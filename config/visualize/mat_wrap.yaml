@@ -1,0 +1,125 @@
+# These settings specify the default matplotlib settings when figures and subplots are plotted.
+
+# For example, the `Figure` section has the following lines:
+
+# Figure:
+#    figure:
+#      aspect: square
+#      figsize: (7,7)
+#    subplot:
+#      aspect: square
+#      figsize: auto
+
+# This means that when a figure (e.g. a single image) is plotted it will use `figsize=(7,7)` and ``aspect="square`` if
+# the values of these parameters are not manually set by the user via a `MatPlot2D` object.
+#
+# In the above example, subplots (e.g. more than one image) will always use `figsize="auto` by default.
+#
+# These configuration options can be customized such that the appearance of figures and subplots for a user is
+# optimal for your computer set up.
+
+
+Axis:                # wrapper for `plt.axis()`: customize the figure axis.
+  figure: {}
+  subplot: {}
+Cmap:
+  figure:
+    cmap: default
+    linscale: 0.01
+    linthresh: 0.05
+    norm: linear
+    vmax: null
+    vmin: null
+  subplot:
+    cmap: default
+    linscale: 0.01
+    linthresh: 0.05
+    norm: linear
+    vmax: null
+    vmin: null
+Colorbar:            # wrapper for `plt.colorbar()`: customize the figure colorbar.
+  figure:
+    fraction: 0.047
+    pad: 0.01
+  subplot:
+    fraction: 0.047
+    pad: 0.01
+ColorbarTickParams:  # wrapper for `cb.ax.tick_params()`: customize the ticks of the figure's colorbar.
+  figure:
+    labelrotation: 90
+    labelsize: 22
+  subplot:
+    labelrotation: 90
+    labelsize: 18
+Figure:              # wrapper for `plt.figure()`: customize the figure size.
+  figure:
+    aspect: square
+    figsize: (7,7)
+  subplot:
+    aspect: square
+    figsize: auto
+Legend:              # wrapper for `plt.legend()`: customize the figure legend.
+  figure:
+    fontsize: 12
+    include: true
+  subplot:
+    fontsize: 12
+    include: true
+Text:                # wrapper for `plt.text()`: customize the appearance of text placed on the figure.
+  figure:
+    fontsize: 16
+  subplot:
+    fontsize: 10
+Annotate:            # wrapper for `plt.annotate()`: customize the appearance of annotations placed on the figure.
+  figure:
+    fontsize: 16
+  subplot:
+    fontsize: 10
+TickParams:          # wrapper for `plt.tick_params()`: customize the figure tick parameters.
+  figure:
+    labelsize: 16
+  subplot:
+    labelsize: 10
+Title:               # wrapper for `plt.title()`: customize the figure title.
+  figure:
+    fontsize: 24
+  subplot:
+    fontsize: 16
+XLabel:              # wrapper for `plt.xlabel()`: customize the figure ylabel.
+  figure:
+    fontsize: 16
+    xlabel: ""
+  subplot:
+    fontsize: 10
+    xlabel: ""
+XTicks:              # wrapper for `plt.xticks()`: customize the figure xticks.
+  manual:
+    extent_factor_1d: 1.0  # For 1D plots, the fraction of the extent that the ticks appears from the edge of the figure and the center.    
+    extent_factor_2d: 0.75 # For 2D plots, the fraction of the extent that the ticks appears from the edge of the figure and the center.
+    number_of_ticks_1d: 3  # For 1D plots, the number of ticks that appear on the x-axis.
+    number_of_ticks_2d: 3  # For 1D plots, the number of ticks that appear on the x-axis.
+  figure:
+    fontsize: 22
+  subplot:
+    fontsize: 18
+YLabel:              # wrapper for `plt.ylabel()`: customize the figure ylabel.
+  figure:
+    fontsize: 16
+    ylabel: ""
+  subplot:
+    fontsize: 10
+    ylabel: ""
+YTicks:              # wrapper for `plt.yticks()`: customize the figure yticks.
+  manual:
+    extent_factor_1d: 1.0  # For 1D plots, the fraction of the extent that the ticks appears from the edge of the figure and the center.    
+    extent_factor_2d: 0.75 # For 2D plots, the fraction of the extent that the ticks appears from the edge of the figure and the center.
+    number_of_ticks_1d: 3  # For 1D plots, the number of ticks that appear on the y-axis.
+    number_of_ticks_2d: 3  # For 1D plots, the number of ticks that appear on the y-axis.
+  figure:
+    fontsize: 22
+    rotation: vertical
+    va: center
+  subplot:
+    fontsize: 18
+    rotation: vertical
+    va: center

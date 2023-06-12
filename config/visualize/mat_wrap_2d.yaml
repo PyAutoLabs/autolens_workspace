@@ -1,0 +1,230 @@
+# These settings specify the default matplotlib settings when "D figures and subplots are plotted.
+
+# For example, the `GridScatter` section has the following lines:
+
+# GridScatter:
+#    figure:
+#      c: k
+#    subplot:
+#      c: k
+
+# This means that when a 2D grid of data is plotted it will use `c=k`, meaning the grid points appear black,
+# provided the values of these parameters are not manually set by the user via a `MatPlot2D` object.
+#
+# In the above example, subplots (e.g. more than one image) will always use `c=k` by default as well.
+#
+# These configuration options can be customized such that the appearance of figures and subplots for a user is
+# optimal for your computer set up.
+
+
+ArrayOverlay:        # wrapper for `plt.imshow()`: customize arrays overlaid.
+  figure:
+    alpha: 0.5
+  subplot:
+    alpha: 0.5
+BorderScatter:       # wrapper for `plt.scatter()`: customize the apperance of 2D borders.
+  figure:
+    c: r
+    marker: .
+    s: 30
+  subplot:
+    c: r
+    marker: .
+    s: 10
+GridErrorbar:        # wrapper for `plt.errrorbar()`: customize grids with errors.
+  figure:
+    alpha: 0.5
+    c: k
+    fmt: o
+    linewidth: 5
+    marker: o
+    markersize: 8
+  subplot:
+    alpha: 0.5
+    c: k
+    fmt: o
+    linewidth: 5
+    marker: o
+    markersize: 8
+GridPlot:            # wrapper for `plt.plot()`: customize how grids plotted via this method appear.
+  figure:
+    c: k
+  subplot:
+    c: k
+GridScatter:        # wrapper for `plt.scatter()`: customize appearances of Grid2D.
+  figure:
+    c: k
+    marker: .
+    s: 1
+  subplot:
+    c: k
+    marker: .
+    s: 1
+IndexScatter:        # wrapper for `plt.scatter()`: customize indexes (e.g. data / source plane or frame objects of an Inversion)
+  figure:
+    c: r,g,b,m,y,k
+    marker: .
+    s: 20
+  subplot:
+    c: r,g,b,m,y,k
+    marker: .
+    s: 20
+MaskScatter:         # wrapper for `plt.scatter()`: customize the appearance of 2D masks.
+  figure:
+    c: k
+    marker: x
+    s: 10
+  subplot:
+    c: k
+    marker: x
+    s: 10
+MeshGridScatter:     # wrapper for `plt.scatter()`: customize the appearance of mesh grids of Inversions in the source-plane / source-frame.
+  figure:
+    c: r
+    marker: .
+    s: 2
+  subplot:
+    c: r
+    marker: .
+    s: 2
+OriginScatter:       # wrapper for `plt.scatter()`: customize the appearance of the (y,x) origin on figures.
+  figure:
+    c: k
+    marker: x
+    s: 80
+  subplot:
+    c: k
+    marker: x
+    s: 80
+PatchOverlay:        # wrapper for `plt.gcf().gca().add_collection`: customize how overlaid patches appear.
+  figure:
+    edgecolor: c
+    facecolor: null
+  subplot:
+    edgecolor: c
+    facecolor: null
+PositionsScatter:    # wrapper for `plt.scatter()`: customize the appearance of positions input via `Visuals2d.positions`.
+  figure:
+    c: k,m,y,b,r,g
+    marker: .
+    s: 32
+  subplot:
+    c: k,m,y,b,r,g
+    marker: .
+    s: 32
+VectorYXQuiver:      # wrapper for `plt.quiver()`: customize (y,x) vectors appearances (e.g. a shear field).
+  figure:
+    alpha: 1.0
+    angles: xy
+    headlength: 0
+    headwidth: 1
+    linewidth: 5
+    pivot: middle
+    units: xy
+  subplot:
+    alpha: 1.0
+    angles: xy
+    headlength: 0
+    headwidth: 1
+    linewidth: 5
+    pivot: middle
+    units: xy
+VoronoiDrawer:       # wrapper for `plt.fill()`: customize the appearance of Voronoi mesh's.
+  figure:
+    alpha: 0.7
+    edgecolor: k
+    linewidth: 0.3
+  subplot:
+    alpha: 0.7
+    edgecolor: k
+    linewidth: 0.3
+ParallelOverscanPlot:
+  figure:
+    c: k
+    linestyle: '-'
+    linewidth: 1
+  subplot:
+    c: k
+    linestyle: '-'
+    linewidth: 1
+SerialOverscanPlot:
+  figure:
+    c: k
+    linestyle: '-'
+    linewidth: 1
+  subplot:
+    c: k
+    linestyle: '-'
+    linewidth: 1
+SerialPrescanPlot:
+  figure:
+    c: k
+    linestyle: '-'
+    linewidth: 1
+  subplot:
+    c: k
+    linestyle: '-'
+    linewidth: 1
+TangentialCriticalCurvesPlot:
+  figure:
+    c: k
+    linestyle: '-'
+    linewidth: 2
+  subplot:
+    c: k
+    linestyle: '-'
+    linewidth: 2
+TangentialCausticsPlot:
+  figure:
+    c: k
+    linestyle: '-'
+    linewidth: 2
+  subplot:
+    c: k
+    linestyle: '-'
+    linewidth: 2
+RadialCriticalCurvesPlot:
+  figure:
+    c: w
+    linestyle: '-'
+    linewidth: 2
+  subplot:
+    c: w
+    linestyle: '-'
+    linewidth: 2
+RadialCausticsPlot:
+  figure:
+    c: w
+    linestyle: '-'
+    linewidth: 2
+  subplot:
+    c: w
+    linestyle: '-'
+    linewidth: 2    
+LightProfileCentresScatter:
+  figure:
+    c: k,r,g,b,m,y
+    marker: +
+    s: 20
+  subplot:
+    c: r,g,b,m,y,k
+    marker: +
+    s: 26
+MassProfileCentresScatter:
+  figure:
+    c: k,r,g,b,m,y
+    marker: x
+    s: 20
+  subplot:
+    c: r,g,b,m,y,k
+    marker: x
+    s: 26
+MultipleImagesScatter:
+  figure:
+    c: k,r,g,b,m,y
+    marker: o
+    s: 16
+  subplot:
+    c: r,g,b,m,y,k
+    marker: o
+    s: 16

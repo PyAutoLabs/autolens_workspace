@@ -1,0 +1,59 @@
+# These settings specify the default matplotlib settings when 1D figures and subplots are plotted.
+
+# For example, the `YXPlot` section has the following lines:
+
+# YXPlot:
+#    figure:
+#      c: k
+#    subplot:
+#      c: k
+
+# This means that when a figure of y vs x data is plotted it will use `c=k`, meaning the line appears black,
+# provided the values of these parameters are not manually set by the user via a `MatPlot1D` object.
+#
+# In the above example, subplots (e.g. more than one image) will always use `c=k` by default as well.
+#
+# These configuration options can be customized such that the appearance of figures and subplots for a user is
+# optimal for your computer set up.
+
+AXVLine:             # wrapper for `plt.axvline()`: customize verticals lines plotted on the figure.
+  figure:
+    c: k
+  subplot:
+    c: k
+FillBetween:         # wrapper for `plt.fill_between()`: customize how fill between plots appear
+  figure:
+    alpha: 0.7
+    color: k
+  subplot:
+    alpha: 0.7
+    color: k
+YXPlot:              # wrapper for `plt.plot()`: customize plots of y versus x.
+  figure:
+    c: k
+  subplot:
+    c: k
+YXScatter:
+  figure:
+    c: k
+  subplot:
+    c: k
+EinsteinRadiusAXVLine:
+  figure:
+    c: b
+    linestyle: --
+  subplot:
+    c: b
+    linestyle: --
+HalfLightRadiusAXVLine:
+  figure:
+    c: g
+    linestyle: -.
+  subplot:
+    c: kg
+    linestyle: -.
+ModelFluxesYXScatter:
+  figure:
+    c: c
+  subplot:
+    c: c
