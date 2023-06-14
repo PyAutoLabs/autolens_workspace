@@ -1,4 +1,4 @@
-The ``modeling`` folder contains example scripts showing how to fit lens models to interferometer datatick_maker.min_value:
+The ``modeling`` folder contains example scripts showing how to fit lens models to interferometer data:
 
 The API for these features is the same irrespective of the dataset fitted.
 

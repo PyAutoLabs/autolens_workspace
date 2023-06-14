@@ -21,7 +21,7 @@ __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge and `Exponential` disk.
+ - The lens galaxy's light is a parametric `Sersic` bulge.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is a parametric `Sersic`.
 
@@ -82,8 +82,7 @@ __Model__
 
 We compose a lens model where:
 
- - The lens galaxy's light is a linear parametric `Sersic` bulge and `Exponential` disk, the centres of 
- which are aligned [9 parameters].
+ - The lens galaxy's light is a linear parametric `Sersic` bulge [6 parameters].
  
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
@@ -100,13 +99,11 @@ https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 # Lens:
 
 bulge = af.Model(al.lp_linear.Sersic)
-disk = af.Model(al.lp_linear.Exponential)
-bulge.centre = disk.centre
 
 mass = af.Model(al.mp.Isothermal)
 shear = af.Model(al.mp.ExternalShear)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, disk=disk, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 # Source:
 
@@ -134,7 +131,7 @@ full description).
 """
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling"),
-    name="light[bulge_disk_linear]_mass[sie]_source[bulge_linear]",
+    name="light[bulge_linear]_mass[sie]_source[bulge_linear]",
     unique_tag=dataset_name,
     nlive=100,
     walks=10,
@@ -156,8 +153,8 @@ For standard light profiles, the log likelihood evaluation time is of order ~0.0
 For linear light profiles, the log likelihood evaluation increases to around ~0.05 seconds per likelihood evaluation.
 This is still fast, but it does mean that the fit may take around five times longer to run.
 
-However, because three free parameters have been removed from the model (the `intensity` of the lens bulge, lens disk 
-and source bulge), the total number of likelihood evaluations will reduce. Furthermore, the simpler parameter space
+However, because two free parameters have been removed from the model (the `intensity` of the lens bulge and 
+source bulge), the total number of likelihood evaluations will reduce. Furthermore, the simpler parameter space
 likely means that the fit will take less than 10000 per free parameter to converge.
 
 Fits using standard light profiles and linear light profiles therefore take roughly the same time to run. However,

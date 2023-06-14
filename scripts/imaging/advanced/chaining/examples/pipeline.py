@@ -5,8 +5,8 @@ Pipelines: Light Parametric + Mass Light Dark + Source Inversion
 By chaining together five searches this script fits `Imaging` dataset of a 'galaxy-scale' strong lens, where in the
 final model:
 
- - The lens galaxy's light is a parametric bulge+disk `Sersic` and `Exponential`.
- - The lens galaxy's stellar mass distribution is a bulge+disk tied to the light model above.
+ - The lens galaxy's light is a parametric bulge with a parametric `Sersic` light profile.
+ - The lens galaxy's stellar mass distribution is a bulge tied to the light model above.
  - The source galaxy is modeled using a `Pixelization`.
 """
 # %matplotlib inline
@@ -68,21 +68,17 @@ __Model + Search + Analysis + Model-Fit (Search 1)__
 
 In search 1 we fit a lens model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge and `Exponential` disk, the centres of 
- which are aligned [11 parameters].
+ - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
 
  - The lens galaxy's mass and source galaxy are omitted.
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
 """
 bulge = af.Model(al.lp.Sersic)
-disk = af.Model(al.lp.Exponential)
-
-bulge.centre = disk.centre
 
 model_1 = af.Collection(
     galaxies=af.Collection(
-        lens=af.Model(al.Galaxy, redshift=0.5, bulge=bulge, disk=disk)
+        lens=af.Model(al.Galaxy, redshift=0.5, bulge=bulge)
     )
 )
 
@@ -102,8 +98,7 @@ __Model + Search + Analysis + Model-Fit (Search 2)__
 
 We use the results of search 1 to create the lens model fitted in search 2, where:
 
- - The lens galaxy's light and stellar mass is an `Sersic` bulge and `Exponential` disk [Parameters 
- fixed to results of search 1].
+ - The lens galaxy's light and stellar mass is an `Sersic` bulge  [Parameters fixed to results of search 1].
 
  - The lens galaxy's dark matter mass distribution is a `NFWMCRLudlow` whose centre is aligned with the 
  `Sersic` bulge and stellar mass model above [3 parameters].
@@ -116,11 +111,10 @@ The number of free parameters and therefore the dimensionality of non-linear par
 
 NOTES:
 
- - By using the fixed `bulge` and `disk` model from the result of search 1, we are assuming this is a sufficiently 
- accurate fit to the lens's light that it can reliably represent the stellar mass.
+ - By using the fixed `bulge` model from the result of search 1, we are assuming this is a sufficiently 
+   accurate fit to the lens's light that it can reliably represent the stellar mass.
 """
 bulge = result_1.instance.galaxies.lens.bulge
-disk = result_1.instance.galaxies.lens.disk
 
 dark = af.Model(al.mp.NFWMCRLudlow)
 dark.centre = bulge.centre
@@ -134,7 +128,6 @@ model_2 = af.Collection(
             al.Galaxy,
             redshift=0.5,
             bulge=bulge,
-            disk=disk,
             dark=af.Model(al.mp.NFW),
             shear=al.mp.ExternalShear,
         ),
@@ -158,8 +151,8 @@ __Model + Search + Analysis + Model-Fit (Search 3)__
 
 We use the results of searches 1 and 2 to create the lens model fitted in search 3, where:
 
- - The lens galaxy's light and stellar mass is a parametric `Sersic` bulge and `Exponential` disk 
- [8 parameters: priors initialized from search 1].
+ - The lens galaxy's light and stellar mass is a parametric `Sersic` bulge [7 parameters: priors initialized from 
+   search 1].
 
  - The lens galaxy's dark matter mass distribution is a `NFWMCRLudlow` whose centre is aligned with the 
  `Sersic` bulge and stellar mass model above [3 parameters: priors initialized from search 2].
@@ -168,14 +161,13 @@ We use the results of searches 1 and 2 to create the lens model fitted in search
 
  - The source galaxy's light is a parametric `Sersic` [7 parameters: priors initialized from search 2].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=22.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=19.
 
 Notes:
 
  - This search attempts to address any issues there may have been with the bulge's stellar mass model.
 """
 bulge = result_1.model.galaxies.lens.bulge
-disk = result_1.model.galaxies.lens.disk
 
 dark = result_2.model.galaxies.lens.dark
 dark.centre = bulge.centre
@@ -186,7 +178,6 @@ model_3 = af.Collection(
             al.Galaxy,
             redshift=0.5,
             bulge=bulge,
-            disk=disk,
             dark=dark,
             shear=result_2.model.galaxies.lens.shear,
         ),
@@ -212,8 +203,7 @@ __Model + Search + Analysis + Model-Fit (Search 4)__
 
 We use the results of searches 3 to create the lens model fitted in search 4, where:
 
- - The lens galaxy's light and stellar mass is an `Sersic` bulge and `Exponential` 
- disk [Parameters fixed to results of search 3].
+ - The lens galaxy's light and stellar mass is an `Sersic` bulge [Parameters fixed to results of search 3].
 
  - The lens galaxy's dark matter mass distribution is a `NFWMCRLudlow` [Parameters fixed to results of 
  search 3].
@@ -243,7 +233,6 @@ model_4 = af.Collection(
             al.Galaxy,
             redshift=redshift_lens,
             bulge=result_3.instance.galaxies.lens.bulge,
-            disk=result_3.instance.galaxies.lens.disk,
             dark=result_3.instance.galaxies.lens.dark,
             shear=result_3.instance.galaxies.lens.shear,
         ),
@@ -267,8 +256,7 @@ __Model +  Search (Search 5)__
 
 We use the results of searches 3 and 4 to create the lens model fitted in search 5, where:
 
- - The lens galaxy's light and stellar mass is an `Sersic` bulge and `Exponential` 
- disk [11 parameters: priors initialized from search 3].
+ - The lens galaxy's light and stellar mass is an `Sersic` bulge [7 parameters: priors initialized from search 3].
 
  - The lens galaxy's dark matter mass distribution is a `NFWMCRLudlow` [8 parameters: priors initialized 
  from search 3].
@@ -279,7 +267,7 @@ The lens mass model also includes an `ExternalShear` [2 parameters: priors initi
 
  - This pixelization is regularized using a `ConstantSplit` scheme [parameters fixed to results of search 4]. 
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=19.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=17.
 """
 model_5 = af.Collection(
     galaxies=af.Collection(
@@ -287,7 +275,6 @@ model_5 = af.Collection(
             al.Galaxy,
             redshift=redshift_lens,
             bulge=result_3.model.galaxies.lens.bulge,
-            disk=result_3.model.galaxies.lens.disk,
             dark=result_3.model.galaxies.lens.dark,
             shear=result_3.model.galaxies.lens.shear,
         ),

@@ -169,8 +169,8 @@ Where:
  - $n$ is the ``sersic_index``, which via $k$ controls the steepness of the inner profile.
  - $R$ is the `effective_radius`, which defines the arc-second radius of a circle containing half the light.
 
-In this example, we assume our lens is composed of two light profiles, an elliptical Sersic and Exponential (a Sersic
-where `sersic_index=4`) which represent the bulge and disk of the lens. 
+In this example, we assume our lens is composed of two light profiles, an elliptical Sersic (a Sersic
+where `sersic_index=4`) which represent the bulge of the lens. 
 """
 bulge = al.lp.Sersic(
     centre=(0.0, 0.0),
@@ -178,13 +178,6 @@ bulge = al.lp.Sersic(
     intensity=4.0,
     effective_radius=0.6,
     sersic_index=3.0,
-)
-
-disk = al.lp.Exponential(
-    centre=(0.0, 0.0),
-    ell_comps=al.convert.ell_comps_from(axis_ratio=0.7, angle=30.0),
-    intensity=2.0,
-    effective_radius=1.6,
 )
 
 """
@@ -196,11 +189,6 @@ image_2d_bulge = bulge.image_2d_from(grid=masked_dataset.grid)
 
 bulge_plotter = aplt.LightProfilePlotter(light_profile=bulge, grid=masked_dataset.grid)
 bulge_plotter.figures_2d(image=True)
-
-image_2d_disk = disk.image_2d_from(grid=masked_dataset.grid)
-
-disk_plotter = aplt.LightProfilePlotter(light_profile=disk, grid=masked_dataset.grid)
-disk_plotter.figures_2d(image=True)
 
 """
 __Likelihood Setup: Lens Galaxy Mass__
@@ -269,10 +257,10 @@ We now combine the light and mass profiles into a single `Galaxy` object for the
 When computing quantities for the light and mass profiles from this object, it computes each individual quantity and 
 adds them together. 
 
-For example, for the `bulge` and `disk`, when it computes their 2D images it computes each individually and then adds
+For example, for the `bulge`, when it computes their 2D images it computes each individually and then adds
 them together.
 """
-lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, disk=disk, mass=mass, shear=shear)
+lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 """
 __Likelihood Setup: Source Galaxy Pixelization and Regularization__
@@ -292,8 +280,8 @@ source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
 """
 __Likelihood Step 1: Lens Light__
 
-Compute a 2D image of the lens galaxy's light as the sum of its individual light profiles (the `EllpiticalSersic` 
-bulge and `Exponential` disk). 
+Compute a 2D image of the lens galaxy's light as the sum of its individual light profiles (the `Sersic` 
+bulge). 
 
 This computes the `image` of each `LightProfile` and adds them together. 
 """

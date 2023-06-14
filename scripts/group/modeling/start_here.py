@@ -21,7 +21,7 @@ In this example we model the source as a point-source, as fitting the full `Imag
 lensed source's arcs is challenging due to the high complexity of the lens model.
 
 The `group/chaining` package includes an example script showing how **PyAutoLens** can model this dataset's full
-extended emission, however this requires familiaritytick_maker.min_value's advanced feature called 'search chaining'
+extended emission, however this requires familiarity's advanced feature called 'search chaining'
 which is covered in chapter 3 of **HowToLens**. This package also shows how to do this using a pixelized source
 reconstruction.
 """

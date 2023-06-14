@@ -1,4 +1,4 @@
-The ``modeling`` folder contains example scripts showing how to fit a lens model to multiple imaging datasetstick_maker.min_value:
+The ``modeling`` folder contains example scripts showing how to fit a lens model to multiple imaging datasets:
 
 Notes
 -----

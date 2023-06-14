@@ -1,4 +1,4 @@
-The ``modeling`` folder contains example scripts showing how to fit lens models to interferometer datatick_maker.min_value:
+The ``modeling`` folder contains example scripts showing how to fit lens models to interferometer data:
 
 Files (Beginner)
 ----------------
@@ -8,7 +8,7 @@ Files (Beginner)
 Folders (Beginner)
 ------------------
 
-- ``features``: Example modeling scripts illustrating the core features for lens modelingtick_maker.min_value.
+- ``features``: Example modeling scripts illustrating the core features for lens modeling.
 - ``customize``: Customize aspects of a model-fit, (e.g. priors, the imaging mask).
 - ``searches``: Using other non-linear searches (E.g. MCMC, maximum likelihood estimators).
 

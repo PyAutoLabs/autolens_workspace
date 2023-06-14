@@ -1,4 +1,4 @@
-The ``group`` folder contains examples for modeling strong lensing groupstick_maker.min_value.
+The ``group`` folder contains examples for modeling strong lensing groups.
 
 A strong lensing group has an Einstien radius approximately between 5.0" -> 10.0", 2-5 lens galaxies and 1-3 sources.
 

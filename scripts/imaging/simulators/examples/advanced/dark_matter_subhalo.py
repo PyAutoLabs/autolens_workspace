@@ -80,15 +80,9 @@ lens_galaxy = al.Galaxy(
     bulge=al.lp.Sersic(
         centre=(0.0, 0.0),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
-        intensity=4.0,
+        intensity=2.0,
         effective_radius=0.6,
         sersic_index=3.0,
-    ),
-    disk=al.lp.Exponential(
-        centre=(0.0, 0.0),
-        ell_comps=al.convert.ell_comps_from(axis_ratio=0.7, angle=30.0),
-        intensity=2.0,
-        effective_radius=1.6,
     ),
     mass=al.mp.Isothermal(
         centre=(0.0, 0.0),
@@ -104,7 +98,7 @@ source_galaxy = al.Galaxy(
     bulge=al.lp.Sersic(
         centre=(0.0, 0.0),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
-        intensity=0.3,
+        intensity=4.0,
         effective_radius=0.1,
         sersic_index=1.0,
     ),

@@ -5,7 +5,7 @@ SLaM (Source, Light and Mass): Light Parametric + Mass Total + Source Inversion
 Using two source pipelines, a light pipeline and a mass pipeline this SLaM modeling script  fits `Imaging` dataset of a strong lens
 system where in the final model:
 
- - The lens galaxy's light is a bulge+disk `Sersic` and `Exponential`.
+ - The lens galaxy's light is a bulge with a parametric `Sersic` light profile.
  - The lens galaxy's total mass distribution is an `PowerLaw`.
  - The source galaxy's light is a parametric `Inversion`.
 
@@ -95,8 +95,7 @@ __SOURCE LP PIPELINE (with lens light)__
 The SOURCE LP PIPELINE (with lens light) uses three searches to initialize a robust model for the 
 source galaxy's light, which in this example:
  
- - Uses a parametric `Sersic` bulge and `Exponential` disk with centres aligned for the lens
- galaxy's light.
+ - Uses a parametric `Sersic` bulge for the lens galaxy's light.
  
  - Uses an `Isothermal` model for the lens's total mass distribution with an `ExternalShear`.
 
@@ -107,14 +106,12 @@ source galaxy's light, which in this example:
 analysis = al.AnalysisImaging(dataset=dataset)
 
 bulge = af.Model(al.lp.Sersic)
-disk = af.Model(al.lp.Exponential)
-bulge.centre = disk.centre
 
 source_lp_results = slam.source_lp.run(
     settings_autofit=settings_autofit,
     analysis=analysis,
     lens_bulge=bulge,
-    lens_disk=disk,
+    lens_disk=None,
     mass=af.Model(al.mp.Isothermal),
     shear=af.Model(al.mp.ExternalShear),
     source_bulge=af.Model(al.lp.Sersic),
@@ -164,8 +161,7 @@ The LIGHT LP PIPELINE uses one search to fit a complex lens light model to a hig
 lens mass model and source light model fixed to the maximum log likelihood result of the SOURCE LP PIPELINE.
 In this example it:
 
- - Uses a parametric `Sersic` bulge and `Sersic` disk with centres aligned for the lens galaxy's 
- light [Do not use the results of the SOURCE LP PIPELINE to initialize priors].
+ - Uses a parametric `Sersic` bulge [Do not use the results of the SOURCE LP PIPELINE to initialize priors].
  
  - Uses an `Isothermal` model for the lens's total mass distribution [fixed from SOURCE LP PIPELINE].
  
@@ -183,8 +179,6 @@ analysis = al.AnalysisImaging(
 )
 
 bulge = af.Model(al.lp.Sersic)
-disk = af.Model(al.lp.Exponential)
-bulge.centre = disk.centre
 
 light_results = slam.light_lp.run(
     settings_autofit=settings_autofit,
@@ -192,7 +186,7 @@ light_results = slam.light_lp.run(
     setup_adapt=setup_adapt,
     source_results=source_pix_results,
     lens_bulge=bulge,
-    lens_disk=disk,
+    lens_disk=None,
 )
 
 """
@@ -202,8 +196,7 @@ The MASS TOTAL PIPELINE (with lens light) uses one search to fits a complex lens
 using the lens mass model and source model of the SOURCE PIX PIPELINE to initialize the model priors and the lens 
 light model of the LIGHT LP PIPELINE. In this example it:
 
- - Uses a parametric `Sersic` bulge and `Sersic` disk with centres aligned for the lens galaxy's 
- light [fixed from LIGHT LP PIPELINE].
+ - Uses a parametric `Sersic` bulge [fixed from LIGHT LP PIPELINE].
 
  - Uses an `PowerLaw` model for the lens's total mass distribution [priors initialized from SOURCE 
  PARAMETRIC PIPELINE + centre unfixed from (0.0, 0.0)].

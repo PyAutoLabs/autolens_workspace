@@ -2,7 +2,7 @@
 Plots: Start Here
 =================
 
-This example illustrates the basic API for plottingtick_maker.min_value.
+This example illustrates the basic API for plotting.
 """
 # %matplotlib inline
 # from pyprojroot import here

@@ -4,17 +4,17 @@ Chaining: Lens Light To Mass
 
 This script chains two searches to fit `Imaging` data of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a bulge+disk `Sersic` and `Exponential`.
+ - The lens galaxy's light is a bulge with a parametric `Sersic` light profile.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is an `Exponential`.
 
 The two searches break down as follows:
 
- 1) Model the lens galaxy's light using an `Sersic` bulge and `Exponential` disk. The source is
- present in the image, but modeling it is omitted.
+ 1) Model the lens galaxy's light using an `Sersic` bulge. The source is present in the image, but modeling it is
+    omitted.
       
  2) Models the lens galaxy's mass using an `Isothermal` and source galaxy's light using
-an `Sersic`. The lens light model is fixed to the result of search 1.
+    an `Sersic`. The lens light model is fixed to the result of search 1.
 
 __Why Chain?__
 
@@ -22,9 +22,9 @@ For many strong lenses the lens galaxy's light is distinct from the source galax
 approach to first subtract the lens's light and then focus on fitting the lens mass model and source's light. This
 provides the following benefits:
 
- - The non-linear parameter space defined by a bulge+disk (N=11), mass (N=5) and parametric source (N=7) models above
- has N=27 dimensions. By splitting the model-fit into two searches, we fit parameter spaces of dimensions N=11
- (bulge+disk) and N=12 (mass+source). These are more efficient to sample and less like to infer a local maxima or
+ - The non-linear parameter space defined by a bulge (N=7), mass (N=5) and parametric source (N=7) models above
+ has N=27 dimensions. By splitting the model-fit into two searches, we fit parameter spaces of dimensions N=7
+ (bulge) and N=12 (mass+source). These are more efficient to sample and less like to infer a local maxima or
  unphysical solution.
 
  - The lens galaxy's light traces its mass, so we can use the lens light model inferred in search 1 to initialize
@@ -89,18 +89,14 @@ __Model (Search 1)__
 
 In search 1 we fit a lens model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge and `Exponential` disk, the centres of 
- which are aligned [11 parameters].
+ - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
  - The lens galaxy's mass and source galaxy are omitted.
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
 """
 bulge = af.Model(al.lp.Sersic)
-disk = af.Model(al.lp.Exponential)
 
-bulge.centre = disk.centre
-
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, disk=disk)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge)
 
 model_1 = af.Collection(galaxies=af.Collection(lens=lens))
 
@@ -140,8 +136,7 @@ __Model (Search 2)__
 
 We use the results of search 1 to create the lens model fitted in search 2, where:
 
- - The lens galaxy's light is an `Sersic` bulge and `Exponential` disk [Parameters fixed to results 
- of search 1].
+ - The lens galaxy's light is an `Sersic` bulge [Parameters fixed to results of search 1].
  - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
  - The source galaxy's light is a parametric `Sersic` [7 parameters].
 
@@ -162,7 +157,6 @@ lens = af.Model(
     al.Galaxy,
     redshift=0.5,
     bulge=result_1.instance.galaxies.lens.bulge,
-    disk=result_1.instance.galaxies.lens.disk,
     mass=mass,
 )
 source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
@@ -203,18 +197,17 @@ print(result_2.info)
 """
 __Wrap Up__
 
-In this example, we passed a bulge + disk model of the lens galaxy's light as an `instance`, as opposed to a `model`, 
+In this example, we passed a bulge model of the lens galaxy's light as an `instance`, as opposed to a `model`, 
 meaning its parameters were fixed to the maximum log likelihood model in search 1 and not fitted as free parameters in 
 search 2.
 
-Of course, one could easily edit this script to fit the bulge + disk as a model in search 2, where the results of 
+Of course, one could easily edit this script to fit the bulge as a model in search 2, where the results of 
 search 1 initialize their priors:
 
  lens = af.Model(
     al.Galaxy, 
      redshift=0.5,
      bulge=result_1.model.galaxies.lens.bulge,
-     disk=result_1.model.galaxies.lens.disk,
      mass=mass,
  )
 
@@ -245,6 +238,6 @@ An even more advanced approach which uses search chaining are the SLaM pipelines
 processing into a series of fits that first perfect the source model, then the lens light model and finally the lens
 mass model. 
 
-The SLaM pipelines begin by fitting the lens's light using a bulge+disk, and then fit the mass model and source as 
+The SLaM pipelines begin by fitting the lens's light using a bulge, and then fit the mass model and source as 
 performed in this example.
 """

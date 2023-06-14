@@ -209,7 +209,7 @@ Given the extra model parameters due to the clumps, we increase the number of li
 50 to 100 and make the random walk length 10.
 """
 search = af.DynestyStatic(
-    path_prefix=path.join("imaging", "features"),
+    path_prefix=path.join("imaging", "modeling"),
     name="clumps",
     unique_tag=dataset_name,
     nlive=100,

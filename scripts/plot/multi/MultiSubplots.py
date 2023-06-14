@@ -71,7 +71,7 @@ source_galaxy = al.Galaxy(
     bulge=al.lp.Sersic(
         centre=(0.0, 0.0),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
-        intensity=0.3,
+        intensity=4.0,
         effective_radius=0.1,
         sersic_index=1.0,
     ),

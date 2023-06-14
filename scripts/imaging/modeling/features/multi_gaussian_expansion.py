@@ -15,7 +15,7 @@ irregular and asymmetric morphological of galaxies (e.g. isophotal twists, an el
 An MGE fully captures these features and can therefore much better represent the emission of complex lens galaxies.
 
 The MGE model can be composed in a way that has fewer non-linear parameters than an elliptical Sersic. In this example,
-two separate groups of Gaussians are used to represent the `bulge` and `disk` of the lens, which in total correspong
+two separate groups of Gaussians are used to represent the `bulge` and `disk` of the lens, which in total correspond
 to just N=6 non-linear parameters (a `bulge` and `disk` comprising two linear Sersics would give N=10). 
 
 The MGE in this script is composed in a way where neither the `intensity` parameters or the parameters controlling

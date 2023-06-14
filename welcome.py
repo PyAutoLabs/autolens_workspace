@@ -167,7 +167,7 @@ input(
     
     Within these folders, you can find the following packages:
         
-    - howtolens: Jupyter notebook tutorials introducing beginners to strong gravitational lensing, describing how to
+    - howtolens: Jupyter notebook lectures introducing beginners to strong gravitational lensing, describing how to
      perform scientific analysis of lens data and detailing the PyAutoLens API. A great starting point for new users!
     
     - overview: An overview of all PyAutoLens's main features.

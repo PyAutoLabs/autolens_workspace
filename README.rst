@@ -14,37 +14,28 @@ PyAutoLens Workspace
 `Introduction on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_ |
 `HowToLens <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
 
-Welcome to the **PyAutoLens** Workspace. You can get started right away by going to the `autolens workspace
+Welcome to the **PyAutoLens** Workspace. You can get set up by following the installation guide on our `readthedocs <https://pyautolens.readthedocs.io/>`_.
+
+Alternatively, you can try **PyAutoLens** out in a web browser by going to the `autolens workspace
 Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/HEAD>`_.
-Alternatively, you can get set up by following the installation guide on our `readthedocs <https://pyautolens.readthedocs.io/>`_.
 
 Getting Started
 ---------------
 
-We recommend new users begin by looking at the following notebooks:
+We recommend new users begin by looking at ``autolens_workspace/introduction.ipynb`` notebook.
 
-- ``notebooks/overview``: Examples giving an overview of **PyAutoLens**'s core features.
-- ``notebooks/howtolens``: Detailed step-by-step Jupyter notebook tutorials on how to use **PyAutoLens**.
+Once complete, we recommend that new users first read through the overview examples of interest (``autolens_workspace/notebooks/overview``)
+and then find a ``start_here.ipynb`` notebook for the feature they are interested in (for example, if you are looking to model
+CCD imaging data, go to ``autolens_workspace/notebooks/imaging/modeling/start_here.ipynb``).
 
-Installation
-------------
+HowToLens
+---------
 
-If you haven't already, install `PyAutoLens via pip or conda <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_.
+For users less experience with gravitational lensing, model fitting, Bayesian inference and scientific analysis
+you may wish to read through the **HowToLens** lectures. These teach you the basic principles of gravitational lensing
+and model fitting, with the target audience undergraduate students, masters students and above.
 
-Next, clone the ``autolens workspace`` (the line ``--depth 1`` clones only the most recent branch on
-the ``autolens_workspace``, reducing the download size):
-
-.. code-block:: bash
-
-   cd /path/on/your/computer/you/want/to/put/the/autolens_workspace
-   git clone https://github.com/Jammy2211/autolens_workspace --depth 1
-   cd autolens_workspace
-
-Run the ``welcome.py`` script to get started!
-
-.. code-block:: bash
-
-   python3 welcome.py
+A complete overview of the lectures `is provided on the HowToLens readthedocs page <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
 
 Workspace Structure
 -------------------
@@ -54,13 +45,13 @@ The workspace includes the following main directories:
 - ``notebooks``: **PyAutoLens** examples written as Jupyter notebooks.
 - ``scripts``: **PyAutoLens** examples written as Python scripts.
 - ``config``: Configuration files which customize **PyAutoLens**'s behaviour.
-- ``dataset``: Where data is stored, including example datasets distributedtick_maker.min_value.
+- ``dataset``: Where data is stored, including example datasets distributed.
 - ``output``: Where the **PyAutoLens** analysis and visualization are output.
 
 The examples in the ``notebooks`` and ``scripts`` folders are structured as follows:
 
 - ``overview``: Examples giving an overview of **PyAutoLens**'s core features.
-- ``howtolens``: Detailed step-by-step Jupyter notebook tutorials on how to use **PyAutoLens**.
+- ``howtolens``: Detailed step-by-step Jupyter notebook lectures on how to use **PyAutoLens**.
 
 - ``imaging``: Examples for analysing and simulating CCD imaging data (e.g. Hubble, Euclid).
 - ``interferometer``: Examples for analysing and simulating interferometer datasets (e.g. ALMA, JVLA).
@@ -89,17 +80,21 @@ Workspace Version
 
 This version of the workspace is built and tested for using **PyAutoLens v2023.6.12.5**.
 
-HowToLens
----------
+Contribution
+------------
+To make changes in the tutorial notebooks, please make changes in the corresponding python files(.py) present in the
+``scripts`` folder of each chapter. Please note that  marker ``# %%`` alternates between code cells and markdown cells.
 
-Included is the ``HowToLens`` lecture series, which provides an introduction to strong gravitational
-lens modelingtick_maker.min_value. It can be found in the workspace & consists of 5 chapters:
+Support
+-------
 
-- ``Introduction``: An introduction to strong gravitational lensing & **PyAutoLens**.
-- ``Lens Modeling``: How to model strong lenses, including a primer on Bayesian analysis and model-fitting via a non-linear search .
-- ``Search Chaining``: Chaining non-linear searches together to build model-fitting pipelines & tailor them to your own science case.
-- ``Pixelizations``: How to perform pixelized reconstructions of the source-galaxy.
+Support for installation issues, help with lens modeling and using **PyAutoLens** is available by
+`raising an issue on the autolens_workspace GitHub page <https://github.com/Jammy2211/autolens_workspace/issues>`_. or
+joining the **PyAutoLens** `Slack channel <https://pyautolens.slack.com/>`_, where we also provide the latest updates on
+**PyAutoLens**.
 
+Slack is invitation-only, so if you'd like to join send an `email <https://github.com/Jammy2211>`_ requesting an
+invite.
 
 Galaxy-Scale vs Group Scale Lenses
 ----------------------------------
@@ -119,20 +114,3 @@ roughly as follows:
 
 If you have data which requires the lens model to include additional galaxies, whether it be a galaxy or group
 scale system, keep an eye out for **PyAutoLens**'s '**clump API**' which is designed to facilitate this.
-
-Contribution
-------------
-To make changes in the tutorial notebooks, please make changes in the corresponding python files(.py) present in the
-``scripts`` folder of each chapter. Please note that  marker ``# %%`` alternates between code cells and markdown cells.
-
-
-Support
--------
-
-Support for installation issues, help with lens modeling and using **PyAutoLens** is available by
-`raising an issue on the autolens_workspace GitHub page <https://github.com/Jammy2211/autolens_workspace/issues>`_. or
-joining the **PyAutoLens** `Slack channel <https://pyautolens.slack.com/>`_, where we also provide the latest updates on
-**PyAutoLens**.
-
-Slack is invitation-only, so if you'd like to join send an `email <https://github.com/Jammy2211>`_ requesting an
-invite.

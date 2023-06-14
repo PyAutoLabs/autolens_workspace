@@ -12,7 +12,7 @@ __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge and `Exponential` disk.
+ - The lens galaxy's light is a parametric `Sersic` bulge.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is a parametric `Sersic`.
 
@@ -107,14 +107,13 @@ __Model__
 
 In this example we compose a lens model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge and `Exponential` disk, the centres of 
- which are aligned [11 parameters].
+ - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
  
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
  - The source galaxy's light is a parametric `Sersic` [7 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=25.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=21.
 
 __Model Composition__
 
@@ -142,14 +141,12 @@ If for your dataset the lens is not centred at (0.0", 0.0"), we recommend that y
 # Lens:
 
 bulge = af.Model(al.lp.Sersic)
-disk = af.Model(al.lp.Exponential)
-bulge.centre = disk.centre
 
 mass = af.Model(al.mp.Isothermal)
 
 shear = af.Model(al.mp.ExternalShear)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, disk=disk, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 # Source:
 
@@ -197,7 +194,7 @@ model-fit, for example the priors.
 
 The `name` and `path_prefix` below specify the path where results ae stored in the output folder:  
 
- `/autolens_workspace/output/imaging/modeling/simple/light[bulge_disk]_mass[sie]_source[bulge]/unique_identifier`.
+ `/autolens_workspace/output/imaging/modeling/simple/light[bulge]_mass[sie]_source[bulge]/unique_identifier`.
 
 __Unique Identifier__
 
@@ -230,7 +227,7 @@ reduced back to 1 to fix it.
 """
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling"),
-    name="light[bulge_disk]_mass[sie]_source[bulge]",
+    name="light[bulge]_mass[sie]_source[bulge]",
     unique_tag=dataset_name,
     nlive=100,
     walks=10,

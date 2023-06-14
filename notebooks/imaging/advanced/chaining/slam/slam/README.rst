@@ -1,5 +1,5 @@
 The ``slam`` folder contains the Source, Light and Mass (SLaM) pipeline, which are **advanced** template pipelines for
-automated lens modelingtick_maker.min_value:
+automated lens modeling:
 
 Files (Advanced)
 ----------------

@@ -2,7 +2,7 @@
 Interferometer: Data Preparation
 ================================
 
-When an interferometer dataset is analysedtick_maker.min_value, it must conform to certain standards in order for
+When an interferometer dataset is analysed, it must conform to certain standards in order for
 the analysis to be performed correctly. This tutorial describes these standards and links to more detailed scripts
 which will help you prepare your dataset to adhere to them if it does not already.
 

@@ -109,7 +109,7 @@ source_0 = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, mass=mass)
 
 # Source 1:
 
-bulge - af.Model(al.lp_linear.ExponentialSph)
+bulge = af.Model(al.lp_linear.ExponentialSph)
 
 source_1 = af.Model(al.Galaxy, redshift=2.0, bulge=bulge)
 
