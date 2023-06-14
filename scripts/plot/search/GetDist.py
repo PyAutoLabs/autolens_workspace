@@ -42,7 +42,7 @@ import autolens as al
 __Model Fit__
 
 First, lets create a result via dynesty by repeating the simple model-fit that is performed in 
-the `modeling/mass_total__source_parametric.py` example.
+the `modeling/start_here.py` example.
 
 We'll use dynesty in this example, but any MCMC / nested sampling non-linear search which produces samples of
 the posterior could be used.

@@ -10,7 +10,7 @@ input(
     
     
     cd path/to/autolens_workspace (if you are not already in the autolens_workspace).
-    python3 scripts/imaging/modeling/mass_total__source_parametric.py
+    python3 scripts/imaging/modeling/start_here.py
 
 
     The reasons for this are so that PyAutoLens can:
@@ -159,34 +159,13 @@ input(
     "##### WORKSPACE TOUR ######\n"
     "###########################\n\n"
     """
-    PyAutoLens is now set up and you can begin exploring the workspace. We recommend new users begin by following the
-    'introduction.ipynb' notebook, which gives an overview of **PyAutoLens** and the workspace.
+    PyAutoLens is now set up and you can begin exploring the workspace. 
     
-    Examples are provided as both Jupyter notebooks in the 'notebooks' folder and Python scripts in the 'scripts'
-    folder. 
+    We recommend new users begin by following the 'introduction.ipynb' notebook, which gives an overview 
+    of **PyAutoLens** and the workspace.
     
-    Within these folders, you can find the following packages:
-        
-    - howtolens: Jupyter notebook lectures introducing beginners to strong gravitational lensing, describing how to
-     perform scientific analysis of lens data and detailing the PyAutoLens API. A great starting point for new users!
-    
-    - overview: An overview of all PyAutoLens's main features.
-    
-    - imaging: Examples for analysing and simulating CCD imaging data of a strong lens.
-     
-    - plot: An API reference guide of all of PyAutoLens's plotting and visualization tools.
-     
-    - results: Tutorials on how to use PyAutoLens's results after fitting a lens.
-
-    - interferometer: Examples for analysing and simulating interferometer data of a strong lens.
-
-    - point_source: Examples for analysing and simulating point source data of a strong lens.
-
-    - group: Examples for analysing and simulating group-scale strong lenses.
-     
-    - misc: Miscellaneous scripts for specific lens analysis.
-     
-    The `advanced` folders are for experienced users and be inspected only once you are familiar with PyAutoLens.
+    A full description of the workspace can be found in the `autolens_workspace/README.rst` file, which you should
+    also give a quick read through of now!
     
     [Press Enter to continue]
     """

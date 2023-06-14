@@ -26,7 +26,7 @@ import autolens.plot as aplt
 
 """
 First, lets create a result via ultranest by repeating the simple model-fit that is performed in 
-the `modeling/mass_total__source_parametric.py` example.
+the `modeling/start_here.py` example.
 """
 dataset_name = "simple__no_lens_light"
 

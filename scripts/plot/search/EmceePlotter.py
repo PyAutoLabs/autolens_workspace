@@ -19,7 +19,7 @@ import autolens.plot as aplt
 
 """
 First, lets create a result via emcee by repeating the simple model-fit that is performed in 
-the `modeling/mass_total__source_parametric.py` example.
+the `modeling/start_here.py` example.
 
 We use a model with an initialized starting point, which is necessary for lens modeling with emcee.
 """

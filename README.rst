@@ -36,7 +36,7 @@ overview of **PyAutoLens**'s core features and API.
 
 Next, read through the overview example notebooks of features you are interested in, in the folder: ``autolens_workspace/notebooks/overview``.
 
-Finally, find the ``start_here.ipynb`` notebook for the feature you are interested in (for example, if you
+Then, find the ``start_here.ipynb`` notebook for the feature you are interested in (for example, if you
 are looking to model CCD imaging data, go to ``autolens_workspace/notebooks/imaging/modeling/start_here.ipynb``).
 
 HowToLens
