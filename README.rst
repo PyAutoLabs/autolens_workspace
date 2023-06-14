@@ -26,16 +26,17 @@ You can get set up on your personal computer by following the installation guide
 our `readthedocs <https://pyautolens.readthedocs.io/>`_.
 
 Alternatively, you can try **PyAutoLens** out in a web browser by going to the `autolens workspace
-Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_
+Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_.
 
 Where To Go?
 ------------
 
-We recommend new users begin with the ``autolens_workspace/introduction.ipynb`` notebook.
+We recommend that you start with the ``autolens_workspace/introduction.ipynb`` notebook, which will give you a concise
+overview of **PyAutoLens**'s core features and API.
 
-Once complete, new users should read through the overview example notebooks of interest in the following folder: ``autolens_workspace/notebooks/overview``.
+Next, read through the overview example notebooks of features you are interested in, in the folder: ``autolens_workspace/notebooks/overview``.
 
-Then, you should find the ``start_here.ipynb`` notebook for the feature you are interested in (for example, if you
+Finally, find the ``start_here.ipynb`` notebook for the feature you are interested in (for example, if you
 are looking to model CCD imaging data, go to ``autolens_workspace/notebooks/imaging/modeling/start_here.ipynb``).
 
 HowToLens
