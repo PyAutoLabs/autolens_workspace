@@ -14,6 +14,9 @@ PyAutoLens Workspace
 `Introduction on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_ |
 `HowToLens <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
 
+.. image:: https://github.com/Jammy2211/PyAutoLogo/blob/main/gifs/pyautolens.gif?raw=true
+  :width: 900
+
 Welcome to the **PyAutoLens** Workspace!
 
 Getting Started
