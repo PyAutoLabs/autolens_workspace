@@ -14,19 +14,26 @@ PyAutoLens Workspace
 `Introduction on Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_ |
 `HowToLens <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
 
-Welcome to the **PyAutoLens** Workspace. You can get set up by following the installation guide on our `readthedocs <https://pyautolens.readthedocs.io/>`_.
-
-Alternatively, you can try **PyAutoLens** out in a web browser by going to the `autolens workspace
-Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/HEAD>`_.
+Welcome to the **PyAutoLens** Workspace!
 
 Getting Started
 ---------------
 
-We recommend new users begin by looking at ``autolens_workspace/introduction.ipynb`` notebook.
+You can get set up on your personal computer by following the installation guide on
+our `readthedocs <https://pyautolens.readthedocs.io/>`_.
 
-Once complete, we recommend that new users first read through the overview examples of interest (``autolens_workspace/notebooks/overview``)
-and then find a ``start_here.ipynb`` notebook for the feature they are interested in (for example, if you are looking to model
-CCD imaging data, go to ``autolens_workspace/notebooks/imaging/modeling/start_here.ipynb``).
+Alternatively, you can try **PyAutoLens** out in a web browser by going to the `autolens workspace
+Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=introduction.ipynb>`_
+
+Where To Go?
+------------
+
+We recommend new users begin with the ``autolens_workspace/introduction.ipynb`` notebook.
+
+Once complete, new users should read through the overview example notebooks of interest in the following folder: ``autolens_workspace/notebooks/overview``.
+
+Then, you should find the ``start_here.ipynb`` notebook for the feature you are interested in (for example, if you
+are looking to model CCD imaging data, go to ``autolens_workspace/notebooks/imaging/modeling/start_here.ipynb``).
 
 HowToLens
 ---------
