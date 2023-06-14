@@ -165,8 +165,11 @@ tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(dataset=dataset, tracer=tracer)
 
-fit_plotter = aplt.FitImagingPlotter(fit=fit)
-fit_plotter.figures_2d_of_planes(plane_index=1, plane_image=True)
+# Commented out because error will be raised if natural neighbor interpolation is not installed.
+# Uncomment if you have installed it!
+
+# fit_plotter = aplt.FitImagingPlotter(fit=fit)
+# fit_plotter.figures_2d_of_planes(plane_index=1, plane_image=True)
 
 """
 __Wrap Up__

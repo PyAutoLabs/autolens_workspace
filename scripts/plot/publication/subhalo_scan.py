@@ -50,7 +50,7 @@ which make image-plane images look publication quality.
 
 Checkout that example for an explanation of why we use these settings.
 """
-mat_plot_2d_image = aplt.MatPlot2D(
+mat_plot_image = aplt.MatPlot2D(
     title=aplt.Title(label=f"Subhalo Scanning Publication Plot", fontsize=24),
     yticks=aplt.YTicks(
         fontsize=22,
@@ -118,7 +118,7 @@ mat_plot = (
             ],
         ),
     )
-    + mat_plot_2d_image
+    + mat_plot_image
 )
 
 """

@@ -23,8 +23,8 @@ Getting Started
 
 We recommend new users begin by looking at the following notebooks:
 
- - ``notebooks/overview``: Examples giving an overview of **PyAutoLens**'s core features.
- - ``notebooks/howtolens``: Detailed step-by-step Jupyter notebook tutorials on how to use **PyAutoLens**.
+- ``notebooks/overview``: Examples giving an overview of **PyAutoLens**'s core features.
+- ``notebooks/howtolens``: Detailed step-by-step Jupyter notebook tutorials on how to use **PyAutoLens**.
 
 Installation
 ------------

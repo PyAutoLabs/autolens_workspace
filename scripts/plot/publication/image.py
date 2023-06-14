@@ -71,7 +71,7 @@ The y / x labels and ticks, and the title, are not ideal for a paper figure:
    
 We address all of the issues below, lets take a look at the figure before discussing the changes.
 """
-mat_plot_2d_ticks = aplt.MatPlot2D(
+mat_plot_ticks = aplt.MatPlot2D(
     title=aplt.Title(label=f"Image Illustrating Publication Plot", fontsize=24),
     yticks=aplt.YTicks(
         fontsize=22,
@@ -121,7 +121,7 @@ mat_plot_2d_cb = aplt.MatPlot2D(
     colorbar_tickparams=aplt.ColorbarTickParams(labelsize=22, labelrotation=90),
 )
 
-mat_plot = mat_plot_2d_ticks + mat_plot_2d_cb
+mat_plot = mat_plot_ticks + mat_plot_2d_cb
 
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset, mat_plot_2d=mat_plot)
 dataset_plotter.figures_2d(
@@ -145,7 +145,7 @@ yposoff = 0.4
 xposoff = -0.1
 length = 1.0
 
-mat_plot_2d_ticks = aplt.MatPlot2D(
+mat_plot_ticks = aplt.MatPlot2D(
     title=aplt.Title(label=f"Image Illustrating Publication Plot", fontsize=24),
     xticks=aplt.XTicks(manual_values=[]),
     yticks=aplt.YTicks(manual_values=[]),
@@ -160,7 +160,7 @@ mat_plot_2d_ticks = aplt.MatPlot2D(
     ),
 )
 
-mat_plot = mat_plot_2d_ticks + mat_plot_2d_cb
+mat_plot = mat_plot_ticks + mat_plot_2d_cb
 
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset, mat_plot_2d=mat_plot)
 dataset_plotter.figures_2d(
@@ -198,7 +198,7 @@ mat_plot_2d_output = aplt.MatPlot2D(
     )
 )
 
-mat_plot = mat_plot_2d + mat_plot_2d_output
+mat_plot = mat_plot + mat_plot_2d_output
 
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset, mat_plot_2d=mat_plot)
 dataset_plotter.figures_2d(
