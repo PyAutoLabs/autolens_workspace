@@ -41,6 +41,20 @@ that can go wrong. For example, there are solutions where a demagnified version 
 reconstructed, using a mass model which effectively has no mass or too much mass. These are described in detail below,
 the point for now is that it may take you a longer time to learn how to fit lens models with a pixelization successfully!
 
+__Positive Only Solver__
+
+All pixelized source reconstructions use a positive-only solver, meaning that every source-pixel is only allowed
+to reconstruct positive flux values. This ensures that the source reconstruction is physical and that we don't
+reconstruct negative flux values that don't exist in the real source galaxy (a common systematic solution in lens
+analysis).
+
+It may be surprising to hear that this is a feature worth pointing out, but it turns out setting up the linear algebra
+to enforce positive reconstructions is difficult to make efficient. A lot of development time went into making this
+possible, where a bespoke fast non-negative linear solver was developed to achieve this.
+
+Other methods in the literature often do not use a positive only solver, and therefore suffer from these
+unphysical solutions, which can degrade the results of lens model in general.
+
 __Chaining__
 
 Due to the complexity of fitting with a pixelization, it is often best to use **PyAutoLens**'s non-linear chaining
@@ -182,10 +196,12 @@ full description).
 """
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling"),
-    name="mass[sie]_source[pix]",
+    name="pixelization",
     unique_tag=dataset_name,
     nlive=50,
     number_of_cores=1,
+    maxiter=100,
+    maxcall=100,
 )
 
 """

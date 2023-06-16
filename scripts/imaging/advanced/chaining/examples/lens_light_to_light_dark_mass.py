@@ -157,9 +157,7 @@ as parameters in the ``Sersic` and `Sersic` light and mass models and passes the
 bulge = af.Model(al.lmp.Sersic)
 bulge.take_attributes(source=result_1.model)
 
-lens = af.Model(
-    al.Galaxy, redshift=0.5, bulge=bulge, dark=af.Model(al.mp.NFW)
-)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, dark=af.Model(al.mp.NFW))
 source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
 
 model_2 = af.Collection(galaxies=af.Collection(lens=lens))

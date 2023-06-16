@@ -246,8 +246,15 @@ print(result.max_log_likelihood_instance.galaxies.source)
 
 """
 The result contains the full posterior information of our non-linear search, including all parameter samples, 
-log likelihood values and tools to compute the errors on the lens model. **PyAutoLens** includes visualization tools 
-for plotting this.
+log likelihood values and tools to compute the errors on the lens model. 
+
+**PyAutoLens** includes visualization tools for plotting this.
+
+The plot is labeled with short hand parameter names (e.g. `sersic_index` is mapped to the short hand 
+parameter `n`). These mappings ate specified in the `config/notation.yaml` file and can be customized by users.
+
+The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
+mass its name `mass` defined when making the `Model` above is used).
 """
 search_plotter = aplt.DynestyPlotter(samples=result.samples)
 search_plotter.cornerplot()

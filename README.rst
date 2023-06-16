@@ -42,9 +42,9 @@ are looking to model CCD imaging data, go to ``autolens_workspace/notebooks/imag
 HowToLens
 ---------
 
-For users less experience with gravitational lensing, model fitting, Bayesian inference and scientific analysis
+For users less familiar with gravitational lensing, Bayesian inference and scientific analysis
 you may wish to read through the **HowToLens** lectures. These teach you the basic principles of gravitational lensing
-and model fitting, with the target audience undergraduate students, masters students and above.
+and Bayesian inference, with the content pitched at undergraduate level and above.
 
 A complete overview of the lectures `is provided on the HowToLens readthedocs page <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
 

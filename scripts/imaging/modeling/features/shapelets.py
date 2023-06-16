@@ -222,7 +222,7 @@ reduced back to 1 to fix it.
 """
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling"),
-    name="light[shapelets]",
+    name="shapelets",
     unique_tag=dataset_name,
     nlive=100,
     walks=10,
@@ -372,7 +372,7 @@ print(model.info)
 
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling"),
-    name="light[basis_regularized]",
+    name="shapelets_regularized",
     unique_tag=dataset_name,
     nlive=100,
     walks=10,

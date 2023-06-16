@@ -28,7 +28,7 @@ fit:                                       # Settings for plots of all fits (e.g
   model_images_of_planes: false            # Plot individual plots of each plane's model image?
   subtracted_images_of_planes: false       # Plot individual plots of each plane's subtracted image?
   plane_images_of_planes: false            # Plot individual plots of each plane's image (e.g. in the source plane)?
-fit: {}                            # Settings for plots of fits to imaging datasets (e.g. FitImagingPlotter).
+fit_imaging: {}                            # Settings for plots of fits to imaging datasets (e.g. FitImagingPlotter).
 ray_tracing:                               # Settings for plots of tracers (e.g. TracerPlotter).
   subplot_ray_tracing: true                # Plot subplot of all quantities in each tracer (e.g. images, convergence)?
   all_at_end_png: true                     # Plot all individual plots listed below as .png (even if False)?

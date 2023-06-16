@@ -292,6 +292,12 @@ __Search Plots__
 
 The Probability Density Functions of the results can be plotted using Dynesty's in-built visualization tools, 
 which are wrapped via the `DynestyPlotter` object.
+
+The plot is labeled with short hand parameter names (e.g. `sersic_index` is mapped to the short hand 
+parameter `n`). These mappings ate specified in the `config/notation.yaml` file and can be customized by users.
+
+The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
+mass its name `mass` defined when making the `Model` above is used).
 """
 search_plotter = aplt.DynestyPlotter(samples=result.samples)
 search_plotter.cornerplot()

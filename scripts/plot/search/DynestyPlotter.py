@@ -90,6 +90,16 @@ figure.
 search_plotter = aplt.DynestyPlotter(samples=result.samples)
 
 """
+__Notation__
+
+Plot are labeled with short hand parameter names (e.g. `sersic_index` is mapped to the short hand 
+parameter `n`). These mappings ate specified in the `config/notation.yaml` file and can be customized by users.
+
+The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
+mass its name `mass` defined when making the `Model` above is used).
+
+__Plots__
+
 The `cornerplot` method produces a triangle of 1D and 2D PDF's of every parameter in the model fit.
 """
 search_plotter.cornerplot(

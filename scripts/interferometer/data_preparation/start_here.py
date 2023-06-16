@@ -111,12 +111,12 @@ You must double check that the real-space mask you use:
  - Spatially covers the lensed source galaxy, such that the source is not truncated by the mask.
  - Is high enough resolution that the lensed source galaxy is not smeared via the Fourier transform.
  
-__Profiling__
+__Run Times__
 
 If you are analysing an interfeometer dataset with many visibilities (e.g. 1 million and above) and a high 
 resolution real-space mask (e.g. 0.01" / pixel), the analysis can take a long time to run. 
 
-The `examples/profiling.ipynb` script shows how to profile and setup your analysis to ensure it have fast enough
+The `examples/run_times.ipynb` script shows how to profile and setup your analysis to ensure it have fast enough
 run times.
 
 __Data Processing Complete__

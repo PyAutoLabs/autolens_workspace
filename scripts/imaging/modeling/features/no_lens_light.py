@@ -114,7 +114,7 @@ full description).
 """
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling"),
-    name="mass[sie]_source[bulge]",
+    name="no_lens_light",
     unique_tag=dataset_name,
     nlive=50,
     number_of_cores=1,

@@ -160,7 +160,7 @@ full description).
 """
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling"),
-    name="light[bulge_psf]_mass[sie]_source[bulge]",
+    name="operated_light_profiles",
     unique_tag=dataset_name,
     nlive=100,
     walks=10,

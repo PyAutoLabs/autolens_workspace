@@ -2,6 +2,72 @@
 Modeling: Mass Total + Source Inversion
 =======================================
 
+A pixelization reconstructs the source's light using a pixel-grid, which is regularized using a prior that forces
+the solution to have a degree of smoothness.
+
+This script fits a source galaxy model which uses a pixelization to reconstruct the source's light. A Delaunay
+mesh and constant regularization scheme are used, which are the simplest forms of pixelization and regularization
+with provide computationally fast and accurate solutions in **PyAutoLens**.
+
+For simplicity, the lens galaxy's light is omitted from the model and is not present in the simulated data. It is
+straightforward to include the lens galaxy's light in the model.
+
+Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
+
+__Advantages__
+
+Many strongly lensed source galaxies are complex, and have asymmetric and irregular morphologies. These morphologies
+cannot be well approximated by a parametric light profiles like a Sersic, or many Sersics, and thus a pixelization
+is required to reconstruct the source's irregular light.
+
+Even basis functions like shapelets or a multi-Gaussian expansion cannot reconstruct a source-plane accurately
+if there are multiple source galaxies, or if the source galaxy has a very complex morphology.
+
+To infer detailed components of a lens mass model (e.g. its density slope, whether there's a dark matter subhalo, etc.)
+then pixelized source models are required, to ensure the mass model is fitting all of the lensed source light.
+
+There are also many science cases where one wants to study the highly magnified light of the source galaxy in detail,
+to learnt about distant and faint galaxies. A pixelization reconstructs the source's unlensed emission and thus
+enables this.
+
+__Disadvantages__
+
+Pixelizations are computationally slow, and thus the run times will be much longer than a parametric source model.
+It is not uncommon for a pixelization to take hours or even days to fit high resolution imaging data (e.g. Hubble Space
+Telescope imaging).
+
+Lens modeling with pixelizations is also more complex than parametric source models, with there being more things
+that can go wrong. For example, there are solutions where a demagnified version of the lensed source galaxy is
+reconstructed, using a mass model which effectively has no mass or too much mass. These are described in detail below,
+the point for now is that it may take you a longer time to learn how to fit lens models with a pixelization successfully!
+
+__Positive Only Solver__
+
+All pixelized source reconstructions use a positive-only solver, meaning that every source-pixel is only allowed
+to reconstruct positive flux values. This ensures that the source reconstruction is physical and that we don't
+reconstruct negative flux values that don't exist in the real source galaxy (a common systematic solution in lens
+analysis).
+
+It may be surprising to hear that this is a feature worth pointing out, but it turns out setting up the linear algebra
+to enforce positive reconstructions is difficult to make efficient. A lot of development time went into making this
+possible, where a bespoke fast non-negative linear solver was developed to achieve this.
+
+Other methods in the literature often do not use a positive only solver, and therefore suffer from these
+unphysical solutions, which can degrade the results of lens model in general.
+
+__Chaining__
+
+Due to the complexity of fitting with a pixelization, it is often best to use **PyAutoLens**'s non-linear chaining
+feature to compose a pipeline which begins by fitting a simpler model using a parametric source.
+
+More information on chaining is provided in the `autolens_workspace/notebooks/imaging/advanced/chaining` folder,
+chapter 3 of the **HowToLens** lectures.
+
+The script `autolens_workspace/scripts/imaging/advanced/chaining/parametric_to_pixelization.py` explitly uses chaining
+to link a lens model using a light profile source to one which then uses a pixelization.
+
+__Model__
+
 This script fits `Interferometer` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
@@ -47,31 +113,48 @@ dataset = al.Interferometer.from_fits(
 )
 
 """
-__Inversion Settings (Run Times)__
+__Run Times (Inversion Settings)__
 
-The run times of an interferometer `Inversion` depend significantly on the following settings:
+The run times of an interferometer pixelization reconstruction (called an `Inversion`) depend significantly 
+on how the reconstruction is performed, specifically the transformer used and way the linear algebra is performed.
 
- - `transformer_class`: whether a discrete Fourier transform (`TransformerDFT`) or non-uniform fast Fourier Transform
- (`TransformerNUFFT) is used to map the inversion's image from real-space to Fourier space.
+The transformer maps the inversion's image from real-space to Fourier space, with two options available that have
+optimal run-times depending on the number of visibilities in the dataset:
 
- - `use_linear_operators`: whether the linear operator formalism or matrix formalism is used for the linear algebra.
+- `TransformerDFT`: A discrete Fourier transform which is most efficient for < ~100 000 visibilities.
 
-The optimal settings depend on the number of visibilities in the dataset:
+- `TransformerNUFFT`: A non-uniform fast Fourier transform which is most efficient for > ~100 000 visibilities.
 
- - For N_visibilities < 1000: `transformer_class=TransformerDFT` and `use_linear_operators=False` gives the fastest
- run-times.
- - For  N_visibilities > ~10000: use `transformer_class=TransformerNUFFT`  and `use_linear_operators=True`.
+This dataset fitted in this example has just ~200 visibilities, so we will input the 
+setting `transformer_cls=TransformerDFT`.
 
-The dataset modeled by default in this script has just 200 visibilties, therefore `transformer_class=TransformerDFT`
-and `use_linear_operators=False`. If you are using this script to model your own dataset with a different number of
-visibilities, you should update the options below accordingly.
+The linear algebra describes how the linear system of equations used to reconstruct a source via a pixelization is
+solved. 
 
-The script `autolens_workspace/*/interferometer/profiling.py` allows you to compute the run-time of an inversion
-for your interferometer dataset. It does this for all possible combinations of settings and therefore can tell you
-which settings give the fastest run times for your dataset.
+There are with three options available that again have run-times that are optimal for datasets of different sizes 
+(do not worry if you do not understand how the linear algebra works, all you need to do is ensure you choose the
+setting most appropriate for the size of your dataset):
+
+- `use_w_tilde`: If `False`, the matrices in the linear system are computed via a `mapping_matrix`, which is optimal
+  for datasets with < ~10 000 visibilities.
+
+- `use_w_tilde`: If `True`, the matrices are computed via a `w_tilde` matrix instead, which is optimal for datasets 
+  with between ~10 000 and 1 000 000 visibilities.
+
+- `use_linear_operators`: A different formalism is used entirely where matrices are not computed and linear operators
+   are used instead. This is optimal for datasets with > ~1 000 000 visibilities.
+
+The dataset fitted in this example has ~200 visibilities, so we will input the settings `use_w_tilde=False` and
+`use_linear_operators=False`.
+
+The script `autolens_workspace/*/interferometer/data_preparation/examples/run_times.py` compares the run-time of an inversion for your 
+interferometer dataset for different settings. 
+
+I recommend you use this script to choose the optimal settings for your dataset, as the difference in run-time can be
+huge!
 """
 settings_dataset = al.SettingsInterferometer(transformer_class=al.TransformerDFT)
-settings_inversion = al.SettingsInversion(use_linear_operators=False)
+settings_inversion = al.SettingsInversion(use_linear_operators=False, use_w_tilde=False)
 
 """
 We now create the `Interferometer` object which is used to fit the lens model.
@@ -97,19 +180,10 @@ example we fit a lens model where:
  
  - This pixelization is regularized using a `ConstantSplit` scheme which smooths every source pixel equally [1 parameter]. 
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=6. 
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=8. 
  
 It is worth noting the `Pixelization`  use significantly fewer parameters (1 parameter) than 
 fitting the source using `LightProfile`'s (7+ parameters). 
-
-__Coordinates__
-
-**PyAutoLens** assumes that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
-
-If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that you either: 
-
- - Reduce your data so that the centre is (`autolens_workspace/*/data_preparation`). 
- - Manually override the lens model priors (`autolens_workspace/*/imaging/modeling/customize/priors.py`).
 """
 lens = af.Model(
     al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
@@ -137,7 +211,7 @@ The model is fitted to the data using the nested sampling algorithm Dynesty (see
 full description).
 """
 search = af.DynestyStatic(
-    path_prefix=path.join("interferometer"),
+    path_prefix=path.join("interferometer", "modeling"),
     name="mass[sie]_source[pix]",
     unique_tag=dataset_name,
     nlive=50,
@@ -199,6 +273,43 @@ analysis = al.AnalysisInterferometer(
     dataset=dataset,
     positions_likelihood=positions_likelihood,
     settings_inversion=settings_inversion,
+)
+
+"""
+__Run Time__
+
+The discussion above described how the run-times of a pixelization using an interferometer dataset are significantly
+depending on the number of visibilities in the dataset. The discussion below is a more generic description of how
+the run-time of a pixelization scales, which applies to other datasets (e.g. imaging) as well.
+
+The log likelihood evaluation time given below is relatively fast (), because we above chose a suitable transformer
+and method to solve the linear equations for the number of visibilities in the dataset.
+
+The run time of a pixelization is longer than many other features, with the estimate below coming out at around ~0.5 
+seconds per likelihood evaluation. This is because the fit has a lot of linear algebra to perform in order to
+reconstruct the source on the pixel-grid.
+
+Nevertheless, this is still fast enough for most use-cases. If run-time is an issue, the following factors determine
+the run-time of a a pixelization and can be changed to speed it up (at the expense of accuracy):
+
+ - The number of unmasked pixels in the image data. By making the mask smaller (e.g. using an annular mask), the 
+   run-time will decrease.
+
+ - The number of source pixels in the pixelization. By reducing the `shape` from (30, 30) the run-time will decrease.
+
+This also serves to highlight why the positions threshold likelihood is so powerful. The likelihood evaluation time
+of this step is below 0.001 seconds, meaning that the initial parameter space sampling is extremely efficient even
+for a pixelization (this is not accounted for in the run-time estimate below)!
+"""
+run_time_dict, info_dict = analysis.profile_log_likelihood_function(
+    instance=model.random_instance()
+)
+
+print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
+print(
+    "Estimated Run Time Upper Limit (seconds) = ",
+    (run_time_dict["fit_time"] * model.total_free_parameters * 10000)
+    / search.number_of_cores,
 )
 
 """

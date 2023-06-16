@@ -115,9 +115,9 @@ We compose a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The source galaxy's light is a parametric linear `Sersic` [6 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=20.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=17.
 
 __Model Cookbook__
 
@@ -169,12 +169,12 @@ bulge = af.Model(
 
 mass = af.Model(al.mp.Isothermal)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=al.lp_linear.Sersic, mass=mass)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
 
 # bulge = af.Model(al.lp.Sersic)
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.Sersic)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -192,7 +192,7 @@ full description).
 """
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling"),
-    name="light[basis]_mass[sie]_source[bulge]",
+    name="mge",
     unique_tag=dataset_name,
     nlive=100,
     walks=10,
@@ -313,7 +313,7 @@ We now fit this model, which includes the MGE source and lens light models.
 """
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling"),
-    name="light[basis]_mass[sie]_source[basis]",
+    name="mge_including_source",
     unique_tag=dataset_name,
     nlive=100,
     walks=10,
@@ -390,7 +390,7 @@ print(model.info)
 
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling"),
-    name="light[basis_regularized]_mass[sie]_source[bulge]",
+    name="mge_regularized",
     unique_tag=dataset_name,
     nlive=100,
     walks=10,

@@ -90,7 +90,7 @@ fit_plotter = aplt.FitImagingPlotter(fit=fit)
 """
 We next pair the `MatPlot2D` objects of the two plotters, which ensures the figures plot on the same subplot.
 """
-dataset_plotter.mat_plot = fit_plotter.mat_plot_2d
+dataset_plotter.mat_plot_2d = fit_plotter.mat_plot_2d
 
 """
 We next open the subplot figure, specifying: 

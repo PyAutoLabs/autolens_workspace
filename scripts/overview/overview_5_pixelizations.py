@@ -3,8 +3,8 @@ Overview: Pixelizations
 -----------------------
 
 Many strongly lensed source galaxies are complex, and they have asymmetric and irregular morphologies. These
- morphologies cannot be well approximated by parametric light profiles like a Sersic, or multiple Sersics. Even
- techniques like a multi-Gaussian expansion or shapelets cannot capture the most complex of source morphologies.
+morphologies cannot be well approximated by parametric light profiles like a Sersic, or multiple Sersics. Even
+techniques like a multi-Gaussian expansion or shapelets cannot capture the most complex of source morphologies.
 
 A pixelization reconstructs the source's light using an adaptive pixel-grid, where the solution is regularized using a
 prior that forces the solution to have a degree of smoothness.
@@ -97,8 +97,8 @@ __Pixelization__
 
 The fit has been performed using a pixelization for the source galaxy, with the following worth noting:
 
- - The central-right and bottom-right panel shows a pixelized grid of the subplot show the source has been reconstructed
-   on an uniform rectangular grid of pixels..
+ - The central-right and bottom-right panel shows a pixelized grid of the subplot show the source has been 
+   reconstructed on an uniform rectangular grid of pixels.
 
  - The source reconstruction is irregular and has multiple clumps of light, these features would be difficult to 
    represent using analytic light profiles!
@@ -106,13 +106,27 @@ The fit has been performed using a pixelization for the source galaxy, with the 
  - The source reconstruction has been mapped back to the image-plane, to produce the reconstructed model image, which 
    is how a `log_likelihood` is computed.
    
- - This reconstructed model image produces significal residuals, because a rectangular mesh is not an optimal way to
+ - This reconstructed model image produces significant residuals, because a rectangular mesh is not an optimal way to
    reconstruct the source galaxy.
 """
 fit_plotter = aplt.FitImagingPlotter(fit=fit)
 fit_plotter.subplot_fit()
 
 """
+__Positive Only Solver__
+
+All pixelized source reconstructions use a positive-only solver, meaning that every source-pixel is only allowed
+to reconstruct positive flux values. This ensures that the source reconstruction is physical and that we don't
+reconstruct negative flux values that don't exist in the real source galaxy (a common systematic solution in lens
+analysis).
+
+It may be surprising to hear that this is a feature worth pointing out, but it turns out setting up the linear algebra
+to enforce positive reconstructions is difficult to make efficient. A lot of development time went into making this
+possible, where a bespoke fast non-negative linear solver was developed to achieve this.
+
+Other methods in the literature often do not use a positive only solver, and therefore suffer from these 
+unphysical solutions, which can degrade the results of lens model in general.
+
 __Alternative Pixelizations__
 
 **PyAutoLens** supports many different meshes. Below, we use a `DelaunayMagnification` mesh, which defines

@@ -131,7 +131,7 @@ full description).
 """
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling"),
-    name="light[bulge_linear]_mass[sie]_source[bulge_linear]",
+    name="linear_light_profiles",
     unique_tag=dataset_name,
     nlive=100,
     walks=10,

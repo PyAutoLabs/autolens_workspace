@@ -194,7 +194,7 @@ model-fit, for example the priors.
 
 The `name` and `path_prefix` below specify the path where results ae stored in the output folder:  
 
- `/autolens_workspace/output/imaging/modeling/simple/light[bulge]_mass[sie]_source[bulge]/unique_identifier`.
+ `/autolens_workspace/output/imaging/modeling/simple/start_here/unique_identifier`.
 
 __Unique Identifier__
 
@@ -224,14 +224,26 @@ use a value above this.
 
 For users on a Windows Operating system, using `number_of_cores>1` may lead to an error, in which case it should be 
 reduced back to 1 to fix it.
+
+__Iterations Per Update__
+
+Every N iterations, the non-linear search outputs the current results to the folder `autolens_workspace/output`,
+which includes producing visualization. 
+
+Depending on how long it takes for the model to be fitted to the data (see discussion about run times below), 
+this can take up a large fraction of the run-time of the non-linear search.
+
+For this fit, the fit is very fast, thus we set a high value of `iterations_per_update=10000` to ensure these updates
+so not slow down the overall speed of the model-fit.
 """
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling"),
-    name="light[bulge]_mass[sie]_source[bulge]",
+    name="start_here",
     unique_tag=dataset_name,
     nlive=100,
     walks=10,
-    number_of_cores=1,
+    iterations_per_update=10000,
+    number_of_cores=8,
 )
 
 """
@@ -362,7 +374,7 @@ The `Result` object also contains:
 
  - The model corresponding to the maximum log likelihood solution in parameter space.
  - The corresponding maximum log likelihood `Plane` and `FitImaging` objects.
- - Information on the posterior as estimated by the `Dynesty` non-linear search. 
+ - 
  
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
 """
@@ -376,6 +388,17 @@ tracer_plotter.subplot_tracer()
 fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_plotter.subplot_fit()
 
+"""
+It also contains information on the posterior as estimated by the non-linear search (in this example `dynesty`). 
+
+Below, we make a corner plot of the "Probability Density Function" of every parameter in the model-fit.
+
+The plot is labeled with short hand parameter names (e.g. `sersic_index` is mapped to the short hand 
+parameter `n`). These mappings ate specified in the `config/notation.yaml` file and can be customized by users.
+
+The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
+mass its name `mass` defined when making the `Model` above is used).
+"""
 search_plotter = aplt.DynestyPlotter(samples=result.samples)
 search_plotter.cornerplot()
 

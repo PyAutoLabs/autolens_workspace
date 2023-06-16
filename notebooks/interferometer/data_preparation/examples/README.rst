@@ -5,7 +5,7 @@ Files (Beginner)
 ----------------
 
 - ``casa_to_autogalaxy``: Convert a dataset to **PyAutoLens** formats via CASA.
-- ``profiling.py``: An overview of interferometer run-times and how to make your analysis run as fast as possible.
+- ``run_times.py``: An overview of interferometer run-times and how to make your analysis run as fast as possible.
 
 Files (Beginner / In Imaging)
 -----------------------------

@@ -49,7 +49,7 @@ The optimal settings depend on the number of visibilities in the dataset:
 The dataset modeled by default in this script has just 200 visibilties, therefore `transformer_class=TransformerDFT`
 and `use_linear_operators=False`.
 
-The script `autolens_workspace/*/interferometer/profiling.py` allows you to compute the run-time of an inversion
+The script `autolens_workspace/*/interferometer/run_times.py` allows you to compute the run-time of an inversion
 for your interferometer dataset. It does this for all possible combinations of settings and therefore can tell you
 which settings give the fastest run times for your dataset.
 """
@@ -104,7 +104,7 @@ The dataset modeled by default in this script has just 200 visibilties, therefor
 and `use_linear_operators=False`. If you are using this script to model your own dataset with a different number of
 visibilities, you should update the options below accordingly.
 
-The script `autolens_workspace/*/interferometer/profiling.py` allows you to compute the run-time of an inversion
+The script `autolens_workspace/*/interferometer/run_times.py` allows you to compute the run-time of an inversion
 for your interferometer dataset. It does this for all possible combinations of settings and therefore can tell you
 which settings give the fastest run times for your dataset.
 """

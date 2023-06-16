@@ -149,7 +149,7 @@ description).
 """
 search = af.DynestyStatic(
     path_prefix=path.join("imaging", "modeling"),
-    name="light[bulge]_mass[mlr_nfw]_source[bulge]",
+    name="mass_stellar_dark",
     unique_tag=dataset_name,
     nlive=100,
     walks=10,

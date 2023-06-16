@@ -113,9 +113,7 @@ The number of free parameters and therefore the dimensionality of non-linear par
 bulge = af.Model(al.lp.Sersic)
 
 model_1 = af.Collection(
-    galaxies=af.Collection(
-        lens=af.Model(al.Galaxy, redshift=0.5, bulge=bulge)
-    )
+    galaxies=af.Collection(lens=af.Model(al.Galaxy, redshift=0.5, bulge=bulge))
 )
 
 search_1 = af.DynestyStatic(
