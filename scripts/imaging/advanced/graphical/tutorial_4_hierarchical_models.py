@@ -91,7 +91,7 @@ __Paths__
 
 The path the results of all model-fits are output:
 """
-path_prefix = path.join("imaging", "graphical")
+path_prefix = path.join("imaging", "hierarchical")
 
 """
 __Analysis__
@@ -192,7 +192,7 @@ __Search__
 We can now create a non-linear search and used it to the fit the factor graph, using its `global_prior_model` property.
 """
 dynesty = af.DynestyStatic(
-    path_prefix=path.join("imaging", "graphical"),
+    path_prefix=path.join("imaging", "hierarchical"),
     name="tutorial_4_hierarchical_models",
     nlive=100,
     sample="rwalk",

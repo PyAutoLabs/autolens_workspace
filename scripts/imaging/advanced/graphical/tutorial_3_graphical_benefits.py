@@ -92,7 +92,7 @@ __Paths__
 
 The path the results of all model-fits are output:
 """
-path_prefix = path.join("imaging", "graphical")
+path_prefix = path.join("imaging", "hierarchical")
 
 """
 __Model (one-by-one)__

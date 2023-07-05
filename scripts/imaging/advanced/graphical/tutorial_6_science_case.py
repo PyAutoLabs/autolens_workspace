@@ -72,7 +72,7 @@ for dataset in dataset_list:
 """
 __Paths__
 """
-path_prefix = path.join("imaging", "graphical")
+path_prefix = path.join("imaging", "hierarchical")
 
 """
 __Model__
@@ -177,7 +177,7 @@ For complex graphs consisting of many  nodes, one could easily use different sea
 graph.
 """
 dynesty = af.DynestyStatic(
-    path_prefix=path.join("imaging", "graphical"),
+    path_prefix=path.join("imaging", "hierarchical"),
     name="tutorial_6_science_case",
     nlive=100,
     sample="rwalk",

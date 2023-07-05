@@ -85,7 +85,7 @@ __Paths__
 
 The path the results of all model-fits are output:
 """
-path_prefix = path.join("imaging", "graphical")
+path_prefix = path.join("imaging", "hierarchical")
 
 """
 __Analysis__
@@ -165,7 +165,7 @@ print()
 """
 __Overall Gaussian Parent Distribution__
 
-We will now fit the inferred `slope`'s from the fits performed above with a Gaussian distribution, in order to 
+Fit the inferred `slope`'s from the fits performed above with a Gaussian distribution, in order to 
 estimate the mean and scatter of the Gaussian from which the Sersic indexes were drawn.
 
 We first extract the inferred median PDF Sersic index values and their 1 sigma errors below, which will be the inputs

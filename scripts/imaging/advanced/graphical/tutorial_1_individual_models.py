@@ -1,48 +1,52 @@
 """
-Tutorial 1:  Individual Models
-==============================
+Tutorial 1: Individual Models
+=============================
 
 The example scripts throughout the workspace have focused on fitting a lens model to one dataset. You will have
-inspected the results of those individual model-fits and used them to estimate properties of the lens, like its
-Einstein radius.
+inspected the results of those individual model-fits and used them to estimate properties of the lens (e.g. the 
+Einstein radius) and source (e.g. the magnification).
 
-You may even have analysed a sample consisting of tens of objects, and combined the results to make more general
-statements about galaxy formation or cosmology. That is, deduce  'global' trends of many models fits a lens sample.
+You may even have analysed a sample consisting of tens of objects and combined the results to make more general
+statements about galaxy formation, cosmology or another scientific topic. In doing so, you would have inferred
+the "global" trends of many models fits to a lens sample.
 
-These tutorials show you how to compose and fit graphical models to a large datasets. A graphical model fits many
-individual models to each dataset in your sample, but it also links parameters in these models together to
-enable global inference on the model over the full dataset.
+These tutorials show you how to compose and fit hierarchical models to a large datasets, which fit many individual 
+models to each dataset in a sample in a way that links the parameters in these models together to enable global 
+inference on the model over the full dataset. This can extract a significant amount of extra information from large
+samples of data, which fitting each dataset individually cannot.
 
-To illustrate this, these tutorials will use graphical models to infer the slope across a sample of lenses.
-Graphical models will be used to determine the global distribution from which the slope are drawn, which uses
-specific type of graphical model called a hierarchical model.
+Fitting a hierarchical model uses a "graphical model", which is a model that is simultaneously fitted to every
+dataset simultaneously. The graph expresses how the parameters of every individual model fitted to each datasets and
+how they are linked to every other model parameter. Complex graphical models fitting a diversity of different datasets
+and non-trivial model parameter linking is possible and common.
 
-The first two tutorials will begin by simplifying the problem. We are going to fit a sample of 3 lenses whose mass
-profiles are `IsothermalSph` profiles which all have the same `slope` value. We can therefore consider the `slope`
-the global parameter we seek to estimate.
+__Example__
 
-The data that we fit is going to be low resolution, meaning that our estimate of each `slope` has large errors.
-To estimate the global slope of the sample, this tutorial does not use graphical models, but instead estimates
-the `slope` by fitting each dataset one-by-one and combining the results post model-fitting. This will act as a
-point of comparison to tutorial 2, where we will fit for the slope using graphical models.
+For illustration, we will infer the power-law density slope across a sample of lenses, where the hierarchical
+models are used to determine the global distribution from which the slope are drawn. We will then show that
+this approach can be used to improve cosmological inferences, but averaging over the mass distribution of the
+lens sample.
+
+The first two tutorials simplify the problem, fitting a sample of 3 lenses whose mass profiles are spherical power-laws
+with the same `slope` values. The `slope` is therefore the global parameter we seek to estimate. The data 
+fitted is low resolution, meaning that our estimate of each `slope` has large errors.
+
+To estimate the global slope of the sample, this tutorial instead estimates the `slope` in each lens by fitting 
+each dataset one-by-one and combining the results post model-fitting. This will act as a point of comparison to 
+tutorial 2, where we will fit for the slope using a graphical model, the basis of hierarchical models.
 
 __Sample Simulation__
 
 The dataset fitted in this example script is simulated imaging data of a sample of 3 galaxies.
 
-This data is not automatically provided with the autogalaxy workspace, and must be first simulated by running the
+This data is not automatically provided with the `autolens_workspace` and must be first simulated by running the
 script `autolens_workspace/scripts/simulators/imaging/samples/simple__no_lens_light.py`.
-
-__PyAutoFit Tutorials__
-
-**PyAutoFit** has dedicated tutorials describing graphical models, which users not familiar with graphical
-modeling may benefit from reading -- https://pyautofit.readthedocs.io/en/latest/howtofit/chapter_graphical_models.html.
 
 __Realism__
 
-For an realistic lens sample, one would not expect that each lens galaxy has the same value of `slope`, which is
-assumed in tutorials 1, 2 and 3. We make this assumption here to simplify the problem and make it easier to
-illustrate graphical models. Later tutorials fit more realistic graphical models where each lens galaxy has its own
+For a realistic lens sample, one would not expect that each lens galaxy has the same value of `slope`, as is
+assumed in tutorials 1, 2 and 3. We make this assumption to simplify the problem and make it easier to illustrate 
+hierarchical models. Later tutorials fit more realistic graphical models where each lens galaxy has its own
 value of slope!
 
 One can easily imagine datasets where the shared parameter is the same across the full sample. For example, studies
@@ -66,7 +70,7 @@ __Dataset__
 
 For each dataset in our sample we set up the correct path and load it by iterating over a for loop.
 
-This data is not automatically provided with the autogalaxy workspace, and must be first simulated by running the 
+This data is not automatically provided with the `autolens workspace`, and must be first simulated by running the 
 script `autolens_workspace/scripts/simulators/imaging/samples/simple__no_lens_light.py`.  
 """
 dataset_label = "samples"
@@ -112,7 +116,7 @@ __Paths__
 
 The path the results of all model-fits are output:
 """
-path_prefix = path.join("imaging", "graphical", "tutorial_1_individual_models")
+path_prefix = path.join("imaging", "hierarchical", "tutorial_1_individual_models")
 
 """
 __Model__
@@ -165,7 +169,7 @@ for dataset_index, masked_dataset in enumerate(masked_imaging_list):
 __Results__
 
 In the `model.results` file of each fit, it will be clear that the `slope` value of every fit (and the other 
-parameters) have much larger errors than other **PyAutoGalaxy** examples due to the low signal to noise of the data.
+parameters) have much larger errors than other examples due to the low signal to noise of the data.
 
 The `result_list` allows us to plot the median PDF value and 3.0 confidence intervals of the `slope` estimate from
 the model-fit to each dataset.
@@ -195,8 +199,7 @@ plt.show()
 plt.close()
 
 """
-These model-fits are consistent with the input `slope` values of 2.0 (the isothermal profile used to simulate
-them). 
+These model-fits are consistent with the input `slope` values of 2.0 (the input value used to simulate them). 
 
 We can show this by plotting the 1D and 2D PDF's of each model fit
 """
@@ -271,7 +274,7 @@ together.
 
 In order to do this, a smooth 1D profile must be fit to the posteriors via a Kernel Density Estimator (KDE).
 
-[**PyAutoGalaxy** does not currently support posterior multiplication and an example illustrating this is currently
+[does not currently support posterior multiplication and an example illustrating this is currently
 missing from this tutorial. However, I will discuss KDE multiplication throughout these tutorials to give the
 reader context for how this approach to parameter estimation compares to graphical models.]
 

@@ -81,7 +81,7 @@ __Paths__
 
 The path the results of all model-fits are output:
 """
-path_prefix = path.join("imaging", "graphical", "tutorial_optional_search_chaining")
+path_prefix = path.join("imaging", "hierarchical", "tutorial_optional_search_chaining")
 
 """
 __Model__
@@ -184,7 +184,7 @@ The model can also be output to a .`json` file and loaded in another Python scri
 This is not necessary for combining search chaining and graphical models, but can help make scripts shorter if the
 search chaining takes up a lot of lines of Python.
 """
-model_path = path.join("imaging", "graphical", "models", "initial")
+model_path = path.join("imaging", "hierarchical", "models", "initial")
 
 for dataset_index, model in enumerate(model_2_list):
     model_dataset_path = path.join(model_path, f"dataset_{dataset_index}")
@@ -202,7 +202,7 @@ __Model Loading__
 
 We can load the model above as follows.
 """
-model_path = path.join("imaging", "graphical", "models", "initial")
+model_path = path.join("imaging", "hierarchical", "models", "initial")
 
 model_list = []
 
