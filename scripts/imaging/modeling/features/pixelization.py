@@ -200,8 +200,6 @@ search = af.DynestyStatic(
     unique_tag=dataset_name,
     nlive=50,
     number_of_cores=1,
-    maxiter=100,
-    maxcall=100,
 )
 
 """
