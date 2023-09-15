@@ -191,14 +191,14 @@ print(model.info)
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Dynesty (see `start.here.py` for a 
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
 full description).
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="pixelization",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
     number_of_cores=1,
 )
 
@@ -231,7 +231,7 @@ trace further from one another.
 
 This ensures the unphysical solutions that bias an `Inversion` have much lower likelihood that the physical solutions
 we desire. Furthermore, the penalty term reduces as the image-plane multiple image positions trace closer in the 
-source-plane, ensuring Dynesty converges towards an accurate mass model. It does this very fast, as 
+source-plane, ensuring Nautilus converges towards an accurate mass model. It does this very fast, as 
 ray-tracing just a few multiple image positions is computationally cheap. 
 
 The threshold of 0.3" is large. For an accurate lens model we would anticipate the positions trace within < 0.01" of
@@ -245,7 +245,7 @@ positions_likelihood = al.PositionsLHPenalty(positions=positions, threshold=0.3)
 """
 __Analysis__
 
-Create the `AnalysisImaging` object defining how the via Dynesty the model is fitted to the data. 
+Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data. 
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
@@ -301,7 +301,7 @@ This confirms that the source galaxy's has a mesh and regularization scheme, whi
 print(result.info)
 
 """
-We plot the maximum likelihood fit, tracer images and posteriors inferred via dynesty.
+We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
 """
@@ -351,7 +351,7 @@ able to do this, and get a fit that is sufficiently good, you are done.
 __Chaining__
 
 If your pixelization fit does not go well, or you want for faster computational run-times, you may wish to use
-search chaining which breaks the model-fit into multiple dynesty runs. This is described for the specific case of 
+search chaining which breaks the model-fit into multiple Nautilus runs. This is described for the specific case of 
 linking a (computationally fast) light profile fit to a pixelization in the script:
 
 `autolens_workspace/scripts/imaging/advanced/chaining/parametric_to_pixelization.py`

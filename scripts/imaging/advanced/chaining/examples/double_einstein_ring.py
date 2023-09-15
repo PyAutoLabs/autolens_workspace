@@ -131,11 +131,11 @@ We now create the non-linear search, analysis and perform the model-fit using th
 You may wish to inspect the results of the search 1 model-fit to ensure a fast non-linear search has been provided that 
 provides a reasonably accurate lens model.
 """
-search_1 = af.DynestyStatic(
+search_1 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[1]__source_0_parametric",
     unique_tag=dataset_name,
-    nlive=75,
+    n_live=100,
 )
 
 analysis_1 = al.AnalysisImaging(dataset=dataset)
@@ -211,11 +211,11 @@ We now create the non-linear search, analysis and perform the model-fit using th
 You may wish to inspect the `model.info` file of the search 2 model-fit to ensure the priors were passed correctly, as 
 well as the checkout the results to ensure an accurate power-law mass model is inferred.
 """
-search_2 = af.DynestyStatic(
+search_2 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[2]__source_1_parametric",
     unique_tag=dataset_name,
-    nlive=100,
+    n_live=150,
 )
 
 analysis_2 = al.AnalysisImaging(dataset=dataset)
@@ -356,11 +356,11 @@ __Search + Analysis + Model-Fit (Search 1)__
 
 We now create the non-linear search, analysis and perform the model-fit using this model.
 """
-search_1 = af.DynestyStatic(
+search_1 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[1]__lens_light",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
 )
 
 analysis_1 = al.AnalysisImaging(dataset=dataset)
@@ -396,11 +396,11 @@ __Search + Analysis + Model-Fit (Search 2)__
 
 We now create the non-linear search, analysis and perform the model-fit using this model.
 """
-search_2 = af.DynestyStatic(
+search_2 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[2]__parametric_source_0",
     unique_tag=dataset_name,
-    nlive=75,
+    n_live=100,
 )
 
 analysis_2 = al.AnalysisImaging(dataset=dataset)
@@ -461,11 +461,11 @@ __Search + Analysis + Model-Fit (Search 3)__
 
 We now create the non-linear search, analysis and perform the model-fit using this model.
 """
-search_3 = af.DynestyStatic(
+search_3 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[3]__source_2_parametric",
     unique_tag=dataset_name,
-    nlive=75,
+    n_live=100,
 )
 
 analysis_3 = al.AnalysisImaging(dataset=dataset)
@@ -514,11 +514,11 @@ __Search + Analysis + Model-Fit (Search 4)__
 
 We now create the non-linear search, analysis and perform the model-fit using this model.
 """
-search_4 = af.DynestyStatic(
+search_4 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[4]__parametric_all",
     unique_tag=dataset_name,
-    nlive=75,
+    n_live=100,
 )
 
 analysis_4 = al.AnalysisImaging(dataset=dataset)
@@ -575,11 +575,11 @@ __Search + Model-Fit__
 
 We now create the non-linear search and perform the model-fit using this model.
 """
-search_5 = af.DynestyStatic(
+search_5 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[5]__sources_pixelization",
     unique_tag=dataset_name,
-    nlive=75,
+    n_live=100,
 )
 
 result_5 = search_5.fit(model=model_5, analysis=analysis_5)

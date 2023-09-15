@@ -581,8 +581,8 @@ def sensitivity_mapping_interferometer(
         analysis here before we return the simulated data.
         """
         return al.Interferometer(
-            data=simulated_interferometer.visibilities,
-            noise_map=simulated_interferometer.noise_map,
+            data=simulated_dataset.visibilities,
+            noise_map=simulated_dataset.noise_map,
             uv_wavelengths=uv_wavelengths,
             real_space_mask=real_space_mask,
         )

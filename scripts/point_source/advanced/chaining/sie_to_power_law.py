@@ -121,8 +121,8 @@ We now create the non-linear search, analysis and perform the model-fit using th
 You may wish to inspect the results of the search 1 model-fit to ensure a fast non-linear search has been provided that 
 provides a reasonably accurate lens model.
 """
-search_1 = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[1]__sie", unique_tag=dataset_name, nlive=50
+search_1 = af.Nautilus(
+    path_prefix=path_prefix, name="search[1]__sie", unique_tag=dataset_name, n_live=100
 )
 
 analysis_1 = al.AnalysisPoint(point_dict=point_dict, solver=point_solver)
@@ -185,11 +185,11 @@ We now create the non-linear search, analysis and perform the model-fit using th
 You may wish to inspect the `model.info` file of the search 2 model-fit to ensure the priors were passed correctly, as 
 well as the checkout the results to ensure an accurate power-law mass model is inferred.
 """
-search_2 = af.DynestyStatic(
+search_2 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[2]__power_law",
     unique_tag=dataset_name,
-    nlive=75,
+    n_live=100,
 )
 
 analysis_2 = al.AnalysisPoint(point_dict=point_dict, solver=point_solver)

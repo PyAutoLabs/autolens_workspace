@@ -30,13 +30,13 @@ def run(
     source_results
         The results of the SLaM SOURCE LP PIPELINE or SOURCE PIX PIPELINE which ran before this pipeline.
     lens_bulge
-        The `LightProfile` `Model` used to represent the light distribution of the lens galaxy's bulge (set to
+        The model used to represent the light distribution of the lens galaxy's bulge (set to
         None to omit a bulge).
     lens_disk
-        The `LightProfile` `Model` used to represent the light distribution of the lens galaxy's disk (set to
+        The model used to represent the light distribution of the lens galaxy's disk (set to
         None to omit a disk).
     lens_point
-        The `LightProfile` `Model` used to represent the light distribution of the lens galaxy's point-source(s)
+        The model used to represent the light distribution of the lens galaxy's point-source(s)
         emission (e.g. a nuclear star burst region) or compact central structures (e.g. an unresolved bulge).
     end_with_adapt_extension
         If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be
@@ -78,10 +78,10 @@ def run(
         ),
     )
 
-    search = af.DynestyStatic(
+    search = af.Nautilus(
         name="light[1]_light[lp]",
         **settings_autofit.search_dict,
-        nlive=150,
+        n_live=150,
     )
 
     result_1 = search.fit(model=model, analysis=analysis, **settings_autofit.fit_dict)

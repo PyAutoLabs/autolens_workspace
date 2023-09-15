@@ -40,7 +40,7 @@ import autolens.plot as aplt
 """
 __Model Fit__
 
-The code below performs a model-fit using dynesty. 
+The code below performs a model-fit using Nautilus. 
 
 You should be familiar with modeling already, if not read the `modeling/start_here.py` script before reading this one!
 
@@ -115,11 +115,11 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.Sersic)
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="light[bulge_disk_linear]",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)

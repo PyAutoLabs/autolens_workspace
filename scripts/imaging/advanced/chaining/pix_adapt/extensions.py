@@ -49,10 +49,9 @@ def stochastic_fit(
     include_lens_light: bool = False,
     include_pixelization: bool = False,
     include_regularization: bool = False,
-    search_cls: af.NonLinearSearch = af.DynestyStatic,
+    search_cls: af.NonLinearSearch = af.Nautilus,
     search_pix_dict: Optional[Dict] = None,
     info: Optional[Dict] = None,
-    pickle_files: Optional[List] = None,
 ):
     """
     Extend a model-fit with a stochastic model-fit, which refits a model but introduces a log likelihood cap whereby
@@ -100,5 +99,4 @@ def stochastic_fit(
         result=result,
         analysis=analysis,
         info=info,
-        pickle_files=pickle_files,
     )

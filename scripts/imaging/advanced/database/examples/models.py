@@ -48,10 +48,24 @@ tracer_gen = tracer_agg.max_log_likelihood_gen_from()
 
 """
 We can now iterate over our tracer generator to make the plots we desire.
+
+The `tracer_gen` returns a list of `Tracer` objects, as opposed to just a single `Tracer`object. This is because
+only a single `Analysis` class was used in the model-fit, meaning there was only one `Tracer` dataset that was
+fit. 
+
+The `multi` package of the workspace illustrates model-fits which fit multiple datasets 
+simultaneously, (e.g. multi-wavelength imaging)  by summing `Analysis` objects together, where the `tracer_list` 
+would contain multiple `Tracer` objects.
+
+The parameters of galaxies in the `Tracer` may vary across the datasets (e.g. different light profile intensities 
+for different wavelengths), which would be reflected in the tracer list.
 """
 grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)
 
-for tracer in tracer_gen:
+for tracer_list in tracer_gen:
+    # Only one `Analysis` so take first and only tracer.
+    tracer = tracer_list[0]
+
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
     tracer_plotter.figures_2d(convergence=True, potential=True)
 
@@ -68,7 +82,10 @@ tracer_gen = tracer_agg.max_log_likelihood_gen_from()
 
 print("Maximum Log Likelihood Lens Einstein Masses:")
 
-for tracer in tracer_gen:
+for tracer_list in tracer_gen:
+    # Only one `Analysis` so take first and only tracer.
+    tracer = tracer_list[0]
+
     einstein_mass = tracer.galaxies[0].einstein_mass_angular_from(grid=grid)
 
     print("Einstein Mass (angular units) = ", einstein_mass)
@@ -101,7 +118,7 @@ measurement that we want to calculate but was not sampled directly by the non-li
 object has everything we need to compute the errors of derived quantities.
 
 Below, we compute the axis ratio of every model sampled by the non-linear search and use this determine the PDF 
-of the axis ratio. When combining each axis ratio we weight each value by its `weight`. For Dynesty, 
+of the axis ratio. When combining each axis ratio we weight each value by its `weight`. For Nautilus, 
 the nested sampler used by the fit, this ensures models which gave a bad fit (and thus have a low weight) do not 
 contribute significantly to the axis ratio error estimate.
 
@@ -111,7 +128,7 @@ a delta ellipticity is cheap, and this is probably not necessary. However, certa
 computational overhead is being calculated and setting a minimum weight can speed up the calculation without 
 significantly changing the inferred errors.
 
-Below, we use the `TracerAgg` to get the `Tracer` of every Dynesty sample in each model-fit. We extract from each 
+Below, we use the `TracerAgg` to get the `Tracer` of every Nautilus sample in each model-fit. We extract from each 
 tracer the model's axis-ratio, store them in a list and find the value via the PDF and quantile method. This again
 uses generators, ensuring minimal memory use. 
 
@@ -126,7 +143,10 @@ weight_list_gen = tracer_agg.weights_above_gen_from(minimum_weight=1e-4)
 for tracer_gen, weight_gen in zip(tracer_list_gen, weight_list_gen):
     axis_ratio_list = []
 
-    for tracer in tracer_gen:
+    for tracer_list in tracer_gen:
+        # Only one `Analysis` so take first and only tracer.
+        tracer = tracer_list[0]
+
         axis_ratio = al.convert.axis_ratio_from(
             ell_comps=tracer.galaxies[0].mass.ell_comps
         )
@@ -157,7 +177,10 @@ tracer_list_gen = tracer_agg.randomly_drawn_via_pdf_gen_from(total_samples=2)
 for tracer_gen in tracer_list_gen:
     axis_ratio_list = []
 
-    for tracer in tracer_gen:
+    for tracer_list in tracer_gen:
+        # Only one `Analysis` so take first and only tracer.
+        tracer = tracer_list[0]
+
         axis_ratio = al.convert.axis_ratio_from(
             ell_comps=tracer.galaxies[0].mass.ell_comps
         )
@@ -169,23 +192,6 @@ for tracer_gen in tracer_list_gen:
     )
 
     print(f"Axis-Ratio = {median_axis_ratio} ({upper_axis_ratio} {lower_axis_ratio}")
-
-
-"""
-__Pickle Files__
-
-In the modeling script, we used the pickle_files input to search.run() to pass a .pickle file from the dataset folder to 
-the database. 
-
-Our strong lens dataset was created via a simulator script, so we passed the `Tracer` used to simulate the strong
-lens, which was written as a .pickle file called `true_tracer.pickle` to the search to make it accessible in the 
-database. This will allow us to directly compare the inferred model to the `truth`. 
-"""
-# true_tracers = [true_tracer for true_tracer in agg.values("true_tracer")]
-
-print("Parameters used to simulate the lens dataset:")
-# print(true_tracers)
-
 
 """
 Finish.

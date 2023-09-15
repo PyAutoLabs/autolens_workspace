@@ -117,7 +117,7 @@ __Search + Analysis + Model-Fit__
 We are now able to model this dataset as a point source, using the exact same tools we used in the point source 
 overview.
 """
-search = af.DynestyStatic(path_prefix="overview", name="groups")
+search = af.Nautilus(path_prefix="overview", name="groups")
 
 analysis = al.AnalysisPoint(point_dict=point_dict, solver=None)
 

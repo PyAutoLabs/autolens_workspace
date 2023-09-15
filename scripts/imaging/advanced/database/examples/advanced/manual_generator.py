@@ -140,10 +140,10 @@ Lets create a list of the imaging dataset of every lens our search fitted.
 The individual masked `data`, `noise_map` and `psf` are stored in the database, as opposed to the `Imaging` object, 
 which saves of hard-disk space used. Thus, we need to create the `Imaging` object ourselves to inspect it. 
 """
-data_gen = agg.values(name="data")
-noise_map_gen = agg.values(name="noise_map")
-psf_gen = agg.values(name="psf")
-settings_dataset_gen = agg.values(name="settings_dataset")
+data_gen = agg.values(name="dataset.data")
+noise_map_gen = agg.values(name="dataset.noise_map")
+psf_gen = agg.values(name="dataset.psf")
+settings_dataset_gen = agg.values(name="dataset.settings")
 
 for data, noise_map, psf, settings_dataset in zip(
     data_gen, noise_map_gen, psf_gen, settings_dataset_gen
@@ -171,10 +171,10 @@ This section is optional, and I advise you only follow it if the `FitImagingAgg`
 
 
 def make_imaging_gen(fit):
-    data = fit.value(name="data")
-    noise_map = fit.value(name="noise_map")
-    psf = fit.value(name="psf")
-    settings_dataset = fit.value(name="settings_dataset")
+    data = fit.value(name="dataset.data")
+    noise_map = fit.value(name="dataset.noise_map")
+    psf = fit.value(name="dataset.psf")
+    settings_dataset = fit.value(name="dataset.settings")
 
     dataset = al.Imaging(
         data=data,
@@ -262,12 +262,12 @@ But what if we want the errors on the axis-ratio? This wasn`t a free parameter i
 marginalize over all other parameters.
 
 Instead, we need to compute the axis-ratio of every model sampled by the non-linear search and from this determine 
-the PDF of the axis-ratio. When combining the different axis-ratios we weight each value by its `weight`. For Dynesty,
+the PDF of the axis-ratio. When combining the different axis-ratios we weight each value by its `weight`. For Nautilus,
 the nested sampler we fitted our aggregator sample with, this down weight_list the model which gave lower likelihood 
 fits. For other non-linear search methods (e.g. MCMC) the weight_list can take on a different meaning but can still be 
 used for combining different model results.
 
-Below, we get an instance of every Dynesty sample using the `Samples`, compute that models axis-ratio, store them in a 
+Below, we get an instance of every Nautilus sample using the `Samples`, compute that models axis-ratio, store them in a 
 list and find the value via the PDF and quantile method.
 
 Now, we iterate over each Samples object, using every model instance to compute its axis-ratio. We combine these 

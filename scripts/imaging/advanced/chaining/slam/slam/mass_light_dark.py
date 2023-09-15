@@ -112,10 +112,10 @@ def run(
         ),
     )
 
-    search = af.DynestyStatic(
+    search = af.Nautilus(
         name="mass_light_dark[1]_light[lp]_mass[light_dark]_source",
         **settings_autofit.search_dict,
-        nlive=100,
+        n_live=150,
     )
 
     result_1 = search.fit(model=model, analysis=analysis, **settings_autofit.fit_dict)

@@ -134,11 +134,11 @@
 #
 # We now create the non-linear search, analysis and perform the model-fit using this model.
 # """
-# search_1 = af.DynestyStatic(
+# search_1 = af.Nautilus(
 #     path_prefix=path_prefix,
 #     name="search[1]__parametric",
 #     unique_tag=dataset_name,
-#     nlive=50,
+#     n_live=100,
 # )
 #
 # result_1_list = search_1.fit(model=model, analysis=analysis)
@@ -199,11 +199,11 @@
 #
 # We now create the non-linear search and perform the model-fit using this model.
 # """
-# search_2 = af.DynestyStatic(
+# search_2 = af.Nautilus(
 #     path_prefix=path_prefix,
 #     name="search[2]__pixelization",
 #     unique_tag=dataset_name,
-#     nlive=40,
+#     n_live=80,
 # )
 #
 # result_2_list = search_2.fit(model=model, analysis=analysis)

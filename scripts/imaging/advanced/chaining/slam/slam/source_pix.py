@@ -90,10 +90,10 @@ def run(
         clumps=al.util.chaining.clumps_from(result=source_lp_results.last),
     )
 
-    search_1 = af.DynestyStatic(
+    search_1 = af.Nautilus(
         name="source_pix[1]_light[fixed]_mass[init]_source[pix_init_mag]",
         **settings_autofit.search_dict,
-        nlive=100,
+        n_live=150,
     )
 
     result_1 = search_1.fit(
@@ -142,10 +142,10 @@ def run(
                 setup_adapt.mesh_pixels_fixed
             )
 
-    search_2 = af.DynestyStatic(
+    search_2 = af.Nautilus(
         name="source_pix[2]_light[fixed]_mass[fixed]_source[pix]",
         **settings_autofit.search_dict,
-        nlive=50,
+        n_live=100,
     )
 
     result_2 = search_2.fit(

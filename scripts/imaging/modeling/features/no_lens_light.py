@@ -109,21 +109,21 @@ print(model.info)
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Dynesty (see `start.here.py` for a 
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
 full description).
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="no_lens_light",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
     number_of_cores=1,
 )
 
 """
 __Analysis__
 
-Create the `AnalysisImaging` object defining how the via Dynesty the model is fitted to the data.
+Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
 """
 analysis = al.AnalysisImaging(dataset=dataset)
 
@@ -170,7 +170,7 @@ This confirms there is no lens galaxy light in the model-fit.
 print(result.info)
 
 """
-We plot the maximum likelihood fit, tracer images and posteriors inferred via dynesty.
+We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
 """

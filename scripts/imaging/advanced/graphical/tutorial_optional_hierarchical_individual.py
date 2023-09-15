@@ -116,7 +116,7 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 """
 __Model Fits (one-by-one)__
 
-For every dataset we now create an `Analysis` class using it and use `Dynesty` to fit it with a lens model.
+For every dataset we now create an `Analysis` class using it and use `Nautilus` to fit it with a lens model.
 
 The `Result` is stored in the list `results`.
 """
@@ -126,19 +126,17 @@ for dataset_index, analysis in enumerate(analysis_list):
     dataset_name = f"dataset_{dataset_index}"
 
     """
-    Create the `DynestyStatic` non-linear search and use it to fit the data.
+    Create the `Nautilus` non-linear search and use it to fit the data.
     """
-    dynesty = af.DynestyStatic(
+    Nautilus = af.Nautilus(
         name="",
         path_prefix=path.join("tutorial_optional_hierarchical_individual"),
         unique_tag=dataset_name,
-        nlive=200,
-        dlogz=1e-4,
-        sample="rwalk",
-        walks=10,
+        n_live=200,
+        f_live=1e-4,
     )
 
-    result_list.append(dynesty.fit(model=model, analysis=analysis))
+    result_list.append(Nautilus.fit(model=model, analysis=analysis))
 
 """
 __Results__
@@ -271,11 +269,11 @@ model.scatter = af.UniformPrior(lower_limit=0.0, upper_limit=50.0)
 """
 __Analysis + Search__
 
-We now create the Analysis class above which fits a parent 1D gaussian and create a dynesty search in order to fit
+We now create the Analysis class above which fits a parent 1D gaussian and create a Nautilus search in order to fit
 it to the 1D inferred list of `slope`'s.
 """
 analysis = Analysis(data=mp_slopes, errors=error_list)
-search = af.DynestyStatic(nlive=100)
+search = af.Nautilus(n_live=150)
 
 result = search.fit(model=model, analysis=analysis)
 

@@ -135,8 +135,8 @@
 #
 # We now create the non-linear search, analysis and perform the model-fit using this model.
 # """
-# search_1 = af.DynestyStatic(
-#     path_prefix=path_prefix, name="search[1]__sie", unique_tag=dataset_name, nlive=50
+# search_1 = af.Nautilus(
+#     path_prefix=path_prefix, name="search[1]__sie", unique_tag=dataset_name, n_live=100
 # )
 #
 # result_1_list = search_1.fit(model=model_1, analysis=analysis_1)
@@ -192,11 +192,11 @@
 #
 # We now create the non-linear search, analysis and perform the model-fit using this model.
 # """
-# search_2 = af.DynestyStatic(
+# search_2 = af.Nautilus(
 #     path_prefix=path_prefix,
 #     name="search[2]__power_law",
 #     unique_tag=dataset_name,
-#     nlive=75,
+#     n_live=100,
 # )
 #
 # result_2_list = search_2.fit(model=model_2, analysis=analysis_2)

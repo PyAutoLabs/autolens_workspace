@@ -172,14 +172,14 @@ analysis = analysis.with_free_parameters(model.galaxies.source)
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Dynesty (see `start.here.py` for a 
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
 full description).
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("multi", "modeling"),
     name="imaging_and_interferometer",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
     number_of_cores=1,
 )
 
@@ -198,7 +198,7 @@ The search returns a result object, which includes:
 
  - The lens model corresponding to the maximum log likelihood solution in parameter space.
  - The corresponding maximum log likelihood `Tracer` and `FitInterferometer` objects.
-  - Information on the posterior as estimated by the `Dynesty` non-linear search.
+  - Information on the posterior as estimated by the `Nautilus` non-linear search.
 """
 print(result_list[0].max_log_likelihood_instance)
 

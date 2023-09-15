@@ -65,7 +65,7 @@ clicker = al.Clicker(
 For lenses with bright lens light emission, it can be difficult to get the source light to show. The normalization
 below uses a log-scale with a capped maximum, which better contrasts the lens and source emission.
 """
-cmap = aplt.Cmap(norm="linear", vmin=1.0e-4, vmax=np.max(image))
+cmap = aplt.Cmap(norm="linear", vmin=1.0e-4, vmax=np.max(data))
 
 norm = cmap.norm_from(array=None)
 

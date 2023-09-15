@@ -11,12 +11,12 @@ Information about PySwarms can be found at the following links:
  - https://pyswarms.readthedocs.io/en/latest/api/pyswarms.single.html#module-pyswarms.single.global_best
 
 An PSO algorithm only seeks to only find the maximum likelihood lens model, unlike MCMC or nested sampling algorithms 
-like Zzeus and dynesty, which aims to map-out parameter space and infer errors on the parameters.Therefore, in 
+like Zzeus and Nautilus, which aims to map-out parameter space and infer errors on the parameters.Therefore, in 
 principle, a PSO like PySwarm should fit a lens model very fast.
 
 In our experience, the parameter spaces fitted by lens models are too complex for `PySwarms` to be used without a lot
 of user attention and care.  Nevertheless, we encourage you to give it a go yourself, and let us know on the PyAutoLens 
-GitHub if you find an example of a problem where `PySwarms` outperforms Dynesty!
+GitHub if you find an example of a problem where `PySwarms` outperforms Nautilus!
 
 __Start Here Notebook__
 

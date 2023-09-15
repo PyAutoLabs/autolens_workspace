@@ -34,7 +34,7 @@ import autolens.plot as aplt
 """
 __Model Fit__
 
-The code below (which we have omitted comments from for brevity) performs a lens model-fit using dynesty. You should
+The code below (which we have omitted comments from for brevity) performs a lens model-fit using Nautilus. You should
 be familiar enough with lens modeling to understand this, if not you should go over the beginner model-fit script again!
 """
 real_space_mask = al.Mask2D.circular(
@@ -70,11 +70,11 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("interferometer"),
     name="mass[sie]_source[bulge]",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
     number_of_cores=1,
 )
 
@@ -92,7 +92,7 @@ print(result.info)
 """
 __Samples__
 
-The result's `Samples` object contains the complete set of non-linear search dynesty samples, where each sample 
+The result's `Samples` object contains the complete set of non-linear search Nautilus samples, where each sample 
 corresponds to a set of a model parameters that were evaluated and accepted. 
 
 The examples script `autolens_workspace/*/imaging/results/examples/samples.py` provides a detailed description of 

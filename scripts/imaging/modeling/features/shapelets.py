@@ -168,11 +168,10 @@ print(model.info)
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Dynesty (see `start.here.py` for a 
-full description). We make the following changes to the Dynesty settings:
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
+full description). We make the following changes to the Nautilus settings:
 
- - Increase the number of live points, `nlive`, from the default value of 50 to 100. 
- - Increase the number of random walks per live point, `walks` from the default value of 5 to 10. 
+ - Increase the number of live points, `n_live`, from the default value of 50 to 100. 
 
 These changes are motivated by the higher dimensionality non-linear parameter space that including the lens light 
 creates, which requires more thorough sampling by the non-linear search.
@@ -206,7 +205,7 @@ the `dataset_name` to the search's `unique_tag`.
 
 __Number Of Cores__
 
-We include an input `number_of_cores`, which when above 1 means that Dynesty uses parallel processing to sample multiple 
+We include an input `number_of_cores`, which when above 1 means that Nautilus uses parallel processing to sample multiple 
 models at once on your CPU. When `number_of_cores=2` the search will run roughly two times as
 fast, for `number_of_cores=3` three times as fast, and so on. The downside is more cores on your CPU will be in-use
 which may hurt the general performance of your computer.
@@ -220,19 +219,18 @@ use a value above this.
 For users on a Windows Operating system, using `number_of_cores>1` may lead to an error, in which case it should be 
 reduced back to 1 to fix it.
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="shapelets",
     unique_tag=dataset_name,
-    nlive=100,
-    walks=10,
+    n_live=150,
     number_of_cores=4,
 )
 
 """
 __Analysis__
 
-Create the `AnalysisImaging` object defining how the via Dynesty the model is fitted to the data.
+Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset, settings_inversion=al.SettingsInversion(use_w_tilde=False)
@@ -286,7 +284,7 @@ The `info` attribute shows the model in a readable format (if this does not disp
 print(result.info)
 
 """
-We plot the maximum likelihood fit, tracer images and posteriors inferred via dynesty.
+We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
 """
@@ -370,12 +368,11 @@ The `info` attribute shows the model, which has addition priors now associated w
 """
 print(model.info)
 
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="shapelets_regularized",
     unique_tag=dataset_name,
-    nlive=100,
-    walks=10,
+    n_live=150,
     number_of_cores=1,
 )
 

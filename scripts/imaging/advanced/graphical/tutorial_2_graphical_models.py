@@ -228,14 +228,13 @@ __Search__
 
 We can now create a non-linear search and used it to the fit the factor graph, using its `global_prior_model` property.
 """
-dynesty = af.DynestyStatic(
+Nautilus = af.Nautilus(
     path_prefix=path_prefix,
     name="tutorial_2_graphical_models",
-    nlive=100,
-    sample="rwalk",
+    n_live=150,
 )
 
-result = dynesty.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
+result = Nautilus.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
 
 """
 __Result__

@@ -208,12 +208,11 @@ The code below performs the normal steps to set up a model-fit.
 Given the extra model parameters due to the clumps, we increase the number of live points from the default of
 50 to 100 and make the random walk length 10.
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="clumps",
     unique_tag=dataset_name,
-    nlive=100,
-    walks=10,
+    n_live=150,
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)
@@ -228,7 +227,7 @@ However, these calculations are pretty fast for profiles like `SersicSph` and `I
 increase in time is expected.
 
 The bigger hit on run time is due to the extra free parameters, which increases the dimensionality of non-linear
-parameter space/ This means dynesty takes longer to converge on the highest likelihood regions of parameter space.
+parameter space/ This means Nautilus takes longer to converge on the highest likelihood regions of parameter space.
 """
 run_time_dict, info_dict = analysis.profile_log_likelihood_function(
     instance=model.random_instance()

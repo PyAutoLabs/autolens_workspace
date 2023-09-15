@@ -84,7 +84,7 @@ The pixelization and regularization schemes which adapt to the source's properti
 `SetupAdapt`, but are used in this example script below.
 
 In this example, we only fix the number of source pixels to 1500, which balances computational runtimes with the
-resolution of the source reconstruction. The adapt search uses the default settings, including a `DynestyStatic` 
+resolution of the source reconstruction. The adapt search uses the default settings, including a `Nautilus` 
 non-linear search.
 """
 setup_adapt = al.SetupAdapt(mesh_pixels_fixed=1500)
@@ -123,8 +123,11 @@ We now create the non-linear search, analysis and perform the model-fit using th
 You may wish to inspect the results of the search 1 model-fit to ensure a fast non-linear search has been provided that 
 provides a reasonably accurate lens model.
 """
-search_1 = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[1]__adapt", unique_tag=dataset_name, nlive=50
+search_1 = af.Nautilus(
+    path_prefix=path_prefix,
+    name="search[1]__adapt",
+    unique_tag=dataset_name,
+    n_live=100,
 )
 
 analysis_1 = al.AnalysisImaging(dataset=dataset)
@@ -171,8 +174,8 @@ higher likelihood than search 1 and how the source reconstruction has congregate
 regions of the source. This indicates that a much better result has been achieved, the reasons for which are discussed
 in chapter 5 of the **HowToLens** lectures.
 """
-search_2 = af.DynestyStatic(
-    path_prefix=path_prefix, name="search[2]__adapt", unique_tag=dataset_name, nlive=30
+search_2 = af.Nautilus(
+    path_prefix=path_prefix, name="search[2]__adapt", unique_tag=dataset_name, n_live=75
 )
 
 analysis_2 = al.AnalysisImaging(dataset=dataset, adapt_result=result_1)

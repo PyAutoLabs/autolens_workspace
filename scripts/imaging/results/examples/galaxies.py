@@ -56,7 +56,7 @@ import autolens.plot as aplt
 """
 __Model Fit__
 
-The code below performs a model-fit using dynesty. 
+The code below performs a model-fit using Nautilus. 
 
 You should be familiar with modeling already, if not read the `modeling/start_here.py` script before reading this one!
 """
@@ -91,11 +91,11 @@ model = af.Collection(
     )
 )
 
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="light[bulge]_mass[sie]_source_x2[bulge]",
     unique_tag=dataset_name,
-    nlive=150,
+    n_live=150,
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)

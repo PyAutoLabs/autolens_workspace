@@ -151,11 +151,11 @@ We now create the non-linear search, analysis and perform the model-fit using th
 You may wish to inspect the results of the search 1 model-fit to ensure a fast non-linear search has been provided that 
 provides a reasonably accurate lens model.
 """
-search_1 = af.DynestyStatic(
+search_1 = af.Nautilus(
     path_prefix=path.join("interferometer", "chaining", "parametric_to_pixelization"),
     name="search[1]__parametric",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
 )
 
 analysis_1 = al.AnalysisInterferometer(dataset=dataset)
@@ -243,11 +243,11 @@ __Search + Model-Fit__
 
 We now create the non-linear search and perform the model-fit using this model.
 """
-search_2 = af.DynestyStatic(
+search_2 = af.Nautilus(
     path_prefix=path.join("interferometer", "chaining", "parametric_to_pixelization"),
     name="search[2]__pixelization",
     unique_tag=dataset_name,
-    nlive=40,
+    n_live=80,
 )
 
 result_2 = search_2.fit(model=model_2, analysis=analysis_2)

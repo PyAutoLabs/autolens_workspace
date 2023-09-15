@@ -2,18 +2,21 @@
 Database: Introduction
 ======================
 
-The default behaviour of **PyAutoLens** is for model-fitting results to be output to hard-disc in folders, which are
-straight forward to navigate and manually check. For small model-fitting tasks this is sufficient, however many users 
-have a need to perform many model fits to large samples of lenses, making manual inspection of results time consuming.
+The default behaviour of model-fitting results output is to be written to hard-disc in folders. These are simple to
+navigate and manually check.
 
-PyAutoLens's database feature outputs all model-fitting results as a
-sqlite3 (https://docs.python.org/3/library/sqlite3.html) relational database, such that all results
-can be efficiently loaded into a Jupyter notebook or Python script for inspection, analysis and interpretation. This
-database supports advanced querying, so that specific model-fits (e.g., which fit a certain model or dataset) can be
-loaded.
+For small model-fitting tasks this is sufficient, however it does not scale well when performing many model fits to
+large datasets, because manual inspection of results becomes time consuming.
+
+All results can therefore be output to an sqlite3 (https://docs.python.org/3/library/sqlite3.html) relational database,
+meaning that results can be loaded into a Jupyter notebook or Python script for inspection, analysis and interpretation.
+This database supports advanced querying, so that specific model-fits (e.g., which fit a certain model or dataset) can
+be loaded.
 
 This script fits a sample of three simulated strong lenses using the same non-linear search. The results will be used
 to illustrate the database in the database tutorials that follow.
+
+__Model__
 
 The search fits each lens with:
  
@@ -32,10 +35,22 @@ import autofit as af
 import autolens as al
 
 """
+__Unique Identifiers__
+
+Results output to hard-disk are contained in a folder named via a unique identifier (a 
+random collection of characters, e.g. `8hds89fhndlsiuhnfiusdh`). The unique identifier changes if the model or 
+search change, to ensure different fits to not overwrite one another on hard-disk.
+
+Each unique identifier is used to define every entry of the database as it is built. Unique identifiers therefore play 
+the same vital role for the database of ensuring that every set of results written to it are unique.
+
+In this example, we fit 3 different datasets with the same search and model. Each `dataset_name` is therefore passed
+in as the search's `unique_tag` to ensure 3 separate sets of results for each model-fit are written to the .sqlite
+database.
+
 __Dataset__
 
 For each dataset we load it from hard-disc, set up its `Analysis` class and fit it with a non-linear search. 
-
 
 We want each results to be stored in the database with an entry specific to the dataset. We'll use the `Dataset`'s name 
 string to do this, so lets create a list of the 3 dataset names.
@@ -49,12 +64,17 @@ dataset_names = [
 pixel_scales = 0.1
 
 """
-___Session__
+__Results From Hard Disk__
 
-To output results directly to the database, we start a session, which includes the name of the database `.sqlite` file
-where results are stored.
+In this example, results will be first be written to hard-disk using the standard output directory structure and we
+will then build the database from these results. This behaviour is governed by us inputting `session=None`.
+
+If you have existing results you wish to build a database for, you can therefore adapt this example you to do this.
+
+Later in this example we show how results can also also be output directly to an .sqlite database, saving on hard-disk 
+space.
 """
-session = af.db.open_database("database.sqlite")
+session = None
 
 for dataset_name in dataset_names:
     """
@@ -98,24 +118,16 @@ for dataset_name in dataset_names:
     """
     __Info__
 
-    Information about our model-fit that isn't part of the model-fit can be made accessible to the database, by 
-    passing an `info` dictionary. 
-
-    Below we load this info dictionary from an `info.json` file stored in each dataset's folder. This dictionary
-    contains the (hypothetical) lens redshift, source redshift and lens velocity dispersion of every lens in our sample.
+    Information about the model-fit that is not part included in the model-fit itself can be made accessible via the 
+    database by passing an `info` dictionary. 
+    
+    Below we write info on the dataset`s (hypothetical) data of observation and exposure time, which we will later show
+    the database can access. 
+    
+    For fits to large datasets this ensures that all relevant information for interpreting results is accessible.
     """
     with open(path.join(dataset_path, "info.json")) as json_file:
         info = json.load(json_file)
-
-    """
-    __Pickle Files__
-
-    We can pass strings specifying the path and filename of .pickle files stored on our hard-drive to the `search.fit()`
-    method, which will make them accessible to the aggregator to aid interpretation of results. Our simulated strong
-    lens datasets have a `true_tracer.pickle` file which we pass in below, which we use in the `Aggregator` tutorials 
-    to check if the model-fit recovers its true input parameters.
-    """
-    pickle_files = [path.join(dataset_path, "true_tracer.pickle")]
 
     """
     __Model__
@@ -130,80 +142,170 @@ for dataset_name in dataset_names:
     )
 
     """
-    In all examples so far, results were written to the `autofit_workspace/output` folder with a path and folder 
-    named after a unique identifier, which was derived from the non-linear search and model. This unique identifier
-    plays a vital role in the database: it is used to ensure every entry in the database is unique. 
-
-    In this example, results are written directly to the `database.sqlite` file after the model-fit is complete and 
-    only stored in the output folder during the model-fit. This can be important for performing large model-fitting 
-    tasks on high performance computing facilities where there may be limits on the number of files allowed, or there
-    are too many results to make navigating the output folder manually feasible.
-
     The `unique_tag` below uses the `dataset_name` to alter the unique identifier, which as we have seen is also 
     generated depending on the search settings and model. In this example, all three model fits use an identical 
     search and model, so this `unique_tag` is key for ensuring 3 separate sets of results for each model-fit are 
     stored in the output folder and written to the .sqlite database. 
     """
-    search = af.DynestyStatic(
+    search = af.Nautilus(
         path_prefix=path.join("database"),
         name="database_example",
         unique_tag=dataset_name,  # This makes the unique identifier use the dataset name
         session=session,  # This instructs the search to write to the .sqlite database.
-        nlive=50,
+        n_live=100,
     )
 
     analysis = al.AnalysisImaging(dataset=dataset)
 
-    search.fit(analysis=analysis, model=model, info=info, pickle_files=pickle_files)
+    search.fit(analysis=analysis, model=model, info=info)
 
 """
-If you inspect the `autolens_workspace/output/database` folder during the model-fit, you'll see that the results
-are only stored there during the model fit, and they are written to the database and removed once complete. 
+__Building a Database File From an Output Folder__
 
-__Loading Results__
+The fits above wrote the results to hard-disk in folders, not as an .sqlite database file. 
 
-After fitting a large suite of data, we can use the aggregator to load the database's results. We can then
-manipulate, interpret and visualize them using a Python script or Jupyter notebook.
+We build the database below, where the `database_name` corresponds to the name of your output folder and is also the 
+name of the `.sqlite` database file that is created.
 
-The results are not contained in the `output` folder after each search completes. Instead, they are
-contained in the `database.sqlite` file, which we can load using the `Aggregator`.
+If you are fitting a relatively small number of datasets (e.g. 10-100) having all results written to hard-disk (e.g. 
+for quick visual inspection) and using the database for sample wide analysis is beneficial.
+
+We can optionally only include completed model-fits but setting `completed_only=True`.
+
+If you inspect the `output` folder, you will see a `database.sqlite` file which contains the results.
 """
-database_file = "database.sqlite"
-agg = af.Aggregator.from_database(filename=database_file)
+database_name = "database"
+
+agg = af.Aggregator.from_database(
+    filename=f"{database_name}.sqlite", completed_only=False
+)
+
+agg.add_directory(directory=path.join("output", database_name))
 
 """
+__Writing Directly To Database__
+
+Results can be written directly to the .sqlite database file, skipping output to hard-disk entirely, by creating
+a session and passing this to the non-linear search.
+
+The code below shows how to do this, but it is commented out to avoid rerunning the non-linear searches.
+
+This is ideal for tasks where model-fits to hundreds or thousands of datasets are performed, as it becomes unfeasible
+to inspect the results of all fits on the hard-disk. 
+
+Our recommended workflow is to set up database analysis scripts using ~10 model-fits, and then scaling these up
+to large samples by writing directly to the database.
+"""
+# session = af.db.open_database("database.sqlite")
+#
+# search = af.Nautilus(
+#     path_prefix=path.join("database"),
+#     name="database_example",
+#     unique_tag=dataset_name,  # This makes the unique identifier use the dataset name
+#     session=session,  # This instructs the search to write to the .sqlite database.
+#     n_live=100,
+# )
+
+
+"""
+__Files__
+
+When performing fits which output results to hard-disc, a `files` folder is created containing .json / .csv files of 
+the model, samples, search, etc.
+
+These are the files that are written to the database, which the aggregator loads via the database in order to make 
+them accessible in a Python script or Jupyter notebook.
+
+You can checkout the output folder created by this fit to see these files.
+
+Below, we will access these results using the aggregator's `values` method. A full list of what can be loaded is
+as follows:
+
+ - `model`: The `model` defined above and used in the model-fit (`model.json`).
+ - `search`: The non-linear search settings (`search.json`).
+ - `samples`: The non-linear search samples (`samples.csv`).
+ - `samples_info`: Additional information about the samples (`samples_info.json`).
+ - `samples_summary`: A summary of key results of the samples (`samples_summary.json`).
+ - `info`: The info dictionary passed to the search (`info.json`).
+ - `covariance`: The inferred covariance matrix (`covariance.csv`).
+ - `cosmology`: The cosmology used by the fit (`cosmology.json`).
+ - `settings_pixelization`: The settings associated with a pixelization if used (`settings_pixelization.json`).
+ - `settings_inversion`: The settings associated with a inversion if used (`settings_inversion.json`).
+ - `dataset/data`: The data that is fitted (`data.fits`).
+ - `dataset/noise_map`: The noise-map (`noise_map.fits`).
+ - `dataset/psf`: The Point Spread Function (`psf.fits`).
+ - `dataset/mask`: The mask applied to the data (`mask.fits`).
+ - `dataset/settings`: The settings associated with the dataset (`settings.json`).
+ 
+The `samples` and `samples_summary` results contain a lot of repeated information. The `samples` result contains
+the full non-linear search samples, for example every parameter sample and its log likelihood. The `samples_summary`
+contains a summary of the results, for example the maximum log likelihood model and error estimates on parameters
+at 1 and 3 sigma confidence.
+
+Accessing results via the `samples_summary` is much faster, because as it does reperform calculations using the full 
+list of samples. Therefore, if the result you want is accessible via the `samples_summary` you should use it
+but if not you can revert to the `samples.
+
 __Generators__
 
-Before using the aggregator to inspect results, let me quickly cover Python generators. A generator is an object that 
-iterates over a function when it is called. The aggregator creates all of the objects that it loads from the database 
-as generators (as opposed to a list, or dictionary, or other Python type).
+Before using the aggregator to inspect results, lets discuss Python generators. 
 
-Why? Because lists and dictionaries store every entry in memory simultaneously. If you fit many datasets, this will use 
-a lot of memory and crash your laptop! On the other hand, a generator only stores the object in memory when it is used; 
-Python is then free to overwrite it afterwards. Thus, your laptop won't crash!
+A generator is an object that iterates over a function when it is called. The aggregator creates all of the objects 
+that it loads from the database as generators (as opposed to a list, or dictionary, or another Python type).
 
-There are two things to bare in mind with generators:
+This is because generators are memory efficient, as they do not store the entries of the database in memory 
+simultaneously. This contrasts objects like lists and dictionaries, which store all entries in memory all at once. 
+If you fit a large number of datasets, lists and dictionaries will use a lot of memory and could crash your computer!
 
- 1) A generator has no length and to determine how many entries it contains you first must turn it into a list.
+Once we use a generator in the Python code, it cannot be used again. To perform the same task twice, the 
+generator must be remade it. This cookbook therefore rarely stores generators as variables and instead uses the 
+aggregator to create each generator at the point of use.
 
- 2) Once we use a generator, we cannot use it again and need to remake it. For this reason, we typically avoid 
- storing the generator as a variable and instead use the aggregator to create them on use.
-
-We can now create a `samples` generator of every fit. The `results` example scripts show how  
-the `Samples` class acts as an interface to the results of the non-linear search.
+To create a generator of a specific set of results, we use the `values` method. This takes the `name` of the
+object we want to create a generator of, for example inputting `name=samples` will return the results `Samples`
+object.
 """
 samples_gen = agg.values("samples")
 
 """
-When we print this the length of this generator converted to a list of outputs we see 3 different `SamplesDynesty`
-instances. 
-
-These correspond to each fit of each search to each of our 3 images.
+By converting this generator to a list and printing it, it is a list of 3 `SamplesNest` objects, corresponding to 
+the 3 model-fits performed above.
 """
-print("NestedSampler Samples: \n")
+print("Samples:\n")
 print(samples_gen)
-print()
 print("Total Samples Objects = ", len(agg), "\n")
+
+"""
+__Model__
+
+The model used to perform the model fit for each of the 3 datasets can be loaded via the aggregator and printed.
+"""
+model_gen = agg.values("model")
+
+for model in model_gen:
+    print(model.info)
+
+"""
+__Search__
+
+The non-linear search used to perform the model fit can be loaded via the aggregator and printed.
+"""
+search_gen = agg.values("search")
+
+for search in search_gen:
+    print(search)
+
+"""
+__Samples__
+
+The `Samples` class contains all information on the non-linear search samples, for example the value of every parameter
+sampled using the fit or an instance of the maximum likelihood model.
+
+The `Samples` class is described fully in the results cookbook.
+"""
+for samples in agg.values("samples"):
+    print("The tenth sample`s third parameter")
+    print(samples.parameter_lists[9][2], "\n")
 
 """
 Therefore, by loading the `Samples` via the database we can now access the results of the fit to each dataset.
@@ -217,29 +319,10 @@ ml_vector = [
 print("Max Log Likelihood Model Parameter Lists: \n")
 print(ml_vector, "\n\n")
 
-"""
-__Building a Database File From an Output Folder__
-
-The fits above directly wrote the results to the .sqlite file, which we loaded above. However, you may have results
-already written to hard-disk in an output folder, which you wish to build your .sqlite file from.
-
-This can be done via the following code, which is commented out below to avoid us deleting the existing .sqlite file.
-
-Below, the `database_name` corresponds to the name of your output folder and is also the name of the `.sqlite` file
-that is created.
-
-If you are fitting a relatively small number of datasets (e.g. 10-100) having all results written
-to hard-disk (e.g. for quick visual inspection) but using the database for sample-wide analysis may be benefitial.
-"""
-# database_name = "database"
-
-# agg = af.Aggregator.from_database(
-#    filename=f"{database_name}.sqlite", completed_only=False
-# )
-
-# agg.add_directory(directory=path.join("output", database_name)))
 
 """
+All remaining methods accessible by `agg.values` are described in the other database examples.
+
 __Wrap Up__
 
 This example illustrates how to use the database.

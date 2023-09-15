@@ -118,11 +118,11 @@ We now create the non-linear search, analysis and perform the model-fit using th
 You may wish to inspect the results of the search 1 model-fit to ensure a fast non-linear search has been provided that 
 provides a reasonably accurate lens model.
 """
-search_1 = af.DynestyStatic(
+search_1 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[1]_point_source",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
     number_of_cores=1,
 )
 
@@ -252,11 +252,11 @@ __Search + Model-Fit__
 
 We now create the non-linear search and perform the model-fit using this model.
 """
-search_2 = af.DynestyStatic(
+search_2 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[2]__imaging",
     unique_tag=dataset_name,
-    nlive=100,
+    n_live=150,
     number_of_cores=4,
 )
 

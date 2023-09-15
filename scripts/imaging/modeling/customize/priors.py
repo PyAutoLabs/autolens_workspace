@@ -25,7 +25,7 @@ __Start Point__
 The `autolens_workspace/*/imaging/modeling/customize/start_point.ipynb` shows an alternative API, which
 customizes where the non-linear search starts its search of parameter space.
 
-This cannot be used for a nested sampling method like `dynesty` (whose parameter space search is dictated by priors)
+This cannot be used for a nested sampling method like `Nautilus` (whose parameter space search is dictated by priors)
 but can be used for the maximum likelihood estimator / MCMC methods PyAutoGalaxy supports.
 
 The benefit of the starting point API is that one can tell the non-linear search where to look in parameter space
@@ -294,12 +294,11 @@ __Search + Analysis + Model-Fit__
 The code below performs the normal steps to set up a model-fit. We omit comments of this code as you should be 
 familiar with it and it is not specific to this example!
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "customize"),
     name="priors",
     unique_tag=dataset_name,
-    nlive=100,
-    walks=10,
+    n_live=150,
     number_of_cores=1,
 )
 

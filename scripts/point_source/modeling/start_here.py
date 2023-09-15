@@ -192,21 +192,20 @@ __Search__
 The lens model is fitted to the data using a non-linear search. 
 
 All examples in the autolens workspace use the nested sampling algorithm 
-Dynesty (https://dynesty.readthedocs.io/en/latest/), which extensive testing has revealed gives the most accurate
+Nautilus (https://Nautilus.readthedocs.io/en/latest/), which extensive testing has revealed gives the most accurate
 and efficient  modeling results.
 
-We make the following changes to the Dynesty settings:
+We make the following changes to the Nautilus settings:
 
- - Increase the number of live points, `nlive`, from the default value of 50 to 100. 
- - Increase the number of random walks per live point, `walks` from the default value of 5 to 10. 
+ - Increase the number of live points, `n_live`, from the default value of 50 to 100. 
 
-These are the two main Dynesty parameters that trade-off slower run time for a more reliable and accurate fit.
+These are the two main Nautilus parameters that trade-off slower run time for a more reliable and accurate fit.
 Increasing both of these parameter produces a more reliable fit at the expense of longer run-times.
 
 __Customization__
 
 The folders `autolens_workspace/*/point_source/modeling/searches` gives an overview of alternative non-linear searches,
-other than Dynesty, that can be used to fit lens models. They also provide details on how to customize the
+other than Nautilus, that can be used to fit lens models. They also provide details on how to customize the
 model-fit, for example the priors.
 
 The `name` and `path_prefix` below specify the path where results ae stored in the output folder:  
@@ -228,7 +227,7 @@ the `dataset_name` to the search's `unique_tag`.
 
 __Number Of Cores__
 
-We include an input `number_of_cores`, which when above 1 means that Dynesty uses parallel processing to sample multiple 
+We include an input `number_of_cores`, which when above 1 means that Nautilus uses parallel processing to sample multiple 
 lens models at once on your CPU. When `number_of_cores=2` the search will run roughly two times as
 fast, for `number_of_cores=3` three times as fast, and so on. The downside is more cores on your CPU will be in-use
 which may hurt the general performance of your computer.
@@ -242,12 +241,11 @@ use a value above this.
 For users on a Windows Operating system, using `number_of_cores>1` may lead to an error, in which case it should be 
 reduced back to 1 to fix it.
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("point_source"),
     name="mass[sie]_source[point]",
     unique_tag=dataset_name,
-    nlive=100,
-    walks=10,
+    n_live=150,
     number_of_cores=1,
 )
 
@@ -323,6 +321,33 @@ for on-the-fly visualization and results).
 result = search.fit(model=model, analysis=analysis)
 
 """
+__Output Folder__
+
+Now this is running you should checkout the `autolens_workspace/output` folder. This is where the results of the 
+search are written to hard-disk (in the `start_here` folder), where all outputs are human readable (e.g. as .json,
+.csv or text files).
+
+As the fit progresses, results are written to the `output` folder on the fly using the highest likelihood model found
+by the non-linear search so far. This means you can inspect the results of the model-fit as it runs, without having to
+wait for the non-linear search to terminate.
+ 
+The `output` folder includes:
+
+ - `model.info`: Summarizes the lens model, its parameters and their priors discussed in the next tutorial.
+ 
+ - `model.results`: Summarizes the highest likelihood lens model inferred so far including errors.
+ 
+ - `images`: Visualization of the highest likelihood model-fit to the dataset, (e.g. a fit subplot showing the lens 
+ and source galaxies, model data and residuals).
+ 
+ - `files`: A folder containing .fits files of the dataset, the model as a human-readable .json file, 
+ a `.csv` table of every non-linear search sample and other files containing information about the model-fit.
+ 
+ - search.summary: A file providing summary statistics on the performance of the non-linear search.
+ 
+ - `search_internal`: Internal files of the non-linear search (in this case Nautilus) used for resuming the fit and
+  visualizing the search.
+
 __Result__
 
 The search returns a result object, which whose `info` attribute shows the result in a readable format.
@@ -334,7 +359,7 @@ the `model.info` attribute display optimally on your computer. This attribute al
 print(result.info)
 
 """
-We plot the maximum likelihood fit, tracer images and posteriors inferred via dynesty.
+We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
 """
@@ -349,7 +374,7 @@ tracer_plotter.subplot_tracer()
 The result contains the full posterior information of our non-linear search, including all parameter samples, 
 log likelihood values and tools to compute the errors on the lens model. 
 
-**PyAutoLens** includes visualization tools for plotting this.
+There are built in visualization tools for plotting this.
 
 The plot is labeled with short hand parameter names (e.g. `sersic_index` is mapped to the short hand 
 parameter `n`). These mappings ate specified in the `config/notation.yaml` file and can be customized by users.

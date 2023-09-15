@@ -207,14 +207,14 @@ print(model.info)
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Dynesty (see `start.here.py` for a 
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
 full description).
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("interferometer", "modeling"),
     name="mass[sie]_source[pix]",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
     number_of_cores=1,
 )
 
@@ -247,7 +247,7 @@ trace further from one another.
 
 This ensures the unphysical solutions that bias an `Inversion` have much lower likelihood that the physical solutions
 we desire. Furthermore, the penalty term reduces as the image-plane multiple image positions trace closer in the 
-source-plane, ensuring Dynesty converges towards an accurate mass model. It does this very fast, as 
+source-plane, ensuring Nautilus converges towards an accurate mass model. It does this very fast, as 
 ray-tracing just a few multiple image positions is computationally cheap. 
 
 The threshold of 0.3" is large. For an accurate lens model we would anticipate the positions trace within < 0.01" of
@@ -328,7 +328,7 @@ The search returns a result object, which whose `info` attribute shows the resul
 print(result.info)
 
 """
-We plot the maximum likelihood fit, tracer images and posteriors inferred via dynesty.
+We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
 """

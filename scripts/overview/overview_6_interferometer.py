@@ -216,9 +216,9 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 """
 __Non-linear Search__
 
-We again choose the non-linear search `dynesty` (https://github.com/joshspeagle/dynesty).
+We again choose the non-linear search `Nautilus` (https://github.com/joshspeagle/Nautilus).
 """
-search = af.DynestyStatic(path_prefix="overview", name="interferometer")
+search = af.Nautilus(path_prefix="overview", name="interferometer")
 
 """
 __Analysis__

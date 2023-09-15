@@ -2,7 +2,7 @@
 Plots: DynestyPlotter
 =====================
 
-This example illustrates how to plot visualization summarizing the results of a dynesty non-linear search using
+This example illustrates how to plot visualization summarizing the results of a Nautilus non-linear search using
 a `ZeusPlotter`.
 """
 # %matplotlib inline
@@ -18,16 +18,16 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-First, lets create a result via dynesty by repeating the simple model-fit that is performed in 
+First, lets create a result via Nautilus by repeating the simple model-fit that is performed in 
 the `modeling/start_here.py` example.
 """
 dataset_name = "simple__no_lens_light"
 
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("plot"),
     name="DynestyPlotter",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
 )
 
 dataset_path = path.join("dataset", "imaging", dataset_name)
@@ -67,24 +67,24 @@ analysis = al.AnalysisImaging(dataset=dataset)
 result = search.fit(model=model, analysis=analysis)
 
 """
-We now pass the samples to a `DynestyPlotter` which will allow us to use dynesty's in-built plotting libraries to 
+We now pass the samples to a `DynestyPlotter` which will allow us to use Nautilus's in-built plotting libraries to 
 make figures.
 
-The dynesty readthedocs describes fully all of the methods used below 
+The Nautilus readthedocs describes fully all of the methods used below 
 
- - https://dynesty.readthedocs.io/en/latest/quickstart.html
- - https://dynesty.readthedocs.io/en/latest/api.html#module-dynesty.plotting
+ - https://Nautilus.readthedocs.io/en/latest/quickstart.html
+ - https://Nautilus.readthedocs.io/en/latest/api.html#module-Nautilus.plotting
  
 In all the examples below, we use the `kwargs` of this function to pass in any of the input parameters that are 
 described in the API docs.
 
-Dynesty plotters use `_kwargs` dictionaries to pass visualization settings to matplotlib lib. For example, below,
+Nautilus plotters use `_kwargs` dictionaries to pass visualization settings to matplotlib lib. For example, below,
 we:
 
  - Set the fontsize of the x and y labels by passing `label_kwargs={"fontsize": 16}`.
  - Set the fontsize of the title by passing `title_kwargs={"fontsize": "10"}`.
  
-There are other `_kwargs` inputs we pass as None, you should check out the Dynesty docs if you need to customize your
+There are other `_kwargs` inputs we pass as None, you should check out the Nautilus docs if you need to customize your
 figure.
 """
 search_plotter = aplt.DynestyPlotter(samples=result.samples)
@@ -126,7 +126,7 @@ search_plotter.cornerplot(
 
 """
 The `runplot` method shows how the estimates of the log evidence and other quantities progress as a function of
-iteration number during the dynesty model-fit.
+iteration number during the Nautilus model-fit.
 """
 search_plotter.runplot(
     span=None,

@@ -116,7 +116,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "customize"),
     name="positions",
     unique_tag=dataset_name,
@@ -138,7 +138,7 @@ lensed source) within 0.5" of one another in the source-plane. If this criteria 
 added to likelihood that massive reduces the overall likelihood. 
 
 This ensures the unphysical solutions that bias an `Inversion` have much lower likelihood that the physical solutions
-we desire. Furthermore, the penalty term reduces as the positions trace closer in the source-plane, ensuring Dynesty
+we desire. Furthermore, the penalty term reduces as the positions trace closer in the source-plane, ensuring Nautilus
 will converges towards an accurate mass model. It does this very fast, as ray-tracing positions is computationally 
 cheap. 
 

@@ -274,7 +274,7 @@ model = af.Collection(galaxies=galaxies)
 
 # Search + Analysis + Model-Fit
 
-search = af.DynestyStatic(path_prefix="overview", name="point_source")
+search = af.Nautilus(path_prefix="overview", name="point_source")
 
 analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 

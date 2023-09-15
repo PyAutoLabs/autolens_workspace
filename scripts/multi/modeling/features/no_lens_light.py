@@ -154,11 +154,11 @@ analysis = analysis.with_free_parameters(model.galaxies.source.bulge.intensity)
 """
 __Search__
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("multi", "modeling"),
     name="mass[sie]_source[bulge]2",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
     number_of_cores=1,
 )
 

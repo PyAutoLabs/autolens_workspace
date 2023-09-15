@@ -176,11 +176,10 @@ requires its own non-linear search.
 For complex graphs consisting of many  nodes, one could easily use different searches for different nodes on the factor 
 graph.
 """
-dynesty = af.DynestyStatic(
+Nautilus = af.Nautilus(
     path_prefix=path.join("imaging", "hierarchical"),
     name="tutorial_6_science_case",
-    nlive=100,
-    sample="rwalk",
+    n_live=150,
 )
 
 analysis_factor_list = []
@@ -191,7 +190,7 @@ for model, analysis in zip(model_list, analysis_list):
     dataset_index += 1
 
     analysis_factor = af.AnalysisFactor(
-        prior_model=model, analysis=analysis, optimiser=dynesty, name=dataset_name
+        prior_model=model, analysis=analysis, optimiser=Nautilus, name=dataset_name
     )
 
     analysis_factor_list.append(analysis_factor)

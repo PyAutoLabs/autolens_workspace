@@ -143,7 +143,7 @@ __Positions (Optional)__
 The script allows you to mark the (y,x) arc-second positions of the multiply imaged lensed source galaxy in 
 the image-plane, under the assumption that they originate from the same location in the source-plane.
 
-A non-linear search (e.g. dynesty) can then use these positions to preferentially choose mass models where these 
+A non-linear search (e.g. Nautilus) can then use these positions to preferentially choose mass models where these 
 positions trace close to one another in the source-plane. This speeding up the initial fitting of lens models and 
 removes unwanted solutions from parameter space which have too much or too little mass in the lens galaxy.
 

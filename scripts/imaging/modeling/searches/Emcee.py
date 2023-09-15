@@ -5,13 +5,13 @@ Searches: Emcee
 Emcee (https://github.com/dfm/emcee) is an ensemble MCMC sampler.
 
 An MCMC algorithm only seeks to map out the posterior of parameter space, unlike a nested sampling algorithm like
-Dynesty, which also aims to estimate the Bayesian evidence if the model. Therefore, in principle, an MCMC approach like
-Emcee should be faster than Dynesty.
+Nautilus, which also aims to estimate the Bayesian evidence if the model. Therefore, in principle, an MCMC approach like
+Emcee should be faster than Nautilus.
 
-In our experience, `Emcee` is outperformed by `Dynesty` for lens modeling in all circumstances, whether that be
+In our experience, `Emcee` is outperformed by `Nautilus` for lens modeling in all circumstances, whether that be
 initializing the lens model, fitting a pixelized source or models with high dimensionality. Nevertheless, we encourage
 you to give it a go yourself, and let us know on the PyAutoLens GitHub if you find an example of a problem where
-`Emcee` outperforms Dynesty!
+`Emcee` outperforms Nautilus!
 
 __Start Here Notebook__
 
@@ -58,7 +58,7 @@ every parameter, where the centre of these priors is near the true values of the
 
 Given this need for a robust starting point, Emcee is only suited to model-fits where we have this information. It may
 therefore be useful when performing lens modeling search chaining (see HowToLens chapter 3). However, even in such
-circumstances, we have found that is often outperformed by other searches such as Dynesty and Zeus for both speed
+circumstances, we have found that is often outperformed by other searches such as Nautilus and Zeus for both speed
 and accuracy.
 """
 # Lens:

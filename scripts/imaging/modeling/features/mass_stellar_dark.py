@@ -144,22 +144,21 @@ print(model.info)
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Dynesty (see `start.here.py` for a full 
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a full 
 description).
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="mass_stellar_dark",
     unique_tag=dataset_name,
-    nlive=100,
-    walks=10,
+    n_live=150,
     number_of_cores=1,
 )
 
 """
 __Analysis__
 
-Create the `AnalysisImaging` object defining how the via Dynesty the model is fitted to the data.
+Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
 """
 analysis = al.AnalysisImaging(dataset=dataset)
 
@@ -202,7 +201,7 @@ The `info` attribute shows the model in a readable format (if this does not disp
 print(result.info)
 
 """
-We plot the maximum likelihood fit, tracer images and posteriors inferred via dynesty.
+We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
 These plots show that a decomposed stars and dark matter model is still able to produce ray-tracing and
 the lensed source's emission.

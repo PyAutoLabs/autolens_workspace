@@ -132,12 +132,11 @@ Given the extra parameters in the model due to the clumps, we increase the numbe
 
 We do this for every search below.
 """
-search_1 = af.DynestyStatic(
+search_1 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[1]_light[lp]",
     unique_tag=dataset_name,
-    nlive=100,
-    walks=10,
+    n_live=150,
 )
 
 analysis_1 = al.AnalysisImaging(dataset=dataset)
@@ -173,12 +172,11 @@ model_2 = af.Collection(
     clumps=clump_model.clumps_mass_only + al.util.chaining.clumps_from(result=result_1),
 )
 
-search_2 = af.DynestyStatic(
+search_2 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[2]_light[fixed]_mass[sie]_source[lp]",
     unique_tag=dataset_name,
-    nlive=125,
-    walks=10,
+    n_live=150,
 )
 
 analysis_2 = al.AnalysisImaging(dataset=dataset)
@@ -225,11 +223,11 @@ model_3 = af.Collection(
     + al.util.chaining.clumps_from(result=result_2, mass_as_model=True),
 )
 
-search_3 = af.DynestyStatic(
+search_3 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[3]_light[lp]_mass[total]_source[lp]",
     unique_tag=dataset_name,
-    nlive=150,
+    n_live=150,
 )
 
 analysis_3 = al.AnalysisImaging(dataset=dataset)

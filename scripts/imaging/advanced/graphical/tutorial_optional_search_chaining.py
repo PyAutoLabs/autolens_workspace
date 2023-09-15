@@ -114,11 +114,11 @@ for dataset_index, masked_dataset in enumerate(masked_imaging_list):
     dataset_name_with_index = f"dataset_{dataset_index}"
     path_prefix_with_index = path.join(path_prefix, dataset_name_with_index)
 
-    search_1 = af.DynestyStatic(
+    search_1 = af.Nautilus(
         path_prefix=path_prefix,
         name="search[1]__simple__no_lens_light",
         unique_tag=dataset_name_with_index,
-        nlive=50,
+        n_live=100,
     )
 
     analysis_1 = al.AnalysisImaging(dataset=masked_dataset)
@@ -164,11 +164,11 @@ for dataset_index, masked_dataset in enumerate(masked_imaging_list):
     dataset_name_with_index = f"dataset_{dataset_index}"
     path_prefix_with_index = path.join(path_prefix, dataset_name_with_index)
 
-    search_2 = af.DynestyStatic(
+    search_2 = af.Nautilus(
         path_prefix=path_prefix,
         name="search[2]__mass_sph_pl__source_sersic",
         unique_tag=dataset_name_with_index,
-        nlive=75,
+        n_live=100,
     )
 
     analysis_2 = al.AnalysisImaging(dataset=masked_dataset)

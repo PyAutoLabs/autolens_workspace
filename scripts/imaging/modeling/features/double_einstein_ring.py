@@ -184,21 +184,21 @@ print(model.info)
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Dynesty (see `start.here.py` for a 
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
 full description).
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="double_einstein_ring",
     unique_tag=dataset_name,
-    nlive=100,
+    n_live=150,
     number_of_cores=1,
 )
 
 """
 __Analysis__
 
-Create the `AnalysisImaging` object defining how the via Dynesty the model is fitted to the data.
+Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
 """
 analysis = al.AnalysisImaging(dataset=dataset)
 
@@ -244,7 +244,7 @@ The search returns a result object, which whose `info` attribute shows the resul
 print(result.info)
 
 """
-We plot the maximum likelihood fit, tracer images and posteriors inferred via dynesty.
+We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
 These plots show that the lens and both sources of the double Einstein ring were fitted successfully.
 """
@@ -281,7 +281,7 @@ to model a real double Einstein ring:
    complex lens and source morphologies whilst keeping the dimensionality of the problem low.
    
  - Search chaining (e.g. `imaging/advanced/chaining` and HowToLens chapter 3): by breaking the model-fit into a series
-   of dynesty searches models of gradually increasing complexity can be fitted.
+   of Nautilus searches models of gradually increasing complexity can be fitted.
    
  - Pixelizations (e.g. `pixelization.ipynb` and HowToLens chapter 4): to infer the cosmological parameters reliably
    the source must be reconstructed on an adaptive mesh to capture a irregular morphological features.

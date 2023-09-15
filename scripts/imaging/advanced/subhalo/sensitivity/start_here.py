@@ -81,11 +81,11 @@ base_model = af.Collection(
     )
 )
 
-search_base = af.DynestyStatic(
+search_base = af.Nautilus(
     path_prefix=path.join("imaging", "misc"),
     name="sensitivity_mapping_base",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)
@@ -213,11 +213,11 @@ class AnalysisImagingSensitivity(al.AnalysisImaging):
 """
 We next specify the search used to perform each model fit by the sensitivity mapper.
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "misc"),
     name="sensitivity_mapping",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
     force_x1_cpu=True,  # ensures parallelizing over grid search works.
 )
 

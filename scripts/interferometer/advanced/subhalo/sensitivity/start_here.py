@@ -82,11 +82,11 @@ base_model = af.Collection(
     )
 )
 
-search_base = af.DynestyStatic(
+search_base = af.Nautilus(
     path_prefix=path.join("interferometer", "misc"),
     name="sensitivity_mapping_base",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
 )
 
 analysis = al.AnalysisInterferometer(dataset=dataset)
@@ -195,9 +195,9 @@ def simulate_function(instance):
     here before we return the simulated data.
     """
     return al.Interferometer(
-        data=simulated_interferometer.visibilities,
-        noise_map=simulated_interferometer.noise_map,
-        uv_wavelengths=simulated_interferometer.uv_wavelengths,
+        data=simulated_dataset.visibilities,
+        noise_map=simulated_dataset.noise_map,
+        uv_wavelengths=simulated_dataset.uv_wavelengths,
         real_space_mask=real_space_mask,
     )
 
@@ -218,11 +218,11 @@ class AnalysisInterferometerSensitivity(al.AnalysisInterferometer):
 """
 We next specify the search used to perform each model fit by the sensitivity mapper.
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("interferometer", "misc"),
     name="sensitivity_mapping",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
     force_x1_cpu=True,  # ensures parallelizing over grid search works.
 )
 

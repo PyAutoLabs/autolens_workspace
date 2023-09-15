@@ -80,11 +80,11 @@ model_1 = af.Collection(
     galaxies=af.Collection(lens=af.Model(al.Galaxy, redshift=0.5, bulge=bulge))
 )
 
-search_1 = af.DynestyStatic(
+search_1 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[1]_light[lp]",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
 )
 
 analysis_1 = al.AnalysisImaging(dataset=dataset)
@@ -133,11 +133,11 @@ model_2 = af.Collection(
     )
 )
 
-search_2 = af.DynestyStatic(
+search_2 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[2]_light[fixed]_mass[light_dark]_source[lp]",
     unique_tag=dataset_name,
-    nlive=75,
+    n_live=100,
 )
 
 analysis_2 = al.AnalysisImaging(dataset=dataset)
@@ -185,11 +185,11 @@ model_3 = af.Collection(
     )
 )
 
-search_3 = af.DynestyStatic(
+search_3 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[3]_light[lp]_mass[light_dark]_source[lp]",
     unique_tag=dataset_name,
-    nlive=100,
+    n_live=150,
 )
 
 analysis_3 = al.AnalysisImaging(dataset=dataset)
@@ -238,11 +238,11 @@ model_4 = af.Collection(
     )
 )
 
-search_4 = af.DynestyStatic(
+search_4 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[4]_light[fixed]_mass[fixed]_source[pix_init]",
     unique_tag=dataset_name,
-    nlive=20,
+    n_live=50,
 )
 
 analysis_4 = al.AnalysisImaging(dataset=dataset)
@@ -284,11 +284,11 @@ model_5 = af.Collection(
     )
 )
 
-search_5 = af.DynestyStatic(
+search_5 = af.Nautilus(
     path_prefix=path_prefix,
     name="search[5]_light[lp]_mass[light_dark]_source[pix]",
     unique_tag=dataset_name,
-    nlive=20,
+    n_live=50,
 )
 
 """

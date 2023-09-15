@@ -319,7 +319,7 @@ array_2d_plotter.figure_2d()
 """
 We can now subtract this image from the observed image to produce a `lens_subtracted_image_2d`:
 """
-lens_subtracted_image_2d = masked_dataset.image - convolved_image_2d
+lens_subtracted_image_2d = masked_dataset.data - convolved_image_2d
 
 array_2d_plotter = aplt.Array2DPlotter(array=lens_subtracted_image_2d)
 array_2d_plotter.figure_2d()
@@ -878,7 +878,7 @@ for, corresponding to a fit with a lower likelihood.
 """
 model_image = convolved_image_2d + mapped_reconstructed_image_2d
 
-residual_map = masked_dataset.image - model_image
+residual_map = masked_dataset.data - model_image
 normalized_residual_map = residual_map / masked_dataset.noise_map
 chi_squared_map = normalized_residual_map**2.0
 
@@ -1006,7 +1006,7 @@ __Lens Modeling__
 To fit a lens model to data, **PyAutoLens** samples the likelihood function illustrated in this tutorial using a
 non-linear search algorithm.
 
-The default sampler is the nested sampling algorithm `dynesty` (https://github.com/joshspeagle/dynesty)
+The default sampler is the nested sampling algorithm `Nautilus` (https://github.com/joshspeagle/Nautilus)
 but **PyAutoLens** supports multiple MCMC and optimization algorithms. 
 
 __Wrap Up__

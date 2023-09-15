@@ -30,10 +30,10 @@ def run(
     source_results
         The results of the SLaM SOURCE LP PIPELINE or SOURCE PIX PIPELINE which ran before this pipeline.
     lens_bulge
-        The `LightProfile` `Model` used to represent the light distribution of the lens galaxy's bulge (set to
+        The model used to represent the light distribution of the lens galaxy's bulge (set to
         None to omit a bulge).
     lens_disk
-        The `LightProfile` `Model` used to represent the light distribution of the lens galaxy's disk (set to
+        The model used to represent the light distribution of the lens galaxy's disk (set to
         None to omit a disk).
     end_with_hyper_extension
         If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be

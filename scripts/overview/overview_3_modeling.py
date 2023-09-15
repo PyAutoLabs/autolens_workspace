@@ -123,16 +123,16 @@ __Non-linear Search__
 We now choose the non-linear search, which is the fitting method used to determine the set of light and mass profile 
 parameters that best-fit our data.
 
-In this example we use `dynesty` (https://github.com/joshspeagle/dynesty), a nested sampling algorithm that is
+In this example we use `Nautilus` (https://github.com/joshspeagle/Nautilus), a nested sampling algorithm that is
 very effective at lens modeling.
 
 PyAutoLens supports many model-fitting algorithms, including maximum likelihood estimators and MCMC, which are
 documented throughout the workspace.
 
-We include an input `number_of_cores`, which when above 1 means that Dynesty uses parallel processing to sample multiple 
+We include an input `number_of_cores`, which when above 1 means that Nautilus uses parallel processing to sample multiple 
 lens models at once on your CPU.
 """
-search = af.DynestyStatic(path_prefix="overview", name="modeling", number_of_cores=4)
+search = af.Nautilus(path_prefix="overview", name="modeling", number_of_cores=4)
 
 """
 The non-linear search fits the lens model by guessing many lens models over and over iteratively, using the models which
@@ -211,7 +211,7 @@ print(
 __Model-Fit__
 
 To perform the model-fit we pass the model and analysis to the search's fit method. This will output results (e.g.,
-dynesty samples, model parameters, visualization) to hard-disk.
+Nautilus samples, model parameters, visualization) to hard-disk.
 
 Once running you should checkout the `autolens_workspace/output` folder, which is where the results of the search are 
 written to hard-disk on-the-fly. This includes lens model parameter estimates with errors non-linear samples and the 
@@ -248,7 +248,7 @@ print(result.max_log_likelihood_instance.galaxies.source)
 The result contains the full posterior information of our non-linear search, including all parameter samples, 
 log likelihood values and tools to compute the errors on the lens model. 
 
-**PyAutoLens** includes visualization tools for plotting this.
+There are built in visualization tools for plotting this.
 
 The plot is labeled with short hand parameter names (e.g. `sersic_index` is mapped to the short hand 
 parameter `n`). These mappings ate specified in the `config/notation.yaml` file and can be customized by users.
@@ -290,7 +290,7 @@ lens = af.Model(
 
 """
 This aligns the light and mass profile centres in the model, reducing the
-number of free parameter fitted for by Dynesty by 2.
+number of free parameter fitted for by Nautilus by 2.
 """
 lens.bulge.centre = lens.mass.centre
 

@@ -82,11 +82,11 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
 
 model_1 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
-search_1 = af.DynestyStatic(
+search_1 = af.Nautilus(
     path_prefix=path.join("results", "subhalo_grid"),
     name="search[1]_no_subhalo",
     unique_tag=dataset_name,
-    nlive=50,
+    n_live=100,
     number_of_cores=1,
 )
 
@@ -128,12 +128,10 @@ model = af.Collection(
 
 analysis_2 = al.AnalysisImaging(dataset=dataset)
 
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("results", "subhalo_grid"),
     name=f"subhalo[2]_subhalo_search]",
-    nlive=50,
-    walks=5,
-    facc=0.2,
+    n_live=100,
     number_of_cores=1,
     force_x1_cpu=True,  # ensures parallelizing over grid search works.
 )
@@ -199,10 +197,10 @@ model = af.Collection(
 
 analysis_3 = al.AnalysisImaging(dataset=dataset)
 
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("results", "subhalo_grid"),
     name=f"subhalo[3]_subhalo_refine",
-    nlive=100,
+    n_live=150,
 )
 
 result_3 = search.fit(model=model, analysis=analysis_3)

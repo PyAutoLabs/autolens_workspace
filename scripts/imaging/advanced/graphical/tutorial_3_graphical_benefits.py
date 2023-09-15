@@ -148,8 +148,8 @@ for dataset_index, analysis in enumerate(analysis_list):
     dataset_name_with_index = f"dataset_{dataset_index}"
     path_prefix_with_index = path.join(path_prefix, dataset_name_with_index)
 
-    search = af.DynestyStatic(
-        path_prefix=path_prefix_with_index, name=dataset_name_with_index, nlive=100
+    search = af.Nautilus(
+        path_prefix=path_prefix_with_index, name=dataset_name_with_index, n_live=150
     )
 
     result = search.fit(model=model, analysis=analysis)
@@ -341,8 +341,9 @@ __Search__
 We can now create a non-linear search and use it to the fit the factor graph, again using its `global_prior_model` 
 property.
 """
-search = af.DynestyStatic(
-    path_prefix=path_prefix, name="tutorial_3_graphical_benefits_2", sample="rwalk"
+search = af.Nautilus(
+    path_prefix=path_prefix,
+    name="tutorial_3_graphical_benefits_2",
 )
 
 result = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)

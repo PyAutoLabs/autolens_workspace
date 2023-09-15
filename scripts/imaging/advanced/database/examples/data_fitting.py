@@ -5,9 +5,24 @@ Database: Data Fitting
 In this tutorial, we use the aggregator to load models and data from a non-linear search and use them to perform
 fits to the data.
 
-All examples use just a single instance of a `FitImaging` object corresponding to the maximum log likelihood sample.
-In tutorial  6, we will show how one can use the database to create lists of `FitImaging`'s that are drawn from the PDF.
-This enables error estimation to be performed of derived quantities.
+We show how to use these tools to inspect the maximum log likelihood model of a fit to the data, customize things
+like its visualization and also inspect fits randomly drawm from the PDF.
+
+__Interferometer__
+
+This script can easily be adapted to analyse the results of charge injection imaging model-fits.
+
+The only entries that needs changing are: 
+
+ - `ImagingAgg` -> `InterferometerAgg`.
+ - `FitImagingAgg` -> `FitInterferometerAgg`.
+ - `Clocker1D` -> `Clocker2D`.
+ - `SettingsImaging` -> `SettingsInterferometer`.
+ - `ImagingPlotter` -> `InterferometerPlotter`.
+ - `FitImagingPlotter` -> `FitInterferometerPlotter`.
+
+Quantities specific to an interfometer, for example its uv-wavelengths real space mask, are accessed using the same API
+(e.g. `values("dataset.uv_wavelengths")` and `.values{"dataset.real_space_mask")).
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -30,7 +45,7 @@ agg = af.Aggregator.from_database("database.sqlite")
 """
 The masks we used to fit the lenses is accessible via the aggregator.
 """
-mask_gen = agg.values("mask")
+mask_gen = agg.values("dataset.mask")
 print([mask for mask in mask_gen])
 
 """
@@ -43,25 +58,34 @@ print([info for info in info_gen])
 """
 __Fits via Database__
 
-Having performed a model-fit, we now want to interpret and visualize the results. In this example, we want to inspect
-the `FitImaging` objects that gave good fits to the data. 
+Having performed a model-fit, we now want to interpret and visualize the results. In this example, we inspect 
+the `Imaging` object objects that gave good fits to the data. 
 
 Using the API shown in the `start_here.py` example this would require us to create a `Samples` object and manually 
-compose our own `FitImaging` object. For large datasets, this would require us to use generators to ensure it is 
+compose our own `Imaging` object. For large datasets, this would require us to use generators to ensure it is 
 memory-light, which are cumbersome to write.
 
-This example therefore uses the `FitImagingAgg` object, which conveniently loads the `FitImaging` objects of every fit via 
+This example therefore uses the `ImagingAgg` object, which conveniently loads the `Imaging` objects of every fit via 
 generators for us. Explicit examples of how to do this via generators is given in the `advanced/manual_generator.py` 
 tutorial.
 
-We get a fit generator via the `al.agg.FitImagingAgg` object, where this `fit_gen` contains the maximum log
-likelihood fit of every model-fit.
+We get a dataset generator via the `ac.agg.ImagingAgg` object, where this `dataset_gen` contains the maximum log
+likelihood `Imaging `object of every model-fit.
+
+The `dataset_gen` returns a list of `Imaging` objects, as opposed to just a single `Imaging`object. This is because
+only a single `Analysis` class was used in the model-fit, meaning there was only one `Imaging` dataset that was
+fit. 
+
+The `multi` package of the workspace illustrates model-fits which fit multiple datasets 
+simultaneously, (e.g. multi-wavelength imaging)  by summing `Analysis` objects together, where the `dataset_list` 
+would contain multiple `Imaging` objects.
 """
 dataset_agg = al.agg.ImagingAgg(aggregator=agg)
 dataset_gen = dataset_agg.dataset_gen_from()
 
-for dataset in dataset_gen:
-    print(imaging)
+for dataset_list in dataset_gen:
+    # Only one `Analysis` so take first and only dataset.
+    dataset = dataset_list[0]
 
     dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
     dataset_plotter.subplot_dataset()
@@ -69,11 +93,17 @@ for dataset in dataset_gen:
 """
 We now use the database to load a generator containing the fit of the maximum log likelihood model (and therefore 
 fit) to each dataset.
+
+Analogous to the `dataset_gen` above returning a list with one `Imaging` object, the `fit_gen` returns a list of
+`FitImaging` objects, because only one `Analysis` was used to perform the model-fit.
 """
 fit_agg = al.agg.FitImagingAgg(aggregator=agg)
 fit_dataset_gen = fit_agg.max_log_likelihood_gen_from()
 
-for fit in fit_dataset_gen:
+for fit_list in fit_dataset_gen:
+    # Only one `Analysis` so take first and only dataset.
+    fit = fit_list[0]
+
     fit_plotter = aplt.FitImagingPlotter(fit=fit)
     fit_plotter.subplot_fit()
 
@@ -96,7 +126,10 @@ fit_agg = al.agg.FitImagingAgg(
 )
 fit_dataset_gen = fit_agg.max_log_likelihood_gen_from()
 
-for fit in fit_dataset_gen:
+for fit_list in fit_dataset_gen:
+    # Only one `Analysis` so take first and only dataset.
+    fit = fit_list[0]
+
     fit_plotter = aplt.FitImagingPlotter(fit=fit)
     fit_plotter.subplot_fit()
 
@@ -112,7 +145,10 @@ in the aggregator package to set up the fit.
 fit_agg = al.agg.FitImagingAgg(aggregator=agg)
 fit_dataset_gen = fit_agg.max_log_likelihood_gen_from()
 
-for fit in fit_dataset_gen:
+for fit_list in fit_dataset_gen:
+    # Only one `Analysis` so take first and only dataset.
+    fit = fit_list[0]
+
     mat_plot = aplt.MatPlot2D(
         figure=aplt.Figure(figsize=(12, 12)),
         title=aplt.Title(label="Custom Image", fontsize=24),
@@ -132,7 +168,10 @@ Making this plot for a paper? You can output it to hard disk.
 fit_agg = al.agg.FitImagingAgg(aggregator=agg)
 fit_dataset_gen = fit_agg.max_log_likelihood_gen_from()
 
-for fit in fit_dataset_gen:
+for fit_list in fit_dataset_gen:
+    # Only one `Analysis` so take first and only dataset.
+    fit = fit_list[0]
+
     mat_plot = aplt.MatPlot2D(
         title=aplt.Title(label="Hey"),
         output=aplt.Output(
@@ -142,6 +181,25 @@ for fit in fit_dataset_gen:
         ),
     )
 
+"""
+__Errors (Random draws from PDF)__
+
+In the `database/models.py` example we showed how `Tracer objects could be randomly drawn form the Probability 
+Distribution Function, in order to quantity things such as errors.
+
+The same approach can be used with `FitImaging` objects, to investigate how the properties of the fit vary within
+the errors (e.g. showing source reconstructions fot different fits consistent with the errors).
+"""
+fit_agg = al.agg.FitImagingAgg(aggregator=agg)
+fit_dataset_gen = fit_agg.randomly_drawn_via_pdf_gen_from(total_samples=2)
+
+
+for fit_list in fit_dataset_gen:
+    # Only one `Analysis` so take first and only dataset.
+    fit = fit_list[0]
+
+    fit_plotter = aplt.FitImagingPlotter(fit=fit)
+    fit_plotter.subplot_fit()
 
 """
 Finished.

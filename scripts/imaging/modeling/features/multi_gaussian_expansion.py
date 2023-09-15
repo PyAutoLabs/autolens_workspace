@@ -19,7 +19,7 @@ two separate groups of Gaussians are used to represent the `bulge` and `disk` of
 to just N=6 non-linear parameters (a `bulge` and `disk` comprising two linear Sersics would give N=10). 
 
 The MGE in this script is composed in a way where neither the `intensity` parameters or the parameters controlling
-the size of the Gaussians (their `sigma`) values are non-linear parameters sampled by Dynesty. This removes some of
+the size of the Gaussians (their `sigma`) values are non-linear parameters sampled by Nautilus. This removes some of
 the most significant degeneracies in parameter space, and can make the model much more reliable and efficient to fit.
 
 Therefore, not only does an MGE fit more complex galaxy morphologies, it does so using fewer non-linear parameters
@@ -187,22 +187,21 @@ print(model.info)
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Dynesty (see `start.here.py` for a 
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
 full description).
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="mge",
     unique_tag=dataset_name,
-    nlive=100,
-    walks=10,
+    n_live=150,
     number_of_cores=1,
 )
 
 """
 __Analysis__
 
-Create the `AnalysisImaging` object defining how the via Dynesty the model is fitted to the data.
+Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
 """
 analysis = al.AnalysisImaging(dataset=dataset)
 
@@ -215,7 +214,7 @@ In this example, the evaluation time is ~0.35s, compared to ~0.01 seconds for st
 
 Huge gains in the overall run-time however are made thanks to the models significantly reduced complexity and lower
 number of free parameters. Furthermore, because there are not free parameters which scale the size of lens galaxy,
-this produces significantly faster convergence by dynesty that any other lens light model.
+this produces significantly faster convergence by Nautilus that any other lens light model.
 
 Overall, it is difficult to state which approach will be faster overall. However, the MGE's ability to fit the data
 more accurately and the less complex parameter due to removing parameters that scale the lens galaxy make it the 
@@ -251,7 +250,7 @@ This confirms there are many `Gaussians` in the lens light model.
 print(result.info)
 
 """
-We plot the maximum likelihood fit, tracer images and posteriors inferred via dynesty.
+We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
 """
@@ -311,12 +310,11 @@ print(model.info)
 """
 We now fit this model, which includes the MGE source and lens light models.
 """
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="mge_including_source",
     unique_tag=dataset_name,
-    nlive=100,
-    walks=10,
+    n_live=150,
     number_of_cores=1,
 )
 
@@ -327,7 +325,7 @@ The likelihood evaluation time for a multi-Gaussian expansion for both lens and 
 than when just the lens galaxy uses an MGE.
 
 However, the overall run-time will be even faster than before, as treating the source as an MGE further
-reduces the complexity of parameter space ensuring dynesty converges even faster.
+reduces the complexity of parameter space ensuring Nautilus converges even faster.
 
 For initial model-fits where the lens model parameters are not known, a lens + source MGE is possibly the best
 model one can use. 
@@ -388,12 +386,11 @@ The `info` attribute shows the model, which has addition priors now associated w
 """
 print(model.info)
 
-search = af.DynestyStatic(
+search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="mge_regularized",
     unique_tag=dataset_name,
-    nlive=100,
-    walks=10,
+    n_live=150,
     number_of_cores=1,
 )
 

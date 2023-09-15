@@ -46,7 +46,7 @@ agg_query = agg.query(unique_tag == "lens_sersic")
 samples_gen = agg_query.values("samples")
 
 """
-As expected, this list now has only 1 `SamplesDynesty` corresponding to the second dataset.
+As expected, this list now has only 1 `SamplesNest` corresponding to the second dataset.
 """
 print("Directory Filtered DynestySampler Samples: \n")
 print("Total Samples Objects via unique tag = ", len(samples_gen), "\n\n")
