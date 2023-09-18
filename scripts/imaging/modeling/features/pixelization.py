@@ -43,6 +43,18 @@ the point for now is that it may take you a longer time to learn how to fit lens
 
 __Positive Only Solver__
 
+Many codes which use linear algebra typically rely on a linear algabra solver which allows for positive and negative
+values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
+
+This is problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
+light, which is clearly unphysical. For a pixelizaiton, this often produces negative source pixels which over-fit
+the data, producing unphysical solutions.
+
+**PyAutoLens** uses a positive only linear algebra solver which has been extensively optimized to ensure it is as fast
+as positive-negative solvers. This ensures that all light profile intensities are positive and therefore physical.
+
+__Positive Only Solver__
+
 All pixelized source reconstructions use a positive-only solver, meaning that every source-pixel is only allowed
 to reconstruct positive flux values. This ensures that the source reconstruction is physical and that we don't
 reconstruct negative flux values that don't exist in the real source galaxy (a common systematic solution in lens
