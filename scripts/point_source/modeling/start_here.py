@@ -192,7 +192,7 @@ __Search__
 The lens model is fitted to the data using a non-linear search. 
 
 All examples in the autolens workspace use the nested sampling algorithm 
-Nautilus (https://Nautilus.readthedocs.io/en/latest/), which extensive testing has revealed gives the most accurate
+Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most accurate
 and efficient  modeling results.
 
 We make the following changes to the Nautilus settings:
@@ -303,8 +303,9 @@ For this example, we conservatively estimate that the non-linear search will per
 parameter in the model. This is an upper limit, with models typically converging in far fewer iterations.
 
 If you perform the fit over multiple CPUs, you can divide the run time by the number of cores to get an estimate of
-the time it will take to fit the model. However, above ~6 cores the speed-up from parallelization is less efficient and
-does not scale linearly with the number of cores.
+the time it will take to fit the model. Parallelization with Nautilus scales well, it speeds up the model-fit by the 
+`number_of_cores` for N < 8 CPUs and roughly `0.5*number_of_cores` for N > 8 CPUs. This scaling continues 
+for N> 50 CPUs, meaning that with super computing facilities you can always achieve fast run times!
 """
 print(
     "Estimated Run Time Upper Limit (seconds) = ",
@@ -382,7 +383,7 @@ parameter `n`). These mappings ate specified in the `config/notation.yaml` file 
 The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
 mass its name `mass` defined when making the `Model` above is used).
 """
-search_plotter = aplt.DynestyPlotter(samples=result.samples)
+search_plotter = aplt.NautilusPlotter(samples=result.samples)
 search_plotter.cornerplot()
 
 """

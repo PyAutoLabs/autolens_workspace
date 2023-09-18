@@ -196,7 +196,7 @@ The `Samples` object still has the dimensions of the overall non-linear search (
 Therefore, the samples is identical in every result object.
 """
 for result in result_list:
-    search_plotter = aplt.DynestyPlotter(samples=result.samples)
+    search_plotter = aplt.NautilusPlotter(samples=result.samples)
     search_plotter.cornerplot()
 
 """

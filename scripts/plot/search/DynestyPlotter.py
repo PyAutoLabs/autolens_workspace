@@ -72,8 +72,8 @@ make figures.
 
 The Nautilus readthedocs describes fully all of the methods used below 
 
- - https://Nautilus.readthedocs.io/en/latest/quickstart.html
- - https://Nautilus.readthedocs.io/en/latest/api.html#module-Nautilus.plotting
+ - https://nautilus-sampler.readthedocs.io/en/latest/quickstart.html
+ - https://nautilus-sampler.readthedocs.io/en/latest/api.html#module-Nautilus.plotting
  
 In all the examples below, we use the `kwargs` of this function to pass in any of the input parameters that are 
 described in the API docs.

@@ -8,22 +8,25 @@ always computes the `intensity` values that give the best fit to the data (e.g. 
 given the light profile's other parameters.
 
 Each light profile's `intensity` parameter is therefore not a free parameter in the model-fit, reducing the
-dimensionality of non-linear parameter space by the number of light profiles (in this example, 3). They also removes
-the degeneracies that occur between the `intnesity` and other light profile parameters (e.g. `effective_radius`,
-`sersic_index`), which are some of the most difficult degeneracies for the model-fit to overcome!
+dimensionality of non-linear parameter space by the number of light profiles (in this example by 2 dimensions).
 
-Furthermore, the inversion has a neglible computational cost, thus we pretty much reduce the model complexity "for
-free" and fit models more reliably and faster without any downside!
+This also removes the degeneracies that occur between the `intensity` and other light profile parameters
+(e.g. `effective_radius`, `sersic_index`), which are difficult degeneracies for the non-linear search to map out
+accurately. This produces more reliable lens model results and converge in fewer iterations, speeding up the overall
+analysis.
 
-It is therefore recommend you always use linear light profiles to fit models over standard light profiles!
+The inversion has a relatively small computational cost, thus we reduce the model complexity with much expensive and
+can therefore fit models more reliably and faster!
+
+It is therefore recommended you always use linear light profiles to fit models over standard light profiles!
 
 __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge.
+ - The lens galaxy's light is a parametric linear `Sersic` bulge.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `Sersic`.
+ - The source galaxy's light is a parametric linear `Sersic`.
 
 __Start Here Notebook__
 
@@ -88,7 +91,10 @@ We compose a lens model where:
  
  - The source galaxy's light is a linear parametric `Sersic` [6 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=22.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=19.
+
+Note how both the lens and source galaxies use linear light profiles, meaning that the `intensity` parameter of both
+is not longer a free parameter in the fit.
 
 __Model Cookbook__
 
@@ -128,12 +134,16 @@ __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
 full description).
+
+In the `start_here.py` example 150 live points (`n_live=150`) were used to sample parameter space. For the linear
+light profiles this is reduced to 100, as the simpler parameter space means we need fewer samples to map it out
+accurately. This will lead to faster run times.
 """
 search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="linear_light_profiles",
     unique_tag=dataset_name,
-    n_live=150,
+    n_live=100,
     number_of_cores=1,
 )
 
@@ -154,7 +164,8 @@ This is still fast, but it does mean that the fit may take around five times lon
 
 However, because two free parameters have been removed from the model (the `intensity` of the lens bulge and 
 source bulge), the total number of likelihood evaluations will reduce. Furthermore, the simpler parameter space
-likely means that the fit will take less than 10000 per free parameter to converge.
+likely means that the fit will take less than 10000 per free parameter to converge. This is aided further
+by the reduction in `n_live` to 100.
 
 Fits using standard light profiles and linear light profiles therefore take roughly the same time to run. However,
 the simpler parameter space of linear light profiles means that the model-fit is more reliable, less susceptible to
@@ -205,7 +216,7 @@ tracer_plotter.subplot_tracer()
 fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_plotter.subplot_fit()
 
-search_plotter = aplt.DynestyPlotter(samples=result.samples)
+search_plotter = aplt.NautilusPlotter(samples=result.samples)
 search_plotter.cornerplot()
 
 """
@@ -227,7 +238,58 @@ source_bulge = print(tracer.galaxies[1].bulge.intensity)
 
 
 """
+To extract the `intensity` values of a specific component in the model, we use that component as defined in the
+`max_log_likelihood_tracer`.
+"""
+tracer = fit.tracer
+
+lens_bulge = tracer.galaxies[0].bulge
+source_bulge = tracer.galaxies[1].bulge
+
+print(
+    f"\n Intensity of lens bulge (lp_linear.Sersic) = {fit.linear_light_profile_intensity_dict[lens_bulge]}"
+)
+print(
+    f"\n Intensity of source bulge (lp_linear.Exponential) = {fit.linear_light_profile_intensity_dict[source_bulge]}"
+)
+
+"""
+A `Tracer` where all linear light profile objects are replaced with ordinary light profiles using the solved 
+for `intensity` values is also accessible.
+
+For example, the linear light profile `Sersic` of the `bulge` component above has a solved for `intensity` of ~0.75. 
+
+The `Tracer` created below instead has an ordinary light profile with an `intensity` of ~0.75.
+"""
+tracer = fit.model_obj_linear_light_profiles_to_light_profiles
+
+print(
+    f"Intensity via Tracer With Ordinary Light Profiles = {tracer.galaxies[0].bulge.intensity}"
+)
+
+"""
+__Visualization__
+
+Linear light profiles and objects containing them (e.g. galaxies, a tracer) cannot be plotted because they do not 
+have an `intensity` value.
+
+Therefore, the object created above which replaces all linear light profiles with ordinary light profiles must be
+used for visualization:
+"""
+tracer = fit.model_obj_linear_light_profiles_to_light_profiles
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=dataset.grid)
+tracer_plotter.figures_2d(image=True)
+
+galaxy_plotter = aplt.GalaxyPlotter(galaxy=tracer.galaxies[0], grid=dataset.grid)
+galaxy_plotter.figures_2d(image=True)
+
+"""
+__Wrap Up__
+
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+
+In particular, checkout the results example `linear.py` which details how to extract all information about linear
+light profiles from a fit.
 
 These examples show how the results API can be extended to investigate double Einstein ring results.
 """

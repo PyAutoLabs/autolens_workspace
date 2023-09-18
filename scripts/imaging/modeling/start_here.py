@@ -175,15 +175,17 @@ __Search__
 The lens model is fitted to the data using a non-linear search. 
 
 All examples in the autolens workspace use the nested sampling algorithm 
-Nautilus (https://Nautilus.readthedocs.io/en/latest/), which extensive testing has revealed gives the most accurate
-and efficient  modeling results.
+Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most 
+accurate and efficient modeling results.
 
-We make the following changes to the Nautilus settings:
+Nautilus has one main setting that trades-off accuracy and computational run-time, the number of `live_points`. 
+A higher number of live points gives a more accurate result, but increases the run-time. A lower value give 
+less reliable lens modeling (e.g. the fit may infer a local maxima), but is faster. 
 
- - Increase the number of live points, `n_live`, from the default value of 50 to 100. 
-
-These are the two main Nautilus parameters that trade-off slower run time for a more reliable and accurate fit.
-Increasing both of these parameter produces a more reliable fit at the expense of longer run-times.
+The suitable value depends on the model complexity whereby models with more parameters require more live points. 
+The default value of 200 is sufficient for the vast majority of common lens models. Lower values often given reliable
+results though, and speed up the run-times. In this example, given the model is quite simple (N=21 parameters), we 
+reduce the number of live points to 100 to speed up the run-time.
 
 __Customization__
 
@@ -234,13 +236,22 @@ this can take up a large fraction of the run-time of the non-linear search.
 
 For this fit, the fit is very fast, thus we set a high value of `iterations_per_update=10000` to ensure these updates
 so not slow down the overall speed of the model-fit.
+
+NOTE: `Nautilus` does not currently support `iterations_per_update` and therefore on-the-fly output of results
+is disabled. However, you can output the best-fit results by cancelling the job (Ctrl + C for Python script,
+kill cell for Jupyter notebook) and restarting. 
+
+Nautilus produces a significant improvement to lens modeling over other libraries (e.g. Dynesty, MultiNest, Emcee) 
+therefore although on-the-fly output is not natively supported, we switched it to the default fitter given the 
+significantly improved model-fits. 
 """
 search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="start_here",
     unique_tag=dataset_name,
-    n_live=100,
-    number_of_cores=2,
+    n_live=150,
+    number_of_cores=4,
+    iterations_per_update=10000,
 )
 
 """
@@ -283,8 +294,8 @@ run_time_dict, info_dict = analysis.profile_log_likelihood_function(
 The overall log likelihood evaluation time is given by the `fit_time` key.
 
 For this example, it is ~0.01 seconds, which is extremely fast for lens modeling. More advanced lens
-modeling features (e.g. shapelets, multi Gaussian expansions, pixelizations) have slower log likelihood evaluation
-times (1-3 seconds), and you should be wary of this when using these features.
+modeling features (e.g.multi Gaussian expansions, pixelizations) have slower log likelihood evaluation
+times (0.1-3 seconds), and you should be wary of this when using these features.
 
 Feel free to go ahead a print the full `run_time_dict` and `info_dict` to see the other information they contain. The
 former has a break-down of the run-time of every individual function call in the log likelihood function, whereas the 
@@ -304,8 +315,9 @@ For this example, we conservatively estimate that the non-linear search will per
 parameter in the model. This is an upper limit, with models typically converging in far fewer iterations.
 
 If you perform the fit over multiple CPUs, you can divide the run time by the number of cores to get an estimate of
-the time it will take to fit the model. However, above ~6 cores the speed-up from parallelization is less efficient and
-does not scale linearly with the number of cores.
+the time it will take to fit the model. Parallelization with Nautilus scales well, it speeds up the model-fit by the 
+`number_of_cores` for N < 8 CPUs and roughly `0.5*number_of_cores` for N > 8 CPUs. This scaling continues 
+for N> 50 CPUs, meaning that with super computing facilities you can always achieve fast run times!
 """
 print(
     "Estimated Run Time Upper Limit (seconds) = ",
@@ -389,7 +401,7 @@ parameter `n`). These mappings ate specified in the `config/notation.yaml` file 
 The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
 mass its name `mass` defined when making the `Model` above is used).
 """
-search_plotter = aplt.DynestyPlotter(samples=result.samples)
+search_plotter = aplt.NautilusPlotter(samples=result.samples)
 search_plotter.cornerplot()
 
 """
@@ -398,16 +410,28 @@ So, what next?
 
 __Features__
 
-The following examples in the `modeling` package illustrate the advanced features of PyAutoLens's lens modeling:
+The examples in the `autolens_workspace/*/imaging/modeling/features` package illustrate other lens modeling features. 
 
-- `autolens_workspace/*/imaging/modeling/features`: using PyAutoLens's advanced lens modeling 
-  features, such as pixelized source reconstructions, multi Gaussian lens light models and fitting double Einstein rings.
+We recommend you checkout the following four features, because they make lens modeling in general more reliable and 
+efficient (you will therefore benefit from using these features irrespective of the quality of your data and 
+scientific topic of study).
 
-- `autolens_workspace/*/imaging/modeling/searches`: using different non-linear searches to fit lens models, such as
-  the MCMC algorithm `Emcee`, as well as how to customize the priors of the lens model.
+We recommend you now checkout the following four features:
 
-- `autolens_workspace/*/imaging/modeling/customize`: customizing how the model is fitted to data via the analysis 
-  object, for example using custom masks.
+- ``linear_light_profiles.py``: The model light profiles use linear algebra to solve for their intensity, reducing model complexity.
+- ``multi_gaussian_expansion.py``: The lens (or source) light is modeled as ~25-100 Gaussian basis functions 
+- ``pixelization.py``: The source is reconstructed using an adaptive Delaunay or Voronoi mesh.
+- ``no_lens_light.py``: The foreground lens's light is not present in the data and thus omitted from the model.
+
+The folders `autolens_workspace/*/imaging/modeling/searches` and `autolens_workspace/*/imaging/modeling/customize`
+provide guides on how to customize many other aspects of the model-fit. Check them out to see if anything
+sounds useful, but for most users you can get by without using these forms of customization!
+  
+__Data Preparation__
+
+If you are looking to fit your own CCD imaing data of a strong lens, checkout  
+the `autolens_workspace/*/imaging/data_preparation/start_here.ipynb` script for an overview of how data should be 
+prepared before being modeled.
 
 __HowToLens__
 
@@ -425,11 +449,4 @@ This deeper insight is offered by the **HowToLens** Jupyter notebook lectures, f
 at `autolens_workspace/*/howtolens`. 
 
 I recommend that you check them out if you are interested in more details!
-
-__Data Preparation__
-
-You may now be looking to fit your own CD imaging data of a strong lens. 
-
-In this case, you should checkout the `autolens_workspace/*/imaging/data_preparation/start_here.ipynb` script for an
-overview of how data should be prepared before being modeled via **PyAutoLens**.
 """

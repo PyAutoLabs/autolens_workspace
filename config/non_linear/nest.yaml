@@ -9,7 +9,7 @@
 # consulting that MCMC method's own readthedocs.
 Nautilus:
   search:
-    n_live: 3000                    # Number of so-called live points. New bounds are constructed so that they encompass the live points.
+    n_live: 200                     # Number of so-called live points. New bounds are constructed so that they encompass the live points.
     n_update:                       # The maximum number of additions to the live set before a new bound is created
     enlarge_per_dim: 1.1            # Along each dimension, outer ellipsoidal bounds are enlarged by this factor.
     n_points_min:                   # The minimum number of points each ellipsoid should have. Effectively, ellipsoids with less than twice that number will not be split further.

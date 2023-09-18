@@ -1,5 +1,9 @@
 The ``modeling/features`` folder contains example scripts showing how to fit a lens model to imaging data using
-different **PyAutoLens** features:
+different **PyAutoLens** features.
+
+The scripts in this folder are all recommend, as they provide tools which make lens modeling more reliable and efficient.
+Most users will benefit from these features irrespective of the quality of their data, complexity of their lens model
+and scientific topic of study.
 
 Files (Beginner)
 ----------------
@@ -8,13 +12,8 @@ The following example scripts illustrating lens modeling where:
 
 - ``no_lens_light.py``: The foreground lens's light is not present in the data and thus omitted from the model.
 - ``linear_light_profiles.py``: The model includes light profiles which use linear algebra to solve for their intensity, reducing model complexity.
-- ``multi_gaussian_expansion.py``: The lens (or source) light is modeled as ~25-100 Gaussian basis functions to capture asymmetric morphological features.
-- ``shapelets.py``: The source (or lens) is reconstructed using shapelet basis functions.
-- ``pixelization.py``: The source is reconstructed using an adaptive Voronoi mesh.
-- ``stellar_dark_mass.py``: The lens galaxy's mass is decomposed into stellar and dark matter mass components.
-- ``clumps.py``: The model includes additional nearby galaxies as light and mass profiles using PyAutoLens's clump API.
-- ``operated_light_profiles.py``: There are light profiles which are assumed to already be convolved with the instrumental PSF (e.g. point sources), commonly used for modeling bright AGN in the centre of a galaxy.
-- ``double_einstein_ring.py``: The lens is a double Einstein ring system with two lensed sources at different redshifts.
+- ``multi_gaussian_expansion.py``: The lens (or source) light is modeled as ~25-100 Gaussian basis functions
+- ``pixelization.py``: The source is reconstructed using an adaptive Delaunay or Voronoi mesh.
 
 Notes
 -----

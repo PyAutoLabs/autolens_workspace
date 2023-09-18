@@ -215,7 +215,7 @@ fit_plotter = aplt.FitInterferometerPlotter(fit=result_list[1].max_log_likelihoo
 fit_plotter.subplot_fit()
 fit_plotter.subplot_fit_dirty_images()
 
-search_plotter = aplt.DynestyPlotter(samples=result_list.samples)
+search_plotter = aplt.NautilusPlotter(samples=result_list.samples)
 search_plotter.cornerplot()
 
 """

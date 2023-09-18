@@ -109,7 +109,7 @@ __Searches__
 Model-fits using a non-linear search (e.g. Nautilus, Emcee) produce search-specific visualization.
 
 The `autolens.workspace.*.plot.search` illustrates how to perform this visualization for every search (e.g.
-`DynestyPlotter`, `EmceePlotter`.
+`NautilusPlotter`, `EmceePlotter`.
 
 __Adding Plotter Objects Together__
 

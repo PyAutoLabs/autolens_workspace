@@ -54,8 +54,9 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 """
 The redshifts in the above model are used to determine which galaxy is the lens and which is the source.
 
-The model `prior_count` tells us the total number of free parameters (which are fitted for via a non-linear search), 
-which in this case is 19 (7 from the lens `Sersic`, 5 from the lens `Isothermal` and 7 from the source `Sersic`).
+The model `total_free_parameters` tells us the total number of free parameters (which are fitted for via a 
+non-linear search), which in this case is 19 (7 from the lens `Sersic`, 5 from the lens `Isothermal` and 7 from the 
+source `Sersic`).
 """
 print(f"Model Total Free Parameters = {model.total_free_parameters}")
 
@@ -142,10 +143,7 @@ source_1 = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(
-        lens_0=lens_0,
-        lens_1=lens_1,
-        source_0=source_0,
-        source_1=source_1
+        lens_0=lens_0, lens_1=lens_1, source_0=source_0, source_1=source_1
     )
 )
 
@@ -175,12 +173,7 @@ lens = af.Model(
     shear=al.mp.ExternalShear,
 )
 
-source = af.Model(
-    al.Galaxy,
-    redshift=1.0,
-    bulge=al.lp.Sersic,
-    disk=al.lp.Exponential
-)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic, disk=al.lp.Exponential)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 print(model.info)
@@ -194,11 +187,17 @@ We can customize the priors of the lens model component individual parameters as
 
 bulge = af.Model(al.lp.Sersic)
 bulge.intensity = af.LogUniformPrior(lower_limit=1e-4, upper_limit=1e4)
-bulge.sersic_index = af.GaussianPrior(mean=4.0, sigma=1.0, lower_limit=1.0, upper_limit=8.0)
+bulge.sersic_index = af.GaussianPrior(
+    mean=4.0, sigma=1.0, lower_limit=1.0, upper_limit=8.0
+)
 
 mass = af.Model(al.mp.Isothermal)
-mass.centre.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.1, lower_limit=-0.5, upper_limit=0.5)
-mass.centre.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.1, lower_limit=-0.5, upper_limit=0.5)
+mass.centre.centre_0 = af.GaussianPrior(
+    mean=0.0, sigma=0.1, lower_limit=-0.5, upper_limit=0.5
+)
+mass.centre.centre_1 = af.GaussianPrior(
+    mean=0.0, sigma=0.1, lower_limit=-0.5, upper_limit=0.5
+)
 mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=8.0)
 
 lens = af.Model(
@@ -213,7 +212,9 @@ bulge = af.Model(al.lp.Sersic)
 # Source
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
-source.effective_radius = af.GaussianPrior(mean=0.1, sigma=0.05, lower_limit=0.0, upper_limit=1.0)
+source.effective_radius = af.GaussianPrior(
+    mean=0.1, sigma=0.05, lower_limit=0.0, upper_limit=1.0
+)
 
 # Overall Lens Model:
 
@@ -274,7 +275,9 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 # Assert that the effective radius of the bulge is larger than that of the disk.
 # (Assertions can only be added at the end of model composition, after all components
 # have been bright together in a `Collection`.
-model.add_assertion(model.galaxies.bulge.effective_radius > model.galaxies.disk.effective_radius)
+model.add_assertion(
+    model.galaxies.bulge.effective_radius > model.galaxies.disk.effective_radius
+)
 
 # Assert that the Einstein Radius is below 3.0":
 model.add_assertion(model.galaxies.mass.einstein_radius < 3.0)
@@ -289,11 +292,7 @@ The redshift of a galaxy can be treated as a free parameter in the model-fit by 
 redshift = af.Model(al.Redshift)
 redshift.redshift = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
 
-lens = af.Model(
-    al.Galaxy,
-    redshift=redshift,
-    mass=al.mp.Isothermal
-)
+lens = af.Model(al.Galaxy, redshift=redshift, mass=al.mp.Isothermal)
 
 """
 The model-fit will automatically enable multi-plane ray tracing and alter the ordering of the planes depending on the

@@ -3,10 +3,12 @@ Modeling Features: Multi Gaussian Expansion
 ===========================================
 
 A multi Gaussian expansion (MGE) decomposes the lens light into a super positive of ~15-100 Gaussians, where 
-the `intensity` of every Gaussian is solved for via an inversion (see the `light_parametric_linear.py` feature).
+the `intensity` of every Gaussian is solved for via a linear algebra using a process called an "inversion"
+(see the `light_parametric_linear.py` feature for a full description of this).
 
-This script fits a lens light model which uses an MGE consisting of 75 Gaussians, and it is fitted to simulated data 
-where the lens galaxy's light has asymmetric and irregular features.
+This script fits a lens light model which uses an MGE consisting of 60 Gaussians. It is fitted to simulated data
+where the lens galaxy's light has asymmetric and irregular features, which are not well fitted by symmetric light
+profiles like the `Sersic`.
 
 __Advantages__
 
@@ -18,47 +20,54 @@ The MGE model can be composed in a way that has fewer non-linear parameters than
 two separate groups of Gaussians are used to represent the `bulge` and `disk` of the lens, which in total correspond
 to just N=6 non-linear parameters (a `bulge` and `disk` comprising two linear Sersics would give N=10). 
 
-The MGE in this script is composed in a way where neither the `intensity` parameters or the parameters controlling
-the size of the Gaussians (their `sigma`) values are non-linear parameters sampled by Nautilus. This removes some of
-the most significant degeneracies in parameter space, and can make the model much more reliable and efficient to fit.
+The MGE model parameterization is also composed such that neither the `intensity` parameters or any of the
+parameters controlling the size of the Gaussians (their `sigma` values) are non-linear parameters sampled by Nautilus.
+This removes the most significant degeneracies in parameter space, making the model much more reliable and efficient
+to fit.
 
 Therefore, not only does an MGE fit more complex galaxy morphologies, it does so using fewer non-linear parameters
 in a much simpler non-linear parameter space which has far less significant parameter degeneracies!
 
 __Disadvantages__
 
-To fit an MGE model to the data, the light of every Gaussian in the MGE must be evaluated and compared to the data.
-The light of ~15-75 Gaussians must therefore be evaluated, compared to just 2 Sersic profiles. This leads to slower
-computational run times (although the simpler non-linear parameter space may still produce a faster fit overall).
+To fit an MGE model to the data, the light of the ~15-75 or more Gaussian in the MGE must be evaluated and compared
+to the data. This is slower than evaluating the light of ~2-3 Sersic profiles, producing slower computational run
+times (although the simpler non-linear parameter space will speed up the fit overall).
+
+__MGE Source Galaxy__
+
+The MGE was designed to model the light of lens galaxies, because they are typically elliptical galaxies whose
+morphology is better represented as a super position of Gaussians. Their complex featgures (e.g. isophotal twists,
+an ellipticity which varies radially) are accurately captured by an MGE.
+
+The morphological features typically seen in source galaxies (e.g. disks, bars, clumps of star formation) are less
+suited to an MGE. The source-plane of many lenses also often have multiple galaxies, whereas the MGE fitted
+in this example assumes a single `centre`.
+
+However, despite these limitations, an MGE turns out to be an extremely powerful way to model the source galaxies
+of strong lenses. This is because, even if it struggles to capture the source's morphology, the simplification of
+non-linear parameter space and removal of degeneracies makes it much easier to obtain a reliable source model.
+This is driven by the removal of any non-linear parameters which change the size of the source's light profile,
+which are otherwise the most degenerate with the lens's mass model.
+
+The second example in this script therefore uses an MGE source. We strongly recommend you read that example and adopt
+MGE lens light models and source models, instead of the elliptical Sersic profiles, as soon as possible!
+
+To capture the irregular and asymmetric features of the source's morphology, or reconstruct multiple source galaxies,
+we recommend using a pixelized source reconstruction (see `autolens_workspace/imaging/modeling/features/pixelization.py`).
+Combining this with an MGE for the len's light can be a very powerful way to model strong lenses!
 
 __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's bulge is a super position of `Gaussian`` profiles.
- - The lens galaxy's disk is a super position of `Gaussian`` profiles.
+ - The lens galaxy's bulge is a super position of 60 `Gaussian`` profiles.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is a parametric `Sersic`.
 
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the modeling `start_here.ipynb` notebook for more detailed comments.
-
-__MGE Source Galaxy__
-
-The MGE is more suited to modeling the light of lens galaxies, because they are typically elliptical galaxies whose
-morphology is better represented as a super position of Gaussians. 
-
-The sort of features typically seen in source galaxies (e.g. disks, bars, clumps of star formation) are less
-suited to an MGE. The source-plane of many lenses also often have multiple galaxies, whereas the MGE fitted
-in this example assumes a single `centre`.
-
-Nevertheless, this script ends with examples using an MGE for the source (and lens) galaxies. Whilst the MGE
-struggles to accurately capture the emission of complex sources, it is still an extremely powerful way to get an 
-initial lens mass model. 
-
-This is because of the advantages listed above, in particular that it produces a lower dimensionality parameter 
-space which has less significant degeneracies because there are no `intensity` and size parameters.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -109,7 +118,7 @@ __Model__
 
 We compose a lens model where:
 
- - The galaxy's bulge is a superposition of 30 parametric linear `Gaussian` profiles [4 parameters]. 
+ - The galaxy's bulge is a superposition of 60 parametric linear `Gaussian` profiles [6 parameters]. 
  - The centres and elliptical components of the Gaussians are all linked together.
  - The `sigma` size of the Gaussians increases in log10 increments.
 
@@ -117,7 +126,10 @@ We compose a lens model where:
  
  - The source galaxy's light is a parametric linear `Sersic` [6 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=17.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=19.
+
+Note that above we combine the MGE for the lens light with a linear light profile for the source, meaning these two
+categories of models can be combined with ease.
 
 __Model Cookbook__
 
@@ -181,6 +193,10 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 """
 The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
 `start_here.ipynb` for a description of how to fix this).
+
+This shows every single Gaussian light profile in the model, which is a lot of parameters! However, the vast
+majority of these parameters are fixed to the values we set above, so the model actually has far fewer free
+parameters than it looks!
 """
 print(model.info)
 
@@ -189,12 +205,15 @@ __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
 full description).
+
+Owing to the simplicity of fitting an MGE we an use even fewer live points than other examples, reducing it to
+75 live points, speeding up converge of the non-linear search.
 """
 search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="mge",
     unique_tag=dataset_name,
-    n_live=150,
+    n_live=75,
     number_of_cores=1,
 )
 
@@ -208,13 +227,14 @@ analysis = al.AnalysisImaging(dataset=dataset)
 """
 __Run Time__
 
-The likelihood evaluation time for a multi-Gaussian expansion is significantly slower than standard light profiles.
-This is because the image of every Gaussian must be computed and evaluated, and each must be blurred with the PSF.
-In this example, the evaluation time is ~0.35s, compared to ~0.01 seconds for standard light profiles.
+The likelihood evaluation time for a multi-Gaussian expansion is significantly slower than standard / linear 
+light profiles. This is because the image of every Gaussian must be computed and evaluated, and each must be blurred 
+with the PSF. In this example, the evaluation time is ~0.5s, compared to ~0.01 seconds for standard light profiles.
 
 Huge gains in the overall run-time however are made thanks to the models significantly reduced complexity and lower
 number of free parameters. Furthermore, because there are not free parameters which scale the size of lens galaxy,
-this produces significantly faster convergence by Nautilus that any other lens light model.
+this produces significantly faster convergence by Nautilus that any other lens light model. We also use fewer live
+points, further speeding up the model-fit.
 
 Overall, it is difficult to state which approach will be faster overall. However, the MGE's ability to fit the data
 more accurately and the less complex parameter due to removing parameters that scale the lens galaxy make it the 
@@ -245,7 +265,7 @@ __Result__
 The search returns a result object, which whose `info` attribute shows the result in a readable format (if this does 
 not display clearly on your screen refer to `start_here.ipynb` for a description of how to fix this):
 
-This confirms there are many `Gaussians` in the lens light model.
+This confirms there are many `Gaussian`' in the lens light model and it lists their inferred parameters.
 """
 print(result.info)
 
@@ -253,6 +273,9 @@ print(result.info)
 We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+
+In particular, checkout the results example `linear.py` which details how to extract all information about linear
+light profiles from a fit.
 """
 print(result.max_log_likelihood_instance)
 
@@ -264,39 +287,96 @@ tracer_plotter.subplot_tracer()
 fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_plotter.subplot_fit()
 
-search_plotter = aplt.DynestyPlotter(samples=result.samples)
+search_plotter = aplt.NautilusPlotter(samples=result.samples)
 search_plotter.cornerplot()
 
 """
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**, 
-which includes a dedicated tutorial for linear objects like basis functions.
-
 __Source MGE__
 
 As discussed at the beginning of this tutorial, an MGE is an effective way to model the light of a source galaxy and 
 get an initial estimate of the lens mass model.
 
 This MGE source is used alongside the MGE lens light model, which offers a lot of flexibility in modeling the lens
-and source galaxies.
+and source galaxies. Note that the MGE source uses fewer Gaussians, as the MGE only needs to capture the main
+structure of the source galaxy's light to obtain an accurate lens model.
 
-We compose the model below, using the Gaussian model compoenents created above.
+We compose the model below, recreating the Gaussian's line-by-line in Python, so you can easily copy and paste
+and reuse the code below in your own scripts.
 """
 # Lens:
 
+total_gaussians = 30
+gaussian_per_basis = 2
+
+# The sigma values of the Gaussians will be fixed to values spanning 0.01 to the mask radius, 3.0".
+mask_radius = 3.0
+log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
+
+# By defining the centre here, it creates two free parameters that are assigned below to all Gaussians.
+
+centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+
+bulge_gaussian_list = []
+
+for j in range(gaussian_per_basis):
+    # A list of Gaussian model components whose parameters are customized belows.
+
+    gaussian_list = af.Collection(
+        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
+    )
+
+    # Iterate over every Gaussian and customize its parameters.
+
+    for i, gaussian in enumerate(gaussian_list):
+        gaussian.centre.centre_0 = centre_0  # All Gaussians have same y centre.
+        gaussian.centre.centre_1 = centre_1  # All Gaussians have same x centre.
+        gaussian.ell_comps = gaussian_list[
+            0
+        ].ell_comps  # All Gaussians have same elliptical components.
+        gaussian.sigma = (
+            10 ** log10_sigma_list[i]
+        )  # All Gaussian sigmas are fixed to values above.
+
+    bulge_gaussian_list += gaussian_list
+
+# The Basis object groups many light profiles together into a single model component.
+
 bulge = af.Model(
     al.lp_basis.Basis,
-    light_profile_list=gaussian_list,
+    light_profile_list=bulge_gaussian_list,
 )
 mass = af.Model(al.mp.Isothermal)
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
 # Source:
 
-bulge = af.Model(
+total_gaussians = 20
+gaussian_per_basis = 1
+
+log10_sigma_list = np.linspace(-2, np.log10(1.0), total_gaussians)
+
+bulge_gaussian_list = []
+
+for j in range(gaussian_per_basis):
+    gaussian_list = af.Collection(
+        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
+    )
+
+    for i, gaussian in enumerate(gaussian_list):
+        gaussian.centre.centre_0 = centre_0
+        gaussian.centre.centre_1 = centre_1
+        gaussian.ell_comps = gaussian_list[0].ell_comps
+        gaussian.sigma = 10 ** log10_sigma_list[i]
+
+    bulge_gaussian_list += gaussian_list
+
+source_bulge = af.Model(
     al.lp_basis.Basis,
-    light_profile_list=gaussian_list,
+    light_profile_list=bulge_gaussian_list,
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 
 # Overall Lens Model:
 
@@ -314,7 +394,7 @@ search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
     name="mge_including_source",
     unique_tag=dataset_name,
-    n_live=150,
+    n_live=75,
     number_of_cores=1,
 )
 
@@ -350,7 +430,38 @@ for on-the-fly visualization and results).
 result = search.fit(model=model, analysis=analysis)
 
 """
-__Regularization__
+__Wrap Up__
+
+A Multi Gaussian Expansion is a powerful tool for modeling the light of galaxies, and offers a compelling method to
+fit complex light profiles with a small number of parameters.
+
+For **PyAutoLens**'s advanced chaining feature, it is common use the MGE to initialize the lens light and source 
+models. The lens light model is then made more complex by using an MGE with more Gaussians and the source becomes a 
+pixelized reconstruction.
+
+Now you are familiar with MGE modeling, it is recommended you adopt this as your default lens modeling approach. 
+However, it may not be suitable for lower resolution data, where the simpler Sersic profiles may be more appropriate.
+
+__Regularization (Advanced / Unused)__
+
+An MGE can be regularized, whereby smoothness is enforced on the `intensity` values of the Gaussians. This was 
+implemented to avoid a "positive / negative" ringing effect in the lens light model reconstruction, whereby the 
+Gaussians went to a systematic solution which alternated between positive and negative values. 
+
+Regularization was intended to smooth over the `intensity` values of the Gaussians, such that the solution would prefer
+a positive-only solution. However, this did not work -- even with high levels of regularization, the Gaussians still
+went to negative values. The solution also became far from optimal, often leaving significant residuals in the lens
+light model reconstruction.
+
+This problem was solved by switching to a positive-only linear algebra solver, which is the default used 
+in **PyAutoLens** and was used for all fits performed above. The regularization feature is currently not used by
+any scientific analysis and it is recommended you skip over the example below and do not use it in your own modeling.
+
+However, its implementation is detailed below for completeness, and if you think you have a use for it in your own
+modeling then go ahead! Indeed, even with a positive-only solver, it may be that regularization helps prevent overfitting
+in certain situations.
+
+__Description__
 
 There is one downside to `Basis` functions, we may compose a model with too much freedom. The `Basis` (e.g. our 20
 Gaussians) may overfit noise in the data, or possible the lensed source galaxy emission -- neither of which we 
@@ -367,14 +478,16 @@ parameter to the fit, the `coefficient`, which controls the degree of smoothing 
 
 regularization = af.Model(al.reg.Constant)
 bulge = af.Model(
-    al.lp_basis.Basis, light_profile_list=gaussian_list, regularization=regularization
+    al.lp_basis.Basis,
+    light_profile_list=bulge_gaussian_list,
+    regularization=regularization,
 )
 mass = af.Model(al.mp.Isothermal)
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
 # Source:
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
@@ -420,21 +533,5 @@ for on-the-fly visualization and results).
 result = search.fit(model=model, analysis=analysis)
 
 """
-__Wrap Up__
-
-A Multi Gaussian Expansion is a powerful tool for modeling the light of galaxies, and offers a compelling method to
-fit complex light profiles with a small number of parameters.
-
-For **PyAutoLens**'s advanced chaining feature, it is common for us to use the MGE to initialize the lens light and 
-source models. The lens light model is then made more complex by using an MGE with more Gaussians, and the source
-becomes a pixelized model.
-
-Now you are familiar with MGE modeling, it is recommended you adopt this as your default lens modeling approach. 
-However, it may not be suitable for lower resolution data, where the simpler Sersic profiles may be more appropriate.
-
-To learn more about Basis functions, regularization and when you should use them, checkout the 
-following **HowToLens** tutorials:
-
- - `howtolens/chapter_2_lens_modeling/tutorial_5_linear_profiles.ipynb`.
- - `howtolens/chapter_4_pixelizations/tutorial_4_bayesian_regularization.ipynb.
+Finish.
 """

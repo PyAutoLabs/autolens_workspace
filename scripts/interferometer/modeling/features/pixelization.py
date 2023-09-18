@@ -344,7 +344,7 @@ fit_plotter = aplt.FitInterferometerPlotter(fit=result.max_log_likelihood_fit)
 fit_plotter.subplot_fit()
 fit_plotter.subplot_fit_dirty_images()
 
-search_plotter = aplt.DynestyPlotter(samples=result.samples)
+search_plotter = aplt.NautilusPlotter(samples=result.samples)
 search_plotter.cornerplot()
 
 """

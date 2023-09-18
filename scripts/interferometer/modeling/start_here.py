@@ -221,8 +221,9 @@ For this example, we conservatively estimate that the non-linear search will per
 parameter in the model. This is an upper limit, with models typically converging in far fewer iterations.
 
 If you perform the fit over multiple CPUs, you can divide the run time by the number of cores to get an estimate of
-the time it will take to fit the model. However, above ~6 cores the speed-up from parallelization is less efficient and
-does not scale linearly with the number of cores.
+the time it will take to fit the model. Parallelization with Nautilus scales well, it speeds up the model-fit by the 
+`number_of_cores` for N < 8 CPUs and roughly `0.5*number_of_cores` for N > 8 CPUs. This scaling continues 
+for N> 50 CPUs, meaning that with super computing facilities you can always achieve fast run times!
 """
 print(
     "Estimated Run Time Upper Limit (seconds) = ",
@@ -305,9 +306,51 @@ parameter `n`). These mappings ate specified in the `config/notation.yaml` file 
 The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
 mass its name `mass` defined when making the `Model` above is used).
 """
-search_plotter = aplt.DynestyPlotter(samples=result.samples)
+search_plotter = aplt.NautilusPlotter(samples=result.samples)
 search_plotter.cornerplot()
 
 """
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+This script gives a concise overview of the PyAutoLens modeling API, fitting one the simplest lens models possible.
+So, what next? 
+
+__Features__
+
+The examples in the `autolens_workspace/*/interferometer/modeling/features` package illustrate other lens modeling 
+features. 
+
+We recommend you checkout the following two features, because they make lens modeling of interferometer datasets 
+in general more reliable and  efficient (you will therefore benefit from using these features irrespective of the 
+quality of your data and scientific topic of study).
+
+We recommend you now checkout the following two features for interferometer modeling:
+
+- ``linear_light_profiles.py``: The model light profiles use linear algebra to solve for their intensity, reducing model complexity.
+- ``pixelization.py``: The source is reconstructed using an adaptive Delaunay or Voronoi mesh.
+
+The folders `autolens_workspace/*/imaging/modeling/searches` and `autolens_workspace/*/imaging/modeling/customize`
+provide guides on how to customize many other aspects of the model-fit. Check them out to see if anything
+sounds useful, but for most users you can get by without using these forms of customization!
+  
+__Data Preparation__
+
+If you are looking to fit your own interferometer data of a strong lens, checkout  
+the `autolens_workspace/*/interferometer/data_preparation/start_here.ipynb` script for an overview of how data should be 
+prepared before being modeled.
+
+__HowToLens__
+
+This `start_here.py` script, and the features examples above, do not explain many details of how lens modeling is 
+performed, for example:
+
+ - How does PyAutoLens perform ray-tracing and lensing calculations in order to fit a lens model?
+ - How is a lens model fitted to data? What quantifies the goodness of fit (e.g. how is a log likelihood computed?).
+ - How does Nautilus find the highest likelihood lens models? What exactly is a "non-linear search"?
+
+You do not need to be able to answer these questions in order to fit lens models with PyAutoLens and do science.
+However, having a deeper understanding of how it all works is both interesting and will benefit you as a scientist
+
+This deeper insight is offered by the **HowToLens** Jupyter notebook lectures, found 
+at `autolens_workspace/*/howtolens`. 
+
+I recommend that you check them out if you are interested in more details!
 """
