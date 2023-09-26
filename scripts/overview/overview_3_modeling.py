@@ -132,11 +132,7 @@ documented throughout the workspace.
 We include an input `number_of_cores`, which when above 1 means that Nautilus uses parallel processing to sample multiple 
 lens models at once on your CPU.
 """
-search = af.Nautilus(
-    path_prefix="overview",
-    name="modeling",
-    number_of_cores=4
-)
+search = af.Nautilus(path_prefix="overview", name="modeling", number_of_cores=4)
 
 """
 The non-linear search fits the lens model by guessing many lens models over and over iteratively, using the models which

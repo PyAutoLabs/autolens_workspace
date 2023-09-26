@@ -2,7 +2,7 @@ import autofit as af
 import autolens as al
 
 
-from typing import Optional, Tuple, Union
+from typing import Optional, Union
 
 
 def run(
@@ -18,7 +18,8 @@ def run(
     end_with_adapt_extension: bool = False,
 ) -> af.ResultsCollection:
     """
-    The SLaM MASS LIGHT DARK PIPELINE for fitting imaging data with a lens light component.
+    The SLaM MASS LIGHT DARK PIPELINE, which fits a mass model where the stellar mass is modeled in a way linked
+    to the stellar light alongside a dark matter halo.
 
     Parameters
     ----------
@@ -30,8 +31,12 @@ def run(
         The results of the SLaM SOURCE PARAMETRIC PIPELINE or SOURCE PIXELIZED PIPELINE which ran before this pipeline.
     light_results
         The results of the SLaM LIGHT PARAMETRIC PIPELINE which ran before this pipeline.
-    mass
-        The `MassProfile` used to fit the lens galaxy mass in this pipeline.
+    lens_bulge
+        The model used to represent the light and mass distribution of the lens galaxy's bulge (set to
+        None to omit a bulge).
+    lens_disk
+        The model used to represent the light and mass distribution of the lens galaxy's disk (set to
+        None to omit a disk).
     smbh
         The `MassProfile` used to fit the a super massive black hole in the lens galaxy.
     lens_bulge
@@ -44,19 +49,19 @@ def run(
         The `MassProfile` `Model` used to represent the dark matter distribution of the lens galaxy's (set to None to
         omit dark matter).
     end_with_adapt_extension
-        If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be
-        certain you have manually passed the new hyper images geneted in this search to the next pipelines.
+        If `True` an adapt extension is performed at the end of the pipeline. If this feature is used, you must be
+        certain you have manually passed the new hyper images generated in this search to the next pipelines.
     """
 
     """
     __Model + Search + Analysis + Model-Fit (Search 1)__
     
-    In search 1 of the MASS LIGHT DARK PIPELINE we fit a lens model where:
+    Search 1 of the MASS LIGHT DARK PIPELINE fits a lens model where:
     
      - The lens galaxy light and stellar mass is modeled using light and mass profiles [Priors on light model parameters
      initialized from LIGHT PIPELINE].
      - The lens galaxy dark mass is modeled using a dark mass distribution [No prior initialization].
-     - The source galaxy's light is parametric or an inversion depending on the previous pipeline [Model and priors 
+     - The source galaxy's light is parametric or a pixelization depending on the previous pipeline [Model and priors 
      initialized from SOURCE PIPELINE].
      
     This search aims to accurately estimate the lens mass model, using the improved mass model priors and source model 
@@ -100,7 +105,7 @@ def run(
                 redshift=light_results.last.instance.galaxies.lens.redshift,
                 bulge=lens_bulge,
                 disk=lens_disk,
-                point=lens_point,
+                #    point=lens_point,
                 dark=dark,
                 shear=source_results[0].model.galaxies.lens.shear,
                 smbh=smbh,

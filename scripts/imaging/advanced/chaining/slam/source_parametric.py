@@ -1,10 +1,10 @@
 """
-SLaM (Source, Light and Mass): Light Parametric + Mass Total + Source Parametric
-================================================================================
+SLaM (Source, Light and Mass): Source Parametric
+================================================
 
 SLaM pipelines break the analysis of 'galaxy-scale' strong lenses down into multiple pipelines which focus on modeling
 a specific aspect of the strong lens, first the Source, then the (lens) Light and finally the Mass. Each of these
-pipelines has it own inputs which which customize the model and analysis in that pipeline.
+pipelines has it own inputs which customize the model and analysis in that pipeline.
 
 The models fitted in earlier pipelines determine the model used in later pipelines. For example, if the SOURCE PIPELINE
 uses a parametric `Sersic` profile for the bulge, this will be used in the subsequent MASS TOTAL PIPELINE.
@@ -18,9 +18,9 @@ lens system, where in the final model:
 
 This modeling script uses the SLaM pipelines:
 
- `source_lp/source_lp__with_lens_light`
+ `source_lp`
  `light_lp`
- `mass_total/mass_total__with_lens_light`
+ `mass_total`
 
 Check them out for a detailed description of the analysis!
 """
@@ -43,7 +43,7 @@ from scripts.imaging.advanced.chaining.slam import slam
 """
 __Dataset__ 
 
-Load the `Imaging` data, define the `Mask2D` and plot them.
+Load, plot and mask the `Imaging` data.
 """
 dataset_name = "simple"
 dataset_path = path.join("dataset", "imaging", dataset_name)
@@ -80,8 +80,7 @@ settings_autofit = af.SettingsSearch(
 """
 __Redshifts__
 
-The redshifts of the lens and source galaxies, which are used to perform unit converions of the model and data (e.g. 
-from arc-seconds to kiloparsecs, masses to solar masses, etc.).
+The redshifts of the lens and source galaxies.
 """
 redshift_lens = 0.5
 redshift_source = 1.0
@@ -96,10 +95,10 @@ setup_adapt = al.SetupAdapt(
 )
 
 """
-__SOURCE LP PIPELINE (with lens light)__
+__SOURCE LP PIPELINE__
 
-The SOURCE LP PIPELINE (with lens light) uses three searches to initialize a robust model for the 
-source galaxy's light, which in this example:
+The SOURCE LP PIPELINE uses one search to initialize a robust model for the source galaxy's light, which in 
+this example:
  
  - Uses a parametric `Sersic` bulge for the lens galaxy's light.
  
@@ -157,11 +156,13 @@ light_results = slam.light_lp.run(
 )
 
 """
-__MASS TOTAL PIPELINE (with lens light)__
+__MASS TOTAL PIPELINE__
 
-The MASS TOTAL PIPELINE (with lens light) uses one search to fits a complex lens mass model to a high level of accuracy, 
+The MASS TOTAL PIPELINE uses one search to fits a complex lens mass model to a high level of accuracy, 
 using the lens mass model and source model of the SOURCE LP PIPELINE to initialize the model priors and the 
-lens light model of the LIGHT LP PIPELINE. In this example it:
+lens light model of the LIGHT LP PIPELINE. 
+
+In this example it:
 
  - Uses a parametric `Sersic` bulge [fixed from LIGHT LP PIPELINE].
 

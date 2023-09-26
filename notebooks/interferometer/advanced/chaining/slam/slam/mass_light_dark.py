@@ -21,7 +21,8 @@ def run(
     end_with_stochastic_extension: bool = False,
 ) -> af.ResultsCollection:
     """
-    The SLaM MASS LIGHT DARK PIPELINE for fitting imaging data with a lens light component.
+    The SLaM MASS LIGHT DARK PIPELINE, which fits a mass model where the stellar mass is modeled in a way linked
+    to the stellar light alongside a dark matter halo.
     Parameters
     ----------
     analysis
@@ -49,17 +50,17 @@ def run(
         The values an the estimate of the Einstein Mass in the LIGHT PIPELINE is multiplied by to set the lower and
         upper limits of the profile's mass-to-light ratio.
     end_with_hyper_extension
-        If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be
-        certain you have manually passed the new hyper images geneted in this search to the next pipelines.
+        If `True` an adapt extension is performed at the end of the pipeline. If this feature is used, you must be
+        certain you have manually passed the new hyper images generated in this search to the next pipelines.
     """
 
     """
     __Model + Search + Analysis + Model-Fit (Search 1)__
-    In search 1 of the MASS LIGHT DARK PIPELINE we fit a lens model where:
+    Search 1 of the MASS LIGHT DARK PIPELINE fits a lens model where:
      - The lens galaxy light and stellar mass is modeled using light and mass profiles [Priors on light model parameters
      initialized from LIGHT PIPELINE].
      - The lens galaxy dark mass is modeled using a dark mass distribution [No prior initialization].
-     - The source galaxy's light is parametric or an inversion depending on the previous pipeline [Model and priors 
+     - The source galaxy's light is parametric or a pixelization depending on the previous pipeline [Model and priors 
      initialized from SOURCE PIPELINE].
     This search aims to accurately estimate the lens mass model, using the improved mass model priors and source model 
     of the SOURCE PIPELINE and LIGHT PIPELINE.
@@ -157,7 +158,8 @@ def run__from_light_linear(
     end_with_stochastic_extension: bool = False,
 ) -> af.ResultsCollection:
     """
-    The SLaM MASS LIGHT DARK PIPELINE for fitting imaging data with a lens light component.
+    The SLaM MASS LIGHT DARK PIPELINE, which fits a mass model where the stellar mass is modeled in a way linked
+    to the stellar light alongside a dark matter halo.
 
     Parameters
     ----------
@@ -186,19 +188,19 @@ def run__from_light_linear(
         The values an the estimate of the Einstein Mass in the LIGHT PIPELINE is multiplied by to set the lower and
         upper limits of the profile's mass-to-light ratio.
     end_with_hyper_extension
-        If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be
-        certain you have manually passed the new hyper images geneted in this search to the next pipelines.
+        If `True` an adapt extension is performed at the end of the pipeline. If this feature is used, you must be
+        certain you have manually passed the new hyper images generated in this search to the next pipelines.
     """
 
     """
     __Model + Search + Analysis + Model-Fit (Search 1)__
 
-    In search 1 of the MASS LIGHT DARK PIPELINE we fit a lens model where:
+    Search 1 of the MASS LIGHT DARK PIPELINE fits a lens model where:
 
      - The lens galaxy light and stellar mass is modeled using light and mass profiles [Priors on light model parameters
      initialized from LIGHT PIPELINE].
      - The lens galaxy dark mass is modeled using a dark mass distribution [No prior initialization].
-     - The source galaxy's light is parametric or an inversion depending on the previous pipeline [Model and priors 
+     - The source galaxy's light is parametric or a pixelization depending on the previous pipeline [Model and priors 
      initialized from SOURCE PIPELINE].
 
     This search aims to accurately estimate the lens mass model, using the improved mass model priors and source model 

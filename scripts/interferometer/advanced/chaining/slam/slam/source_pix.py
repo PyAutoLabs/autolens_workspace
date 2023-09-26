@@ -20,7 +20,8 @@ def run(
     ),
 ) -> af.ResultsCollection:
     """
-    The SLaM SOURCE PIX PIPELINE for fitting imaging data with a lens light component.
+    The SLaM SOURCE PIX PIPELINE, which initializes a lens model which uses a pixelized source for the source
+    analysis.
 
     Parameters
     ----------
@@ -47,16 +48,16 @@ def run(
     """
     __Model + Search + Analysis + Model-Fit (Search 3)__
 
-    In search 3 of the SOURCE PIX PIPELINE we fit a lens model where:
+    Search 3 of the SOURCE PIX PIPELINE fits a lens model where:
 
-    - The lens galaxy light is modeled using a parametric / basis bulge + disk [parameters fixed to result of 
-    SOURCE LP PIPELINE].
+    - The lens galaxy light is modeled using a light profiles [parameters fixed to result of SOURCE LP PIPELINE].
      - The lens galaxy mass is modeled using a total mass distribution [parameters initialized from the results of the 
      SOURCE LP PIPELINE].
-     - The source galaxy's light is the input initialization pixelization and regularization scheme [parameters of 
+     - The source galaxy's light is the input initialization mesh and regularization scheme [parameters of 
      regularization free to vary].
 
-    This search aims to improve the lens mass model using the input `Inversion`.
+    This search improves the lens mass model by modeling the source using a `Pixelization` and computes the adapt
+    images that are used in search 2.
     """
 
     analysis.set_adapt_dataset(result=source_lp_results.last)
@@ -103,12 +104,11 @@ def run(
     """
     __Model + Search + Analysis + Model-Fit (Search 2)__
 
-    In search 2 of the SOURCE PIX PIPELINE we fit a lens model where:
+    Search 2 of the SOURCE PIX PIPELINE fits a lens model where:
 
-    - The lens galaxy light is modeled using a parametric / basis bulge + disk [parameters fixed to result 
-    of SOURCE LP PIPELINE].
+    - The lens galaxy light is modeled using a light profiles [parameters fixed to result of SOURCE LP PIPELINE].
      - The lens galaxy mass is modeled using a total mass distribution [parameters fixed to result of search 2].
-     - The source galaxy's light is the input pixelization and regularization.
+     - The source galaxy's light is the input mesh and regularization.
 
     This search initializes the pixelization's mesh and regularization.
     """

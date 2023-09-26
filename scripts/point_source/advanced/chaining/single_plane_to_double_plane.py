@@ -98,7 +98,7 @@ point_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
 """
 __Model (Search 1)__
 
-In search 1 we fit a lens model where:
+Search 1 fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
  - The intermediate source galaxy is a point `Point` [2 parameters].

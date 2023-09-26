@@ -54,8 +54,7 @@ path_prefix = path.join("imaging", "pipelines")
 """
 __Redshifts__
 
-The redshifts of the lens and source galaxies, which are used to perform unit converions of the model and data (e.g. 
-from arc-seconds to kiloparsecs, masses to solar masses, etc.).
+The redshifts of the lens and source galaxies.
 
 In this analysis, they are used to explicitly set the `mass_at_200` of the elliptical NFW dark matter profile, which is
 a model parameter that is fitted for.
@@ -66,7 +65,7 @@ redshift_source = 1.0
 """
 __Model + Search + Analysis + Model-Fit (Search 1)__
 
-In search 1 we fit a lens model where:
+Search 1 fits a lens model where:
 
  - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
 
@@ -216,7 +215,7 @@ The number of free parameters and therefore the dimensionality of non-linear par
 
 NOTES:
 
- - This search allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
+ - This search allows us to very efficiently set up the resolution of the mesh and regularization coefficient 
  of the regularization scheme, before using these models to refit the lens mass model.
 """
 pixelization = af.Model(

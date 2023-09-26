@@ -49,7 +49,7 @@ profiling:
   should_profile: false             # If True, the ``profile_log_likelihood_function()`` function of an analysis class is called throughout a model-fit, profiling run times.
   repeats: 1                        # The number of repeat function calls used to measure run-times when profiling.
 structures:
-  use_dataset_grids: true           # If True, dataset objects (e.g. Imaging) have a grid of (y,x) coordinates computed for them.
+  native_binned_only: false           # If True, data structures are only stored in their native and binned format. This is used to reduce memory usage in autocti.
 test:
   check_figure_of_merit_sanity: false
   bypass_figure_of_merit_sanity: false

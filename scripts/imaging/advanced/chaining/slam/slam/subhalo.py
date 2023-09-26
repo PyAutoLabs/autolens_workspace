@@ -20,8 +20,7 @@ def detection(
     number_of_steps: Union[Tuple[int], int] = 5,
 ) -> af.ResultsCollection:
     """
-    The SLaM SUBHALO PIPELINE for fitting imaging data with or without a lens light component, where it is assumed
-    that the subhalo is at the same redshift as the lens galaxy.
+    The SLaM SUBHALO PIPELINE for fitting lens mass models which include a dark matter subhalo.
 
     Parameters
     ----------
@@ -48,15 +47,17 @@ def detection(
     """
     __Model + Search + Analysis + Model-Fit (Search 1)__
 
-    In search 1 of the SUBHALO PIPELINE we fit a lens model where:
+    Search 1 of the SUBHALO PIPELINE fits a lens model where:
 
      - The lens galaxy mass is modeled using MASS PIPELINE's mass distribution [Priors initialized from MASS PIPELINE].
-     - The source galaxy's light is parametric or an inversion depending on the previous MASS PIPELINE [Model and 
+     - The source galaxy's light is parametric or a pixelization depending on the previous MASS PIPELINE [Model and 
      priors initialized from MASS PIPELINE].
 
     This search aims to accurately estimate the lens mass model, using the improved mass model priors and source model 
-    of the MASS PIPELINE. This model will be used to perform Bayesian model comparison with models that include a 
-    subhalo, to determine if a subhalo is detected.
+    of the MASS PIPELINE. 
+    
+    This model will be used to perform Bayesian model comparison with models that include a subhalo, to determine if 
+    a subhalo is detected.
     """
 
     source = al.util.chaining.source_from(
@@ -85,11 +86,11 @@ def detection(
     """
     __Model + Search + Analysis + Model-Fit (Search 2)__
 
-    In search 2 of the SUBHALO PIPELINE we perform a [number_of_steps x number_of_steps] grid search of non-linear
+    Search 2 of the SUBHALO PIPELINE we perform a [number_of_steps x number_of_steps] grid search of non-linear
     searches where:
 
      - The lens galaxy mass is modeled using MASS PIPELINE's mass distribution [Priors initialized from MASS PIPELINE].
-     - The source galaxy's light is parametric or an inversion depending on the previous MASS PIPELINE [Model and 
+     - The source galaxy's light is parametric or a pixelization depending on the previous MASS PIPELINE [Model and 
      priors initialized from MASS PIPELINE].
      - The subhalo redshift is fixed to that of the lens galaxy.
      - Each grid search varies the subhalo (y,x) coordinates and mass as free parameters.
@@ -159,11 +160,11 @@ def detection(
     """
     __Model + Search + Analysis + Model-Fit (Search 3)__
 
-    In search 3 of the SUBHALO PIPELINE we refit the lens and source models above but now including a subhalo, where 
+    Search 3 of the SUBHALO PIPELINE we refit the lens and source models above but now including a subhalo, where 
     the subhalo model is initialized from the highest evidence model of the subhalo grid search.
 
      - The lens galaxy mass is modeled using MASS PIPELINE's mass distribution [Priors initialized from MASS PIPELINE].
-     - The source galaxy's light is parametric or an inversion depending on the previous MASS PIPELINE [Model and 
+     - The source galaxy's light is parametric or a pixelization depending on the previous MASS PIPELINE [Model and 
      priors initialized from MASS PIPELINE].
      - The subhalo redshift is fixed to that of the lens galaxy.
      - Each grid search varies the subhalo (y,x) coordinates and mass as free parameters.
@@ -278,8 +279,8 @@ def sensitivity_mapping_imaging(
     number_of_steps: Union[Tuple[int], int] = 5,
 ):
     """
-    The SLaM SUBHALO PIPELINE for performing sensitivity mapping to imaging data with or without a lens light
-    component, which determines what mass subhalos are detected where in the dataset.
+    The SLaM SUBHALO PIPELINE for performing sensitivity mapping, which determines what mass dark matter subhalos
+    can be detected where in the dataset.
 
     Parameters
     ----------
@@ -457,8 +458,8 @@ def sensitivity_mapping_interferometer(
     number_of_steps: Union[Tuple[int], int] = 5,
 ):
     """
-    The SLaM SUBHALO PIPELINE for performing sensitivity mapping to imaging data with or without a lens light
-    component, which determines what mass subhalos are detected where in the dataset.
+    The SLaM SUBHALO PIPELINE for performing sensitivity mapping, which determines what mass dark matter subhalos
+    can be detected where in the dataset.
 
     Parameters
     ----------

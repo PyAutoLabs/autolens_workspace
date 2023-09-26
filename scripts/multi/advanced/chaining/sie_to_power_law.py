@@ -110,7 +110,7 @@
 # """
 # __Model (Search 1)__
 #
-# In search 1 we fit a lens model where:
+# Search 1 fits a lens model where:
 #
 #  - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
 #  - The source galaxy's light is a parametric `Sersic`, where the `intensity` parameter of the source galaxy

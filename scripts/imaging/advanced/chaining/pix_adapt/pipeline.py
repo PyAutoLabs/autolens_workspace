@@ -40,7 +40,7 @@ import autolens.plot as aplt
 """
 __Dataset__ 
 
-Load the `Imaging` data, define the `Mask2D` and plot them.
+Load, plot and mask the `Imaging` data.
 """
 dataset_name = "simple__source_x2"
 dataset_path = path.join("dataset", "imaging", dataset_name)
@@ -71,8 +71,7 @@ path_prefix = path.join("imaging", "chaining", "pix_adapt_pipeline")
 """
 __Redshifts__
 
-The redshifts of the lens and source galaxies, which are used to perform unit converions of the model and data (e.g. 
-from arc-seconds to kiloparsecs, masses to solar masses, etc.).
+The redshifts of the lens and source galaxies.
 """
 redshift_lens = 0.5
 redshift_source = 1.0
@@ -90,7 +89,7 @@ The following options are available:
  
  - `search_pix_dict`: The dictionary of search options for the adapt model-fit searches.
  
-The pixelization and regularization schemes which adapt to the source's properties are not passed into
+The mesh and regularization schemes which adapt to the source's properties are not passed into
 `SetupAdapt`, but are used in this example script below.
 
 In this example, we only fix the number of source pixels to 1500, which balances computational runtimes with the
@@ -102,7 +101,7 @@ setup_adapt = al.SetupAdapt(mesh_pixels_fixed=1500)
 """
 __Model + Search + Analysis + Model-Fit (Search 1)__
 
-In search 1 we fit a lens model where:
+Search 1 fits a lens model where:
 
  - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
 
@@ -252,7 +251,7 @@ The number of free parameters and therefore the dimensionality of non-linear par
 
 NOTES:
 
- - This search allows us to very efficiently set up the resolution of the pixelization and regularization coefficient 
+ - This search allows us to very efficiently set up the resolution of the mesh and regularization coefficient 
  of the regularization scheme, before using these models to refit the lens mass model.
 """
 pixelization = af.Model(

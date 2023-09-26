@@ -17,7 +17,8 @@ def run(
     ),
 ) -> af.ResultsCollection:
     """
-    The SLaM SOURCE PIX PIPELINE for fitting imaging data with a lens light component.
+    The SLaM SOURCE PIX PIPELINE, which initializes a lens model which uses a pixelized source for the source
+    analysis.
 
     Parameters
     ----------
@@ -36,14 +37,13 @@ def run(
     """
     __Model + Search + Analysis + Model-Fit (Search 3)__
 
-    In search 3 of the SOURCE PIX PIPELINE we fit a lens model where:
+    Search 3 of the SOURCE PIX PIPELINE fits a lens model where:
 
-    - The lens galaxy light is modeled using a parametric / basis bulge + disk [parameters fixed to result 
-    of SOURCE LP PIPELINE].
+    - The lens galaxy light is modeled using a light profiles [parameters fixed to result of SOURCE LP PIPELINE].
      - The lens galaxy mass is modeled using a total mass distribution [parameters fixed to result of search 2].
-     - The source galaxy's light is the input pixelization and regularization.
+     - The source galaxy's light is the input mesh and regularization.
 
-    This search aims to estimate values for the pixelization and regularization scheme.
+    This search aims to estimate values for the mesh and regularization scheme.
     """
 
     analysis.set_adapt_dataset(result=source_lp_results.last)
@@ -86,16 +86,16 @@ def run(
     """
     __Model + Search + Analysis + Model-Fit (Search 4)__
 
-    In search 4 of the SOURCE PIX PIPELINE we fit a lens model where:
+    Search 4 of the SOURCE PIX PIPELINE fits a lens model where:
 
-    - The lens galaxy light is modeled using a parametric / basis bulge + disk [parameters fixed to result of 
-    SOURCE LP PIPELINE].
+    - The lens galaxy light is modeled using a light profiles [parameters fixed to result of SOURCE LP PIPELINE].
      - The lens galaxy mass is modeled using a total mass distribution [parameters initialized from the results of the 
      search 2].
-     - The source galaxy's light is the input pixelization and regularization scheme [parameters fixed to the result 
+     - The source galaxy's light is the input mesh and regularization scheme [parameters fixed to the result 
      of search 3].
 
-    This search aims to improve the lens mass model using the input `Inversion`.
+    This search improves the lens mass model by modeling the source using a `Pixelization` and computes the adapt
+    images that are used in search 2.
     """
     mass = slam_util.mass_from(
         mass=source_lp_results.last.model.galaxies.lens.mass,

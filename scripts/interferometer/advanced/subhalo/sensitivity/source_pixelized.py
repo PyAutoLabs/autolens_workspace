@@ -4,7 +4,7 @@ SLaM (Source, Light and Mass): Mass Total + Subhalo NFW + Source Parametric Sens
 
 SLaM pipelines break the analysis of 'galaxy-scale' strong lenses down into multiple pipelines which focus on modeling
 a specific aspect of the strong lens, first the Source, then the (lens) Light and finally the Mass. Each of these
-pipelines has it own inputs which which customize the model and analysis in that pipeline.
+pipelines has it own inputs which customize the model and analysis in that pipeline.
 
 The models fitted in earlier pipelines determine the model used in later pipelines. For example, if the SOURCE PIPELINE
 uses a parametric `Sersic` profile for the bulge, this will be used in the subsequent MASS TOTAL PIPELINE.
@@ -22,7 +22,7 @@ subhalos of a given mass could have been detected if present.
 This modeling script uses the SLaM pipelines:
 
  `source_lp`
- `source__pixelization/source_pixelization__no_lens_light`
+ `source_pix`
  `mass_total`
  `subhalo/sensitivity_mapping`
 
@@ -158,10 +158,10 @@ setup_adapt = al.SetupAdapt(
 )
 
 """
-__SOURCE LP PIPELINE (no lens light)__
+__SOURCE LP PIPELINE__
 
-The SOURCE LP PIPELINE (no lens light) uses one search to initialize a robust model for the source galaxy's 
-light, which in this example:
+The SOURCE LP PIPELINE uses one search to initialize a robust model for the source galaxy's light, which in
+this example:
 
  - Uses a parametric `Sersic` bulge for the source's light (omitting a disk / envelope).
  - Uses an `Isothermal` model for the lens's total mass distribution with an `ExternalShear`.
@@ -187,9 +187,9 @@ source_lp_results = slam.source_lp.run(
 )
 
 """
-__SOURCE PIX PIPELINE (no lens light)__
+__SOURCE PIX PIPELINE__
 
-The SOURCE PIX PIPELINE (no lens light) uses four searches to initialize a robust model for the `Inversion` that
+The SOURCE PIX PIPELINE uses two searches to initialize a robust model for the `Pixelization` that
 reconstructs the source galaxy's light. It begins by fitting a `DelaunayMagnification` mesh with `Constant` 
 regularization, to set up the model and hyper images, and then:
 
@@ -221,9 +221,9 @@ source_pix_results = slam.source_pix.run(
 )
 
 """
-__MASS TOTAL PIPELINE (no lens light)__
+__MASS TOTAL PIPELINE__
 
-The MASS TOTAL PIPELINE (no lens light) uses one search to fits a complex lens mass model to a high level of accuracy, 
+The MASS TOTAL PIPELINE uses one search to fits a complex lens mass model to a high level of accuracy, 
 using the lens mass model and source model of the SOURCE PIPELINE to initialize the model priors. In this example it:
 
  - Uses an `PowerLaw` model for the lens's total mass distribution [The centre if unfixed from (0.0, 0.0)].

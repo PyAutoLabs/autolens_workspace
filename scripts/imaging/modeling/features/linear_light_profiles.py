@@ -237,46 +237,23 @@ The intensities of linear light profiles are not a part of the model parameteriz
 in the `model.results` file.
 
 To extract the `intensity` values of a specific component in the model, we use the `max_log_likelihood_tracer`,
-which has already had the inversion performed and therefore the galaxy light profiles have their solved for
+which has already performed the inversion and therefore the galaxy light profiles have their solved for
 `intensity`'s associated with them.
+"""
+tracer = result.max_log_likelihood_tracer
+
+print(tracer.galaxies[0].bulge.intensity)
+print(tracer.galaxies[1].bulge.intensity)
+
+"""
+The `Tracer` contained in the `max_log_likelihood_fit` also has the solved for `intensity` values:
 """
 fit = result.max_log_likelihood_fit
 
 tracer = fit.tracer
 
-lens_bulge = print(tracer.galaxies[0].bulge.intensity)
-source_bulge = print(tracer.galaxies[1].bulge.intensity)
-
-
-"""
-To extract the `intensity` values of a specific component in the model, we use that component as defined in the
-`max_log_likelihood_tracer`.
-"""
-tracer = fit.tracer
-
-lens_bulge = tracer.galaxies[0].bulge
-source_bulge = tracer.galaxies[1].bulge
-
-print(
-    f"\n Intensity of lens bulge (lp_linear.Sersic) = {fit.linear_light_profile_intensity_dict[lens_bulge]}"
-)
-print(
-    f"\n Intensity of source bulge (lp_linear.Exponential) = {fit.linear_light_profile_intensity_dict[source_bulge]}"
-)
-
-"""
-A `Tracer` where all linear light profile objects are replaced with ordinary light profiles using the solved 
-for `intensity` values is also accessible.
-
-For example, the linear light profile `Sersic` of the `bulge` component above has a solved for `intensity` of ~0.75. 
-
-The `Tracer` created below instead has an ordinary light profile with an `intensity` of ~0.75.
-"""
-tracer = fit.model_obj_linear_light_profiles_to_light_profiles
-
-print(
-    f"Intensity via Tracer With Ordinary Light Profiles = {tracer.galaxies[0].bulge.intensity}"
-)
+print(tracer.galaxies[0].bulge.intensity)
+print(tracer.galaxies[1].bulge.intensity)
 
 """
 __Visualization__
@@ -284,10 +261,11 @@ __Visualization__
 Linear light profiles and objects containing them (e.g. galaxies, a tracer) cannot be plotted because they do not 
 have an `intensity` value.
 
-Therefore, the object created above which replaces all linear light profiles with ordinary light profiles must be
+Therefore, the objects created above which replaces all linear light profiles with ordinary light profiles must be
 used for visualization:
 """
-tracer = fit.model_obj_linear_light_profiles_to_light_profiles
+tracer = result.max_log_likelihood_tracer
+
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=dataset.grid)
 tracer_plotter.figures_2d(image=True)
 

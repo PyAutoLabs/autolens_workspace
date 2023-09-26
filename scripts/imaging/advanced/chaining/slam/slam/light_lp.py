@@ -16,7 +16,8 @@ def run(
     end_with_adapt_extension: bool = False,
 ) -> af.ResultsCollection:
     """
-    The SlaM LIGHT LP PIPELINE for fitting imaging data with a lens light component.
+    The SlaM LIGHT LP PIPELINE, which fits a complex model for a lens galaxy's light with the mass and source models
+    fixed.
 
     Parameters
     ----------
@@ -39,16 +40,16 @@ def run(
         The model used to represent the light distribution of the lens galaxy's point-source(s)
         emission (e.g. a nuclear star burst region) or compact central structures (e.g. an unresolved bulge).
     end_with_adapt_extension
-        If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be
-        certain you have manually passed the new hyper images geneted in this search to the next pipelines.
+        If `True` an adapt extension is performed at the end of the pipeline. If this feature is used, you must be
+        certain you have manually passed the new hyper images generated in this search to the next pipelines.
     """
 
     """
     __Model + Search + Analysis + Model-Fit (Search 1)__
 
-    In search 1 of the LIGHT LP PIPELINE we fit a lens model where:
+    Search 1 of the LIGHT LP PIPELINE fits a lens model where:
 
-     - The lens galaxy light is modeled using a parametric / basis bulge + disk [no prior initialization].
+     - The lens galaxy light is modeled using a light profiles [no prior initialization].
      - The lens galaxy mass is modeled using SOURCE PIPELINE's mass distribution [Parameters fixed from SOURCE PIPELINE].
      - The source galaxy's light is modeled using SOURCE PIPELINE's model [Parameters fixed from SOURCE PIPELINE].
 

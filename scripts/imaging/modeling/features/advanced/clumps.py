@@ -171,7 +171,7 @@ Currently, the clump API require that the centres of the light and mass profiles
 
 A future version of **PyAutoLens** will add more flexibility to the `CLumpModel` object.
 
-Therefore, in this example we fit a lens model where:
+Therefore, in this example fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
 

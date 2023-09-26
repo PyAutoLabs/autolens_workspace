@@ -20,7 +20,8 @@ def run(
     clump_model: Union[al.ClumpModel, al.ClumpModelDisabled] = al.ClumpModelDisabled(),
 ) -> af.ResultsCollection:
     """
-    The SlaM SOURCE LP PIPELINE for fitting imaging data with a lens light component.
+    The SlaM SOURCE LP PIPELINE, which provides an initial model for the lens's light, mass and source using a
+    parametric source model (e.g. Sersics, an MGE).
 
     Parameters
     ----------
@@ -61,11 +62,11 @@ def run(
     """
     __Model + Search + Analysis + Model-Fit (Search 1)__
 
-    In search 1 of the SOURCE LP PIPELINE we fit a lens model where:
+    Search 1 of the SOURCE LP PIPELINE fits a lens model where:
 
-     - The lens galaxy light is modeled using a parametric / basis bulge + disk [no prior initialization].
+     - The lens galaxy light is modeled using a light profiles [no prior initialization].
      - The lens galaxy mass is modeled using a total mass distribution [no prior initialization].
-     - The source galaxy's light is a parametric / basis bulge + disk [no prior initialization].
+     - The source galaxy's light is a light profiles [no prior initialization].
 
     This search aims to accurately estimate an initial lens light model, mass model and source model.
     """
@@ -96,8 +97,7 @@ def run(
     search_1 = af.Nautilus(
         name="source_lp[1]_light[lp]_mass[total]_source[lp]",
         **settings_autofit.search_dict,
-        n_live=200,
-        n_live=50
+        n_live=200
     )
 
     result_1 = search_1.fit(

@@ -6,7 +6,7 @@ A pixelization reconstructs the source's light using a pixel-grid, which is regu
 the solution to have a degree of smoothness.
 
 This script fits a source galaxy model which uses a pixelization to reconstruct the source's light. A Delaunay
-mesh and constant regularization scheme are used, which are the simplest forms of pixelization and regularization
+mesh and constant regularization scheme are used, which are the simplest forms of mesh and regularization
 with provide computationally fast and accurate solutions in **PyAutoLens**.
 
 For simplicity, the lens galaxy's light is omitted from the model and is not present in the simulated data. It is
@@ -172,7 +172,7 @@ dataset_plotter.subplot_dirty_images()
 __Model__
 
 We compose our lens model using `Model` objects, which represent the galaxies we fit to our data.  In this 
-example we fit a lens model where:
+example fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  

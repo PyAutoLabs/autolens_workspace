@@ -80,7 +80,7 @@ The following options are available:
  
  - `search_pix_dict`: The dictionary of search options for the adapt model-fit searches.
  
-The pixelization and regularization schemes which adapt to the source's properties are not passed into
+The mesh and regularization schemes which adapt to the source's properties are not passed into
 `SetupAdapt`, but are used in this example script below.
 
 In this example, we only fix the number of source pixels to 1500, which balances computational runtimes with the
@@ -137,7 +137,7 @@ result_1 = search_1.fit(model=model_1, analysis=analysis_1)
 """
 __Model (Search 2)__
 
-In search 2, our source model now uses the `DelaunayBrightnessImage` pixelization and `AdaptiveBrightness` regularization
+Search 2, our source model now uses the `DelaunayBrightnessImage` pixelization and `AdaptiveBrightness` regularization
 scheme that adapt to the source's unlensed morphology. These use the model-images of search 1, which is passed to the
 `Analysis` class below. 
 

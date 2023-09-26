@@ -19,7 +19,7 @@ def run(
     end_with_stochastic_extension: bool = False,
 ) -> af.ResultsCollection:
     """
-    The SLaM MASS TOTAL PIPELINE for fitting imaging data with a lens light component.
+    The SLaM MASS TOTAL PIPELINE, which fits a lens model with a total mass distribution (e.g. a power-law).
 
     Parameters
     ----------
@@ -39,17 +39,17 @@ def run(
        If input, a fixed (y,x) centre of the mass profile is used which is not treated as a free parameter by the
        non-linear search.
     end_with_hyper_extension
-        If `True` a hyper extension is performed at the end of the pipeline. If this feature is used, you must be
-        certain you have manually passed the new hyper images geneted in this search to the next pipelines.
+        If `True` an adapt extension is performed at the end of the pipeline. If this feature is used, you must be
+        certain you have manually passed the new hyper images generated in this search to the next pipelines.
     """
 
     """
     __Model + Search + Analysis + Model-Fit (Search 1)__
 
-    In search 1 of the MASS TOTAL PIPELINE we fit a lens model where:
+    Search 1 of the MASS TOTAL PIPELINE fits a lens model where:
 
      - The lens galaxy mass is modeled using a total mass distribution [Priors initialized from SOURCE PIPELINE].
-     - The source galaxy's light is parametric or an inversion depending on the previous pipeline [Model and priors 
+     - The source galaxy's light is parametric or a pixelization depending on the previous pipeline [Model and priors 
      initialized from SOURCE PIPELINE].
 
     This search aims to accurately estimate the lens mass model, using the improved mass model priors and source model 

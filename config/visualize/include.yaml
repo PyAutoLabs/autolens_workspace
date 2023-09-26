@@ -18,8 +18,8 @@ include_2d:
   tangential_caustics: true
   radial_critical_curves: true
   radial_caustics: true
-  light_profile_centres: true
-  mass_profile_centres: true
+  light_profile_centres: false
+  mass_profile_centres: false
   multiple_images: true
   mapper_image_plane_mesh_grid: true       # For an Inversion, include the pixel centres computed in the image-plane / data frame?
   mapper_source_plane_data_grid: false    # For an Inversion, include the centres of the image-plane grid mapped to the source-plane / frame in source-plane figures?

@@ -1,6 +1,6 @@
 """
-Pipelines: Clumps
-=================
+Chaining: Clumps
+================
 
 Certain lenses may have galaxies inside or nearby their lensed source emission, which we may wish to include in the
 len model.
@@ -78,8 +78,7 @@ path_prefix = path.join("imaging", "pipelines")
 """
 __Redshifts__
 
-The redshifts of the lens and source galaxies, which are used to perform unit converions of the model and data (e.g. 
-from arc-seconds to kiloparsecs, masses to solar masses, etc.).
+The redshifts of the lens and source galaxies.
 """
 redshift_lens = 0.5
 redshift_source = 1.0
@@ -108,7 +107,7 @@ clump_model = al.ClumpModel(
 """
 __Model + Search + Analysis + Model-Fit (Search 1)__
 
-In search 1 we fit a lens model where:
+Search 1 fits a lens model where:
 
  - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
 
@@ -146,7 +145,7 @@ result_1 = search_1.fit(model=model_1, analysis=analysis_1)
 """
 __Model + Search + Analysis + Model-Fit (Search 2)__
 
-In search 2 we fit a lens model where:
+Search 2 fits a lens model where:
 
  - The lens galaxy's light is an `Sersic` bulge [Parameters fixed to results of search 1].
 
@@ -186,7 +185,7 @@ result_2 = search_2.fit(model=model_2, analysis=analysis_2)
 """
 __Model + Search + Analysis + Model-Fit (Search 3)__
 
-In search 2 we fit a lens model where:
+Search 2 fits a lens model where:
 
  - The lens galaxy's light is an `Sersic` bulge [7 Parameters: we do not use the results of search 1 to 
  initialize priors].

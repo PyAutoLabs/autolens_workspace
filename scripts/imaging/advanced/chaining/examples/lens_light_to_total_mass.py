@@ -87,7 +87,7 @@ path_prefix = path.join("imaging", "chaining", "lens_light_to_total_mass")
 """
 __Model (Search 1)__
 
-In search 1 we fit a lens model where:
+Search 1 fits a lens model where:
 
  - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
  - The lens galaxy's mass and source galaxy are omitted.

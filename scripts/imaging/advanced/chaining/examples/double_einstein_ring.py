@@ -99,7 +99,7 @@ dataset_plotter.subplot_dataset()
 """
 __Model (Search 1)__
 
-In search 1 we fit a lens model where:
+Search 1 fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
  - The first source galaxy's light is a parametric `Sersic` [7 parameters].
@@ -338,7 +338,7 @@ dataset_plotter.subplot_dataset()
 """
 __Model (Search 1)__
 
-In search 1 we fit a lens model where:
+Search 1 fits a lens model where:
 
  - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
  - The lens galaxy's mass and both source galaxies are omitted.

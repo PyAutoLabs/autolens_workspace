@@ -97,7 +97,7 @@ result_1 = search_1.fit(model=model_1, analysis=analysis_1)
 """
 __Model + Search + Analysis + Model-Fit (Search 2)__
 
-In search 2E we perform a [number_of_steps x number_of_steps] grid search of non-linear searches where:
+Search 2E we perform a [number_of_steps x number_of_steps] grid search of non-linear searches where:
 
  - The lens galaxy mass is modeled using result 1's mass distribution [Priors initialized from result_1].
  - The source galaxy's light is parametric using result 1 [Model and priors initialized from result_1].
@@ -160,7 +160,7 @@ grid_search_result = subhalo_grid_search.fit(
 """
 __Model + Search + Analysis + Model-Fit (Search 3)__
 
-In search 3 we refit the lens and source models above but now including a subhalo, where the subhalo model is 
+Search 3 we refit the lens and source models above but now including a subhalo, where the subhalo model is 
 initialized from the highest evidence model of the subhalo grid search.
 
  - The lens galaxy mass is modeled using result_2's mass distribution [Priors initialized from result_2].

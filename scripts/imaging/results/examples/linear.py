@@ -141,7 +141,49 @@ inversion_plotter = aplt.InversionPlotter(inversion=inversion)
 # inversion_plotter.figures_2d(reconstructed_image=True)
 
 """
-__Linear Objects__
+__Intensities__
+
+The intensities of linear light profiles are not a part of the model parameterization and therefore are not displayed
+in the `model.results` file.
+
+To extract the `intensity` values of a specific component in the model, we use the `max_log_likelihood_tracer`,
+which has already performed the inversion and therefore the galaxy light profiles have their solved for
+`intensity`'s associated with them.
+"""
+tracer = result.max_log_likelihood_tracer
+
+lens_bulge = print(tracer.galaxies[0].bulge.intensity)
+source_bulge = print(tracer.galaxies[1].bulge.intensity)
+
+"""
+The `Tracer` contained in the `max_log_likelihood_fit` also has the solved for `intensity` values:
+"""
+fit = result.max_log_likelihood_fit
+
+tracer = fit.tracer
+
+lens_bulge = print(tracer.galaxies[0].bulge.intensity)
+source_bulge = print(tracer.galaxies[1].bulge.intensity)
+
+"""
+__Visualization__
+
+Linear light profiles and objects containing them (e.g. galaxies, a tracer) cannot be plotted because they do not 
+have an `intensity` value.
+
+Therefore, the object created above which replaces all linear light profiles with ordinary light profiles must be
+used for visualization:
+"""
+tracer = fit.model_obj_linear_light_profiles_to_light_profiles
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=dataset.grid)
+tracer_plotter.figures_2d(image=True)
+
+galaxy_plotter = aplt.GalaxyPlotter(galaxy=tracer.galaxies[0], grid=dataset.grid)
+galaxy_plotter.figures_2d(image=True)
+
+
+"""
+__Linear Objects (Internal Source Code)__
 
 An `Inversion` contains all of the linear objects used to reconstruct the data in its `linear_obj_list`. 
 
@@ -183,30 +225,16 @@ print(
 )
 
 """
-__Intensities__
+__Intensity Dict (Internal Source Code)__
 
-The intensities of linear light profiles are not a part of the model parameterization and therefore cannot be
-accessed in the resulting galaxies, as seen in previous tutorials, for example:
+The results above already allow you to compute the solved for intensity values.
 
-tracer = result.max_log_likelihood_tracer
-intensity = tracer.galaxies[0].bulge.intensity
+These are computed using a fit's `linear_light_profile_intensity_dict`, which maps each linear light profile 
+in the model parameterization above to its `intensity`.
 
-The intensities are also only computed once a fit is performed, as they must first be solved for via linear algebra. 
-They are therefore accessible via the `Fit` and `Inversion` objects, for example as a dictionary mapping every
-linear light profile (defined above) to the intensity values:
+The code below shows how to use this dictionary, as an alternative to using the max_log_likelihood quantities above.
 """
 fit = result.max_log_likelihood_fit
-
-print(fit.linear_light_profile_intensity_dict)
-
-"""
-To extract the `intensity` values of a specific component in the model, we use that component as defined in the
-`max_log_likelihood_tracer`.
-"""
-tracer = fit.tracer
-
-lens_bulge = tracer.galaxies[0].bulge
-source_bulge = tracer.galaxies[1].bulge
 
 print(
     f"\n Intensity of source bulge (lp_linear.Sersic) = {fit.linear_light_profile_intensity_dict[source_bulge]}"
@@ -217,7 +245,7 @@ print(
 
 """
 A `Tracer` where all linear light profile objects are replaced with ordinary light profiles using the solved 
-for `intensity` values is also accessible.
+for `intensity` values is also accessible from a fit.
 
 For example, the linear light profile `Sersic` of the `bulge` component above has a solved for `intensity` of ~0.75. 
 
@@ -227,22 +255,6 @@ tracer = fit.model_obj_linear_light_profiles_to_light_profiles
 
 print(tracer.galaxies[0].bulge.light_profile_list[0].intensity)
 print(tracer.galaxies[1].bulge.intensity)
-
-"""
-__Visualization__
-
-Linear light profiles and objects containing them (e.g. galaxies, a tracer) cannot be plotted because they do not 
-have an `intensity` value.
-
-Therefore, the object created above which replaces all linear light profiles with ordinary light profiles must be
-used for visualization:
-"""
-tracer = fit.model_obj_linear_light_profiles_to_light_profiles
-tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=dataset.grid)
-tracer_plotter.figures_2d(image=True)
-
-galaxy_plotter = aplt.GalaxyPlotter(galaxy=tracer.galaxies[0], grid=dataset.grid)
-galaxy_plotter.figures_2d(image=True)
 
 """
 Finish.
