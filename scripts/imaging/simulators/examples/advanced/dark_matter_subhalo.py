@@ -166,7 +166,7 @@ are safely stored and available to check how the dataset was simulated in the fu
 
 This can be loaded via the method `tracer = al.from_json()`.
 """
-# al.output_to_json(
+al.output_to_json(
     obj=tracer,
     file_path=path.join(dataset_path, "tracer.json"),
 )
