@@ -257,8 +257,41 @@ This functionality is not currently implemented in **PyAutoLens**, but would be 
 yourself (e.g. using the `astropy` package). If you want to contribute to **PyAutoLens**, this would be a great
 first issue to tackle, so please get in touch on SLACK!
 
-__Mass Quantities__
+__Convergence__
 
 The `colorbar_convert_factor` and `colorbar_label` inputs above can also be used to convert the units of mass
-profiles images, for example the convergence.
+profiles images. 
+
+For example, we can convert the convergence from its dimensionless lensing units to a physical surface density
+in units of solar masses per kpc^2.
 """
+critical_surface_density = cosmology.critical_surface_density_between_redshifts_from(
+    redshift_0=tracer.planes[0].redshift, redshift_1=tracer.planes[1].redshift
+)
+
+units = aplt.Units(
+    colorbar_convert_factor=critical_surface_density, colorbar_label=" $MSun kpc^-2$"
+)
+convergence = tracer.convergence_2d_from(grid=grid)
+
+"""
+With the convergence in units of MSun / kpc^2, we can easily compute the total mass associated with it in a specifc
+area.
+
+For example, in a single pixel of convergence in these units, we can compute the mass by simply multiplying it by the
+area of the pixel in kpc^2.
+"""
+pixel_area_kpc = (
+    grid.pixel_scales[0] * grid.pixel_scales[1] * image_plane_kpc_per_arcsec**2
+)
+
+print(
+    f"Total mass in central pixel: {convergence.native[50, 50] * critical_surface_density * pixel_area_kpc} MSun"
+)
+
+"""
+The total mass of the convergence map is the sum of all these masses.
+"""
+print(
+    f"Total mass in convergence map: {np.sum(convergence * critical_surface_density * pixel_area_kpc)} MSun"
+)

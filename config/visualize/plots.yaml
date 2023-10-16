@@ -19,12 +19,14 @@ fit:                                       # Settings for plots of all fits (e.g
   all_at_end_pdf: false                    # Plot all individual plots listed below as publication-quality .pdf (even if False)?
   subplot_of_planes: false                 # Plot subplot of the model-image, subtracted image and other quantities of each plane?
   subplot_plane_images: false              # Plot subplot of the image of each plane in the model?
-  data: false
-  noise_map: false
-  signal_to_noise_map: false
-  model_data: false
-  residual_map: false
-  normalized_residual_map: false
+  data: false                              # Plot individual plots of the data?
+  noise_map: false                         # Plot individual plots of the noise-map?
+  signal_to_noise_map: false               # Plot individual plots of the signal-to-noise-map?
+  model_data: false                        # Plot individual plots of the model-data?
+  residual_map: false                      # Plot individual plots of the residual-map?
+  normalized_residual_map: false           # Plot individual plots of the normalized-residual-map?
+  chi_squared_map: false                   # Plot individual plots of the chi-squared-map?
+  residual_flux_fraction: false            # Plot individual plots of the residual_flux_fraction?
   model_images_of_planes: false            # Plot individual plots of each plane's model image?
   subtracted_images_of_planes: false       # Plot individual plots of each plane's subtracted image?
   plane_images_of_planes: false            # Plot individual plots of each plane's image (e.g. in the source plane)?

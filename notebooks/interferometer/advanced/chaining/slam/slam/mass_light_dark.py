@@ -118,7 +118,7 @@ def run(
     result_1 = search.fit(model=model, analysis=analysis, **settings_autofit.fit_dict)
 
     """
-    __Hyper Extension__
+    __Adapt Extension__
     The above search may be extended with an adapt search, if the SetupAdapt has one or more of the following inputs:
      - The source is modeled using a pixelization with a regularization scheme.
      - One or more `HyperGalaxy`'s are included.
@@ -265,7 +265,7 @@ def run__from_light_linear(
     result_1 = search.fit(model=model, analysis=analysis, **settings_autofit.fit_dict)
 
     """
-    __Hyper Extension__
+    __Adapt Extension__
 
     The above search may be extended with an adapt search, if the SetupAdapt has one or more of the following inputs:
 

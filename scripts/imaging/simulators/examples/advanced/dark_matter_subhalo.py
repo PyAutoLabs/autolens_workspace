@@ -166,7 +166,102 @@ are safely stored and available to check how the dataset was simulated in the fu
 
 This can be loaded via the method `Tracer.from_json`.
 """
-tracer.output_to_json(file_path=path.join(dataset_path, "tracer.json"))
+# tracer.output_to_json(file_path=path.join(dataset_path, "tracer.json"))
+
+"""
+__Subhalo Difference Image__
+
+An informative way to visualize the effect of a subhalo on a strong lens is to subtract the image-plane image of the 
+tracer with and without the subhalo included. 
+
+This effectively creates a subhalo residual-map, showing the regions of the image-plane where the subhalo's
+effects are located (e.g. near the location of the subhalo).
+
+If this image creates very small residuals (e.g. below the noise level), it means that the subhalo is not detectable 
+in the image. Inspecting this image will therefore save you a lot of time, as you will avoid searching for
+subhalos that do not produce strong enough effects to be visible in the image!
+
+On the other hand, if the resduals are large, it does not necessarily confirm that the subhalo is detectable. This is
+because the subhalo effect may be degenerate with the lens model, whereby the lens mass model or source parameters
+can change their parameters to account for the subhalo's effect. Only full end-to-end lens modeling can robustly
+confirm whether a subhalo is detectable.
+"""
+lens_galaxy_no_subhalo = al.Galaxy(
+    redshift=0.5,
+    bulge=al.lp.Sersic(
+        centre=(0.0, 0.0),
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+        intensity=2.0,
+        effective_radius=0.6,
+        sersic_index=3.0,
+    ),
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.6,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+    ),
+    shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
+)
+
+tracer_no_subhalo = al.Tracer.from_galaxies(
+    galaxies=[lens_galaxy_no_subhalo, source_galaxy]
+)
+
+image = tracer.image_2d_from(grid=grid)
+image_no_subhalo = tracer_no_subhalo.image_2d_from(grid=grid)
+
+subhalo_residual_image = image - image_no_subhalo
+
+mat_plot = aplt.MatPlot2D(
+    output=aplt.Output(
+        path=dataset_path, filename="subhalo_residual_image", format="png"
+    )
+)
+
+array_plotter = aplt.Array2DPlotter(array=subhalo_residual_image, mat_plot_2d=mat_plot)
+array_plotter.figure_2d()
+
+"""
+__No Lens Light__
+
+The code below simulates the same lens, but without a lens light component.
+"""
+dataset_name = "dark_matter_subhalo_no_lens_light"
+dataset_path = path.join("dataset", dataset_type, dataset_name)
+
+lens_galaxy = al.Galaxy(
+    redshift=0.5,
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.6,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+    ),
+    subhalo=al.mp.NFWTruncatedMCRLudlowSph(centre=(1.601, 0.0), mass_at_200=1.0e10),
+    shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
+)
+
+tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+
+dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
+
+dataset.output_to_fits(
+    data_path=path.join(dataset_path, "data.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    overwrite=True,
+)
+
+mat_plot = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
+
+dataset_plotter = aplt.ImagingPlotter(dataset=dataset, mat_plot_2d=mat_plot)
+dataset_plotter.subplot_dataset()
+dataset_plotter.figures_2d(data=True)
+
+tracer_plotter = aplt.TracerPlotter(
+    tracer=tracer, grid=grid.binned, mat_plot_2d=mat_plot
+)
+tracer_plotter.subplot_tracer()
+tracer_plotter.subplot_plane_images()
 
 """
 The dataset can be viewed in the folder `autolens_workspace/imaging/light_sersic_exp__dark_matter_subhalo`.

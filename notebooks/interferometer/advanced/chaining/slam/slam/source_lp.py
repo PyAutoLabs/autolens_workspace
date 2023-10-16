@@ -108,7 +108,7 @@ def run(
     )
 
     """
-    __Hyper Extension__
+    __Adapt Extension__
 
     The above search is extended with an adapt search if the SetupAdapt has one or more of the following inputs:
 

@@ -46,7 +46,7 @@ __Dataset + Masking__
 
 Load, plot and mask the `Imaging` data.
 """
-dataset_name = "dark_matter_subhalo"
+dataset_name = "dark_matter_subhalo_no_lens_light"
 dataset_path = path.join("dataset", "imaging", dataset_name)
 
 dataset = al.Imaging.from_fits(
@@ -74,7 +74,7 @@ settings_autofit = af.SettingsSearch(
     path_prefix=path.join("imaging", "slam"),
     unique_tag=dataset_name,
     info=None,
-    number_of_cores=1,
+    number_of_cores=4,
     session=None,
 )
 
