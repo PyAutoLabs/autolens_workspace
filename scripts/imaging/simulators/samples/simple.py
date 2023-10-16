@@ -223,7 +223,10 @@ for sample_index in range(total_datasets):
     
     This can be loaded via the method `tracer = al.from_json()`.
     """
-    tracer.output_to_json(file_path=path.join(dataset_sample_path, "tracer.json"))
+    al.output_to_json(
+        obj=tracer,
+        file_path=path.join(dataset_sample_path, "tracer.json"),
+    )
 
     """
     The dataset can be viewed in the 

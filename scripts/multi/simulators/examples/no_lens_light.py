@@ -200,7 +200,9 @@ are safely stored and available to check how the dataset was simulated in the fu
 This can be loaded via the method `tracer = al.from_json()`.
 """
 [
-    tracer.output_to_json(file_path=path.join(dataset_path, f"{color}_tracer.json"))
+    al.output_to_json(
+        obj=tracer, file_path=path.join(dataset_path, f"{color}_tracer.json")
+    )
     for color, tracer in zip(color_list, tracer_list)
 ]
 
