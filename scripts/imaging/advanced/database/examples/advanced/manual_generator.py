@@ -139,6 +139,9 @@ Lets create a list of the imaging dataset of every lens our search fitted.
 
 The individual masked `data`, `noise_map` and `psf` are stored in the database, as opposed to the `Imaging` object, 
 which saves of hard-disk space used. Thus, we need to create the `Imaging` object ourselves to inspect it. 
+
+They are stored as .fits HDU objects, which can be converted to `Array2D` and `Kernel2D` objects via the
+`from_primary_hdu` method.
 """
 data_gen = agg.values(name="dataset.data")
 noise_map_gen = agg.values(name="dataset.noise_map")
@@ -148,13 +151,21 @@ settings_dataset_gen = agg.values(name="dataset.settings")
 for data, noise_map, psf, settings_dataset in zip(
     data_gen, noise_map_gen, psf_gen, settings_dataset_gen
 ):
+    data = al.Array2D.from_primary_hdu(primary_hdu=data)
+    noise_map = al.Array2D.from_primary_hdu(
+        primary_hdu=noise_map
+    )
+    psf = al.Kernel2D.from_primary_hdu(primary_hdu=psf)
+
     dataset = al.Imaging(
         data=data,
         noise_map=noise_map,
         psf=psf,
         settings=settings_dataset,
         pad_for_convolver=True,
+        check_noise_map=False,
     )
+
 
     dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
     dataset_plotter.subplot_dataset()
@@ -171,9 +182,12 @@ This section is optional, and I advise you only follow it if the `FitImagingAgg`
 
 
 def make_imaging_gen(fit):
-    data = fit.value(name="dataset.data")
-    noise_map = fit.value(name="dataset.noise_map")
-    psf = fit.value(name="dataset.psf")
+
+    data = al.Array2D.from_primary_hdu(primary_hdu=fit.value(name="dataset.data"))
+    noise_map = al.Array2D.from_primary_hdu(
+        primary_hdu=fit.value(name="dataset.noise_map")
+    )
+    psf = al.Kernel2D.from_primary_hdu(primary_hdu=fit.value(name="dataset.psf"))
     settings_dataset = fit.value(name="dataset.settings")
 
     dataset = al.Imaging(
@@ -182,9 +196,8 @@ def make_imaging_gen(fit):
         psf=psf,
         settings=settings_dataset,
         pad_for_convolver=True,
+        check_noise_map=False,
     )
-
-    dataset.apply_settings(settings=settings_dataset)
 
     return dataset
 
@@ -276,52 +289,59 @@ axis-ratios with the samples weight_list to give us the weighted mean axis-ratio
 To do this, we again use a generator. Whislt the axis-ratio is a fairly light-weight value, and this could be
 performed using a list without crippling your comptuer`s memory, for other quantities this is not the case. Thus, for
 computing derived quantities it is good practise to always use a generator.
+
+[Commented out but should work fine if you uncomment it]
 """
 
-from autofit.non_linear.samples.pdf import quantile
-import math
+# from autofit.non_linear.samples.pdf import quantile
+# import math
+#
+# sigma = 3.0
+#
+# low_limit = (1 - math.erf(sigma / math.sqrt(2))) / 2
+#
+#
+# def axis_ratio_error_from_agg_obj(fit):
+#     samples = fit.value(name="samples")
+#
+#     axis_ratios = []
+#     weight_list = []
+#
+#     for sample_index in range(samples.total_samples):
+#         weight = samples.sample_list[sample_index].weight
+#
+#         if weight > 1e-4:
+#
+#             instance = samples.from_sample_index(sample_index=sample_index)
+#
+#             axis_ratio = al.convert.axis_ratio_from(
+#                 ell_comps=instance.galaxies.lens.mass.ell_comps
+#             )
+#
+#             axis_ratios.append(axis_ratio)
+#             weight_list.append(weight)
+#
+#     median_axis_ratio = quantile(x=axis_ratios, q=0.5, weights=weight_list)[0]
+#
+#     lower_axis_ratio = quantile(x=axis_ratios, q=low_limit, weights=weight_list)
+#
+#     upper_axis_ratio = quantile(x=axis_ratios, q=1 - low_limit, weights=weight_list)
+#
+#     return median_axis_ratio, lower_axis_ratio, upper_axis_ratio
+#
+#
+# axis_ratio_values = list(agg.map(func=axis_ratio_error_from_agg_obj))
+# median_axis_ratio_list = [value[0] for value in axis_ratio_values]
+# lower_axis_ratio_list = [value[1] for value in axis_ratio_values]
+# upper_axis_ratio_list = [value[2] for value in axis_ratio_values]
+#
+# print("Axis Ratios:")
+# print(median_axis_ratio_list)
+#
+# print("Axis Ratio Errors:")
+# print(lower_axis_ratio_list)
+# print(upper_axis_ratio_list)
 
-sigma = 3.0
-
-low_limit = (1 - math.erf(sigma / math.sqrt(2))) / 2
-
-
-def axis_ratio_error_from_agg_obj(fit):
-    samples = fit.value(name="samples")
-
-    axis_ratios = []
-    weight_list = []
-
-    for sample_index in range(samples.total_accepted_samples):
-        weight = samples.sample_list[sample_index].weight
-
-        if weight > 1e-4:
-            instance = samples.from_sample_index(sample_index=sample_index)
-
-            axis_ratio = al.convert.axis_ratio_from(
-                ell_comps=instance.galaxies.lens.mass.ell_comps
-            )
-
-            axis_ratios.append(axis_ratio)
-            weight_list.append(weight)
-
-    median_axis_ratio = quantile(x=axis_ratios, q=0.5, weights=weight_list)[0]
-
-    lower_axis_ratio = quantile(x=axis_ratios, q=low_limit, weights=weight_list)
-
-    upper_axis_ratio = quantile(x=axis_ratios, q=1 - low_limit, weights=weight_list)
-
-    return median_axis_ratio, lower_axis_ratio, upper_axis_ratio
-
-
-axis_ratio_values = list(agg.map(func=axis_ratio_error_from_agg_obj))
-median_axis_ratio_list = [value[0] for value in axis_ratio_values]
-lower_axis_ratio_list = [value[1] for value in axis_ratio_values]
-upper_axis_ratio_list = [value[2] for value in axis_ratio_values]
-
-print("Axis Ratios:")
-print(median_axis_ratio_list)
-
-print("Axis Ratio Errors:")
-print(lower_axis_ratio_list)
-print(upper_axis_ratio_list)
+"""
+Fin.
+"""
