@@ -72,7 +72,7 @@ will then build the database from these results. This behaviour is governed by u
 If you have existing results you wish to build a database for, you can therefore adapt this example you to do this.
 
 Later in this example we show how results can also also be output directly to an .sqlite database, saving on hard-disk 
-space.
+space. This will be acheived by setting `session` to something that is not `None`.
 """
 session = None
 
@@ -151,7 +151,7 @@ for dataset_name in dataset_names:
         path_prefix=path.join("database"),
         name="database_example",
         unique_tag=dataset_name,  # This makes the unique identifier use the dataset name
-        session=session,  # This instructs the search to write to the .sqlite database.
+        session=session,  # This can instruct the search to write to the .sqlite database.
         n_live=100,
     )
 
@@ -202,7 +202,7 @@ to large samples by writing directly to the database.
 #     path_prefix=path.join("database"),
 #     name="database_example",
 #     unique_tag=dataset_name,  # This makes the unique identifier use the dataset name
-#     session=session,  # This instructs the search to write to the .sqlite database.
+#     session=session,  # This can instruct the search to write to the .sqlite database.
 #     n_live=100,
 # )
 

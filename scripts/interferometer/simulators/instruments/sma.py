@@ -148,9 +148,12 @@ __Tracer json__
 Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass profiles and galaxies
 are safely stored and available to check how the dataset was simulated in the future. 
 
-This can be loaded via the method `Tracer.from_json`.
+This can be loaded via the method `tracer = al.from_json()`.
 """
-tracer.output_to_json(file_path=path.join(dataset_path, "tracer.json"))
+al.output_to_json(
+    obj=tracer,
+    file_path=path.join(dataset_path, "tracer.json"),
+)
 
 """
 The dataset can be viewed in the folder `autolens_workspace/interferometer/instruments/sma`.
