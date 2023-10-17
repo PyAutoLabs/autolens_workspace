@@ -49,7 +49,8 @@ The mass profile centres are an internal property of the `Tracer`, so we can plo
 include = aplt.Include2D(
     light_profile_centres=False,
     mass_profile_centres=True,
-    critical_curves=False,
+        tangential_critical_curves=False,
+    radial_critical_curves=False,
     tangential_caustics=False,
     radial_caustics=False,
 )

@@ -98,9 +98,9 @@ Analogous to the `dataset_gen` above returning a list with one `Imaging` object,
 `FitImaging` objects, because only one `Analysis` was used to perform the model-fit.
 """
 fit_agg = al.agg.FitImagingAgg(aggregator=agg)
-fit_dataset_gen = fit_agg.max_log_likelihood_gen_from()
+fit_gen = fit_agg.max_log_likelihood_gen_from()
 
-for fit_list in fit_dataset_gen:
+for fit_list in fit_gen:
     # Only one `Analysis` so take first and only dataset.
     fit = fit_list[0]
 
@@ -124,9 +124,9 @@ fit_agg = al.agg.FitImagingAgg(
     settings_dataset=al.SettingsImaging(sub_size=4),
     settings_pixelization=al.SettingsPixelization(use_border=False),
 )
-fit_dataset_gen = fit_agg.max_log_likelihood_gen_from()
+fit_gen = fit_agg.max_log_likelihood_gen_from()
 
-for fit_list in fit_dataset_gen:
+for fit_list in fit_gen:
     # Only one `Analysis` so take first and only dataset.
     fit = fit_list[0]
 
@@ -143,9 +143,9 @@ Below, we create a new function to apply as a generator to do this. However, we 
 in the aggregator package to set up the fit.
 """
 fit_agg = al.agg.FitImagingAgg(aggregator=agg)
-fit_dataset_gen = fit_agg.max_log_likelihood_gen_from()
+fit_gen = fit_agg.max_log_likelihood_gen_from()
 
-for fit_list in fit_dataset_gen:
+for fit_list in fit_gen:
     # Only one `Analysis` so take first and only dataset.
     fit = fit_list[0]
 
@@ -166,9 +166,9 @@ for fit_list in fit_dataset_gen:
 Making this plot for a paper? You can output it to hard disk.
 """
 fit_agg = al.agg.FitImagingAgg(aggregator=agg)
-fit_dataset_gen = fit_agg.max_log_likelihood_gen_from()
+fit_gen = fit_agg.max_log_likelihood_gen_from()
 
-for fit_list in fit_dataset_gen:
+for fit_list in fit_gen:
     # Only one `Analysis` so take first and only dataset.
     fit = fit_list[0]
 
@@ -191,12 +191,15 @@ The same approach can be used with `FitImaging` objects, to investigate how the 
 the errors (e.g. showing source reconstructions fot different fits consistent with the errors).
 """
 fit_agg = al.agg.FitImagingAgg(aggregator=agg)
-fit_dataset_gen = fit_agg.randomly_drawn_via_pdf_gen_from(total_samples=2)
+fit_gen = fit_agg.randomly_drawn_via_pdf_gen_from(total_samples=2)
 
 
-for fit_list in fit_dataset_gen:
-    # Only one `Analysis` so take first and only dataset.
-    fit = fit_list[0]
+for fit_list_gen in fit_gen: # Total samples 2 so fit_list_gen contains 2 fits.
+
+    for fit_list in fit_list_gen: # Iterate over each fit of total_samples=2
+
+        # Only one `Analysis` so take first and only dataset.
+        fit = fit_list[0]
 
     fit_plotter = aplt.FitImagingPlotter(fit=fit)
     fit_plotter.subplot_fit()
