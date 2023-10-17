@@ -567,7 +567,7 @@ def sensitivity_mapping_interferometer(
     1e6 MSun and 1e11 MSun.
     """
 
-    def simulate_function(instance):
+    def simulate_function(instance, simulate_path):
         """
         Set up the `Tracer` which is used to simulate the strong lens imaging, which may include the subhalo in
         addition to the lens and source galaxy.

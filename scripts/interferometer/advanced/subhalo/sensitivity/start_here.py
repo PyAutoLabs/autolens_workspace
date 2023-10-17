@@ -156,7 +156,7 @@ In this example, this `instance.perturbation` corresponds to two different subha
 """
 
 
-def simulate_function(instance):
+def simulate_function(instance, simulate_path):
     """
     Set up the `Tracer` which is used to simulate the strong lens interferometer, which may include the subhalo in
     addition to the lens and source galaxy.
