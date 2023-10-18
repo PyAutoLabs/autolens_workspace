@@ -152,9 +152,7 @@ for data, noise_map, psf, settings_dataset in zip(
     data_gen, noise_map_gen, psf_gen, settings_dataset_gen
 ):
     data = al.Array2D.from_primary_hdu(primary_hdu=data)
-    noise_map = al.Array2D.from_primary_hdu(
-        primary_hdu=noise_map
-    )
+    noise_map = al.Array2D.from_primary_hdu(primary_hdu=noise_map)
     psf = al.Kernel2D.from_primary_hdu(primary_hdu=psf)
 
     dataset = al.Imaging(
@@ -165,7 +163,6 @@ for data, noise_map, psf, settings_dataset in zip(
         pad_for_convolver=True,
         check_noise_map=False,
     )
-
 
     dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
     dataset_plotter.subplot_dataset()
@@ -182,7 +179,6 @@ This section is optional, and I advise you only follow it if the `FitImagingAgg`
 
 
 def make_imaging_gen(fit):
-
     data = al.Array2D.from_primary_hdu(primary_hdu=fit.value(name="dataset.data"))
     noise_map = al.Array2D.from_primary_hdu(
         primary_hdu=fit.value(name="dataset.noise_map")
