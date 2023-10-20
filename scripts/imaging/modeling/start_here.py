@@ -228,15 +228,15 @@ reduced back to 1 to fix it.
 
 __Parallel Script__
 
-Depending on the operating system (e.g. Linux, Mac, Windows), Python version, and other factors, this script may not
-run a successful parallel fit (e.g. running the script with `number_of_cores` > 1 will produce an error). It is
-also common for Jupyter notebooks to not run in parallel correctly, requiring a Python script to be run, often from
-a command line terminal.
+Depending on the operating system (e.g. Linux, Mac, Windows), Python version, if you are running a Jupyter notebook 
+and other factors, this script may not run a successful parallel fit (e.g. running the script 
+with `number_of_cores` > 1 will produce an error). It is also common for Jupyter notebooks to not run in parallel 
+correctly, requiring a Python script to be run, often from a command line terminal.
 
 To fix these issues, the Python script needs to be adapted to use an `if __name__ == "__main__":` API, as this allows
 the Python `multiprocessing` module to allocate threads and jobs correctly. An adaptation of this example script 
-is provided at `autolens_workspace/scripts/imaging/modeling/parallel.py`, which will hopefully run successfully in
-parallel on your computer!
+is provided at `autolens_workspace/scripts/imaging/modeling/customize/parallel.py`, which will hopefully run 
+successfully inparallel on your computer!
 
 Therefore if paralellization for this script doesn't work, check out the `parallel.py` example. You will need to update
 all scripts you run to use the this format and API. 

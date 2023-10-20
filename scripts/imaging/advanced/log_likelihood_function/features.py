@@ -9,13 +9,13 @@ adaptively increases depending on a required fractional accuracy of the light pr
 
  https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/structures/grids/two_d/grid_iterate.py
 """
-masked_imaging_iterate = dataset.apply_mask(mask=mask)
-masked_imaging_iterate = masked_imaging_iterate.apply_settings(
-    settings=al.SettingsImaging(grid_class=al.Grid2DIterate)
-)
-
-image_iterate = lens_galaxy.image_2d_from(grid=masked_imaging_iterate.grid)
-blurring_image_iterate = lens_galaxy.image_2d_from(grid=masked_dataset.blurring_grid)
+# masked_imaging_iterate = dataset.apply_mask(mask=mask)
+# masked_imaging_iterate = masked_imaging_iterate.apply_settings(
+#     settings=al.SettingsImaging(grid_class=al.Grid2DIterate)
+# )
+#
+# image_iterate = lens_galaxy.image_2d_from(grid=masked_imaging_iterate.grid)
+# blurring_image_iterate = lens_galaxy.image_2d_from(grid=masked_dataset.blurring_grid)
 
 
 """
@@ -41,7 +41,7 @@ the calculation of the `mapping_matrix` described next.
 As discussed above, because for the `VoronoiNoInterp` pixelization where every sub-pixel maps to one source pixel,
 every entry of this array will be equal to 1.
 """
-pix_sizes_for_sub_slim_index = mapper.pix_sizes_for_sub_slim_index
+# pix_sizes_for_sub_slim_index = mapper.pix_sizes_for_sub_slim_index
 
 """
 When each sub-pixel maps to multiple source pixels, the mappings are described via an interpolation weight. For 
@@ -51,4 +51,4 @@ it lands in.
 For the `VoronoiNoInterp` pixelization where every sub-pixel maps to a single source pixel without inteprolation,
 every entry of this weight array is 1.0.
 """
-pix_weights_for_sub_slim_index = mapper.pix_weights_for_sub_slim_index
+# pix_weights_for_sub_slim_index = mapper.pix_weights_for_sub_slim_index

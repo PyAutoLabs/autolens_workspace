@@ -364,7 +364,7 @@ We add the lens and source galaxy images and blurring together, to create an ove
 """
 image = lens_image_2d + source_image_2d
 
-array_2d_plotter = aplt.Array2DPlotter(array=data)
+array_2d_plotter = aplt.Array2DPlotter(array=image)
 array_2d_plotter.figure_2d()
 
 blurring_image_2d = lens_blurring_image_2d + source_blurring_image_2d
