@@ -320,7 +320,7 @@ likelihoods of the samples.
 If different models are fitted to the same dataset, this value can be compared to determine which model provides
 the best fit (e.g. which model has the highest maximum likelihood)?
 """
-print([max(samps.log_likelihod_list) for samps in agg.values("samples")])
+print([max(samps.log_likelihood_list) for samps in agg.values("samples")])
 
 """
 __Bayesian Evidence__
