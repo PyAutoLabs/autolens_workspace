@@ -5,6 +5,7 @@ Files
 
 - ``custom_mask.py``: Customize the mask applied to the imaging dataset.
 - ``model_cookbook.py``: Customize the lens model by adding and removing lens mass profiles and source light profiles.
+- ``parallel_bug_fix.py``: How to get parallel model fits to run if they crash for default examples.
 - ``positions.py``: Resample unphysical mass models during lens modeling which do not ray-trace multiple images of the lensed source close to one another.
 - ``priors.py``: Customize the priors on the lens model parameters.
 - ``sub_grid_size.py``: Fit a lens model with a different sub-grid size for the image grid.
