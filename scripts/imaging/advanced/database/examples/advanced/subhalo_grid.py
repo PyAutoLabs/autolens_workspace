@@ -131,7 +131,7 @@ This object is made via the aggregator using generators.
 """
 for fit_grid, fit_imaging_detect in zip(agg_grid, fit_imaging_gen):
     subhalo_search_result = al.subhalo.SubhaloResult(
-        grid_search_result=fit_grid["result"], result_no_subhalo=fit_grid.parent
+        grid_search_result=fit_grid["result"], fit_agg_no_subhalo=fit_grid.parent
     )
 
 """
@@ -141,10 +141,10 @@ dataset fitted (in this case just 1 dataset).
 """
 for fit_grid, fit_imaging_detect in zip(agg_grid, fit_imaging_gen):
     subhalo_search_result = al.subhalo.SubhaloResult(
-        grid_search_result=fit_grid["result"], result_no_subhalo=fit_grid.parent
+        grid_search_result=fit_grid["result"], fit_agg_no_subhalo=fit_grid.parent
     )
 
-    subhalo_detection_array = subhalo_search_result.subhalo_detection_array_from(
+    subhalo_detection_array = subhalo_search_result.detection_array_from(
         use_log_evidences=True, relative_to_no_subhalo=True
     )
 
@@ -157,7 +157,7 @@ The `SubhaloPlotter` object can be used for visualizing results via the database
 """
 for fit_grid, fit_imaging_detect in zip(agg_grid, fit_imaging_gen):
     subhalo_search_result = al.subhalo.SubhaloResult(
-        grid_search_result=fit_grid["result"], result_no_subhalo=fit_grid.parent
+        grid_search_result=fit_grid["result"], fit_agg_no_subhalo=fit_grid.parent
     )
 
     subhalo_plotter = al.subhalo.SubhaloPlotter(

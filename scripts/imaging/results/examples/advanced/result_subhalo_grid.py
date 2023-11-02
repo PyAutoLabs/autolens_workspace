@@ -212,7 +212,7 @@ The results of a subhalo grid-search are returned as an instance of the `Subhalo
 """
 subhalo_result = al.subhalo.SubhaloResult(
     grid_search_result=grid_search_result,
-    result_no_subhalo=result_1,
+    fit_agg_no_subhalo=result_1,
 )
 
 print(subhalo_result)
@@ -223,7 +223,7 @@ This object has built-in arrays containing the key results of the subhalo grid s
 For example, the function `subhalo_detection_array_from()` returns an `Array2D` object containing the Bayesian 
 evidence of every model fitted by the subhalo grid.
 """
-subhalo_detection_array = subhalo_result.subhalo_detection_array_from(
+subhalo_detection_array = subhalo_result.detection_array_from(
     use_log_evidences=True, relative_to_no_subhalo=True
 )
 
@@ -235,7 +235,7 @@ This is possible because of the input `parent=search_1` of the function `subhalo
 
 If we set `relative_to_no_subhalo=False` the actual Bayesian evidence inferred in search 2 is returned instead.
 """
-subhalo_detection_array = subhalo_result.subhalo_detection_array_from(
+subhalo_detection_array = subhalo_result.detection_array_from(
     use_log_evidences=True, relative_to_no_subhalo=False
 )
 
