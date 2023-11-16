@@ -5,6 +5,7 @@ fits:
   flip_for_ds9: true
 grid:
   remove_projected_centre: false
+  max_evaluation_grid_size: 1000   # An evaluation grid whose shape is adaptive chosen is used to compute quantities like critical curves, this integer is the max size of the grid ensuring faster run times.
 inversion:
   check_reconstruction: true        # If True, the inversion's reconstruction is checked to ensure the solution of a meshs's mapper is not an invalid solution where the values are all the same.
   use_positive_only_solver: true      # If True, inversion's use a positive-only linear algebra solver by default, which is slower but prevents unphysical negative values in the reconstructed solutuion.

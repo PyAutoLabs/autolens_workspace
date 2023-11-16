@@ -45,7 +45,7 @@ __Dataset + Masking__
 
 Load, plot and mask the `Imaging` data.
 """
-dataset_name = "no_lens_light"
+dataset_name = "simple__no_lens_light"
 dataset_path = path.join("dataset", "imaging", dataset_name)
 
 dataset = al.Imaging.from_fits(

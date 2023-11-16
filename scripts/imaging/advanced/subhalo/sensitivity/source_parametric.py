@@ -194,10 +194,10 @@ __SUBHALO PIPELINE (sensitivity mapping)__
 
 The SUBHALO PIPELINE (sensitivity mapping) performs sensitivity mapping of the data using the lens model
 fitted above, so as to determine where subhalos of what mass could be detected in the data. A full description of
-sensitivty mapping if given in the script `sensitivity_mapping.py`.
+Sensitivity mapping if given in the script `sensitivity_mapping.py`.
 
 Each model-fit performed by sensitivity mapping creates a new instance of an `Analysis` class, which contains the
-data simulated by the `simulate_function` for that model. This requires us to write a wrapper around the 
+data simulated by the `simulate_cls` for that model. This requires us to write a wrapper around the 
 PyAutoLens `AnalysisImaging` class.
 """
 

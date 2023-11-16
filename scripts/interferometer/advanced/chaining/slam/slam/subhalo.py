@@ -219,7 +219,7 @@ class SimulateImaging:
         tracer = al.Tracer.from_galaxies(
             galaxies=[
                 instance.galaxies.lens,
-                instance.perturbation,
+                instance.perturb,
                 instance.galaxies.source,
             ]
         )
@@ -243,7 +243,7 @@ class SimulateImaging:
         )
 
         dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
-        dataset.apply_mask(mask=self.mask)
+        dataset = dataset.apply_mask(mask=self.mask)
 
         self.output_info(simulate_path=simulate_path, dataset=dataset, tracer=tracer)
 
@@ -324,12 +324,12 @@ def sensitivity_mapping_imaging(
     base_model = mass_results.last.model
 
     """
-    We now define the `perturbation_model`, which is the model component whose parameters we iterate over to perform 
+    We now define the `perturb_model`, which is the model component whose parameters we iterate over to perform 
     sensitivity mapping. In this case, this model is a `NFWMCRLudlowSph` model and we will iterate over its
     `centre` and `mass_at_200`. We set it up as a `Model` so it has an associated redshift and can be directly
     passed to the tracer in the simulate function below.
 
-    Many instances of the `perturbation_model` are created and used to simulate the many strong lens datasets that we fit. 
+    Many instances of the `perturb_model` are created and used to simulate the many strong lens datasets that we fit. 
     However, it is only included in half of the model-fits; corresponding to the lens models which include a dark matter 
     subhalo and whose Bayesian evidence we compare to the simpler model-fits consisting of just the `base_model` to 
     determine if the subhalo was detectable.
@@ -339,7 +339,7 @@ def sensitivity_mapping_imaging(
     subhalo the model-fit including a subhalo provide higher values of Bayesian evidence than the simpler model-fit (and
     therefore when it is detectable!).
     """
-    perturbation_model = af.Model(al.Galaxy, redshift=0.5, mass=subhalo_mass)
+    perturb_model = af.Model(al.Galaxy, redshift=0.5, mass=subhalo_mass)
 
     """
     Sensitivity mapping is typically performed over a large range of parameters. However, to make this demonstration quick
@@ -347,20 +347,18 @@ def sensitivity_mapping_imaging(
     iterate over just two `mass_at_200` values corresponding to subhalos of mass 1e6 and 1e11, of which only the latter
     will be shown to be detectable.
     """
-    # perturbation_model.mass.mass_at_200 = af.UniformPrior(
+    # perturb_model.mass.mass_at_200 = af.UniformPrior(
     #     lower_limit=1e6, upper_limit=1e11
     # )
-    perturbation_model.mass.mass_at_200 = 1e10
-    perturbation_model.mass.centre.centre_0 = af.UniformPrior(
+    perturb_model.mass.mass_at_200 = 1e10
+    perturb_model.mass.centre.centre_0 = af.UniformPrior(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
-    perturbation_model.mass.centre.centre_1 = af.UniformPrior(
+    perturb_model.mass.centre.centre_1 = af.UniformPrior(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
-    perturbation_model.mass.redshift_object = (
-        mass_results.last.model.galaxies.lens.redshift
-    )
-    perturbation_model.mass.redshift_source = (
+    perturb_model.mass.redshift_object = mass_results.last.model.galaxies.lens.redshift
+    perturb_model.mass.redshift_source = (
         mass_results.last.model.galaxies.source.redshift
     )
 
@@ -386,17 +384,17 @@ def sensitivity_mapping_imaging(
     )
 
     """
-    We now write the `simulate_function`, which takes the `simulation_instance` of our model (defined above) and uses it to 
+    We now write the `simulate_cls`, which takes the `simulation_instance` of our model (defined above) and uses it to 
     simulate a dataset which is subsequently fitted.
 
-    Note that when this dataset is simulated, the quantity `instance.perturbation` is used in the `simulate_function`.
-    This is an instance of the `NFWMCRLudlowSph`, and it is different every time the `simulate_function` is called
+    Note that when this dataset is simulated, the quantity `instance.perturb` is used in the `simulate_cls`.
+    This is an instance of the `NFWMCRLudlowSph`, and it is different every time the `simulate_cls` is called
     based on the value of sensitivity being computed. 
 
-    In this example, this `instance.perturbation` corresponds to two different subhalos with values of `mass_at_200` of 
+    In this example, this `instance.perturb` corresponds to two different subhalos with values of `mass_at_200` of 
     1e6 MSun and 1e11 MSun.
     """
-    simulate_function = SimulateImaging(mask=mask, psf=psf)
+    simulate_cls = SimulateImaging(mask=mask, psf=psf)
 
     """
     We next specify the search used to perform each model fit by the sensitivity mapper.
@@ -416,17 +414,17 @@ def sensitivity_mapping_imaging(
     - `base_model`: This is the lens model that is fitted to every simulated dataset, which does not include a subhalo. 
     In this example is composed of an `Isothermal` lens and `Sersic` source.
 
-    - `perturbation_model`: This is the extra model component that alongside the `base_model` is fitted to every 
+    - `perturb_model`: This is the extra model component that alongside the `base_model` is fitted to every 
     simulated dataset. In this example it is a `NFWMCRLudlowSph` dark matter subhalo.
 
-    - `simulate_function`: This is the function that uses the `simulation_instance` and many instances of the 
-    `perturbation_model` to simulate many datasets that are fitted with the `base_model` 
-    and `base_model` + `perturbation_model`.
+    - `simulate_cls`: This is the function that uses the `simulation_instance` and many instances of the 
+    `perturb_model` to simulate many datasets that are fitted with the `base_model` 
+    and `base_model` + `perturb_model`.
 
     - `analysis_class`: The wrapper `Analysis` class that passes each simulated dataset to the `Analysis` class that 
     fits the data.
 
-    - `number_of_steps`: The number of steps over which the parameters in the `perturbation_model` are iterated. In 
+    - `number_of_steps`: The number of steps over which the parameters in the `perturb_model` are iterated. In 
     this example, `mass_at_200` has a `LogUniformPrior` with lower limit 1e6 and upper limit 1e11, therefore 
     the `number_of_steps` of 2 will simulate and fit just 2 datasets where the `mass_at_200` is between 1e6 and 1e11.
 
@@ -435,9 +433,9 @@ def sensitivity_mapping_imaging(
     """
     sensitivity_mapper = s.Sensitivity(
         base_model=base_model,
-        perturbation_model=perturbation_model,
+        perturb_model=perturb_model,
         simulation_instance=simulation_instance,
-        simulate_function=simulate_function,
+        simulate_cls=simulate_cls,
         analysis_class=analysis_cls,
         search=search,
         number_of_steps=number_of_steps,
@@ -507,12 +505,12 @@ def sensitivity_mapping_interferometer(
     base_model = mass_results.last.model
 
     """
-    We now define the `perturbation_model`, which is the model component whose parameters we iterate over to perform 
+    We now define the `perturb_model`, which is the model component whose parameters we iterate over to perform 
     sensitivity mapping. In this case, this model is a `NFWMCRLudlowSph` model and we will iterate over its
     `centre` and `mass_at_200`. We set it up as a `Model` so it has an associated redshift and can be directly
     passed to the tracer in the simulate function below.
 
-    Many instances of the `perturbation_model` are created and used to simulate the many strong lens datasets that we fit. 
+    Many instances of the `perturb_model` are created and used to simulate the many strong lens datasets that we fit. 
     However, it is only included in half of the model-fits; corresponding to the lens models which include a dark matter 
     subhalo and whose Bayesian evidence we compare to the simpler model-fits consisting of just the `base_model` to 
     determine if the subhalo was detectable.
@@ -522,7 +520,7 @@ def sensitivity_mapping_interferometer(
     subhalo the model-fit including a subhalo provide higher values of Bayesian evidence than the simpler model-fit (and
     therefore when it is detectable!).
     """
-    perturbation_model = af.Model(al.Galaxy, redshift=0.5, mass=subhalo_mass)
+    perturb_model = af.Model(al.Galaxy, redshift=0.5, mass=subhalo_mass)
 
     """
     Sensitivity mapping is typically performed over a large range of parameters. However, to make this demonstration quick
@@ -530,19 +528,17 @@ def sensitivity_mapping_interferometer(
     iterate over just two `mass_at_200` values corresponding to subhalos of mass 1e6 and 1e11, of which only the latter
     will be shown to be detectable.
     """
-    perturbation_model.mass.mass_at_200 = af.LogUniformPrior(
+    perturb_model.mass.mass_at_200 = af.LogUniformPrior(
         lower_limit=1e6, upper_limit=1e11
     )
-    perturbation_model.mass.centre.centre_0 = af.UniformPrior(
+    perturb_model.mass.centre.centre_0 = af.UniformPrior(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
-    perturbation_model.mass.centre.centre_1 = af.UniformPrior(
+    perturb_model.mass.centre.centre_1 = af.UniformPrior(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
-    perturbation_model.mass.redshift_object = (
-        mass_results.last.model.galaxies.lens.redshift
-    )
-    perturbation_model.mass.redshift_source = (
+    perturb_model.mass.redshift_object = mass_results.last.model.galaxies.lens.redshift
+    perturb_model.mass.redshift_source = (
         mass_results.last.model.galaxies.source.redshift
     )
 
@@ -556,18 +552,18 @@ def sensitivity_mapping_interferometer(
     simulation_instance = mass_results.last.instance
 
     """
-    We now write the `simulate_function`, which takes the `simulation_instance` of our model (defined above) and uses it to 
+    We now write the `simulate_cls`, which takes the `simulation_instance` of our model (defined above) and uses it to 
     simulate a dataset which is subsequently fitted.
 
-    Note that when this dataset is simulated, the quantity `instance.perturbation` is used in the `simulate_function`.
-    This is an instance of the `NFWMCRLudlowSph`, and it is different every time the `simulate_function` is called
+    Note that when this dataset is simulated, the quantity `instance.perturb` is used in the `simulate_cls`.
+    This is an instance of the `NFWMCRLudlowSph`, and it is different every time the `simulate_cls` is called
     based on the value of sensitivity being computed. 
 
-    In this example, this `instance.perturbation` corresponds to two different subhalos with values of `mass_at_200` of 
+    In this example, this `instance.perturb` corresponds to two different subhalos with values of `mass_at_200` of 
     1e6 MSun and 1e11 MSun.
     """
 
-    def simulate_function(instance, simulate_path):
+    def __call__(instance, simulate_path):
         """
         Set up the `Tracer` which is used to simulate the strong lens imaging, which may include the subhalo in
         addition to the lens and source galaxy.
@@ -575,7 +571,7 @@ def sensitivity_mapping_interferometer(
         tracer = al.Tracer.from_galaxies(
             galaxies=[
                 instance.galaxies.lens,
-                instance.perturbation,
+                instance.perturb,
                 instance.galaxies.source,
             ]
         )
@@ -629,17 +625,17 @@ def sensitivity_mapping_interferometer(
     - `base_model`: This is the lens model that is fitted to every simulated dataset, which does not include a subhalo. 
     In this example is composed of an `Isothermal` lens and `Sersic` source.
 
-    - `perturbation_model`: This is the extra model component that alongside the `base_model` is fitted to every 
+    - `perturb_model`: This is the extra model component that alongside the `base_model` is fitted to every 
     simulated dataset. In this example it is a `NFWMCRLudlowSph` dark matter subhalo.
 
-    - `simulate_function`: This is the function that uses the `simulation_instance` and many instances of the 
-    `perturbation_model` to simulate many datasets that are fitted with the `base_model` 
-    and `base_model` + `perturbation_model`.
+    - `simulate_cls`: This is the function that uses the `simulation_instance` and many instances of the 
+    `perturb_model` to simulate many datasets that are fitted with the `base_model` 
+    and `base_model` + `perturb_model`.
 
     - `analysis_class`: The wrapper `Analysis` class that passes each simulated dataset to the `Analysis` class that 
     fits the data.
 
-    - `number_of_steps`: The number of steps over which the parameters in the `perturbation_model` are iterated. In 
+    - `number_of_steps`: The number of steps over which the parameters in the `perturb_model` are iterated. In 
     this example, `mass_at_200` has a `LogUniformPrior` with lower limit 1e6 and upper limit 1e11, therefore 
     the `number_of_steps` of 2 will simulate and fit just 2 datasets where the `mass_at_200` is between 1e6 and 1e11.
 
@@ -650,8 +646,8 @@ def sensitivity_mapping_interferometer(
         search=search,
         simulation_instance=simulation_instance,
         base_model=base_model,
-        perturbation_model=perturbation_model,
-        simulate_function=simulate_function,
+        perturb_model=perturb_model,
+        simulate_cls=simulate_cls,
         analysis_class=analysis_cls,
         number_of_steps=number_of_steps,
         number_of_cores=settings_autofit.number_of_cores,

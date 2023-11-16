@@ -124,13 +124,13 @@ for fit in fit_imaging_gen:
 """
 __Subhalo Result__
 
-The results of a subhalo grid-search use an instance of the `SubhaloResult` class (see 
+The results of a subhalo grid-search use an instance of the `SubhaloGridSearchResult` class (see 
 the `autolens_workspace/*/imaging/results/advanced/result_subhalo_grid.ipynb` tutorial).
 
 This object is made via the aggregator using generators.
 """
 for fit_grid, fit_imaging_detect in zip(agg_grid, fit_imaging_gen):
-    subhalo_search_result = al.subhalo.SubhaloResult(
+    subhalo_search_result = al.subhalo.SubhaloGridSearchResult(
         grid_search_result=fit_grid["result"], fit_agg_no_subhalo=fit_grid.parent
     )
 
@@ -140,7 +140,7 @@ object, we show one example below which prints the `subhalo_detection_array` of 
 dataset fitted (in this case just 1 dataset).
 """
 for fit_grid, fit_imaging_detect in zip(agg_grid, fit_imaging_gen):
-    subhalo_search_result = al.subhalo.SubhaloResult(
+    subhalo_search_result = al.subhalo.SubhaloGridSearchResult(
         grid_search_result=fit_grid["result"], fit_agg_no_subhalo=fit_grid.parent
     )
 
@@ -156,19 +156,19 @@ __Plot__
 The `SubhaloPlotter` object can be used for visualizing results via the database.
 """
 for fit_grid, fit_imaging_detect in zip(agg_grid, fit_imaging_gen):
-    subhalo_search_result = al.subhalo.SubhaloResult(
+    subhalo_search_result = al.subhalo.SubhaloGridSearchResult(
         grid_search_result=fit_grid["result"], fit_agg_no_subhalo=fit_grid.parent
     )
 
     subhalo_plotter = al.subhalo.SubhaloPlotter(
-        subhalo_result=subhalo_search_result,
+        subhalo_grid_search_result=subhalo_search_result,
         fit_imaging_detect=fit_imaging_detect,
         use_log_evidences=True,
     )
 
     subhalo_plotter.subplot_detection_imaging(remove_zeros=True)
     subhalo_plotter.subplot_detection_fits()
-    subhalo_plotter.figure_with_detection_overlay(image=True, remove_zeros=True)
+    subhalo_plotter.figure_figures_of_merit_grid(image=True, remove_zeros=True)
 
 """
 Finish.

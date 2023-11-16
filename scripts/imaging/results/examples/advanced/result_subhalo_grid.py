@@ -208,9 +208,9 @@ result_3 = search.fit(model=model, analysis=analysis_3)
 """
 __Subhalo Result__
 
-The results of a subhalo grid-search are returned as an instance of the `SubhaloResult` class.
+The results of a subhalo grid-search are returned as an instance of the `SubhaloGridSearchResult` class.
 """
-subhalo_result = al.subhalo.SubhaloResult(
+subhalo_result = al.subhalo.SubhaloGridSearchResult(
     grid_search_result=grid_search_result,
     fit_agg_no_subhalo=result_1,
 )
@@ -257,7 +257,7 @@ __Plot__
 The `SubhaloPlotter` object contains convenience methods for visualizing these results.
 """
 subhalo_plotter = aplt.SubhaloPlotter(
-    subhalo_result=subhalo_result,
+    subhalo_grid_search_result=subhalo_result,
     fit_imaging_detect=result_3.max_log_likelihood_fit,
     use_log_evidences=True,
 )
@@ -265,12 +265,12 @@ subhalo_plotter = aplt.SubhaloPlotter(
 """
 A plot of the lensed source model, with the subhalo grid search overlaid, is produced via:
 """
-subhalo_plotter.figure_with_detection_overlay()
+subhalo_plotter.figure_figures_of_merit_grid()
 
 """
 The mass overlay is given as follows:
 """
-subhalo_plotter.figure_with_mass_overlay()
+subhalo_plotter.figure_mass_grid()
 
 """
 A subhalo summarizing the detection:
