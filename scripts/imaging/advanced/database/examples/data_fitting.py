@@ -111,7 +111,7 @@ for fit_list in fit_gen:
 __Modification__
 
 The `FitImagingAgg` allow us to modify the fit settings. By default, it uses the `SettingsImaging`, 
-`SettingsPixelization` and `SettingsInversion` that were used during the model-fit. 
+and `SettingsInversion` that were used during the model-fit. 
 
 However, we can change these settings such that the fit is performed differently. For example, what if I wanted to see 
 how the fit looks where the `Grid2D`'s `sub_size` is 4 (instead of the value of 2 that was used)? Or where the 
@@ -122,7 +122,7 @@ You can do this by passing the settings objects, which overwrite the ones used b
 fit_agg = al.agg.FitImagingAgg(
     aggregator=agg,
     settings_dataset=al.SettingsImaging(sub_size=4),
-    settings_pixelization=al.SettingsPixelization(use_border=False),
+    settings_inversion=al.SettingsInversion(relocate_pix_border=False),
 )
 fit_gen = fit_agg.max_log_likelihood_gen_from()
 

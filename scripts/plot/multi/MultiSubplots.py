@@ -12,6 +12,10 @@ an `ImagingPLotter` and `FitImagingPlotter` and is the example used in this exam
 The script `MultiFigurePlotter.py` illustrates a similar example, but plots the same figures from a single `Plotter`
 object on the same subplot. This script offers a more concise way of plotting the same figures on the same subplot, but
 does not have the flexibility of plotting different figures from different `Plotter` objects shown here.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

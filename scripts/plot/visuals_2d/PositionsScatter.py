@@ -10,6 +10,10 @@ in `autolens_workspace.plot.mat_wramat_plot.wrap.base`.
 
 The `PositionsScatter` object serves the purpose is allowing us to uniquely customize the appearance of any positions
 on a plot.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

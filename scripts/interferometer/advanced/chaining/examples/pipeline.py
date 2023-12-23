@@ -162,7 +162,9 @@ We use the results of search 1 to create the lens model fitted in search 2, wher
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [Parameters fixed to 
  results of search 1].
  
- - The source-galaxy's light uses a `DelaunayMagnification` mesh [2 parameters].
+ - The source galaxy's light uses an `Overlay` image-mesh [2 parameters].
+ 
+ - The source-galaxy's light uses a `Delaunay` mesh [0 parameters].
  
  - This pixelization is regularized using a `ConstantSplit` scheme [1 parameter]. 
 
@@ -173,7 +175,8 @@ of the regularization scheme, before using these models to refit the lens mass m
 """
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.DelaunayMagnification,
+    image_mesh=al.image_mesh.KMeans,
+    mesh=al.mesh.Delaunay,
     regularization=al.reg.ConstantSplit,
 )
 
@@ -210,7 +213,9 @@ We use the results of searches 1 and 2 to create the lens model fitted in search
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters: priors 
  initialized from search 1].
  
- - The source-galaxy's light uses a `DelaunayMagnification` mesh [parameters fixed to results of search 2].
+ - The source-galaxy's light uses an `Overlay` image-mesh [parameters fixed to results of search 2].
+
+ - The source-galaxy's light uses a `Delaunay` mesh [parameters fixed to results of search 2].
  
  - This pixelization is regularized using a `ConstantSplit` scheme [parameters fixed to results of search 2]. 
 
@@ -266,7 +271,9 @@ We use the results of searches 2 and 4 to create the lens model fitted in search
  - The lens galaxy's total mass distribution is an `PowerLaw` and `ExternalShear` [8 parameters: priors 
  initialized from search 3].
  
- - The source-galaxy's light uses a `DelaunayMagnification` mesh [parameters fixed to results of search 2].
+ - The source-galaxy's light uses an `Overlay` image-mesh [parameters fixed to results of search 2].
+
+ - The source-galaxy's light uses a `Delaunay` mesh [parameters fixed to results of search 2].
  
  - This pixelization is regularized using a `ConstantSplit` scheme [parameters fixed to results of search 2]. 
 

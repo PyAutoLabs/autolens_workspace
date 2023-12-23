@@ -40,6 +40,10 @@ shape [total_unmasked_pixels]. This is a slimmed-down representation of the data
 unmasked data points
 
 These are documented fully in the `autolens_workspace/*/imaging/results/examples/data_structure.ipynb` example.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `results/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

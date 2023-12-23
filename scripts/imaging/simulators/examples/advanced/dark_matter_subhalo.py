@@ -20,7 +20,7 @@ This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the simulators `start_here.ipynb` notebook for more detailed comments.
+If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -267,5 +267,5 @@ tracer_plotter.subplot_tracer()
 tracer_plotter.subplot_plane_images()
 
 """
-The dataset can be viewed in the folder `autolens_workspace/imaging/light_sersic_exp__dark_matter_subhalo`.
+The dataset can be viewed in the folder `autolens_workspace/imaging/dark_matter_subhalo`.
 """

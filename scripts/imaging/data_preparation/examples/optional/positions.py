@@ -26,6 +26,10 @@ positions on the lensed source.
 
 See `autolens_workspace/*/imaging/modeling/customize/positions.py` for an example.of how to use positions in a
 `modeling` script.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `data_preparation/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

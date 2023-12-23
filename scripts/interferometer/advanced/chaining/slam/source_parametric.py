@@ -22,6 +22,11 @@ This uses the SLaM pipelines:
  `mass_total`
 
 Check them out for a full description of the analysis!
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `autolens_workspace/imaging/advanced/chaining/slam/start_here.ipynb`
+notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -71,7 +76,7 @@ __Settings AutoFit__
 
 The settings of autofit, which controls the output paths, parallelization, database use, etc.
 """
-settings_autofit = af.SettingsSearch(
+settings_search = af.SettingsSearch(
     path_prefix=path.join("interferometer", "slam"),
     unique_tag=dataset_name,
     info=None,
@@ -113,7 +118,7 @@ this example:
 analysis = al.AnalysisInterferometer(dataset=dataset)
 
 source_lp_results = slam.source_lp.run(
-    settings_autofit=settings_autofit,
+    settings_search=settings_search,
     analysis=analysis,
     lens_bulge=None,
     lens_disk=None,
@@ -143,7 +148,7 @@ using the lens mass model and source model of the SOURCE PIPELINE to initialize 
 analysis = al.AnalysisInterferometer(dataset=dataset)
 
 mass_results = slam.mass_total.run(
-    settings_autofit=settings_autofit,
+    settings_search=settings_search,
     analysis=analysis,
     setup_adapt=setup_adapt,
     source_results=source_lp_results,

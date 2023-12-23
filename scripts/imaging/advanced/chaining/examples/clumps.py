@@ -24,6 +24,10 @@ fits an `Imaging` dataset of a 'galaxy-scale' strong lens, where in the final mo
  - The lens galaxy's total mass distribution is an `PowerLaw`.
  - The source galaxy is a parametric `Sersic`.
  - Two clumps are included in the lens model which have `SersicSph` light profiles and `IsothermalSph` mass profiles.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `chaining/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

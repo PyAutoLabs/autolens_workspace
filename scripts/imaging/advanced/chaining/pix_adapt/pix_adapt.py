@@ -14,12 +14,16 @@ This script introduces **PyAutoLens**'s pixelization adaption features, which pa
 model-fits performed by earlier searches to searches performed later in the chain, in order to adapt the pixelizaiton's
 mesh and regularization to the source's unlensed properties.
 
-This script illustrates using the `DelaunayBrightnessImage` pixelization and `AdaptiveBrightness` regularization
+This script illustrates using the `KMeans` image-mesh, `Delaunay` mesh and `AdaptiveBrightness` regularization
 scheme to adapt the source reconstruction to the source galaxy's morphology (as opposed to schemes introduced
 previously which adapt to the mass model magnification or apply a constant regularization pattern).
 
 This script illustrates the API used for pixelization adaptive features, but does not go into the details of how they
 work. This is described in chapter 4 of the **HowToLens** lectures.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `chaining/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -107,7 +111,8 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.DelaunayMagnification(shape=(30, 30)),
+    image_mesh=al.image_mesh.Overlay(shape=(30, 30)),
+    mesh=al.mesh.Delaunay(),
     regularization=al.reg.ConstantSplit,
 )
 
@@ -137,7 +142,7 @@ result_1 = search_1.fit(model=model_1, analysis=analysis_1)
 """
 __Model (Search 2)__
 
-Search 2, our source model now uses the `DelaunayBrightnessImage` pixelization and `AdaptiveBrightness` regularization
+Search 2, our source model now uses the `KMeans` image-mesh, `Delaunay` mesh and `AdaptiveBrightness` regularization
 scheme that adapt to the source's unlensed morphology. These use the model-images of search 1, which is passed to the
 `Analysis` class below. 
 
@@ -148,7 +153,8 @@ lens = result_1.model.galaxies.lens
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.DelaunayBrightnessImage,
+    image_mesh=al.image_mesh.KMeans,
+    mesh=al.mesh.Delaunay,
     regularization=al.reg.AdaptiveBrightnessSplit,
 )
 
@@ -166,7 +172,7 @@ __Search + Analysis + Model-Fit (Search 2)__
 We now create the non-linear search, analysis and perform the model-fit using this model.
 
 When we create the analysis, we pass it a `adapt_result`, which is the result of search 1. This is telling the 
-`Analysis` class to use the model-images of this fit to aid the fitting of the `DelaunayBrightnessImage` pixelization 
+`Analysis` class to use the model-images of this fit to aid the fitting of the `KMeans` image-mesh, `Delaunay` mesh 
 and `AdaptiveBrightness` regularization for the source galaxy.
 
 If you inspect and compare the results of searches 1 and 2, you'll note how the model-fits of search 2 have a much

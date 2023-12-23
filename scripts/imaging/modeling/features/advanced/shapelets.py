@@ -13,7 +13,7 @@ Shapelets are described in full in the following paper:
 
  https://arxiv.org/abs/astro-ph/0105178
 
-This script performs a model-fit using shapelet, where it decomposes the source light into a super positive of ~200
+This script performs a model-fit using shapelet, where it decomposes the source light into ~200
 Shapelets. The `intensity` of every Shapelet is solved for via an inversion (see the `light_parametric_linear.py`
 feature).
 
@@ -59,7 +59,7 @@ This script fits an `Imaging` dataset of a galaxy with a model where:
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the modeling `start_here.ipynb` notebook for more detailed comments.
+If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -95,8 +95,7 @@ dataset_plotter.subplot_dataset()
 """
 __Mask__
 
-The model-fit requires a `Mask2D` defining the regions of the image we fit the model to the data, which we define
-and use to set up the `Imaging` object that the model fits.
+Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
 """
 mask = al.Mask2D.circular(
     shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
@@ -177,6 +176,8 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 """
 The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
 `start_here.ipynb` for a description of how to fix this).
+
+This confirms that the source galaxy is made of many `ShapeletCartesian` profiles.
 """
 print(model.info)
 
@@ -184,55 +185,7 @@ print(model.info)
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
-full description). We make the following changes to the Nautilus settings:
-
- - Increase the number of live points, `n_live`, from the default value of 50 to 100. 
-
-These changes are motivated by the higher dimensionality non-linear parameter space that including the lens light 
-creates, which requires more thorough sampling by the non-linear search.
-
-The folders: 
-
- - `autolens_workspace/*/imaging/modeling/searches`.
- - `autolens_workspace/*/imaging/modeling/customize`
-
-Give overviews of the non-linear searches **Pyautolens** supports and more details on how to customize the
-model-fit, including the priors on the model. 
-
-If you are unclear of what a non-linear search is, checkout chapter 2 of the **HowToGalaxy** lectures.
-
-The `name` and `path_prefix` below specify the path where results ae stored in the output folder:  
-
- `/autolens_workspace/output/imaging/light_sersic/mass[sie]/unique_identifier`.
-
-__Unique Identifier__
-
-In the path above, the `unique_identifier` appears as a collection of characters, where this identifier is generated 
-based on the model, search and dataset that are used in the fit.
-
-An identical combination of model and search generates the same identifier, meaning that rerunning the script will use 
-the existing results to resume the model-fit. In contrast, if you change the model or search, a new unique identifier 
-will be generated, ensuring that the model-fit results are output into a separate folder.
-
-We additionally want the unique identifier to be specific to the dataset fitted, so that if we fit different datasets
-with the same model and search results are output to a different folder. We achieve this below by passing 
-the `dataset_name` to the search's `unique_tag`.
-
-__Number Of Cores__
-
-We include an input `number_of_cores`, which when above 1 means that Nautilus uses parallel processing to sample multiple 
-models at once on your CPU. When `number_of_cores=2` the search will run roughly two times as
-fast, for `number_of_cores=3` three times as fast, and so on. The downside is more cores on your CPU will be in-use
-which may hurt the general performance of your computer.
-
-You should experiment to figure out the highest value which does not give a noticeable loss in performance of your 
-computer. If you know that your processor is a quad-core processor you should be able to use `number_of_cores=4`. 
-
-Above `number_of_cores=4` the speed-up from parallelization diminishes greatly. We therefore recommend you do not
-use a value above this.
-
-For users on a Windows Operating system, using `number_of_cores>1` may lead to an error, in which case it should be 
-reduced back to 1 to fix it.
+full description).
 """
 search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
@@ -262,7 +215,7 @@ Gains in the overall run-time however are made thanks to the models reduced comp
 number of free parameters. The source is modeled with 3 free parameters, compared to 6+ for a linear light profile 
 Sersic.
 
-However, the multi-gaussian expansion (MGE) approachj is even faster than shapelets. It uses fewer Gaussian basis
+However, the multi-gaussian expansion (MGE) approach is even faster than shapelets. It uses fewer Gaussian basis
 functions (speed up the likelihood evaluation) and has fewer free parameters (speeding up the non-linear search).
 Furthermore, non of the free parameters scale the size of the source galaxy, which means the non-linear search
 can converge faster.

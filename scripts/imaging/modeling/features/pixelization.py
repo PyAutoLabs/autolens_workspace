@@ -5,8 +5,9 @@ Modeling Features: Pixelization
 A pixelization reconstructs the source's light using a pixel-grid, which is regularized using a prior that forces
 the solution to have a degree of smoothness.
 
-This script fits a source galaxy model which uses a pixelization to reconstruct the source's light. A Delaunay
-mesh and constant regularization scheme are used, which are the simplest forms of mesh and regularization
+This script fits a source galaxy model which uses a pixelization to reconstruct the source's light. 
+
+A Delaunay mesh and constant regularization scheme are used, which are the simplest forms of mesh and regularization
 with provide computationally fast and accurate solutions in **PyAutoLens**.
 
 For simplicity, the lens galaxy's light is omitted from the model and is not present in the simulated data. It is
@@ -32,14 +33,16 @@ enables this.
 
 __Disadvantages__
 
-Pixelizations are computationally slow, and thus the run times will be much longer than a parametric source model.
-It is not uncommon for a pixelization to take hours or even days to fit high resolution imaging data (e.g. Hubble Space
-Telescope imaging).
+Pixelizations are computationally slow and run times are typically longer than a parametric source model. It is not 
+uncommon for lens models using a pixelization to take hours or even days to fit high resolution imaging 
+data (e.g. Hubble Space Telescope imaging).
 
 Lens modeling with pixelizations is also more complex than parametric source models, with there being more things
 that can go wrong. For example, there are solutions where a demagnified version of the lensed source galaxy is
-reconstructed, using a mass model which effectively has no mass or too much mass. These are described in detail below,
-the point for now is that it may take you a longer time to learn how to fit lens models with a pixelization successfully!
+reconstructed, using a mass model which effectively has no mass or too much mass. These are described in detail below.
+
+It will take you longer to learn how to successfully fit lens models with a pixelization than other methods illustrated
+in the workspace!
 
 __Positive Only Solver__
 
@@ -49,11 +52,6 @@ values of the solution (e.g. `np.linalg.solve`), because they are computationall
 This is problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
 light, which is clearly unphysical. For a pixelizaiton, this often produces negative source pixels which over-fit
 the data, producing unphysical solutions.
-
-**PyAutoLens** uses a positive only linear algebra solver which has been extensively optimized to ensure it is as fast
-as positive-negative solvers. This ensures that all light profile intensities are positive and therefore physical.
-
-__Positive Only Solver__
 
 All pixelized source reconstructions use a positive-only solver, meaning that every source-pixel is only allowed
 to reconstruct positive flux values. This ensures that the source reconstruction is physical and that we don't
@@ -84,12 +82,12 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's surface-brightness is reconstructed using a `DelaunayMagnification` mesh and `Constant`
-   regularization scheme.
+ - The source galaxy's surface-brightness is reconstructed using a `Delaunay` mesh, `Overlay` image-mesh
+   and `ConstantSplit` regularization scheme.
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the modeling `start_here.ipynb` notebook for more detailed comments.
+If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -123,7 +121,7 @@ dataset_plotter.subplot_dataset()
 """
 __Mask__
 
-We define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
+Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
 """
 mask = al.Mask2D.circular(
     shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
@@ -152,7 +150,10 @@ example fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source-galaxy's light uses a `DelaunayMagnification` mesh with fixed resolution 30 x 30 pixels (0 parameters).
+ - The source-galaxy's light uses a `Delaunay` mesh [0 parameters].
+ 
+ - The mesh centres of the `Delaunay` mesh are computed using a `Overlay` image-mesh, with a fixed resolution of 
+   30 x 30 pixels [0 parameters].
  
  - This pixelization is regularized using a `ConstantSplit` scheme which smooths every source pixel equally [1 parameter]. 
 
@@ -179,12 +180,16 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
 
-mesh = af.Model(al.mesh.DelaunayMagnification)
-mesh.shape = (30, 30)
+image_mesh = af.Model(al.image_mesh.Overlay)
+image_mesh.shape = (30, 30)
+
+mesh = af.Model(al.mesh.Delaunay)
 
 regularization = af.Model(al.reg.ConstantSplit)
 
-pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)
+pixelization = af.Model(
+    al.Pixelization, image_mesh=image_mesh, mesh=mesh, regularization=regularization
+)
 
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
 
@@ -222,7 +227,8 @@ the lensed source galaxy do not trace close to one another in the source plane. 
 solutions" from the source pixelization, which one is likely to infer without this penalty.
 
 A comprehensive description of why we do this is given at the following readthedocs page. I strongly recommend you 
-read this page in full if you are not familiar with the positions likelihood penalty and demagnified source reconstructions:
+read this page in full if you are not familiar with the positions likelihood penalty and demagnified source 
+reconstructions:
 
  https://pyautolens.readthedocs.io/en/latest/general/demagnified_solutions.html
 
@@ -232,8 +238,7 @@ Unlike other example scripts, we also pass the `AnalysisImaging` object below a 
 includes the positions we loaded above, alongside a `threshold`.
 
 This is because `Inversion`'s suffer a bias whereby they fit unphysical lens models where the source galaxy is 
-reconstructed as a demagnified version of the lensed source. These are covered in more detail in chapter 4 
-of **HowToLens**. 
+reconstructed as a demagnified version of the lensed source. 
 
 To prevent these solutions biasing the model-fit we specify a `position_threshold` of 0.5", which requires that a 
 mass model traces the four (y,x) coordinates specified by our positions (that correspond to the brightest regions of the 
@@ -241,13 +246,13 @@ lensed source) within 0.5" of one another in the source-plane. If this criteria 
 added to likelihood that massively reduces the overall likelihood. This penalty is larger if the ``positions``
 trace further from one another.
 
-This ensures the unphysical solutions that bias an `Inversion` have much lower likelihood that the physical solutions
+This ensures the unphysical solutions that bias a pixelization have a lower likelihood that the physical solutions
 we desire. Furthermore, the penalty term reduces as the image-plane multiple image positions trace closer in the 
 source-plane, ensuring Nautilus converges towards an accurate mass model. It does this very fast, as 
 ray-tracing just a few multiple image positions is computationally cheap. 
 
 The threshold of 0.3" is large. For an accurate lens model we would anticipate the positions trace within < 0.01" of
-one another. However, we only want the threshold to aid the non-linear with the choice of mass model in the intiial fit.
+one another. The high threshold ensures only the initial mass models at the start of the fit are resampled.
 
 Position thresholding is described in more detail in the 
 script `autolens_workspace/*/imaging/modeling/customize/positions.py`
@@ -337,7 +342,7 @@ The pixelization mesh which tests have revealed performs best is the `VoronoiNN`
 mesh with a technique called natural neighbour interpolation (full details are provided in the **HowToLens**
 tutorials).
 
-I recommend users always use these pixelizations, however they require a c library to be installed, thus they are
+I recommend users use this pixelization, how it requires a c library to be installed, thus it is
 not the default pixelization used in this tutorial.
 
 If you want to use this pixelization, checkout the installation instructions here:
@@ -357,9 +362,6 @@ However, fitting complex mass models (e.g. a power-law, stellar / dark model or 
 this level of complexity in the source model. Furthermore, if you are interested in studying the properties of the
 source itself, you won't find a better way to do this than using a pixelization.
 
-Having read this script, you are probably now in a position to fit your own lens model using a pixelization. If you are
-able to do this, and get a fit that is sufficiently good, you are done.
-
 __Chaining__
 
 If your pixelization fit does not go well, or you want for faster computational run-times, you may wish to use
@@ -370,7 +372,6 @@ linking a (computationally fast) light profile fit to a pixelization in the scri
 
 __HowToLens__
 
-You probably also don't have a good understanding of how pixelizations actually work, which comes down to a lot of
-linear algebra, Bayesian statistics and geometry. If you want to understand this, you should checkout chapter 4 of
-**HowToLens**.
+A full description of how pixelizations work, which comes down to a lot of linear algebra, Bayesian statistics and
+2D geometry, is provided in chapter 4 of the **HowToLens** lectures.
 """

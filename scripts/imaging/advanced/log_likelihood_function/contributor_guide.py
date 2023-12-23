@@ -1,9 +1,9 @@
 """
-__Log Likelihood Function: Inversion (pix.VoronoiMagnification + reg.Constant)__
+__Log Likelihood Function: Inversion (image_mesh.Overlay + mesh.Voronoi + + reg.Constant)__
 
 The `inversion` script accompanying this one provides a step-by-step guide of the **PyAutoLens** `log_likelihood_function`
-which is used to fit `Imaging` data with an inversion (specifically a `VoronoiMagnification` pixelization and `Constant`
-regularization scheme`).
+which is used to fit `Imaging` data with an inversion (specifically an `Overlay` image-mesh, `Voronoi` mesh
+and `Constant` regularization scheme`).
 
 This script provides a contributor guide, that gives links to every part of the source-code that performs a LH
 evaluation.

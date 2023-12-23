@@ -5,12 +5,9 @@ Files (Advanced)
 
 The followint example SLaM scripts:
 
-- ``source_parametric.py``: Fits a source galaxy with parametric light profiles.
-- ``source_pixelized.py``: Fits a source galaxy with a pixelized source.
-- ``no_lens_light.py``: Fits a dataset where the lens galaxy has no emission.
-- ``mass_light_dark.py``: Fits a lens galaxy with a stellar plus dark matter mass model.
+- ``start_here.py``: A simple example illustrating how to use the SLaM pipeline to perform analysis of a strong lens.
 
 Folders (Advanced)
 ------------------
 
-- ``slam``: The Source, Light and Mass (SLaM) lens modeling pipelines.
+- ``examples``: Other examples of how to use the SLaM pipelines.

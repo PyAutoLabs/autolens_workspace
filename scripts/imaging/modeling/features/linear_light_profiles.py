@@ -7,18 +7,29 @@ via linear algebra every time the model is fitted to the data. This uses a proce
 always computes the `intensity` values that give the best fit to the data (e.g. maximize the likelihood)
 given the light profile's other parameters.
 
+Based on the advantages below, we recommended you always use linear light profiles to fit models over standard
+light profiles!
+
+__Advantages__
+
 Each light profile's `intensity` parameter is therefore not a free parameter in the model-fit, reducing the
 dimensionality of non-linear parameter space by the number of light profiles (in this example by 2 dimensions).
 
 This also removes the degeneracies that occur between the `intensity` and other light profile parameters
 (e.g. `effective_radius`, `sersic_index`), which are difficult degeneracies for the non-linear search to map out
-accurately. This produces more reliable lens model results and converge in fewer iterations, speeding up the overall
-analysis.
+accurately. This produces more reliable lens model results and the fit converges in fewer iterations, speeding up the
+overall analysis.
 
-The inversion has a relatively small computational cost, thus we reduce the model complexity with much expensive and
+The inversion has a relatively small computational cost, thus we reduce the model complexity without much slow-down and
 can therefore fit models more reliably and faster!
 
-It is therefore recommended you always use linear light profiles to fit models over standard light profiles!
+__Disadvantages__
+
+Althought the computation time of the inversion is small, it is not non-negligable. It is approximately 3-4x slower
+than using a standard light profile.
+
+The gains in run times due to the simpler non-linear parameter space therefore are somewhat balanced by the slower
+likelihood calculation.
 
 __Positive Only Solver__
 
@@ -41,12 +52,12 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the modeling `start_here.ipynb` notebook for more detailed comments.
+If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 
 __Notes__
 
-This script is identical to `modeling/light_parametric__mass_total__source_lp.py` except that the light
-profiles are switched to linear light profiles.
+This script is identical to `modeling/start_here.py` except that the light profiles are switched to linear light 
+profiles.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -80,7 +91,7 @@ dataset_plotter.subplot_dataset()
 """
 __Mask__
 
-We define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
+Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
 """
 mask = al.Mask2D.circular(
     shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
@@ -105,7 +116,7 @@ We compose a lens model where:
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=19.
 
 Note how both the lens and source galaxies use linear light profiles, meaning that the `intensity` parameter of both
-is not longer a free parameter in the fit.
+is no longer a free parameter in the fit.
 
 __Model Cookbook__
 
@@ -147,7 +158,7 @@ The model is fitted to the data using the nested sampling algorithm Nautilus (se
 full description).
 
 In the `start_here.py` example 150 live points (`n_live=150`) were used to sample parameter space. For the linear
-light profiles this is reduced to 100, as the simpler parameter space means we need fewer samples to map it out
+light profiles this is reduced to 100, as the simpler parameter space means we need fewer live points to map it out
 accurately. This will lead to faster run times.
 """
 search = af.Nautilus(
@@ -279,6 +290,4 @@ Checkout `autolens_workspace/*/imaging/results` for a full description of analys
 
 In particular, checkout the results example `linear.py` which details how to extract all information about linear
 light profiles from a fit.
-
-These examples show how the results API can be extended to investigate double Einstein ring results.
 """

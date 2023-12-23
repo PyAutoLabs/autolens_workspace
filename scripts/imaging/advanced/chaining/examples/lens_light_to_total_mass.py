@@ -41,6 +41,10 @@ is also fixed.
 these in memory before the non-linear search begins such that they are not recomputed for every likelihood evaluation.
 
 In this example no preloading occurs.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `chaining/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -230,7 +234,7 @@ in a robust and efficient way.
 The following example pipelines exploit our ability to model separately the lens's light and its mass / the source to 
 perform model-fits in non-linear parameter spaces of reduced complexity, as shown in this example:
 
- `autolens_workspace/imaging/chaining/pipelines/light_parametric__mass_total__source_lp.py`
+ `autolens_workspace/imaging/chaining/pipelines/start_here.py`
  
 __SLaM (Source, Light and Mass)__
  

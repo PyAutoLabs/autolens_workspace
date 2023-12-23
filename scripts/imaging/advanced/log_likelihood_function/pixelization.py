@@ -1,8 +1,8 @@
 """
-__Log Likelihood Function: Inversion (pix.VoronoiMagnification + reg.Constant)__
+__Log Likelihood Function: Inversion (image_mesh.Overlay + mesh.Voronoi + reg.Constant)__
 
 This script provides a step-by-step guide of the **PyAutoLens** `log_likelihood_function` which is used to fit
-`Imaging` data with an inversion (specifically a `VoronoiMagnification` pixelization and `Constant`
+`Imaging` data with an inversion (specifically an `Overlay` image-mesh, `Voronoi` mesh and `Constant`
 regularization scheme`).
 
 This script has the following aims:
@@ -271,7 +271,8 @@ irregularities and asymmetries in the source's surface brightness.
 A constant regularization scheme is applied which applies a smoothness prior on the reconstruction. 
 """
 pixelization = al.Pixelization(
-    mesh=al.mesh.VoronoiMagnification(shape=(30, 30)),
+    image_mesh=al.image_mesh.Overlay(shape=(30, 30)),
+    mesh=al.mesh.Voronoi(),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -330,7 +331,7 @@ __Likelihood Step 3: Source Pixel Centre Calculation__
 In order to reconstruct the source galaxy using a Voronoi mesh, we need to determine the centres of the Voronoi 
 source pixels.
 
-The `VoronoiMagnification` computes the source-pixel centres in the image-plane (which are ray-traced to the 
+The image-mesh `Overlay` object computes the source-pixel centres in the image-plane (which are ray-traced to the 
 source-plane below). The source pixelization therefore adapts to the lens model magnification, because more
 source pixels will congregate in higher magnification regions.
 
@@ -338,15 +339,14 @@ This calculation is performed by overlaying a uniform regular grid with an `pixe
 mask and retaining all pixels that fall within the mask. This uses a `Grid2DSparse` object.
 
 """
-sparse_image_plane_grid = al.Grid2DSparse.from_grid_and_unmasked_2d_grid_shape(
+image_plane_mesh_grid = pixelization.image_mesh.image_plane_mesh_grid_from(
     grid=masked_dataset.grid,
-    unmasked_sparse_shape=source_galaxy.pixelization.mesh.shape,
 )
 
 """
 Plotting this grid shows a sparse grid of (y,x) coordinates within the mask, which will form our source pixel centres.
 """
-visuals = aplt.Visuals2D(grid=sparse_image_plane_grid)
+visuals = aplt.Visuals2D(grid=image_plane_mesh_grid)
 dataset_plotter = aplt.ImagingPlotter(dataset=masked_dataset, visuals_2d=visuals)
 dataset_plotter.figures_2d(data=True)
 
@@ -378,14 +378,14 @@ traced_grid_pixelization = tracer.traced_grid_2d_list_from(
 )[-1]
 
 # This functions a bit weird - it returns a list of lists of ndarrays. Best not to worry about it for now!
-traced_sparse_grid = tracer_to_inversion.traced_sparse_grid_pg_list[0][-1][0]
+traced_mesh_grid = tracer_to_inversion.traced_mesh_grid_pg_list[0][-1][0]
 
 mat_plot = aplt.MatPlot2D(axis=aplt.Axis(extent=[-1.5, 1.5, -1.5, 1.5]))
 
 grid_plotter = aplt.Grid2DPlotter(grid=traced_grid_pixelization, mat_plot_2d=mat_plot)
 grid_plotter.figure_2d()
 
-grid_plotter = aplt.Grid2DPlotter(grid=traced_sparse_grid, mat_plot_2d=mat_plot)
+grid_plotter = aplt.Grid2DPlotter(grid=traced_mesh_grid, mat_plot_2d=mat_plot)
 grid_plotter.figure_2d()
 
 """
@@ -402,7 +402,7 @@ relocated_grid_mesh = traced_grid_pixelization.relocated_grid_from(
 )
 
 relocated_mesh_grid = traced_grid_pixelization.relocated_mesh_grid_from(
-    mesh_grid=traced_sparse_grid
+    mesh_grid=traced_mesh_grid
 )
 
 mat_plot = aplt.MatPlot2D(axis=aplt.Axis(extent=[-1.5, 1.5, -1.5, 1.5]))
@@ -417,12 +417,9 @@ grid_plotter.figure_2d()
 __Likelihood Step 6: Voronoi Mesh__
 
 The relocated pixelization grid is used to create the `Pixelization`'s Voronoi mesh using the `scipy.spatial` library.
-
-The array `sparse_index_for_slim_index` is used for efficiency and can be ignored.
 """
 grid_voronoi = al.Mesh2DVoronoi(
     values=relocated_mesh_grid,
-    nearest_pixelization_index_for_slim_index=sparse_image_plane_grid.sparse_index_for_slim_index,
 )
 
 """
@@ -436,7 +433,7 @@ to show how each set of image-pixels fall within a Voronoi pixel.
 mapper_grids = al.MapperGrids(
     source_plane_data_grid=masked_dataset.grid_pixelization,
     source_plane_mesh_grid=grid_voronoi,
-    image_plane_mesh_grid=sparse_image_plane_grid,
+    image_plane_mesh_grid=image_plane_mesh_grid,
 )
 
 mapper = al.Mapper(mapper_grids=mapper_grids, regularization=None)
@@ -993,8 +990,9 @@ those of you familiar will have seen before.
 fit = al.FitImaging(
     dataset=masked_dataset,
     tracer=tracer,
-    settings_inversion=al.SettingsInversion(use_w_tilde=False),
-    settings_pixelization=al.SettingsPixelization(use_border=True),
+    settings_inversion=al.SettingsInversion(
+        use_w_tilde=False, relocate_pix_border=True
+    ),
 )
 fit_log_evidence = fit.log_evidence
 print(fit_log_evidence)

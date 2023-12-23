@@ -3,6 +3,10 @@ Plots: HalfLightRadiusAXVLine
 =============================
 
 This example illustrates how to plot the half-light radius of a `LightProfile` on 1D figures of its properties.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

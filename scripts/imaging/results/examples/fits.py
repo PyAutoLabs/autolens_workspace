@@ -42,6 +42,10 @@ This tutorial does not use a pixelized source reconstruction or linear light pro
 functionality that interfacts with the `FitImaging` object.
 
 These are described in the dedicated example scripts `results/examples/linear.py` and `results/examples/pixelizaiton.py`.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `results/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

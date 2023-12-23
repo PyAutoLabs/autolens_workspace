@@ -132,7 +132,7 @@ __Settings AutoFit__
 
 The settings of autofit, which controls the output paths, parallelization, database use, etc.
 """
-settings_autofit = af.SettingsSearch(
+settings_search = af.SettingsSearch(
     path_prefix=path.join("interferometer", "slam"),
     unique_tag=dataset_name,
     info=None,
@@ -176,7 +176,7 @@ this example:
 analysis = al.AnalysisInterferometer(dataset=dataset)
 
 source_lp_results = slam.source_lp.run(
-    settings_autofit=settings_autofit,
+    settings_search=settings_search,
     analysis=analysis,
     lens_bulge=None,
     lens_disk=None,
@@ -194,13 +194,14 @@ __SOURCE PIX PIPELINE__
 The SOURCE PIX PIPELINE uses two searches to initialize a robust model for the `Pixelization` that
 reconstructs the source galaxy's light. 
 
-The first search, which is an initialization search, fits a `DelaunayMagnification` mesh with `Constant` 
+The first search, which is an initialization search, fits an `Overlay` image-mesh, `Delaunay` mesh and `Constant` 
 regularization. 
 
 The second search, which uses the mesh and regularization used throughout the remainder of the SLaM pipelines,
 fits the following model:
 
- - Uses a `DelaunayBrightnessImage` pixelization.
+- Uses a `KMeans` image-mesh. 
+- Uses a `Delaunay` mesh.
  - Uses an `AdaptiveBrightness` regularization.
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE LP PIPELINE through to the
  SOURCE PIX PIPELINE.
@@ -219,11 +220,12 @@ analysis = al.AnalysisInterferometer(
 )
 
 source_pix_results = slam.source_pix.run(
-    settings_autofit=settings_autofit,
+    settings_search=settings_search,
     analysis=analysis,
     setup_adapt=setup_adapt,
     source_lp_results=source_lp_results,
-    mesh=al.mesh.DelaunayBrightnessImage,
+    image_mesh=al.image_mesh.KMeans,
+    mesh=al.mesh.Delaunay,
     regularization=al.reg.AdaptiveBrightnessSplit,
 )
 
@@ -249,7 +251,7 @@ In this example it:
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    adapt_result=source_pix_results.last,
+    adapt_images=source_pix_results.last.adapt_images,
     positions_likelihood=source_pix_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2, use_resample=True
     ),
@@ -257,7 +259,7 @@ analysis = al.AnalysisInterferometer(
 )
 
 mass_results = slam.mass_total.run(
-    settings_autofit=settings_autofit,
+    settings_search=settings_search,
     analysis=analysis,
     setup_adapt=setup_adapt,
     source_results=source_pix_results,
@@ -283,15 +285,15 @@ For this modeling script the SUBHALO PIPELINE customizes:
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    adapt_result=source_pix_results.last,
+    adapt_images=source_pix_results.last.adapt_images,
     positions_likelihood=mass_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2, use_resample=True
     ),
     settings_inversion=settings_inversion,
 )
 
-subhalo_results = slam.subhalo.detection(
-    settings_autofit=settings_autofit,
+subhalo_results = slam.subhalo.detection.run(
+    settings_search=settings_search,
     analysis=analysis,
     mass_results=mass_results,
     subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),

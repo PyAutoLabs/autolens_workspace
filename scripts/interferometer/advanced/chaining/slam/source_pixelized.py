@@ -45,6 +45,11 @@ and `use_linear_operators=False`.
 The script `autolens_workspace/*/interferometer/run_times.py` allows you to compute the run-time of an inversion
 for your interferometer dataset. It does this for all possible combinations of settings and therefore can tell you
 which settings give the fastest run times for your dataset.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `autolens_workspace/imaging/advanced/chaining/slam/start_here.ipynb`
+notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -128,7 +133,7 @@ __Settings AutoFit__
 
 The settings of autofit, which controls the output paths, parallelization, database use, etc.
 """
-settings_autofit = af.SettingsSearch(
+settings_search = af.SettingsSearch(
     path_prefix=path.join("interferometer", "slam"),
     unique_tag=dataset_name,
     info=None,
@@ -171,7 +176,7 @@ __Settings__:
 analysis = al.AnalysisInterferometer(dataset=dataset)
 
 source_lp_results = slam.source_lp.run(
-    settings_autofit=settings_autofit,
+    settings_search=settings_search,
     analysis=analysis,
     lens_bulge=None,
     lens_disk=None,
@@ -187,10 +192,11 @@ source_lp_results = slam.source_lp.run(
 __SOURCE PIX PIPELINE__
 
 The SOURCE PIX PIPELINE uses two searches to initialize a robust model for the `Pixelization` that
-reconstructs the source galaxy's light. It begins by fitting a `DelaunayMagnification` mesh with `Constant` 
+reconstructs the source galaxy's light. It begins by fitting an `Overlay` image-mesh, `Delaunay` mesh and `Constant` 
 regularization, to set up the model and hyper images, and then:
 
- - Uses a `DelaunayBrightnessImage` pixelization.
+- Uses a `KMeans` image-mesh. 
+- Uses a `Delaunay` mesh.
  - Uses an `AdaptiveBrightness` regularization.
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE LP PIPELINE through to the
  SOURCE PIX PIPELINE.
@@ -209,11 +215,12 @@ analysis = al.AnalysisInterferometer(
 )
 
 source_pix_results = slam.source_pix.run(
-    settings_autofit=settings_autofit,
+    settings_search=settings_search,
     analysis=analysis,
     setup_adapt=setup_adapt,
     source_lp_results=source_lp_results,
-    mesh=al.mesh.DelaunayBrightnessImage,
+    image_mesh=al.image_mesh.KMeans,
+    mesh=al.mesh.Delaunay,
     regularization=al.reg.AdaptiveBrightnessSplit,
 )
 
@@ -239,7 +246,7 @@ __Settings__:
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    adapt_result=source_pix_results.last,
+    adapt_images=source_pix_results.last.adapt_images,
     positions_likelihood=source_pix_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),
@@ -247,7 +254,7 @@ analysis = al.AnalysisInterferometer(
 )
 
 mass_results = slam.mass_total.run(
-    settings_autofit=settings_autofit,
+    settings_search=settings_search,
     analysis=analysis,
     setup_adapt=setup_adapt,
     source_results=source_pix_results,

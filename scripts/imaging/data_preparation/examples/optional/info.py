@@ -19,6 +19,10 @@ data might be:
 - The velocity dispersion of the lens galaxy.
 - The stellar mass of the lens galaxy.
 - The results of previous strong lens models to the lens performed in previous papers.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `data_preparation/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

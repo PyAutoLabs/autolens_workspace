@@ -3,6 +3,10 @@ Plots: Legend
 =============
 
 This example illustrates how to customize the Matplotlib legend of a PyAutoLens figures and subplot.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

@@ -4,6 +4,10 @@ Plots: Ticks
 
 This example illustrates how to customize the Ticks of a figure or subplot displayed in PyAutoLens, by
 wrapping the inputs of the Matplotlib methods `plt.tick_params`, `plt.yticks` and `plt.xticks`.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

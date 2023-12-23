@@ -1,51 +1,88 @@
 """
-Feature: Sensitivity Mapping
-============================
+Sensitivity Mapping: Start Here
+===============================
 
 Bayesian model comparison allows us to take a dataset, fit it with multiple models and use the Bayesian evidence to
 quantify which model objectively gives the best-fit following the principles of Occam's Razor.
 
 However, a complex model may not be favoured by model comparison not because it is the 'wrong' model, but simply
 because the dataset being fitted is not of a sufficient quality for the more complex model to be favoured. Sensitivity
-mapping allows us to address what quality of data would be needed for the more complex model to be favoured or
-alternatively for what sets of model parameter values it would be favoured for data of a given quality.
+mapping addresses what quality of data would be needed for the more complex model to be favoured.
 
 In order to do this, sensitivity mapping involves us writing a function that uses the model(s) to simulate a dataset.
 We then use this function to simulate many datasets, for many different models, and fit each dataset to quantify
 how much the change in the model led to a measurable change in the data. This is called computing the sensitivity.
 
 How we compute the sensitivity is chosen by us, the user. In this example, we will perform multiple model-fits
-with a nested sampling search, to effectively use Bayesian model comparison to compute the sensitivity. This allows
+with a nested sampling search, and therefore perform Bayesian model comparison to compute the sensitivity. This allows
 us to infer how much of a Bayesian evidence increase we should expect for datasets of varying quality and / or models
 with different parameters.
+
+__Subhalo Detection Discussion__
 
 For strong lensing, this process is crucial for dark matter substructure detection, as discussed in the following paper:
 
 https://arxiv.org/abs/0903.4752
 
 In subhalo detection, our strong lens modeling informs us of whether there is a dark matter subhalo at a given (y,x)
-image-plane location of the strong lens. We determine this by fitting a lens models which include a subhalo. However,
-are only able to detect dark matter subhalos with (y,x) locations near the lensed source light, and when they are
-massive enough to perturb its light in an observable way.
+image-plane location of the strong lens. We determine this by fitting a lens models which includes a subhalo. However,
+we are only able to detect dark matter subhalos with (y,x) locations near the lensed source light, and when the
+subhalo is massive enough to perturb its light in an observable way.
 
 Subhalo detection analysis therefore does not tell us where we could detect subhalos and of what mass. To know this,
 we must perform sensitivity mapping.
 
+__Subhalo Sensitivity Mapping__
+
 Sensitivity mapping is a process where we simulate many thousands of strong lens images. Each simulated image includes a
 dark matter subhalo at a given (y,x) coordinate and at a given mass. We fit each simulated dataset twice,
-with a lens model which does not include a subhalo and with a lens model that does. If the Bayesian evidence
-of the lens model including a subhalo is higher than the model which does not, a subhalo at that (Y,x) location and
-mass is therefore detectable. For many simulated datasets, we will find the evidence does not increase when we include
-a subhalo in the model-fit, informing us that regions of the image-plane away from the lensed source are not sensitive
-to subhalos.
+with a lens model which does not include a subhalo and with a lens model that does.
 
-The sensitivity map is performed over a three dimensional (or higher) grid of subhalo y,x and mass. Thus, once
+If the Bayesian evidence of the lens model including a subhalo is higher than the model which does not, a subhalo at t
+hat (y,x) location and mass is therefore detectable.
+
+For many simulated datasets, we will find the evidence does not increase when we include a subhalo in the model-fit,
+informing us that regions of the image-plane away from the lensed source are not sensitive to subhalos.
+
+The sensitivity map is performed over a three dimensional (or higher) grid of subhalo (y,x) and mass. Thus, once
 sensitivity mapping is complete, we have a complete map of where in the image-plane subhalos of what mass are
 detectable. We can plot 2D plots of this grid to visualize where we are sensitive to dark matter subhalos.
 
 The information provided by a sensitivity map is ultimately required to turn dark matter subhalo detections into
 constraints on the dark matter subhalo mass function, which is the primary goal of subhalo detection. Thus, it is
 necessary to make statements about the nature of dark matter: cold, warm, fuzzy, or something else entirely?
+
+__SLaM Pipelines__
+
+The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pipelines which automate the fitting
+of complex lens models. The SLaM pipelines are used for all DM subhalo detection analyses in **PyAutoLens**.
+
+This example script does not use a SLaM pipeline, to keep the sensitivity mapping self contained. However, it is
+anticipated that any user performing sensitivity mapping on real data will use the SLaM pipelines, which in the
+`subhalo` package have dedicated extensions for performing sensitivity mapping to both imaging and interferometer data.
+
+Therefore you should be familiar with the SLaM pipelines before performing DM subhalo sensitivity mapping on real
+data. If you are unfamiliarwith the SLaM pipelines, checkout the
+example `autolens_workspace/notebooks/imaging/advanced/chaining/slam/start_here.ipynb`.
+
+__Pixelized Source__
+
+Detecting a DM subhalo requires the lens model to be sufficiently accurate that the residuals of the source's light
+are at a level where the subhalo's perturbing lensing effects can be detected.
+
+This requires the source reconstruction to be performed using a pixelized source, as this provides a more detailed
+reconstruction of the source's light than fits using light profiles.
+
+Therefore, the corresponding sensitivity mapping should also be performed using pixelized sources. This example
+sticks to light profile sources, to provide faster run times illustrative purposes.
+
+The example `subhalo/sensitivity/examples/source_pixelized.ipynb` extends the SLaM pipelines with pixelized sources
+and therefore shows how to perform sensitivity mapping using pixelized sources.
+
+Note that the simulation procedure for a pixelized source is different to the one shown here. In this example, the
+light profile source parameters are used to simulate each sensitivity mapping dataset. When pixelized sources are
+used, the source reconstruction on the mesh is used, such that the simulations capture the irregular morphologies
+of real source galaxies.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -152,11 +189,63 @@ and clear we are going to fix the `centre` of the subhalo to a value near the Ei
 iterate over just two `mass_at_200` values corresponding to subhalos of mass 1e6 and 1e13, of which only the latter
 will be shown to be detectable.
 """
-perturb_model.mass.centre.centre_0 = 1.6
-perturb_model.mass.centre.centre_1 = 0.0
+grid_dimension_arcsec = 3.0
+
+perturb_model.mass.mass_at_200 = 1e10
+perturb_model.mass.centre.centre_0 = af.UniformPrior(
+    lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
+)
+perturb_model.mass.centre.centre_1 = af.UniformPrior(
+    lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
+)
 perturb_model.mass.redshift_object = 0.5
 perturb_model.mass.redshift_source = 1.0
-perturb_model.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1e6, upper_limit=1e13)
+
+"""
+__Perturb Model Prior Func__
+
+The default priors on the `perturb_model` are `UniformPrior`'s bounded around each sensitivity grid cell.
+
+For example, the first simulated dark matter subhalo is at location (1.5, -1.5) and its priors are:  
+
+- y is `UniformPrior(lower_limit=0.0, upper_limit=3.0)`.
+- x is `UniformPrior(lower_limit=-3.0, upper_limit=0.0)`.
+
+The `mass_at_200` is fixed to a value of 1e10 in the `perturb_model` above, which is the fixed value used by
+the model fit.
+
+By passing a `perturb_model_prior_func` to the sensitivity mapper, we can manually overwrite the priors on 
+the `perturb_model` which are used instead for the fit.
+
+Below, we update the priors as follows:
+
+- The y and x priors are trimmed to much narrower bounded priors, confined to regions 0.05" each side of the 
+  true DM subhalo.
+
+- The `mass_at_200` is made a free parameter with `LogUniformPrior(lower_limit=1e6, 1e12)`. This is a large range, 
+  but ensures there are solutions where the DM subhalo can go to lower masses.    
+"""
+
+
+def perturb_model_prior_func(perturb_instance, perturb_model):
+    b = 0.05
+
+    perturb_model.mass.centre.centre_0 = af.UniformPrior(
+        lower_limit=perturb_instance.mass.centre[0] - b,
+        upper_limit=perturb_instance.mass.centre[0] + b,
+    )
+
+    perturb_model.mass.centre.centre_1 = af.UniformPrior(
+        lower_limit=perturb_instance.mass.centre[1] - b,
+        upper_limit=perturb_instance.mass.centre[1] + b,
+    )
+
+    perturb_model.mass.mass_at_200 = af.LogUniformPrior(
+        lower_limit=1e6, upper_limit=1e12
+    )
+
+    return perturb_model
+
 
 """
 __Simulation Instance__
@@ -319,26 +408,6 @@ class SimulateImaging:
 
 
 """
-__Analysis Class__
-
-We are about to write functions which fit the base and perturb models to the simulated imaging data. 
-
-It is convenient to define a `Analysis` class, which behaves analogously to the `Analysis` class used elsewhere
-but ensures the adapt images are set up based on the `perturb` model of the sensitivity instance.
-"""
-
-
-class AnalysisImagingSensitivity(al.AnalysisImaging):
-    def __init__(self, dataset):
-        # TODO : PRELOADS, need to make sure w_tilde isnt repeated over and over.
-
-        super().__init__(dataset=dataset)
-
-        self.adapt_galaxy_image_path_dict = result.adapt_galaxy_image_path_dict
-        self.adapt_model_image = result.adapt_model_image
-
-
-"""
 __Base Fit__
 
 We have defined a `Simulate` class that will be used to simulate every dataset simulated by the sensitivity mapper.
@@ -356,11 +425,15 @@ In this example, we use a full non-linear search to fit the `base_model` to the 
 the `log_evidence` of the model fit as the goodness-of-fit. This fit could easily be something much simpler and
 more computationally efficient, for example performing a single log likelihood evaluation of the `base_model` fit
 to the simulated data.
+
+Fucntionality which adapts the mesh and regularization of a pixelized source reconstruction to the unlensed source's 
+morphology require an `adapt_result`. This is an input of the __init__ constructor which is passed to the `Analysis` 
+for every simulated dataset.
 """
 
 
 class BaseFit:
-    def __init__(self, analysis_cls):
+    def __init__(self, adapt_result):
         """
         Class used to fit every dataset used for sensitivity mapping with the base model (the model without the
         perturbed feature sensitivity mapping maps out).
@@ -377,10 +450,11 @@ class BaseFit:
 
         Parameters
         ----------
-        analysis_cls
-            The `Analysis` class used to fit the model to the dataset.
+        adapt_result
+            The result of the previous search containing adapt images used to adapt certain pixelized source meshs's
+            and regularizations to the unlensed source morphology.
         """
-        self.analysis_cls = analysis_cls
+        self.adapt_result = adapt_result
 
     def __call__(self, dataset, model, paths):
         """
@@ -407,7 +481,7 @@ class BaseFit:
             n_live=50,
         )
 
-        analysis = self.analysis_cls(dataset=dataset)
+        analysis = al.AnalysisImaging(dataset=dataset, adapt_result=self.adapt_result)
 
         return search.fit(model=model, analysis=analysis)
 
@@ -427,7 +501,7 @@ to the simulated data.
 
 
 class PerturbFit:
-    def __init__(self, analysis_cls):
+    def __init__(self, adapt_result):
         """
         Class used to fit every dataset used for sensitivity mapping with the perturbed model (the model with the
         perturbed feature sensitivity mapping maps out).
@@ -444,10 +518,11 @@ class PerturbFit:
 
         Parameters
         ----------
-        analysis_cls
-            The `Analysis` class used to fit the model to the dataset.
+        adapt_result
+            The result of the previous search containing adapt images used to adapt certain pixelized source meshs's
+            and regularizations to the unlensed source morphology.
         """
-        self.analysis_cls = analysis_cls
+        self.adapt_result = adapt_result
 
     def __call__(self, dataset, model, paths):
         """
@@ -474,7 +549,7 @@ class PerturbFit:
             n_live=50,
         )
 
-        analysis = self.analysis_cls(dataset=dataset)
+        analysis = al.AnalysisImaging(dataset=dataset, adapt_result=self.adapt_result)
 
         return search.fit(model=model, analysis=analysis)
 
@@ -503,8 +578,9 @@ goodness-of-fit of the model to the data.
 returns the goodness-of-fit of the model to the data.
 
 - `number_of_steps`: The number of steps over which the parameters in the `perturb_model` are iterated. In this 
-example, `mass_at_200` has a `LogUniformPrior` with lower limit 1e6 and upper limit 1e13, therefore 
-the `number_of_steps` of 2 will simulate and fit just 2 datasets where the `mass_at_200` is between 1e6 and 1e13.
+example, each subhalo ``centre` has a `UniformPrior` with lower limit -3.0 and upper limit 3.0, therefore 
+the `number_of_steps=2` will simulate and fit 4 datasets where the `centre` values 
+are [(-1.5, -1.5), (-1.5, 1.5), (1.5, -1.5), (1.5, 1.5)].
 
 - `number_of_cores`: The number of cores over which the sensitivity mapping is performed, enabling parallel processing
 if set above 1.
@@ -520,11 +596,14 @@ sensitivity = af.Sensitivity(
     base_model=base_model,
     perturb_model=perturb_model,
     simulate_cls=SimulateImaging(mask=mask, psf=dataset.psf),
-    base_fit_cls=BaseFit(analysis_cls=AnalysisImagingSensitivity),
-    perturb_fit_cls=PerturbFit(analysis_cls=AnalysisImagingSensitivity),
+    base_fit_cls=BaseFit(adapt_result=result),
+    perturb_fit_cls=PerturbFit(adapt_result=result),
+    perturb_model_prior_func=perturb_model_prior_func,
     number_of_steps=2,
+    #    number_of_steps=(4, 2),
     number_of_cores=2,
 )
+
 sensitivity_result = sensitivity.run()
 
 """
@@ -532,26 +611,19 @@ __Results__
 
 You should now look at the results of the sensitivity mapping in the folder `output/features/sensitivity_mapping`. 
 
-You will note the following 4 model-fits have been performed:
+You will note the following 4 sets of x2 model-fits have been performed:
 
- - The `base_model` is fitted to a simulated dataset where a subhalo with `mass_at_200=1e6` is included.
+ - The `base_model` is fitted to a simulated dataset where a subhalo is included at the (y,x) 
+   coorindates [(-1.5, -1.5), (-1.5, 1.5), (1.5, -1.5), (1.5, 1.5)].
 
- - The `base_model` + `perturb_model` is fitted to a simulated dataset where a subhalo with `mass_at_200=1e6` 
- is included.
-
- - The `base_model` is fitted to a simulated dataset where a subhalo with `mass_at_200=1e13` is included.
-
- - The `base_model` + `perturb_model` is fitted to a simulated dataset where a subhalo with `mass_at_200=1e13` is 
- included.
+ - The `base_model` + `perturb_model` is fitted to a simulated dataset where a subhalo is included at the (y,x) 
+   coorindates [(-1.5, -1.5), (-1.5, 1.5), (1.5, -1.5), (1.5, 1.5)].
 
 The fit produces a `sensitivity_result`. 
 
-We are still developing the `SensitivityResult` class to provide a data structure that better streamlines the analysis
-of results. If you intend to use sensitivity mapping, the best way to interpret the resutls is currently via
-**PyAutoFit**'s database and `Aggregator` tools. 
+We can print the `log_evidence_differences` of every cell of the sensitivity map.
 """
-print(sensitivity_result.results[0].result.samples.log_evidence)
-print(sensitivity_result.results[1].result.samples.log_evidence)
+print(sensitivity_result.log_evidence_differences.native)
 
 """
 Finish.

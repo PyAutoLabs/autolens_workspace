@@ -29,7 +29,7 @@ every lens in you dataset.
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the modeling `start_here.ipynb` notebook for more detailed comments.
+If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -129,21 +129,20 @@ Unlike other example scripts, we also pass the `AnalysisImaging` object below a 
 includes the positions we loaded above, alongside a `threshold`.
 
 This is because `Inversion`'s suffer a bias whereby they fit unphysical lens models where the source galaxy is 
-reconstructed as a demagnified version of the lensed source. These are covered in more detail in chapter 4 
-of **HowToLens**. 
+reconstructed as a demagnified version of the lensed source. 
 
 To prevent these solutions biasing the model-fit we specify a `position_threshold` of 0.5", which requires that a 
 mass model traces the four (y,x) coordinates specified by our positions (that correspond to the brightest regions of the 
 lensed source) within 0.5" of one another in the source-plane. If this criteria is not met, a large penalty term is
 added to likelihood that massive reduces the overall likelihood. 
 
-This ensures the unphysical solutions that bias an `Inversion` have much lower likelihood that the physical solutions
+This ensures the unphysical solutions that bias a pixelization have a lower likelihood that the physical solutions
 we desire. Furthermore, the penalty term reduces as the positions trace closer in the source-plane, ensuring Nautilus
 will converges towards an accurate mass model. It does this very fast, as ray-tracing positions is computationally 
 cheap. 
 
 The threshold of 0.5" is large. For an accurate lens model we would anticipate the positions trace within < 0.01" of
-one another. However, we only want the threshold to aid the non-linear with the choice of mass model in the intiial fit.
+one another. The high threshold ensures only the initial mass models at the start of the fit are resampled.
 """
 positions_likelihood = al.PositionsLHPenalty(positions=positions, threshold=0.3)
 

@@ -20,7 +20,7 @@ using an `Inversion`.
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the simulators `start_here.ipynb` notebook for more detailed comments.
+If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

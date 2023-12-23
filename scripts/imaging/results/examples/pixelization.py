@@ -27,6 +27,10 @@ arc seconds, luminosities in electrons per second and mass quantities (e.g. conv
 
 The results example `units_and_cosmology.ipynb` illustrates how to convert these quantities to physical units like
 kiloparsecs, magnitudes and solar masses.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `results/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -71,7 +75,8 @@ lens = af.Model(
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.DelaunayMagnification(shape=(30, 30)),
+    image_mesh=al.image_mesh.Overlay(shape=(30, 30)),
+    mesh=al.mesh.Delaunay(),
     regularization=al.reg.Constant,
 )
 

@@ -161,7 +161,7 @@ for fit_grid, fit_imaging_detect in zip(agg_grid, fit_imaging_gen):
     )
 
     subhalo_plotter = al.subhalo.SubhaloPlotter(
-        subhalo_grid_search_result=subhalo_search_result,
+        result_subhalo_grid_search=subhalo_search_result,
         fit_imaging_detect=fit_imaging_detect,
         use_log_evidences=True,
     )

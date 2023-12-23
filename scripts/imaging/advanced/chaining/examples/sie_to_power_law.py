@@ -43,6 +43,10 @@ is also fixed.
 these in memory before the non-linear search begins such that they are not recomputed for every likelihood evaluation.
 
 In this example no preloading occurs.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `chaining/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

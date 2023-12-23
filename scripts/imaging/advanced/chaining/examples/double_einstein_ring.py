@@ -41,6 +41,10 @@ is also fixed.
 these in memory before the non-linear search begins such that they are not recomputed for every likelihood evaluation.
 
 In this example no preloading occurs.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `chaining/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -282,6 +286,10 @@ The three searches break down as follows:
 
 The approach used in this pipeline and benefits of using chaining searching to fit double einstein ring systems are
 described in the script `notebooks/imaging/chaining/double_einstein_ring.ipynb`.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `chaining/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -533,9 +541,9 @@ We use the results of search 4 to create the lens model fitted in search 5, wher
  - The lens galaxy's light is an `Sersic` bulge [Parameters fixed to results of search 4].
  - The lens galaxy's total mass distribution is again an `Isothermal` [Parameters fixed to results of search 4].
  - The first source galaxy's mass is a `IsothermalSph` [Parameters fixed to results of search 4].
- - The first source-galaxy's light uses a `DelaunayMagnification`, which is regularized using a `ConstantSplit` 
+ - The first source-galaxy's light uses an `Overlay` image-mesh, `Delaunay` mesh and `ConstantSplit` regularization 
  scheme [3 parameters].
- - The second source-galaxy's light uses a `DelaunayMagnification`, which is regularized using a `ConstantSplit`  
+ - The second source-galaxy's light uses an `Overlay` image-mesh, `Delaunay` mesh and `ConstantSplit` regularization  
  scheme [3 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=6.
@@ -547,7 +555,8 @@ source_0 = af.Model(
     mass=result_4.instance.galaxies.source_0.mass,
     pixelization=af.Model(
         al.Pixelization,
-        mesh=al.mesh.DelaunayMagnification,
+        image_mesh=al.image_mesh.Overlay,
+        mesh=al.mesh.Delaunay,
         regularization=al.reg.ConstantSplit,
     ),
 )
@@ -556,7 +565,8 @@ source_1 = af.Model(
     redshift=2.0,
     pixelization=af.Model(
         al.Pixelization,
-        mesh=al.mesh.DelaunayMagnification,
+        image_mesh=al.image_mesh.Overlay,
+        mesh=al.mesh.Delaunay,
         regularization=al.reg.ConstantSplit,
     ),
 )

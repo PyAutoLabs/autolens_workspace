@@ -229,8 +229,8 @@ for fit in fit_imaging_gen:
     fit_plotter.subplot_fit()
 
 """
-The `AnalysisImaging` object has `settings_pixelization` and `settings_inversion` attributes, which customizes how 
-these are used to fit the data. The generator above uses the `settings` of the object that were used by the model-fit. 
+The `AnalysisImaging` object has a `settings_inversion` attribute, which customizes how the inversion fits the 
+data. The generator above uses the `settings` of the object that were used by the model-fit. 
 
 These settings objected are contained in the database and can therefore also be passed to the `FitImaging`.
 """
@@ -239,7 +239,6 @@ These settings objected are contained in the database and can therefore also be 
 def make_fit_imaging_generator(fit):
     dataset = make_imaging_gen(fit=fit)
 
-    settings_pixelization = fit.value(name="settings_pixelization")
     settings_inversion = fit.value(name="settings_inversion")
 
     tracer = al.Tracer.from_galaxies(galaxies=fit.instance.galaxies)
@@ -247,7 +246,6 @@ def make_fit_imaging_generator(fit):
     return al.FitImaging(
         dataset=dataset,
         tracer=tracer,
-        settings_pixelization=settings_pixelization,
         settings_inversion=settings_inversion,
     )
 

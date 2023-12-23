@@ -3,6 +3,10 @@ Plots: PointDatasetPlotter
 ==========================
 
 This example illustrates how to plot a `PointDataset` dataset using an `PointDatasetPlotter`.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

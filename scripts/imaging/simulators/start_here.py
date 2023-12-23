@@ -11,7 +11,7 @@ __Model__
 
 This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
 
- - The lens galaxy's light profiles is a `Sersic1.
+ - The lens galaxy's light profile is a `Sersic`.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is a `Sersic`.
 

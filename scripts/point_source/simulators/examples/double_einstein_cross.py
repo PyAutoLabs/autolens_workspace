@@ -2,10 +2,14 @@
 Simulator: Point Source
 =======================
 
-This script simulates `Positions` data of a strong lens where:
+This script simulates `PointDataset` data of a strong lens where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source `Galaxy` is a `Point`.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -21,7 +25,7 @@ import autolens.plot as aplt
 """
 __Dataset Paths__
 
-The `dataset_type` describes the type of data being simulated (in this case, `Positions` data) and `dataset_name` 
+The `dataset_type` describes the type of data being simulated (in this case, `PointDataset` data) and `dataset_name` 
 gives it a descriptive name. 
 
  - The image will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/positions.json`.

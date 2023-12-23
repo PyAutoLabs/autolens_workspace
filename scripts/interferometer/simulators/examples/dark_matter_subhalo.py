@@ -7,6 +7,10 @@ This script simulates `Interferometer` data of a 'galaxy-scale' strong lens wher
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The subhalo`s `MassProfile` is a `NFWSph`.
  - The source galaxy's light is an `Sersic`.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

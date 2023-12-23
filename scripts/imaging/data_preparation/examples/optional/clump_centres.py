@@ -26,6 +26,10 @@ clump centres in this way.
 
 The script `modeling/features/clumps.py` shows how to use clumps in a model-fit, including loading the clump centres
 created by this script.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `data_preparation/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

@@ -89,7 +89,7 @@ imaging_plotter.subplot_dataset()
 """
 __Imaging Masking__
 
-We define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
+Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
 """
 mask = al.Mask2D.circular(
     shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=3.0

@@ -160,13 +160,14 @@ __Tracer__
 Set up the `Tracer` used to profile each method, which:
  
  - Does not implement mass or light profiles for the lens galaxy.
- - Uses a `DelaunayMagnification` mesh with `Constant` regularization to fit the data and thus profile the 
+ - Uses an `Overlay` image-mesh, `Delaunay` mesh with `Constant` regularization to fit the data and thus profile the 
   pixelized source reconstruction `Inversion` run time.
 """
 lens_galaxy = al.Galaxy(redshift=0.5)
 
 pixelization = al.Pixelization(
-    mesh=al.mesh.DelaunayMagnification(shape=(30, 30)),
+    image_mesh=al.image_mesh.Overlay(shape=(30, 30)),
+    mesh=al.mesh.Delaunay(),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 

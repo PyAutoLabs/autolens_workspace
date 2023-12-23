@@ -74,7 +74,7 @@ __Settings AutoFit__
 
 The settings of autofit, which controls the output paths, parallelization, database use, etc.
 """
-settings_autofit = af.SettingsSearch(
+settings_search = af.SettingsSearch(
     path_prefix=path.join("interferometer", "slam"),
     unique_tag=dataset_name,
     info=None,
@@ -116,7 +116,7 @@ this example:
 analysis = al.AnalysisInterferometer(dataset=dataset)
 
 source_lp_results = slam.source_lp.run(
-    settings_autofit=settings_autofit,
+    settings_search=settings_search,
     analysis=analysis,
     lens_bulge=None,
     lens_disk=None,
@@ -141,7 +141,7 @@ using the lens mass model and source model of the SOURCE PIPELINE to initialize 
 analysis = al.AnalysisInterferometer(dataset=dataset)
 
 mass_results = slam.mass_total.run(
-    settings_autofit=settings_autofit,
+    settings_search=settings_search,
     analysis=analysis,
     setup_adapt=setup_adapt,
     source_results=source_lp_results,
@@ -154,7 +154,7 @@ __SUBHALO PIPELINE (sensitivity mapping)__
 
 The SUBHALO PIPELINE (sensitivity mapping) performs sensitivity mapping of the data using the lens model
 fitted above, so as to determine where subhalos of what mass could be detected in the data. A full description of
-Sensitivity mapping if given in the script `sensitivity_mapping.py`.
+Sensitivity mapping if given in the SLaM pipeline script `slam/subhalo/sensitivity_imaging.py`.
 
 Each model-fit performed by sensitivity mapping creates a new instance of an `Analysis` class, which contains the
 data simulated by the `simulate_cls` for that model. This requires us to write a wrapper around the 
@@ -166,14 +166,14 @@ class AnalysisInterferometerSensitivity(al.AnalysisInterferometer):
     def __init__(self, dataset):
         super().__init__(dataset=dataset)
 
-        self.adapt_galaxy_image_path_dict = (
-            mass_results.last.adapt_galaxy_image_path_dict
+        self.adapt_galaxy_name_image_dict = (
+            mass_results.last.adapt_galaxy_name_image_dict
         )
         self.adapt_model_image = mass_results.last.adapt_model_image
 
 
 subhalo_results = slam.subhalo.sensitivity_mapping_interferometer(
-    settings_autofit=settings_autofit,
+    settings_search=settings_search,
     analysis_cls=AnalysisInterferometerSensitivity,
     uv_wavelengths=dataset.uv_wavelengths,
     real_space_mask=real_space_mask,

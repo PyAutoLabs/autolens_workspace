@@ -129,8 +129,12 @@ unphysical solutions, which can degrade the results of lens model in general.
 
 __Alternative Pixelizations__
 
-**PyAutoLens** supports many different meshes. Below, we use a `DelaunayMagnification` mesh, which defines
-the source-pixel centres in the image-plane and ray traces them to the source-plane. 
+**PyAutoLens** supports many different meshes. Below, we use a `Delaunay` mesh, which uses a Delaunay tessellation to
+reconstruct the source.
+
+This requires that the centrals of the Delaunay cells, which act as source pixels, are computed first. This uses an
+"image-mesh", which computes them by overlaying a uniform grid of Cartesian coordinates over the image-plane image
+and ray-traces them to the source plane.
 
 The source pixel-grid is therefore adapted to the mass-model magnification pattern, placing more source-pixel in the
 highly magnified regions of the source-plane.
@@ -139,7 +143,8 @@ This leads to a noticeable improvement in the fit, where the residuals are reduc
 is noticeably smoother.
 """
 pixelization = al.Pixelization(
-    mesh=al.mesh.DelaunayMagnification(shape=(40, 40)),
+    image_mesh=al.image_mesh.Overlay(shape=(40, 40)),
+    mesh=al.mesh.Delaunay(),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -159,7 +164,7 @@ The pixelization mesh which tests have revealed performs best is the `VoronoiNN`
 mesh with a technique called natural neighbour interpolation (full details are provided in the **HowToLens**
 tutorials).
 
-I recommend users always use these pixelizations, however they require a c library to be installed, thus they are
+I recommend users use this pixelization, however it requires a c library to be installed, thus it is
 not the default pixelization used in this tutorial.
 
 If you want to use this pixelization, checkout the installation instructions here:
@@ -169,7 +174,8 @@ https://github.com/Jammy2211/PyAutoArray/tree/main/autoarray/util/nn
 The code below is commented out because it will not run on your computer, unless you install the c library.
 """
 pixelization = al.Pixelization(
-    mesh=al.mesh.VoronoiNNMagnification(shape=(40, 40)),
+    image_mesh=al.image_mesh.Overlay(shape=(40, 40)),
+    mesh=al.mesh.VoronoiNN(),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -186,6 +192,23 @@ fit = al.FitImaging(dataset=dataset, tracer=tracer)
 # fit_plotter.figures_2d_of_planes(plane_index=1, plane_image=True)
 
 """
+__Image Meshes__
+
+The `Overlay` image mesh above placed a uniform grid of Cartesian coordinates over the image-plane, producing a 
+source-plane pixelization which adapted to the magnification pattern of the mass-model. The source reconstruction is
+good, but could be improved by placing more source-pixels in the source's brightest regions (which typically do not
+correspond to the highest magnification regions).
+
+**PyAutoLens** has alternative image-mesh objects that adapt the source-plane pixelization to the morphology of the 
+reconstructed unlensed source galaxy. 
+
+This produces the desirable result that high resolution is dedicated to a source's bright, irregular and clumpy 
+features (e.g. star forming clumps) and fewer pixels to the outskirts which have no measureable signal. 
+
+This type of image-mesh is the recommended approach to source analysis in **PyAutoLens**. It requires the advanced 
+adaptive pixelization features, which are recommend for experienced PyAutoLens users and 
+described at `autolens_workspace/*/imaging/advanced/chaining/pix_adapt`.
+
 __Wrap Up__
 
 This script has given a brief overview of pixelizations.

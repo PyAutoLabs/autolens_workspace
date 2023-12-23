@@ -20,6 +20,10 @@ The pixel scale of some common telescopes is as follows:
  - Keck Adaptive Optics 0.01" - 0.03" (depends on the instrument and wavelength).
 
 It is absolutely vital you use the correct pixel scale, so double check this value!
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `data_preparation/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

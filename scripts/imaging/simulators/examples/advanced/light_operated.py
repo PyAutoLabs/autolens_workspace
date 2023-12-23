@@ -5,7 +5,7 @@ Simulator: Light Operated
 It is common for galaxies to have point-source emission, for example bright emission right at their centre due to
 an active galactic nuclei or a compact knot of star formation.
 
-This point-source emission is subject to blurring during data acquisiton due to the telescope optics, and therefore
+This point-source emission is subject to blurring during data acquisition due to the telescope optics, and therefore
 is not seen as a single pixel of light but spread over multiple pixels as a convolution with the telescope
 Point Spread Function (PSF).
 
@@ -27,7 +27,7 @@ This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the simulators `start_here.ipynb` notebook for more detailed comments.
+If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
 # from pyprojroot import here
 # workspace_path = str(here())

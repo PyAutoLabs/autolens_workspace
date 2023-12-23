@@ -5,7 +5,7 @@ Modeling Features: Operated Light Profiles
 It is common for galaxies to have point-source emission, for example bright emission right at their centre due to
 an active galactic nuclei or a compact knot of star formation.
 
-This point-source emission is subject to blurring during data acquisiton due to the telescope optics, and therefore
+This point-source emission is subject to blurring during data acquiziton due to the telescope optics, and therefore
 is not seen as a single pixel of light but spread over multiple pixels as a convolution with the telescope
 Point Spread Function (PSF).
 
@@ -29,7 +29,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the modeling `start_here.ipynb` notebook for more detailed comments.
+If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -63,7 +63,7 @@ dataset_plotter.subplot_dataset()
 """
 __Mask__
 
-We define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
+Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
 """
 mask = al.Mask2D.circular(
     shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0

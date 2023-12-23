@@ -16,6 +16,10 @@ subplot.
 The script `MultiSubplot.py` illustrates a similar example, but a more general use-case where different figures
 from different plotters are plotted on the same subplot. This script offers a more concise way of plotting the same
 figures on the same subplot, but is less general.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

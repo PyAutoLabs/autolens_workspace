@@ -85,7 +85,7 @@ for dataset in dataset_list:
 """
 __Mask__
 
-We define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
+Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
 
 For multi-wavelength lens modeling, we use the same mask for every dataset whenever possible. This is not absolutely 
 necessary, but provides a more reliable analysis.

@@ -3,6 +3,10 @@ Plots: MapperPlotter
 ====================
 
 This example illustrates how to plot a `Mapper` using a `MapperPlotter`.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -53,7 +57,8 @@ lens_galaxy = al.Galaxy(
 )
 
 pixelization = al.Pixelization(
-    mesh=al.mesh.VoronoiMagnification(shape=(25, 25)),
+    image_mesh=al.image_mesh.Overlay(shape=(25, 25)),
+    mesh=al.mesh.Voronoi(),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 

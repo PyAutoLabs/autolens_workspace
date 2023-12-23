@@ -22,7 +22,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a dou
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the modeling `start_here.ipynb` notebook for more detailed comments.
+If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -61,7 +61,7 @@ dataset_plotter.subplot_dataset()
 """
 __Mask__
 
-We define a 3.0" circular mask, which includes the emission of both of the lensed source galaxies.
+Define a 3.0" circular mask, which includes the emission of both of the lensed source galaxies.
 """
 mask = al.Mask2D.circular(
     shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
@@ -78,8 +78,10 @@ __Model__
 We compose a lens model where:
 
  - The first lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
+ 
  - The second lens / first source galaxy's light is a parametric `ExponentialSph` and its mass 
  a `IsothermalSph` [7 parameters].
+
  - The second source galaxy's light is a parametric `ExponentialSph` [4 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=16.
@@ -114,7 +116,7 @@ bulge = af.Model(al.lp_linear.ExponentialSph)
 source_1 = af.Model(al.Galaxy, redshift=2.0, bulge=bulge)
 
 """
-__CHEATING__
+__Cheating__
 
 Initializing a double Einstein ring lens model is difficult, due to the complexity of parameter space. It is common to 
 infer local maxima, which this script does if default broad priors on every model parameter are assumed.

@@ -72,8 +72,11 @@ This script fits `Interferometer` dataset of a 'galaxy-scale' strong lens with a
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `DelaunayMagnification` `Pixelization` and `Constant`
-   regularization.
+ - The source galaxy's light is an `Overlay` image-mesh, `Delaunay` mesh and `Constant` regularization.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -191,7 +194,8 @@ lens = af.Model(
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.DelaunayMagnification(shape=(30, 30)),
+    image_mesh=al.image_mesh.Overlay(shape=(30, 30)),
+    mesh=al.mesh.Delaunay(),
     regularization=al.reg.ConstantSplit,
 )
 
@@ -236,8 +240,7 @@ Unlike other example scripts, we also pass the `AnalysisInterferometer` object b
 whichincludes the positions we loaded above, alongside a `threshold`.
 
 This is because `Inversion`'s suffer a bias whereby they fit unphysical lens models where the source galaxy is 
-reconstructed as a demagnified version of the lensed source. These are covered in more detail in chapter 4 
-of **HowToLens**. 
+reconstructed as a demagnified version of the lensed source. 
 
 To prevent these solutions biasing the model-fit we specify a `position_threshold` of 0.5", which requires that a 
 mass model traces the four (y,x) coordinates specified by our positions (that correspond to the brightest regions of the 
@@ -245,13 +248,13 @@ lensed source) within 0.5" of one another in the source-plane. If this criteria 
 added to likelihood that massively reduces the overall likelihood. This penalty is larger if the ``positions``
 trace further from one another.
 
-This ensures the unphysical solutions that bias an `Inversion` have much lower likelihood that the physical solutions
+This ensures the unphysical solutions that bias a pixelization have a lower likelihood that the physical solutions
 we desire. Furthermore, the penalty term reduces as the image-plane multiple image positions trace closer in the 
 source-plane, ensuring Nautilus converges towards an accurate mass model. It does this very fast, as 
 ray-tracing just a few multiple image positions is computationally cheap. 
 
 The threshold of 0.3" is large. For an accurate lens model we would anticipate the positions trace within < 0.01" of
-one another. However, we only want the threshold to aid the non-linear with the choice of mass model in the intiial fit.
+one another. The high threshold ensures only the initial mass models at the start of the fit are resampled.
 
 Position thresholding is described in more detail in the 
 script `autolens_workspace/*/imaging/modeling/customize/positions.py`

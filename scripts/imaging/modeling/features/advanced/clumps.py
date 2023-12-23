@@ -23,7 +23,7 @@ describes how to create these centres and output them to a `.json` file, which a
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the modeling `start_here.ipynb` notebook for more detailed comments.
+If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -206,7 +206,7 @@ __Search + Analysis__
 The code below performs the normal steps to set up a model-fit.
 
 Given the extra model parameters due to the clumps, we increase the number of live points from the default of
-50 to 100 and make the random walk length 10.
+100 to 150.
 """
 search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),
@@ -220,14 +220,14 @@ analysis = al.AnalysisImaging(dataset=dataset)
 """
 __Run Time__
 
-Adding clumps to the model increases the likelihood evaluation, because their light profiles need their images 
+Adding clumps to the model increases the likelihood evaluation times, because their light profiles need their images 
 evaluated and their mass profiles need their deflection angles computed.
 
 However, these calculations are pretty fast for profiles like `SersicSph` and `IsothermalSph`, so only a small
 increase in time is expected.
 
 The bigger hit on run time is due to the extra free parameters, which increases the dimensionality of non-linear
-parameter space/ This means Nautilus takes longer to converge on the highest likelihood regions of parameter space.
+parameter space. This means Nautilus takes longer to converge on the highest likelihood regions of parameter space.
 """
 run_time_dict, info_dict = analysis.profile_log_likelihood_function(
     instance=model.random_instance()

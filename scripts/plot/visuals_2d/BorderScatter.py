@@ -9,6 +9,10 @@ as a pixel that is on an exterior edge of a mask (e.g. it does not include the i
 
 The `BorderScatter` object serves the purpose is allowing us to uniquely customize the appearance of any border on
 a plot.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

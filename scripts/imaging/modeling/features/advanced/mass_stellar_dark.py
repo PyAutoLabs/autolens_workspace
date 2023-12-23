@@ -10,7 +10,7 @@ This script fits a mass model which decomposes the lens galaxy's mass into its s
 __Advantages__
 
 Decomposed mass models measure direct properties of the stars and dark matter, for example the lens's stellar mass,
-dark matter mass and the relative distribution between the two. Total masss profiles only inform us about the
+dark matter mass and the relative distribution between the two. Total mass profiles only inform us about the
 superposition of these two components.
 
 Decomposed mass models couple the lens galaxy's light profile to its stellar mass distribution, meaning that
@@ -24,7 +24,7 @@ model each have their own elliptical coordinate system, meaning that the mass mo
 __Disadvantages__
 
 Assumptions must be made about how light and mass are coupled. This script assumes a constant mass-to-light raito,
-however it is not clear this is a reliable assumption in many lens galaxy.
+however it is not clear this is a reliable assumption in many lens galaxies.
 
 **PyAutoLens** supports more complex mass models which introduce a radial gradient into the mass-to-light ratio.
 However, these are more complex and therefore are difficult to fit robustly. Furthermore, it is still not clear
@@ -44,7 +44,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the modeling `start_here.ipynb` notebook for more detailed comments.
+If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -75,7 +75,7 @@ dataset = al.Imaging.from_fits(
 """
 __Mask__
 
-We define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
+Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
 """
 mask = al.Mask2D.circular(
     shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0

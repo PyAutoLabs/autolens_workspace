@@ -20,6 +20,10 @@ Links / Resources:
 
 The script `data_prepration/gui/lens_light_centre.ipynb` shows how to use a Graphical User Interface (GUI) to mask the
 lens galaxy light centres.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `data_preparation/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

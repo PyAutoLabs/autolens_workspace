@@ -3,6 +3,10 @@ Plots: MassProfileCentreScatter
 ===============================
 
 This example illustrates how to customize the mass profile centres plotted over data.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

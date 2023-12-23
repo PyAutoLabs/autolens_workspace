@@ -41,6 +41,10 @@ is also fixed.
 these in memory before the non-linear search begins such that they are not recomputed for every likelihood evaluation.
 
 In this example no preloading occurs.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `chaining/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -140,7 +144,9 @@ We use the results of search 1 to create the lens model fitted in search 2, wher
 
  - The lens galaxy's total mass distribution is again an `Isothermal` and `ExternalShear` [7 parameters: 
  priors initialized from search 1].
- - The source-galaxy's light uses a `DelaunayMagnification` mesh [2 parameters].
+ - The source galaxy's light uses an `Overlay` image-mesh [2 parameters].
+ 
+ - The source-galaxy's light uses a `Delaunay` mesh [0 parameters].
  - This pixelization is regularized using a `ConstantSplit` scheme which smooths every source pixel equally [1 parameter]. 
  
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=10.
@@ -153,7 +159,8 @@ lens = result_1.model.galaxies.lens
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.DelaunayMagnification,
+    image_mesh=al.image_mesh.KMeans,
+    mesh=al.mesh.Delaunay,
     regularization=al.reg.ConstantSplit,
 )
 

@@ -8,6 +8,10 @@ final model:
  - The lens galaxy's light is a parametric bulge with a parametric `Sersic` light profile.
  - The lens galaxy's stellar mass distribution is a bulge tied to the light model above.
  - The source galaxy is modeled using a `Pixelization`.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `chaining/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -207,7 +211,9 @@ We use the results of searches 3 to create the lens model fitted in search 4, wh
 
  - The lens mass model also includes an `ExternalShear` [Parameters fixed to results of search 3].
 
- - The source-galaxy's light uses a `DelaunayMagnification` mesh [2 parameters].
+ - The source galaxy's light uses an `Overlay` image-mesh [2 parameters].
+ 
+ - The source-galaxy's light uses a `Delaunay` mesh [0 parameters].
 
  - This pixelization is regularized using a `ConstantSplit` scheme [1 parameter]. 
 
@@ -220,7 +226,8 @@ NOTES:
 """
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.DelaunayMagnification,
+    image_mesh=al.image_mesh.KMeans,
+    mesh=al.mesh.Delaunay,
     regularization=al.reg.ConstantSplit,
 )
 
@@ -260,7 +267,9 @@ We use the results of searches 3 and 4 to create the lens model fitted in search
 
 The lens mass model also includes an `ExternalShear` [2 parameters: priors initialized from search 3].
 
- - The source-galaxy's light uses a `DelaunayMagnification` mesh [parameters fixed to results of search 4].
+ - The source-galaxy's light uses an `Overlay` image-mesh [parameters fixed to results of search 4].
+
+ - The source-galaxy's light uses a `Delaunay` mesh [parameters fixed to results of search 4].
 
  - This pixelization is regularized using a `ConstantSplit` scheme [parameters fixed to results of search 4]. 
 

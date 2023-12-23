@@ -3,6 +3,10 @@ Plots: PlanePlotter
 ===================
 
 This example illustrates how to plot a `Plane` using a `PlanePlotter`.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

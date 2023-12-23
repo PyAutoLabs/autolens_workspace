@@ -58,6 +58,7 @@ The workspace includes the following main directories:
 - ``config``: Configuration files which customize **PyAutoLens**'s behaviour.
 - ``dataset``: Where data is stored, including example datasets distributed.
 - ``output``: Where the **PyAutoLens** analysis and visualization are output.
+- ``slam``: The Source, Light and Mass (SLaM) pipelines to model strong lens imaging **(Advanced)**.
 
 The examples in the ``notebooks`` and ``scripts`` folders are structured as follows:
 

@@ -8,6 +8,19 @@ of a lensed quasar) with **PyAutoLens** and it provides an overview of the lens 
 After reading this script, the `features`, `customize` and `searches` folders provide example for performing lens
 modeling in different ways and customizing the analysis.
 
+__Not Using Light Profiles__
+
+Users familiar with PyAutoLens who are familiar with analysing imaging data will be surprised to see that point-source
+based mass modeling does not use light profiles at all. That is, the source galaxy's light is never modeled as a light
+profile (e.g. a `Sersic`) and it would never be appropriate to use a pixelized source reconstruction.
+
+The reason for this is because the source is, as the name suggest, a point-source of light. It is not extended in
+any way, meaning that modeling it as a light profile would be an incorrect assumption.
+
+If this is a surprise to you or unclear, I recommend you read through the overview example
+`autolens_workspace/*/overview/overview_8_point_sources.py` before continuing. This example explains how point-source
+modeling differs from imaging data and why it is a completely different approach.
+
 __Source Plane Chi Squared__
 
 This example performs point-source modeling using a source-plane chi-squared. This means the likelihood of a model

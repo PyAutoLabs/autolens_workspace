@@ -22,6 +22,10 @@ which are tailored to match the lens or lensed source emission of your data.
 
 The script `data_prepration/gui/mask.ipynb` shows how to use a Graphical User Interface (GUI) to create an even
 more custom mask.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `data_preparation/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

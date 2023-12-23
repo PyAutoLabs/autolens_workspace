@@ -5,6 +5,10 @@ Plots: MultiYX1DPlotter
 This example illustrates how to plot multi 1D figure lines on the same plot.
 
 It uses the specific example of plotting a `MassProfile`'s 1D convergence using multiple `MassProfilePlotter`'s.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here

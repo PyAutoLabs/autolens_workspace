@@ -97,7 +97,7 @@ If we plot the masked data, the mask removes the exterior regions of the image w
 lens and lensed source galaxies.
 
 The mask used to fit the data can be customized, as described in 
-the script `autolens_workspace/*/imaging/modeling/customize/mask.py`
+the script `autolens_workspace/*/imaging/modeling/customize/custom_mask.py`
 """
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
@@ -120,7 +120,7 @@ __Model Composition__
 The API below for composing a lens model uses the `Model` and `Collection` objects, which are imported from 
 **PyAutoLens**'s parent project **PyAutoFit** 
 
-The API is is fairly self explanatory and is straight forward to extend, for example adding more light profiles
+The API is fairly self explanatory and is straight forward to extend, for example adding more light profiles
 to the lens and source or using a different mass profile.
 
 __Model Cookbook__
@@ -236,7 +236,7 @@ correctly, requiring a Python script to be run, often from a command line termin
 To fix these issues, the Python script needs to be adapted to use an `if __name__ == "__main__":` API, as this allows
 the Python `multiprocessing` module to allocate threads and jobs correctly. An adaptation of this example script 
 is provided at `autolens_workspace/scripts/imaging/modeling/customize/parallel.py`, which will hopefully run 
-successfully inparallel on your computer!
+successfully in parallel on your computer!
 
 Therefore if paralellization for this script doesn't work, check out the `parallel.py` example. You will need to update
 all scripts you run to use the this format and API. 
@@ -309,7 +309,7 @@ run_time_dict, info_dict = analysis.profile_log_likelihood_function(
 The overall log likelihood evaluation time is given by the `fit_time` key.
 
 For this example, it is ~0.01 seconds, which is extremely fast for lens modeling. More advanced lens
-modeling features (e.g.multi Gaussian expansions, pixelizations) have slower log likelihood evaluation
+modeling features (e.g. multi Gaussian expansions, pixelizations) have slower log likelihood evaluation
 times (0.1-3 seconds), and you should be wary of this when using these features.
 
 Feel free to go ahead a print the full `run_time_dict` and `info_dict` to see the other information they contain. The
@@ -390,8 +390,7 @@ print(result.info)
 The `Result` object also contains:
 
  - The model corresponding to the maximum log likelihood solution in parameter space.
- - The corresponding maximum log likelihood `Plane` and `FitImaging` objects.
- - 
+ - The corresponding maximum log likelihood `Tracer` and `FitImaging` objects.
  
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
 """
@@ -444,7 +443,7 @@ sounds useful, but for most users you can get by without using these forms of cu
   
 __Data Preparation__
 
-If you are looking to fit your own CCD imaing data of a strong lens, checkout  
+If you are looking to fit your own CCD imaging data of a strong lens, checkout  
 the `autolens_workspace/*/imaging/data_preparation/start_here.ipynb` script for an overview of how data should be 
 prepared before being modeled.
 
