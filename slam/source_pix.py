@@ -73,7 +73,7 @@ def run(
     images that are used in search 2.
     """
 
-    analysis.set_adapt_dataset(result=source_lp_results.last)
+    analysis.adapt_images = source_lp_results.last.adapt_images
 
     mass = al.util.chaining.mass_from(
         mass=source_lp_results.last.model.galaxies.lens.mass,
@@ -129,7 +129,7 @@ def run(
     This search initializes the pixelization's mesh and regularization.
     """
 
-    analysis.set_adapt_dataset(result=result_1)
+    analysis.adapt_images = result_1.adapt_images
 
     model_2 = af.Collection(
         galaxies=af.Collection(
@@ -161,10 +161,10 @@ def run(
                 setup_adapt.mesh_pixels_fixed
             )
 
-    search_2 = af.Nautilus(
+    search_2 = af.DynestyStatic(
         name="source_pix[2]_light[fixed]_mass[fixed]_source[pix]",
         **settings_search.search_dict,
-        n_live=100,
+        nlive=100,
     )
 
     result_2 = search_2.fit(
