@@ -22,7 +22,7 @@
 #  `source_lp`
 #  `mass_total`
 #  `subhalo/detection`
-# 
+#
 # Check them out for a full description of the analysis!
 # """
 # # %matplotlib inline
