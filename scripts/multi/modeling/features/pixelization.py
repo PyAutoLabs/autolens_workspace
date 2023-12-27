@@ -145,7 +145,7 @@ lens = af.Model(
 
 pixelization = af.Model(
     al.Pixelization,
-    image_mesh=al.image_mesh.KMeans,
+    image_mesh=al.image_mesh.Overlay,
     mesh=al.mesh.Delaunay,
     regularization=al.reg.ConstantSplit,
 )
@@ -169,7 +169,7 @@ full description).
 """
 search = af.Nautilus(
     path_prefix=path.join("multi", "modeling"),
-    name="mass[sie]_source[pix]",
+    name="pixelization",
     unique_tag=dataset_name,
     n_live=100,
     number_of_cores=1,
