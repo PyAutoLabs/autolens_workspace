@@ -1,4 +1,4 @@
-Hilbert:
+HilbertBalanced:
   pixels:
     type: Uniform
     lower_limit: 50.0
