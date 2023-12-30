@@ -200,7 +200,7 @@
 # The second search, which uses the mesh and regularization used throughout the remainder of the SLaM pipelines,
 # fits the following model:
 #
-# - Uses a `KMeans` image-mesh.
+# - Uses a `Hilbert` image-mesh.
 # - Uses a `Delaunay` mesh.
 #  - Uses an `AdaptiveBrightness` regularization.
 #  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE LP PIPELINE through to the

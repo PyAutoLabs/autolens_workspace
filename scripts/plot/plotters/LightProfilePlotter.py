@@ -80,9 +80,7 @@ The same image can be set up manually via the `CMap`, `Contour` and `Colorbar` o
 use-case, the `use_log10` input is provided for convenience.
 """
 light_profile_plotter = aplt.LightProfilePlotter(
-    light_profile=bulge, 
-    grid=grid, 
-    mat_plot_2d=aplt.MatPlot2D(use_log10=True)
+    light_profile=bulge, grid=grid, mat_plot_2d=aplt.MatPlot2D(use_log10=True)
 )
 light_profile_plotter.figures_2d(image=True)
 

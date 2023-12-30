@@ -427,13 +427,13 @@ more computationally efficient, for example performing a single log likelihood e
 to the simulated data.
 
 Fucntionality which adapts the mesh and regularization of a pixelized source reconstruction to the unlensed source's 
-morphology require an `adapt_result`. This is an input of the __init__ constructor which is passed to the `Analysis` 
+morphology require an `adapt_images`. This is an input of the __init__ constructor which is passed to the `Analysis` 
 for every simulated dataset.
 """
 
 
 class BaseFit:
-    def __init__(self, adapt_result):
+    def __init__(self, adapt_images):
         """
         Class used to fit every dataset used for sensitivity mapping with the base model (the model without the
         perturbed feature sensitivity mapping maps out).
@@ -450,11 +450,11 @@ class BaseFit:
 
         Parameters
         ----------
-        adapt_result
+        adapt_images
             The result of the previous search containing adapt images used to adapt certain pixelized source meshs's
             and regularizations to the unlensed source morphology.
         """
-        self.adapt_result = adapt_result
+        self.adapt_images = adapt_images
 
     def __call__(self, dataset, model, paths):
         """
@@ -481,7 +481,7 @@ class BaseFit:
             n_live=50,
         )
 
-        analysis = al.AnalysisImaging(dataset=dataset, adapt_result=self.adapt_result)
+        analysis = al.AnalysisImaging(dataset=dataset, adapt_images=self.adapt_images)
 
         return search.fit(model=model, analysis=analysis)
 
@@ -501,7 +501,7 @@ to the simulated data.
 
 
 class PerturbFit:
-    def __init__(self, adapt_result):
+    def __init__(self, adapt_images):
         """
         Class used to fit every dataset used for sensitivity mapping with the perturbed model (the model with the
         perturbed feature sensitivity mapping maps out).
@@ -518,11 +518,11 @@ class PerturbFit:
 
         Parameters
         ----------
-        adapt_result
+        adapt_images
             The result of the previous search containing adapt images used to adapt certain pixelized source meshs's
             and regularizations to the unlensed source morphology.
         """
-        self.adapt_result = adapt_result
+        self.adapt_images = adapt_images
 
     def __call__(self, dataset, model, paths):
         """
@@ -549,7 +549,7 @@ class PerturbFit:
             n_live=50,
         )
 
-        analysis = al.AnalysisImaging(dataset=dataset, adapt_result=self.adapt_result)
+        analysis = al.AnalysisImaging(dataset=dataset, adapt_images=self.adapt_images)
 
         return search.fit(model=model, analysis=analysis)
 
@@ -596,8 +596,8 @@ sensitivity = af.Sensitivity(
     base_model=base_model,
     perturb_model=perturb_model,
     simulate_cls=SimulateImaging(mask=mask, psf=dataset.psf),
-    base_fit_cls=BaseFit(adapt_result=result),
-    perturb_fit_cls=PerturbFit(adapt_result=result),
+    base_fit_cls=BaseFit(adapt_images=result.adapt_images),
+    perturb_fit_cls=PerturbFit(adapt_images=result.adapt_images),
     perturb_model_prior_func=perturb_model_prior_func,
     number_of_steps=2,
     #    number_of_steps=(4, 2),

@@ -170,7 +170,8 @@ the `MatPlot2D` object will do.
 The same image can be set up manually via the `CMap`, `Contour` and `Colorbar` objects, but given this is a common
 use-case, the `use_log10` input is provided for convenience.
 """
-plane_plotter = aplt.PlanePlotter(plane=image_plane, grid=masked_grid, mat_plot_2d=aplt.MatPlot2D(use_log10=True)
+plane_plotter = aplt.PlanePlotter(
+    plane=image_plane, grid=masked_grid, mat_plot_2d=aplt.MatPlot2D(use_log10=True)
 )
 plane_plotter.figures_2d(image=True, convergence=True, potential=True)
 

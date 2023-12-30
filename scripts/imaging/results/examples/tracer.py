@@ -122,7 +122,7 @@ Below, we can see that the image plotted now appears more clearly, with the outs
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer,
     grid=mask.derive_grid.all_false_sub_1,
-    mat_plot_2d=aplt.MatPlot2D(use_log10=True)
+    mat_plot_2d=aplt.MatPlot2D(use_log10=True),
 )
 tracer_plotter.figures_2d(image=True)
 

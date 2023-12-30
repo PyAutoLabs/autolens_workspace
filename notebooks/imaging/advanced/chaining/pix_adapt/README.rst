@@ -4,5 +4,5 @@ lensed source's intrinsic morphology.
 Files (Advanced)
 ----------------
 
-- ``adapt_pix.py``: An example modeling script using hyper mode.
-- ``pipeline.py``: An example search chaining pipeline using hyper mode.
+- ``start_here.py``: The example start here modeling script explaining adapt mode
+- ``pipeline.py``: An example search chaining pipeline using adapt mode.

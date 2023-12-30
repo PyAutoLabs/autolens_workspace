@@ -224,7 +224,9 @@ The `MatPlot2D` object has an input `use_log10`, which will do this automaticall
 Below, we can see that the image plotted now appears more clearly, with the outskirts of the light profile more visible.
 """
 bulge_plotter = aplt.LightProfilePlotter(
-    light_profile=tracer.planes[0].galaxies[0].bulge, grid=dataset.grid, mat_plot_2d=aplt.MatPlot2D(use_log10=True)
+    light_profile=tracer.planes[0].galaxies[0].bulge,
+    grid=dataset.grid,
+    mat_plot_2d=aplt.MatPlot2D(use_log10=True),
 )
 bulge_plotter.figures_2d(image=True)
 

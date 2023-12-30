@@ -193,7 +193,7 @@
 # reconstructs the source galaxy's light. It begins by fitting an `Overlay` image-mesh, `Delaunay` mesh and `Constant`
 # regularization, to set up the model and hyper images, and then:
 #
-# - Uses a `KMeans` image-mesh.
+# - Uses a `Hilbert` image-mesh.
 # - Uses a `Delaunay` mesh.
 #  - Uses an `AdaptiveBrightness` regularization.
 #  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE LP PIPELINE through to the

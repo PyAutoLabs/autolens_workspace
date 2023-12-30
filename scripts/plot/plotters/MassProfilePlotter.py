@@ -92,7 +92,7 @@ The same image can be set up manually via the `CMap`, `Contour` and `Colorbar` o
 use-case, the `use_log10` input is provided for convenience.
 """
 mass_profile_plotter = aplt.MassProfilePlotter(
-    mass_profile=mass, grid=masked_grid,mat_plot_2d=aplt.MatPlot2D(use_log10=True)
+    mass_profile=mass, grid=masked_grid, mat_plot_2d=aplt.MatPlot2D(use_log10=True)
 )
 mass_profile_plotter.figures_2d(convergence=True, potential=True)
 

@@ -5,9 +5,17 @@ SLaM (Source, Light and Mass): Start Here
 This scripts gives an introduce to the Source, (lens) Light and Mass (SLaM) pipelines. These are advanced modeling
 pipelines which use many aspects of core PyAutoLens functionality to automate the modeling of strong lenses.
 
+__Prequisites__
+
 Before reading this script, you should be familiar with non-linear search chaining, illustrated in the
 `imaging/advanced/chaining` package, and have experience using have looked at multiple examples explaining why its
 a powerful tool to chain models together (e.g. going from a light profile source to pixelixed source).
+
+You should also be familiar with adaptive pixelization features, which are described in the
+`imaging/advanced/chaining/pix_adapt/start_here.py` script. These features adapt the source pixelization to the source's
+unlensed morphology, and is used throughout the SLaM pipelines.
+
+__Overview__
 
 The Source, (lens) Light and Mass pipelines (SLaM) chain together between 3-6 searches in a carefully crafted way
 which fully exploit the different benefits of search chaining. They provide a fully automated framework for fitting
@@ -197,7 +205,7 @@ regularization.
 The second search, which uses the mesh and regularization used throughout the remainder of the SLaM pipelines,
 fits the following model:
 
-- Uses a `KMeans` image-mesh. 
+- Uses a `Hilbert` image-mesh. 
 - Uses a `Delaunay` mesh.
  - Uses an `AdaptiveBrightness` regularization.
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE LP PIPELINE through to the
@@ -290,7 +298,7 @@ __Settings__:
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_result=light_results.last,
+    adapt_images=source_pix_results[0].adapt_images,
     positions_likelihood=source_pix_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),

@@ -12,7 +12,7 @@ of a strong lens system, where in the final model:
 
  - The lens galaxy's light is omitted from the data and model.
  - The lens galaxy's total mass distribution is an `PowerLaw`.
- - The source galaxy is reconstructed using a `Kmeans` image-mesh, `Delaunay` mesh and `ConstantSplit` 
+ - The source galaxy is reconstructed using a `Hilbert` image-mesh, `Delaunay` mesh and `ConstantSplit` 
    regularization scheme.
 
 This uses the SLaM pipelines:
@@ -138,7 +138,7 @@ regularization.
 The second search, which uses the mesh and regularization used throughout the remainder of the SLaM pipelines,
 fits the following model:
 
-- Uses a `KMeans` image-mesh. 
+- Uses a `Hilbert` image-mesh. 
 - Uses a `Delaunay` mesh.
  - Uses an `AdaptiveBrightness` regularization.
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE LP PIPELINE through to the
