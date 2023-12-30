@@ -22,6 +22,17 @@ ArrayOverlay:        # wrapper for `plt.imshow()`: customize arrays overlaid.
     alpha: 0.5
   subplot:
     alpha: 0.5
+Contour:             # wrapper for `plt.contour()`: customize contours plotted on the figure.
+  figure:
+    colors: "k"
+    total_contours: 10     # Number of contours to plot
+    use_log10: true        # If true, contours are plotted with log10 spacing, if False, linear spacing.
+    include_values: true   # If true, the values of the contours are plotted on the figure.
+  subplot:
+    colors: "k"
+    total_contours: 10     # Number of contours to plot
+    use_log10: true        # If true, contours are plotted with log10 spacing, if False, linear spacing.
+    include_values: true   # If true, the values of the contours are plotted on the figure.
 BorderScatter:       # wrapper for `plt.scatter()`: customize the apperance of 2D borders.
   figure:
     c: r

@@ -100,7 +100,7 @@ In this example, we only fix the number of source pixels to 1500, which balances
 resolution of the source reconstruction. The adapt search uses the default settings, including a `Nautilus` 
 non-linear search.
 """
-setup_adapt = al.SetupAdapt(mesh_pixels_fixed=1500)
+setup_adapt = al.SetupAdapt(mesh_pixels_fixed=1000)
 
 """
 __Model + Search + Analysis + Model-Fit (Search 1)__
@@ -262,7 +262,7 @@ NOTES:
 """
 pixelization = af.Model(
     al.Pixelization,
-    image_mesh=al.image_mesh.KMeans,
+    image_mesh=al.image_mesh.Hilbert,
     mesh=al.mesh.Delaunay,
     regularization=al.reg.ConstantSplit,
 )

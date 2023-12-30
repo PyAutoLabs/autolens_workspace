@@ -175,7 +175,7 @@ of the regularization scheme, before using these models to refit the lens mass m
 """
 pixelization = af.Model(
     al.Pixelization,
-    image_mesh=al.image_mesh.KMeans,
+    image_mesh=al.image_mesh.Hilbert,
     mesh=al.mesh.Delaunay,
     regularization=al.reg.ConstantSplit,
 )

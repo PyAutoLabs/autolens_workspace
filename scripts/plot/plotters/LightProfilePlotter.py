@@ -71,6 +71,22 @@ light_profile_plotter = aplt.LightProfilePlotter(
 light_profile_plotter.figures_2d(image=True)
 
 """
+__Log10__
+
+Light profiles are often clearer in log10 space, which inputting `use_log10=True` into the `MatPlot2D` object
+will do.
+
+The same image can be set up manually via the `CMap`, `Contour` and `Colorbar` objects, but given this is a common
+use-case, the `use_log10` input is provided for convenience.
+"""
+light_profile_plotter = aplt.LightProfilePlotter(
+    light_profile=bulge, 
+    grid=grid, 
+    mat_plot_2d=aplt.MatPlot2D(use_log10=True)
+)
+light_profile_plotter.figures_2d(image=True)
+
+"""
 __Errors__
 
 Using a `LightProfilePDFPlotter`, we can make 1D plots that show the errors of a light model estimated via a model-fit. 

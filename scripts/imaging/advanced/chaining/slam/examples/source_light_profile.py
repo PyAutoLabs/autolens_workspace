@@ -95,7 +95,7 @@ __Adapt Setup__
 The `SetupAdapt` determines which hyper-mode features are used during the model-fit.
 """
 setup_adapt = al.SetupAdapt(
-    mesh_pixels_fixed=1500,
+    mesh_pixels_fixed=1000,
 )
 
 """

@@ -155,7 +155,7 @@
 # The `SetupAdapt` determines which hyper-mode features are used during the model-fit.
 # """
 # setup_adapt = al.SetupAdapt(
-#     mesh_pixels_fixed=1500,
+#     mesh_pixels_fixed=1000,
 # )
 #
 # """
@@ -224,7 +224,7 @@
 #     analysis=analysis,
 #     setup_adapt=setup_adapt,
 #     source_lp_results=source_lp_results,
-#     image_mesh=al.image_mesh.KMeans,
+#     image_mesh=al.image_mesh.Hilbert,
 #     mesh=al.mesh.Delaunay,
 #     regularization=al.reg.AdaptiveBrightnessSplit,
 # )

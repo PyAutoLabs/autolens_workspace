@@ -83,6 +83,20 @@ mass_profile_plotter = aplt.MassProfilePlotter(
 mass_profile_plotter.figures_2d(convergence=True)
 
 """
+__Log10__
+
+Mass profiles are often clearer in log10 space, which inputting `use_log10=True` into the `MatPlot2D` object
+will do.
+
+The same image can be set up manually via the `CMap`, `Contour` and `Colorbar` objects, but given this is a common
+use-case, the `use_log10` input is provided for convenience.
+"""
+mass_profile_plotter = aplt.MassProfilePlotter(
+    mass_profile=mass, grid=masked_grid,mat_plot_2d=aplt.MatPlot2D(use_log10=True)
+)
+mass_profile_plotter.figures_2d(convergence=True, potential=True)
+
+"""
 __Errors__
 
 Using a `MassProfilePDFPlotter`, we can make 1D plots that show the errors of a mass model estimated via a model-fit. 

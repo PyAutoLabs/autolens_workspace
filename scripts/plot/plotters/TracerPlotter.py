@@ -105,6 +105,19 @@ tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=masked_grid, include_2d=
 tracer_plotter.figures_2d(image=True, source_plane=True)
 
 """
+__Log10__
+
+A plane's light and mass profiles are often clearer in log10 space, which inputting `use_log10=True` into 
+the `MatPlot2D` object will do.
+
+The same image can be set up manually via the `CMap`, `Contour` and `Colorbar` objects, but given this is a common
+use-case, the `use_log10` input is provided for convenience.
+"""
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=masked_grid, mat_plot_2d=aplt.MatPlot2D(use_log10=True)
+)
+tracer_plotter.figures_2d(image=True, convergence=True, potential=True)
+
+"""
 __Plane Image__
 
 Whereas a `PlanePlotter` had a method to plot its `plane_image`, it did not know the caustics of the source-plane as

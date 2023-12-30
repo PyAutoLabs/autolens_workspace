@@ -91,8 +91,13 @@ def run(
         multipole.einstein_radius = mass.einstein_radius
         multipole.slope = mass.slope
 
+    if light_results is not None:
+        result_source = light_results.last
+    else:
+        result_source = source_results.last
+
     source = al.util.chaining.source_from(
-        result=source_results.last,
+        result=result_source,
     )
 
     model = af.Collection(
