@@ -94,13 +94,6 @@ redshift_lens = 0.5
 redshift_source = 1.0
 
 """
-__Adapt Setup__
-
-The `SetupAdapt` determines which hyper-mode features are used during the model-fit.
-"""
-setup_adapt = al.SetupAdapt()
-
-"""
 __SOURCE LP PIPELINE__
 
 This is the standard SOURCE LP PIPELINE described in the `slam/start_here.ipynb` example.
@@ -136,7 +129,6 @@ bulge = af.Model(al.lp.Sersic)
 light_results = slam.light_lp.run(
     settings_search=settings_search,
     analysis=analysis,
-    setup_adapt=setup_adapt,
     source_results=source_lp_results,
     lens_bulge=bulge,
     lens_disk=None,
@@ -154,7 +146,6 @@ analysis = al.AnalysisImaging(
 mass_results = slam.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
-    setup_adapt=setup_adapt,
     source_results=source_lp_results,
     light_results=light_results,
     mass=af.Model(al.mp.PowerLaw),

@@ -8,12 +8,10 @@ from typing import Union, Optional
 def run(
     settings_search: af.SettingsSearch,
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
-    setup_adapt: al.SetupAdapt,
     source_results: af.ResultsCollection,
     lens_bulge: Optional[af.Model] = af.Model(al.lp.Sersic),
     lens_disk: Optional[af.Model] = None,
     lens_point: Optional[af.Model] = None,
-    end_with_adapt_extension: bool = False,
 ) -> af.ResultsCollection:
     """
     The SlaM LIGHT LP PIPELINE, which fits a complex model for a lens galaxy's light with the mass and source models
@@ -26,8 +24,6 @@ def run(
         parallelization, etc.).
     analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_adapt
-        The setup of the adapt fit.
     source_results
         The results of the SLaM SOURCE LP PIPELINE or SOURCE PIX PIPELINE which ran before this pipeline.
     lens_bulge
@@ -39,9 +35,6 @@ def run(
     lens_point
         The model used to represent the light distribution of the lens galaxy's point-source(s)
         emission (e.g. a nuclear star burst region) or compact central structures (e.g. an unresolved bulge).
-    end_with_adapt_extension
-        If `True` an adapt extension is performed at the end of the pipeline. If this feature is used, you must be
-        certain you have manually passed the new hyper images generated in this search to the next pipelines.
     """
 
     """
@@ -90,21 +83,5 @@ def run(
     )
 
     result_1 = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
-
-    """
-    __Adapt Extension__
-
-    The above search is extended with an adapt search if the SetupAdapt has one or more of the following inputs:
-
-     - The source is modeled using a pixelization with a regularization scheme.
-    """
-
-    if end_with_adapt_extension:
-        result_1 = al.util.model.adapt_fit(
-            setup_adapt=setup_adapt,
-            result=result_1,
-            analysis=analysis,
-            search_previous=search,
-        )
 
     return af.ResultsCollection([result_1])

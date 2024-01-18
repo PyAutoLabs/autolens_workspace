@@ -92,14 +92,6 @@ The redshifts of the lens and source galaxies.
 redshift_lens = 0.5
 redshift_source = 1.0
 
-"""
-__Adapt Setup__
-
-The `SetupAdapt` determines which hyper-mode features are used during the model-fit.
-"""
-setup_adapt = al.SetupAdapt(
-    mesh_pixels_fixed=1000,
-)
 
 """
 __SOURCE LP PIPELINE__
@@ -167,7 +159,6 @@ analysis = al.AnalysisImaging(
 source_pix_results = slam.source_pix.run(
     settings_search=settings_search,
     analysis=analysis,
-    setup_adapt=setup_adapt,
     source_lp_results=source_lp_results,
     image_mesh=al.image_mesh.Hilbert,
     mesh=al.mesh.Delaunay,
@@ -201,7 +192,6 @@ bulge = af.Model(al.lp.Sersic)
 light_results = slam.light_lp.run(
     settings_search=settings_search,
     analysis=analysis,
-    setup_adapt=setup_adapt,
     source_results=source_pix_results,
     lens_bulge=bulge,
     lens_disk=None,
@@ -251,7 +241,6 @@ dark.centre = lens_bulge.centre
 mass_results = slam.mass_light_dark.run(
     settings_search=settings_search,
     analysis=analysis,
-    setup_adapt=setup_adapt,
     source_results=source_pix_results,
     light_results=light_results,
     lens_bulge=lens_bulge,

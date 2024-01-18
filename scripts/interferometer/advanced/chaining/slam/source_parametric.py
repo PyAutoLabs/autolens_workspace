@@ -93,14 +93,6 @@ from arc-seconds to kiloparsecs, masses to solar masses, etc.).
 redshift_lens = 0.5
 redshift_source = 1.0
 
-"""
-__Adapt Setup__
-
-The `SetupAdapt` determines which hyper-mode features are used during the model-fit.
-"""
-setup_adapt = al.SetupAdapt(
-    mesh_pixels_fixed=1000,
-)
 
 """
 __SOURCE LP PIPELINE__
@@ -150,7 +142,6 @@ analysis = al.AnalysisInterferometer(dataset=dataset)
 mass_results = slam.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
-    setup_adapt=setup_adapt,
     source_results=source_lp_results,
     light_results=None,
     mass=af.Model(al.mp.PowerLaw),

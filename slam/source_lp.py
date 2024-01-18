@@ -27,8 +27,6 @@ def run(
     ----------
     analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_adapt
-        The setup of the adapt fit.
     lens_bulge
         The model used to represent the light distribution of the lens galaxy's bulge (set to
         None to omit a bulge).

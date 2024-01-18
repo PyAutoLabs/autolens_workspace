@@ -149,14 +149,6 @@
 # redshift_lens = 0.5
 # redshift_source = 1.0
 #
-# """
-# __Adapt Setup__
-#
-# The `SetupAdapt` determines which hyper-mode features are used during the model-fit.
-# """
-# setup_adapt = al.SetupAdapt(
-#     mesh_pixels_fixed=1000,
-# )
 #
 # """
 # __SOURCE LP PIPELINE__
@@ -222,7 +214,6 @@
 # source_pix_results = slam.source_pix.run(
 #     settings_search=settings_search,
 #     analysis=analysis,
-#     setup_adapt=setup_adapt,
 #     source_lp_results=source_lp_results,
 #     image_mesh=al.image_mesh.Hilbert,
 #     mesh=al.mesh.Delaunay,
@@ -261,7 +252,6 @@
 # mass_results = slam.mass_total.run(
 #     settings_search=settings_search,
 #     analysis=analysis,
-#     setup_adapt=setup_adapt,
 #     source_results=source_pix_results,
 #     light_results=None,
 #     mass=af.Model(al.mp.PowerLaw),

@@ -1,13 +1,12 @@
 import autofit as af
 import autolens as al
 
-from typing import Tuple, Union
+from typing import Optional, Tuple, Union
 
 
 def run(
     settings_search: af.SettingsSearch,
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
-    setup_adapt: al.SetupAdapt,
     source_lp_results: af.ResultsCollection,
     image_mesh_init: af.Model(al.AbstractImageMesh) = af.Model(al.image_mesh.Overlay),
     mesh_init: af.Model(al.AbstractMesh) = af.Model(al.mesh.Delaunay),
@@ -20,6 +19,7 @@ def run(
     regularization: af.Model(al.AbstractRegularization) = af.Model(
         al.reg.AdaptiveBrightnessSplit
     ),
+    image_mesh_pixels_fixed: Optional[int] = 1000,
 ) -> af.ResultsCollection:
     """
     The SLaM SOURCE PIX PIPELINE, which initializes a lens model which uses a pixelized source for the source
@@ -29,8 +29,6 @@ def run(
     ----------
     analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_adapt
-        The setup of the adapt fit.
     source_lp_results
         The results of the SLaM SOURCE LP PIPELINE which ran before this pipeline.
     image_mesh_init
@@ -54,6 +52,9 @@ def run(
     regularization
         The regularization, which places a smoothness prior on the source reconstruction, used by the pixelization
         in the final search which improves the source adaption.
+    image_mesh_pixels_fixed
+        The fixed number of pixels in the image-mesh, if an image-mesh with an input number of pixels is used
+        (e.g. `Hilbert`).
     """
 
     """
@@ -155,10 +156,10 @@ def run(
         clumps=al.util.chaining.clumps_from(result=source_lp_results.last),
     )
 
-    if setup_adapt.mesh_pixels_fixed is not None:
+    if image_mesh_pixels_fixed is not None:
         if hasattr(model_2.galaxies.source.pixelization.image_mesh, "pixels"):
             model_2.galaxies.source.pixelization.image_mesh.pixels = (
-                setup_adapt.mesh_pixels_fixed
+                image_mesh_pixels_fixed
             )
 
     search_2 = af.DynestyStatic(

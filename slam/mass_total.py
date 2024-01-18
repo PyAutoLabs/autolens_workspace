@@ -8,7 +8,6 @@ from typing import Union, Optional, Tuple
 def run(
     settings_search: af.SettingsSearch,
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
-    setup_adapt: al.SetupAdapt,
     source_results: af.ResultsCollection,
     light_results: Optional[af.ResultsCollection],
     mass: af.Model = af.Model(al.mp.Isothermal),
@@ -16,7 +15,6 @@ def run(
     smbh: Optional[af.Model] = None,
     mass_centre: Optional[Tuple[float, float]] = None,
     reset_shear_prior: bool = False,
-    end_with_adapt_extension: bool = False,
 ) -> af.ResultsCollection:
     """
     The SLaM MASS TOTAL PIPELINE, which fits a lens model with a total mass distribution (e.g. a power-law).
@@ -25,8 +23,6 @@ def run(
     ----------
     analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    setup_adapt
-        The setup of the adapt fit.
     source_results
         The results of the SLaM SOURCE LP PIPELINE or SOURCE PIX PIPELINE which ran before this pipeline.
     light_results
@@ -42,9 +38,6 @@ def run(
         If `True`, the shear of the mass model is reset to the config priors (e.g. broad uniform). This is useful
         when the mass model changes in a way that adds azimuthal structure (e.g. `PowerLawMultipole`) that the
         shear in ass models in earlier pipelines may have absorbed some of the signal of.
-    end_with_adapt_extension
-        If `True` an adapt extension is performed at the end of the pipeline. If this feature is used, you must be
-        certain you have manually passed the new hyper images generated in this search to the next pipelines.
     """
 
     """
@@ -127,21 +120,5 @@ def run(
     )
 
     result_1 = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
-
-    """
-    __Adapt Extension__
-
-    The above search may be extended with an adapt search, if the SetupAdapt has one or more of the following inputs:
-
-     - The source is modeled using a pixelization with a regularization scheme.
-    """
-
-    if end_with_adapt_extension:
-        result_1 = al.util.model.adapt_fit(
-            setup_adapt=setup_adapt,
-            result=result_1,
-            analysis=analysis,
-            search_previous=search,
-        )
 
     return af.ResultsCollection([result_1])

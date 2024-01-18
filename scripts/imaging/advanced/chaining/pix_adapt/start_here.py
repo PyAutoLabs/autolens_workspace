@@ -262,40 +262,4 @@ These pipelines are built around the use of adaptive features -- for example the
 these features are set up robustly before more complex lens light and mass models are fitted.
 
 Below, we detail a few convenience functions that make using adaptive features in the SLaM pipelines straight forward.
-
-__Adapt Fit__
-
-The second search above fitted just the parameters of the adaptive objects in the source galaxy (the `Hilbert`
-image-mesh and `AdaptiveBrightness` regularization scheme). 
-
-This is a very common thing to do, therefore a convenience function `adapt_fit` is provided in the `model_util`
-module.
-
-This takes as input the `SetupAdapt` object, which determines the pixelization adaption setup. 
-
-The following options are available:
-
- - `mesh_pixels_fixed`: Use a fixed number of source pixels in the pixelization's mesh.
-
- - `search_pix_cls`: The non-linear search used to adapt the pixelization's mesh and regularization scheme.
-
- - `search_pix_dict`: The dictionary of search options for the adapt model-fit searches.
-
-The image-mesh, mesh and regularization schemes which adapt to the source's properties are not passed into
-`SetupAdapt`, they are instead extracted from the `result` passed in. 
-
-This means `adapt_fit` is not used the first time a model-fit is performed, but instead only if the adaptive features 
-are being fitted for the second time (e.g. after search 3 above).
-"""
-setup_adapt = al.SetupAdapt(mesh_pixels_fixed=1000)
-
-result_3 = al.util.model.adapt_fit(
-    setup_adapt=setup_adapt,
-    result=result_3,
-    analysis=analysis_3,
-    search_previous=search_3,
-)
-
-"""
-The result is extended with a new attribute `adapt` which can be used for subsequent model-fits via search chaining.
 """

@@ -57,8 +57,11 @@ label:
     redshift: z
     redshift_object: z_{\rm obj}
     redshift_source: z_{\rm src}
+    rs: r_{\rm s}
+    ra: r_{\rm a}
     scale_radius: R_{\rm s}
     scatter: \sigma
+    sigma_scale: \sigma
     separation: s
     sersic_index: n
     shape_0: y_{\rm pix}
@@ -132,12 +135,14 @@ label_format:
     outer_coefficient: '{:.4f}'
     outer_slope: '{:.4f}'
     pixels: '{:.4f}'
+    ra : '{:.4f}'
     radius: '{:.4f}'
     radius_break: '{:.4f}'
     redshift: '{:.4f}'
     redshift_object: '{:.4f}'
     redshift_source: '{:.4f}'
     rho: '{:.4f}'
+    rs: '{:.4f}'
     scale_radius: '{:.4f}'
     separation: '{:.4f}'
     sersic_index: '{:.4f}'
