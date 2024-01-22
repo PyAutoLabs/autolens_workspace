@@ -152,6 +152,12 @@ The `FitImagingPlotter` may also plot a subplot of these attributes.
 fit_plotter.subplot_fit()
 fit_plotter.subplot_of_planes(plane_index=1)
 
+"""
+It also includes a log10 subplot option, which shows the same figures but with the colormap in log10 format to
+highlight the fainter regions of the data.
+"""
+fit_plotter.subplot_fit_log10()
+
 """`
 __Include__
 
