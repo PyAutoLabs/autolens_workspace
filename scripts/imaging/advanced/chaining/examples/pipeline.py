@@ -224,9 +224,12 @@ NOTES:
  - This search allows us to very efficiently set up the resolution of the mesh and regularization coefficient 
  of the regularization scheme, before using these models to refit the lens mass model.
 """
+image_mesh = af.Model(al.image_mesh.Overlay)
+image_mesh.shape = (30, 30)
+
 pixelization = af.Model(
     al.Pixelization,
-    image_mesh=al.image_mesh.Hilbert,
+    image_mesh=image_mesh,
     mesh=al.mesh.Delaunay,
     regularization=al.reg.ConstantSplit,
 )

@@ -157,9 +157,12 @@ does not use any priors from the result of search 1.
 """
 lens = result_1.model.galaxies.lens
 
+image_mesh = af.Model(al.image_mesh.Overlay)
+image_mesh.shape = (30, 30)
+
 pixelization = af.Model(
     al.Pixelization,
-    image_mesh=al.image_mesh.Hilbert,
+    image_mesh=image_mesh,
     mesh=al.mesh.Delaunay,
     regularization=al.reg.ConstantSplit,
 )
