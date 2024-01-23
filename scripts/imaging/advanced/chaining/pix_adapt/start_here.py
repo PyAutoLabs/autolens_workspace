@@ -190,29 +190,66 @@ source = af.Model(
 model_2 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
-__Search + Analysis + Model-Fit (Search 2)__
+__Analysis (Search 2)__
 
-We now create the non-linear search, analysis and perform the model-fit using this model.
+We now create the analysis for the second search.
+
+__Adapt Images__
 
 When we create the analysis, we pass it a `adapt_images`, which contains the model image of the source galaxy from 
 the result of search 1. 
 
 This is telling the `Analysis` class to use the model-images of this fit to aid the fitting of the `Hilbert` 
-image-mesh and `AdaptiveBrightness` regularization for the source galaxy.
+image-mesh and `AdaptiveBrightness` regularization for the source galaxy. Specifically, it uses the model image 
+of the lensed source in order to adapt the location of the source-pixels to the source's brightet regions and lower
+the regularization coefficient in these regions.
 
-If you inspect and compare the results of searches 1 and 2, you'll note how the model-fits of search 2 have a much
-higher likelihood than search 1 and how the source reconstruction has congregated it pixels to the bright central
-regions of the source. This indicates that a much better result has been achieved.
+__Image Mesh Settings__
+
+The `Hilbert` image-mesh may not fully adapt to the data in a satisfactory way. Often, it does not place enough
+pixels in the source's brightest regions and it may place too few pixels further out where the source is not observed.
+To address this, we use the `settings_inversion` input of the `Analysis` class to specify that we require the following:
+
+ - `image_mesh_min_mesh_pixels_per_pixel=3` and `image_mesh_min_mesh_number=5`: the five brightest source image-pixels
+ must each have at least 3 source-pixels after the adaptive image mesh has been computed. If this is not the case,
+ the model is rejected and the non-linear search samples a new lens model.
+ 
+ - `image_mesh_adapt_background_percent_threshold=0.1` and `image_mesh_adapt_background_percent_check=0.8`: the faintest
+ 80% of image-pixels must have at least 10% of the total source pixels, to ensure the regions of the image with no
+ source-flux are reconstructed using sufficient pixels. If this is not the case, the model is rejected and the
+ non-linear search samples a new lens model.
+
+These inputs are a bit contrived, but have been tested to ensure they lead to good lens models.
+"""
+analysis_2 = al.AnalysisImaging(
+    dataset=dataset,
+    adapt_images=result_1.adapt_images,
+    settings_inversion=al.SettingsInversion(
+        image_mesh_min_mesh_pixels_per_pixel=3,
+        image_mesh_min_mesh_number=5,
+        image_mesh_adapt_background_percent_threshold=0.1,
+        image_mesh_adapt_background_percent_check=0.8,
+    ),
+)
+
+"""
+__Search + Model-Fit (Search 2)__
+
+We now create the non-linear search and perform the model-fit using this model.
 """
 search_2 = af.Nautilus(
     path_prefix=path_prefix, name="search[2]__adapt", unique_tag=dataset_name, n_live=75
 )
 
-analysis_2 = al.AnalysisImaging(dataset=dataset, adapt_images=result_1.adapt_images)
-
 result_2 = search_2.fit(model=model_2, analysis=analysis_2)
 
 """
+__Result (Search 2)__
+
+If you inspect and compare the results of searches 1 and 2, you'll note how the model-fits of search 2 have a much
+higher likelihood than search 1 and how the source reconstruction has congregated it pixels to the bright central
+regions of the source. This indicates that a much better result has been achieved.
+
 __Model + Search + Analysis + Model-Fit (Search 3)__
 
 We now perform a final search which uses the `Hilbert` image-mesh and `AdaptiveBrightness` regularization with their

@@ -114,7 +114,15 @@ for your interferometer dataset. It does this for all possible combinations of s
 which settings give the fastest run times for your dataset.
 """
 settings_dataset = al.SettingsInterferometer(transformer_class=al.TransformerDFT)
-settings_inversion = al.SettingsInversion(use_linear_operators=False)
+settings_inversion = (
+    al.SettingsInversion(
+        use_linear_operators=False,
+        image_mesh_min_mesh_pixels_per_pixel=3,
+        image_mesh_min_mesh_number=5,
+        image_mesh_adapt_background_percent_threshold=0.1,
+        image_mesh_adapt_background_percent_check=0.8,
+    ),
+)
 
 """
 We now create the `Interferometer` object which is used to fit the lens model.

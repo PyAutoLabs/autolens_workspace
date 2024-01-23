@@ -178,6 +178,12 @@ analysis = al.AnalysisImaging(
     positions_likelihood=source_lp_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),
+    settings_inversion=al.SettingsInversion(
+        image_mesh_min_mesh_pixels_per_pixel=3,
+        image_mesh_min_mesh_number=5,
+        image_mesh_adapt_background_percent_threshold=0.1,
+        image_mesh_adapt_background_percent_check=0.8,
+    ),
 )
 
 source_pix_results = slam.source_pix.run(

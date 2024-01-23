@@ -203,6 +203,11 @@ fits the following model:
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE LP PIPELINE through to the
  SOURCE PIX PIPELINE.
 
+__Adapt Images / Image Mesh Settings__
+
+If you are unclear what the `adapt_images` and `SettingsInversion` inputs are doing below, refer to the 
+`autolens_workspace/*/imaging/advanced/chaining/pix_adapt/start_here.py` example script.
+
 __Settings__:
 
  - Positions: We update the positions and positions threshold using the previous model-fitting result (as described 
@@ -213,6 +218,12 @@ analysis = al.AnalysisImaging(
     adapt_images=source_lp_results.last.adapt_images,
     positions_likelihood=source_lp_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
+    ),
+    settings_inversion=al.SettingsInversion(
+        image_mesh_min_mesh_pixels_per_pixel=3,
+        image_mesh_min_mesh_number=5,
+        image_mesh_adapt_background_percent_threshold=0.1,
+        image_mesh_adapt_background_percent_check=0.8,
     ),
 )
 

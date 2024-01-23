@@ -129,8 +129,16 @@ def run(
 
     This search initializes the pixelization's mesh and regularization.
     """
-
-    analysis.adapt_images = result_1.adapt_images
+    analysis = al.AnalysisImaging(
+        dataset=analysis.dataset,
+        adapt_images=result_1.adapt_images,
+        settings_inversion=al.SettingsInversion(
+            image_mesh_min_mesh_pixels_per_pixel=3,
+            image_mesh_min_mesh_number=5,
+            image_mesh_adapt_background_percent_threshold=0.1,
+            image_mesh_adapt_background_percent_check=0.8,
+        )
+    )
 
     model_2 = af.Collection(
         galaxies=af.Collection(
