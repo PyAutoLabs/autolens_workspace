@@ -90,7 +90,7 @@ The files ``README.rst`` distributed throughout the workspace describe what is i
 Workspace Version
 -----------------
 
-This version of the workspace is built and tested for using **PyAutoLens v2024.1.27.3**.
+This version of the workspace is built and tested for using **PyAutoLens v2024.1.27.4**.
 
 Contribution
 ------------
