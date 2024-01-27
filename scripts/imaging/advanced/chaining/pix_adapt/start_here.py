@@ -210,14 +210,14 @@ The `Hilbert` image-mesh may not fully adapt to the data in a satisfactory way. 
 pixels in the source's brightest regions and it may place too few pixels further out where the source is not observed.
 To address this, we use the `settings_inversion` input of the `Analysis` class to specify that we require the following:
 
- - `image_mesh_min_mesh_pixels_per_pixel=3` and `image_mesh_min_mesh_number=5`: the five brightest source image-pixels
- must each have at least 3 source-pixels after the adaptive image mesh has been computed. If this is not the case,
- the model is rejected and the non-linear search samples a new lens model.
+- `image_mesh_min_mesh_pixels_per_pixel=3` and `image_mesh_min_mesh_number=5`: the five brightest source image-pixels
+   must each have at least 3 source-pixels after the adaptive image mesh has been computed. If this is not the case,
+   the model is rejected and the non-linear search samples a new lens model.
  
- - `image_mesh_adapt_background_percent_threshold=0.1` and `image_mesh_adapt_background_percent_check=0.8`: the faintest
- 80% of image-pixels must have at least 10% of the total source pixels, to ensure the regions of the image with no
- source-flux are reconstructed using sufficient pixels. If this is not the case, the model is rejected and the
- non-linear search samples a new lens model.
+- `image_mesh_adapt_background_percent_threshold=0.1` and `image_mesh_adapt_background_percent_check=0.8`: the faintest
+   80% of image-pixels must have at least 10% of the total source pixels, to ensure the regions of the image with no
+   source-flux are reconstructed using sufficient pixels. If this is not the case, the model is rejected and the
+   non-linear search samples a new lens model.
 
 These inputs are a bit contrived, but have been tested to ensure they lead to good lens models.
 """

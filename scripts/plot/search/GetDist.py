@@ -92,6 +92,18 @@ result = search.fit(model=model, analysis=analysis)
 samples = result.samples
 
 """
+__Param Names__
+
+GetDist uses a `model.paramnames` file to load the name of every parameter in the model-fit and pair it with the
+latex symbol used to represent it in plots.
+
+This file is not created by **PyAutoLens** by default, but can be output by the `search.paths` object as shown below.
+"""
+search.paths._save_parameter_names_file(model=model)
+search.paths.zip_remove()
+search.paths._zip()
+
+"""
 __GetDist MCSamples__
 
 GetDist uses an `MCSamples` object to store the samples of a non-linear search.

@@ -137,7 +137,7 @@ def run(
             image_mesh_min_mesh_number=5,
             image_mesh_adapt_background_percent_threshold=0.1,
             image_mesh_adapt_background_percent_check=0.8,
-        )
+        ),
     )
 
     model_2 = af.Collection(
