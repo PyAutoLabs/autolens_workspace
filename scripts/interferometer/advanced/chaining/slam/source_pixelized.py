@@ -114,14 +114,12 @@ for your interferometer dataset. It does this for all possible combinations of s
 which settings give the fastest run times for your dataset.
 """
 settings_dataset = al.SettingsInterferometer(transformer_class=al.TransformerDFT)
-settings_inversion = (
-    al.SettingsInversion(
-        use_linear_operators=False,
-        image_mesh_min_mesh_pixels_per_pixel=3,
-        image_mesh_min_mesh_number=5,
-        image_mesh_adapt_background_percent_threshold=0.1,
-        image_mesh_adapt_background_percent_check=0.8,
-    ),
+settings_inversion = al.SettingsInversion(
+    use_linear_operators=False,
+    image_mesh_min_mesh_pixels_per_pixel=3,
+    image_mesh_min_mesh_number=5,
+    image_mesh_adapt_background_percent_threshold=0.1,
+    image_mesh_adapt_background_percent_check=0.8,
 )
 
 """
@@ -245,7 +243,7 @@ __Settings__:
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    adapt_images=source_pix_results[0].adapt_images,
+    adapt_images=source_pix_results[0].adapt_images_from(),
     positions_likelihood=source_pix_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),

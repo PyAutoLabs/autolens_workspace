@@ -74,7 +74,7 @@ def run(
     images that are used in search 2.
     """
 
-    analysis.adapt_images = source_lp_results.last.adapt_images
+    analysis.adapt_images = source_lp_results.last.adapt_images_from()
 
     mass = al.util.chaining.mass_from(
         mass=source_lp_results.last.model.galaxies.lens.mass,
@@ -104,8 +104,8 @@ def run(
                     regularization=regularization_init,
                 ),
             ),
-        ),
-        clumps=al.util.chaining.clumps_from(result=source_lp_results.last),
+        )
+        + al.util.chaining.clumps_from(result=source_lp_results.last),
     )
 
     search_1 = af.Nautilus(
@@ -131,7 +131,7 @@ def run(
     """
     analysis = al.AnalysisImaging(
         dataset=analysis.dataset,
-        adapt_images=result_1.adapt_images,
+        adapt_images=result_1.adapt_images_from(use_model_images=False),
         settings_inversion=al.SettingsInversion(
             image_mesh_min_mesh_pixels_per_pixel=3,
             image_mesh_min_mesh_number=5,
@@ -160,8 +160,8 @@ def run(
                     regularization=regularization,
                 ),
             ),
-        ),
-        clumps=al.util.chaining.clumps_from(result=source_lp_results.last),
+        )
+        + al.util.chaining.clumps_from(result=source_lp_results.last),
     )
 
     if image_mesh_pixels_fixed is not None:
@@ -170,6 +170,24 @@ def run(
                 image_mesh_pixels_fixed
             )
 
+    """
+    __Search (Search 2)__
+
+    This search uses the nested sampling algorithm Dynesty, in contrast to nearly every other search throughout the
+    autolens workspace which use `Nautilus`.
+
+    The reason is quite technical, but in a nutshell it is because the likelihood function sampled in `source_pix[2]`
+    is often not smooth. This leads to behaviour where the `Nautilus` search gets stuck sampling small regions of
+    parameter space indefinitely, and does not converge and terminate.
+
+    Dynesty has proven more robust to these issues, because it uses a random walk nested sampling algorithm which
+    is less susceptible to a noisy likelihood function.
+
+    The reason this likelihood function is noisy is because it has parameters which change the distribution of source
+    pixels. For example, the parameters may mean more or less source pixels cluster over the brightest regions of the
+    image. In all other searches, the source pixelization parameters are fixed, ensuring that the likelihood function
+    is smooth.
+    """
     search_2 = af.DynestyStatic(
         name="source_pix[2]_light[fixed]_mass[fixed]_source[pix]",
         **settings_search.search_dict,

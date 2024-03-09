@@ -140,6 +140,32 @@ is important.
 print(f"Delaunay Mapper = {inversion.linear_obj_list[0]}")
 
 """
+__Grids__
+
+The role of a mapper is to map between the image-plane and source-plane. 
+
+This includes mapping grids corresponding to the data grid (e.g. the centers of each image-pixel in the image and
+source plane) and the pixelization grid (e.g. the centre of the Delaunay triangulation in the image-plane and 
+source-plane).
+
+All grids are available in a mapper via its `mapper_grids` property.
+"""
+mapper = inversion.linear_obj_list[0]
+
+# Centre of each masked image pixel in the image-plane.
+print(mapper.mapper_grids.image_plane_data_grid)
+
+# Centre of each source pixel in the source-plane.
+print(mapper.mapper_grids.source_plane_data_grid)
+
+# Centre of each pixelization pixel in the image-plane (the `Overlay` image_mesh computes these in the image-plane
+# and maps to the source-plane).
+print(mapper.mapper_grids.image_plane_mesh_grid)
+
+# Centre of each pixelization pixel in the source-plane.
+print(mapper.mapper_grids.source_plane_mesh_grid)
+
+"""
 __Interpolated Source__
 
 The pixelized source reconstruction used by an `Inversion` is often on an irregular grid (e.g. a Delaunay triangulation

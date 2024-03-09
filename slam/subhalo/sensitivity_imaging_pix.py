@@ -136,7 +136,7 @@ class SimulateImagingPixelized:
         The source-plane requires a source-galaxy with a `redshift` in order for the tracer to trace it. We therefore
         make one, noting it has no light profiles because its emission is entirely defined by the source galaxy image.
         """
-        tracer = al.Tracer.from_galaxies(
+        tracer = al.Tracer(
             galaxies=[
                 instance.galaxies.lens,
                 instance.perturb,
@@ -183,7 +183,7 @@ class SimulateImagingPixelized:
         """
         Outputs info about the `Tracer` to the fit, so we know exactly how we simulated the image.
         """
-        tracer_no_perturb = al.Tracer.from_galaxies(
+        tracer_no_perturb = al.Tracer(
             galaxies=[
                 instance.galaxies.lens,
                 al.Galaxy(redshift=instance.galaxies.source.redshift),
@@ -671,8 +671,10 @@ def run(
         base_model=base_model,
         perturb_model=perturb_model,
         simulate_cls=simulate_cls,
-        base_fit_cls=BaseFit(adapt_images=source_pix_results[0].adapt_images),
-        perturb_fit_cls=PerturbFit(adapt_images=source_pix_results[0].adapt_images),
+        base_fit_cls=BaseFit(adapt_images=source_pix_results[0].adapt_images_from()),
+        perturb_fit_cls=PerturbFit(
+            adapt_images=source_pix_results[0].adapt_images_from()
+        ),
         perturb_model_prior_func=perturb_model_prior_func,
         number_of_steps=number_of_steps,
         number_of_cores=settings_search.number_of_cores,

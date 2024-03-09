@@ -224,7 +224,7 @@
 # """
 # analysis = al.AnalysisInterferometer(
 #     dataset=dataset,
-#     adapt_images=source_pix_results[0].adapt_images,
+#     adapt_images=source_pix_results[0].adapt_images_from(),
 #     positions_likelihood=source_pix_results.last.positions_likelihood_from(
 #         factor=3.0, minimum_threshold=0.2, use_resample=True
 #     ),

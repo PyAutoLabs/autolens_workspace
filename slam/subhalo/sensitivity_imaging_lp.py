@@ -78,7 +78,7 @@ class SimulateImaging:
         Set up the `Tracer` which is used to simulate the strong lens imaging, which may include the subhalo in
         addition to the lens and source galaxy.
         """
-        tracer = al.Tracer.from_galaxies(
+        tracer = al.Tracer(
             galaxies=[
                 instance.galaxies.lens,
                 instance.perturb,
@@ -609,8 +609,10 @@ def run(
         base_model=base_model,
         perturb_model=perturb_model,
         simulate_cls=SimulateImaging(mask=mask, psf=psf),
-        base_fit_cls=BaseFit(adapt_images=source_pix_results[0].adapt_images),
-        perturb_fit_cls=PerturbFit(adapt_images=source_pix_results[0].adapt_images),
+        base_fit_cls=BaseFit(adapt_images=source_pix_results[0].adapt_images_from()),
+        perturb_fit_cls=PerturbFit(
+            adapt_images=source_pix_results[0].adapt_images_from()
+        ),
         perturb_model_prior_func=perturb_model_prior_func,
         number_of_steps=number_of_steps,
         number_of_cores=settings_search.number_of_cores,

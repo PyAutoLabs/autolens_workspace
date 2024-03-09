@@ -1,8 +1,8 @@
 """
-Plots: PlanePlotter
-===================
+Plots: GalaxiesPlotter
+======================
 
-This example illustrates how to plot a `Plane` using a `PlanePlotter`.
+This example illustrates how to plot `Galaxies` using a `GalaxiesPlotter`.
 
 __Start Here Notebook__
 
@@ -35,7 +35,7 @@ lensed_grid = grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 """
 __Plane__
 
-We create a `Plane` representing a source-plane containing a `Galaxy` with a `LightProfile`.
+We create galaxies representing a source-plane containing a `Galaxy` with a `LightProfile`.
 """
 bulge = al.lp.Sersic(
     centre=(0.1, 0.1),
@@ -47,39 +47,41 @@ bulge = al.lp.Sersic(
 
 source_galaxy = al.Galaxy(redshift=1.0, bulge=bulge)
 
-image_plane = al.Plane(galaxies=[lens_galaxy])
-source_plane = al.Plane(galaxies=[source_galaxy])
+image_plane_galaxies = al.Galaxies(galaxies=[lens_galaxy])
+source_plane_galaxies = al.Galaxies(galaxies=[source_galaxy])
 
 """
 __Figures__
 
-We can plot the `image_plane` by passing it and our `grid to a` PlanePlotter` and calling various `figure_*` methods.
+We can plot the `image_plane_galaxies` by passing it and our `grid to a` GalaxiesPlotter` and calling various `figure_*` methods.
 
 In this script our `lens_galaxy` only had a `MassProfile` so only methods like `figure_convergence` are
 available.
 """
-plane_plotter = aplt.PlanePlotter(plane=image_plane, grid=grid)
-plane_plotter.figures_2d(convergence=True)
+galaxies_plotter = aplt.GalaxiesPlotter(galaxies=image_plane_galaxies, grid=grid)
+galaxies_plotter.figures_2d(convergence=True)
 
 """
 __Subplots__
 
 A subplot of the above quantaties can be plotted.
 """
-plane_plotter.subplot_plane()
+galaxies_plotter.subplot_galaxies()
 
 """
 A subplot of the image of the galaxies in the plane can also be plotted.
 """
-plane_plotter.subplot_galaxy_images()
+galaxies_plotter.subplot_galaxy_images()
 
 """
-We can also plot the `source_plane` by passing it with the `lensed_grid` to a `PlanePlotter`.
+We can also plot the `source_plane_galaxies` by passing it with the `lensed_grid` to a `GalaxiesPlotter`.
 
 In this case, our `source_galaxy` only had a ` LightProfile` so only a plot of its image is available.
 """
-plane_plotter = aplt.PlanePlotter(plane=source_plane, grid=lensed_grid)
-plane_plotter.figures_2d(image=True)
+galaxies_plotter = aplt.GalaxiesPlotter(
+    galaxies=source_plane_galaxies, grid=lensed_grid
+)
+galaxies_plotter.figures_2d(image=True)
 
 """
 In addition to the lensed image of the source-plane, we can plot its unlensed image (e.g. how the source-galaxy 
@@ -87,20 +89,20 @@ appears in the source-plane before lensing) using the `figure_plane_image` metho
 
 By default, this image is zoomed to the brightest pixels, so the galaxy can be clearly seen.
 """
-plane_plotter.figures_2d(plane_image=True, zoom_to_brightest=True)
+galaxies_plotter.figures_2d(plane_image=True, zoom_to_brightest=True)
 
 """
 If we do not want the image to be zoomed, we can pass `zoom_to_brightest=False`. This shows the full extent of the
 grid used to create the source-plane image.
 """
-plane_plotter.figures_2d(plane_image=True, zoom_to_brightest=False)
+galaxies_plotter.figures_2d(plane_image=True, zoom_to_brightest=False)
 
 """
 __Galaxy Image__
 
 We can also plot specific images of galaxies in the plane.
 """
-plane_plotter.figures_2d_of_galaxies(image=True, galaxy_index=0)
+galaxies_plotter.figures_2d_of_galaxies(image=True, galaxy_index=0)
 
 """
 __Visuals__
@@ -109,18 +111,18 @@ It is feasible for us to plot the caustics in the source-plane. However, to calc
 compute them from the image-plane `MassProfile` and pass them to the source-plane mat_plot_2d. 
 """
 visuals = aplt.Visuals2D(
-    tangential_caustics=image_plane.tangential_caustic_list_from(grid=grid),
-    radial_caustics=image_plane.radial_caustic_list_from(grid=grid),
+    tangential_caustics=image_plane_galaxies.tangential_caustic_list_from(grid=grid),
+    radial_caustics=image_plane_galaxies.radial_caustic_list_from(grid=grid),
 )
-plane_plotter = aplt.PlanePlotter(
-    plane=source_plane, grid=lensed_grid, visuals_2d=visuals
+galaxies_plotter = aplt.GalaxiesPlotter(
+    galaxies=source_plane_galaxies, grid=lensed_grid, visuals_2d=visuals
 )
-plane_plotter.figures_2d(plane_image=True)
+galaxies_plotter.figures_2d(plane_image=True)
 
 """
 __Include__
 
-For `PlanePlotter`'s, `GalaxyPlotter`'s and `LightProfilePlotter's that are plotting source-plane images, the only
+For `GalaxiesPlotter`'s, `GalaxyPlotter`'s and `LightProfilePlotter's that are plotting source-plane images, the only
 way to plot the caustics is to manually extract them from the foreground `MassProfile`'s, as shown above. This is 
 because these source-plane objects have no knowledge of what objects are in the image-plane.
 
@@ -152,14 +154,14 @@ include = aplt.Include2D(
 Note that the image-plane has no `LightProfile`'s and does not plot any light-profile centres. Similarly, the 
 source-plane has no `MassProfile`'s and plot no mass-profile centres.
 """
-plane_plotter = aplt.PlanePlotter(
-    plane=image_plane, grid=masked_grid, include_2d=include
+galaxies_plotter = aplt.GalaxiesPlotter(
+    galaxies=image_plane_galaxies, grid=masked_grid, include_2d=include
 )
-plane_plotter.figures_2d(image=True)
-plane_plotter = aplt.PlanePlotter(
-    plane=source_plane, grid=masked_grid, include_2d=include
+galaxies_plotter.figures_2d(image=True)
+galaxies_plotter = aplt.GalaxiesPlotter(
+    galaxies=source_plane_galaxies, grid=masked_grid, include_2d=include
 )
-plane_plotter.figures_2d(image=True)
+galaxies_plotter.figures_2d(image=True)
 
 """
 __Log10__
@@ -170,10 +172,12 @@ the `MatPlot2D` object will do.
 The same image can be set up manually via the `CMap`, `Contour` and `Colorbar` objects, but given this is a common
 use-case, the `use_log10` input is provided for convenience.
 """
-plane_plotter = aplt.PlanePlotter(
-    plane=image_plane, grid=masked_grid, mat_plot_2d=aplt.MatPlot2D(use_log10=True)
+galaxies_plotter = aplt.GalaxiesPlotter(
+    galaxies=image_plane_galaxies,
+    grid=masked_grid,
+    mat_plot_2d=aplt.MatPlot2D(use_log10=True),
 )
-plane_plotter.figures_2d(image=True, convergence=True, potential=True)
+galaxies_plotter.figures_2d(image=True, convergence=True, potential=True)
 
 """
 Finish.

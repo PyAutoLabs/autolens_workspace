@@ -35,7 +35,7 @@ source_galaxy = al.Galaxy(
         centre=(0.4, 0.3), intensity=0.3, effective_radius=1.0, sersic_index=2.5
     ),
 )
-tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 """
 We also need the `Grid2D` that we can use to make plots of the `Tracer`'s properties.

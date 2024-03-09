@@ -104,10 +104,8 @@ def run(
                 smbh=smbh,
             ),
             source=source,
-        ),
-        clumps=al.util.chaining.clumps_from(
-            result=source_results[0], mass_as_model=True
-        ),
+        )
+        + al.util.chaining.clumps_from(result=source_results[0], mass_as_model=True),
     )
 
     search = af.Nautilus(

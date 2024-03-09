@@ -88,8 +88,8 @@ def run(
                 bulge=source_bulge,
                 disk=source_disk,
             ),
-        ),
-        clumps=clump_model.clumps,
+        )
+        + clump_model.clumps,
     )
 
     search_1 = af.Nautilus(

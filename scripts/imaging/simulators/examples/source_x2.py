@@ -115,9 +115,7 @@ source_galaxy_1 = al.Galaxy(
 """
 Use these galaxies to setup a tracer, which will generate the image for the simulated `Imaging` dataset.
 """
-tracer = al.Tracer.from_galaxies(
-    galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1]
-)
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1])
 
 """
 Lets look at the tracer`s image, this is the image we'll be simulating.
@@ -165,7 +163,7 @@ tracer_plotter = aplt.TracerPlotter(
     tracer=tracer, grid=grid.binned, mat_plot_2d=mat_plot
 )
 tracer_plotter.subplot_tracer()
-tracer_plotter.subplot_plane_images()
+tracer_plotter.subplot_galaxies_images()
 
 """
 __Tracer json__

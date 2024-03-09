@@ -42,9 +42,7 @@ PyAutoLens.
 
 Lets create the maximum log likelihood tracer of every fit.
 """
-ml_tracers = [
-    al.Tracer.from_galaxies(galaxies=instance.galaxies) for instance in ml_instances
-]
+ml_tracers = [al.Tracer(galaxies=instance.galaxies) for instance in ml_instances]
 
 print("Maximum Log Likelihood Tracers: \n")
 print(ml_tracers, "\n")
@@ -75,7 +73,7 @@ This section is optional, and I advise you only follow it if the `TracerAgg` obj
 def make_tracer_generator(fit):
     samples = fit.value(name="samples")
 
-    return al.Tracer.from_galaxies(galaxies=samples.max_log_likelihood().galaxies)
+    return al.Tracer(galaxies=samples.max_log_likelihood().galaxies)
 
 
 """
@@ -103,7 +101,7 @@ def print_max_log_likelihood_mass(fit):
 
     instance = samples.max_log_likelihood()
 
-    tracer = al.Tracer.from_galaxies(galaxies=instance.galaxies)
+    tracer = al.Tracer(galaxies=instance.galaxies)
 
     einstein_mass = tracer.galaxies[0].einstein_mass_angular_from(grid=grid)
 
@@ -217,7 +215,7 @@ corresponding dataset, via the following generator:
 def make_fit_imaging_generator(fit):
     dataset = make_imaging_gen(fit=fit)
 
-    tracer = al.Tracer.from_galaxies(galaxies=fit.instance.galaxies)
+    tracer = al.Tracer(galaxies=fit.instance.galaxies)
 
     return al.FitImaging(dataset=dataset, tracer=tracer)
 
@@ -241,7 +239,7 @@ def make_fit_imaging_generator(fit):
 
     settings_inversion = fit.value(name="settings_inversion")
 
-    tracer = al.Tracer.from_galaxies(galaxies=fit.instance.galaxies)
+    tracer = al.Tracer(galaxies=fit.instance.galaxies)
 
     return al.FitImaging(
         dataset=dataset,

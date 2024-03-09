@@ -140,7 +140,7 @@ model_1 = af.Collection(
             shear=al.mp.ExternalShear,
         ),
         source=af.Model(al.Galaxy, redshift=redshift_source, bulge=al.lp.Sersic),
-    )
+    ),
 )
 
 search_1 = af.Nautilus(
@@ -192,7 +192,7 @@ model_2 = af.Collection(
             shear=result_1.instance.galaxies.lens.shear,
         ),
         source=af.Model(al.Galaxy, redshift=redshift_source, pixelization=pixelization),
-    )
+    ),
 )
 
 search_2 = af.Nautilus(
@@ -240,7 +240,7 @@ model_3 = af.Collection(
             redshift=redshift_source,
             pixelization=result_2.instance.galaxies.source.pixelization,
         ),
-    )
+    ),
 )
 
 search_3 = af.Nautilus(
@@ -301,7 +301,7 @@ model_4 = af.Collection(
             redshift=redshift_source,
             pixelization=result_2.instance.galaxies.source.pixelization,
         ),
-    )
+    ),
 )
 
 search_4 = af.Nautilus(

@@ -190,7 +190,7 @@ clumps = clump_model.clumps
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source), clumps=clumps)
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source) + clumps)
 
 """
 The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to

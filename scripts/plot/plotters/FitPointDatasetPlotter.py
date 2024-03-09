@@ -50,7 +50,7 @@ source_galaxy = al.Galaxy(
     redshift=1.0, point_0=al.ps.PointFlux(centre=(0.0, 0.0), flux=0.8)
 )
 
-tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)
 

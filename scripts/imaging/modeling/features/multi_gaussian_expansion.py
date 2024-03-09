@@ -126,6 +126,86 @@ dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
 """
+__Fit__
+
+We first show how to compose a basis of multiple Gaussians and use them to fit the lens galaxy's light in data,
+ignoring the source galaxy for now.
+
+This is to illustrate the API for performing an MGE using standard autolens objects like the `Galaxy`, `Tracer`
+and `FitImaging` 
+
+This does not perform a model-fit via a non-linear search, and therefore requires us to manually specify and guess
+suitable parameter values for the Gaussians. However, an MGE can do a reasonable job even before we just guess sensible 
+parameter values.
+
+__Basis__
+
+We first build a `Basis`, which is built from multiple linear light profiles (in this case, Gaussians). 
+
+Below, we make a `Basis` out of 30 elliptical Gaussian linear light profiles which: 
+
+ - All share the same centre and elliptical components.
+ - The `sigma` size of the Gaussians increases in log10 increments.
+ 
+Note that any linear light profile can be used to compose a Basis. This includes shapelets, which are a set of functions
+closely related to the Exponential function and are often used to represent the light of disk 
+galaxies (see `modeling/features/advanced/shapelets.py`).
+"""
+total_gaussians = 30
+
+# The sigma values of the Gaussians will be fixed to values spanning 0.01 to the mask radius, 3.0".
+
+mask_radius = 3.0
+log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
+
+# A list of linear light profile Gaussians will be input here, which will then be used to fit the data.
+
+bulge_gaussian_list = []
+
+# Iterate over every Gaussian and create it, with it centered at (0.0", 0.0") and assuming spherical symmetry.
+
+for i in range(total_gaussians):
+    gaussian = al.lp_linear.Gaussian(
+        centre=(0.0, 0.0),
+        ell_comps=(0.0, 0.0),
+        sigma=10 ** log10_sigma_list[i],
+    )
+
+    bulge_gaussian_list.append(gaussian)
+
+# The Basis object groups many light profiles together into a single model component and is used to fit the data.
+
+bulge = al.lp_basis.Basis(light_profile_list=bulge_gaussian_list)
+
+"""
+Once we have a `Basis`, we can treat it like any other light profile in order to create a `Galaxy` and `Tracer` and 
+use it to fit data.
+"""
+lens = al.Galaxy(
+    redshift=0.5,
+    bulge=bulge,
+)
+
+tracer = al.Tracer(galaxies=[lens, al.Galaxy(redshift=1.0)])
+
+fit = al.FitImaging(dataset=dataset, tracer=tracer)
+
+"""
+By plotting the fit, we see that the `Basis` does a reasonable job at capturing the appearance of the lens galaxy.
+
+The majority of residuals are due to the lensed source, which was not included in the model. There are faint
+central residuals, which are due to the MGE not being a perfect fit to the lens galaxy's light. 
+
+Given that there was no non-linear search to determine the optimal values of the Gaussians and the source galaxy
+was omitted entirely, this is a pretty good fit!
+"""
+fit_plotter = aplt.FitImagingPlotter(fit=fit)
+fit_plotter.subplot_fit()
+
+"""
+Nevertheless, there are still residuals, which we now rectify by fitting the MGE in a non-linear search, simultaneously
+fitting the lens's mass and source galaxies.
+
 __Model__
 
 We compose a lens model where:

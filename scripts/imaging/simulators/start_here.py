@@ -155,7 +155,7 @@ source_galaxy = al.Galaxy(
 We now pass these galaxies to a `Tracer`, which performs the ray-tracing calculations they describe and returns
 the image of the strong lens system they produce.
 """
-tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 """
 We can plot the `Tracer``s image, which is the image we'll next simulate as CCD imaging data.
@@ -215,7 +215,7 @@ dataset_plotter.figures_2d(data=True)
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot)
 tracer_plotter.subplot_tracer()
-tracer_plotter.subplot_plane_images()
+tracer_plotter.subplot_galaxies_images()
 
 """
 __Tracer json__

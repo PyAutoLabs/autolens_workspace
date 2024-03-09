@@ -68,7 +68,7 @@ model = af.Collection(
     galaxies=af.Collection(
         lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
         source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic),
-    )
+    ),
 )
 
 search = af.Nautilus(
@@ -196,7 +196,7 @@ Using this tracer is expanded upon in the `tracer.py` results tutorial.
 
 (If we had the `Imaging` available we could easily use this to create the maximum log likelihood `FitImaging`).
 """
-max_lh_tracer = al.Tracer.from_galaxies(galaxies=instance.galaxies)
+max_lh_tracer = al.Tracer(galaxies=instance.galaxies)
 
 print(max_lh_tracer)
 print(mask.derive_grid.all_false_sub_1)
@@ -411,7 +411,36 @@ for sample in samples.sample_list:
 
     axis_ratio_list.append(axis_ratio)
 
-median_axis_ratio, upper_axis_ratio, lower_axis_ratio = af.marginalize(
+median_axis_ratio, lower_axis_ratio, upper_axis_ratio = af.marginalize(
+    parameter_list=axis_ratio_list, sigma=3.0, weight_list=samples.weight_list
+)
+
+print(f"axis_ratio = {median_axis_ratio} ({upper_axis_ratio} {lower_axis_ratio}")
+
+"""
+The calculation above could be computationally expensive, if there are many samples and the derived quantity is
+slow to compute.
+
+An alternative approach, which will provide comparable accuracy provided enough draws are used, is to sample 
+points randomy from the PDF of the model and use these to compute the derived quantity.
+
+Draws are from the PDF of the model, so the weights of the samples are accounted for and we therefore do not
+pass them to the `marginalize` function (it essentially treats all samples as having equal weight).
+"""
+random_draws = 50
+
+axis_ratio_list = []
+
+for i in range(random_draws):
+    instance = samples.draw_randomly_via_pdf()
+
+    ell_comps = instance.galaxies.lens.mass.ell_comps
+
+    axis_ratio = al.convert.axis_ratio_from(ell_comps=ell_comps)
+
+    axis_ratio_list.append(axis_ratio)
+
+median_axis_ratio, lower_axis_ratio, upper_axis_ratio = af.marginalize(
     parameter_list=axis_ratio_list, sigma=3.0, weight_list=samples.weight_list
 )
 

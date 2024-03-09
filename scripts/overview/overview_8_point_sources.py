@@ -100,7 +100,7 @@ source_galaxy = al.Galaxy(
     light=exponential_light_profile,
 )
 
-tracer_extended = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+tracer_extended = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 """
 We plot the image of our strongly lensed source galaxy. 
@@ -122,7 +122,7 @@ point_source = al.ps.PointSourceChi(centre=(0.07, 0.07))
 
 source_galaxy = al.Galaxy(redshift=1.0, point_0=point_source)
 
-tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 """
 __Position Solving__

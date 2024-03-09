@@ -65,9 +65,9 @@ __LH Step 2: Lens Light Convolution__
 
 __LH Step 4: Ray Tracing__
 
- Ray tracing is handled in `lens` package and `ray_tracing` module:
+ Ray tracing is handled in `lens` package and `tracer` module:
 
- https://github.com/Jammy2211/PyAutoLens/blob/main/autolens/lens/ray_tracing.py
+ https://github.com/Jammy2211/PyAutoLens/blob/main/autolens/lens/tracer.py
 
 
 __LH Step 5: Border Relocation__
@@ -194,6 +194,6 @@ __LH Step 19: Complexity Terms__
 
 __Fit__
 
- https://github.com/Jammy2211/PyAutoLens/blob/main/autolens/lens/ray_tracing.py
+ https://github.com/Jammy2211/PyAutoLens/blob/main/autolens/lens/tracer.py
  https://github.com/Jammy2211/PyAutoLens/blob/main/autolens/imaging/fit.py
 """

@@ -41,7 +41,7 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 """
 __Grid__
@@ -76,7 +76,7 @@ tracer_plotter.subplot_tracer()
 A subplot of the image-plane image and image in the source-plane of the galaxies in each plane can also be plotted 
 (note that for  plane 0 the image-plane image and plane image are the same, thus the latter is omitted).
 """
-tracer_plotter.subplot_plane_images()
+tracer_plotter.subplot_galaxies_images()
 
 """
 __Include__
@@ -121,7 +121,7 @@ tracer_plotter.figures_2d(image=True, convergence=True, potential=True)
 """
 __Plane Image__
 
-Whereas a `PlanePlotter` had a method to plot its `plane_image`, it did not know the caustics of the source-plane as
+Whereas a `GalaxiesPlotter` had a method to plot its `plane_image`, it did not know the caustics of the source-plane as
 they depend on the `MassProfile`'s of `Galaxy`'s in lower redshift planes. When we plot a plane image with a `Tracer`,
 this information is now available and thus the caustics of the source-plane are now plotted.
 

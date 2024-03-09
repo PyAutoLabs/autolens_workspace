@@ -147,7 +147,7 @@ Use these galaxies to setup tracers at each waveband, which will generate each i
 dataset.
 """
 tracer_list = [
-    al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+    al.Tracer(galaxies=[lens_galaxy, source_galaxy])
     for lens_galaxy, source_galaxy in zip(lens_galaxy_list, source_galaxy_list)
 ]
 
@@ -212,7 +212,7 @@ for color, grid, tracer in zip(color_list, grid_list, tracer_list):
         tracer=tracer, grid=grid.binned, mat_plot_2d=mat_plot
     )
     tracer_plotter.subplot_tracer()
-    tracer_plotter.subplot_plane_images()
+    tracer_plotter.subplot_galaxies_images()
 
     mat_plot = aplt.MatPlot2D(
         title=aplt.Title(label=f"Lens and Source {color}-band Images"),

@@ -146,9 +146,7 @@ the source galaxy. It there depends on the redshifts of the `Galaxy` objects.
 By passing these `Galaxy` objects to a `Tracer` with a `Cosmology` object, **PyAutoLens** uses these galaxy redshifts 
 and a cosmological model to create the appropriate strong lens system.
 """
-tracer = al.Tracer.from_galaxies(
-    galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.Planck15()
-)
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.Planck15())
 
 """
 __Ray Tracing__
@@ -250,7 +248,7 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy])
 
 """
 This is what the lens looks like. 

@@ -124,8 +124,8 @@ The number of free parameters and therefore the dimensionality of non-linear par
 model_1 = af.Collection(
     galaxies=af.Collection(
         lens=af.Model(al.Galaxy, redshift=0.5, bulge=af.Model(al.lp.Sersic))
+        + clump_model.clumps_light_only
     ),
-    clumps=clump_model.clumps_light_only,
 )
 
 """
@@ -171,8 +171,9 @@ model_2 = af.Collection(
             shear=al.mp.ExternalShear,
         ),
         source=af.Model(al.Galaxy, redshift=redshift_source, bulge=al.lp.Sersic),
-    ),
-    clumps=clump_model.clumps_mass_only + al.util.chaining.clumps_from(result=result_1),
+    )
+    + clump_model.clumps_mass_only
+    + al.util.chaining.clumps_from(result=result_1),
 )
 
 search_2 = af.Nautilus(
@@ -221,8 +222,8 @@ model_3 = af.Collection(
             redshift=redshift_source,
             bulge=result_2.model.galaxies.source.bulge,
         ),
-    ),
-    clumps=clump_model.clumps_light_only
+    )
+    + clump_model.clumps_light_only
     + al.util.chaining.clumps_from(result=result_2, mass_as_model=True),
 )
 

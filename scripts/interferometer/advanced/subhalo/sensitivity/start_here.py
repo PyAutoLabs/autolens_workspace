@@ -158,7 +158,7 @@
 #     Set up the `Tracer` which is used to simulate the strong lens interferometer, which may include the subhalo in
 #     addition to the lens and source galaxy.
 #     """
-#     tracer = al.Tracer.from_galaxies(
+#     tracer = al.Tracer(
 #         galaxies=[
 #             instance.galaxies.lens,
 #             instance.perturb,

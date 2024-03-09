@@ -72,7 +72,7 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(dataset=dataset, tracer=tracer)
 
@@ -208,7 +208,7 @@ pixelization = al.Pixelization(
 
 source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitImaging(dataset=dataset, tracer=tracer)
 
@@ -284,9 +284,10 @@ fit_plotter.figures_2d_of_planes(plane_index=1, plane_image=True)
 __Inversion Plotter__
 
 We can even extract an `InversionPlotter` from the `FitImagingPlotter` and use it to plot all of its usual methods,
-which will now include the caustic and border.
+which will now include the critical curves, caustics and border.
 """
 inversion_plotter = fit_plotter.inversion_plotter_of_plane(plane_index=1)
+inversion_plotter.figures_2d(reconstructed_image=True)
 inversion_plotter.figures_2d_of_pixelization(
     pixelization_index=0, reconstruction=True, regularization_weights=True
 )
@@ -353,9 +354,7 @@ source_galaxy_1 = al.Galaxy(
 )
 
 
-tracer = al.Tracer.from_galaxies(
-    galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1]
-)
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1])
 
 fit = al.FitImaging(dataset=dataset, tracer=tracer)
 
@@ -455,9 +454,7 @@ source_galaxy_1 = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer.from_galaxies(
-    galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1]
-)
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1])
 
 fit = al.FitImaging(dataset=dataset, tracer=tracer)
 

@@ -1,6 +1,6 @@
 """
-Results 2: Linear
-=================
+Results: Linear
+===============
 
 This tutorial inspects an inferred model using linear light profiles which solve for the intensity via linear
 algebra, in the form of both linear light profiles (via `lp_linear`) and a `Basis` of linear light profiles.
@@ -107,9 +107,6 @@ for j in range(gaussian_per_basis):
 basis = af.Model(
     al.lp_basis.Basis,
     light_profile_list=bulge_gaussian_list,
-    regularization=al.reg.ConstantZeroth(
-        coefficient_neighbor=0.0, coefficient_zeroth=1.0
-    ),
 )
 
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=basis, mass=al.mp.Isothermal)
@@ -156,8 +153,17 @@ which has already performed the inversion and therefore the galaxy light profile
 """
 tracer = result.max_log_likelihood_tracer
 
-lens_bulge = print(tracer.galaxies[0].bulge.intensity)
-source_bulge = print(tracer.galaxies[1].bulge.intensity)
+print(tracer.galaxies[0].bulge.intensity)
+print(tracer.galaxies[1].bulge.intensity)
+
+"""
+Above, we access these values using the list index entry of each galaxy in the tracer. However, we may not be certain
+of the order of the galaxies in the tracer, and therefore which galaxy index corresponds to the lens and source.
+
+We can therefore use the model composition API to access these values.
+"""
+print(tracer.galaxies.lens.bulge.intensity)
+print(tracer.galaxies.source.bulge.intensity)
 
 """
 The `Tracer` contained in the `max_log_likelihood_fit` also has the solved for `intensity` values:
@@ -166,8 +172,8 @@ fit = result.max_log_likelihood_fit
 
 tracer = fit.tracer
 
-lens_bulge = print(tracer.galaxies[0].bulge.intensity)
-source_bulge = print(tracer.galaxies[1].bulge.intensity)
+print(tracer.galaxies.lens.bulge.intensity)
+print(tracer.galaxies.source.bulge.intensity)
 
 """
 __Visualization__

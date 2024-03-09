@@ -39,7 +39,7 @@ lens_galaxy = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy])
 
 """
 __Dataset__
@@ -87,7 +87,7 @@ lens_galaxy = al.Galaxy(
     ),
 )
 
-tracer_fit = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
+tracer_fit = al.Tracer(galaxies=[lens_galaxy])
 
 fit = al.FitQuantity(dataset=dataset, tracer=tracer_fit, func_str="convergence_2d_from")
 
@@ -181,7 +181,7 @@ lens_galaxy = al.Galaxy(
     ),
 )
 
-tracer_fit = al.Tracer.from_galaxies(galaxies=[lens_galaxy])
+tracer_fit = al.Tracer(galaxies=[lens_galaxy])
 
 fit = al.FitQuantity(
     dataset=dataset, tracer=tracer_fit, func_str="deflections_yx_2d_from"

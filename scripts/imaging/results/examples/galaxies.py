@@ -1,9 +1,9 @@
 """
-Results 4: Galaxies
-===================
+Results: Galaxies
+=================
 
-In results tutorial 2, we inspected the results of a `Tracer` and computed the overall properties of the lens model's
-image, convergence and other quantities.
+In results tutorial `tracer.py`, we inspected the results of a `Tracer` and computed the overall properties of the
+lens model's image, convergence and other quantities.
 
 However, we did not compute the individual properties of each galaxy. For example, we did not compute an image of the
 source galaxy on the source plane or compute individual quantities for each mass profile.
@@ -92,7 +92,7 @@ model = af.Collection(
         ),
         source_0=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic),
         source_1=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic),
-    )
+    ),
 )
 
 search = af.Nautilus(
@@ -204,8 +204,7 @@ In fact, if we create a `Tracer` from an instance (which is how `result.max_log_
 can choose whether to access its attributes using each API: 
 """
 tracer = result.max_log_likelihood_tracer
-print(tracer.planes[0].galaxies[0].bulge)
-# print(tracer.galaxies.lens.bulge)
+print(tracer.galaxies.lens.bulge)
 
 """
 We'll use the former API from here on. 

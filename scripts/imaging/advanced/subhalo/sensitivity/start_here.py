@@ -134,7 +134,7 @@ base_model = af.Collection(
     galaxies=af.Collection(
         lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
         source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic),
-    )
+    ),
 )
 
 search_base = af.Nautilus(
@@ -329,7 +329,7 @@ class SimulateImaging:
         Set up the `Tracer` which is used to simulate the strong lens imaging, which may include the subhalo in
         addition to the lens and source galaxy.
         """
-        tracer = al.Tracer.from_galaxies(
+        tracer = al.Tracer(
             galaxies=[
                 instance.galaxies.lens,
                 instance.perturb,
@@ -596,8 +596,8 @@ sensitivity = af.Sensitivity(
     base_model=base_model,
     perturb_model=perturb_model,
     simulate_cls=SimulateImaging(mask=mask, psf=dataset.psf),
-    base_fit_cls=BaseFit(adapt_images=result.adapt_images),
-    perturb_fit_cls=PerturbFit(adapt_images=result.adapt_images),
+    base_fit_cls=BaseFit(adapt_images=result.adapt_images_from()),
+    perturb_fit_cls=PerturbFit(adapt_images=result.adapt_images_from()),
     perturb_model_prior_func=perturb_model_prior_func,
     number_of_steps=2,
     #    number_of_steps=(4, 2),

@@ -64,7 +64,7 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitInterferometer(dataset=dataset, tracer=tracer)
 
@@ -145,6 +145,92 @@ fit_plotter = aplt.FitInterferometerPlotter(fit=fit, residuals_symmetric_cmap=Fa
 fit_plotter.figures_2d(
     dirty_residual_map=True,
     dirty_normalized_residual_map=True,
+)
+
+"""
+__Pixelization__
+
+We can also plot a `FitInterferometer` which uses a `Pixelization`.
+"""
+pixelization = al.Pixelization(
+    image_mesh=al.image_mesh.Overlay(shape=(25, 25)),
+    mesh=al.mesh.Delaunay(),
+    regularization=al.reg.Constant(coefficient=1.0),
+)
+
+source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+
+fit = al.FitInterferometer(dataset=dataset, tracer=tracer)
+
+"""
+__Reconstruction Options__
+
+The visualization plottes the reconstructed source on the Delaunay mesh, and you'll have seen it zoomed in to
+its brightest pixels. 
+
+This is so the galaxy can be clearly seen and is the default behavior of the `InversionPlotter`, given the
+input `zoom_to_brightest=True`.
+"""
+fit_plotter = aplt.FitInterferometerPlotter(
+    fit=fit,
+)
+fit_plotter.figures_2d_of_planes(
+    plane_index=1, plane_image=True, zoom_to_brightest=True
+)
+
+"""
+If we do not want the image to be zoomed, we can pass `zoom_to_brightest=False`. 
+
+This shows the full extent of the source-plane pixelization and may also include the caustics which the zoomed 
+image does not due to zooming inside of them. This can be useful for ensuring that the construction of the
+source-plane pixelization is reasonable.
+"""
+fit_plotter.figures_2d_of_planes(
+    plane_index=1, plane_image=True, zoom_to_brightest=False
+)
+
+"""
+__Include__
+
+It can use the `Include2D` object to plot the `Mapper`'s specific structures like the image and source plane 
+pixelization grids.
+"""
+include = aplt.Include2D(
+    mapper_image_plane_mesh_grid=True, mapper_source_plane_data_grid=True
+)
+
+fit_plotter = aplt.FitInterferometerPlotter(fit=fit, include_2d=include)
+fit_plotter.figures_2d_of_planes(plane_index=1, plane_image=True)
+
+"""
+In fact, via the `FitInterferometerPlotter` we can plot the `reconstruction` with caustics and a border, which are extracted
+from the `Tracer` of the `FitInterferometer`.
+
+To do this with an `InversionPlotter` we would have had to manually pass these attributes via the `Visuals2D` object.
+"""
+include = aplt.Include2D(
+    border=True,
+    tangential_caustics=True,
+    radial_caustics=True,
+    mapper_image_plane_mesh_grid=True,
+    mapper_source_plane_data_grid=True,
+)
+
+fit_plotter = aplt.FitInterferometerPlotter(fit=fit, include_2d=include)
+fit_plotter.figures_2d_of_planes(plane_index=1, plane_image=True)
+
+"""
+__Inversion Plotter__
+
+We can even extract an `InversionPlotter` from the `FitInterferometerPlotter` and use it to plot all of its usual 
+methods,which will now include the critical curves, caustics and border.
+"""
+inversion_plotter = fit_plotter.inversion_plotter_of_plane(plane_index=1)
+inversion_plotter.figures_2d(reconstructed_image=True)
+inversion_plotter.figures_2d_of_pixelization(
+    pixelization_index=0, reconstruction=True, regularization_weights=True
 )
 
 """

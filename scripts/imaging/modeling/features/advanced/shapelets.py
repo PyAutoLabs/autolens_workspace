@@ -55,7 +55,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
 This script fits an `Imaging` dataset of a galaxy with a model where:
 
- - The source galaxy's bulge is a super position of `ShapeletCartesian`` profiles.
+ - The source galaxy's bulge is a super position of `ShapeletCartesianSph`` profiles.
 
 __Start Here Notebook__
 
@@ -107,13 +107,104 @@ dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
 """
+__Fit__
+
+We first show how to compose a basis of multiple shapelets and use them to fit the source galaxy's light in data
+
+This is to illustrate the API for fitting shapelets using standard autolens objects like the `Galaxy`, `Tracer`
+and `FitImaging`.
+
+This does not perform a model-fit via a non-linear search, and therefore requires us to manually specify and guess
+suitable parameter values for the shapelets. However, shapelets can do a reasonable even if we just guess 
+sensible parameter values.
+
+We are applying shapelets to reconstruct the source galaxy's light, which means we need an accurate mass model of the
+lens galaxy. We use the true lens mass model from the simulator script to do this, noting that later in the example
+we will infer the lens mass model using a non-linear search.
+
+__Basis__
+
+We first build a `Basis`, which is built from multiple linear light profiles (in this case, shapelets). 
+
+Below, we make a `Basis` out of 10 elliptical shapelet linear light profiles which: 
+
+ - All share the same centre and elliptical components.
+ - The size of the Shapelet basis is controlled by a `beta` parameter, which is the same for all shapelet basis 
+   functions.
+ 
+Note that any linear light profile can be used to compose a Basis. This includes Gaussians, which are often used to r
+epresent the light of elliptical galaxies (see `modeling/features/multi_gaussian_expansion.py`).
+"""
+total_n = 10
+total_m = sum(range(2, total_n + 1)) + 1
+
+shapelets_bulge_list = []
+
+n_count = 1
+m_count = -1
+
+for i in range(total_n + total_m):
+    shapelet = al.lp_linear.ShapeletPolarSph(
+        n=n_count, m=m_count, centre=(0.01, 0.01), beta=0.1
+    )
+
+    shapelets_bulge_list.append(shapelet)
+
+    m_count += 2
+
+    if m_count > n_count:
+        n_count += 1
+        m_count = -n_count
+
+bulge = af.Model(
+    al.lp_basis.Basis,
+    light_profile_list=shapelets_bulge_list,
+)
+
+"""
+Once we have a `Basis`, we can treat it like any other light profile in order to create a `Galaxy` and `Tracer` and 
+use it to fit data.
+"""
+lens = al.Galaxy(
+    redshift=0.5,
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.6,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+    ),
+    shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
+)
+
+source = al.Galaxy(
+    redshift=1.0,
+    bulge=bulge,
+)
+
+tracer = al.Tracer(galaxies=[lens, source])
+
+fit = al.FitImaging(dataset=dataset, tracer=tracer)
+
+"""
+By plotting the fit, we see that the `Basis` does a reasonable job at capturing the appearance of the source galaxy,
+with only faint residuals visible where the lensed source is located.
+
+This is despite the beta parameter of the shapelets being a complete guess and not the optimal value for fitting the
+source galaxy's light. 
+"""
+fit_plotter = aplt.FitImagingPlotter(fit=fit)
+fit_plotter.subplot_fit()
+
+"""
+Nevertheless, there are still residuals, which we now rectify by fitting the shapelets in a non-linear search, 
+simultaneously fitting the lens's mass and source galaxies.
+
 __Model__
 
 We compose our model using `Model` objects, which represent the galaxies we fit to our data. In this 
 example we fit a model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
- - The source galaxy's bulge is a superposition of 10 parametric linear `ShapeletCartesian` profiles [3 parameters]. 
+ - The source galaxy's bulge is a superposition of 10 parametric linear `ShapeletCartesianSph` profiles [3 parameters]. 
  - The centres of the Shapelets are all linked together.
  - The size of the Shapelet basis is controlled by a `beta` parameter, which is the same for all Shapelet basis 
    functions.
@@ -143,7 +234,7 @@ total_n = 10
 total_m = sum(range(2, total_n + 1)) + 1
 
 shapelets_bulge_list = af.Collection(
-    af.Model(al.lp_shapelets.ShapeletPolar) for _ in range(total_n + total_m)
+    af.Model(al.lp_linear.ShapeletPolarSph) for _ in range(total_n + total_m)
 )
 
 n_count = 1
@@ -177,7 +268,7 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
 `start_here.ipynb` for a description of how to fix this).
 
-This confirms that the source galaxy is made of many `ShapeletCartesian` profiles.
+This confirms that the source galaxy is made of many `ShapeletCartesianSph` profiles.
 """
 print(model.info)
 
@@ -192,6 +283,7 @@ search = af.Nautilus(
     name="shapelets",
     unique_tag=dataset_name,
     n_live=150,
+    #    force_x1_cpu=True,
     number_of_cores=4,
 )
 
@@ -201,7 +293,10 @@ __Analysis__
 Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, settings_inversion=al.SettingsInversion(use_w_tilde=False)
+    dataset=dataset,
+    settings_inversion=al.SettingsInversion(
+        use_w_tilde=False, use_positive_only_solver=False
+    ),
 )
 
 """
@@ -258,10 +353,10 @@ Checkout `autolens_workspace/*/imaging/results` for a full description of analys
 """
 print(result.max_log_likelihood_instance)
 
-plane_plotter = aplt.PlanePlotter(
-    plane=result.max_log_likelihood_plane, grid=result.grid
+galaxies_plotter = aplt.GalaxiesPlotter(
+    galaxies=result.max_log_likelihood_galaxies, grid=result.grid
 )
-plane_plotter.subplot()
+galaxies_plotter.subplot()
 
 fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_plotter.subplot_fit()

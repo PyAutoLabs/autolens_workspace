@@ -80,7 +80,7 @@ The number of free parameters and therefore the dimensionality of non-linear par
 bulge = af.Model(al.lp.Sersic)
 
 model_1 = af.Collection(
-    galaxies=af.Collection(lens=af.Model(al.Galaxy, redshift=0.5, bulge=bulge))
+    galaxies=af.Collection(lens=af.Model(al.Galaxy, redshift=0.5, bulge=bulge)),
 )
 
 search_1 = af.Nautilus(
@@ -133,7 +133,7 @@ model_2 = af.Collection(
             shear=al.mp.ExternalShear,
         ),
         source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic),
-    )
+    ),
 )
 
 search_2 = af.Nautilus(
@@ -185,7 +185,7 @@ model_3 = af.Collection(
         source=af.Model(
             al.Galaxy, redshift=1.0, bulge=result_2.model.galaxies.source.bulge
         ),
-    )
+    ),
 )
 
 search_3 = af.Nautilus(
@@ -244,7 +244,7 @@ model_4 = af.Collection(
             shear=result_3.instance.galaxies.lens.shear,
         ),
         source=af.Model(al.Galaxy, redshift=redshift_source, pixelization=pixelization),
-    )
+    ),
 )
 
 search_4 = af.Nautilus(
@@ -292,7 +292,7 @@ model_5 = af.Collection(
             redshift=redshift_source,
             pixelization=result_4.instance.galaxies.source.pixelization,
         ),
-    )
+    ),
 )
 
 search_5 = af.Nautilus(

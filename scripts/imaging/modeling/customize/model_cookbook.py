@@ -144,7 +144,7 @@ source_1 = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 model = af.Collection(
     galaxies=af.Collection(
         lens_0=lens_0, lens_1=lens_1, source_0=source_0, source_1=source_1
-    )
+    ),
 )
 
 print(model.info)

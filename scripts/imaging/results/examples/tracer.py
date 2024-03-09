@@ -82,7 +82,7 @@ model = af.Collection(
             al.Galaxy, redshift=0.5, bulge=al.lp.Sersic, mass=al.mp.Isothermal
         ),
         source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic),
-    )
+    ),
 )
 
 search = af.Nautilus(
@@ -125,6 +125,23 @@ tracer_plotter = aplt.TracerPlotter(
     mat_plot_2d=aplt.MatPlot2D(use_log10=True),
 )
 tracer_plotter.figures_2d(image=True)
+
+"""
+__Attributes__
+
+Printing individual attributes of the max log likelihood tracer gives us access to the inferred parameters of the
+lens and source galaxies.
+
+The tracer contains the galaxies as both a list and an instance of the model used to fit it. This means we can
+access the same values in two ways, either indexing the galaxies list index or by the name used in model composition.
+
+It can be difficult to track which galaxy is which index in the list, so it is recommended to use the model
+composition to access the galaxies.
+"""
+print(f"Einstein Radius via list index = {tracer.galaxies[0].mass.einstein_radius}")
+print(
+    f"Einstein Radius via model composition = {tracer.galaxies.lens.mass.einstein_radius}"
+)
 
 """
 __Lensing Quantities__
@@ -234,8 +251,8 @@ A 2D magnification map is available, which using only the ray-tracing and theref
 light rays are focus at a given point in the image-plane.
 
 If you are studying a strongly lensed source galaxy and want to know how much the galaxy itself is magnified, the
-magnification below is not of too much use too you. In result tutorial 4 we will explain how the magnification 
-of the source can be quantified.
+magnification below is not of too much use too you. In the result tutorial `galaxies.py` we explain how the 
+magnification of the source can be quantified.
 """
 magnification_2d = tracer.magnification_2d_from(grid=dataset.grid)
 
@@ -315,7 +332,7 @@ samples = result.samples
 
 instance = samples.from_sample_index(sample_index=-10)
 
-tracer = al.Tracer.from_galaxies(galaxies=instance.galaxies)
+tracer = al.Tracer(galaxies=instance.galaxies)
 
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer, grid=mask.derive_grid.all_false_sub_1

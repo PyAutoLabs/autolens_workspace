@@ -122,7 +122,9 @@
 # )
 # source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
 #
-# model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+# model = af.Collection(
+#                     galaxies=af.Collection(lens=lens, source=source)
+#                     )
 #
 # """
 # We now make the intensity a free parameter across every analysis object.
@@ -186,8 +188,10 @@
 # )
 #
 # source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
-# model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
-#
+# model = af.Collection(
+#                     galaxies=af.Collection(lens=lens, source=source)
+#                     )
+# #
 #
 # """
 # We now make the regularization coefficient a free parameter across every analysis object.

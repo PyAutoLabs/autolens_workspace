@@ -368,7 +368,7 @@ The function below computes the 2D deflection angles of the tracer's lens galaxi
 image-plane 2D (y,x) coordinates $\theta$ of each grid, thus ray-tracing their coordinates to the source plane to 
 compute their $\beta$ values.
 """
-tracer = al.Tracer.from_galaxies(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 tracer_to_inversion = al.TracerToInversion(tracer=tracer, dataset=masked_dataset)
 

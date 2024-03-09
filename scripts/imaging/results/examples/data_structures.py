@@ -79,7 +79,7 @@ model = af.Collection(
             al.Galaxy, redshift=0.5, bulge=al.lp.Sersic, mass=al.mp.Isothermal
         ),
         source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic),
-    )
+    ),
 )
 
 search = af.Nautilus(

@@ -119,7 +119,7 @@ source_0 = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.Sersic)
 source_1 = af.Model(al.Galaxy, redshift=2.0)
 
 model_1 = af.Collection(
-    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1)
+    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),
 )
 
 """
@@ -199,7 +199,7 @@ source_1.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.5)
 source_1.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.5)
 
 model_2 = af.Collection(
-    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1)
+    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),
 )
 
 """
@@ -461,7 +461,7 @@ source_0 = af.Model(
 source_1 = af.Model(al.Galaxy, redshift=2.0, bulge=al.lp.Sersic)
 
 model_3 = af.Collection(
-    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1)
+    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),
 )
 
 """
@@ -514,7 +514,7 @@ source_1 = af.Model(
 )
 
 model_4 = af.Collection(
-    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1)
+    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),
 )
 
 """
@@ -571,7 +571,7 @@ source_1 = af.Model(
     ),
 )
 model_5 = af.Collection(
-    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1)
+    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),
 )
 
 """

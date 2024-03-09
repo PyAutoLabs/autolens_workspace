@@ -139,7 +139,7 @@ In this example it:
  PIPELINE [fixed values].
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, adapt_images=source_lp_results.last.adapt_images
+    dataset=dataset, adapt_images=source_lp_results.last.adapt_images_from()
 )
 
 bulge = af.Model(al.lp.Sersic)

@@ -153,9 +153,7 @@ for sample_index in range(total_datasets):
     
     The steps below are expanded on in other `imaging/simulator` scripts, so check them out if anything below is unclear.
     """
-    tracer = al.Tracer.from_galaxies(
-        galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1]
-    )
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1])
 
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
     tracer_plotter.figures_2d(image=True)
@@ -198,7 +196,7 @@ for sample_index in range(total_datasets):
         tracer=tracer, grid=grid.binned, mat_plot_2d=mat_plot
     )
     tracer_plotter.subplot_tracer()
-    tracer_plotter.subplot_plane_images()
+    tracer_plotter.subplot_galaxies_images()
 
     """
     __Tracer json__

@@ -112,9 +112,8 @@ source_0 = af.Model(al.Galaxy, redshift=1.0, point_0=al.ps.Point)
 source_1 = af.Model(al.Galaxy, redshift=2.0)
 
 model_1 = af.Collection(
-    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1)
+    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),
 )
-
 """
 The `info` attribute shows the model in a readable format.
 """
@@ -174,7 +173,7 @@ source_1 = af.Model(al.Galaxy, redshift=2.0, point_1=al.ps.Point)
 
 
 model_2 = af.Collection(
-    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1)
+    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),
 )
 
 """

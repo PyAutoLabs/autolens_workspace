@@ -50,13 +50,9 @@ def run(
     SOURCE PIPELINE as the mass and source models were not properly initialized.
     """
 
-    # source = al.util.chaining.source_custom_model_from(
-    #     result=source_results.last, source_is_model=False
-    # )
-
-    fit = source_results.last.max_log_likelihood_fit
-
-    source = fit.model_obj_linear_light_profiles_to_light_profiles.galaxies[-1]
+    source = al.util.chaining.source_custom_model_from(
+        result=source_results.last, source_is_model=False
+    )
 
     model = af.Collection(
         galaxies=af.Collection(
@@ -70,10 +66,8 @@ def run(
                 shear=source_results[0].instance.galaxies.lens.shear,
             ),
             source=source,
-        ),
-        clumps=al.util.chaining.clumps_from(
-            result=source_results[0], light_as_model=True
-        ),
+        )
+        + al.util.chaining.clumps_from(result=source_results[0], light_as_model=True),
     )
 
     search = af.Nautilus(

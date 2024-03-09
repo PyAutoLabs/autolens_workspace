@@ -223,7 +223,7 @@ These inputs are a bit contrived, but have been tested to ensure they lead to go
 """
 analysis_2 = al.AnalysisImaging(
     dataset=dataset,
-    adapt_images=result_1.adapt_images,
+    adapt_images=result_1.adapt_images_from(),
     settings_inversion=al.SettingsInversion(
         image_mesh_min_mesh_pixels_per_pixel=3,
         image_mesh_min_mesh_number=5,
@@ -281,7 +281,9 @@ search_3 = af.Nautilus(
     n_live=100,
 )
 
-analysis_3 = al.AnalysisImaging(dataset=dataset, adapt_images=result_1.adapt_images)
+analysis_3 = al.AnalysisImaging(
+    dataset=dataset, adapt_images=result_1.adapt_images_from()
+)
 
 result_3 = search_3.fit(model=model_3, analysis=analysis_3)
 

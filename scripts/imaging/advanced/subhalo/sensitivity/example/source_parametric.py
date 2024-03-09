@@ -121,7 +121,7 @@ __LIGHT LP PIPELINE__
 This is the standard LIGHT LP PIPELINE described in the `slam/start_here.ipynb` example.
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, adapt_images=source_lp_results.last.adapt_images
+    dataset=dataset, adapt_images=source_lp_results.last.adapt_images_from()
 )
 
 bulge = af.Model(al.lp.Sersic)
@@ -140,7 +140,7 @@ __MASS TOTAL PIPELINE__
 This is the standard MASS TOTAL PIPELINE described in the `slam/start_here.ipynb` example.
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, adapt_images=source_lp_results.last.adapt_images
+    dataset=dataset, adapt_images=source_lp_results.last.adapt_images_from()
 )
 
 mass_results = slam.mass_total.run(
