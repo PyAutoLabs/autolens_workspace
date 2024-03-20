@@ -91,7 +91,7 @@ we:
 There are other `_kwargs` inputs we pass as None, you should check out the Nautilus docs if you need to customize your
 figure.
 """
-search_plotter = aplt.DynestyPlotter(samples=result.samples)
+search_plotter = aplt.NestPlotter(samples=result.samples)
 
 """
 __Notation__

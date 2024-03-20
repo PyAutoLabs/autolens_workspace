@@ -108,6 +108,7 @@ solver = al.PointSolver(
 We now pass the `Tracer` to the solver. This will then find the image-plane coordinates that map directly to the
 source-plane coordinate (0.0", 0.0").
 """
+
 positions_0 = solver.solve(
     lensing_obj=tracer,
     source_plane_coordinate=source_galaxy_0.point_0.centre,

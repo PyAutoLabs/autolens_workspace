@@ -148,7 +148,7 @@ def fit():
     fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
     fit_plotter.subplot_fit()
 
-    search_plotter = aplt.NautilusPlotter(samples=result.samples)
+    search_plotter = aplt.NestPlotter(samples=result.samples)
     search_plotter.cornerplot()
 
     """
