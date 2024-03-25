@@ -205,8 +205,8 @@ We can show this by plotting the 1D and 2D PDF's of each model fit
 """
 
 for samples in samples_list:
-    search_plotter = aplt.NestPlotter(samples=samples)
-    search_plotter.cornerplot()
+    plotter = aplt.NestPlotter(samples=samples)
+    plotter.cornerplot()
 
 
 """

@@ -215,8 +215,8 @@ fit_plotter = aplt.FitInterferometerPlotter(fit=result_list[1].max_log_likelihoo
 fit_plotter.subplot_fit()
 fit_plotter.subplot_fit_dirty_images()
 
-search_plotter = aplt.NestPlotter(samples=result_list.samples)
-search_plotter.cornerplot()
+plotter = aplt.NestPlotter(samples=result_list.samples)
+plotter.cornerplot()
 
 """
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.

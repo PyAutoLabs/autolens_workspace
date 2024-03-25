@@ -73,6 +73,18 @@ analysis = al.AnalysisImaging(dataset=dataset)
 result = search.fit(model=model, analysis=analysis)
 
 """
+__Notation__
+
+Plot are labeled with short hand parameter names (e.g. the `centre` parameters are plotted using an `x`). 
+
+The mappings of every parameter to its shorthand symbol for plots is specified in the `config/notation.yaml` file 
+and can be customized.
+
+Each label also has a superscript corresponding to the model component the parameter originates from. For example,
+Gaussians are given the superscript `g`. This can also be customized in the `config/notation.yaml` file.
+
+__Plotting__
+
 We now pass the samples to a `UltraNestPlotter` which will allow us to use ultranest's in-built plotting libraries to 
 make figures.
 
@@ -84,68 +96,31 @@ The ultranest readthedocs describes fully all of the methods used below
 In all the examples below, we use the `kwargs` of this function to pass in any of the input parameters that are 
 described in the API docs.
 """
-ultranest_plotter = aplt.UltraNestPlotter(samples=result.samples)
+plotter = aplt.NestPlotter(samples=result.samples)
 
 """
-The `cornerplot` method produces a triangle of 1D and 2D PDF's of every parameter in the model fit.
+The `corner_anesthetic` method produces a triangle of 1D and 2D PDF's of every parameter using the library `anesthetic`.
 """
-ultranest_plotter.cornerplot()
+plotter.corner_anesthetic()
 
 """
-The `runplot` method shows how the estimates of the log evidence and other quantities progress as a function of
-iteration number during the ultranest model-fit.
+__Search Specific Visualization__
+
+The internal sampler can be used to plot the results of the non-linear search. 
+
+We do this using the `search_internal` attribute which contains the sampler in its native form.
+
+The first time you run a search, the `search_internal` attribute will be available because it is passed ot the
+result via memory. 
+
+If you rerun the fit on a completed result, it will not be available in memory, and therefore
+will be loaded from the `files/search_internal` folder. The `search_internal` entry of the `output.yaml` must be true 
+for this to be possible.
 """
-ultranest_plotter.runplot(
-    span=None,
-    logplot=False,
-    kde=True,
-    nkde=1000,
-    color="blue",
-    plot_kwargs=None,
-    label_kwargs=None,
-    lnz_error=True,
-    lnz_truth=None,
-    truth_color="red",
-    truth_kwargs=None,
-    max_x_ticks=8,
-    max_y_ticks=3,
-    use_math_text=True,
-    mark_final_live=True,
-    fig=None,
-)
+search_internal = result.search_internal
 
 """
-The `traceplot` method shows how the live points of each parameter converged alongside their PDF.
-"""
-ultranest_plotter.traceplot(
-    span=None,
-    quantiles=[0.025, 0.5, 0.975],
-    smooth=0.02,
-    post_color="blue",
-    post_kwargs=None,
-    kde=True,
-    nkde=1000,
-    trace_cmap="plasma",
-    trace_color=None,
-    trace_kwargs=None,
-    connect=False,
-    connect_highlight=10,
-    connect_color="red",
-    connect_kwargs=None,
-    max_n_ticks=5,
-    use_math_text=False,
-    labels=None,
-    label_kwargs=None,
-    show_titles=False,
-    title_fmt=".2f",
-    title_kwargs=None,
-    truths=None,
-    truth_color="red",
-    truth_kwargs=None,
-    verbose=False,
-    fig=None,
-)
+__Plots__
 
-"""
-Finish.
+UltraNest example plots are not shown explicitly below, so checkout their docs for examples!
 """

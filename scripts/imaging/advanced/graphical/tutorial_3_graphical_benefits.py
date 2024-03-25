@@ -233,8 +233,8 @@ two shared parameters we are trying to estimate, *and they are degenerate with o
 We can see this by inspecting the probability distribution function (PDF) of the fit, placing particular focus on the 
 2D degeneracy between the inner slope and outer slope of the lens mass model.
 """
-search_plotter = aplt.NestPlotter(samples=result_list[0].samples)
-search_plotter.cornerplot()
+plotter = aplt.NestPlotter(samples=result_list[0].samples)
+plotter.cornerplot()
 
 """
 The problem is that the simple approach of taking a weighted average does not capture the curved banana-like shape

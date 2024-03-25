@@ -15,6 +15,7 @@ If any code in this script is unclear, refer to the `plot/start_here.ipynb` note
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+import matplotlib.pyplot as plt
 from os import path
 
 import autofit as af
@@ -71,6 +72,18 @@ analysis = al.AnalysisImaging(dataset=dataset)
 result = search.fit(model=model, analysis=analysis)
 
 """
+__Notation__
+
+Plot are labeled with short hand parameter names (e.g. the `centre` parameters are plotted using an `x`). 
+
+The mappings of every parameter to its shorthand symbol for plots is specified in the `config/notation.yaml` file 
+and can be customized.
+
+Each label also has a superscript corresponding to the model component the parameter originates from. For example,
+Gaussians are given the superscript `g`. This can also be customized in the `config/notation.yaml` file.
+
+__Plotting__
+
 We now pass the samples to a `DynestyPlotter` which will allow us to use Nautilus's in-built plotting libraries to 
 make figures.
 
@@ -91,22 +104,17 @@ we:
 There are other `_kwargs` inputs we pass as None, you should check out the Nautilus docs if you need to customize your
 figure.
 """
-search_plotter = aplt.NestPlotter(samples=result.samples)
+plotter = aplt.NestPlotter(samples=result.samples)
 
 """
-__Notation__
-
-Plot are labeled with short hand parameter names (e.g. `sersic_index` is mapped to the short hand 
-parameter `n`). These mappings ate specified in the `config/notation.yaml` file and can be customized by users.
-
-The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
-mass its name `mass` defined when making the `Model` above is used).
-
-__Plots__
-
-The `cornerplot` method produces a triangle of 1D and 2D PDF's of every parameter in the model fit.
+The `corner_anesthetic` method produces a triangle of 1D and 2D PDF's of every parameter using the library `anesthetic`.
 """
-search_plotter.cornerplot(
+plotter.corner_anesthetic()
+
+"""
+The `corner_cornerpy` method produces a triangle of 1D and 2D PDF's of every parameter using the library `corner.py`.
+"""
+plotter.corner_cornerpy(
     dims=None,
     span=None,
     quantiles=[0.025, 0.5, 0.975],
@@ -128,11 +136,155 @@ search_plotter.cornerplot(
     verbose=False,
 )
 
+
 """
-The `runplot` method shows how the estimates of the log evidence and other quantities progress as a function of
-iteration number during the Nautilus model-fit.
+__Search Specific Visualization__
+
+The internal sampler can be used to plot the results of the non-linear search. 
+
+We do this using the `search_internal` attribute which contains the sampler in its native form.
+
+The first time you run a search, the `search_internal` attribute will be available because it is passed ot the
+result via memory. 
+
+If you rerun the fit on a completed result, it will not be available in memory, and therefore
+will be loaded from the `files/search_internal` folder. The `search_internal` entry of the `output.yaml` must be true 
+for this to be possible.
 """
-search_plotter.runplot(
+search_internal = result.search_internal
+
+"""
+__Plots__
+
+All plots use dynesty's inbuilt plotting library and the model.
+"""
+from dynesty import plotting as dyplot
+
+model = result.model
+
+
+"""
+The boundplot plots the bounding distribution used to propose either (1) live points at a given iteration or (2) a 
+specific dead point during the course of a run, projected onto the two dimensions specified by `dims`.
+"""
+dyplot.boundplot(
+    results=search_internal.results,
+    labels=model.parameter_labels_with_superscripts_latex,
+    dims=(2, 2),
+    it=100,
+    idx=None,
+    prior_transform=None,
+    periodic=None,
+    reflective=None,
+    ndraws=5000,
+    color="gray",
+    plot_kwargs=None,
+    label_kwargs={"fontsize": 16},
+    max_n_ticks=5,
+    use_math_text=False,
+    show_live=False,
+    live_color="darkviolet",
+    live_kwargs=None,
+    span=None,
+    fig=None,
+)
+
+plt.show()
+plt.close()
+
+"""
+The cornerbound plots the bounding distribution used to propose either (1) live points at a given iteration or (2) a 
+specific dead point during the course of a run, projected onto all pairs of dimensions.
+"""
+dyplot.cornerbound(
+    results=search_internal.results,
+    labels=model.parameter_labels_with_superscripts_latex,
+    it=100,
+    idx=None,
+    dims=None,
+    prior_transform=None,
+    periodic=None,
+    reflective=None,
+    ndraws=5000,
+    color="gray",
+    plot_kwargs=None,
+    label_kwargs={"fontsize": 16},
+    max_n_ticks=5,
+    use_math_text=False,
+    show_live=False,
+    live_color="darkviolet",
+    live_kwargs=None,
+    span=None,
+    fig=None,
+)
+
+plt.show()
+plt.close()
+
+"""
+The cornerplot plots a corner plot of the 1-D and 2-D marginalized posteriors.
+"""
+
+dyplot.cornerplot(
+    results=search_internal.results,
+    labels=model.parameter_labels_with_superscripts_latex,
+    dims=None,
+    span=None,
+    quantiles=[0.025, 0.5, 0.975],
+    color="black",
+    smooth=0.02,
+    quantiles_2d=None,
+    hist_kwargs=None,
+    hist2d_kwargs=None,
+    label_kwargs={"fontsize": 16},
+    show_titles=True,
+    title_fmt=".2f",
+    title_kwargs={"fontsize": "10"},
+    truths=None,
+    truth_color="red",
+    truth_kwargs=None,
+    max_n_ticks=5,
+    top_ticks=False,
+    use_math_text=False,
+    verbose=False,
+)
+
+plt.show()
+plt.close()
+
+
+"""
+The cornerpoints plots a (sub-)corner plot of (weighted) samples.
+"""
+dyplot.cornerpoints(
+    results=search_internal.results,
+    labels=model.parameter_labels_with_superscripts_latex,
+    dims=None,
+    thin=1,
+    span=None,
+    cmap="plasma",
+    color=None,
+    kde=True,
+    nkde=1000,
+    plot_kwargs=None,
+    label_kwargs={"fontsize": 16},
+    truths=None,
+    truth_color="red",
+    truth_kwargs=None,
+    max_n_ticks=5,
+    use_math_text=False,
+    fig=None,
+)
+
+plt.show()
+plt.close()
+
+
+"""
+The runplot plots live points, ln(likelihood), ln(weight), and ln(evidence) as a function of ln(prior volume).
+"""
+dyplot.runplot(
+    results=search_internal.results,
     span=None,
     logplot=False,
     kde=True,
@@ -151,10 +303,16 @@ search_plotter.runplot(
     fig=None,
 )
 
+plt.show()
+plt.close()
+
+
 """
-The `traceplot` method shows how the live points of each parameter converged alongside their PDF.
+The traceplot plots traces and marginalized posteriors for each parameter.
 """
-search_plotter.traceplot(
+
+dyplot.traceplot(
+    results=search_internal.results,
     span=None,
     quantiles=[0.025, 0.5, 0.975],
     smooth=0.02,
@@ -184,77 +342,10 @@ search_plotter.traceplot(
     fig=None,
 )
 
-
-"""
-The `cornerpoints` method produces a triangle of 1D and 2D plots of the weight points of every parameter in the model 
-fit.
-"""
-search_plotter.cornerpoints(
-    dims=None,
-    thin=1,
-    span=None,
-    cmap="plasma",
-    color=None,
-    kde=True,
-    nkde=1000,
-    plot_kwargs=None,
-    label_kwargs={"fontsize": 16},
-    truths=None,
-    truth_color="red",
-    truth_kwargs=None,
-    max_n_ticks=5,
-    use_math_text=False,
-    fig=None,
-)
-
-"""
-The `boundplot` method produces a plot of the bounding distribution used to draw a live point at a given iteration `it`
-of the sample or of a dead point `idx`.
-"""
-search_plotter.boundplot(
-    dims=(2, 2),
-    it=100,
-    idx=None,
-    prior_transform=None,
-    periodic=None,
-    reflective=None,
-    ndraws=5000,
-    color="gray",
-    plot_kwargs=None,
-    label_kwargs={"fontsize": 16},
-    max_n_ticks=5,
-    use_math_text=False,
-    show_live=False,
-    live_color="darkviolet",
-    live_kwargs=None,
-    span=None,
-    fig=None,
-)
-
-"""
-The `cornerbound` method produces the bounding distribution used to draw points at an input iteration `it` or used to
-specify a dead point via `idx`.
-"""
-search_plotter.cornerbound(
-    it=100,
-    idx=None,
-    dims=None,
-    prior_transform=None,
-    periodic=None,
-    reflective=None,
-    ndraws=5000,
-    color="gray",
-    plot_kwargs=None,
-    label_kwargs={"fontsize": 16},
-    max_n_ticks=5,
-    use_math_text=False,
-    show_live=False,
-    live_color="darkviolet",
-    live_kwargs=None,
-    span=None,
-    fig=None,
-)
+plt.show()
+plt.close()
 
 """
 Finish.
 """
+

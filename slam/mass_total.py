@@ -84,13 +84,8 @@ def run(
         multipole.einstein_radius = mass.einstein_radius
         multipole.slope = mass.slope
 
-    if light_results is not None:
-        result_source = light_results.last
-    else:
-        result_source = source_results.last
-
     source = al.util.chaining.source_from(
-        result=result_source,
+        result=source_results.last,
     )
 
     model = af.Collection(
@@ -107,8 +102,11 @@ def run(
                 smbh=smbh,
             ),
             source=source,
-        )
-        + al.util.chaining.clumps_from(result=source_results[0], mass_as_model=True),
+        ),
+        sky=al.util.chaining.sky_from(result=source_results.last),
+        clumps=al.util.chaining.clumps_from(
+            result=source_results[0], mass_as_model=True
+        ),
     )
 
     search = af.Nautilus(

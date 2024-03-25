@@ -3,7 +3,7 @@ import autolens as al
 import autolens.plot as aplt
 
 import os
-from typing import Union, Tuple
+from typing import Optional, Union, Tuple
 
 """
 __Simulate Function Class__
@@ -325,7 +325,8 @@ class BaseFit:
             n_live=50,
         )
 
-        analysis = al.AnalysisImaging(dataset=dataset, adapt_images=self.adapt_images)
+        analysis = al.AnalysisImaging(dataset=dataset)
+        analysis._adapt_images = self.adapt_images
 
         return search.fit(model=model, analysis=analysis)
 
@@ -393,7 +394,8 @@ class PerturbFit:
             n_live=50,
         )
 
-        analysis = al.AnalysisImaging(dataset=dataset, adapt_images=self.adapt_images)
+        analysis = al.AnalysisImaging(dataset=dataset)
+        analysis._adapt_images = self.adapt_images
 
         return search.fit(model=model, analysis=analysis)
 
@@ -464,6 +466,7 @@ def run(
     psf: al.Kernel2D,
     mass_results: af.ResultsCollection,
     subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
+    adapt_images: Optional[al.AdaptImageMaker] = None,
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
 ):
@@ -671,9 +674,9 @@ def run(
         base_model=base_model,
         perturb_model=perturb_model,
         simulate_cls=simulate_cls,
-        base_fit_cls=BaseFit(adapt_images=source_pix_results[0].adapt_images_from()),
+        base_fit_cls=BaseFit(adapt_images=adapt_images),
         perturb_fit_cls=PerturbFit(
-            adapt_images=source_pix_results[0].adapt_images_from()
+            adapt_images=adapt_images
         ),
         perturb_model_prior_func=perturb_model_prior_func,
         number_of_steps=number_of_steps,

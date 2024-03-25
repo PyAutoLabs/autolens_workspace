@@ -111,11 +111,11 @@ result = search.fit(model=model, analysis=analysis)
 """
 __Result__
 
-We can use an `EmceePlotter` to create a corner plot, which shows the probability density function (PDF) of every
+We can use an `MCMCPlotter` to create a corner plot, which shows the probability density function (PDF) of every
 parameter in 1D and 2D.
 """
-search_plotter = aplt.NestPlotter(samples=result.samples)
-search_plotter.cornerplot()
+plotter = aplt.NestPlotter(samples=result.samples)
+plotter.cornerplot()
 
 """
 Finish.

@@ -60,8 +60,11 @@ def run(
     lens = mass_results.last.model.galaxies.lens
 
     model = af.Collection(
-        galaxies=af.Collection(lens=lens, source=source)
-        + al.util.chaining.clumps_from(result=mass_results.last, mass_as_model=True),
+        galaxies=af.Collection(lens=lens, source=source),
+        sky=al.util.chaining.sky_from(result=mass_results.last),
+        clumps=al.util.chaining.clumps_from(
+            result=mass_results.last, mass_as_model=True
+        ),
     )
 
     search_no_subhalo = af.Nautilus(
@@ -125,8 +128,11 @@ def run(
     )
 
     model = af.Collection(
-        galaxies=af.Collection(lens=lens, subhalo=subhalo, source=source)
-        + al.util.chaining.clumps_from(result=result_no_subhalo, mass_as_model=True)
+        galaxies=af.Collection(lens=lens, subhalo=subhalo, source=source),
+        sky=al.util.chaining.sky_from(result=mass_results.last),
+        clumps=al.util.chaining.clumps_from(
+            result=result_no_subhalo, mass_as_model=True
+        ),
     )
 
     search_subhalo_grid = af.Nautilus(
@@ -191,10 +197,11 @@ def run(
             lens=result_subhalo_grid_search.model.galaxies.lens,
             subhalo=subhalo,
             source=result_subhalo_grid_search.model.galaxies.source,
-        )
-        + al.util.chaining.clumps_from(
+        ),
+        sky=al.util.chaining.sky_from(result=result_subhalo_grid_search),
+        clumps=al.util.chaining.clumps_from(
             result=result_subhalo_grid_search, mass_as_model=True
-        )
+        ),
     )
 
     search_final_subhalo = af.Nautilus(

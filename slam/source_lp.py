@@ -2,7 +2,7 @@ import autofit as af
 import autolens as al
 
 
-from typing import Callable, Union, Optional, Tuple
+from typing import Union, Optional, Tuple
 
 
 def run(
@@ -14,6 +14,7 @@ def run(
     shear: af.Model(al.mp.ExternalShear) = af.Model(al.mp.ExternalShear),
     source_bulge: Optional[af.Model] = af.Model(al.lp.Sersic),
     source_disk: Optional[af.Model] = None,
+    sky: Optional[af.Model] = None,
     redshift_lens: float = 0.5,
     redshift_source: float = 1.0,
     mass_centre: Optional[Tuple[float, float]] = None,
@@ -43,6 +44,9 @@ def run(
     source_disk
         The model used to represent the light distribution of the source galaxy's disk (set to
         None to omit a disk).
+    sky
+        The model used to represent the sky background. Even if  the sky is already been subtracted from the image,
+        this can model any residual background signal.
     redshift_lens
         The redshift of the lens galaxy fitted, used by the pipeline for converting arc-seconds to kpc, masses to
         solMass, etc.
@@ -88,8 +92,9 @@ def run(
                 bulge=source_bulge,
                 disk=source_disk,
             ),
-        )
-        + clump_model.clumps,
+        ),
+        sky=sky,
+        clumps=clump_model.clumps,
     )
 
     search_1 = af.Nautilus(

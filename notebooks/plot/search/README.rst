@@ -4,8 +4,8 @@ Files
 -----
 
 - ``DynestyPlotter.py``: Plots results of a Dynesty fit (e.g. cornerplot).
-- ``EmceePlotter.py``: Plots results of an Emcee fit (e.g. cornerplot).
-- ``PySwarmsPlotter.py``: Plots results of a PySwarms fit (e.g. contour).
+- ``MCMCPlotter.py``: Plots results of an Emcee fit (e.g. cornerplot).
+- ``OptimizePlotter.py``: Plots results of a PySwarms fit (e.g. contour).
 - ``UltraNest.py``: Plots results of an UltraNest fit (e.g. cornerplot).
 - ``ZeusPlotter.py``: Plots results of a Zeus fit (e.g. cornerplot).
 

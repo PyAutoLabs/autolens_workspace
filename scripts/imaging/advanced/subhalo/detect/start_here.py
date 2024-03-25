@@ -174,7 +174,7 @@ This is the standard SOURCE PIX PIPELINE described in the `slam/start_here.ipynb
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_images=source_lp_results.last.adapt_images_from(),
+    adapt_image_maker=al.AdaptImageMaker(result=source_lp_results.last),
     positions_likelihood=source_lp_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),
@@ -201,7 +201,7 @@ __LIGHT LP PIPELINE__
 This is the standard LIGHT LP PIPELINE described in the `slam/start_here.ipynb` example.
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, adapt_images=source_pix_results[0].adapt_images_from()
+    dataset=dataset, adapt_image_maker=al.AdaptImageMaker(result=source_pix_results[0])
 )
 
 bulge = af.Model(al.lp.Sersic)
@@ -221,7 +221,7 @@ This is the standard MASS TOTAL PIPELINE described in the `slam/start_here.ipynb
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_images=source_pix_results[0].adapt_images_from(),
+    adapt_image_maker=al.AdaptImageMaker(result=source_pix_results[0]),
     positions_likelihood=source_pix_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),
@@ -259,7 +259,7 @@ analysis = al.AnalysisImaging(
     positions_likelihood=mass_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2, use_resample=True
     ),
-    adapt_images=source_pix_results[0].adapt_images_from(),
+    adapt_image_maker=al.AdaptImageMaker(result=source_pix_results[0]),
 )
 
 subhalo_results = slam.subhalo.detection.run(

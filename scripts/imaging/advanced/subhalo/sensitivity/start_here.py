@@ -481,7 +481,8 @@ class BaseFit:
             n_live=50,
         )
 
-        analysis = al.AnalysisImaging(dataset=dataset, adapt_images=self.adapt_images)
+        analysis = al.AnalysisImaging(dataset=dataset)
+        analysis._adapt_images = self.adapt_images
 
         return search.fit(model=model, analysis=analysis)
 
@@ -549,7 +550,8 @@ class PerturbFit:
             n_live=50,
         )
 
-        analysis = al.AnalysisImaging(dataset=dataset, adapt_images=self.adapt_images)
+        analysis = al.AnalysisImaging(dataset=dataset)
+        analysis._adapt_images = self.adapt_images
 
         return search.fit(model=model, analysis=analysis)
 

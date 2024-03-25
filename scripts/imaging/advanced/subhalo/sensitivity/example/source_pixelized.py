@@ -124,7 +124,7 @@ This is the standard SOURCE PIX PIPELINE described in the `slam/start_here.ipynb
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_images=source_lp_results.last.adapt_images_from(),
+    adapt_image_maker=al.AdaptImageMaker(result=source_lp_results.last),
     positions_likelihood=source_lp_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),
@@ -168,7 +168,7 @@ This is the standard MASS TOTAL PIPELINE described in the `slam/start_here.ipynb
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_images=source_pix_results[0].adapt_images_from(),
+    adapt_image_maker=al.AdaptImageMaker(result=source_pix_results[0]),
     positions_likelihood=source_pix_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),

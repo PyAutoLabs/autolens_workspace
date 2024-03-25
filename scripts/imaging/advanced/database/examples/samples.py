@@ -308,8 +308,8 @@ The `autofit_workspace/*/plots` folder illustrates other packages that can be us
 the standard output results formats (e.g. `GetDist.py`).
 """
 for samples in agg.values("samples"):
-    search_plotter = aplt.NestPlotter(samples=samples)
-#  search_plotter.cornerplot()
+    plotter = aplt.NestPlotter(samples=samples)
+#  plotter.cornerplot()
 
 """
 __Maximum Likelihood__

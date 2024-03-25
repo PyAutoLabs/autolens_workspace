@@ -1,7 +1,8 @@
 general:
   backend: default                  # The matploblib backend used for visualization. `default` uses the system default, can specifiy specific backend (e.g. TKAgg, Qt5Agg, WXAgg).
   imshow_origin: upper                  # The `origin` input of `imshow`, determining if pixel values are ascending or descending on the y-axis.
-  log10_min_value: 1.0e-4               # If a quantitiy with negative values is being plotted on a log10 scale, all values below this value are rounded up to it (e.g. to remove negative values).
+  log10_min_value: 1.0e-4               # If negative values are being plotted on a log10 scale, values below this value are rounded up to it (e.g. to remove negative values).
+  log10_max_value: 1.0e99               # If positive values are being plotted on a log10 scale, values above this value are rounded down to it (e.g. to prevent white blobs).
   zoom_around_mask: true                # If True, plots of data structures with a mask automatically zoom in the masked region.
   disable_zoom_for_fits: true           # If True, the zoom-in around the masked region is disabled when outputting .fits files, which is useful to retain the same dimensions as the input data.
 inversion:

@@ -280,8 +280,8 @@ visualization tools.
 The `autofit_workspace/*/plots` folder illustrates other packages that can be used to make these plots using
 the standard output results formats (e.g. `GetDist.py`).
 """
-search_plotter = aplt.NestPlotter(samples=result.samples)
-search_plotter.cornerplot()
+plotter = aplt.NestPlotter(samples=result.samples)
+plotter.cornerplot()
 
 """
 __Maximum Likelihood__

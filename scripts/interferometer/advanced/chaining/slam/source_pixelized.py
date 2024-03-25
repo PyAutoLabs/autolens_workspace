@@ -243,7 +243,7 @@ __Settings__:
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    adapt_images=source_pix_results[0].adapt_images_from(),
+    adapt_image_maker=al.AdaptImageMaker(result=source_pix_results[0]),
     positions_likelihood=source_pix_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),

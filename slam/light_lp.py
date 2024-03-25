@@ -66,8 +66,11 @@ def run(
                 shear=source_results[0].instance.galaxies.lens.shear,
             ),
             source=source,
-        )
-        + al.util.chaining.clumps_from(result=source_results[0], light_as_model=True),
+        ),
+        sky=al.util.chaining.sky_from(result=source_results.last),
+        clumps=al.util.chaining.clumps_from(
+            result=source_results[0], light_as_model=True
+        ),
     )
 
     search = af.Nautilus(

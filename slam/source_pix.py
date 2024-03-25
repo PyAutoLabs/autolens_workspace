@@ -74,8 +74,6 @@ def run(
     images that are used in search 2.
     """
 
-    analysis.adapt_images = source_lp_results.last.adapt_images_from()
-
     mass = al.util.chaining.mass_from(
         mass=source_lp_results.last.model.galaxies.lens.mass,
         mass_result=source_lp_results.last.model.galaxies.lens.mass,
@@ -104,8 +102,9 @@ def run(
                     regularization=regularization_init,
                 ),
             ),
-        )
-        + al.util.chaining.clumps_from(result=source_lp_results.last),
+        ),
+        sky=al.util.chaining.sky_from(result=source_lp_results.last),
+        clumps=al.util.chaining.clumps_from(result=source_lp_results.last),
     )
 
     search_1 = af.Nautilus(
@@ -129,14 +128,33 @@ def run(
 
     This search initializes the pixelization's mesh and regularization.
     """
-    analysis = al.AnalysisImaging(
+
+    """
+    The code to set up the second analysis below is a bit clunky, and will be improved in the future.
+    
+    The reason it does some weird stuff is as follows:
+    
+    - The SLaM pipelines can be for imaging or interferometer data, therefore it is unclear if an `AnalysisImaging`
+    or `AnalysisInterferometer` object is required. The `analysis.__class__` creates an instance of whatever class
+    was used in the previous analysis.
+    
+    - The settings inversion has a lot of options, which control the Hilbert pixelization. These are meant to be there
+    and they ensure the grid clusters the sources pixels in a way that is well spread out. This will be documented
+    more thoroughly in the future, but may also be simplified depending on how testing goes.
+    
+    - The `use_linear_operators` and `use_w_tilde` options often changed for interferometer fits, whereas for imaging
+    datasets they are typically left as default. They are included below for interferometer runs.
+    """
+    analysis = analysis.__class__(
         dataset=analysis.dataset,
-        adapt_images=result_1.adapt_images_from(use_model_images=False),
+        adapt_image_maker=al.AdaptImageMaker(result=result_1),
         settings_inversion=al.SettingsInversion(
             image_mesh_min_mesh_pixels_per_pixel=3,
             image_mesh_min_mesh_number=5,
             image_mesh_adapt_background_percent_threshold=0.1,
             image_mesh_adapt_background_percent_check=0.8,
+            use_linear_operators=analysis.settings_inversion.use_linear_operators,
+            use_w_tilde=analysis.settings_inversion.use_w_tilde
         ),
     )
 
@@ -160,8 +178,9 @@ def run(
                     regularization=regularization,
                 ),
             ),
-        )
-        + al.util.chaining.clumps_from(result=source_lp_results.last),
+        ),
+        sky=al.util.chaining.sky_from(result=result_1),
+        clumps=al.util.chaining.clumps_from(result=source_lp_results.last),
     )
 
     if image_mesh_pixels_fixed is not None:
