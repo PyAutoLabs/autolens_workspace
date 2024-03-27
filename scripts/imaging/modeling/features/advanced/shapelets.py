@@ -156,10 +156,7 @@ for i in range(total_n + total_m):
         n_count += 1
         m_count = -n_count
 
-bulge = af.Model(
-    al.lp_basis.Basis,
-    light_profile_list=shapelets_bulge_list,
-)
+bulge = al.lp_basis.Basis(light_profile_list=shapelets_bulge_list)
 
 """
 Once we have a `Basis`, we can treat it like any other light profile in order to create a `Galaxy` and `Tracer` and 

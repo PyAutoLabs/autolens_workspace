@@ -144,9 +144,6 @@ input(
     [Press Enter to continue]
     """
 )
-
-from astropy import cosmology as cosmo
-
 lens_galaxy = al.Galaxy(redshift=0.5, mass=isothermal_mass_profile)
 source_galaxy = al.Galaxy(redshift=1.0, light=sersic_light_profile)
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])

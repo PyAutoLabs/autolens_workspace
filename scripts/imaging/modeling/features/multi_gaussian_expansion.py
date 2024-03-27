@@ -446,6 +446,11 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 total_gaussians = 20
 gaussian_per_basis = 1
 
+# By defining the centre here, it creates two free parameters that are assigned to the source Gaussians.
+
+centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+
 log10_sigma_list = np.linspace(-2, np.log10(1.0), total_gaussians)
 
 bulge_gaussian_list = []
