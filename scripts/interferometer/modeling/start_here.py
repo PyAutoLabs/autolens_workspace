@@ -34,7 +34,7 @@ __Mask__
 We define the ‘real_space_mask’ which defines the grid the image the strong lens is evaluated using.
 """
 real_space_mask = al.Mask2D.circular(
-    shape_native=(800, 800), pixel_scales=0.05, radius=4.0, sub_size=1
+    shape_native=(800, 800), pixel_scales=0.05, radius=4.0
 )
 
 """
@@ -42,6 +42,10 @@ __Dataset__
 
 Load and plot the strong lens `Interferometer` dataset `simple` from .fits files, which we will fit 
 with the lens model.
+
+This includes a `SettingsInterferometer`, which includes the method used to Fourier transform the real-space 
+image of the strong lens to the uv-plane and compare directly to the visiblities. We use a non-uniform fast Fourier 
+transform, which is the most efficient method for interferometer datasets containing ~1-10 million visibilities.
 """
 dataset_name = "simple"
 dataset_path = path.join("dataset", "interferometer", dataset_name)
@@ -51,20 +55,12 @@ dataset = al.Interferometer.from_fits(
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
     real_space_mask=real_space_mask,
+    transformer_class=al.TransformerDFT,
 )
 
 dataset_plotter = aplt.InterferometerPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 dataset_plotter.subplot_dirty_images()
-
-"""
-We now create the `Interferometer` object which is used to fit the lens model.
-
-This includes a `SettingsInterferometer`, which includes the method used to Fourier transform the real-space 
-image of the strong lens to the uv-plane and compare directly to the visiblities. We use a non-uniform fast Fourier 
-transform, which is the most efficient method for interferometer datasets containing ~1-10 million visibilities.
-"""
-settings_dataset = al.SettingsInterferometer(transformer_class=al.TransformerNUFFT)
 
 """
 __Model__
@@ -286,7 +282,7 @@ print(result.max_log_likelihood_instance)
 
 tracer_plotter = aplt.TracerPlotter(
     tracer=result.max_log_likelihood_tracer,
-    grid=real_space_mask.derive_grid.unmasked_sub_1,
+    grid=real_space_mask.derive_grid.unmasked,
 )
 tracer_plotter.subplot_tracer()
 
@@ -307,7 +303,7 @@ The superscripts of labels correspond to the name each component was given in th
 mass its name `mass` defined when making the `Model` above is used).
 """
 plotter = aplt.NestPlotter(samples=result.samples)
-plotter.cornerplot()
+plotter.corner_anesthetic()
 
 """
 This script gives a concise overview of the PyAutoLens modeling API, fitting one the simplest lens models possible.

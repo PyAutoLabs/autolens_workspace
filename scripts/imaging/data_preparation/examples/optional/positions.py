@@ -80,8 +80,9 @@ array_plotter.figure_2d()
 Now we`re happy with the positions, lets output them to the dataset folder of the lens, so that we can load them from a
 .json file in our pipelines!
 """
-positions.output_to_json(
-    file_path=path.join(dataset_path, "positions.json"), overwrite=True
+al.output_to_json(
+    obj=positions,
+    file_path=path.join(dataset_path, "positions.json"),
 )
 
 """

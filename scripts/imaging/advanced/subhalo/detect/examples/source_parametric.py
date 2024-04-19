@@ -99,7 +99,7 @@ analysis = al.AnalysisImaging(dataset=dataset)
 
 bulge = af.Model(al.lp.Sersic)
 
-source_lp_results = slam.source_lp.run(
+source_lp_result = slam.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=bulge,
@@ -118,7 +118,7 @@ __LIGHT LP PIPELINE__
 This is the standard LIGHT LP PIPELINE described in the `slam/start_here.ipynb` example.
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, adapt_image_maker=al.AdaptImageMaker(result=source_lp_results.last)
+    dataset=dataset,
 )
 
 bulge = af.Model(al.lp.Sersic)
@@ -126,7 +126,8 @@ bulge = af.Model(al.lp.Sersic)
 light_results = slam.light_lp.run(
     settings_search=settings_search,
     analysis=analysis,
-    source_results=source_lp_results,
+    source_result_for_lens=source_lp_result,
+    source_result_for_source=source_lp_result,
     lens_bulge=bulge,
     lens_disk=None,
 )
@@ -138,11 +139,12 @@ This is the standard MASS TOTAL PIPELINE described in the `slam/start_here.ipynb
 """
 analysis = al.AnalysisImaging(dataset=dataset)
 
-mass_results = slam.mass_total.run(
+mass_result = slam.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
-    source_results=source_lp_results,
-    light_results=light_results,
+    source_result_for_lens=source_lp_result,
+    source_result_for_source=source_lp_result,
+    light_result=light_results,
     mass=af.Model(al.mp.PowerLaw),
 )
 
@@ -153,13 +155,28 @@ This is the standard SUBHALO PIPELINE described in the `subhalo/detect/start_her
 """
 analysis = al.AnalysisImaging(dataset=dataset)
 
-subhalo_results = slam.subhalo.detection.run(
+result_no_subhalo = slam.subhalo.detection.run_1_no_subhalo(
     settings_search=settings_search,
     analysis=analysis,
-    mass_results=mass_results,
+    mass_result=mass_result,
+)
+
+result_subhalo_grid_search = slam.subhalo.detection.run_2_grid_search(
+    settings_search=settings_search,
+    analysis=analysis,
+    mass_result=mass_result,
+    subhalo_result_1=result_no_subhalo,
     subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
     grid_dimension_arcsec=3.0,
-    number_of_steps=5,
+    number_of_steps=2,
+)
+
+result_with_subhalo = slam.subhalo.detection.run_3_subhalo(
+    settings_search=settings_search,
+    analysis=analysis,
+    subhalo_result_1=result_no_subhalo,
+    subhalo_grid_search_result_2=result_subhalo_grid_search,
+    subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
 )
 
 """

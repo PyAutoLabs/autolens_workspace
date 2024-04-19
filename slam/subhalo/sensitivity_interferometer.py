@@ -2,8 +2,6 @@ import autofit as af
 import autolens as al
 import autolens.plot as aplt
 from autofit.non_linear.grid import sensitivity as s
-
-import os
 from typing import Union, Tuple, ClassVar
 import numpy as np
 
@@ -12,7 +10,7 @@ def run(
     settings_search: af.SettingsSearch,
     uv_wavelengths: np.ndarray,
     real_space_mask: al.Mask2D,
-    mass_results: af.ResultsCollection,
+    mass_result: af.Result,
     analysis_cls: ClassVar[al.AnalysisInterferometer],
     subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
     grid_dimension_arcsec: float = 3.0,
@@ -65,7 +63,7 @@ def run(
     mass pipeline. This ensures the priors associated with each parameter are initialized so as to speed up
     each non-linear search performed during sensitivity mapping.
     """
-    base_model = mass_results.last.model
+    base_model = mass_result.model
 
     """
     We now define the `perturb_model`, which is the model component whose parameters we iterate over to perform 
@@ -100,10 +98,8 @@ def run(
     perturb_model.mass.centre.centre_1 = af.UniformPrior(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
-    perturb_model.mass.redshift_object = mass_results.last.model.galaxies.lens.redshift
-    perturb_model.mass.redshift_source = (
-        mass_results.last.model.galaxies.source.redshift
-    )
+    perturb_model.mass.redshift_object = mass_result.model.galaxies.lens.redshift
+    perturb_model.mass.redshift_source = mass_result.model.galaxies.source.redshift
 
     """
     We are performing sensitivity mapping to determine when a subhalo is detectable. Eery simulated dataset must 
@@ -112,7 +108,7 @@ def run(
 
     This includes the lens light and mass and source galaxy light.
     """
-    simulation_instance = mass_results.last.instance
+    simulation_instance = mass_result.instance
 
     """
     We now write the `simulate_cls`, which takes the `simulation_instance` of our model (defined above) and uses it to 
@@ -146,8 +142,9 @@ def run(
         grid = al.Grid2DIterate.uniform(
             shape_native=real_space_mask.shape_native,
             pixel_scales=real_space_mask.pixel_scales,
-            fractional_accuracy=0.9999,
-            sub_steps=[2, 4, 8, 16, 24],
+            over_sampling=al.OverSamplingIterate(
+                fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
+            ),
         )
 
         simulator = al.SimulatorInterferometer(

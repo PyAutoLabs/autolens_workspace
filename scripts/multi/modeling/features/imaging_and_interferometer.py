@@ -36,7 +36,7 @@ __Interferometer Masking__
 We define the ‘real_space_mask’ which defines the grid the image the strong lens is evaluated using.
 """
 real_space_mask = al.Mask2D.circular(
-    shape_native=(800, 800), pixel_scales=0.05, radius=4.0, sub_size=1
+    shape_native=(800, 800), pixel_scales=0.05, radius=4.0
 )
 
 """
@@ -204,7 +204,7 @@ print(result_list[0].max_log_likelihood_instance)
 
 tracer_plotter = aplt.TracerPlotter(
     tracer=result_list[0].max_log_likelihood_tracer,
-    grid=real_space_mask.derive_grid.unmasked_sub_1,
+    grid=real_space_mask.derive_grid.unmasked,
 )
 tracer_plotter.subplot_tracer()
 
@@ -216,7 +216,7 @@ fit_plotter.subplot_fit()
 fit_plotter.subplot_fit_dirty_images()
 
 plotter = aplt.NestPlotter(samples=result_list.samples)
-plotter.cornerplot()
+plotter.corner_anesthetic()
 
 """
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.

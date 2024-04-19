@@ -38,7 +38,7 @@ The code below (which we have omitted comments from for brevity) performs a lens
 be familiar enough with lens modeling to understand this, if not you should go over the beginner model-fit script again!
 """
 real_space_mask = al.Mask2D.circular(
-    shape_native=(800, 800), pixel_scales=0.05, radius=4.0, sub_size=1
+    shape_native=(800, 800), pixel_scales=0.05, radius=4.0
 )
 
 dataset_name = "simple"

@@ -8,11 +8,12 @@ from typing import Union, Optional
 def run(
     settings_search: af.SettingsSearch,
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
-    source_results: af.ResultsCollection,
+    source_result_for_lens: af.Result,
+    source_result_for_source: af.Result,
     lens_bulge: Optional[af.Model] = af.Model(al.lp.Sersic),
     lens_disk: Optional[af.Model] = None,
     lens_point: Optional[af.Model] = None,
-) -> af.ResultsCollection:
+) -> af.Result:
     """
     The SlaM LIGHT LP PIPELINE, which fits a complex model for a lens galaxy's light with the mass and source models
     fixed.
@@ -24,8 +25,12 @@ def run(
         parallelization, etc.).
     analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    source_results
-        The results of the SLaM SOURCE LP PIPELINE or SOURCE PIX PIPELINE which ran before this pipeline.
+    source_result_for_lens
+        The result of the SLaM SOURCE LP PIPELINE or SOURCE PIX PIPELINE which ran before this pipeline, used
+        for initializing model components associated with the lens galaxy.
+    source_result_for_source
+        The result of the SLaM SOURCE LP PIPELINE or SOURCE PIX PIPELINE which ran before this pipeline, used
+        for initializing model components associated with the source galaxy.
     lens_bulge
         The model used to represent the light distribution of the lens galaxy's bulge (set to
         None to omit a bulge).
@@ -51,25 +56,25 @@ def run(
     """
 
     source = al.util.chaining.source_custom_model_from(
-        result=source_results.last, source_is_model=False
+        result=source_result_for_source, source_is_model=False
     )
 
     model = af.Collection(
         galaxies=af.Collection(
             lens=af.Model(
                 al.Galaxy,
-                redshift=source_results.last.instance.galaxies.lens.redshift,
+                redshift=source_result_for_lens.instance.galaxies.lens.redshift,
                 bulge=lens_bulge,
                 disk=lens_disk,
                 point=lens_point,
-                mass=source_results[0].instance.galaxies.lens.mass,
-                shear=source_results[0].instance.galaxies.lens.shear,
+                mass=source_result_for_lens.instance.galaxies.lens.mass,
+                shear=source_result_for_lens.instance.galaxies.lens.shear,
             ),
             source=source,
         ),
-        sky=al.util.chaining.sky_from(result=source_results.last),
+        sky=al.util.chaining.sky_from(result=source_result_for_source),
         clumps=al.util.chaining.clumps_from(
-            result=source_results[0], light_as_model=True
+            result=source_result_for_lens, light_as_model=True
         ),
     )
 
@@ -79,6 +84,6 @@ def run(
         n_live=150,
     )
 
-    result_1 = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
+    result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
 
-    return af.ResultsCollection([result_1])
+    return result

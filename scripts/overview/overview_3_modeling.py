@@ -258,7 +258,7 @@ The superscripts of labels correspond to the name each component was given in th
 mass its name `mass` defined when making the `Model` above is used).
 """
 plotter = aplt.NestPlotter(samples=result.samples)
-plotter.cornerplot()
+plotter.corner_anesthetic()
 
 """
 The result also contains the maximum log likelihood `Tracer` and `FitImaging` objects which can easily be plotted.

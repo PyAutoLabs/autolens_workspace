@@ -259,8 +259,8 @@ one another. The high threshold ensures only the initial mass models at the star
 Position thresholding is described in more detail in the 
 script `autolens_workspace/*/imaging/modeling/customize/positions.py`
 """
-positions = al.Grid2DIrregular.from_json(
-    file_path=path.join(dataset_path, "positions.json")
+positions = al.Grid2DIrregular(
+    al.from_json(file_path=path.join(dataset_path, "positions.json"))
 )
 
 
@@ -339,7 +339,7 @@ print(result.max_log_likelihood_instance)
 
 tracer_plotter = aplt.TracerPlotter(
     tracer=result.max_log_likelihood_tracer,
-    grid=real_space_mask.derive_grid.unmasked_sub_1,
+    grid=real_space_mask.derive_grid.unmasked,
 )
 tracer_plotter.subplot_tracer()
 
@@ -348,7 +348,7 @@ fit_plotter.subplot_fit()
 fit_plotter.subplot_fit_dirty_images()
 
 plotter = aplt.NestPlotter(samples=result.samples)
-plotter.cornerplot()
+plotter.corner_anesthetic()
 
 """
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.

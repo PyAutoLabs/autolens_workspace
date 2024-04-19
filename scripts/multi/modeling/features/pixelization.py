@@ -95,8 +95,8 @@ __Positions__
 This fit also uses the arc-second positions of the multiply imaged lensed source galaxy, which were drawn onto the
 image via the GUI described in the file `autolens_workspace/*/imaging/data_preparation/gui/positions.py`.
 """
-positions = al.Grid2DIrregular.from_json(
-    file_path=path.join(dataset_path, "positions.json")
+positions = al.Grid2DIrregular(
+    al.from_json(file_path=path.join(dataset_path, "positions.json"))
 )
 
 """
@@ -211,7 +211,7 @@ Therefore, the samples is identical in every result object.
 """
 for result in result_list:
     plotter = aplt.NestPlotter(samples=result.samples)
-    plotter.cornerplot()
+    plotter.corner_anesthetic()
 
 """
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.

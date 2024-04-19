@@ -138,8 +138,8 @@ __Positions__
 This fit also uses the arc-second positions of the multiply imaged lensed source galaxy, which were drawn onto the
 image via the GUI described in the file `autolens_workspace/*/imaging/data_preparation/gui/positions.py`.
 """
-positions = al.Grid2DIrregular.from_json(
-    file_path=path.join(dataset_path, "positions.json")
+positions = al.Grid2DIrregular(
+    al.from_json(file_path=path.join(dataset_path, "positions.json"))
 )
 
 """
@@ -333,7 +333,7 @@ fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_plotter.subplot_fit()
 
 plotter = aplt.NestPlotter(samples=result.samples)
-plotter.cornerplot()
+plotter.corner_anesthetic()
 
 """
 __Voronoi__

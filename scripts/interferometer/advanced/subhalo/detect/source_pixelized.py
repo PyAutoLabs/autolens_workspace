@@ -167,7 +167,7 @@ this example:
 """
 analysis = al.AnalysisInterferometer(dataset=dataset)
 
-source_lp_results = slam.source_lp.run(
+source_lp_result = slam.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=None,
@@ -205,19 +205,51 @@ __Settings__:
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_lp_results[0]),
-    positions_likelihood=source_lp_results.last.positions_likelihood_from(
+    adapt_image_maker=al.AdaptImageMaker(result=source_lp_result[0]),
+    positions_likelihood=source_lp_result.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),
     settings_inversion=settings_inversion,
 )
 
-source_pix_results = slam.source_pix.run(
+source_pix_result_1 = slam.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
-    source_lp_results=source_lp_results,
+    source_lp_result=source_lp_result,
+    mesh_init=al.mesh.VoronoiNN,
+)
+
+adapt_image_maker = al.AdaptImageMaker(result=source_pix_result_1)
+adapt_image = adapt_image_maker.adapt_images.galaxy_name_image_dict[
+    "('galaxies', 'source')"
+]
+
+over_sampling = al.OverSamplingUniform.from_adapt(
+    data=adapt_image,
+    noise_map=dataset.noise_map,
+)
+
+dataset.over_sampling_pixelization = over_sampling
+dataset.__dict__["grid_pixelization"] = None
+
+analysis = al.AnalysisImaging(
+    dataset=dataset,
+    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+    settings_inversion=al.SettingsInversion(
+        image_mesh_min_mesh_pixels_per_pixel=3,
+        image_mesh_min_mesh_number=5,
+        image_mesh_adapt_background_percent_threshold=0.1,
+        image_mesh_adapt_background_percent_check=0.8,
+    ),
+)
+
+source_pix_result_2 = slam.source_pix.run_2(
+    settings_search=settings_search,
+    analysis=analysis,
+    source_lp_result=source_lp_result,
+    source_pix_result_1=source_pix_result_1,
     image_mesh=al.image_mesh.Hilbert,
-    mesh=al.mesh.Delaunay,
+    mesh=al.mesh.VoronoiNN,
     regularization=al.reg.AdaptiveBrightnessSplit,
 )
 
@@ -243,7 +275,7 @@ In this example it:
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_pix_results[0]),
+    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
     positions_likelihood=source_pix_results.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2, use_resample=True
     ),
@@ -254,7 +286,7 @@ mass_results = slam.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
     source_results=source_pix_results,
-    light_results=None,
+    light_result=None,
     mass=af.Model(al.mp.PowerLaw),
 )
 
@@ -276,8 +308,8 @@ For this modeling script the SUBHALO PIPELINE customizes:
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_pix_results[0]),
-    positions_likelihood=mass_results.last.positions_likelihood_from(
+    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+    positions_likelihood=mass_result.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2, use_resample=True
     ),
     settings_inversion=settings_inversion,
@@ -286,7 +318,7 @@ analysis = al.AnalysisInterferometer(
 subhalo_results = slam.subhalo.detection.run(
     settings_search=settings_search,
     analysis=analysis,
-    mass_results=mass_results,
+    mass_result=mass_result,
     subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
     grid_dimension_arcsec=3.0,
     number_of_steps=5,

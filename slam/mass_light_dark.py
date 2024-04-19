@@ -8,8 +8,9 @@ from typing import Optional, Union
 def run(
     settings_search: af.SettingsSearch,
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
-    source_results: af.ResultsCollection,
-    light_results: af.ResultsCollection,
+    source_result_for_lens: af.Result,
+    source_result_for_source: af.Result,
+    light_result: af.Result,
     lens_bulge: Optional[af.Model] = af.Model(al.lp.Sersic),
     lens_disk: Optional[af.Model] = None,
     dark: af.Model = af.Model(al.mp.NFWMCRLudlow),
@@ -23,10 +24,14 @@ def run(
     ----------
     analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    source_results
-        The results of the SLaM SOURCE PARAMETRIC PIPELINE or SOURCE PIXELIZED PIPELINE which ran before this pipeline.
-    light_results
-        The results of the SLaM LIGHT PARAMETRIC PIPELINE which ran before this pipeline.
+    source_result_for_lens
+        The result of the SLaM SOURCE LP PIPELINE or SOURCE PIX PIPELINE which ran before this pipeline,
+        used for initializing model components associated with the lens galaxy.
+    source_result_for_source
+        The result of the SLaM SOURCE LP PIPELINE or SOURCE PIX PIPELINE which ran before this pipeline,
+        used for initializing model components associated with the source galaxy.
+    light_result
+        The result of the SLaM LIGHT LP PIPELINE which ran before this pipeline.
     lens_bulge
         The model used to represent the light and mass distribution of the lens galaxy's bulge (set to
         None to omit a bulge).
@@ -69,44 +74,44 @@ def run(
 
     lens_bulge = al.util.chaining.mass_light_dark_from(
         lmp_model=lens_bulge,
-        result_light_component=light_results.last.model.galaxies.lens.bulge,
+        result_light_component=light_result.model.galaxies.lens.bulge,
     )
     lens_disk = al.util.chaining.mass_light_dark_from(
         lmp_model=lens_disk,
-        result_light_component=light_results.last.model.galaxies.lens.disk,
+        result_light_component=light_result.model.galaxies.lens.disk,
     )
     # lens_point = al.util.chaining.mass_light_dark_from(
     #     lmp_model=lens_point,
-    #     result_light_component=light_results.last.model.galaxies.lens.point,
+    #     result_light_component=light_result.model.galaxies.lens.point,
     # )
 
     dark.mass_at_200 = af.LogUniformPrior(lower_limit=1e10, upper_limit=1e15)
-    dark.redshift_object = light_results.last.instance.galaxies.lens.redshift
-    dark.redshift_source = light_results.last.instance.galaxies.source.redshift
+    dark.redshift_object = light_result.instance.galaxies.lens.redshift
+    dark.redshift_source = light_result.instance.galaxies.source.redshift
 
     if smbh is not None:
         smbh.centre = lens_bulge.centre
 
     source = al.util.chaining.source_from(
-        result=source_results.last,
+        result=source_result_for_source,
     )
 
     model = af.Collection(
         galaxies=af.Collection(
             lens=af.Model(
                 al.Galaxy,
-                redshift=light_results.last.instance.galaxies.lens.redshift,
+                redshift=light_result.instance.galaxies.lens.redshift,
                 bulge=lens_bulge,
                 disk=lens_disk,
                 #    point=lens_point,
                 dark=dark,
-                shear=source_results[0].model.galaxies.lens.shear,
+                shear=source_result_for_lens.model.galaxies.lens.shear,
                 smbh=smbh,
             ),
             source=source,
         ),
         clumps=al.util.chaining.clumps_from(
-            result=source_results[0], mass_as_model=True
+            result=source_result_for_lens, mass_as_model=True
         ),
     )
 
@@ -116,6 +121,6 @@ def run(
         n_live=150,
     )
 
-    result_1 = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
+    result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
 
-    return af.ResultsCollection([result_1])
+    return result

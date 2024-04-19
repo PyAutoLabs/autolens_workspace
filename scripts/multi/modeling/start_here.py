@@ -197,7 +197,7 @@ Therefore, the samples is identical in every result object.
 """
 for result in result_list:
     plotter = aplt.NestPlotter(samples=result.samples)
-    plotter.cornerplot()
+    plotter.corner_anesthetic()
 
 """
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.

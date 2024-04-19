@@ -991,7 +991,7 @@ fit = al.FitImaging(
     dataset=masked_dataset,
     tracer=tracer,
     settings_inversion=al.SettingsInversion(
-        use_w_tilde=False, relocate_pix_border=True
+        use_w_tilde=False, use_border_relocator=True
     ),
 )
 fit_log_evidence = fit.log_evidence

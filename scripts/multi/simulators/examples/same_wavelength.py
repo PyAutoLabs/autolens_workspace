@@ -48,11 +48,13 @@ Nevertheless, we specify this as a list as there could be an exception.
 pixel_scales_list = [0.1, 0.1]
 
 grid_list = [
-    al.Grid2DIterate.uniform(
+    al.Grid2D.uniform(
         shape_native=(150, 150),
         pixel_scales=pixel_scales,
-        fractional_accuracy=0.9999,
-        sub_steps=[2, 4, 8, 16, 24],
+        over_sampling=al.OverSamplingIterate(
+            fractional_accuracy=0.9999,
+            sub_steps=[2, 4, 8, 16],
+        ),
     )
     for pixel_scales in pixel_scales_list
 ]

@@ -116,6 +116,7 @@ array_2d_plotter.figure_2d()
 """
 Output the positions to a .json file in the dataset folder, so we can load them in modeling scripts.
 """
-positions.output_to_json(
-    file_path=path.join(dataset_path, "positions.json"), overwrite=True
+al.output_to_json(
+    obj=positions,
+    file_path=path.join(dataset_path, "positions.json"),
 )

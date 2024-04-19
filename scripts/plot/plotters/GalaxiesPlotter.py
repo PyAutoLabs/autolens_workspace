@@ -33,7 +33,7 @@ lens_galaxy = al.Galaxy(redshift=0.5, mass=mass_profile)
 lensed_grid = grid.grid_2d_via_deflection_grid_from(deflection_grid=deflections)
 
 """
-__Plane__
+__Galaxies__
 
 We create galaxies representing a source-plane containing a `Galaxy` with a `LightProfile`.
 """

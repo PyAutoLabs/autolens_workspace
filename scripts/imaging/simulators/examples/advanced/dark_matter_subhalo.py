@@ -44,14 +44,14 @@ dataset_path = path.join("dataset", dataset_type, dataset_name)
 """
 __Simulate__
 
-Simulate the image using the `Grid2DIterate` object, which is a grid of (y,x) coordinates that is iteratively
-where the sub-size of the grid is increased until the input fractional accuracy of 99.99% is met.
+Simulate the image using a `Grid2D` with the `OverSamplingIterate` object.
 """
-grid = al.Grid2DIterate.uniform(
+grid = al.Grid2D.uniform(
     shape_native=(150, 150),
     pixel_scales=0.05,
-    fractional_accuracy=0.9999,
-    sub_steps=[2, 4, 8, 16, 24],
+    over_sampling=al.OverSamplingIterate(
+        fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
+    ),
 )
 
 """

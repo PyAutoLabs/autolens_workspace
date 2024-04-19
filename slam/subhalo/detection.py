@@ -4,36 +4,24 @@ import autolens as al
 from typing import Union, Tuple
 
 
-def run(
+def run_1_no_subhalo(
     settings_search: af.SettingsSearch,
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
-    mass_results: af.ResultsCollection,
-    subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
-    free_redshift: bool = False,
-    grid_dimension_arcsec: float = 3.0,
-    number_of_steps: Union[Tuple[int], int] = 5,
-) -> af.ResultsCollection:
+    mass_result: af.Result,
+) -> af.Result:
     """
-    The SLaM SUBHALO PIPELINE for fitting lens mass models which include a dark matter subhalo.
+    The first SLaM SUBHALO PIPELINE for fitting lens mass models which include a dark matter subhalo.
+
+    This pipeline fits the lens model without a dark matter subhalo, providing the Bayesian evidence which we use to
+    perform Bayesian model comparison with the models fitted in the second and third pipelines to determine whether a
+    dark matter subhalo is detected.
 
     Parameters
     ----------
     analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    mass_results
-        The results of the SLaM MASS PIPELINE which ran before this pipeline.
-    subhalo_mass
-        The `MassProfile` used to fit the subhalo in this pipeline.
-    grid_dimension_arcsec
-        the arc-second dimensions of the grid in the y and x directions. An input value of 3.0" means the grid in
-        all four directions extends to 3.0" giving it dimensions 6.0" x 6.0".
-    free_redshift
-        If `True` the redshift of the subhalo is a free parameter in the second and third searches.
-    number_of_steps
-        The 2D dimensions of the grid (e.g. number_of_steps x number_of_steps) that the subhalo search is performed for.
-    number_of_cores
-        The number of cores used to perform the non-linear search grid search. If 1, each model-fit on the grid is
-        performed in serial, if > 1 fits are distributed in parallel using the Python multiprocessing module.
+    mass_result
+        The result of the SLaM MASS PIPELINE which ran before this pipeline.
     """
 
     """
@@ -54,28 +42,62 @@ def run(
     """
 
     source = al.util.chaining.source_from(
-        result=mass_results.last,
+        result=mass_result,
     )
 
-    lens = mass_results.last.model.galaxies.lens
+    lens = mass_result.model.galaxies.lens
 
     model = af.Collection(
         galaxies=af.Collection(lens=lens, source=source),
-        sky=al.util.chaining.sky_from(result=mass_results.last),
-        clumps=al.util.chaining.clumps_from(
-            result=mass_results.last, mass_as_model=True
-        ),
+        sky=al.util.chaining.sky_from(result=mass_result),
+        clumps=al.util.chaining.clumps_from(result=mass_result, mass_as_model=True),
     )
 
-    search_no_subhalo = af.Nautilus(
+    search = af.Nautilus(
         name="subhalo[1]_mass[total_refine]",
         **settings_search.search_dict,
         n_live=200,
     )
 
-    result_no_subhalo = search_no_subhalo.fit(
-        model=model, analysis=analysis, **settings_search.fit_dict
-    )
+    result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
+
+    return result
+
+
+def run_2_grid_search(
+    settings_search: af.SettingsSearch,
+    analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
+    mass_result: af.Result,
+    subhalo_result_1: af.Result,
+    subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
+    free_redshift: bool = False,
+    grid_dimension_arcsec: float = 3.0,
+    number_of_steps: Union[Tuple[int], int] = 5,
+) -> af.GridSearchResult:
+    """
+    The SLaM SUBHALO PIPELINE for fitting lens mass models which include a dark matter subhalo.
+
+    Parameters
+    ----------
+    analysis
+        The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
+    mass_result
+        The result of the SLaM MASS PIPELINE which ran before this pipeline.
+    subhalo_result_1
+        The result of the first SLaM SUBHALO PIPELINE which ran before this pipeline.
+    subhalo_mass
+        The `MassProfile` used to fit the subhalo in this pipeline.
+    grid_dimension_arcsec
+        the arc-second dimensions of the grid in the y and x directions. An input value of 3.0" means the grid in
+        all four directions extends to 3.0" giving it dimensions 6.0" x 6.0".
+    free_redshift
+        If `True` the redshift of the subhalo is a free parameter in the second and third searches.
+    number_of_steps
+        The 2D dimensions of the grid (e.g. number_of_steps x number_of_steps) that the subhalo search is performed for.
+    number_of_cores
+        The number of cores used to perform the non-linear search grid search. If 1, each model-fit on the grid is
+        performed in serial, if > 1 fits are distributed in parallel using the Python multiprocessing module.
+    """
 
     """
     __Model + Search + Analysis + Model-Fit (Search 2)__
@@ -108,46 +130,46 @@ def run(
     )
 
     if not free_redshift:
-        subhalo.redshift = result_no_subhalo.instance.galaxies.lens.redshift
-        subhalo.mass.redshift_object = result_no_subhalo.instance.galaxies.lens.redshift
+        subhalo.redshift = subhalo_result_1.instance.galaxies.lens.redshift
+        subhalo.mass.redshift_object = subhalo_result_1.instance.galaxies.lens.redshift
         search_tag = "search_lens_plane"
-        refine_tag = "single_plane_refine"
     else:
         subhalo.redshift = af.UniformPrior(
             lower_limit=0.0,
-            upper_limit=result_no_subhalo.instance.galaxies.source.redshift,
+            upper_limit=subhalo_result_1.instance.galaxies.source.redshift,
         )
         subhalo.mass.redshift_object = subhalo.redshift
         search_tag = "search_multi_plane"
-        refine_tag = "multi_plane_refine"
 
-    subhalo.mass.redshift_source = result_no_subhalo.instance.galaxies.source.redshift
+    subhalo.mass.redshift_source = subhalo_result_1.instance.galaxies.source.redshift
+
+    lens = mass_result.model.galaxies.lens
 
     source = al.util.chaining.source_from(
-        result=mass_results.last,
+        result=mass_result,
     )
 
     model = af.Collection(
         galaxies=af.Collection(lens=lens, subhalo=subhalo, source=source),
-        sky=al.util.chaining.sky_from(result=mass_results.last),
+        sky=al.util.chaining.sky_from(result=mass_result),
         clumps=al.util.chaining.clumps_from(
-            result=result_no_subhalo, mass_as_model=True
+            result=subhalo_result_1, mass_as_model=True
         ),
     )
 
-    search_subhalo_grid = af.Nautilus(
+    search = af.Nautilus(
         name=f"subhalo[2]_mass[total]_source_subhalo[{search_tag}]",
         **settings_search.search_dict,
         n_live=200,
     )
 
     subhalo_grid_search = af.SearchGridSearch(
-        search=search_subhalo_grid,
+        search=search,
         number_of_steps=number_of_steps,
         number_of_cores=1,
     )
 
-    result_subhalo_grid_search = subhalo_grid_search.fit(
+    result = subhalo_grid_search.fit(
         model=model,
         analysis=analysis,
         grid_priors=[
@@ -156,6 +178,39 @@ def run(
         ],
         info=settings_search.info,
     )
+
+    return result
+
+
+def run_3_subhalo(
+    settings_search: af.SettingsSearch,
+    analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
+    subhalo_result_1: af.Result,
+    subhalo_grid_search_result_2: af.GridSearchResult,
+    subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
+    free_redshift: bool = False,
+) -> af.Result:
+    """
+    The SLaM SUBHALO PIPELINE for fitting lens mass models which include a dark matter subhalo.
+
+    Parameters
+    ----------
+    analysis
+        The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
+    mass_result
+        The result of the SLaM MASS PIPELINE which ran before this pipeline.
+    subhalo_result_1
+        The result of the first SLaM SUBHALO PIPELINE which ran before this pipeline.
+    subhalo_mass
+        The `MassProfile` used to fit the subhalo in this pipeline.
+    subhalo_grid_search_result_2
+        The result of the second SLaM SUBHALO PIPELINE grid search which ran before this pipeline.
+    grid_dimension_arcsec
+        the arc-second dimensions of the grid in the y and x directions. An input value of 3.0" means the grid in
+        all four directions extends to 3.0" giving it dimensions 6.0" x 6.0".
+    free_redshift
+        If `True` the redshift of the subhalo is a free parameter in the second and third searches.
+    """
 
     """
     __Model + Search + Analysis + Model-Fit (Search 3)__
@@ -180,40 +235,48 @@ def run(
 
     subhalo = af.Model(
         al.Galaxy,
-        redshift=result_no_subhalo.instance.galaxies.lens.redshift,
+        redshift=subhalo_result_1.instance.galaxies.lens.redshift,
         mass=subhalo_mass,
     )
 
+    if not free_redshift:
+        subhalo.redshift = subhalo_result_1.instance.galaxies.lens.redshift
+        subhalo.mass.redshift_object = subhalo_result_1.instance.galaxies.lens.redshift
+        refine_tag = "single_plane_refine"
+    else:
+        subhalo.redshift = af.UniformPrior(
+            lower_limit=0.0,
+            upper_limit=subhalo_result_1.instance.galaxies.source.redshift,
+        )
+        subhalo.mass.redshift_object = subhalo.redshift
+        refine_tag = "multi_plane_refine"
+
     subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
-    subhalo.mass.centre = result_subhalo_grid_search.model_absolute(
+    subhalo.mass.centre = subhalo_grid_search_result_2.model_absolute(
         a=1.0
     ).galaxies.subhalo.mass.centre
 
-    subhalo.redshift = result_subhalo_grid_search.model.galaxies.subhalo.redshift
+    subhalo.redshift = subhalo_grid_search_result_2.model.galaxies.subhalo.redshift
     subhalo.mass.redshift_object = subhalo.redshift
 
     model = af.Collection(
         galaxies=af.Collection(
-            lens=result_subhalo_grid_search.model.galaxies.lens,
+            lens=subhalo_grid_search_result_2.model.galaxies.lens,
             subhalo=subhalo,
-            source=result_subhalo_grid_search.model.galaxies.source,
+            source=subhalo_grid_search_result_2.model.galaxies.source,
         ),
-        sky=al.util.chaining.sky_from(result=result_subhalo_grid_search),
+        sky=al.util.chaining.sky_from(result=subhalo_grid_search_result_2),
         clumps=al.util.chaining.clumps_from(
-            result=result_subhalo_grid_search, mass_as_model=True
+            result=subhalo_grid_search_result_2, mass_as_model=True
         ),
     )
 
-    search_final_subhalo = af.Nautilus(
+    search = af.Nautilus(
         name=f"subhalo[3]_subhalo[{refine_tag}]",
         **settings_search.search_dict,
         n_live=600,
     )
 
-    result_with_subhalo = search_final_subhalo.fit(
-        model=model, analysis=analysis, **settings_search.fit_dict
-    )
+    result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
 
-    return af.ResultsCollection(
-        [result_no_subhalo, result_subhalo_grid_search, result_with_subhalo]
-    )
+    return result

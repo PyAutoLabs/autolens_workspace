@@ -18,6 +18,6 @@ Folders (Beginner)
 - ``plots``: Output plots written to hard-disk.
 - ``plotters``: Plotters which plot specific **PyAutoLens** objects (e.g. ``GalaxyPlotter``, ``TracerPlotter``).
 - ``publication``: Examples for plotting figures suitable for published scientific papers.
-- ``search``: Visualization tools for the results of a non-linear search (e.g. ``NestPlotter``).
+- ``search``: Visualization tools for the results of a non-linear search (e.g. ``DynestyPlotter``).
 - ``visuals_1d``: Include 1D visuals on a 1D plot (e.g. a vertical line of the Einstein on a 1D convergence plot).
 - ``visuals_2d``: Include 2D visuals on a 2D plot (e.g. a critical curve on an image).

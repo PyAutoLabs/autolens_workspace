@@ -281,7 +281,7 @@ The `autofit_workspace/*/plots` folder illustrates other packages that can be us
 the standard output results formats (e.g. `GetDist.py`).
 """
 plotter = aplt.NestPlotter(samples=result.samples)
-plotter.cornerplot()
+plotter.corner_anesthetic()
 
 """
 __Maximum Likelihood__

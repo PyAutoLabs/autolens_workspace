@@ -102,7 +102,7 @@ source_galaxy = al.Galaxy(
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 tracer_plotter = aplt.TracerPlotter(
-    tracer=tracer, grid=real_space_mask.derive_grid.unmasked_sub_1
+    tracer=tracer, grid=real_space_mask.derive_grid.unmasked
 )
 tracer_plotter.figures_2d(image=True)
 

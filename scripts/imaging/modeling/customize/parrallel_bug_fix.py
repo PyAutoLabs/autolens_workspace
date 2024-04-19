@@ -149,7 +149,7 @@ def fit():
     fit_plotter.subplot_fit()
 
     plotter = aplt.NestPlotter(samples=result.samples)
-    plotter.cornerplot()
+    plotter.corner_anesthetic()
 
     """
     Finish.

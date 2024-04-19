@@ -318,9 +318,7 @@ mask = al.Mask2D.circular(
     shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.5
 )
 dataset = dataset.apply_mask(mask=mask)
-dataset = dataset.apply_settings(
-    settings=al.SettingsImaging(grid_class=al.Grid2DIterate)
-)
+dataset = dataset.apply_over_sampling(over_sampling=al.OverSamplingIterate())
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,

@@ -309,7 +309,7 @@ the standard output results formats (e.g. `GetDist.py`).
 """
 for samples in agg.values("samples"):
     plotter = aplt.NestPlotter(samples=samples)
-#  plotter.cornerplot()
+#  plotter.corner_anesthetic()
 
 """
 __Maximum Likelihood__

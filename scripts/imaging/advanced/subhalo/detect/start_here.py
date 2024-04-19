@@ -154,7 +154,7 @@ analysis = al.AnalysisImaging(dataset=dataset)
 
 bulge = af.Model(al.lp.Sersic)
 
-source_lp_results = slam.source_lp.run(
+source_lp_result = slam.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=bulge,
@@ -174,8 +174,8 @@ This is the standard SOURCE PIX PIPELINE described in the `slam/start_here.ipynb
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_lp_results.last),
-    positions_likelihood=source_lp_results.last.positions_likelihood_from(
+    adapt_image_maker=al.AdaptImageMaker(result=source_lp_result),
+    positions_likelihood=source_lp_result.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),
     settings_inversion=al.SettingsInversion(
@@ -186,12 +186,44 @@ analysis = al.AnalysisImaging(
     ),
 )
 
-source_pix_results = slam.source_pix.run(
+source_pix_result_1 = slam.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
-    source_lp_results=source_lp_results,
+    source_lp_result=source_lp_result,
+    mesh_init=al.mesh.VoronoiNN,
+)
+
+adapt_image_maker = al.AdaptImageMaker(result=source_pix_result_1)
+adapt_image = adapt_image_maker.adapt_images.galaxy_name_image_dict[
+    "('galaxies', 'source')"
+]
+
+over_sampling = al.OverSamplingUniform.from_adapt(
+    data=adapt_image,
+    noise_map=dataset.noise_map,
+)
+
+dataset.over_sampling_pixelization = over_sampling
+dataset.__dict__["grid_pixelization"] = None
+
+analysis = al.AnalysisImaging(
+    dataset=dataset,
+    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+    settings_inversion=al.SettingsInversion(
+        image_mesh_min_mesh_pixels_per_pixel=3,
+        image_mesh_min_mesh_number=5,
+        image_mesh_adapt_background_percent_threshold=0.1,
+        image_mesh_adapt_background_percent_check=0.8,
+    ),
+)
+
+source_pix_result_2 = slam.source_pix.run_2(
+    settings_search=settings_search,
+    analysis=analysis,
+    source_lp_result=source_lp_result,
+    source_pix_result_1=source_pix_result_1,
     image_mesh=al.image_mesh.Hilbert,
-    mesh=al.mesh.Delaunay,
+    mesh=al.mesh.VoronoiNN,
     regularization=al.reg.AdaptiveBrightnessSplit,
 )
 
@@ -201,15 +233,16 @@ __LIGHT LP PIPELINE__
 This is the standard LIGHT LP PIPELINE described in the `slam/start_here.ipynb` example.
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, adapt_image_maker=al.AdaptImageMaker(result=source_pix_results[0])
+    dataset=dataset, adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1)
 )
 
 bulge = af.Model(al.lp.Sersic)
 
-light_results = slam.light_lp.run(
+light_result = slam.light_lp.run(
     settings_search=settings_search,
     analysis=analysis,
-    source_results=source_pix_results,
+    source_result_for_lens=source_pix_result_1,
+    source_result_for_source=source_pix_result_2,
     lens_bulge=bulge,
     lens_disk=None,
 )
@@ -221,17 +254,18 @@ This is the standard MASS TOTAL PIPELINE described in the `slam/start_here.ipynb
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_pix_results[0]),
-    positions_likelihood=source_pix_results.last.positions_likelihood_from(
+    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+    positions_likelihood=source_pix_result_2.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),
 )
 
-mass_results = slam.mass_total.run(
+mass_result = slam.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
-    source_results=source_pix_results,
-    light_results=light_results,
+    source_result_for_lens=source_pix_result_1,
+    source_result_for_source=source_pix_result_2,
+    light_result=light_result,
     mass=af.Model(al.mp.PowerLaw),
 )
 
@@ -256,31 +290,35 @@ A full description of the SUBHALO PIPELINE can be found in the SLaM pipeline its
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    positions_likelihood=mass_results.last.positions_likelihood_from(
+    positions_likelihood=mass_result.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2, use_resample=True
     ),
-    adapt_image_maker=al.AdaptImageMaker(result=source_pix_results[0]),
+    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
 )
 
-subhalo_results = slam.subhalo.detection.run(
+result_no_subhalo = slam.subhalo.detection.run_1_no_subhalo(
     settings_search=settings_search,
     analysis=analysis,
-    mass_results=mass_results,
-    subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
-    grid_dimension_arcsec=3.0,
-    number_of_steps=5,
+    mass_result=mass_result,
 )
 
-"""
-__Result__
+result_subhalo_grid_search = slam.subhalo.detection.run_2_grid_search(
+    settings_search=settings_search,
+    analysis=analysis,
+    mass_result=mass_result,
+    subhalo_result_1=result_no_subhalo,
+    subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
+    grid_dimension_arcsec=3.0,
+    number_of_steps=2,
+)
 
-The `subhalo_results` object returned by the pipeline contains the results of all 3 searches performed by the pipeline.
-
-We unpack them below for convenience.
-"""
-result_no_subhalo = subhalo_results[0]
-result_subhalo_grid_search = subhalo_results[1]
-result_with_subhalo = subhalo_results[2]
+result_with_subhalo = slam.subhalo.detection.run_3_subhalo(
+    settings_search=settings_search,
+    analysis=analysis,
+    subhalo_result_1=result_no_subhalo,
+    subhalo_grid_search_result_2=result_subhalo_grid_search,
+    subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
+)
 
 """
 __Bayesian Evidence__

@@ -115,7 +115,7 @@ We can use an `MCMCPlotter` to create a corner plot, which shows the probability
 parameter in 1D and 2D.
 """
 plotter = aplt.NestPlotter(samples=result.samples)
-plotter.cornerplot()
+plotter.corner_anesthetic()
 
 """
 Finish.

@@ -326,7 +326,7 @@ The superscripts of labels correspond to the name each component was given in th
 mass its name `mass` defined when making the `Model` above is used).
 """
 plotter = aplt.NestPlotter(samples=result.samples)
-plotter.cornerplot()
+plotter.corner_anesthetic()
 
 """
 Checkout `autolens_workspace/*/modeling/results.py` for a full description of the result object.

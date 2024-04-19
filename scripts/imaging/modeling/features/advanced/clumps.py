@@ -97,8 +97,8 @@ Therefore, via the clump API we input the centre of each clump, which fixes thei
 The `data_preparation` tutorial `autolens_workspace/*/imaging/data_preparation/examples/optional/clump_centres.py` 
 describes how to create these centres. Using this script they have been output to the `.json` file we load below.
 """
-clump_centres = al.Grid2DIrregular.from_json(
-    file_path=path.join(dataset_path, "clump_centres.json")
+clump_centres = al.Grid2DIrregular(
+    al.from_json(file_path=path.join(dataset_path, "clump_centres.json"))
 )
 
 """

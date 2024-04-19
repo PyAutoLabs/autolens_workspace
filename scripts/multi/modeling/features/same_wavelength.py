@@ -200,7 +200,7 @@ The `Samples` object still has the dimensions of the overall non-linear search (
 Therefore, the samples is identical in every result object.
 """
 plotter = aplt.NestPlotter(samples=result_list.samples)
-plotter.cornerplot()
+plotter.corner_anesthetic()
 
 """
 Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.

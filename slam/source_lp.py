@@ -19,7 +19,7 @@ def run(
     redshift_source: float = 1.0,
     mass_centre: Optional[Tuple[float, float]] = None,
     clump_model: Union[al.ClumpModel, al.ClumpModelDisabled] = al.ClumpModelDisabled(),
-) -> af.ResultsCollection:
+) -> af.Result:
     """
     The SlaM SOURCE LP PIPELINE, which provides an initial model for the lens's light, mass and source using a
     parametric source model (e.g. Sersics, an MGE).
@@ -76,7 +76,7 @@ def run(
     if mass_centre is not None:
         mass.centre = mass_centre
 
-    model_1 = af.Collection(
+    model = af.Collection(
         galaxies=af.Collection(
             lens=af.Model(
                 al.Galaxy,
@@ -97,14 +97,12 @@ def run(
         clumps=clump_model.clumps,
     )
 
-    search_1 = af.Nautilus(
+    search = af.Nautilus(
         name="source_lp[1]_light[lp]_mass[total]_source[lp]",
         **settings_search.search_dict,
         n_live=200,
     )
 
-    result_1 = search_1.fit(
-        model=model_1, analysis=analysis, **settings_search.fit_dict
-    )
+    result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
 
-    return af.ResultsCollection([result_1])
+    return result

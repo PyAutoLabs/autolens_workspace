@@ -104,7 +104,7 @@
 # """
 # analysis = al.AnalysisInterferometer(dataset=dataset)
 #
-# source_lp_results = slam.source_lp.run(
+# source_lp_result = slam.source_lp.run(
 #     settings_search=settings_search,
 #     analysis=analysis,
 #     lens_bulge=None,
@@ -132,7 +132,7 @@
 # mass_results = slam.mass_total.run(
 #     settings_search=settings_search,
 #     analysis=analysis,
-#     source_results=source_lp_results,
+#     source_results=source_lp_result,
 #     light_results=None,
 #     mass=af.Model(al.mp.PowerLaw),
 # )
@@ -158,7 +158,7 @@
 # subhalo_results = slam.subhalo.detection.run(
 #     settings_search=settings_search,
 #     analysis=analysis,
-#     mass_results=mass_results,
+#     mass_result=mass_result,
 #     subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
 #     grid_dimension_arcsec=3.0,
 #     number_of_steps=5,

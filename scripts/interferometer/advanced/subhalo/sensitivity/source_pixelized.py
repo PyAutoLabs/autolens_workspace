@@ -164,7 +164,7 @@
 # """
 # analysis = al.AnalysisInterferometer(dataset=dataset)
 #
-# source_lp_results = slam.source_lp.run(
+# source_lp_result = slam.source_lp.run(
 #     settings_search=settings_search,
 #     analysis=analysis,
 #     lens_bulge=None,
@@ -197,7 +197,7 @@
 # """
 # analysis = al.AnalysisInterferometer(
 #     dataset=dataset,
-#     positions_likelihood=source_lp_results.last.positions_likelihood_from(
+#     positions_likelihood=source_lp_result.positions_likelihood_from(
 #         factor=3.0, minimum_threshold=0.2
 #     ),
 #     settings_inversion=settings_inversion,
@@ -206,7 +206,7 @@
 # source_pix_results = slam.source_pix.run(
 #     settings_search=settings_search,
 #     analysis=analysis,
-#     source_lp_results=source_lp_results,
+#     source_lp_result=source_lp_result,
 #     image_mesh=al.image_mesh.Hilbert,
 #     mesh=al.mesh.Delaunay,
 #     regularization=al.reg.AdaptiveBrightnessSplit,
@@ -224,7 +224,7 @@
 # """
 # analysis = al.AnalysisInterferometer(
 #     dataset=dataset,
-#     adapt_image_maker=al.AdaptImageMaker(result=source_pix_results[0]),
+#     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
 #     positions_likelihood=source_pix_results.last.positions_likelihood_from(
 #         factor=3.0, minimum_threshold=0.2, use_resample=True
 #     ),
@@ -270,7 +270,7 @@
 #     analysis_cls=AnalysisInterferometerSensitivity,
 #     uv_wavelengths=dataset.uv_wavelengths,
 #     real_space_mask=real_space_mask,
-#     mass_results=mass_results,
+#     mass_result=mass_result,
 #     subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
 #     grid_dimension_arcsec=3.0,
 #     number_of_steps=2,

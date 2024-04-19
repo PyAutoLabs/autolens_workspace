@@ -63,19 +63,20 @@ Instead, an iterative ray-tracing algorithm is used to approximate the line inte
 are used to evaluate the flux in each pixel from the lens and source galaxies. Grids of higher resolution are used
 until the fractional accuracy of the flux in each pixel meets a certain threshold, which we set below to 99.99%
 
-This uses the `Grid2DIterate` object, which is identical to the `Grid2D` object you may have seen in other example 
-scripts, however it additional performs the iterative ray-tracing described above.
+This uses the `OverSamplingIterate` object, which is input into to the `Grid2D` object you may have seen in other 
+example scripts, however it make sit perform the iterative ray-tracing described above.
 
 The grid is also created from:
 
  - `shape_native`: The (y_pixels, x_pixels) 2D shape of the grid defining the shape of the data that is simulated.
  - `pixel_scales`: The arc-second to pixel conversion factor of the grid and data.
 """
-grid = al.Grid2DIterate.uniform(
+grid = al.Grid2D.uniform(
     shape_native=(100, 100),
     pixel_scales=0.1,
-    fractional_accuracy=0.9999,
-    sub_steps=[2, 4, 8, 16, 24],
+    over_sampling=al.OverSamplingIterate(
+        fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
+    ),
 )
 
 """
@@ -166,7 +167,13 @@ tracer_plotter.figures_2d(image=True)
 """
 By passing the `Tracer` and grid to the simulator, we create the simulated CCD imaging dataset.
 """
+import time
+
+start = time.time()
 dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
+print(f"Time to simulate dataset = {time.time() - start} seconds.")
+sfsdfsd
+
 
 """
 We now plot the simulated `Imaging` dataset before outputting it to fits.

@@ -408,7 +408,7 @@ The superscripts of labels correspond to the name each component was given in th
 mass its name `mass` defined when making the `Model` above is used).
 """
 plotter = aplt.NestPlotter(samples=result.samples)
-plotter.cornerplot()
+plotter.corner_anesthetic()
 
 """
 This script gives a concise overview of the PyAutoLens modeling API, fitting one the simplest lens models possible.

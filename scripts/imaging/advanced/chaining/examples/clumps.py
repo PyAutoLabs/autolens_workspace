@@ -96,8 +96,8 @@ model galaxies nearby the strong lens system.
 A full description of the clump API is given in the 
 script `autolens_workspace/*/imaging/modeling/features/clumps.py`
 """
-clump_centres = al.Grid2DIrregular.from_json(
-    file_path=path.join(dataset_path, "clump_centres.json")
+clump_centres = clump_centres = al.Grid2DIrregular(
+    al.from_json(file_path=path.join(dataset_path, "clump_centres.json"))
 )
 
 clump_model = al.ClumpModel(

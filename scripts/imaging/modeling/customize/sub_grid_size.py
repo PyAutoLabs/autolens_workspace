@@ -25,24 +25,24 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-__Settings Specific Code__
+__Over Sampling API__
 
-To customize the sub-grid used by the model-fit, we create a `SettingsImaging` object and specify that the 
+To customize the sub-grid used by the model-fit, we create a `OverSamplingUniform` object and specify that the 
 `sub_size=4`. 
 
-This increases the sub grid size of the `Grid2D` used to evaluate the lens galaxy and source galaxy `LightProfiles` 
+This increases the sub grid size of the `Grid2D` used to evaluate the galaxy  galaxy `LightProfiles` 
 from the default value of 2 to 4.
 """
-settings_dataset = al.SettingsImaging(grid_class=al.Grid2D, sub_size=4)
+over_sampling = al.OverSamplingUniform(sub_size=4)
 
 """
-We can alternatively use ` Grid2DIterate` object, where the sub-size of the grid is iteratively increased (in steps 
+We can alternatively use `OverSamplingIterate` object, where the sub-size of the grid is iteratively increased (in steps 
 of 2, 4, 8, 16, 24) until the input fractional accuracy of 99.99% is met.
 
 We will use these settings for the model-fit performed in this script.
 """
-settings_dataset = al.SettingsImaging(
-    grid_class=al.Grid2DIterate, fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16, 24]
+over_sampling = al.OverSamplingIterate(
+    fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
 )
 
 """
@@ -61,8 +61,8 @@ dataset = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
-dataset = dataset.apply_settings(
-    settings=settings_dataset
+dataset = dataset.apply_over_sampling(
+    over_sampling=over_sampling,
 )  # <----- The `SettingsImaging` above is used here!
 
 """

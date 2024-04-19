@@ -171,11 +171,13 @@
 #     These should be tuned to match the S/N and noise properties of the observed data you are performing sensitivity
 #     mapping on.
 #     """
-#     grid = al.Grid2DIterate.uniform(
+#     grid = al.Grid2D.uniform(
 #         shape_native=real_space_mask.shape_native,
 #         pixel_scales=real_space_mask.pixel_scales,
-#         fractional_accuracy=0.9999,
-#         sub_steps=[2, 4, 8, 16, 24],
+# over_sampling = al.OverSamplingIterate(
+#    fractional_accuracy=0.9999,
+#    sub_steps=[2, 4, 8, 16]
+# )
 #     )
 #
 #     simulator = al.SimulatorInterferometer(

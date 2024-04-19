@@ -10,8 +10,8 @@ adaptively increases depending on a required fractional accuracy of the light pr
  https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/structures/grids/two_d/grid_iterate.py
 """
 # masked_imaging_iterate = dataset.apply_mask(mask=mask)
-# masked_imaging_iterate = masked_imaging_iterate.apply_settings(
-#     settings=al.SettingsImaging(grid_class=al.Grid2DIterate)
+# masked_imaging_iterate = masked_imaging_iterate.apply_over_sampling(
+#     over_sampling=al.OverSamplingIterate()
 # )
 #
 # image_iterate = lens_galaxy.image_2d_from(grid=masked_imaging_iterate.grid)

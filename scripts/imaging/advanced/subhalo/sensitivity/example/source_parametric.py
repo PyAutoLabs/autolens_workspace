@@ -102,7 +102,7 @@ analysis = al.AnalysisImaging(dataset=dataset)
 
 bulge = af.Model(al.lp.Sersic)
 
-source_lp_results = slam.source_lp.run(
+source_lp_result = slam.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=bulge,
@@ -121,7 +121,7 @@ __LIGHT LP PIPELINE__
 This is the standard LIGHT LP PIPELINE described in the `slam/start_here.ipynb` example.
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, adapt_image_maker=al.AdaptImageMaker(result=source_lp_results.last)
+    dataset=dataset,
 )
 
 bulge = af.Model(al.lp.Sersic)
@@ -129,7 +129,8 @@ bulge = af.Model(al.lp.Sersic)
 light_results = slam.light_lp.run(
     settings_search=settings_search,
     analysis=analysis,
-    source_results=source_lp_results,
+    source_result_for_lens=source_lp_result,
+    source_result_for_source=source_lp_result,
     lens_bulge=bulge,
     lens_disk=None,
 )
@@ -139,15 +140,14 @@ __MASS TOTAL PIPELINE__
 
 This is the standard MASS TOTAL PIPELINE described in the `slam/start_here.ipynb` example.
 """
-analysis = al.AnalysisImaging(
-    dataset=dataset, adapt_image_maker=al.AdaptImageMaker(result=source_lp_results.last)
-)
+analysis = al.AnalysisImaging(dataset=dataset)
 
-mass_results = slam.mass_total.run(
+mass_result = slam.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
-    source_results=source_lp_results,
-    light_results=light_results,
+    source_result_for_lens=source_lp_result,
+    source_result_for_source=source_lp_result,
+    light_result=light_results,
     mass=af.Model(al.mp.PowerLaw),
 )
 
@@ -158,11 +158,11 @@ The SUBHALO PIPELINE (sensitivity mapping) performs sensitivity mapping of the d
 fitted above, so as to determine where subhalos of what mass could be detected in the data. A full description of
 Sensitivity mapping if given in the SLaM pipeline script `slam/subhalo/sensitivity_imaging.py`.
 """
-subhalo_results = slam.subhalo.sensitivity_imaging.run(
+subhalo_results = slam.subhalo.sensitivity_imaging_lp.run(
     settings_search=settings_search,
     mask=mask,
     psf=dataset.psf,
-    mass_results=mass_results,
+    mass_result=mass_result,
     subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
     grid_dimension_arcsec=3.0,
     number_of_steps=2,

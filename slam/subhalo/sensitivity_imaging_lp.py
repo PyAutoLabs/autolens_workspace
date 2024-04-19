@@ -91,11 +91,12 @@ class SimulateImaging:
         Set up the grid, PSF and simulator settings used to simulate imaging of the strong lens. These should be 
         tuned to match the S/N and noise properties of the observed data you are performing sensitivity mapping on.
         """
-        grid = al.Grid2DIterate.uniform(
+        grid = al.Grid2D.uniform(
             shape_native=self.mask.shape_native,
             pixel_scales=self.mask.pixel_scales,
-            fractional_accuracy=0.9999,
-            sub_steps=[2, 4, 8, 16, 24],
+            over_sampling=al.OverSamplingIterate(
+                fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
+            ),
         )
 
         simulator = al.SimulatorImaging(
@@ -402,7 +403,7 @@ def run(
     settings_search: af.SettingsSearch,
     mask: al.Mask2D,
     psf: al.Kernel2D,
-    mass_results: af.ResultsCollection,
+    mass_result: af.Result,
     subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
     adapt_images: Optional[al.AdaptImages] = None,
     grid_dimension_arcsec: float = 3.0,
@@ -419,8 +420,8 @@ def run(
     psf
         The Point Spread Function (PSF) used when simulating every image of the strong lens that is fitted by
         sensitivity mapping.
-    mass_results
-        The results of the SLaM MASS PIPELINE which ran before this pipeline.
+    mass_result
+        The result of the SLaM MASS PIPELINE which ran before this pipeline.
     subhalo_mass
         The `MassProfile` used to fit the subhalo in this pipeline.
     grid_dimension_arcsec
@@ -444,10 +445,10 @@ def run(
     before sensitivity mapping. This ensures the priors associated with each parameter are initialized so as to speed up
     each non-linear search performed during sensitivity mapping.
     """
-    base_model = mass_results.last.model
+    base_model = mass_result.model
 
     base_model = base_model_narrow_priors_from(
-        base_model=base_model, result=mass_results.last
+        base_model=base_model, result=mass_result
     )
 
     """
@@ -488,10 +489,8 @@ def run(
     perturb_model.mass.centre.centre_1 = af.UniformPrior(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
-    perturb_model.mass.redshift_object = mass_results.last.model.galaxies.lens.redshift
-    perturb_model.mass.redshift_source = (
-        mass_results.last.model.galaxies.source.redshift
-    )
+    perturb_model.mass.redshift_object = mass_result.model.galaxies.lens.redshift
+    perturb_model.mass.redshift_source = mass_result.model.galaxies.source.redshift
 
     """
     __Perturb Model Prior Func__
@@ -545,9 +544,9 @@ def run(
     The code below ensures that the lens light, mass and source parameters of the strong lens are used when simulating
     each dataset with a dark matter subhalo.
     """
-    simulation_instance = mass_results.last.instance
+    simulation_instance = mass_result.instance
 
-    fit = mass_results.last.max_log_likelihood_fit
+    fit = mass_result.max_log_likelihood_fit
 
     simulation_instance.galaxies.lens = (
         fit.model_obj_linear_light_profiles_to_light_profiles.galaxies[0]
@@ -612,9 +611,7 @@ def run(
         perturb_model=perturb_model,
         simulate_cls=SimulateImaging(mask=mask, psf=psf),
         base_fit_cls=BaseFit(adapt_images=adapt_images),
-        perturb_fit_cls=PerturbFit(
-            adapt_images=adapt_images
-        ),
+        perturb_fit_cls=PerturbFit(adapt_images=adapt_images),
         perturb_model_prior_func=perturb_model_prior_func,
         number_of_steps=number_of_steps,
         number_of_cores=settings_search.number_of_cores,

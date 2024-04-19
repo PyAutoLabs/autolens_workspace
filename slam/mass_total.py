@@ -8,14 +8,15 @@ from typing import Union, Optional, Tuple
 def run(
     settings_search: af.SettingsSearch,
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
-    source_results: af.ResultsCollection,
-    light_results: Optional[af.ResultsCollection],
+    source_result_for_lens: af.Result,
+    source_result_for_source: af.Result,
+    light_result: Optional[af.Result],
     mass: af.Model = af.Model(al.mp.Isothermal),
     multipole: Optional[af.Model] = None,
     smbh: Optional[af.Model] = None,
     mass_centre: Optional[Tuple[float, float]] = None,
     reset_shear_prior: bool = False,
-) -> af.ResultsCollection:
+) -> af.Result:
     """
     The SLaM MASS TOTAL PIPELINE, which fits a lens model with a total mass distribution (e.g. a power-law).
 
@@ -23,10 +24,14 @@ def run(
     ----------
     analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
-    source_results
-        The results of the SLaM SOURCE LP PIPELINE or SOURCE PIX PIPELINE which ran before this pipeline.
-    light_results
-        The results of the SLaM LIGHT LP PIPELINE which ran before this pipeline.
+    source_result_for_lens
+        The result of the SLaM SOURCE LP PIPELINE or SOURCE PIX PIPELINE which ran before this pipeline,
+        used for initializing model components associated with the lens galaxy.
+    source_result_for_source
+        The result of the SLaM SOURCE LP PIPELINE or SOURCE PIX PIPELINE which ran before this pipeline,
+        used for initializing model components associated with the source galaxy.
+    light_result
+        The result of the SLaM LIGHT LP PIPELINE which ran before this pipeline.
     mass
         The `MassProfile` used to fit the lens galaxy mass in this pipeline.
     smbh
@@ -54,7 +59,7 @@ def run(
     """
     mass = al.util.chaining.mass_from(
         mass=mass,
-        mass_result=source_results[0].model.galaxies.lens.mass,
+        mass_result=source_result_for_lens.model.galaxies.lens.mass,
         unfix_mass_centre=True,
     )
 
@@ -64,18 +69,18 @@ def run(
     if smbh is not None:
         smbh.centre = mass.centre
 
-    if light_results is None:
+    if light_result is None:
         bulge = None
         disk = None
         point = None
 
     else:
-        bulge = light_results.last.instance.galaxies.lens.bulge
-        disk = light_results.last.instance.galaxies.lens.disk
-        point = light_results.last.instance.galaxies.lens.point
+        bulge = light_result.instance.galaxies.lens.bulge
+        disk = light_result.instance.galaxies.lens.disk
+        point = light_result.instance.galaxies.lens.point
 
     if not reset_shear_prior:
-        shear = source_results[0].model.galaxies.lens.shear
+        shear = source_result_for_lens.model.galaxies.lens.shear
     else:
         shear = al.mp.ExternalShear
 
@@ -85,14 +90,14 @@ def run(
         multipole.slope = mass.slope
 
     source = al.util.chaining.source_from(
-        result=source_results.last,
+        result=source_result_for_source,
     )
 
     model = af.Collection(
         galaxies=af.Collection(
             lens=af.Model(
                 al.Galaxy,
-                redshift=source_results.last.instance.galaxies.lens.redshift,
+                redshift=source_result_for_lens.instance.galaxies.lens.redshift,
                 bulge=bulge,
                 disk=disk,
                 point=point,
@@ -103,9 +108,9 @@ def run(
             ),
             source=source,
         ),
-        sky=al.util.chaining.sky_from(result=source_results.last),
+        sky=al.util.chaining.sky_from(result=source_result_for_source),
         clumps=al.util.chaining.clumps_from(
-            result=source_results[0], mass_as_model=True
+            result=source_result_for_lens, mass_as_model=True
         ),
     )
 
@@ -115,6 +120,6 @@ def run(
         n_live=150,
     )
 
-    result_1 = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
+    result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
 
-    return af.ResultsCollection([result_1])
+    return result
