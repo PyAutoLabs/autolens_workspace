@@ -34,7 +34,7 @@ This tutorial will only use the `slim` properties which show results in 1D numpy
 shape [total_unmasked_pixels]. This is a slimmed-down representation of the data in 1D that contains only the
 unmasked data points
 
-These are documented fully in the `autolens_workspace/*/imaging/results/examples/data_structure.ipynb` example.
+These are documented fully in the `autolens_workspace/*/guides/data_structure.ipynb` guide.
 
 __Other Models__
 
