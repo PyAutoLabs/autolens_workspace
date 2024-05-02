@@ -187,9 +187,7 @@ for color, grid, tracer in zip(color_list, grid_list, tracer_list):
         output=aplt.Output(path=dataset_path, prefix=f"{color}_", format="png")
     )
 
-    tracer_plotter = aplt.TracerPlotter(
-        tracer=tracer, grid=grid.binned, mat_plot_2d=mat_plot
-    )
+    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot)
     tracer_plotter.subplot_tracer()
     tracer_plotter.subplot_galaxies_images()
 

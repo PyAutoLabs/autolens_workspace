@@ -170,8 +170,7 @@ __Galaxies__
 The result's maximum likelihood `Galaxy` objects contain everything necessary to inspect the individual properties of
 the lens and source galaxies.
 
-The examples script `autolens_workspace/*/imaging/results/examples/galaxies.py` provides a detailed description 
-of this object, including:
+The examples script `autolens_workspace/*/imaging/results/examples/galaxies.py` describes this object, including:
 
  - How to plot individual galaxy images, such as the source galaxy's image-plane and source-plane images.
  - Plotting the individual light profiles and mass profiles of the galaxies.
@@ -231,8 +230,7 @@ __Pixelization__
 
 The lens model can reconstruct the source galaxy using a pixelization, for example on a Voronoi mesh.
 
-The example script `autolens_workspace/*/imaging/results/examples/pixelizations.py` provides a detailed description 
-of inspecting the results of a fit using a pixelization, including:
+The example script `autolens_workspace/*/imaging/results/examples/pixelizations.py` describes inspecting the results of a fit using a pixelization, including:
 
  - Producing source reconstructions using the Voronoi mesh, Delaunay triangulation or whichever mesh is used.
  - Inspecting the evidence terms of the fit, which quantify how well the pixelization reconstructs fits the data whilst

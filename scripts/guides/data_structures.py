@@ -64,26 +64,41 @@ and the pixel-scale is therefore the resolution of the image.
 We first create each data structure without a mask using the `no_mask` method:
 """
 arr = al.Array2D.no_mask(
-    values=[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]],
-    pixel_scales=1.0
+    values=[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]], pixel_scales=1.0
 )
 
 print(arr)
 
 grid = al.Grid2D.no_mask(
-    values=[[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
-            [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-            [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]],
-    pixel_scales=1.0
+    values=[
+        [-1.0, -1.0],
+        [-1.0, 0.0],
+        [-1.0, 1.0],
+        [0.0, -1.0],
+        [0.0, 0.0],
+        [0.0, 1.0],
+        [1.0, -1.0],
+        [1.0, 0.0],
+        [1.0, 1.0],
+    ],
+    pixel_scales=1.0,
 )
 
 print(grid)
 
 vector_yx = al.VectorYX2D.no_mask(
-    values=[[5.0, -5.0], [5.0, 0.0], [5.0, 5.0],
-            [0.0, -5.0], [0.0, 0.0], [0.0, 5.0],
-            [-5.0, -5.0], [-5.0, 0.0], [-5.0, 5.0]],
-    pixel_scales=1.0
+    values=[
+        [5.0, -5.0],
+        [5.0, 0.0],
+        [5.0, 5.0],
+        [0.0, -5.0],
+        [0.0, 0.0],
+        [0.0, 5.0],
+        [-5.0, -5.0],
+        [-5.0, 0.0],
+        [-5.0, 5.0],
+    ],
+    pixel_scales=1.0,
 )
 
 print(vector_yx)
@@ -100,9 +115,7 @@ First, lets make a uniform 100 x 100 grid of (y,x) coordinates and plot it.
 """
 grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
-mat_plot = aplt.MatPlot2D(
-    title=aplt.Title(label="Uniform 100 x 100 Grid2D")
-)
+mat_plot = aplt.MatPlot2D(title=aplt.Title(label="Uniform 100 x 100 Grid2D"))
 
 grid_plotter = aplt.Grid2DPlotter(grid=grid, mat_plot_2d=mat_plot)
 grid_plotter.figure_2d()
@@ -181,9 +194,7 @@ follows:
 This can be seen by computing a grid via a mask and comparing the its`shape_slim` attribute to the `pixels_in_mask` of 
 the mask.
 """
-mask = al.Mask2D.circular(
-    shape_native=(100, 100), pixel_scales=0.05, radius=3.0
-)
+mask = al.Mask2D.circular(shape_native=(100, 100), pixel_scales=0.05, radius=3.0)
 
 grid = al.Grid2D.from_mask(mask=mask)
 
@@ -273,9 +284,16 @@ This includes the lens light and lensed source images.
 Below, we use the grid that is aligned with the imaging data (e.g. where each grid coordinate is at the centre of each
 image pixel) to compute the galaxy image and show its data structure.
 """
-lens = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.6))
+lens = al.Galaxy(
+    redshift=0.5, mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=1.6)
+)
 
-source = al.Galaxy(redshift=1.0, light=al.lp.SersicSph(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2, sersic_index=1.0))
+source = al.Galaxy(
+    redshift=1.0,
+    light=al.lp.SersicSph(
+        centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2, sersic_index=1.0
+    ),
+)
 
 tracer = al.Tracer(galaxies=[lens, source])
 
@@ -362,13 +380,6 @@ deflections_yx_2d = tracer.deflections_yx_2d_from(grid=grid)
 
 print(deflections_yx_2d.slim)
 print(deflections_yx_2d.native)
-
-grid_sub = al.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1)
-
-deflections_yx_2d = tracer.deflections_yx_2d_from(grid=grid_sub)
-
-print(deflections_yx_2d.binned.slim)
-print(deflections_yx_2d.binned.native)
 
 grid_irregular = al.Grid2DIrregular(values=[[1.0, 1.0], [1.0, 2.0], [2.0, 2.0]])
 

@@ -144,7 +144,17 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
-We now make the intensity of the lens's bulge and source's bulge a free parameter across every analysis object.
+Galaxies change appearance across wavelength, with the most significant change in their brightness.
+
+Models applied to summed analyses can be extended to include free parameters specific to each dataset. In this example,
+we want the lens and source brightnesses to vary across the g and r-band datasets.
+
+The API for doing this is shown below, where by inputting the `intensity` model parameters to the `with_free_parameter` 
+method the intensity of the lens's bulge and source's bulge become free parameters across every analysis object.
+
+NOTE: The size, shape and other aspects of galaxies as vary across wavelength, none of which are included in this
+example. The API below can easily be extended to include these additional parameters, and the `features` package
+explains other tools for extending the model across datasets.
 """
 analysis = analysis.with_free_parameters(
     model.galaxies.lens.bulge.intensity, model.galaxies.source.bulge.intensity

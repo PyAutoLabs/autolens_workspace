@@ -97,17 +97,8 @@ We create an `Analysis` object for every dataset.
 analysis_list = [al.AnalysisImaging(dataset=dataset) for dataset in dataset_list]
 
 """
-By summing this list of analysis objects, we create an overall `CombinedAnalysis` which we can use to fit the 
-multi-wavelength imaging data, where:
-
- - The log likelihood function of this summed analysis class is the sum of the log likelihood functions of each 
- individual analysis objects (e.g. the fit to each separate waveband).
-
- - The summing process ensures that tasks such as outputting results to hard-disk, visualization, etc use a 
- structure that separates each analysis and therefore each dataset.
- 
- - Next, we will use this combined analysis to parameterize a model where certain lens parameters vary across
- the dataset.
+Sum the analyses to create an overall analysis object, which sums the `log_likelihood_function` of each dataset
+and returns the overall likelihood of the model fit to the dataset.
 """
 analysis = sum(analysis_list)
 

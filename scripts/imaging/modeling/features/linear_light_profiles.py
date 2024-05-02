@@ -300,4 +300,155 @@ Checkout `autolens_workspace/*/imaging/results` for a full description of analys
 
 In particular, checkout the results example `linear.py` which details how to extract all information about linear
 light profiles from a fit.
+
+__Result (Advanced)__
+
+The code belows shows all additional results that can be computed from a `Result` object following a fit with a
+linear light profile.
+
+__Max Likelihood Inversion__
+
+As seen elsewhere in the workspace, the result contains a `max_log_likelihood_fit`, which contains the
+`Inversion` object we need.
+"""
+inversion = result.max_log_likelihood_fit.inversion
+
+"""
+This `Inversion` can be used to plot the reconstructed image of specifically all linear light profiles.
+"""
+inversion_plotter = aplt.InversionPlotter(inversion=inversion)
+# inversion_plotter.figures_2d(reconstructed_image=True)
+
+"""
+__Intensities__
+
+The intensities of linear light profiles are not a part of the model parameterization and therefore are not displayed
+in the `model.results` file.
+
+To extract the `intensity` values of a specific component in the model, we use the `max_log_likelihood_tracer`,
+which has already performed the inversion and therefore the galaxy light profiles have their solved for
+`intensity`'s associated with them.
+"""
+tracer = result.max_log_likelihood_tracer
+
+print(tracer.galaxies[0].bulge.intensity)
+print(tracer.galaxies[1].bulge.intensity)
+
+"""
+Above, we access these values using the list index entry of each galaxy in the tracer. However, we may not be certain
+of the order of the galaxies in the tracer, and therefore which galaxy index corresponds to the lens and source.
+
+We can therefore use the model composition API to access these values.
+"""
+print(tracer.galaxies.lens.bulge.intensity)
+print(tracer.galaxies.source.bulge.intensity)
+
+"""
+The `Tracer` contained in the `max_log_likelihood_fit` also has the solved for `intensity` values:
+"""
+fit = result.max_log_likelihood_fit
+
+tracer = fit.tracer
+
+print(tracer.galaxies.lens.bulge.intensity)
+print(tracer.galaxies.source.bulge.intensity)
+
+"""
+__Visualization__
+
+Linear light profiles and objects containing them (e.g. galaxies, a tracer) cannot be plotted because they do not 
+have an `intensity` value.
+
+Therefore, the object created above which replaces all linear light profiles with ordinary light profiles must be
+used for visualization:
+"""
+tracer = fit.model_obj_linear_light_profiles_to_light_profiles
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=dataset.grid)
+tracer_plotter.figures_2d(image=True)
+
+galaxy_plotter = aplt.GalaxyPlotter(galaxy=tracer.galaxies[0], grid=dataset.grid)
+galaxy_plotter.figures_2d(image=True)
+
+
+"""
+__Linear Objects (Internal Source Code)__
+
+An `Inversion` contains all of the linear objects used to reconstruct the data in its `linear_obj_list`. 
+
+This list may include the following objects:
+
+ - `LightProfileLinearObjFuncList`: This object contains lists of linear light profiles and the functionality used
+ by them to reconstruct data in an inversion. For example it may only contain a list with a single light profile
+ (e.g. `lp_linear.Sersic`) or many light profiles combined in a `Basis` (e.g. `lp_basis.Basis`).
+
+- `Mapper`: The linear objected used by a `Pixelization` to reconstruct data via an `Inversion`, where the `Mapper` 
+is specific to the `Pixelization`'s `Mesh` (e.g. a `RectnagularMapper` is used for a `Rectangular` mesh).
+
+In this example, two linear objects were used to fit the data:
+
+ - An `Sersic` linear light profile for the source galaxy.
+ ` A `Basis` containing 5 Gaussians for the lens galaxly's light. 
+"""
+print(inversion.linear_obj_list)
+
+"""
+To extract results from an inversion many quantities will come in lists or require that we specific the linear object
+we with to use. 
+
+Thus, knowing what linear objects are contained in the `linear_obj_list` and what indexes they correspond to
+is important.
+"""
+print(f"LightProfileLinearObjFuncList (Basis) = {inversion.linear_obj_list[0]}")
+print(f"LightProfileLinearObjFuncList (Sersic) = {inversion.linear_obj_list[1]}")
+
+"""
+Each of these `LightProfileLinearObjFuncList` objects contains its list of light profiles, which for the
+`Sersic` is a single entry whereas for the `Basis` is 5 Gaussians.
+"""
+print(
+    f"Linear Light Profile list (Basis -> x5 Gaussians) = {inversion.linear_obj_list[0].light_profile_list}"
+)
+print(
+    f"Linear Light Profile list (Sersic) = {inversion.linear_obj_list[1].light_profile_list}"
+)
+
+"""
+__Intensity Dict (Internal Source Code)__
+
+The results above already allow you to compute the solved for intensity values.
+
+These are computed using a fit's `linear_light_profile_intensity_dict`, which maps each linear light profile 
+in the model parameterization above to its `intensity`.
+
+The code below shows how to use this dictionary, as an alternative to using the max_log_likelihood quantities above.
+"""
+fit = result.max_log_likelihood_fit
+
+lens_bulge = tracer.galaxies[0].bulge.intensity
+source_bulge = tracer.galaxies[1].bulge.intensity
+
+print(
+    f"\n Intensity of source bulge (lp_linear.Sersic) = {fit.linear_light_profile_intensity_dict[source_bulge]}"
+)
+print(
+    f"\n Intensity of lens galaxy's first Gaussian in bulge = {fit.linear_light_profile_intensity_dict[lens_bulge.light_profile_list[0]]}"
+)
+
+"""
+A `Tracer` where all linear light profile objects are replaced with ordinary light profiles using the solved 
+for `intensity` values is also accessible from a fit.
+
+For example, the linear light profile `Sersic` of the `bulge` component above has a solved for `intensity` of ~0.75. 
+
+The `tracer` created below instead has an ordinary light profile with an `intensity` of ~0.75.
+"""
+tracer = fit.model_obj_linear_light_profiles_to_light_profiles
+
+print(tracer.galaxies[0].bulge.light_profile_list[0].intensity)
+print(tracer.galaxies[1].bulge.intensity)
+
+"""
+__Future Ideas / Contributions__
+
+Not a lot tbh.
 """

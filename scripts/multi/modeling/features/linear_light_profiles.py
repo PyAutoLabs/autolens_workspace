@@ -1,12 +1,49 @@
 """
-Modeling: Mass Total + Source Parametric
-========================================
+Modeling: Linear Light Profiles
+===============================
+
+A "linear light profile" is a variant of a standard light profile where the `intensity` parameter is solved for
+via linear algebra every time the model is fitted to the data. This uses a process called an "inversion" and it
+always computes the `intensity` values that give the best fit to the data (e.g. maximize the likelihood)
+given the light profile's other parameters.
+
+Linear light profiles are described in
+the `autolens_workspace/notebooks/imaging/modeling/features/light_light_profiles.ipynb` example, and if you have
+not read this you should go through this example first.
+
+This script illustrates their application in the context of multi-wavelength lens modeling.
+
+__Advantages__
+
+The brightness of a galaxy varies significantly across different wavebands, and in most example scripts we have
+seen that the `intensity` parameter of the lens and source galaxies is made an additional free parameter in the
+model-fit.
+
+Therefore, every time we add a new dataset to our analysis, we increase the dimensionality of non-linear parameter
+by at least 1 parameter per galaxy. This can make the model-fit slower and take longer to converge.
+
+Linear light profiles completely remove this problem, because all `intensity` values are computed via linear algebra
+and therefore are not non-linear parameters. The dimensionality of the non-linear parameter space therefore does
+not increase as we add more datasets.
+
+__Positive Only Solver__
+
+Many codes which use linear algebra typically rely on a linear algabra solver which allows for positive and negative
+values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
+
+This is problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
+light, which is clearly unphysical.
+
+**PyAutoLens** uses a positive only linear algebra solver which has been extensively optimized to ensure it is as fast
+as positive-negative solvers. This ensures that all light profile intensities are positive and therefore physical.
+
+__Model__
 
 This script fits a multi-wavelength `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge where the `intensity` varies across wavelength.
+ - The lens galaxy's light is a parametric linear `Sersic` bulge where the `intensity` varies across wavelength.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `Sersic` where the `intensity` varies across wavelength.
+ - The source galaxy's light is a parametric linear `Sersic` where the `intensity` varies across wavelength.
 
 Two images are fitted, corresponding to a greener ('g' band) redder image (`r` band).
 
@@ -97,17 +134,8 @@ We create an `Analysis` object for every dataset.
 analysis_list = [al.AnalysisImaging(dataset=dataset) for dataset in dataset_list]
 
 """
-By summing this list of analysis objects, we create an overall `CombinedAnalysis` which we can use to fit the 
-multi-wavelength imaging data, where:
-
- - The log likelihood function of this summed analysis class is the sum of the log likelihood functions of each 
- individual analysis objects (e.g. the fit to each separate waveband).
-
- - The summing process ensures that tasks such as outputting results to hard-disk, visualization, etc use a 
- structure that separates each analysis and therefore each dataset.
- 
- - Next, we will use this combined analysis to parameterize a model where certain lens parameters vary across
- the dataset.
+Sum the analyses to create an overall analysis object, which sums the `log_likelihood_function` of each dataset
+and returns the overall likelihood of the model fit to the dataset.
 """
 analysis = sum(analysis_list)
 
@@ -122,40 +150,36 @@ __Model__
 
 We compose a lens model where:
 
- - The lens galaxy's light is a parametric `Sersic`, where the `intensity` parameter of the lens galaxy
- for each individual waveband of imaging is a different free parameter [8 parameters].
+ - The lens galaxy's light is a linear parametric `Sersic`, where the `intensity` parameter of the lens galaxy
+ for each individual waveband is solved for linearly independently in each waveband [6 parameters].
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `Sersic`, where the `intensity` parameter of the source galaxy
- for each individual waveband of imaging is a different free parameter [8 parameters].
+ - The source galaxy's light is a linear parametric `Sersic`, where the `intensity` parameter of the lens galaxy
+ for each individual waveband is solved for linearly independently in each waveband [6 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=23.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=19.
+
+A dimensionality of N=19 is 4 parameters less than the dimensionality of N=23 we would have if we used standard
+light profiles with the `intensity` of the lens and source galaxies as free parameters in the model-fit.
 """
 lens = af.Model(
     al.Galaxy,
     redshift=0.5,
-    bulge=al.lp.Sersic,
+    bulge=al.lp_linear.Sersic,
     mass=al.mp.Isothermal,
     shear=al.mp.ExternalShear,
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.Sersic)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
-
-"""
-We now make the intensity of the lens's bulge and source's bulge a free parameter across every analysis object.
-"""
-analysis = analysis.with_free_parameters(
-    model.galaxies.lens.bulge.intensity, model.galaxies.source.bulge.intensity
-)
 
 """
 __Search__
 """
 search = af.Nautilus(
     path_prefix=path.join("multi", "modeling"),
-    name="light[bulge]_mass[sie]_source[bulge]",
+    name="linear_light_profiles",
     unique_tag=dataset_name,
     n_live=100,
     number_of_cores=1,

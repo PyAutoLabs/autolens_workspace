@@ -5,7 +5,6 @@ Folders (Beginner)
 
 - ``howtolens``: The **HowToLens** lectures which teach you what strong lensing is how to use **PyAutoLens**.
 - ``overview``: A concise overview of **PyAutoLens**'s core features.
-- ``guides``: Guides on specific aspects of **PyAutoLens**'s functionality and API.
 
 - ``imaging``: Examples for galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, Euclid).
 - ``interferometer``: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA).

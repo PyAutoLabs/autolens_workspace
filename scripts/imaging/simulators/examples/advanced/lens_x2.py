@@ -49,16 +49,7 @@ dataset_path = path.join("dataset", dataset_type, dataset_name)
 """
 __Simulate__
 
-When simulating the amount of emission in each image pixel from the lens and source galaxies, a two dimensional
-line integral of all of the emission within the area of that pixel should be performed. However, for complex lens
-models this can be difficult to analytically compute and can lead to slow run times.
-
-Instead, an iterative ray-tracing algorithm is used to approximate the line integral. Grids of increasing resolution
-are used to evaluate the flux in each pixel from the lens and source galaxies. Grids of higher resolution are used
-until the fractional accuracy of the flux in each pixel meets a certain threshold, which we set below to 99.99%
-
-This uses the `OverSamplingIterate` object, which is input into to the `Grid2D` object you may have seen in other 
-example scripts, however it make sit perform the iterative ray-tracing described above.
+Simulate the image using a `Grid2D` with the `OverSamplingIterate` object.
 """
 grid = al.Grid2D.uniform(
     shape_native=(150, 150),
@@ -159,9 +150,7 @@ dataset_plotter = aplt.ImagingPlotter(dataset=dataset, mat_plot_2d=mat_plot)
 dataset_plotter.subplot_dataset()
 dataset_plotter.figures_2d(data=True)
 
-tracer_plotter = aplt.TracerPlotter(
-    tracer=tracer, grid=grid.binned, mat_plot_2d=mat_plot
-)
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot)
 tracer_plotter.subplot_tracer()
 tracer_plotter.subplot_galaxies_images()
 

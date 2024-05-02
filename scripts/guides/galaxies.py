@@ -1,8 +1,8 @@
 """
-Results: Galaxies
-=================
+Galaxies
+========
 
-In results tutorial `tracer.py`, we inspected the results of a `Tracer` and computed the overall properties of the
+In the guide `tracer.py`, we inspected the results of a `Tracer` and computed the overall properties of the
 lens model's image, convergence and other quantities.
 
 However, we did not compute the individual properties of each galaxy. For example, we did not compute an image of the
@@ -26,7 +26,7 @@ __Units__
 In this example, all quantities are **PyAutoLens**'s internal unit coordinates, with spatial coordinates in
 arc seconds, luminosities in electrons per second and mass quantities (e.g. convergence) are dimensionless.
 
-The results example `units_and_cosmology.ipynb` illustrates how to convert these quantities to physical units like
+The guide `guides/units_and_cosmology.ipynb` illustrates how to convert these quantities to physical units like
 kiloparsecs, magnitudes and solar masses.
 
 __Data Structures__
@@ -39,7 +39,7 @@ This tutorial will only use the `slim` properties which show results in 1D numpy
 shape [total_unmasked_pixels]. This is a slimmed-down representation of the data in 1D that contains only the
 unmasked data points
 
-These are documented fully in the `autolens_workspace/*/guides/data_structure.ipynb` guide.
+These are documented fully in the `autolens_workspace/*/guides/data_structures.ipynb` guide.
 
 __Start Here Notebook__
 
@@ -58,64 +58,69 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-__Model Fit__
+__Grids__
 
-The code below performs a model-fit using Nautilus. 
+To describe the luminous emission of galaxies, **PyAutoGalaxy** uses `Grid2D` data structures, which are 
+two-dimensional Cartesian grids of (y,x) coordinates. 
 
-You should be familiar with modeling already, if not read the `modeling/start_here.py` script before reading this one!
+Below, we make and plot a uniform Cartesian grid:
 """
-dataset_name = "simple__source_x2"
-dataset_path = path.join("dataset", "imaging", dataset_name)
-
-dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
-    pixel_scales=0.1,
+grid = ag.Grid2D.uniform(
+    shape_native=(100, 100),
+    pixel_scales=0.1,  # The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
-mask = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+grid_plotter = aplt.Grid2DPlotter(grid=grid)
+grid_plotter.figure_2d()
+
+"""
+__Tracer__
+
+We first set up a tracer with a lens galaxy and two source galaxies, which we will use to illustrate how to extract
+individual galaxy images.
+"""
+lens_galaxy = al.Galaxy(
+    redshift=0.5,
+    bulge=al.lp.Sersic(
+        centre=(0.0, 0.0),
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+        intensity=2.0,
+        effective_radius=0.6,
+        sersic_index=3.0,
+    ),
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.6,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+    ),
+    shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
-dataset = dataset.apply_mask(mask=mask)
-
-model = af.Collection(
-    galaxies=af.Collection(
-        lens=af.Model(
-            al.Galaxy,
-            redshift=0.5,
-            bulge=al.lp.Sersic,
-            disk=al.lp.Exponential,
-            mass=al.mp.Isothermal,
-            shear=al.mp.ExternalShear,
-        ),
-        source_0=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic),
-        source_1=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic),
+source_galaxy_0 = al.Galaxy(
+    redshift=1.0,
+    bulge=al.lp.Sersic(
+        centre=(0.25, 0.15),
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.7, angle=120.0),
+        intensity=0.7,
+        effective_radius=0.7,
+        sersic_index=1.0,
     ),
 )
 
-search = af.Nautilus(
-    path_prefix=path.join("imaging", "modeling"),
-    name="light[bulge]_mass[sie]_source_x2[bulge]",
-    unique_tag=dataset_name,
-    n_live=150,
+source_galaxy_1 = al.Galaxy(
+    redshift=1.0,
+    bulge=al.lp.Sersic(
+        centre=(0.7, -0.5),
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=60.0),
+        intensity=0.2,
+        effective_radius=1.6,
+        sersic_index=3.0,
+    ),
 )
 
-analysis = al.AnalysisImaging(dataset=dataset)
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1])
 
-result = search.fit(model=model, analysis=analysis)
-
-"""
-__Max Likelihood Tracer__
-
-As seen elsewhere in the workspace, the result contains a `max_log_likelihood_tracer` which we can visualize.
-"""
-tracer = result.max_log_likelihood_tracer
-
-tracer_plotter = aplt.TracerPlotter(
-    tracer=tracer, grid=mask.derive_grid.all_false_sub_1
-)
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
 tracer_plotter.subplot_tracer()
 
 """
@@ -124,7 +129,7 @@ __Individual Lens Galaxy Components__
 We are able to create an image of the lens galaxy as follows, which includes the emission of both the lens galaxy's
 `bulge` and `disk` components.
 """
-image = tracer.image_2d_from(grid=dataset.grid)
+image = tracer.image_2d_from(grid=grid)
 
 """
 In order to create images of the `bulge` and `disk` separately, we need to extract each individual component from the 
@@ -155,8 +160,8 @@ Finally, we can use the `lens_galaxy` to extract the `bulge` and `disk` and make
 bulge = lens_galaxy.bulge
 disk = lens_galaxy.disk
 
-bulge_image_2d = bulge.image_2d_from(grid=dataset.grid)
-disk_image_2d = disk.image_2d_from(grid=dataset.grid)
+bulge_image_2d = bulge.image_2d_from(grid=grid)
+disk_image_2d = disk.image_2d_from(grid=grid)
 
 """
 If you are unclear on what `slim` means, refer to the section `Data Structure` at the top of this example.
@@ -167,51 +172,17 @@ print(disk_image_2d.slim[0])
 """
 It is more concise to extract these quantities in one line of Python:
 """
-bulge_image_2d = tracer.planes[0].galaxies[0].bulge.image_2d_from(grid=dataset.grid)
+bulge_image_2d = tracer.planes[0].galaxies[0].bulge.image_2d_from(grid=grid)
 
 """
 The `LightProfilePlotter` makes it straight forward to extract and plot an individual light profile component.
 """
 bulge_plotter = aplt.LightProfilePlotter(
-    light_profile=tracer.planes[0].galaxies[0].bulge, grid=dataset.grid
+    light_profile=tracer.planes[0].galaxies[0].bulge, grid=grid
 )
 bulge_plotter.figures_2d(image=True)
 
 """
-__Alternative API__
-
-In the first results tutorial, we used `Samples` objects to inspect the results of a model.
-
-We saw how these samples created instances, which include a `galaxies` property that mains the API of the `Model`
-creates above (e.g. `galaxies.lens.bulge`). 
-
-We can also use this instance to extract individual components of the model.
-"""
-samples = result.samples
-
-ml_instance = samples.max_log_likelihood()
-
-bulge = ml_instance.galaxies.lens.bulge
-
-bulge_image_2d = bulge.image_2d_from(grid=dataset.grid)
-print(bulge_image_2d.slim[0])
-
-bulge_plotter = aplt.LightProfilePlotter(light_profile=bulge, grid=dataset.grid)
-bulge_plotter.figures_2d(image=True)
-
-"""
-In fact, if we create a `Tracer` from an instance (which is how `result.max_log_likelihood_tracer` is created) we
-can choose whether to access its attributes using each API: 
-"""
-tracer = result.max_log_likelihood_tracer
-print(tracer.galaxies.lens.bulge)
-
-"""
-We'll use the former API from here on. 
-
-Whilst its a bit less clear and concise, it is more representative of the internal **PyAutoLens** source code and
-therefore gives a clearer sense of how the internals work.
-
 __Log10__
 
 The light distributions of galaxies are closer to a log10 distribution than a linear one. 
@@ -224,7 +195,7 @@ Below, we can see that the image plotted now appears more clearly, with the outs
 """
 bulge_plotter = aplt.LightProfilePlotter(
     light_profile=tracer.planes[0].galaxies[0].bulge,
-    grid=dataset.grid,
+    grid=grid,
     mat_plot_2d=aplt.MatPlot2D(use_log10=True),
 )
 bulge_plotter.figures_2d(image=True)
@@ -236,18 +207,18 @@ Above, we extract the `bulge` and `disk` light profiles.
 
 We can just as easily extract each `Galaxy` and use it to perform the calculations above. Note that because the 
 lens galaxy contains both the `bulge` and `disk`, the `image` we create below contains both components (and is therefore
-the same as `tracer.image_2d_from(grid=dataset.grid)`:
+the same as `tracer.image_2d_from(grid=grid)`:
 """
 lens = tracer.planes[0].galaxies[0]
 
-lens_image_2d = lens.image_2d_from(grid=dataset.grid)
-lens_convergence_2d = lens.convergence_2d_from(grid=dataset.grid)
+lens_image_2d = lens.image_2d_from(grid=grid)
+lens_convergence_2d = lens.convergence_2d_from(grid=grid)
 
 """
 We can also use the `GalaxyPlotter` to plot the lens galaxy, for example a subplot of each individual light profile 
 image and mass profile convergence.
 """
-galaxy_plotter = aplt.GalaxyPlotter(galaxy=lens, grid=dataset.grid)
+galaxy_plotter = aplt.GalaxyPlotter(galaxy=lens, grid=grid)
 galaxy_plotter.subplot_of_light_profiles(image=True)
 galaxy_plotter.subplot_of_mass_profiles(convergence=True)
 
@@ -267,10 +238,10 @@ source_1 = tracer.planes[1].galaxies[1]
 # source_0 = tracer.galaxies.source_0
 # source_1 = tracer.galaxies.source_1
 
-galaxy_plotter = aplt.GalaxyPlotter(galaxy=source_0, grid=dataset.grid)
+galaxy_plotter = aplt.GalaxyPlotter(galaxy=source_0, grid=grid)
 galaxy_plotter.figures_2d(image=True)
 
-galaxy_plotter = aplt.GalaxyPlotter(galaxy=source_1, grid=dataset.grid)
+galaxy_plotter = aplt.GalaxyPlotter(galaxy=source_1, grid=grid)
 galaxy_plotter.figures_2d(image=True)
 
 """
@@ -296,7 +267,7 @@ In order to plot source-plane images that are lensed we can compute traced grids
 traced_grid_list = tracer.traced_grid_2d_list_from(grid=grid)
 
 """
-The first grid in the list is the image-plane grid (and is identical to `dataset.grid`) whereas the second grid has
+The first grid in the list is the image-plane grid (and is identical to `grid`) whereas the second grid has
 had its coordinates deflected via the tracer's lens galaxy mass profiles.
 """
 image_plane_grid = traced_grid_list[0]
@@ -367,7 +338,7 @@ __One Dimensional Quantities__
 We have made two dimensional plots of galaxy images, grids and convergences.
 
 We can also compute all these quantities in 1D, for inspection and visualization.
- 
+
 For example, from a light profile or galaxy we can compute its `image_1d`, which provides us with its image values
 (e.g. luminosity) as a function of radius.
 """
@@ -383,11 +354,11 @@ print(image_1d)
 How are these 1D quantities from an input 2D grid? 
 
 From the 2D grid a 1D grid is compute where:
- 
+
  - The 1D grid of (x,) coordinates are centred on the galaxy or light profile and aligned with the major-axis. 
  - The 1D grid extends from this centre to the edge of the 2D grid.
  - The pixel-scale of the 2D grid defines the radial steps between each coordinate.
- 
+
 If we input a larger 2D grid, with a smaller pixel scale, the 1D plot adjusts accordingly.
 """
 grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.04)
@@ -410,56 +381,5 @@ galaxy_plotter = aplt.GalaxyPlotter(galaxy=lens, grid=grid)
 galaxy_plotter.figures_1d(image=True, convergence=True)
 
 """
-__Decomposed 1D Plot__
-
-We can make a plot containing every individual light and mass profile of a galaxy in 1D, for example showing a 
-decomposition of its `bulge` and `disk`.
-
-Every profile on a decomposed plot is computed using a radial grid centred on its profile centre and aligned with
-its major-axis. Therefore 2D offsets between the components are not portray in such a figure.
-"""
-galaxy_plotter = aplt.GalaxyPlotter(galaxy=lens, grid=grid)
-galaxy_plotter.figures_1d_decomposed(image=True)
-
-"""
-__Errors__
-
-Using a `GalaxyPDFPlotter`, we can make 1D plots that show the errors of the light and mass models estimated via a 
-model-fit. 
-
-Here, the `galaxy_pdf_list` is a list of `Galaxy` objects that are drawn randomly from the PDF of the model-fit. 
-
-These are used to estimate the errors at an input `sigma` value of: 
-
- - The 1D light or mass profile, which is plotted as a shaded region on the figure. 
- - The median `half_light_radius` and `einstein_radius` with errors, which are plotted as vertical lines.
-
-Below, we manually input one hundred realisations of the lens galaxy with light and mass profiles that clearly show 
-these errors on the figure.
-"""
-galaxy_pdf_list = [samples.draw_randomly_via_pdf().galaxies.lens for i in range(10)]
-
-galaxy_pdf_plotter = aplt.GalaxyPDFPlotter(
-    galaxy_pdf_list=galaxy_pdf_list, grid=grid, sigma=3.0
-)
-galaxy_pdf_plotter.figures_1d(
-    #    image=True,
-    #   convergence=True,
-    #   potential=True
-)
-
-"""
-A decomposed plot of the individual light profiles of the galaxy, with errors, can also be created.
-"""
-galaxy_pdf_plotter.figures_1d_decomposed(
-    # image=True,
-    #  convergence=True,
-    #  potential=True
-)
-
-"""
-__Wrap Up__
-
-We have learnt how to extract individual planes, galaxies, light and mass profiles from the tracer that results from
-a model-fit and use these objects to compute specific quantities of each component.
+Fin.
 """

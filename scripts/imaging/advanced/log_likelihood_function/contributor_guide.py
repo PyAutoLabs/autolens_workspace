@@ -24,14 +24,14 @@ __LH Setup: Lens Galaxy Mass__
 
 To see examples of all mass profiles in **PyAutoLens** checkout the `mass_profiles` package:
 
- https://github.com/Jammy2211/PyAutoGalaxy/tree/master/autogalaxy/profiles/mass_profiles
+ https://github.com/Jammy2211/PyAutoGalaxy/tree/main/autogalaxy/profiles/mass_profiles
 
 
 __LH Setup: Lens Galaxy__
 
 The galaxy package and module contains the `Galaxy` object:
 
- https://github.com/Jammy2211/PyAutoGalaxy/tree/master/autogalaxy/galaxy
+ https://github.com/Jammy2211/PyAutoGalaxy/tree/main/autogalaxy/galaxy
 
 
 __LH Setup: Source Galaxy Pixelization and Regularization__
@@ -39,8 +39,8 @@ __LH Setup: Source Galaxy Pixelization and Regularization__
 To see examples of all pixelizations and regularization schemes in **PyAutoLens** checkout
 the `Pixelization`  packages:
 
- https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/inversion/pixelizations
- https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/inversion/regularization
+ https://github.com/Jammy2211/PyAutoArray/tree/main/autoarray/inversion/pixelizations
+ https://github.com/Jammy2211/PyAutoArray/tree/main/autoarray/inversion/regularization
 
 
 __LH Step 1: Lens Light__
@@ -95,7 +95,7 @@ __LH Step 7: Image-Source Mapping__
 
  Checkout the modules below for a full description of a `Mapper` and the `mapping_matrix`:
 
- https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/inversion/mappers
+ https://github.com/Jammy2211/PyAutoArray/tree/main/autoarray/inversion/mappers
  https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/inversion/mappers/abstract.py
  https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/inversion/mappers/voronoi.py
  https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/inversion/mappers/mapper_util.py
@@ -141,7 +141,7 @@ __LH Step 12: Regularization Matrix (H)__
 
  A complete description of regularization is at the link below.
 
- https://github.com/Jammy2211/PyAutoArray/tree/master/autoarray/inversion/regularization
+ https://github.com/Jammy2211/PyAutoArray/tree/main/autoarray/inversion/regularization
  https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/inversion/regularization/abstract.py
  https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/inversion/regularization/constant.py
  https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/inversion/regularization/regularization_util.py

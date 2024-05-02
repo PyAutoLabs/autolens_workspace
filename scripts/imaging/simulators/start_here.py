@@ -167,13 +167,7 @@ tracer_plotter.figures_2d(image=True)
 """
 By passing the `Tracer` and grid to the simulator, we create the simulated CCD imaging dataset.
 """
-import time
-
-start = time.time()
 dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
-print(f"Time to simulate dataset = {time.time() - start} seconds.")
-sfsdfsd
-
 
 """
 We now plot the simulated `Imaging` dataset before outputting it to fits.
@@ -209,11 +203,6 @@ Having .png files like this is useful, as they can be opened quickly and easily 
 
 For a faster run time, this visualization uses a regular grid which does not perferm the iterative ray-tracing.
 """
-grid = al.Grid2D.uniform(
-    shape_native=grid.shape_native,
-    pixel_scales=grid.pixel_scales,
-)
-
 mat_plot = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
 
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset, mat_plot_2d=mat_plot)

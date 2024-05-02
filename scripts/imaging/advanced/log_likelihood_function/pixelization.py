@@ -33,7 +33,7 @@ import autolens.plot as aplt
 """
 __Dataset__
 
-In order to perform a likelihood evaluation, we first load the dataset we fit. 
+In order to perform a likelihood evaluation, we first load a dataset.
 
 This example fits a simulated strong lens which is simulated using a 0.1 arcsecond-per-pixel resolution (this is lower
 resolution than the best quality Hubble Space Telescope imaging and close to that of the Euclid space satellite).

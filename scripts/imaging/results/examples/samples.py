@@ -13,7 +13,7 @@ __Units__
 In this example, all quantities are **PyAutoLens**'s internal unit coordinates, with spatial coordinates in
 arc seconds, luminosities in electrons per second and mass quantities (e.g. convergence) are dimensionless.
 
-The results example `units_and_cosmology.ipynb` illustrates how to convert these quantities to physical units like
+The guide `guides/units_and_cosmology.ipynb` illustrates how to convert these quantities to physical units like
 kiloparsecs, magnitudes and solar masses.
 
 __Start Here Notebook__
@@ -98,7 +98,7 @@ As a reminder, in the `modeling` scripts we use the `max_log_likelihood_tracer` 
 the results of the fit.
 """
 tracer_plotter = aplt.TracerPlotter(
-    tracer=result.max_log_likelihood_tracer, grid=mask.derive_grid.all_false_sub_1
+    tracer=result.max_log_likelihood_tracer, grid=mask.derive_grid.all_false
 )
 tracer_plotter.subplot_tracer()
 fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
@@ -199,10 +199,10 @@ Using this tracer is expanded upon in the `tracer.py` results tutorial.
 max_lh_tracer = al.Tracer(galaxies=instance.galaxies)
 
 print(max_lh_tracer)
-print(mask.derive_grid.all_false_sub_1)
+print(mask.derive_grid.all_false)
 
 tracer_plotter = aplt.TracerPlotter(
-    tracer=max_lh_tracer, grid=mask.derive_grid.all_false_sub_1
+    tracer=max_lh_tracer, grid=mask.derive_grid.all_false
 )
 tracer_plotter.subplot_tracer()
 

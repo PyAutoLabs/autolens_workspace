@@ -1,10 +1,9 @@
 """
-Results: Units and Cosmology
-============================
+Units and Cosmology
+===================
 
-This tutorial illustrates how to perform unit conversions of  modeling results from **PyAutoLens**'s internal
-units (e.g. arc-seconds, electrons per second, dimensionless mass units) to physical units (e.g. kiloparsecs,
-magnitudes, solar masses).
+This tutorial illustrates how to perform unit conversions from **PyAutoLens**'s internal units (e.g. arc-seconds,
+electrons per second, dimensionless mass units) to physical units (e.g. kiloparsecs, magnitudes, solar masses).
 
 This is used on a variety of important lens model cosmological quantities for example the lens's Einstein radius and
 Mass or the effective radii of the galaxies in the lens model.
@@ -22,10 +21,6 @@ __Errors__
 
 To produce errors on unit converted quantities, you`ll may need to perform marginalization over samples of these
 converted quantities (see `results/examples/samples.ipynb`).
-
-__Start Here Notebook__
-
-If any code in this script is unclear, refer to the `results/start_here.ipynb` notebook.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -40,44 +35,33 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-__Model Fit__
+__Tracer__
 
-The code below (which we have omitted comments from for brevity) performs a lens model-fit using Nautilus. You should
-be familiar enough with lens modeling to understand this, if not you should go over the beginner model-fit script again!
+We set up a simple strong lens tracer and grid which will illustrate the unit conversion functionality. 
 """
-dataset_name = "simple__no_lens_light"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
-dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
-    pixel_scales=0.1,
-)
-
-mask = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
-)
-
-dataset = dataset.apply_mask(mask=mask)
-
-model = af.Collection(
-    galaxies=af.Collection(
-        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic),
+lens = al.Galaxy(
+    redshift=0.5,
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        ell_comps=(0.1, 0.0),
+        einstein_radius=1.6,
     ),
 )
 
-search = af.Nautilus(
-    path_prefix=path.join("imaging", "modeling"),
-    name="mass[sie]_source[bulge]",
-    unique_tag=dataset_name,
-    n_live=100,
+source = al.Galaxy(
+    redshift=1.0,
+    bulge=al.lp.Sersic(
+        centre=(0.0, 0.0),
+        ell_comps=(0.1, 0.0),
+        intensity=1.0,
+        effective_radius=1.0,
+        sersic_index=4.0,
+    ),
 )
 
-analysis = al.AnalysisImaging(dataset=dataset)
-
-result = search.fit(model=model, analysis=analysis)
+tracer = al.Tracer(galaxies=[lens, source])
 
 """
 __Arcsec to Kiloparsec__
@@ -90,8 +74,6 @@ By assuming redshifts for the lens and source galaxies we can convert their quan
 Below, we compute the effective radii of the source in kiloparsecs. To do this, we assume a cosmology which 
 allows us to compute the conversion factor `kpc_per_arcsec`.
 """
-tracer = result.max_log_likelihood_tracer
-
 cosmology = al.cosmo.Planck15()
 
 source = tracer.planes[1].galaxies[0]
@@ -117,18 +99,14 @@ units = aplt.Units(ticks_convert_factor=image_plane_kpc_per_arcsec, ticks_label=
 
 mat_plot = aplt.MatPlot2D(units=units)
 
-tracer_plotter = aplt.TracerPlotter(
-    tracer=tracer, grid=dataset.grid, mat_plot_2d=mat_plot
-)
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot)
 tracer_plotter.figures_2d(image=True)
 
 units = aplt.Units(ticks_convert_factor=source_plane_kpc_per_arcsec, ticks_label=" kpc")
 
 mat_plot = aplt.MatPlot2D(units=units)
 
-tracer_plotter = aplt.TracerPlotter(
-    tracer=tracer, grid=dataset.grid, mat_plot_2d=mat_plot
-)
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot)
 tracer_plotter.figures_2d(source_plane=True)
 
 """
