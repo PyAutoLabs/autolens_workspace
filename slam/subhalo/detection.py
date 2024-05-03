@@ -49,7 +49,6 @@ def run_1_no_subhalo(
 
     model = af.Collection(
         galaxies=af.Collection(lens=lens, source=source),
-        sky=al.util.chaining.sky_from(result=mass_result),
         clumps=al.util.chaining.clumps_from(result=mass_result, mass_as_model=True),
     )
 
@@ -151,7 +150,6 @@ def run_2_grid_search(
 
     model = af.Collection(
         galaxies=af.Collection(lens=lens, subhalo=subhalo, source=source),
-        sky=al.util.chaining.sky_from(result=mass_result),
         clumps=al.util.chaining.clumps_from(
             result=subhalo_result_1, mass_as_model=True
         ),
@@ -265,7 +263,6 @@ def run_3_subhalo(
             subhalo=subhalo,
             source=subhalo_grid_search_result_2.model.galaxies.source,
         ),
-        sky=al.util.chaining.sky_from(result=subhalo_grid_search_result_2),
         clumps=al.util.chaining.clumps_from(
             result=subhalo_grid_search_result_2, mass_as_model=True
         ),

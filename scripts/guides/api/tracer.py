@@ -2,14 +2,14 @@
 Fits
 ====
 
-This guide shows how to fit data using the `FitImaging` object, including visualizing and interpreting its results.
-
-This tutorial shows how to use galaxies, including visualizing and interpreting their properties.
+This tutorial inspects an inferred model using the `Tracer` object inferred by the non-linear search.
+This allows us to visualize and interpret its results.
 
 The first half of this tutorial repeats the over example `overview/overview_1_lensing.py` and contains the
 following:
 
-The guide then extends the overview with more advanced uses of galaxies, including:
+This tutorial focuses on explaining how to use the inferred tracer to compute results as numpy arrays and only
+briefly discusses visualization.
 
 __Plot Module__
 

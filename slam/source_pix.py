@@ -92,7 +92,6 @@ def run_1(
                 ),
             ),
         ),
-        sky=al.util.chaining.sky_from(result=source_lp_result),
         clumps=al.util.chaining.clumps_from(result=source_lp_result),
     )
 
@@ -179,7 +178,6 @@ def run_2(
                 ),
             ),
         ),
-        sky=al.util.chaining.sky_from(result=source_pix_result_1),
         clumps=al.util.chaining.clumps_from(result=source_lp_result),
     )
 

@@ -74,19 +74,16 @@ dataset_plotter = aplt.ImagingPlotter(dataset=masked_dataset)
 dataset_plotter.subplot_dataset()
 
 """
-__Sub Gridding__
+__Over Sampling__
 
-By inputting a `sub_size` above 1, the image-plane grid is subgridded into sub-pixels and multiple 
-image-pixel coordinates are then ray-traced to the source plane for the source reconstruction. 
+Over sampling evaluates a light profile using multiple samples of its intensity per image-pixel.
 
-To illustrate the likelihood function it is easier to assume no subgridding and therefore input `sub_size=1`. We 
-provide links to notebooks describing how changing the `sub_size` changes the inversion at the end of this tutorial.
+For simplicity, we disable over sampling in this guide by setting `sub_size=1`. 
 
-(The default `sub_size_pixelization` used for an inversion is 4, and if you did not manually set this in a model-fit
-you performed you will have unknowingly used sub-gridding).
+a full description of over sampling and how to use it is given in `autogalaxy_workspace/*/guides/over_sampling.py`.
 """
-masked_dataset = masked_dataset.apply_settings(
-    settings=al.SettingsImaging(sub_size=1, sub_size_pixelization=1)
+masked_dataset = masked_dataset.apply_over_sampling(
+    over_sampling=al.OverSamplingUniform(sub_size=1)
 )
 
 """

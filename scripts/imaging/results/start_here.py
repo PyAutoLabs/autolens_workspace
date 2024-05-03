@@ -57,8 +57,8 @@ model = af.Collection(
 )
 
 search = af.Nautilus(
-    path_prefix=path.join("imaging", "modeling"),
-    name="mass[sie]_source[bulge]",
+    path_prefix=path.join("results_folder"),
+    name="results",
     unique_tag=dataset_name,
     n_live=100,
 )
@@ -95,8 +95,13 @@ as follows:
  - `samples_summary`: A summary of key results of the samples (`samples_summary.json`).
  - `info`: The info dictionary passed to the search (`info.json`).
  - `covariance`: The inferred covariance matrix (`covariance.csv`).
- - `data`: The 1D noisy data used that is fitted (`data.json`).
- - `noise_map`: The 1D noise-map fitted (`noise_map.json`).
+ - `cosmology`: The cosmology used by the fit (`cosmology.json`).
+ - `settings_inversion`: The settings associated with a inversion if used (`settings_inversion.json`).
+ - `dataset/data`: The data that is fitted (`data.fits`).
+ - `dataset/noise_map`: The noise-map (`noise_map.fits`).
+ - `dataset/psf`: The Point Spread Function (`psf.fits`).
+ - `dataset/mask`: The mask applied to the data (`mask.fits`).
+ - `dataset/settings`: The settings associated with the dataset (`settings.json`).
 
 The `samples` and `samples_summary` results contain a lot of repeated information. The `samples` result contains
 the full non-linear search samples, for example every parameter sample and its log likelihood. The `samples_summary`
@@ -110,7 +115,7 @@ but if not you can revert to the `samples.
 from autofit.aggregator.aggregator import Aggregator
 
 agg = Aggregator.from_directory(
-    directory=path.join("output", "cookbook_result"),
+    directory=path.join("output", "results_folder"),
 )
 
 """
@@ -137,6 +142,20 @@ for samples in agg.values("samples"):
     print(samples.parameter_lists[0])
 
 """
+__Database File__
+
+The aggregator can also load results from a `.sqlite` database file.
+
+This is benefitial when loading results for large numbers of model-fits (e.g. more than hundreds)
+because it is optimized for fast querying of results.
+
+It is recommended you use hard-disk loading to begin, as it is simpler and easier to use.
+
+See the package `results/database` for a full description of how to set up the database and the benefits it provides,
+especially if loading results from hard-disk is slow.
+
+__Result__
+
 From here on we will use attributes contained in the `result` passed from the `search.fit` method above, as opposed
 to using the aggregator. This is because things will run faster, but all of the results we use can be loaded using
 the aggregator as shown above.

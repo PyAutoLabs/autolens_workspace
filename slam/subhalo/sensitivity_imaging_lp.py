@@ -91,12 +91,11 @@ class SimulateImaging:
         Set up the grid, PSF and simulator settings used to simulate imaging of the strong lens. These should be 
         tuned to match the S/N and noise properties of the observed data you are performing sensitivity mapping on.
         """
-        grid = al.Grid2D.uniform(
+        grid = al.Grid2DIterate.uniform(
             shape_native=self.mask.shape_native,
             pixel_scales=self.mask.pixel_scales,
-            over_sampling=al.OverSamplingIterate(
-                fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
-            ),
+            fractional_accuracy=0.9999,
+            sub_steps=[2, 4, 8, 16],
         )
 
         simulator = al.SimulatorImaging(
@@ -490,7 +489,9 @@ def run(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
     perturb_model.mass.redshift_object = mass_result.model.galaxies.lens.redshift
-    perturb_model.mass.redshift_source = mass_result.model.galaxies.source.redshift
+    perturb_model.mass.redshift_source = (
+        mass_result.model.galaxies.source.redshift
+    )
 
     """
     __Perturb Model Prior Func__

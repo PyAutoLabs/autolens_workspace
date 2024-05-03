@@ -5,13 +5,15 @@ These scripts are intended to help users understand how **PyAutoLens** works.
 Files (Beginner)
 ----------------
 
-- ``tracer.py`` Performing ray-tracing and lensing calculations.
-- ``fits.py`` Fitting CCD imaging data with a lens system.
-- ``galaxies.py`` Creating and using galaxies and their mass and light profiles.
 - ``data_structures.py``: How the NumPy arrays containing results are structured and the API for using them.
 - ``mass_to_light_ratio_units.py``: The units of light and mass profiles and how to convert between them.
 - ``over_sampling.py``: How to use over-sampling evaluate a light profile integral within a pixel more accurately.
 - ``units_and_cosmology.py``: Unit conversions and Cosmological quantities (converting to kiloparsecs, Einstein masses, etc.).
+
+Folders (Beginner)
+-----------------
+
+- ``api.py``: Illustration of how to use basic **PyAutoGalaxy** API features (e.g. `Galaxy`, `FitImaging`, etc).
 
 Files (Advanced)
 ----------------

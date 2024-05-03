@@ -99,7 +99,9 @@ def run(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
     perturb_model.mass.redshift_object = mass_result.model.galaxies.lens.redshift
-    perturb_model.mass.redshift_source = mass_result.model.galaxies.source.redshift
+    perturb_model.mass.redshift_source = (
+        mass_result.model.galaxies.source.redshift
+    )
 
     """
     We are performing sensitivity mapping to determine when a subhalo is detectable. Eery simulated dataset must 
@@ -143,8 +145,9 @@ def run(
             shape_native=real_space_mask.shape_native,
             pixel_scales=real_space_mask.pixel_scales,
             over_sampling=al.OverSamplingIterate(
-                fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
-            ),
+                fractional_accuracy=0.9999,
+                sub_steps=[2, 4, 8, 16]
+            )
         )
 
         simulator = al.SimulatorInterferometer(

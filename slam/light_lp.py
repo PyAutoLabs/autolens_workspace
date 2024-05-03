@@ -72,7 +72,6 @@ def run(
             ),
             source=source,
         ),
-        sky=al.util.chaining.sky_from(result=source_result_for_source),
         clumps=al.util.chaining.clumps_from(
             result=source_result_for_lens, light_as_model=True
         ),

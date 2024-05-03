@@ -103,17 +103,12 @@ for dataset_name in dataset_names:
     __Mask__
     
     The `Mask2D` we fit this data-set with, which will be available via the aggregator.
-
-    The `SettingsImaging` (which customize the fit of the search`s fit), will also be available to the aggregator! 
     """
     mask = al.Mask2D.circular(
         shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
     )
 
-    settings_dataset = al.SettingsImaging(grid_class=al.Grid2D, sub_size=1)
-
     dataset = dataset.apply_mask(mask=mask)
-    dataset = dataset.apply_settings(settings=settings_dataset)
 
     """
     __Info__

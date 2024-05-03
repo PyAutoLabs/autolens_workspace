@@ -1,11 +1,11 @@
 """
-Database: Models
-================
+Results: Models
+===============
 
-In this tutorial, we use the database to load models and `Tracer`'s from a non-linear search. This allows us to
+In this tutorial, we use the aggregator to load models and `Tracer`'s from a non-linear search. This allows us to
 visualize and interpret its results.
 
-We then show how the database also allows us to load many `Tracer`'s correspond to many samples of the non-linear
+We then show how the aggregator also allows us to load many `Tracer`'s correspond to many samples of the non-linear
 search. This allows us to compute the errors on quantities that the `Tracer` contains, but were not sampled directly
 by the non-linear search.
 """
@@ -15,19 +15,37 @@ by the non-linear search.
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+import os
+from os import path
+
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
 """
-__Database File__
+__Aggregator__
 
-First, set up the aggregator as we did in the previous tutorial.
+The functionality illustrated in this example only supports results loaded via the .sqlite database.
+
+We therefore do not load results from hard-disk like other scritps, but build a .sqlite database in order
+to create the `Aggregator` object.
+
+If you have not used the .sqlite database before, the `database` package describes how to set it up and the API
+for the aggregator is identical from here on.
 """
-agg = af.Aggregator.from_database("database.sqlite")
+database_name = "results_folder"
+
+if path.exists(path.join("output", f"{database_name}.sqlite")):
+    os.remove(path.join("output", f"{database_name}.sqlite"))
+
+agg = af.Aggregator.from_database(
+    filename=f"{database_name}.sqlite", completed_only=False
+)
+
+agg.add_directory(directory=path.join("output", database_name))
 
 """
-__Tracer via Database__
+__Tracer via Aggregator__
 
 Having performed a model-fit, we now want to interpret and visualize the results. In this example, we want to inspect
 the `Tracer` objects that gave good fits to the data. 

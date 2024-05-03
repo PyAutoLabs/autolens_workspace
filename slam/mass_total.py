@@ -12,7 +12,9 @@ def run(
     source_result_for_source: af.Result,
     light_result: Optional[af.Result],
     mass: af.Model = af.Model(al.mp.Isothermal),
-    multipole: Optional[af.Model] = None,
+    multipole_1: Optional[af.Model] = None,
+    multipole_3: Optional[af.Model] = None,
+    multipole_4: Optional[af.Model] = None,
     smbh: Optional[af.Model] = None,
     mass_centre: Optional[Tuple[float, float]] = None,
     reset_shear_prior: bool = False,
@@ -34,6 +36,12 @@ def run(
         The result of the SLaM LIGHT LP PIPELINE which ran before this pipeline.
     mass
         The `MassProfile` used to fit the lens galaxy mass in this pipeline.
+    multipole_1
+        Optionally include a first order multipole mass profile component in the mass model.
+    multipole_3
+        Optionally include a third order multipole mass profile component in the mass model.
+    multipole_4
+        Optionally include a fourth order multipole mass profile component in the mass model.
     smbh
         The `MassProfile` used to fit the a super massive black hole in the lens galaxy.
     mass_centre
@@ -84,10 +92,20 @@ def run(
     else:
         shear = al.mp.ExternalShear
 
-    if multipole is not None:
-        multipole.centre = mass.centre
-        multipole.einstein_radius = mass.einstein_radius
-        multipole.slope = mass.slope
+    if multipole_1 is not None:
+        multipole_1.centre = mass.centre
+        multipole_1.einstein_radius = mass.einstein_radius
+        multipole_1.slope = mass.slope
+
+    if multipole_3 is not None:
+        multipole_3.centre = mass.centre
+        multipole_3.einstein_radius = mass.einstein_radius
+        multipole_3.slope = mass.slope
+
+    if multipole_4 is not None:
+        multipole_4.centre = mass.centre
+        multipole_4.einstein_radius = mass.einstein_radius
+        multipole_4.slope = mass.slope
 
     source = al.util.chaining.source_from(
         result=source_result_for_source,
@@ -102,13 +120,14 @@ def run(
                 disk=disk,
                 point=point,
                 mass=mass,
-                multipole=multipole,
+                multipole_1=multipole_1,
+                multipole_3=multipole_3,
+                multipole_4=multipole_4,
                 shear=shear,
                 smbh=smbh,
             ),
             source=source,
         ),
-        sky=al.util.chaining.sky_from(result=source_result_for_source),
         clumps=al.util.chaining.clumps_from(
             result=source_result_for_lens, mass_as_model=True
         ),

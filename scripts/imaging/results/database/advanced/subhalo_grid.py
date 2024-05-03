@@ -77,7 +77,7 @@ agg = af.Aggregator.from_database(filename=database_file, completed_only=False)
 Add all results in the directory "output/results/subhalo_grid" to the database, which we manipulate below via the agg.
 Avoid rerunning this once the file `subhalo_grid.sqlite` has been built.
 """
-agg.add_directory(directory=path.join("output", "results", "subhalo_grid"))
+agg.add_directory(directory=path.join("output", "results_folder", "subhalo_grid"))
 
 """
 __Aggregator Grid Search__

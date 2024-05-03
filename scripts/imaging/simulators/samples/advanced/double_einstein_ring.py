@@ -75,7 +75,7 @@ grid = al.Grid2D.uniform(
     ),
 )
 
-grid = al.Grid2D.uniform(shape_native=(150, 150), pixel_scales=0.1, sub_size=1)
+grid = al.Grid2D.uniform(shape_native=(150, 150), pixel_scales=0.1)
 
 """
 Simulate a simple Gaussian PSF for the image.

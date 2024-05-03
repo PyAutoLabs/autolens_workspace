@@ -15,16 +15,22 @@ to make these objects.
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+from os import path
+
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
 """
-__Database File__
+__Aggregator__
 
-First, set up the aggregator as we did in the previous tutorial.
+First, set up the aggregator as shown in `start_here.py`.
 """
-agg = af.Aggregator.from_database("database.sqlite")
+from autofit.aggregator.aggregator import Aggregator
+
+agg = Aggregator.from_directory(
+    directory=path.join("output", "results_folder"),
+)
 
 """
 __Manual Tracers via Lists (Optional)__

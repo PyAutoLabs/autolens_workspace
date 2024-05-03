@@ -63,7 +63,7 @@ dataset = al.Imaging.from_fits(
 
 dataset = dataset.apply_over_sampling(
     over_sampling=over_sampling,
-)  # <----- The `SettingsImaging` above is used here!
+)
 
 """
 __Mask__

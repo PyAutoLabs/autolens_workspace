@@ -1,6 +1,6 @@
 """
-Database: Queries
-=================
+Results: Queries
+================
 
 Suppose we have the results of many fits in the database and we only wanted to load and inspect a specific set
 of model-fits (e.g. the results of `tutorial_1_introduction`). We can use the database's querying tools to only load
@@ -21,16 +21,15 @@ import autolens as al
 
 
 """
-__Database File__
+__Aggregator__
 
-First, we set up the aggregator like we did in the previous tutorial. However, we can also filter results to only 
-include completed results. By including the `completed_only` input below, any results which are in the middle of a 
-non-linear will be omitted and not loaded in the `Aggregator`.
-
-For these tutorials, we only performed 3 model-fits which ran to completion, so this does not remove any results. For
-general database use when you may have many model-fits running simultaneously, this filter can prove useful.
+First, set up the aggregator as shown in `start_here.py`.
 """
-agg = af.Aggregator.from_database("database.sqlite", completed_only=True)
+from autofit.aggregator.aggregator import Aggregator
+
+agg = Aggregator.from_directory(
+    directory=path.join("output", "results_folder"),
+)
 
 """
 __Unique Tag__
