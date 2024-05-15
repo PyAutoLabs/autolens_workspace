@@ -116,7 +116,7 @@ Create the `PointDataset`  and `PointDict` objects using identical code to the `
 point_dataset = al.PointDataset(
     name="point_0",
     positions=positions,
-    positions_noise_map=positions.values_via_value_from(value=grid.pixel_scale),
+    positions_noise_map=al.ArrayIrregular(values=len(positions)*[grid.pixel_scale]),
     fluxes=fluxes,
     fluxes_noise_map=al.ArrayIrregular(values=[1.0, 1.0, 1.0, 1.0]),
 )
