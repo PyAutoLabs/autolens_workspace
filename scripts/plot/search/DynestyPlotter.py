@@ -171,7 +171,7 @@ dyplot.boundplot(
     results=search_internal.results,
     labels=model.parameter_labels_with_superscripts_latex,
     dims=(2, 2),
-    it=100,
+    it=-1,  # -1 is the final iteration of the dynesty samples, change this to plot a different iteration
     idx=None,
     prior_transform=None,
     periodic=None,
@@ -196,30 +196,34 @@ plt.close()
 The cornerbound plots the bounding distribution used to propose either (1) live points at a given iteration or (2) a 
 specific dead point during the course of a run, projected onto all pairs of dimensions.
 """
-dyplot.cornerbound(
-    results=search_internal.results,
-    labels=model.parameter_labels_with_superscripts_latex,
-    it=100,
-    idx=None,
-    dims=None,
-    prior_transform=None,
-    periodic=None,
-    reflective=None,
-    ndraws=5000,
-    color="gray",
-    plot_kwargs=None,
-    label_kwargs={"fontsize": 16},
-    max_n_ticks=5,
-    use_math_text=False,
-    show_live=False,
-    live_color="darkviolet",
-    live_kwargs=None,
-    span=None,
-    fig=None,
-)
+try:
+    dyplot.cornerbound(
+        results=search_internal.results,
+        labels=model.parameter_labels_with_superscripts_latex,
+        it=-1,  # -1 is the final iteration of the dynesty samples, change this to plot a different iteration
+        idx=None,
+        dims=None,
+        prior_transform=None,
+        periodic=None,
+        reflective=None,
+        ndraws=5000,
+        color="gray",
+        plot_kwargs=None,
+        label_kwargs={"fontsize": 16},
+        max_n_ticks=5,
+        use_math_text=False,
+        show_live=False,
+        live_color="darkviolet",
+        live_kwargs=None,
+        span=None,
+        fig=None,
+    )
 
-plt.show()
-plt.close()
+    plt.show()
+    plt.close()
+
+except ValueError:
+    pass
 
 """
 The cornerplot plots a corner plot of the 1-D and 2-D marginalized posteriors.

@@ -428,6 +428,7 @@ Below, we plot the Voronoi mesh without the traced image-grid pixels (for clarit
 to show how each set of image-pixels fall within a Voronoi pixel.
 """
 mapper_grids = al.MapperGrids(
+    mask=mask,
     source_plane_data_grid=masked_dataset.grid_pixelization,
     source_plane_mesh_grid=grid_voronoi,
     image_plane_mesh_grid=image_plane_mesh_grid,
@@ -532,7 +533,7 @@ mapping_matrix = al.util.mapper.mapping_matrix_from(
     pixels=mapper.pixels,
     total_mask_pixels=mapper.source_plane_data_grid.mask.pixels_in_mask,
     slim_index_for_sub_slim_index=mapper.slim_index_for_sub_slim_index,
-    sub_fraction=mapper.source_plane_data_grid.mask.sub_fraction,
+    sub_fraction=np.array(mapper.over_sampler.sub_fraction),
 )
 
 """
@@ -644,8 +645,8 @@ NOTE: WD03 assume the data is already lens subtracted thus $b_{j}$ is omitted (e
 """
 data_vector = al.util.inversion_imaging.data_vector_via_blurred_mapping_matrix_from(
     blurred_mapping_matrix=blurred_mapping_matrix,
-    image=lens_subtracted_image_2d,
-    noise_map=masked_dataset.noise_map,
+    image=np.array(lens_subtracted_image_2d),
+    noise_map=np.array(masked_dataset.noise_map),
 )
 
 """

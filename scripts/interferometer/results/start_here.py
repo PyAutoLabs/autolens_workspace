@@ -70,8 +70,8 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 search = af.Nautilus(
-    path_prefix=path.join("interferometer"),
-    name="mass[sie]_source[bulge]",
+    path_prefix=path.join("results_folder"),
+    name="results",
     unique_tag=dataset_name,
     n_live=100,
     number_of_cores=1,
@@ -278,7 +278,7 @@ Below, is an example of how to use the `Galaxy` objects to plot the source galax
 """
 tracer = result.max_log_likelihood_tracer
 
-source = tracer.planes[1].galaxies[0]
+source = tracer.planes[1][0]
 galaxy_plotter = aplt.GalaxyPlotter(galaxy=source, grid=dataset.grid)
 galaxy_plotter.figures_2d(image=True)
 
@@ -303,7 +303,7 @@ tracer = result.max_log_likelihood_tracer
 
 cosmology = al.cosmo.Planck15()
 
-source = tracer.planes[1].galaxies[0]
+source = tracer.planes[1][0]
 source_kpc_per_arcsec = cosmology.kpc_per_arcsec_from(redshift=source.redshift)
 source_effective_radius_kpc = source.bulge.effective_radius * source_kpc_per_arcsec
 

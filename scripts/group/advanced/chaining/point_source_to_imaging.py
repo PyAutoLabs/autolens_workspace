@@ -190,7 +190,6 @@ source_0 = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.Sersic)
 source_0.bulge.centre = result_1.model.galaxies.source_0.point_0.centre
 
 model_2 = af.Collection(
-    al.Tracer,
     galaxies=af.Collection(
         lens_0=lens_0, lens_1=lens_1, lens_2=lens_2, source_0=source_0
     ),
