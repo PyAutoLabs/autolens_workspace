@@ -55,7 +55,7 @@ interferometer = al.Interferometer.from_fits(
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
     real_space_mask=real_space_mask,
-    transformer_class=al.TransformerNUFFT
+    transformer_class=al.TransformerNUFFT,
 )
 
 interferometer_plotter = aplt.InterferometerPlotter(dataset=interferometer)

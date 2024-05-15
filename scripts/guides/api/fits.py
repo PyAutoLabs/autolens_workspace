@@ -278,10 +278,10 @@ goodness-of-fit.
 
 If you are unclear on what `slim` means, refer to the section `Data Structure` at the top of this example.
 """
-print(fit.model_image.slim)
+print(fit.model_data.slim)
 
 # The native property provides quantities in 2D NumPy Arrays.
-# print(fit.model_image.native)
+# print(fit.model_data.native)
 
 """
 There are numerous ndarrays showing the goodness of fit: 

@@ -56,7 +56,6 @@ visibilities. This is used to determine which transformer is optimal for your da
 
 
 def print_transformer_time_from(dataset, transformer_class, repeats=1):
-
     """
     __Numba Caching__
 
@@ -86,7 +85,6 @@ This function is used throughout this script to time how long a fit takes for ea
 
 
 def print_fit_time_from(dataset, transformer_class, use_linear_operators, repeats=1):
-
     """
     __Numba Caching__
 

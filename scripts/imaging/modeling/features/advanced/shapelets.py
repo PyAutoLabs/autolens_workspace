@@ -507,7 +507,6 @@ shapelets_bulge_list = []
 
 for x in range(total_xy):
     for y in range(total_xy):
-
         shapelet = al.lp_linear.ShapeletCartesian(
             n_y=y, n_x=x, centre=(0.0, 0.0), ell_comps=(0.0, 0.0), beta=1.0
         )
@@ -573,7 +572,6 @@ shapelets_bulge_list = af.Collection(
 
 for x in range(total_xy):
     for y in range(total_xy):
-
         shapelet.n_y = y
         shapelet.n_x = x
 

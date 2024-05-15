@@ -175,7 +175,7 @@ The code below is commented out because it will not run on your computer, unless
 """
 pixelization = al.Pixelization(
     image_mesh=al.image_mesh.Overlay(shape=(40, 40)),
-    mesh=al.mesh.VoronoiNN(),
+    mesh=al.mesh.Delaunay(),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
