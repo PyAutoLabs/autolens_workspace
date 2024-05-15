@@ -190,14 +190,14 @@ analyse the dataset.
 point_dataset_0 = al.PointDataset(
     name="point_0",
     positions=positions_0,
-    positions_noise_map=al.ArrayIrregular(values=len(positions_0)*[grid.pixel_scale]),
+    positions_noise_map=al.ArrayIrregular(values=len(positions_0) * [grid.pixel_scale]),
     fluxes=fluxes_0,
     fluxes_noise_map=al.ArrayIrregular(values=[1.0, 1.0, 1.0, 1.0]),
 )
 point_dataset_1 = al.PointDataset(
     name="point_1",
     positions=positions_1,
-    positions_noise_map=al.ArrayIrregular(values=len(positions_1)*[grid.pixel_scale]),
+    positions_noise_map=al.ArrayIrregular(values=len(positions_1) * [grid.pixel_scale]),
     fluxes=fluxes_1,
     fluxes_noise_map=al.ArrayIrregular(values=[1.0, 1.0, 1.0, 1.0]),
 )

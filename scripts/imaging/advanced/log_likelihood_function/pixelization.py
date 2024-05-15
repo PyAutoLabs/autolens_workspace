@@ -433,7 +433,11 @@ mapper_grids = al.MapperGrids(
     image_plane_mesh_grid=image_plane_mesh_grid,
 )
 
-mapper = al.Mapper(mapper_grids=mapper_grids, regularization=None)
+mapper = al.Mapper(
+    mapper_grids=mapper_grids,
+    over_sampler=masked_dataset.over_sampler_pixelization,
+    regularization=None,
+)
 
 include = aplt.Include2D(mapper_source_plane_data_grid=False)
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, include_2d=include)
@@ -451,7 +455,11 @@ every source-plane Voronoi pixel.
 
 There are two steps in this calculation, which we show individually below.
 """
-mapper = al.Mapper(mapper_grids=mapper_grids, regularization=None)
+mapper = al.Mapper(
+    mapper_grids=mapper_grids,
+    over_sampler=masked_dataset.over_sampler_pixelization,
+    regularization=None,
+)
 
 """
 The `Mapper` contains:

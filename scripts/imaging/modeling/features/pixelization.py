@@ -582,9 +582,13 @@ regular 2D array of data which could be output to .fits format.
 """
 mesh = al.mesh.Rectangular(shape=(50, 50))
 
-mapper_grids = mesh.mapper_grids_from(source_plane_data_grid=dataset.grid)
+mapper_grids = mesh.mapper_grids_from(mask=mask, source_plane_data_grid=dataset.grid)
 
-mapper = al.Mapper(mapper_grids=mapper_grids, regularization=None)
+mapper = al.Mapper(
+    mapper_grids=mapper_grids,
+    over_sampler=dataset.over_sampler_pixelization,
+    regularization=None,
+)
 
 image_to_source = mapper.mapped_to_source_from(array=dataset.data)
 
