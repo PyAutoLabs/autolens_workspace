@@ -56,8 +56,6 @@ visibilities. This is used to determine which transformer is optimal for your da
 
 
 def print_transformer_time_from(dataset, transformer_class, repeats=1):
-    settings_dataset = al.SettingsInterferometer(transformer_class=transformer_class)
-    dataset = dataset.apply_settings(settings=settings_dataset)
 
     """
     __Numba Caching__
@@ -88,8 +86,6 @@ This function is used throughout this script to time how long a fit takes for ea
 
 
 def print_fit_time_from(dataset, transformer_class, use_linear_operators, repeats=1):
-    settings_dataset = al.SettingsInterferometer(transformer_class=transformer_class)
-    dataset = dataset.apply_settings(settings=settings_dataset)
 
     """
     __Numba Caching__
@@ -193,6 +189,14 @@ specific dataset and use that setting in your modeling scripts.
 For datasets with > ~100 000 visibilities, the DFT uses a lot of memory and has very long run times. You may still 
 wish to profile it below, but it can use a lot of memory so proceed with caution!
 """
+dataset = al.Interferometer.from_fits(
+    data_path=path.join(dataset_path, "data.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
+    real_space_mask=real_space_mask,
+    transformer_class=al.TransformerDFT,
+)
+
 print_transformer_time_from(
     dataset=dataset, transformer_class=al.TransformerDFT, repeats=1
 )
@@ -223,6 +227,14 @@ If your dataset has > 1 000 000 visibilities, you should be cautious that using 
 You should now vary the settings below to determine the optimal settings for your dataset, making sure to use the
 optimal transformer determined above.
 """
+dataset = al.Interferometer.from_fits(
+    data_path=path.join(dataset_path, "data.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
+    real_space_mask=real_space_mask,
+    transformer_class=al.TransformerNUFFT,
+)
+
 print_fit_time_from(
     dataset=dataset,
     transformer_class=al.TransformerNUFFT,

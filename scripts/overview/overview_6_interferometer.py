@@ -50,6 +50,7 @@ dataset = al.Interferometer.from_fits(
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
     real_space_mask=real_space_mask,
+    transformer_class = al.TransformerNUFFT
 )
 
 """
@@ -123,15 +124,10 @@ to perform a single transform. This approach is therefore unfeasible for high qu
 For this reason, **PyAutoLens** supports the non-uniform fast fourier transform algorithm
 **PyNUFFT** (https://github.com/jyhmiinlin/pynufft), which is significantly faster, being able to perform a Fourier
 transform of ~10 million in less than a second!
+
+This was passed input the `from_fits` method when loading the dataset above.
 """
 transformer_class = al.TransformerNUFFT
-
-"""
-To use this transformer in a fit, we use the `apply_settings` method.
-"""
-dataset = dataset.apply_settings(
-    settings=al.SettingsInterferometer(transformer_class=transformer_class)
-)
 
 """
 __Fitting__

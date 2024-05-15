@@ -115,6 +115,7 @@ dataset = al.Interferometer.from_fits(
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
     real_space_mask=real_space_mask,
+    transformer_class=al.TransformerDFT
 )
 
 """
@@ -158,17 +159,11 @@ interferometer dataset for different settings.
 I recommend you use this script to choose the optimal settings for your dataset, as the difference in run-time can be
 huge!
 """
-settings_dataset = al.SettingsInterferometer(transformer_class=al.TransformerDFT)
 settings_inversion = al.SettingsInversion(use_linear_operators=False, use_w_tilde=False)
 
 """
-We now create the `Interferometer` object which is used to fit the lens model.
-
-This includes a `SettingsInterferometer`, which includes the method used to Fourier transform the real-space 
-image of the strong lens to the uv-plane and compare directly to the visiblities. We use a non-uniform fast Fourier 
-transform, which is the most efficient method for interferometer datasets containing ~1-10 million visibilities.
+We now plot the `Interferometer` object which is used to fit the lens model.
 """
-dataset = dataset.apply_settings(settings=settings_dataset)
 dataset_plotter = aplt.InterferometerPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 dataset_plotter.subplot_dirty_images()

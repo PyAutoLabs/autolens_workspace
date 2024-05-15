@@ -69,6 +69,10 @@ import numpy as np
 __Dataset + Masking__ 
 
 Load, plot and mask the `Interferometer` data.
+
+This includes the method used to Fourier transform the real-space image of the strong lens to the uv-plane and 
+compare directly to the visiblities. We use a non-uniform fast Fourier transform, which is the most efficient method 
+for interferometer datasets containing ~1-10 million visibilities.
 """
 real_space_mask = al.Mask2D.circular(
     shape_native=(151, 151), pixel_scales=0.05, radius=3.0
@@ -82,6 +86,7 @@ dataset = al.Interferometer.from_fits(
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
     real_space_mask=real_space_mask,
+    transformer_class=al.TransformerDFT
 )
 
 """
@@ -108,17 +113,11 @@ The script `autolens_workspace/*/interferometer/run_times.py` allows you to comp
 for your interferometer dataset. It does this for all possible combinations of settings and therefore can tell you
 which settings give the fastest run times for your dataset.
 """
-settings_dataset = al.SettingsInterferometer(transformer_class=al.TransformerDFT)
 settings_inversion = al.SettingsInversion(use_linear_operators=False)
 
 """
 We now create the `Interferometer` object which is used to fit the lens model.
-
-This includes a `SettingsInterferometer`, which includes the method used to Fourier transform the real-space 
-image of the strong lens to the uv-plane and compare directly to the visiblities. We use a non-uniform fast Fourier 
-transform, which is the most efficient method for interferometer datasets containing ~1-10 million visibilities.
 """
-dataset = dataset.apply_settings(settings=settings_dataset)
 dataset_plotter = aplt.InterferometerPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 dataset_plotter.subplot_dirty_images()
