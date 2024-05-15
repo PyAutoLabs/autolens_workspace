@@ -80,9 +80,6 @@ This class is where the data and tracer's galaxies are combined to fit the data 
 tracer_to_inversion = al.TracerToInversion(
     tracer=tracer,
     dataset=dataset,
-    data=dataset.data,
-    noise_map=dataset.noise_map,
-    w_tilde=dataset.w_tilde,
 )
 
 inversion = tracer_to_inversion.inversion
@@ -116,6 +113,12 @@ The `Inversion` attributes can also be plotted as a subplot.
 """
 inversion_plotter = aplt.InversionPlotter(inversion=inversion)
 inversion_plotter.subplot_of_mapper(mapper_index=0)
+
+"""
+The mappings subplot shows the mappings between the image and source plane, by drawing circles around the brightest
+source pixels and showing how they map to the image-plane.
+"""
+inversion_plotter.subplot_mappings(pixelization_index=0)
 
 """`
 __Include__
@@ -212,9 +215,6 @@ This class is where the data and tracer's galaxies are combined to fit the data 
 tracer_to_inversion = al.TracerToInversion(
     tracer=tracer,
     dataset=dataset,
-    data=dataset.data,
-    noise_map=dataset.noise_map,
-    w_tilde=dataset.w_tilde,
 )
 
 inversion = tracer_to_inversion.inversion

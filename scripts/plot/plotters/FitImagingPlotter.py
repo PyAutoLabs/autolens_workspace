@@ -251,6 +251,12 @@ fit_plotter.figures_2d_of_planes(
 )
 
 """
+The mappings subplot shows the mappings between the image and source plane, by drawing circles around the brightest
+source pixels and showing how they map to the image-plane.
+"""
+fit_plotter.subplot_mappings_of_plane(plane_index=1)
+
+"""
 __Include__
 
 It can use the `Include2D` object to plot the `Mapper`'s specific structures like the image and source plane 

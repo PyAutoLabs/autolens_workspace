@@ -80,9 +80,9 @@ grid_list = [
 """
 __Offset__
 
-Offset the second grid from the first grid by half the pixel scale in both the y and x directions.
+Offset the second grid from the first grid by the pixel scale in both the y and x directions.
 """
-grid_list[1] -= pixel_scales_list[1] / 2.0
+grid_list[1] -= pixel_scales_list[1]
 
 """
 Simulate simple Gaussian PSFs for the images in the r and g bands.

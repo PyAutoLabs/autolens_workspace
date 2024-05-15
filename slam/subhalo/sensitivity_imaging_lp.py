@@ -489,9 +489,7 @@ def run(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
     perturb_model.mass.redshift_object = mass_result.model.galaxies.lens.redshift
-    perturb_model.mass.redshift_source = (
-        mass_result.model.galaxies.source.redshift
-    )
+    perturb_model.mass.redshift_source = mass_result.model.galaxies.source.redshift
 
     """
     __Perturb Model Prior Func__

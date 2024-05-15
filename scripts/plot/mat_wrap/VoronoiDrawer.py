@@ -77,9 +77,6 @@ This class is where the data and tracer's galaxies are combined to fit the data 
 tracer_to_inversion = al.TracerToInversion(
     tracer=tracer,
     dataset=dataset,
-    data=dataset.data,
-    noise_map=dataset.noise_map,
-    w_tilde=dataset.w_tilde,
 )
 
 inversion = tracer_to_inversion.inversion

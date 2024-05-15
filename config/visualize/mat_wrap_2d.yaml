@@ -80,6 +80,13 @@ IndexScatter:        # wrapper for `plt.scatter()`: customize indexes (e.g. data
     c: r,g,b,m,y,k
     marker: .
     s: 20
+IndexPlot:        # wrapper for `plt.plot()`: customize indexes (e.g. data / source plane or frame objects of an Inversion)
+  figure:
+    c: r,g,b,m,y,k
+    linewidth: 3
+  subplot:
+    c: r,g,b,m,y,k
+    linewidth: 3
 MaskScatter:         # wrapper for `plt.scatter()`: customize the appearance of 2D masks.
   figure:
     c: k
