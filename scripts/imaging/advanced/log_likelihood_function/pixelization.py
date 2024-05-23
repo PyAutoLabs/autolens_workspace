@@ -173,7 +173,7 @@ where `sersic_index=4`) which represent the bulge of the lens.
 bulge = al.lp.Sersic(
     centre=(0.0, 0.0),
     ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
-    intensity=4.0,
+    intensity=2.0,
     effective_radius=0.6,
     sersic_index=3.0,
 )
@@ -399,17 +399,15 @@ from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 
 border_relocator = BorderRelocator(mask=dataset.mask, sub_size=1)
 
-relocated_grid_mesh = border_relocator.relocated_grid_from(
-    grid=traced_grid_pixelization
-)
+relocated_grid = border_relocator.relocated_grid_from(grid=traced_grid_pixelization)
 
 relocated_mesh_grid = border_relocator.relocated_mesh_grid_from(
-    grid=traced_grid_pixelization, mesh_grid=traced_mesh_grid
+    grid=traced_mesh_grid, mesh_grid=traced_mesh_grid
 )
 
 mat_plot = aplt.MatPlot2D(axis=aplt.Axis(extent=[-1.5, 1.5, -1.5, 1.5]))
 
-grid_plotter = aplt.Grid2DPlotter(grid=relocated_grid_mesh, mat_plot_2d=mat_plot)
+grid_plotter = aplt.Grid2DPlotter(grid=relocated_grid, mat_plot_2d=mat_plot)
 grid_plotter.figure_2d()
 
 grid_plotter = aplt.Grid2DPlotter(grid=relocated_mesh_grid, mat_plot_2d=mat_plot)
@@ -434,7 +432,7 @@ to show how each set of image-pixels fall within a Voronoi pixel.
 """
 mapper_grids = al.MapperGrids(
     mask=mask,
-    source_plane_data_grid=masked_dataset.grid_pixelization,
+    source_plane_data_grid=relocated_grid,
     source_plane_mesh_grid=grid_voronoi,
     image_plane_mesh_grid=image_plane_mesh_grid,
 )
@@ -470,7 +468,7 @@ mapper = al.Mapper(
 """
 The `Mapper` contains:
 
- 1) `source_plane_data_grid`: the traced grid of (y,x) image-pixel coordinate centres (`relocated_grid_mesh`).
+ 1) `source_plane_data_grid`: the traced grid of (y,x) image-pixel coordinate centres (`relocated_grid`).
  2) `source_plane_mesh_grid`: The Voronoi mesh of traced (y,x) source-pixel coordinates (`grid_voronoi`).
 
 We have therefore discretized the source-plane into a Voronoi mesh, and can pair every traced image-pixel coordinate
