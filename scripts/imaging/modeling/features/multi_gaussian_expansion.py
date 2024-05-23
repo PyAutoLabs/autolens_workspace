@@ -10,6 +10,25 @@ This script fits a lens light model which uses an MGE consisting of 60 Gaussians
 where the lens galaxy's light has asymmetric and irregular features, which fitted poorly by symmetric light
 profiles like the `Sersic`.
 
+__Contents__
+
+**Advantages & Disadvantages:** Benefits and drawbacks of using an MGE.
+**Positive Only Solver:** How a positive solution to the light profile intensities is ensured.
+**MGE Source Galaxy:** Discussion of using the MGE for the source galaxy, which is illustrated fully at the end of the example.
+**Dataset & Mask:** Standard set up of imaging dataset that is fitted.
+**Basis:** How to create a basis of multiple light profiles, in this example Gaussians.
+**Gaussians:** A visualization of the Gaussians in the Basis that make up the MGE.
+**Linear Light Profiles:** How to create a basis of linear light profiles to perform the MGE.
+**Fit:** Perform a fit to a dataset using linear light profile MGE.
+**Intensities:** Access the solved for intensities of linear light profiles from the fit.
+**Model:** Composing a model using an MGE and how it changes the number of free parameters.
+**Search & Analysis:** Standard set up of non-linear search and analysis.
+**Run Time:** Profiling of MGE run times and discussion of how they compare to standard light profiles.
+**Model-Fit:** Performs the model fit using standard API.
+**Result:** MGE results, including accessing light profiles with solved for intensity values.
+**MGE Source:** Detailed illustration of using MGE source.
+**Regularization:** API for applying regularization to MGE, which is not recommend but included for illustration.
+
 __Advantages__
 
 Symmetric light profiles (e.g. elliptical Sersics) may leave significant residuals, because they fail to capture 
@@ -34,6 +53,18 @@ To fit an MGE model to the data, the light of the ~15-75 or more Gaussian in the
 to the data. This is slower than evaluating the light of ~2-3 Sersic profiles, producing slower computational run
 times (although the simpler non-linear parameter space will speed up the fit overall).
 
+__Positive Only Solver__
+
+Many codes which use linear algebra typically rely on a linear algabra solver which allows for positive and negative
+values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
+
+This is problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
+light, which is clearly unphysical. For an MGE, this produces a positive-negative "ringing", where the
+Gaussians alternate between large positive and negative values. This is clearly undesirable and unphysical.
+
+**PyAutoLens** uses a positive only linear algebra solver which has been extensively optimized to ensure it is as fast
+as positive-negative solvers. This ensures that all light profile intensities are positive and therefore physical.
+
 __MGE Source Galaxy__
 
 The MGE was designed to model the light of lens galaxies, because they are typically elliptical galaxies whose
@@ -56,18 +87,6 @@ MGE lens light models and source models, instead of the elliptical Sersic profil
 To capture the irregular and asymmetric features of the source's morphology, or reconstruct multiple source galaxies,
 we recommend using a pixelized source reconstruction (see `autolens_workspace/imaging/modeling/features/pixelization.py`).
 Combining this with an MGE for the len's light can be a very powerful way to model strong lenses!
-
-__Positive Only Solver__
-
-Many codes which use linear algebra typically rely on a linear algabra solver which allows for positive and negative
-values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
-
-This is problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
-light, which is clearly unphysical. For an MGE, this produces a positive-negative "ringing", where the
-Gaussians alternate between large positive and negative values. This is clearly undesirable and unphysical.
-
-**PyAutoLens** uses a positive only linear algebra solver which has been extensively optimized to ensure it is as fast
-as positive-negative solvers. This ensures that all light profile intensities are positive and therefore physical.
 
 __Model__
 
@@ -183,7 +202,7 @@ basis_plotter.subplot_image()
 """
 __Linear Light Profiles__
 
-We now show how to compose a basis of multiple Gaussians and use them to fit the lens galaxy's light in data.
+We now show Composing a basis of multiple Gaussians and use them to fit the lens galaxy's light in data.
 
 This does not perform a model-fit via a non-linear search, and therefore requires us to manually specify and guess
 suitable parameter values for the shapelets (e.g. the `centre`, `ell_comps`). However, Gaussians are
@@ -235,7 +254,6 @@ and `FitImaging`
 
 Once we have a `Basis`, we can treat it like any other light profile in order to create a `Galaxy` and `Tracer` and 
 use it to fit data.
-
 """
 lens = al.Galaxy(
     redshift=0.5,
@@ -269,10 +287,42 @@ basis_plotter = aplt.BasisPlotter(basis=tracer.galaxies[0].bulge, grid=grid)
 basis_plotter.subplot_image()
 
 """
-Nevertheless, there are still residuals, which we now rectify by fitting the MGE in a non-linear search, simultaneously
-fitting the lens's mass and source galaxies.
+__Intensities__
 
+The fit contains the solved for intensity values.
+
+These are computed using a fit's `linear_light_profile_intensity_dict`, which maps each linear light profile 
+in the model parameterization above to its `intensity`.
+
+The code below shows how to use this dictionary, as an alternative to using the max_log_likelihood quantities above.
+"""
+lens_bulge = fit.tracer.galaxies[0].bulge
+
+print(
+    f"\n Intensity of lens galaxy's first Gaussian in bulge = {fit.linear_light_profile_intensity_dict[lens_bulge.light_profile_list[0]]}"
+)
+
+"""
+A `Tracer` where all linear light profile objects are replaced with ordinary light profiles using the solved 
+for `intensity` values is also accessible from a fit.
+
+For example, the first linear light profile of the MGE `bulge` component above printed it solved for intensity value,
+but it was still represented as a linear light profile. 
+
+The `tracer` created below instead has a standard light profile with an `intensity` actually set.
+
+The benefit of using a tracer with standard light profiles is it can be visualized, as performed above (linear 
+light profiles cannot by default because they do not have `intensity` values).
+"""
+tracer = fit.model_obj_linear_light_profiles_to_light_profiles
+
+print(tracer.galaxies[0].bulge.light_profile_list[0].intensity)
+
+"""
 __Model__
+
+The MGE above produced residuals, which we now rectify by fitting the MGE in a non-linear search, simultaneously
+fitting the lens's mass and source galaxies.
 
 We compose a lens model where:
 

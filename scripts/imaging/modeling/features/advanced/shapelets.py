@@ -3,8 +3,8 @@ Modeling Features: Shapelets
 ============================
 
 A shapelet is a basis function that is appropriate for capturing the exponential / disk-like features of a galaxy. It
-has been employed in many strong lensing studies too model the light of the lensed source galaxy, as it can represent
-features of disky star forming galaxies that a single Sersic function cannot.
+has been employed in many strong lensing studies to model the light of the lensed source galaxy, because it can
+represent features of disky star forming galaxies that a single Sersic function cannot.
 
 - https://ui.adsabs.harvard.edu/abs/2016MNRAS.457.3066T
 - https://iopscience.iop.org/article/10.1088/0004-637X/813/2/102 t
@@ -13,39 +13,52 @@ Shapelets are described in full in the following paper:
 
  https://arxiv.org/abs/astro-ph/0105178
 
-This script performs a model-fit using shapelet, where it decomposes the source light into ~200
-Shapelets. The `intensity` of every Shapelet is solved for via an inversion (see the `light_parametric_linear.py`
+This script performs a model-fit using shapelet, where it decomposes the galaxy light into ~20
+Shapelets. The `intensity` of every Shapelet is solved for via linear algebra (see the `light_parametric_linear.py`
 feature).
+
+__Contents__
+
+**Advantages & Disadvantages:** Benefits and drawbacks of using shapelets.
+**Dataset & Mask:** Standard set up of imaging dataset that is fitted.
+**Basis:** How to create a basis of multiple light profiles, in this example shapelets.
+**Coefficients:** A visualization of the real and imaginary shapelet coefficients in the Basis.
+**Linear Light Profiles:** How to create a basis of linear light profiles to perform the shapelet decomposition.
+**Fit:** Perform a fit to a dataset using linear light profile MGE.
+**Intensities:** Access the solved for intensities of linear light profiles from the fit.
+**Model:** Composing a model using shapelets and how it changes the number of free parameters.
+**Search & Analysis:** Standard set up of non-linear search and analysis.
+**Run Time:** Profiling of shapelet run times and discussion of how they compare to standard light profiles.
+**Model-Fit:** Performs the model fit using standard API.
+**Result:** Shaeplet results, including accessing light profiles with solved for intensity values.
+**Cartesian Shapelets:** Using shapelets definedon a Cartesian coordinate system instead of polar coordinates.
+**Lens Shapelets:** Using shapelets to decompose the lens galaxy instead of the source galaxy.
+**Regularization:** API for applying regularization to shapelets, which is not recommend but included for illustration.
 
 __Advantages__
 
 Symmetric light profiles (e.g. elliptical Sersics) may leave significant residuals, because they fail to capture
 irregular and asymmetric morphological of galaxies (e.g. isophotal twists, an ellipticity which varies radially).
-Shapelets can capture these features and can therefore much better represent the emission of complex source galaxies.
+Shapelets can capture some of these features and can therefore better represent the emission of complex source galaxies.
 
 The shapelet model can be composed in a way that has fewer non-linear parameters than an elliptical Sersic. In this
-example, the ~200 shapelets which represent the `bulge` of the source are composed in a model corresponding to just
+example, the ~20 shapelets which represent the `bulge` of the source are composed in a model corresponding to just
 N=3 non-linear parameters (a `bulge` comprising a linear Sersic would give N=6).
 
-Therefore, not only does a shapelet fit more complex source galaxy morphologies, it does so using fewer non-linear
-parameters than the standard light profile models!
+Therefore, shapelet fit more complex source galaxy morphologies using fewer non-linear parameters than the standard
+light profile models!
 
 __Disadvantages__
 
-- Computationally slow.
-- Assume single centre
+- There are many types of galaxy structure which shapelets may struggle to represent, such as a bar or assymetric
+knots of star formation. They also rely on the galaxy have a distinct central over which the shapelets can be
+centered, which is not the case of the galaxy is multiple merging systems or has bright companion galaxies.
 
-__Positive Only Solver__
+- The linear algebra used to solve for the `intensity` of each shapelet has to allow for negative values of intensity
+in order for shapelets to work. Negative surface brightnesses are unphysical, and are often inferred in a shapelet
+decomposition, for example if the true galaxy has structure that cannot be captured by the shapelet basis.
 
-Many codes which use linear algebra typically rely on a linear algabra solver which allows for positive and negative
-values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
-
-This is problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
-light, which is clearly unphysical. For shapelets, this produces a positive-negative "ringing", where the
-Gaussians alternate between large positive and negative values. This is clearly undesirable and unphysical.
-
-**PyAutoLens** uses a positive only linear algebra solver which has been extensively optimized to ensure it is as fast
-as positive-negative solvers. This ensures that all light profile intensities are positive and therefore physical.
+- Computationally slower than standard light profiles like the Sersic.
 
 __Model__
 
@@ -97,8 +110,11 @@ __Mask__
 
 Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
 """
-mask = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+mask = al.Mask2D.circular_annular(
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    inner_radius=0.4,
+    outer_radius=3.0,
 )
 
 dataset = dataset.apply_mask(mask=mask)
@@ -175,7 +191,7 @@ basis_plotter.subplot_image()
 """
 __Linear Light Profiles__
 
-We now show how to compose a basis of multiple shapelets and use them to fit the source galaxy's light in data.
+We now show Composing a basis of multiple shapelets and use them to fit the source galaxy's light in data.
 
 This does not perform a model-fit via a non-linear search, and therefore requires us to manually specify and guess
 suitable parameter values for the shapelets (e.g. the `centre`, `ell_comps`, `beta`). However, shapelets are
@@ -287,10 +303,42 @@ basis_plotter = aplt.BasisPlotter(basis=tracer.galaxies[1].bulge, grid=grid)
 basis_plotter.subplot_image()
 
 """
-Nevertheless, there are still residuals, which we now rectify by fitting the shapelets in a non-linear search, 
-simultaneously fitting the lens's mass and source galaxies.
+__Intensities__
 
+The fit contains the solved for intensity values.
+
+These are computed using a fit's `linear_light_profile_intensity_dict`, which maps each linear light profile 
+in the model parameterization above to its `intensity`.
+
+The code below shows how to use this dictionary, as an alternative to using the max_log_likelihood quantities above.
+"""
+source_bulge = fit.tracer.galaxies[1].bulge
+
+print(
+    f"\n Intensity of source galaxy's first shapelet in bulge = {fit.linear_light_profile_intensity_dict[source_bulge.light_profile_list[0]]}"
+)
+
+"""
+A `Tracer` where all linear light profile objects are replaced with ordinary light profiles using the solved 
+for `intensity` values is also accessible from a fit.
+
+For example, the first linear light profile of the shapelet `bulge` component above printed it solved for intensity 
+value, but it was still represented as a linear light profile. 
+
+The `tracer` created below instead has a standard light profile with an `intensity` actually set.
+
+The benefit of using a tracer with standard light profiles is it can be visualized, as performed above (linear 
+light profiles cannot by default because they do not have `intensity` values).
+"""
+tracer = fit.model_obj_linear_light_profiles_to_light_profiles
+
+print(tracer.galaxies[1].bulge.light_profile_list[0].intensity)
+
+"""
 __Model__
+
+The shapelet decomposition above produced residuals, which we now rectify by fitting the shapelets in a non-linear 
+search, simultaneously fitting the lens's mass and source galaxies.
 
 We compose our model using `Model` objects, which represent the galaxies we fit to our data. In this 
 example we fit a model where:
@@ -381,7 +429,6 @@ search = af.Nautilus(
     name="shapelets",
     unique_tag=dataset_name,
     n_live=150,
-    #    force_x1_cpu=True,
     number_of_cores=4,
 )
 
@@ -499,7 +546,7 @@ basis_plotter = aplt.BasisPlotter(basis=bulge, grid=grid)
 basis_plotter.subplot_image()
 
 """
-__Linear Shapelets__
+__Cartesian Shapelets__
 """
 total_xy = 5
 

@@ -7,6 +7,40 @@ has already been subtracted from the image.
 
 This example illustrates how to fit a lens model to data where the lens galaxy's light is not present.
 
+__Contents__
+
+**Advantages & Disadvantages:** Benefits and drawbacks of fitting data without lens light.
+**Dataset & Mask:** Standard set up of imaging dataset that is fitted.
+**Fit:** Perform a fit to a dataset without lens light.
+**Model:** Composing a model without lens light and how it changes the number of free parameters.
+**Search & Analysis:** Standard set up of non-linear search and analysis.
+**Run Time:** Profiling of run times without lens light.
+**Model-Fit:** Performs the model fit using standard API.
+**Result:** Accessing results of model fit without lens light.
+
+__Advantages__
+
+The main advantage of fitting data without lens light is the reduction in the number of free parameters in the
+model-fit. In the `start_here.py` example, the lens galaxy's light profile was composed of a `bulge` and `disk` which
+were both Sersic profiles, which contributed an extra N=12 free parameters. Without the lens light we therefore
+reduce the dimensionality of non-linear parameter space by 12, which makes the model-fit much faster and more efficient.
+
+__Disadvantages__
+
+If the lens light was simply not present in the observed data (e.g. it was too faint at the wavelength of the
+observation) then there is no option but to fit the data without lens light, and therefore there is also no disadvantage.
+
+If you are fitting data where the lens light was subtracted before lens modeling (e.g. using a Sersic
+subtraction or GUI / b-splines based fitting), there are disadvantages.
+
+The lens light subtraction process may not be clean. The lens and source light are blended with one another in the
+data (e.g. due to PSF convlution). The process may over subtract source light in certain regions of the data and
+fail to subtract lens light in other regions. This will distort the lensed source emission input into the lens
+modeling and therefore potentially bias the inferred mass model.
+
+Performing lens and source modeling simultanoeusly means that the model-fit can find the optimal deblending of the two
+components whilst fully propagating the errors on the inferred model parameters forward.
+
 __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
@@ -61,6 +95,45 @@ dataset = dataset.apply_mask(mask=mask)
 
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
+
+"""
+__Fit__
+
+This is to illustrate the API for performing a fit without lens light using standard autolens objects like 
+the `Galaxy`, `Tracer` and `FitImaging`.
+
+We simply do not input a `bulge` with a light profile into the `lens`.
+"""
+lens = al.Galaxy(
+    redshift=0.5,
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.6,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+    ),
+    shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
+)
+
+source = al.Galaxy(
+    redshift=1.0,
+    bulge=al.lp.Sersic(
+        centre=(0.0, 0.0),
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
+        intensity=4.0,
+        effective_radius=0.1,
+        sersic_index=1.0,
+    ),
+)
+
+tracer = al.Tracer(galaxies=[lens, source])
+
+fit = al.FitImaging(dataset=dataset, tracer=tracer)
+
+"""
+By plotting the fit, we see that the lens light is not included in the model fit.
+"""
+fit_plotter = aplt.FitImagingPlotter(fit=fit)
+fit_plotter.subplot_fit()
 
 """
 __Model__

@@ -85,7 +85,8 @@ For simplicity, we disable over sampling in this guide by setting `sub_size=1`.
 a full description of over sampling and how to use it is given in `autogalaxy_workspace/*/guides/over_sampling.py`.
 """
 masked_dataset = masked_dataset.apply_over_sampling(
-    over_sampling=al.OverSamplingUniform(sub_size=1)
+    over_sampling=al.OverSamplingUniform(sub_size=1),
+    over_sampling_pixelization=al.OverSamplingUniform(sub_size=1),
 )
 
 """
@@ -337,7 +338,7 @@ mask and retaining all pixels that fall within the mask. This uses a `Grid2DSpar
 
 """
 image_plane_mesh_grid = pixelization.image_mesh.image_plane_mesh_grid_from(
-    grid=masked_dataset.grid,
+    mask=masked_dataset.mask,
 )
 
 """
@@ -394,12 +395,16 @@ the source-plane.
 We relocate these pixels (for both grids above) to the edge of the source-plane border (defined via the border of the 
 image-plane mask). This is detailed in **HowToLens chapter 4 tutorial 5** and figure 2 of https://arxiv.org/abs/1708.07377.
 """
-relocated_grid_mesh = traced_grid_pixelization.relocated_grid_from(
+from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+
+border_relocator = BorderRelocator(mask=dataset.mask, sub_size=1)
+
+relocated_grid_mesh = border_relocator.relocated_grid_from(
     grid=traced_grid_pixelization
 )
 
-relocated_mesh_grid = traced_grid_pixelization.relocated_mesh_grid_from(
-    mesh_grid=traced_mesh_grid
+relocated_mesh_grid = border_relocator.relocated_mesh_grid_from(
+    grid=traced_grid_pixelization, mesh_grid=traced_mesh_grid
 )
 
 mat_plot = aplt.MatPlot2D(axis=aplt.Axis(extent=[-1.5, 1.5, -1.5, 1.5]))
@@ -526,6 +531,7 @@ It has dimensions `(total_image_pixels, total_source_pixels)`.
 (A number of inputs are not used for the `Voronoi` pixelization and are expanded upon in the `features.ipynb`
 log likelihood guide notebook).
 """
+
 mapping_matrix = al.util.mapper.mapping_matrix_from(
     pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
     pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,  # unused for Voronoi

@@ -15,6 +15,24 @@ straightforward to include the lens galaxy's light in the model.
 
 Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
 
+__Contents__
+
+**Advantages & Disadvantages:** Benefits and drawbacks of using an MGE.
+**Positive Only Solver:** How a positive solution to the light profile intensities is ensured.
+**Chaining:** How the advanced modeling feature, non-linear search chaining, can significantly improve lens modeling with pixelizaitons.
+**Dataset & Mask:** Standard set up of imaging dataset that is fitted.
+**Pixelization:** How to create a pixelization, including a description of its inputs.
+**Fit:** Perform a fit to a dataset using a pixelization, and visualize its results.
+**Model:** Composing a model using a pixelization and how it changes the number of free parameters.
+**Search & Analysis:** Standard set up of non-linear search and analysis.
+**Positions Likelihood:** Removing unphysical pixelized source solutions using a likelihood penalty using the lensed multiple images.
+**Run Time:** Profiling of pixelization run times and discussion of how they compare to standard light profiles.
+**Model-Fit:** Performs the model fit using standard API.
+**Result:** Pixelization results and visualizaiton.
+**Interpolated Source:** Interpolate the source reconstruction from an irregular Delaunay mesh to a uniform square grid and output to a .fits file.
+**Voronoi:** Using a Voronoi mesh pixelizaiton (instead of Delaunay), which provides better results but requires installing an external library.
+**Result (Advanced):** API for various pixelization outputs (magnifications, mappings) which requires some polishing.
+
 __Advantages__
 
 Many strongly lensed source galaxies are complex, and have asymmetric and irregular morphologies. These morphologies
@@ -133,14 +151,78 @@ dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
 """
-__Positions__
+__Pixelization__
 
-This fit also uses the arc-second positions of the multiply imaged lensed source galaxy, which were drawn onto the
-image via the GUI described in the file `autolens_workspace/*/imaging/data_preparation/gui/positions.py`.
+We create a `Pixelization` object to perform the pixelized source reconstruction, which is made up of three
+components:
+
+- `image_mesh:`The coordinates of the mesh used for the pixelization need to be defined. The way this is performed
+depends on pixelization used. In this example, we define the source pixel centers by overlaying a uniform regular grid
+in the image-plane and ray-tracing these coordinates to the source-plane. Where they land then make up the coordinates
+used by the mesh.
+
+- `mesh:` Different types of mesh can be used to perform the source reconstruction, where the mesh changes the
+details of how the source is reconstructed (e.g. interpolation weights). In this exmaple, we use a `Delaunay` mesh,
+where the centres computed via the `image_mesh` are the vertexes of every `Delaunay` triangle.
+
+- `regularization:` A pixelization uses many pixels to reconstructed the source, which will often lead to over fitting
+of the noise in the data and an unrealistically complex and strucutred source. Regularization smooths the source
+reconstruction solution by penalizing solutions where neighboring pixels (Delaunay triangles in this example) have
+large flux differences.
 """
-positions = al.Grid2DIrregular(
-    al.from_json(file_path=path.join(dataset_path, "positions.json"))
+image_mesh = al.image_mesh.Overlay(shape=(30, 30))
+mesh = al.mesh.Delaunay()
+regularization = al.reg.ConstantSplit(coefficient=1.0)
+
+pixelization = al.Pixelization(
+    image_mesh=image_mesh, mesh=mesh, regularization=regularization
 )
+
+"""
+__Fit__
+
+This is to illustrate the API for performing a fit via a pixelization using standard autolens objects like 
+the `Galaxy`, `Tracer` and `FitImaging` 
+
+We simply create a `Pixelization` and pass it to the source galaxy, which then gets input into the tracer.
+"""
+lens = al.Galaxy(
+    redshift=0.5,
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.6,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+    ),
+    shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
+)
+
+source = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+tracer = al.Tracer(galaxies=[lens, source])
+
+fit = al.FitImaging(dataset=dataset, tracer=tracer)
+
+"""
+By plotting the fit, we see that the pixelized source does a good job at capturing the appearance of the source galaxy
+and fitting the data to roughly the noise level.
+"""
+fit_plotter = aplt.FitImagingPlotter(fit=fit)
+fit_plotter.subplot_fit()
+
+"""
+Pixelizations have bespoke visualizations which show more details about the source-reconstruction, image-mesh
+and other quantities.
+
+These plots use an `InversionPlotter`, which gets its name from the internals of how pixelizations are performed in
+the source code, where the linear algebra process which computes the source pixel fluxes is called an inversion.
+
+The `subplot_mappings` overlays colored circles in the image and source planes that map to one another, thereby
+allow one to assess how the mass model ray-traces image-pixels and therefore to assess how the source reconstruction
+maps to the image.
+"""
+inversion_plotter = fit_plotter.inversion_plotter_of_plane(plane_index=1)
+inversion_plotter.subplot_of_mapper(mapper_index=0)
+inversion_plotter.subplot_mappings(pixelization_index=0)
 
 """
 __Model__
@@ -257,7 +339,13 @@ one another. The high threshold ensures only the initial mass models at the star
 
 Position thresholding is described in more detail in the 
 script `autolens_workspace/*/imaging/modeling/customize/positions.py`
+
+The arc-second positions of the multiply imaged lensed source galaxy were drawn onto the
+image via the GUI described in the file `autolens_workspace/*/imaging/data_preparation/gui/positions.py`.
 """
+positions = al.Grid2DIrregular(
+    al.from_json(file_path=path.join(dataset_path, "positions.json"))
+)
 positions_likelihood = al.PositionsLHPenalty(positions=positions, threshold=0.3)
 
 """
@@ -335,6 +423,59 @@ fit_plotter.subplot_fit()
 
 plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
+
+"""
+__Interpolated Source__
+
+The pixelized source reconstruction used by an `Inversion` is often on an irregular grid (e.g. a Delaunay triangulation
+or Voronoi mesh), making it difficult to manipulate and inspect after the lens modeling has completed (although we show 
+how to do this below).
+
+A simpler way to inspect the source reconstruction is to interpolate the reconstruction values from the irregular
+pixelization (e.g. a Delaunay triangulation or Voronoi mesh) to a uniform 2D grid of pixels.
+
+(if you do not know what the `slim` and `native` properties below refer too, it 
+is described in the `results/examples/data_structures.py` example.)
+
+Inversions can have multiple source reconstructions (e.g. double Einstein ring strong lenses) thus the majority of
+quantities are returned as a list. It is likely you are only using one `Inversion` to reconstruction one source galaxy,
+so these lists will likely contain only one entry
+
+We interpolate the Delaunay triangulation this source is reconstructed on to a 2D grid of 401 x 401 square pixels. 
+"""
+inversion = result.max_log_likelihood_fit.inversion
+
+interpolated_reconstruction_list = inversion.interpolated_reconstruction_list_from(
+    shape_native=(401, 401)
+)
+
+"""
+If you are unclear on what `slim` means, refer to the section `Data Structure` at the top of this example.
+"""
+print(interpolated_reconstruction_list[0].slim)
+
+"""
+We can alternatively input the arc-second `extent` of the source reconstruction we want, which will not use square 
+pixels unless symmetric y and x arc-second extents are input.
+
+The extent is input via the notation (xmin, xmax, ymin, ymax), therefore unlike most of the **PyAutoLens** API it
+does not follow the (y,x) convention. This will be updated in a future version.
+"""
+interpolated_reconstruction_list = inversion.interpolated_reconstruction_list_from(
+    shape_native=(401, 401), extent=(-1.0, 1.0, -1.0, 1.0)
+)
+
+print(interpolated_reconstruction_list[0].slim)
+
+"""
+The interpolated errors on the source reconstruction can also be computed, in case you are planning to perform 
+model-fitting of the source reconstruction.
+"""
+interpolated_errors_list = inversion.interpolated_errors_list_from(
+    shape_native=(401, 401), extent=(-1.0, 1.0, -1.0, 1.0)
+)
+
+print(interpolated_errors_list[0].slim)
 
 """
 __Voronoi__
@@ -446,56 +587,6 @@ print(mapper.mapper_grids.image_plane_mesh_grid)
 # Centre of each pixelization pixel in the source-plane.
 print(mapper.mapper_grids.source_plane_mesh_grid)
 
-"""
-__Interpolated Source__
-
-The pixelized source reconstruction used by an `Inversion` is often on an irregular grid (e.g. a Delaunay triangulation
-or Voronoi mesh), making it difficult to manipulate and inspect after the lens modeling has completed (although we show 
-how to do this below).
-
-A simpler way to inspect the source reconstruction is to interpolate the reconstruction values from the irregular
-pixelization (e.g. a Delaunay triangulation or Voronoi mesh) to a uniform 2D grid of pixels.
-
-(if you do not know what the `slim` and `native` properties below refer too, it 
-is described in the `results/examples/data_structures.py` example.)
-
-Inversions can have multiple source reconstructions (e.g. double Einstein ring strong lenses) thus the majority of
-quantities are returned as a list. It is likely you are only using one `Inversion` to reconstruction one source galaxy,
-so these lists will likely contain only one entry
-
-We interpolate the Delaunay triangulation this source is reconstructed on to a 2D grid of 401 x 401 square pixels. 
-"""
-interpolated_reconstruction_list = inversion.interpolated_reconstruction_list_from(
-    shape_native=(401, 401)
-)
-
-"""
-If you are unclear on what `slim` means, refer to the section `Data Structure` at the top of this example.
-"""
-print(interpolated_reconstruction_list[0].slim)
-
-"""
-We can alternatively input the arc-second `extent` of the source reconstruction we want, which will not use square 
-pixels unless symmetric y and x arc-second extents are input.
-
-The extent is input via the notation (xmin, xmax, ymin, ymax), therefore unlike most of the **PyAutoLens** API it
-does not follow the (y,x) convention. This will be updated in a future version.
-"""
-interpolated_reconstruction_list = inversion.interpolated_reconstruction_list_from(
-    shape_native=(401, 401), extent=(-1.0, 1.0, -1.0, 1.0)
-)
-
-print(interpolated_reconstruction_list[0].slim)
-
-"""
-The interpolated errors on the source reconstruction can also be computed, in case you are planning to perform 
-model-fitting of the source reconstruction.
-"""
-interpolated_errors_list = inversion.interpolated_errors_list_from(
-    shape_native=(401, 401), extent=(-1.0, 1.0, -1.0, 1.0)
-)
-
-print(interpolated_errors_list[0].slim)
 
 """
 __Reconstruction__
@@ -569,9 +660,7 @@ mapper_plotter.plot_source_from(pixel_values=magnification_2d)
 
 """
 We can interpolate these arrays to output them to fits.
-"""
 
-"""
 Although the model-fit used a Voronoi mesh, there is no reason we need to use this pixelization to map the image-plane
 data onto a source-plane array.
 
