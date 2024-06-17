@@ -6,7 +6,7 @@ This script fits an `Interferometer` and `Imaging` dataset of a 'galaxy-scale' s
 
  - The lens galaxy's light is an `Sersic` (but is invisible in the interferometer data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `Sersic`.
+ - The source galaxy's light is a parametric `SersicCore`.
 
 __Benefits__
 
@@ -115,7 +115,7 @@ lens = af.Model(
     mass=al.mp.Isothermal,
     shear=al.mp.ExternalShear,
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

@@ -10,7 +10,7 @@ Mass or the effective radii of the galaxies in the lens model.
 
 __Plot Module__
 
-This example uses the **PyAutoLens** plot module to plot the results, including `Plotter` objects that make
+This example uses the plot module to plot the results, including `Plotter` objects that make
 the figures and `MatPlot` objects that wrap matplotlib to customize the figures.
 
 The visualization API is straightforward but is explained in the `autolens_workspace/*/plot` package in full.
@@ -52,7 +52,7 @@ lens = al.Galaxy(
 
 source = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.Sersic(
+    bulge=al.lp.SersicCore(
         centre=(0.0, 0.0),
         ell_comps=(0.1, 0.0),
         intensity=1.0,

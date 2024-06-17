@@ -240,8 +240,8 @@ MassProfileCentresScatter:
 MultipleImagesScatter:
   figure:
     c: k,r,g,b,m,y
-    marker: o
-    s: 16
+    marker: '*'
+    s: 100
   subplot:
     c: r,g,b,m,y,k
     marker: o

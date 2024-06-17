@@ -110,7 +110,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
 
-bulge = af.Model(al.lp_linear.Sersic)
+bulge = af.Model(al.lp_linear.SersicCore)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 

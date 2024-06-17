@@ -19,7 +19,7 @@ import autolens.plot as aplt
 
 """
 The multiple images are defined as the unique set of multiple images that are traced from the centre of
-every source galaxy in a `Tracer`. These are computed using the `PositionSolver` object.
+every source galaxy in a `Tracer`. These are computed using the `MultipleImageSolver` object.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -28,10 +28,10 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge_0=al.lp.SersicSph(
+    bulge_0=al.lp.SersiclCoreSph(
         centre=(0.1, 0.1), intensity=0.3, effective_radius=1.0, sersic_index=2.5
     ),
-    bulge_1=al.lp.SersicSph(
+    bulge_1=al.lp.SersiclCoreSph(
         centre=(0.4, 0.3), intensity=0.3, effective_radius=1.0, sersic_index=2.5
     ),
 )
@@ -92,7 +92,7 @@ tracer_plotter.figures_2d(image=True)
 # To plot the light profile centres manually, we can pass them into a` Visuals2D` object. This is useful for plotting
 # the centres on figures where they are not an internal property, like an `Array2D`.
 # """
-# position_solver = al.PointSolver(grid=grid)
+# position_solver = al.MultipleImageSolver(grid=grid)
 # multiple_images = position_solver.solve(lensing_obj=tracer, source_plane_coordinate=(0.1, 0.1))
 #
 # visuals = aplt.Visuals2D(multiple_images=multiple_images)

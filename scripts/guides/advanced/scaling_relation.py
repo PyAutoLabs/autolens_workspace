@@ -290,7 +290,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.Sersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 """
 When creating the overall model, we include the clumps as a separate collection of galaxies, which we call `clumps`.

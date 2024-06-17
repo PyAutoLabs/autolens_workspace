@@ -40,7 +40,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
  - The lens galaxy's light is a parametric `Sersic`.
  - The lens galaxy's stellar mass distribution is tied to the light model above.
  - The lens galaxy's dark matter mass distribution is a `NFW`.
- - The source galaxy's light is a parametric `Sersic`.
+ - The source galaxy's light is a parametric `SersicCore`.
 
 __Start Here Notebook__
 
@@ -98,7 +98,7 @@ We compose a lens model where:
  
  - The lens mass model also includes an `ExternalShear` [2 parameters].
  
- - The source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The source galaxy's light is a parametric `SersicCore` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=22.
 
@@ -124,9 +124,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, dark=dark, shear=shear)
 
 # Source:
 
-bulge = af.Model(al.lp.Sersic)
-
-source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 # Overall Model:
 

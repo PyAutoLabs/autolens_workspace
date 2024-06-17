@@ -146,7 +146,7 @@ lens = al.Galaxy(
 
 source = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp_linear.Sersic(
+    bulge=al.lp_linear.SersicCore(
         centre=(0.0, 0.0),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
         effective_radius=0.1,
@@ -187,7 +187,7 @@ print(
 )
 
 print(
-    f"\n Intensity of source bulge (lp_linear.Sersic) = {fit.linear_light_profile_intensity_dict[source_bulge]}"
+    f"\n Intensity of source bulge (lp_linear.SersicCore) = {fit.linear_light_profile_intensity_dict[source_bulge]}"
 )
 
 """
@@ -239,7 +239,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 # Source:
 
-bulge = af.Model(al.lp_linear.Sersic)
+bulge = af.Model(al.lp_linear.SersicCore)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 

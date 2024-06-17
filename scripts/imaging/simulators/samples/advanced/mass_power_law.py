@@ -115,7 +115,7 @@ shear.gamma_2 = af.GaussianPrior(mean=0.0, sigma=0.05)
 
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
-bulge = af.Model(al.lp_snr.Sersic)
+bulge = af.Model(al.lp_snr.SersicCore)
 
 bulge.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
 bulge.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)

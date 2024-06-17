@@ -119,7 +119,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source:
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp.SersicCore)
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 """
@@ -175,7 +175,7 @@ Therefore, in this example fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
 
- - The source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The source galaxy's light is a parametric `SersicCore` [7 parameters].
 
  - Each clump's light is a parametric `SersicSph` profile with fixed centre [2 clumps x 3 parameters = 6 parameters].
 

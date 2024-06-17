@@ -85,28 +85,28 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    light_0=al.lp.Sersic(
+    light_0=al.lp.SersicCore(
         centre=(0.1, 0.1),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
         intensity=0.1,
         effective_radius=1.0,
         sersic_index=2.5,
     ),
-    light_1=al.lp.Sersic(
+    light_1=al.lp.SersicCore(
         centre=(0.8, 0.6),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.5, angle=30.0),
         intensity=0.2,
         effective_radius=0.3,
         sersic_index=3.0,
     ),
-    light_2=al.lp.Sersic(
+    light_2=al.lp.SersicCore(
         centre=(-0.3, 0.6),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.3, angle=120.0),
         intensity=0.6,
         effective_radius=0.5,
         sersic_index=1.5,
     ),
-    light_3=al.lp.Sersic(
+    light_3=al.lp.SersicCore(
         centre=(-0.3, -0.3),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=85.0),
         intensity=0.4,

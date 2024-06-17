@@ -86,7 +86,7 @@ We compose a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The source galaxy's light is a parametric `SersicCore` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
  
@@ -138,7 +138,7 @@ lens = af.Model(
 
 # Source:
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp.SersicCore)
 
 bulge.centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 bulge.centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
@@ -153,7 +153,7 @@ bulge.effective_radius = af.UniformPrior(lower_limit=0.05, upper_limit=0.15)
 bulge.sersic_index = af.GaussianPrior(mean=1.0, sigma=0.5)
 
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
@@ -198,7 +198,7 @@ lens.shear.gamma_2 = af.GaussianPrior(
 )
 
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 source.bulge.centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 source.bulge.centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
@@ -233,9 +233,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
 
-bulge = af.Model(al.lp.Sersic)
-
-source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 # Overall Lens Model:
 

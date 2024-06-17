@@ -80,7 +80,7 @@ Over sampling evaluates a light profile using multiple samples of its intensity 
 
 For simplicity, we disable over sampling in this guide by setting `sub_size=1`. 
 
-a full description of over sampling and how to use it is given in `autogalaxy_workspace/*/guides/over_sampling.py`.
+a full description of over sampling and how to use it is given in `autolens_workspace/*/guides/over_sampling.py`.
 """
 masked_dataset = masked_dataset.apply_over_sampling(
     over_sampling=al.OverSamplingUniform(sub_size=1)
@@ -265,7 +265,7 @@ The source galaxy is fitted using another analytic light profile, in this exampl
 """
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.Sersic(
+    bulge=al.lp.SersicCore(
         centre=(0.0, 0.0),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
         intensity=4.0,

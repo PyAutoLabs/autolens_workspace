@@ -43,9 +43,7 @@ lens = af.Model(
 
 # Source:
 
-bulge = af.Model(al.lp.Sersic)
-
-source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 # Overall Lens Model:
 
@@ -89,8 +87,8 @@ lens = af.Model(
 
 # Source:
 
-bulge = af.Model(al.lp.Sersic)
-disk = af.Model(al.lp.Exponential)
+bulge = af.Model(al.lp.SersicCore)
+disk = af.Model(al.lp.ExponentialCore)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk)
 
@@ -129,13 +127,13 @@ lens_1 = af.Model(
 
 # Source 0:
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp.SersicCore)
 
 source_0 = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Source 1 :
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp.SersicCore)
 
 source_1 = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
@@ -173,7 +171,9 @@ lens = af.Model(
     shear=al.mp.ExternalShear,
 )
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic, disk=al.lp.Exponential)
+source = af.Model(
+    al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore, disk=al.lp.ExponentialCore
+)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 print(model.info)
@@ -207,9 +207,9 @@ lens = af.Model(
     mass=mass,
 )
 
-bulge = af.Model(al.lp.Sersic)
-
 # Source
+
+bulge = af.Model(al.lp.SersicCore)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 source.effective_radius = af.GaussianPrior(
@@ -263,8 +263,8 @@ lens = af.Model(
 
 # Source:
 
-bulge = af.Model(al.lp.Sersic)
-disk = af.Model(al.lp.Exponential)
+bulge = af.Model(al.lp.SersicCore)
+disk = af.Model(al.lp.ExponentialCore)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk)
 

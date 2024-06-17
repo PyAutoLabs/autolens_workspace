@@ -26,7 +26,7 @@ This script fits an `Imaging` dataset of a galaxy with a model where:
  - The sky background is included as part of a `DatasetModel`.
  - The lens galaxy's light is a parametric `Sersic` bulge.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `Sersic`.
+ - The source galaxy's light is a parametric `SersicCore`.
 
 __Start Here Notebook__
 
@@ -113,7 +113,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.Sersic(
+    bulge=al.lp.SersicCore(
         centre=(0.0, 0.0),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
         intensity=4.0,
@@ -147,7 +147,7 @@ In this example we compose a lens model where:
  
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The source galaxy's light is a parametric `SersicCore` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=22.
 
@@ -171,7 +171,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 dataset_model = af.Model(al.DatasetModel)
 dataset_model.background_sky_level = af.UniformPrior(lower_limit=0.0, upper_limit=5.0)

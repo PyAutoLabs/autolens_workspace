@@ -147,7 +147,7 @@ for model_index in range(total_datasets):
     # This makes every Galaxy share the same `slope`.
     lens.mass.slope = slope_shared_prior
 
-    source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.ExponentialSph)
+    source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.ExponentialCoreSph)
 
     model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

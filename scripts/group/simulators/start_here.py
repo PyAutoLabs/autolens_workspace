@@ -138,10 +138,10 @@ __Point Source__
 It is common for group-scale strong lens datasets to be modeled assuming that the source is a point-source. Even if 
 it isn't, this can be necessary due to computational run-time making it unfeasible to fit the imaging dataset outright.
 
-We will use a `PositionSolver` to locate the multiple images, using computationally slow but robust settings to ensure w
+We will use a `MultipleImageSolver` to locate the multiple images, using computationally slow but robust settings to ensure w
 e accurately locate the image-plane positions.
 """
-solver = al.PointSolver(
+solver = al.MultipleImageSolver(
     grid=grid,
     use_upscaling=True,
     pixel_scale_precision=0.001,

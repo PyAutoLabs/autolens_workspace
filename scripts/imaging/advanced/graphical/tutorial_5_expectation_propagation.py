@@ -122,7 +122,7 @@ for model_index in range(total_datasets):
     # This slope is shared across all lens galaxies
     lens.mass.slope = slope_shared_prior
 
-    source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.Exponential)
+    source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.ExponentialCore)
 
     source.bulge.ell_comps.ellipitcal_comps_0 = 0.0
     source.bulge.ell_comps.ellipitcal_comps_1 = 0.0

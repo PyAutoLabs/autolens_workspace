@@ -7,7 +7,7 @@
 #
 #  - The lens galaxy's light is omitted.
 #  - The lens galaxy's total mass distribution is an `PowerLaw`.
-#  - The source galaxy's light is a parametric `Sersic`.
+#  - The source galaxy's light is a parametric `SersicCore`.
 #
 # The two searches break down as follows:
 #
@@ -113,7 +113,7 @@
 # Search 1 fits a lens model where:
 #
 #  - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
-#  - The source galaxy's light is a parametric `Sersic`, where the `intensity` parameter of the source galaxy
+#  - The source galaxy's light is a parametric `SersicCore`, where the `intensity` parameter of the source galaxy
 #  for each individual waveband of imaging is a different free parameter [8 parameters].
 #
 # The number of free parameters and therefore the dimensionality of non-linear parameter space is N=15.
@@ -121,7 +121,7 @@
 # lens = af.Model(
 #     al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
 # )
-# source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+# source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 #
 # model_1 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 #

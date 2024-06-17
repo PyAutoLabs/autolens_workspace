@@ -54,11 +54,9 @@ tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)
 
-point_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
+solver = al.MultipleImageSolver(grid=grid, pixel_scale_precision=0.025)
 
-fit = al.FitPointDataset(
-    point_dataset=point_dataset, tracer=tracer, point_solver=point_solver
-)
+fit = al.FitPointDataset(point_dataset=point_dataset, tracer=tracer, solver=solver)
 
 """
 __Figures__

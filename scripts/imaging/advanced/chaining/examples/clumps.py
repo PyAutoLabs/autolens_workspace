@@ -155,7 +155,7 @@ Search 2 fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
 
- - The source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The source galaxy's light is a parametric `SersicCore` [7 parameters].
 
  - The clump mass profiles are fitted and their light profiles are fixed to the previous search [2 parameters]
 
@@ -170,7 +170,7 @@ model_2 = af.Collection(
             mass=al.mp.Isothermal,
             shear=al.mp.ExternalShear,
         ),
-        source=af.Model(al.Galaxy, redshift=redshift_source, bulge=al.lp.Sersic),
+        source=af.Model(al.Galaxy, redshift=redshift_source, bulge=al.lp.SersicCore),
     )
     + clump_model.clumps_mass_only
     + al.util.chaining.clumps_from(result=result_1),
@@ -198,7 +198,7 @@ Search 2 fits a lens model where:
  - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters: priors
  initialized from search 2].
 
- - The source galaxy's light is a parametric `Sersic` [7 parameters: priors initialized from search 2].
+ - The source galaxy's light is a parametric `SersicCore` [7 parameters: priors initialized from search 2].
 
  - The clump light and mass profiles are fitted [8 parameters: priors initialized from search 2]
 

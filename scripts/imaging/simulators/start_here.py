@@ -53,23 +53,33 @@ The path where the dataset will be output, which in this case is:
 dataset_path = path.join("dataset", dataset_type, dataset_name)
 
 """
-__Simulate__
+__Grid__
 
-When simulating the amount of emission in each image pixel from the lens and source galaxies, a two dimensional
-line integral of all of the emission within the area of that pixel should be performed. However, for complex lens
-models this can be difficult to analytically compute and can lead to slow run times.
-
-Instead, an iterative ray-tracing algorithm is used to approximate the line integral. Grids of increasing resolution
-are used to evaluate the flux in each pixel from the lens and source galaxies. Grids of higher resolution are used
-until the fractional accuracy of the flux in each pixel meets a certain threshold, which we set below to 99.99%
-
-This uses the `OverSamplingIterate` object, which is input into to the `Grid2D` object you may have seen in other 
-example scripts, however it make sit perform the iterative ray-tracing described above.
-
-The grid is also created from:
+Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated and therefore simulated 
+on, via the inputs:
 
  - `shape_native`: The (y_pixels, x_pixels) 2D shape of the grid defining the shape of the data that is simulated.
  - `pixel_scales`: The arc-second to pixel conversion factor of the grid and data.
+
+__Over Sampling__
+
+Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
+on a higher resolution grid than the image data to ensure the calculation is accurate. 
+
+For lensing calculations, the high magnification regions of a lensed source galaxy require especially high levels of 
+over sampling to ensure the lensed images are evaluated accurately.
+
+An iterative algorithm is used to perform this efficiently by inputting the `OverSamplingIterate` object. Grids of 
+increasing resolution are used to evaluate the flux in each pixel from the galaxies, until the fractional accuracy of 
+the flux in each pixel meets a certain threshold, which we set below to 99.99%. This iterative process includes
+deflection angle calculations and ray-tracing for evaluating the light of the lensed source.
+
+Iterative over sampling is relatively slow, but it provides a more accurate result. Slow run times are ok for 
+simulating data, but for tasks which require more rapid run times (e.g. model-fitting) an adaptive over sampling 
+algorithm is used, which provides high levels of over sampling only where it is necessary making the process much faster.
+
+Once you are more experienced, you should read up on over-sampling in more detail via 
+the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
 """
 grid = al.Grid2D.uniform(
     shape_native=(100, 100),
@@ -122,6 +132,7 @@ The following should be noted about the parameters below:
  - The external shear is defined using the (gamma_1, gamma_2) convention.
  - The input redshifts are used to determine which galaxy is the lens (e.g. lower redshift) and which is the 
    source (e.g. higher redshift).
+ - The source uses a cored Sersic with a radius half the pixel-scale, ensuring that over-sampling is not necessary.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -142,7 +153,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.Sersic(
+    bulge=al.lp.SersicCore(
         centre=(0.0, 0.0),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
         intensity=4.0,

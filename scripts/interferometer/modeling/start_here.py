@@ -14,7 +14,7 @@ This script fits `Interferometer` dataset of a 'galaxy-scale' strong lens with a
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `Sersic`.
+ - The source galaxy's light is a parametric `SersicCore`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -63,6 +63,14 @@ dataset_plotter.subplot_dataset()
 dataset_plotter.subplot_dirty_images()
 
 """
+__Over Sampling__
+
+If you are familiar with using imaging data, you may have seen that a numerical technique called over sampling is used, 
+which evaluates light profiles on a higher resolution grid than the image data to ensure the calculation is accurate.
+
+Interferometer does not observe galaxies in a way where over sampling is necessary, therefore all interferometer
+calculations are performed without over sampling.
+
 __Model__
 
 We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In this 
@@ -91,9 +99,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
 
-bulge = af.Model(al.lp.Sersic)
-
-source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 # Overall Lens Model:
 

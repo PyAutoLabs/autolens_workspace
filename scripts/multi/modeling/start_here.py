@@ -6,7 +6,7 @@ This script fits a multi-wavelength `Imaging` dataset of a 'galaxy-scale' strong
 
  - The lens galaxy's light is a parametric `Sersic` bulge where the `intensity` varies across wavelength.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `Sersic` where the `intensity` varies across wavelength.
+ - The source galaxy's light is a parametric `SersicCore` where the `intensity` varies across wavelength.
 
 Two images are fitted, corresponding to a greener ('g' band) redder image (`r` band).
 
@@ -127,7 +127,7 @@ We compose a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `Sersic`, where the `intensity` parameter of the source galaxy
+ - The source galaxy's light is a parametric `SersicCore`, where the `intensity` parameter of the source galaxy
  for each individual waveband of imaging is a different free parameter [8 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=23.
@@ -139,7 +139,7 @@ lens = af.Model(
     mass=al.mp.Isothermal,
     shear=al.mp.ExternalShear,
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

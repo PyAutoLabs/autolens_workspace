@@ -88,7 +88,7 @@ def fit():
 
     # Source:
 
-    source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+    source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
     # Overall Lens Model:
 

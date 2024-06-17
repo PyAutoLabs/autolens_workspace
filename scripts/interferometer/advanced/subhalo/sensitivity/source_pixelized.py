@@ -171,7 +171,7 @@
 #     lens_disk=None,
 #     mass=af.Model(al.mp.Isothermal),
 #     shear=af.Model(al.mp.ExternalShear),
-#     source_bulge=af.Model(al.lp.Sersic),
+#     source_bulge=af.Model(al.lp.SersicCore),
 #     mass_centre=(0.0, 0.0),
 #     redshift_lens=0.5,
 #     redshift_source=1.0,

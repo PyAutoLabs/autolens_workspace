@@ -115,7 +115,7 @@ We therefore omit the second source from the model entirely.
 mass = af.Model(al.mp.Isothermal)
 
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
-source_0 = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.Sersic)
+source_0 = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 source_1 = af.Model(al.Galaxy, redshift=2.0)
 
 model_1 = af.Collection(
@@ -194,7 +194,7 @@ source_0 = af.Model(
     bulge=result_1.instance.galaxies.source_0.bulge,
     mass=al.mp.IsothermalSph,
 )
-source_1 = af.Model(al.Galaxy, redshift=2.0, bulge=al.lp_linear.Sersic)
+source_1 = af.Model(al.Galaxy, redshift=2.0, bulge=al.lp_linear.SersicCore)
 source_1.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.5)
 source_1.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.5)
 
@@ -395,7 +395,7 @@ mass.centre = result_1.model.galaxies.lens.bulge.centre
 lens = af.Model(
     al.Galaxy, redshift=0.5, bulge=result_1.instance.galaxies.lens.bulge, mass=mass
 )
-source_0 = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+source_0 = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 model_2 = af.Collection(galaxies=af.Collection(lens=lens, source_0=source_0))
 
@@ -458,7 +458,7 @@ source_0 = af.Model(
     bulge=result_2.model.galaxies.source_0.bulge,
     mass=al.mp.IsothermalSph,
 )
-source_1 = af.Model(al.Galaxy, redshift=2.0, bulge=al.lp.Sersic)
+source_1 = af.Model(al.Galaxy, redshift=2.0, bulge=al.lp.SersicCore)
 
 model_3 = af.Collection(
     galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),

@@ -14,7 +14,7 @@ in the final model:
 
  - The lens galaxy's light is omitted from the data and model.
  - The lens galaxy's total mass distribution is an `PowerLaw`.
- - The source galaxy's light is a parametric `Sersic`.
+ - The source galaxy's light is a parametric `SersicCore`.
 
 This uses the SLaM pipelines:
 
@@ -114,7 +114,7 @@ source_lp_result = slam.source_lp.run(
     lens_disk=None,
     mass=af.Model(al.mp.Isothermal),
     shear=af.Model(al.mp.ExternalShear),
-    source_bulge=af.Model(al.lp.Sersic),
+    source_bulge=af.Model(al.lp.SersicCore),
     mass_centre=(0.0, 0.0),
     redshift_lens=0.5,
     redshift_source=1.0,

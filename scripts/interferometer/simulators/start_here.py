@@ -35,10 +35,24 @@ The path where the dataset will be output, which in this case is
 dataset_path = path.join("dataset", dataset_type, dataset_name)
 
 """
-__Simulate__
+__Grid__
 
-For simulating interferometer data of a strong lens, we recommend using a Grid2D object with a `sub_size` of 1. This
-simplifies the generation of the strong lens image in real space before it is transformed to Fourier space.
+Define the 2d grid of (y,x) coordinates that the galaxy images are evaluated and therefore simulated on, via
+the inputs:
+
+ - `shape_native`: The (y_pixels, x_pixels) 2D shape of the grid defining the shape of the data that is simulated.
+ - `pixel_scales`: The arc-second to pixel conversion factor of the grid and data.
+
+For interferometer data, this image is evaluate in real-space and then transformed to Fourier space.
+
+__Over Sampling__
+
+If you are familiar with using imaging data, you may have seen that a numerical technique called
+over sampling is used, which evaluates light profiles on a higher resolution grid than the image data to ensure the
+calculation is accurate.
+
+Interferometer does not observe galaxies in a way where over sampling is necessary, therefore all interferometer
+calculations are performed without over sampling.
 """
 grid = al.Grid2D.uniform(shape_native=(800, 800), pixel_scales=0.05)
 
@@ -70,13 +84,17 @@ __Ray Tracing__
 
 Setup the lens galaxy's mass (SIE+Shear) and source galaxy light (elliptical Sersic) for this simulated lens.
 
-For lens modeling, defining ellipticity in terms of the `ell_comps` improves the model-fitting procedure.
+The following should be noted about the parameters below:
 
-However, for simulating a strong lens you may find it more intuitive to define the elliptical geometry using the 
-axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle, where angle is
-in degrees and defined counter clockwise from the positive x-axis.
-
-We can use the **PyAutoLens** `convert` module to determine the elliptical components from the axis-ratio and angle.
+ - The native units of light and mass profiles distance parameters (e.g. centres, effective_radius) are arc-seconds. 
+ - The intensity of the light profiles is in units of electrons per second per arc-second squared.
+ - The ellipticity of light and mass profiles are defined using the `ell_comps` parameter, however we below use
+   the convert module to input the `axis-ratio` (semi-major axis / semi-minor axis = b/a) and positive 
+   angle (degrees defined counter clockwise from the positive x-axis).
+ - The external shear is defined using the (gamma_1, gamma_2) convention.
+ - The input redshifts are used to determine which galaxy is the lens (e.g. lower redshift) and which is the 
+   source (e.g. higher redshift).
+ - The source uses a cored Sersic with a radius half the pixel-scale, ensuring that over-sampling is not necessary.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -90,7 +108,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.Sersic(
+    bulge=al.lp.SersicCore(
         centre=(0.0, 0.0),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
         intensity=0.3,

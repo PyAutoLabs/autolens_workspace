@@ -14,7 +14,7 @@ comprises two galaxies.
 
 __Plot Module__
 
-This example uses the **PyAutoLens** plot module to plot the results, including `Plotter` objects that make
+This example uses the plot module to plot the results, including `Plotter` objects that make
 the figures and `MatPlot` objects that wrap matplotlib to customize the figures.
 
 The visualization API is straightforward but is explained in the `autolens_workspace/*/plot` package in full.

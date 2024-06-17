@@ -343,7 +343,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy_0 = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.ExponentialSph(
+    bulge=al.lp.ExponentialCoreSph(
         centre=(-0.15, -0.15), intensity=1.2, effective_radius=0.1
     ),
     mass=al.mp.IsothermalSph(centre=(-0.15, -0.15), einstein_radius=0.3),
@@ -351,7 +351,7 @@ source_galaxy_0 = al.Galaxy(
 
 source_galaxy_1 = al.Galaxy(
     redshift=2.0,
-    bulge=al.lp.ExponentialSph(
+    bulge=al.lp.ExponentialCoreSph(
         centre=(-0.45, 0.45), intensity=0.6, effective_radius=0.07
     ),
 )

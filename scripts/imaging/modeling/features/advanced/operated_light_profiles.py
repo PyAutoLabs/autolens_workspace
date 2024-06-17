@@ -25,7 +25,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
  - The lens galaxy's light is a parametric `Sersic` bulge.
  - The lens galaxy includes a parametric `Gaussian` psf.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `Sersic`.
+ - The source galaxy's light is a parametric `SersicCore`.
 
 __Start Here Notebook__
 
@@ -85,7 +85,7 @@ We compose a lens model where:
  
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The source galaxy's light is a parametric `SersicCore` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=25.
 
@@ -110,7 +110,7 @@ lens = af.Model(
     mass=al.mp.Isothermal,
     shear=al.mp.ExternalShear,
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -136,7 +136,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, psf=psf, mass=mass, shear=
 
 # Source:
 
-bulge = af.Model(al.lp_linear.Sersic)
+bulge = af.Model(al.lp_linear.SersicCore)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 

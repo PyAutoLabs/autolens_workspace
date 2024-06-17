@@ -142,7 +142,7 @@ We use the results of search 1 to create the lens model fitted in search 2, wher
 
  - The lens galaxy's light is an `Sersic` bulge [Parameters fixed to results of search 1].
  - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
- - The source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The source galaxy's light is a parametric `SersicCore` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 
@@ -163,7 +163,8 @@ lens = af.Model(
     bulge=result_1.instance.galaxies.lens.bulge,
     mass=mass,
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 model_2 = af.Collection(galaxies=af.Collection(lens=lens))
 

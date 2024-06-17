@@ -157,7 +157,7 @@ intensity_list = [0.5, 0.7]
 source_galaxy_list = [
     al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.Sersic(
+        bulge=al.lp.SersicCore(
             centre=(0.0, 0.0),
             ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
             intensity=intensity,

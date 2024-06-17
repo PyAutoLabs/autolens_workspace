@@ -15,7 +15,7 @@ These data structures use the `slim` and `native` data representations API to ma
 
 __Plot Module__
 
-This example uses the **PyAutoLens** plot module to plot the results, including `Plotter` objects that make
+This example uses the plot module to plot the results, including `Plotter` objects that make
 the figures and `MatPlot` objects that wrap matplotlib to customize the figures.
 
 The visualization API is straightforward but is explained in the `autolens_workspace/*/plot` package in full.
@@ -290,8 +290,12 @@ lens = al.Galaxy(
 
 source = al.Galaxy(
     redshift=1.0,
-    light=al.lp.SersicSph(
-        centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2, sersic_index=1.0
+    light=al.lp.SersicCoreSph(
+        centre=(0.0, 0.0),
+        intensity=0.2,
+        effective_radius=0.2,
+        sersic_index=1.0,
+        radius_break=0.025,
     ),
 )
 

@@ -78,7 +78,9 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.ExponentialSph(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2),
+    bulge=al.lp.ExponentialCoreSph(
+        centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2, radius_break=0.025
+    ),
 )
 
 """

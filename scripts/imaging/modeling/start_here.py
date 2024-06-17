@@ -14,7 +14,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's light is a parametric `Sersic` bulge.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `Sersic`.
+ - The source galaxy's light is a parametric `SersicCore`.
 
 This lens model is simple and computationally fast to fit, and therefore acts as a good starting point for new
 users.
@@ -80,6 +80,27 @@ dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
 """
+__Over Sampling__
+
+Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
+on a higher resolution grid than the image data to ensure the calculation is accurate. 
+
+For lensing calculations, the high magnification regions of a lensed source galaxy require especially high levels of 
+over sampling to ensure the lensed images are evaluated accurately.
+
+For a new user, the details of over-sampling are not important, therefore just be aware that calculations either:
+ 
+ (i) use adaptive over sampling for the foregorund lens's light, which ensures high accuracy across. 
+ (ii) use cored light profiles for the background source galaxy, where the core ensures low levels of over-sampling 
+ produce numerically accurate but fast to compute results.
+
+This is why throughout the workspace the cored Sersic profile is used, instead of the regular Sersic profile which
+you may be more familiar with from the literature. Fitting a regular Sersic profile is possible, but you should
+read up on over-sampling to ensure the results are accurate.
+
+Once you are more experienced, you should read up on over-sampling in more detail via 
+the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
+
 __Mask__
 
 The model-fit requires a `Mask2D` defining the regions of the image we fit the lens model to the data. 
@@ -111,7 +132,7 @@ In this example we compose a lens model where:
  
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The source galaxy's light is a parametric `SersicCore` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=21.
 
@@ -137,6 +158,14 @@ If for your dataset the lens is not centred at (0.0", 0.0"), we recommend that y
 
  - Reduce your data so that the centre is (`autolens_workspace/*/data_preparation`). 
  - Manually override the lens model priors (`autolens_workspace/*/imaging/modeling/customize/priors.py`).
+
+__Over Sampling__
+
+As discussed above, a cored Sersic is used to ensure over-sampling is not required for the source galaxy's light.
+
+The lens galaxy is adaptively over sampled to a high degree, therefore a normal Sersic light profile is used.
+
+The over sampling guide fully explains how these choices, but new users should not worry for now.
 """
 # Lens:
 
@@ -150,7 +179,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 # Overall Lens Model:
 

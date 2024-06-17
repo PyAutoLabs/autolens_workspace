@@ -145,7 +145,7 @@ We use the results of search 1 to create the lens model fitted in search 2, wher
  - The lens galaxy's dark matter mass distribution is a `NFW` whose centre is aligned with the 
  `Sersic` bulge and stellar mass model above [5 parameters].
  - The lens mass model also includes an `ExternalShear` [2 parameters].
- - The source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The source galaxy's light is a parametric `SersicCore` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=22.
 
@@ -162,7 +162,8 @@ bulge = af.Model(al.lmp.Sersic)
 bulge.take_attributes(source=result_1.model)
 
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, dark=af.Model(al.mp.NFW))
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 model_2 = af.Collection(galaxies=af.Collection(lens=lens))
 

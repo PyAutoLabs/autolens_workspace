@@ -1,13 +1,26 @@
 """
-Settings: Sub Gridding
-======================
+Settings: Over Sampling
+=======================
 
-This example demonstrates how to change the sub-grid used by a parametric `LightProfile` to compute the surface
-brightness of every image-pixel, whereby a higher sub-grid resolution better oversamples the image of the light profile
-to provide a more accurate model of its image.
+Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated
+on a higher resolution grid than the image data to ensure the calculation is accurate.
 
-**Benefit**: Higher level of sub-gridding provide a more accurate estimate of the surface brightness in every image-pixel.
-**Downside**: Higher levels of sub-gridding require longer calculations and higher memory usage.
+For lensing calculations, the high magnification regions of a lensed source galaxy require especially high levels of
+over sampling to ensure the lensed images are evaluated accurately.
+
+This is why throughout the workspace the cored Sersic profile is used, instead of the regular Sersic profile which
+you may be more familiar with from the literature. In this example we will increase the over sampling level and
+therefore fit a regular Sersic profile to the data, instead of a cored Sersic profile.
+
+This example demonstrates how to change the over sampling used to compute the surface brightness of every image-pixel,
+whereby a higher sub-grid resolution better oversamples the image of the light profile so as to provide a more accurate
+model of its image.
+
+**Benefit**: Higher level of over sampling provide a more accurate estimate of the surface brightness in every image-pixel.
+**Downside**: Higher levels of over sampling require longer calculations and higher memory usage.
+
+You should read up on over-sampling in more detail via  the `autolens_workspace/*/guides/over_sampling.ipynb`
+notebook before using this example to customize the over sampling of your model-fits.
 
 __Start Here Notebook__
 
@@ -90,9 +103,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source:
 
-bulge = af.Model(al.lp.Sersic)
-
-source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 # Overall Lens Model:
 

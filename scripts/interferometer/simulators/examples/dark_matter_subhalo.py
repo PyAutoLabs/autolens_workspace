@@ -97,32 +97,20 @@ lens_galaxy = al.Galaxy(
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.0),
 )
 
-source_galaxy_0 = al.Galaxy(
+source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.Sersic(
-        centre=(0.25, 0.15),
-        ell_comps=al.convert.ell_comps_from(axis_ratio=0.7, angle=120.0),
-        intensity=0.7,
-        effective_radius=0.7,
+    bulge=al.lp.SersicCore(
+        centre=(0.0, 0.0),
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
+        intensity=4.0,
+        effective_radius=0.1,
         sersic_index=1.0,
     ),
 )
-
-source_galaxy_1 = al.Galaxy(
-    redshift=1.0,
-    bulge=al.lp.Sersic(
-        centre=(0.7, -0.5),
-        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=60.0),
-        intensity=0.2,
-        effective_radius=1.6,
-        sersic_index=3.0,
-    ),
-)
-
 """
 Use these galaxies to setup a tracer, which will generate the image for the simulated interferometer dataset.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 """
 Lets look at the tracer`s image, this is the image we'll be simulating.

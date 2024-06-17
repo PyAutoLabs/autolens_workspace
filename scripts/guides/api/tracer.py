@@ -13,7 +13,7 @@ briefly discusses visualization.
 
 __Plot Module__
 
-This example uses the **PyAutoLens** plot module to plot the results, including `Plotter` objects that make
+This example uses the plot module to plot the results, including `Plotter` objects that make
 the figures and `MatPlot` objects that wrap matplotlib to customize the figures.
 
 The visualization API is straightforward but is explained in the `autolens_workspace/*/plot` package in full.
@@ -173,7 +173,7 @@ lens_galaxy = al.Galaxy(
     redshift=0.5, bulge=sersic_light_profile, mass=isothermal_mass_profile
 )
 
-source_light_profile = al.lp.Exponential(
+source_light_profile = al.lp.ExponentialCore(
     centre=(0.3, 0.2), ell_comps=(0.1, 0.0), intensity=0.1, effective_radius=0.5
 )
 

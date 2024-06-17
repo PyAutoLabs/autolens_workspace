@@ -70,14 +70,18 @@ source_galaxy_0 = al.Galaxy(
         einstein_radius=0.2,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
     ),
-    light=al.lp.Exponential(centre=(0.02, 0.03), intensity=0.1, effective_radius=0.02),
+    light=al.lp.ExponentialCore(
+        centre=(0.02, 0.03), intensity=0.1, effective_radius=0.02
+    ),
     point_0=al.ps.Point(centre=(0.02, 0.03)),
 )
 
 
 source_galaxy_1 = al.Galaxy(
     redshift=2.0,
-    light=al.lp.Exponential(centre=(0.0, 0.0), intensity=0.1, effective_radius=0.02),
+    light=al.lp.ExponentialCore(
+        centre=(0.0, 0.0), intensity=0.1, effective_radius=0.02
+    ),
     point_1=al.ps.Point(centre=(0.0, 0.0)),
 )
 
@@ -87,7 +91,7 @@ Use these galaxies to setup a tracer, which will compute the multiple image posi
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1])
 
 """
-We will use a `PositionSolver` to locate the multiple images. 
+We will use a `MultipleImageSolver` to locate the multiple images. 
 
 We will use computationally slow but robust settings to ensure we accurately locate the image-plane positions.
 """
@@ -96,7 +100,7 @@ grid = al.Grid2D.uniform(
     pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
-solver = al.PointSolver(
+solver = al.MultipleImageSolver(
     grid=grid,
     use_upscaling=True,
     upscale_factor=2,
@@ -115,7 +119,7 @@ positions_0 = solver.solve(
     upper_plane_index=1,
 )
 
-# We are still improving the PositionSolver, this is a hack to get it to give sensible positions for now.
+# We are still improving the MultipleImageSolver, this is a hack to get it to give sensible positions for now.
 
 positions_0 = al.Grid2DIrregular(
     values=[

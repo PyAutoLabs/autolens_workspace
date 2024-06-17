@@ -16,7 +16,7 @@ and therefore you should read these guides in detail first.
 
 __Plot Module__
 
-This example uses the **PyAutoLens** plot module to plot the results, including `Plotter` objects that make
+This example uses the plot module to plot the results, including `Plotter` objects that make
 the figures and `MatPlot` objects that wrap matplotlib to customize the figures.
 
 The visualization API is straightforward but is explained in the `autolens_workspace/*/plot` package in full.
@@ -92,8 +92,8 @@ model = af.Collection(
             mass=al.mp.Isothermal,
             shear=al.mp.ExternalShear,
         ),
-        source_0=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic),
-        source_1=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic),
+        source_0=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore),
+        source_1=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore),
     ),
 )
 

@@ -181,7 +181,7 @@ The source galaxy at each wavelength has a different intensity, thus we create t
 source_galaxy_list = [
     al.Galaxy(
         redshift=1.0,
-        bulge=al.lp.Sersic(
+        bulge=al.lp.SersicCore(
             centre=(0.0, 0.0),
             ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
             intensity=intensity,

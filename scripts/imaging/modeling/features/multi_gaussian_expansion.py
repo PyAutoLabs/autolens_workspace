@@ -94,7 +94,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's bulge is a super position of 60 `Gaussian`` profiles.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `Sersic`.
+ - The source galaxy's light is a parametric `SersicCore`.
 
 __Start Here Notebook__
 
@@ -395,9 +395,7 @@ mass = af.Model(al.mp.Isothermal)
 
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
-# bulge = af.Model(al.lp.Sersic)
-
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.Sersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -707,7 +705,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
 # Source:
 
-bulge = af.Model(al.lp_linear.Sersic)
+bulge = af.Model(al.lp_linear.SersicCore)
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:

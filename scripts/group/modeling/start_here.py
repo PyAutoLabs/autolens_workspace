@@ -87,19 +87,19 @@ grid_plotter = aplt.Grid2DPlotter(grid=point_dict["point_0"].positions)
 grid_plotter.figure_2d()
 
 """
-__PointSolver__
+__MultipleImageSolver__
 
-For point-source modeling we also need to define our `PointSolver`. This object determines the multiple-images of 
+For point-source modeling we also need to define our `MultipleImageSolver`. This object determines the multiple-images of 
 a mass model for a point source at location (y,x) in the source plane, by iteratively ray-tracing light rays to the 
 source-plane. 
 
-Checkout the script ? for a complete description of this object, we will use the default `PositionSolver` in this 
+Checkout the script ? for a complete description of this object, we will use the default `MultipleImageSolver` in this 
 example with a `point_scale_precision` half the value of the position noise-map, which should be sufficiently good 
 enough precision to fit the lens model accurately.
 """
 grid = al.Grid2D.uniform(shape_native=data.shape_native, pixel_scales=data.pixel_scales)
 
-point_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
+solver = al.MultipleImageSolver(grid=grid, pixel_scale_precision=0.025)
 
 """
 __Model__
@@ -232,7 +232,7 @@ __Analysis__
 The `AnalysisPoint` object defines the `log_likelihood_function` used by the non-linear search to fit the model 
 to the `PointDataset`.
 """
-analysis = al.AnalysisPoint(point_dict=point_dict, solver=point_solver)
+analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
 """
 __Run Times__

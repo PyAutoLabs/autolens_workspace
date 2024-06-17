@@ -1,9 +1,9 @@
 """
-Modeling: Point-Source Mass Total
-=================================
+Modeling: Point-Source
+======================
 
 This script is the starting point for lens modeling of point-source lens datasets (E.g. the multiple image positions
-of a lensed quasar) with **PyAutoLens** and it provides an overview of the lens modeling API.
+of a lensed quasar).
 
 After reading this script, the `features`, `customize` and `searches` folders provide example for performing lens
 modeling in different ways and customizing the analysis.
@@ -11,11 +11,11 @@ modeling in different ways and customizing the analysis.
 __Not Using Light Profiles__
 
 Users familiar with PyAutoLens who are familiar with analysing imaging data will be surprised to see that point-source
-based mass modeling does not use light profiles at all. That is, the source galaxy's light is never modeled as a light
-profile (e.g. a `Sersic`) and it would never be appropriate to use a pixelized source reconstruction.
+based mass modeling does not use light profiles. The source galaxy's light is never modeled as a
+light profile (e.g. a `Sersic`) and a pixelized source reconstruction is equally inappropriate.
 
-The reason for this is because the source is, as the name suggest, a point-source of light. It is not extended in
-any way, meaning that modeling it as a light profile would be an incorrect assumption.
+This is because the source, as the name suggest, is a point-source of light. It has no extend emission and therefore
+should not be modeled as such.
 
 If this is a surprise to you or unclear, I recommend you read through the overview example
 `autolens_workspace/*/overview/overview_8_point_sources.py` before continuing. This example explains how point-source
@@ -185,19 +185,19 @@ print(model.info)
 """
 __Point Solver__
 
-For point-source modeling we also need to define our `PointSolver`. This object determines the multiple-images of 
+For point-source modeling we also need to define our `MultipleImageSolver`. This object determines the multiple-images of 
 a mass model for a point source at location (y,x) in the source plane, by iteratively ray-tracing light rays to the 
 source-plane. 
 
-[For a source-plane chi-squared, we actually do not need to use a `PointSolver` at all, as its only purpose is to
+[For a source-plane chi-squared, we actually do not need to use a `MultipleImageSolver` at all, as its only purpose is to
 find the multiple-images of a source in the image-plane.
 
 Nevertheless, if you are feeling bold enough to try and use the current imaege-plage chi-squared feature, go ahead
-and use the `PointSolver` below.]
+and use the `MultipleImageSolver` below.]
 """
 grid = al.Grid2D.uniform(shape_native=data.shape_native, pixel_scales=data.pixel_scales)
 
-point_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
+solver = al.MultipleImageSolver(grid=grid, pixel_scale_precision=0.025)
 
 """
 __Search__

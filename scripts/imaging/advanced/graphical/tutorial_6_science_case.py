@@ -121,9 +121,12 @@ model_list = []
 for model_index in range(total_datasets):
     lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
     source_0 = af.Model(
-        al.Galaxy, redshift=1.0, mass=al.mp.IsothermalSph, bulge=al.lp.ExponentialSph
+        al.Galaxy,
+        redshift=1.0,
+        mass=al.mp.IsothermalSph,
+        bulge=al.lp.ExponentialCoreSph,
     )
-    source_1 = af.Model(al.Galaxy, redshift=2.0, bulge=al.lp.ExponentialSph)
+    source_1 = af.Model(al.Galaxy, redshift=2.0, bulge=al.lp.ExponentialCoreSph)
 
     lens.mass.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.1)
     lens.mass.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.1)

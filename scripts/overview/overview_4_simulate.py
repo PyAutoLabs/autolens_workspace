@@ -34,7 +34,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.Exponential(
+    bulge=al.lp.ExponentialCore(
         centre=(0.3, 0.2),
         ell_comps=(0.1, 0.0),
         intensity=0.1,

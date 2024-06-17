@@ -85,13 +85,13 @@ The path the results of all chained searches are output:
 path_prefix = path.join("point_source", "chaining", "sie_to_power_law")
 
 """
-__PointSolver__
+__MultipleImageSolver__
 
-Setup the `PositionSolver`.
+Setup the `MultipleImageSolver`.
 """
 grid = al.Grid2D.uniform(shape_native=data.shape_native, pixel_scales=data.pixel_scales)
 
-point_solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
+solver = al.MultipleImageSolver(grid=grid, pixel_scale_precision=0.025)
 
 """
 __Model (Search 1)__
@@ -125,7 +125,7 @@ search_1 = af.Nautilus(
     path_prefix=path_prefix, name="search[1]__sie", unique_tag=dataset_name, n_live=100
 )
 
-analysis_1 = al.AnalysisPoint(point_dict=point_dict, solver=point_solver)
+analysis_1 = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
 result_1 = search_1.fit(model=model_1, analysis=analysis_1)
 
@@ -192,7 +192,7 @@ search_2 = af.Nautilus(
     n_live=100,
 )
 
-analysis_2 = al.AnalysisPoint(point_dict=point_dict, solver=point_solver)
+analysis_2 = al.AnalysisPoint(point_dict=point_dict, solver=solver)
 
 result_2 = search_2.fit(model=model_2, analysis=analysis_2)
 

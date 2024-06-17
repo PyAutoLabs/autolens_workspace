@@ -96,7 +96,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.Sersic(
+    bulge=al.lp.SersicCore(
         centre=(0.2, 0.1),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.7, angle=90.0),
         intensity=0.2,
