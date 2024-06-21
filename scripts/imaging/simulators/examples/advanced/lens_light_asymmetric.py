@@ -200,7 +200,7 @@ for gaussian_index in range(len(centre_x_list)):
 
     gaussians.append(gaussian)
 
-basis = al.lp_basis.Basis(light_profile_list=gaussians)
+basis = al.lp_basis.Basis(profile_list=gaussians)
 
 mass = al.mp.Isothermal(
     centre=(0.0, 0.0),

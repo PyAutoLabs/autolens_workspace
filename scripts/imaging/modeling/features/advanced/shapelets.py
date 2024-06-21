@@ -168,7 +168,7 @@ for i in range(total_n + total_m):
         n_count += 1
         m_count = -n_count
 
-bulge = al.lp_basis.Basis(light_profile_list=shapelets_bulge_list)
+bulge = al.lp_basis.Basis(profile_list=shapelets_bulge_list)
 
 """
 __Coefficients__
@@ -244,7 +244,7 @@ for i in range(total_n + total_m):
         n_count += 1
         m_count = -n_count
 
-bulge = al.lp_basis.Basis(light_profile_list=shapelets_bulge_list)
+bulge = al.lp_basis.Basis(profile_list=shapelets_bulge_list)
 
 """
 __Fit__
@@ -315,7 +315,7 @@ The code below shows how to use this dictionary, as an alternative to using the 
 source_bulge = fit.tracer.galaxies[1].bulge
 
 print(
-    f"\n Intensity of source galaxy's first shapelet in bulge = {fit.linear_light_profile_intensity_dict[source_bulge.light_profile_list[0]]}"
+    f"\n Intensity of source galaxy's first shapelet in bulge = {fit.linear_light_profile_intensity_dict[source_bulge.profile_list[0]]}"
 )
 
 """
@@ -332,7 +332,7 @@ light profiles cannot by default because they do not have `intensity` values).
 """
 tracer = fit.model_obj_linear_light_profiles_to_light_profiles
 
-print(tracer.galaxies[1].bulge.light_profile_list[0].intensity)
+print(tracer.galaxies[1].bulge.profile_list[0].intensity)
 
 """
 __Model__
@@ -401,7 +401,7 @@ for i, shapelet in enumerate(shapelets_bulge_list):
 
 bulge = af.Model(
     al.lp_basis.Basis,
-    light_profile_list=shapelets_bulge_list,
+    profile_list=shapelets_bulge_list,
 )
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
@@ -538,7 +538,7 @@ for x in range(total_xy):
 
         shapelets_bulge_list.append(shapelet)
 
-bulge = al.lp_basis.Basis(light_profile_list=shapelets_bulge_list)
+bulge = al.lp_basis.Basis(profile_list=shapelets_bulge_list)
 
 grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
@@ -560,7 +560,7 @@ for x in range(total_xy):
 
         shapelets_bulge_list.append(shapelet)
 
-bulge = al.lp_basis.Basis(light_profile_list=shapelets_bulge_list)
+bulge = al.lp_basis.Basis(profile_list=shapelets_bulge_list)
 
 """
 __Fit__
@@ -628,7 +628,7 @@ for x in range(total_xy):
 
 bulge = af.Model(
     al.lp_basis.Basis,
-    light_profile_list=shapelets_bulge_list,
+    profile_list=shapelets_bulge_list,
 )
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
@@ -653,7 +653,7 @@ For most massive early-type galaxies, an MGE model will be faster and give highe
 
 bulge = af.Model(
     al.lp_basis.Basis,
-    light_profile_list=shapelets_bulge_list,
+    profile_list=shapelets_bulge_list,
 )
 
 mass = af.Model(al.mp.Isothermal)
@@ -666,7 +666,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 bulge = af.Model(
     al.lp_basis.Basis,
-    light_profile_list=shapelets_bulge_list,
+    profile_list=shapelets_bulge_list,
 )
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
@@ -694,7 +694,7 @@ parameter to the fit, the `coefficient`, which controls the degree of smoothing 
 """
 bulge = af.Model(
     al.lp_basis.Basis,
-    light_profile_list=shapelets_bulge_list,
+    profile_list=shapelets_bulge_list,
     regularization=al.reg.Constant,
 )
 galaxy = af.Model(al.Galaxy, redshift=0.5, bulge=bulge)

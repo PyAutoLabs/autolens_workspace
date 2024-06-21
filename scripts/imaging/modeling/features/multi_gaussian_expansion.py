@@ -182,7 +182,7 @@ for i in range(total_gaussians):
 
 # The Basis object groups many light profiles together into a single model component and is used to fit the data.
 
-bulge = al.lp_basis.Basis(light_profile_list=bulge_gaussian_list)
+bulge = al.lp_basis.Basis(profile_list=bulge_gaussian_list)
 
 """
 __Gaussians__
@@ -244,7 +244,7 @@ for i in range(total_gaussians):
 
 # The Basis object groups many light profiles together into a single model component and is used to fit the data.
 
-bulge = al.lp_basis.Basis(light_profile_list=bulge_gaussian_list)
+bulge = al.lp_basis.Basis(profile_list=bulge_gaussian_list)
 
 """
 __Fit__
@@ -299,7 +299,7 @@ The code below shows how to use this dictionary, as an alternative to using the 
 lens_bulge = fit.tracer.galaxies[0].bulge
 
 print(
-    f"\n Intensity of lens galaxy's first Gaussian in bulge = {fit.linear_light_profile_intensity_dict[lens_bulge.light_profile_list[0]]}"
+    f"\n Intensity of lens galaxy's first Gaussian in bulge = {fit.linear_light_profile_intensity_dict[lens_bulge.profile_list[0]]}"
 )
 
 """
@@ -316,7 +316,7 @@ light profiles cannot by default because they do not have `intensity` values).
 """
 tracer = fit.model_obj_linear_light_profiles_to_light_profiles
 
-print(tracer.galaxies[0].bulge.light_profile_list[0].intensity)
+print(tracer.galaxies[0].bulge.profile_list[0].intensity)
 
 """
 __Model__
@@ -388,7 +388,7 @@ for j in range(gaussian_per_basis):
 
 bulge = af.Model(
     al.lp_basis.Basis,
-    light_profile_list=bulge_gaussian_list,
+    profile_list=bulge_gaussian_list,
 )
 
 mass = af.Model(al.mp.Isothermal)
@@ -553,7 +553,7 @@ for j in range(gaussian_per_basis):
 
 bulge = af.Model(
     al.lp_basis.Basis,
-    light_profile_list=bulge_gaussian_list,
+    profile_list=bulge_gaussian_list,
 )
 mass = af.Model(al.mp.Isothermal)
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
@@ -587,7 +587,7 @@ for j in range(gaussian_per_basis):
 
 source_bulge = af.Model(
     al.lp_basis.Basis,
-    light_profile_list=bulge_gaussian_list,
+    profile_list=bulge_gaussian_list,
 )
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
@@ -697,7 +697,7 @@ parameter to the fit, the `coefficient`, which controls the degree of smoothing 
 regularization = af.Model(al.reg.Constant)
 bulge = af.Model(
     al.lp_basis.Basis,
-    light_profile_list=bulge_gaussian_list,
+    profile_list=bulge_gaussian_list,
     regularization=regularization,
 )
 mass = af.Model(al.mp.Isothermal)
