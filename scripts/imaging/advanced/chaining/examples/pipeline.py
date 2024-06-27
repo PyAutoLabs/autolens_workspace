@@ -53,7 +53,7 @@ __Paths__
 
 The path the results of all chained searches are output:
 """
-path_prefix = path.join("imaging", "pipelines")
+path_prefix = path.join("imaging", "chaining")
 
 """
 __Redshifts__
