@@ -75,7 +75,7 @@ dataset = al.Imaging.from_fits(
 )
 
 dataset = dataset.apply_over_sampling(
-    over_sampling=over_sampling,
+    over_sampling=al.OverSamplingDataset(uniform=over_sampling),
 )
 
 """

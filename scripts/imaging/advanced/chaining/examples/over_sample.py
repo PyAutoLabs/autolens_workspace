@@ -160,11 +160,11 @@ traced_grid = tracer.traced_grid_2d_list_from(
 
 source_centre = tracer.galaxies[1].bulge.centre
 
-dataset = dataset.apply_over_sampling(
-    over_sampling_non_uniform=al.OverSamplingUniform.from_radial_bins(
-        grid=traced_grid, sub_size_list=[32, 8, 2], radial_list=[0.1, 0.3], centre_list=[source_centre]
-    )
-)
+# dataset = dataset.apply_over_sampling(
+#     over_sampling=al.OverSamplingDataset(non_uniform=al.OverSamplingUniform.from_radial_bins(
+#         grid=traced_grid, sub_size_list=[32, 8, 2], radial_list=[0.1, 0.3], centre_list=[source_centre]
+#     ))
+# )
 
 """
 __Model (Search 1)__

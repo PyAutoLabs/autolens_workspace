@@ -11,7 +11,7 @@ adaptively increases depending on a required fractional accuracy of the light pr
 """
 # masked_imaging_iterate = dataset.apply_mask(mask=mask)
 # masked_imaging_iterate = masked_imaging_iterate.apply_over_sampling(
-#     over_sampling=al.OverSamplingIterate()
+#     over_sampling=al.OverSamplingDataset(uniform=al.OverSamplingIterate())
 # )
 #
 # image_iterate = lens_galaxy.image_2d_from(grid=masked_imaging_iterate.grid)

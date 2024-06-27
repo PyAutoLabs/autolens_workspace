@@ -3,7 +3,8 @@ Simulator: Sersic No Core
 =========================
 
 This script simulates `Imaging` of a 'galaxy-scale' which is identical to the `simple` simulated in the `start_here.py`
-script, but where Sersic light profile does not have a core (and the lens galaxy's light is omitted).
+script, but where Sersic light profile does not have a core and has a steeper central light profile (and the lens
+galaxy's light is omitted).
 
 It is used in `autolens_workspace/notebooks/imaging/advanced/chaining/no_lens_light__sersic_no_core.ipynb` to
 illustrate how to use over sampling of the lensed source.
@@ -89,7 +90,7 @@ source_galaxy = al.Galaxy(
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
         intensity=4.0,
         effective_radius=0.1,
-        sersic_index=1.0,
+        sersic_index=3.0,
     ),
 )
 

@@ -515,10 +515,8 @@ dataset = al.Imaging.from_fits(
 
 # This can be any of the over-sampling objects we have used above.
 
-over_sampling = al.OverSamplingUniform(sub_size=4)
-
 dataset = dataset.apply_over_sampling(
-    over_sampling=over_sampling,
+    over_sampling=al.OverSamplingDataset(uniform=al.OverSamplingUniform(sub_size=4))
 )
 
 """
@@ -543,7 +541,7 @@ This is explained in more detail in the pixelization examples.
 Here is an example of how to change the over sampling applied to a pixelization for a lens model fit:
 """
 dataset = dataset.apply_over_sampling(
-    over_sampling_pixelization=over_sampling,
+    over_sampling=al.OverSamplingDataset(pixelization=al.OverSamplingUniform(sub_size=4))
 )
 
 """
