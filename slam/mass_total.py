@@ -12,6 +12,7 @@ def run(
     source_result_for_source: af.Result,
     light_result: Optional[af.Result],
     mass: af.Model = af.Model(al.mp.Isothermal),
+    light_linear_to_standard: bool = False,
     multipole_1: Optional[af.Model] = None,
     multipole_3: Optional[af.Model] = None,
     multipole_4: Optional[af.Model] = None,
@@ -36,6 +37,9 @@ def run(
         The result of the SLaM LIGHT LP PIPELINE which ran before this pipeline.
     mass
         The `MassProfile` used to fit the lens galaxy mass in this pipeline.
+    light_linear_to_standard
+        If `True`, convert all linear light profiles in the model to standard light profiles, whose `intensity` values
+        use the max likelihood result of the LIGHT PIPELINE.
     multipole_1
         Optionally include a first order multipole mass profile component in the mass model.
     multipole_3
@@ -93,16 +97,19 @@ def run(
         shear = al.mp.ExternalShear
 
     if multipole_1 is not None:
+        multipole_1.m = 1
         multipole_1.centre = mass.centre
         multipole_1.einstein_radius = mass.einstein_radius
         multipole_1.slope = mass.slope
 
     if multipole_3 is not None:
+        multipole_3.m = 3
         multipole_3.centre = mass.centre
         multipole_3.einstein_radius = mass.einstein_radius
         multipole_3.slope = mass.slope
 
     if multipole_4 is not None:
+        multipole_4.m = 4
         multipole_4.centre = mass.centre
         multipole_4.einstein_radius = mass.einstein_radius
         multipole_4.slope = mass.slope
@@ -134,7 +141,7 @@ def run(
     )
 
     search = af.Nautilus(
-        name="mass_total[1]_light[lp]_mass[total]_source",
+        name="mass_total[1]",
         **settings_search.search_dict,
         n_live=150,
     )

@@ -78,9 +78,9 @@ with open(lenses_file, "w+") as f:
 """
 __Source_x1__
 
-The group has a single source galaxy whose emission is observed but we model as a `PointSourceChi`.
+The group has a single source galaxy whose emission is observed but we model as a `Point`.
 """
-point_0 = af.Model(al.ps.PointSourceChi)
+point_0 = af.Model(al.ps.Point)
 point_0.centre_0 = af.GaussianPrior(mean=0.0, sigma=3.0)
 point_0.centre_1 = af.GaussianPrior(mean=0.0, sigma=3.0)
 

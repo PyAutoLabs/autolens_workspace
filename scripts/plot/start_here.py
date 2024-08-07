@@ -2,7 +2,20 @@
 Plots: Start Here
 =================
 
-This example illustrates the basic API for plotting.
+This example illustrates the basic API for plotting, including how to customize the appearance of figures and subplots.
+
+__Contents__
+
+- **Dataset**: Load an example image used to illustrate plotting.
+- **Figures**: Plot the image using a `Plotter` object.
+- **Customization With MatPlot**: Customize the appearance of the figure using a `MatPlot` object.
+- **Configs**: Customize the appearance of figures using the config files.
+- **Subplots**: Plot multiple images using subplots and customize their appearance.
+- **Visuals**: Add visuals to the figure, such as a mask or light profile centres.
+- **Customize Visuals With Include**: Customize the appearance of visuals using the `Include` object.
+- **Customize Visuals With Config**: Customize the appearance of visuals using the config files.
+- **Searches**: Visualize the results of a search using a `Plotter` object.
+- **Adding Plotter Objects Together**: Add `MatPlot` and `Visuals` objects together to customize the appearance of figures.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -36,7 +49,7 @@ array_plotter = aplt.Array2DPlotter(array=data)
 array_plotter.figure_2d()
 
 """
-__Plot Customization via MatPlot__
+__Customization With MatPlot__
 
 You can customize a number of matplotlib setup options using a `MatPlot` object, which 
 wraps the `matplotlib` methods used to display the image.
@@ -104,6 +117,36 @@ array_plotter = aplt.Array2DPlotter(array=data, visuals_2d=visuals)
 array_plotter.figure_2d()
 
 """
+__Customize Visuals With Include__
+
+Many of the visuals above (e.g. mass profile centres, critical curves, caustics) may be plotted by default and
+therefore appear in the figure without being explicitly input.
+
+If you want to disable their appears, or make a visual appear that is not in the figure by default, you can use
+the `Include2D` object.
+
+By passing an attribute as `True`, if the attribute is contained in the object being plotted then it will be plotted.
+
+For example, the `data` input into the `Array2DPlotter` object has a mask, so it will be plotted if `mask=True`,
+which is the default behaviour and therefore why it is plotted above. If we set `mask=False`, it is not plotted.
+
+Checkout the API docs of the `Include2D` object for all options, which are also documented individually throuhgout the
+`autolens.workspace.*.plot` examples.
+"""
+include = aplt.Include2D(mask=False)
+
+array_plotter = aplt.Array2DPlotter(array=data, include_2d=include)
+array_plotter.figure_2d()
+
+"""
+__Customize Visuals With Config__
+
+The default options used by `Inclare provided in the `config/visualize/include.yaml` config file, which you should
+checkout now.
+
+For example, you'll see the `mask` is set to `True` by default, which is why it appeared in the figure above. You can
+therefore customize the default appearance of figures by editing this config file.
+
 __Searches__
 
 Model-fits using a non-linear search (e.g. Nautilus, Emcee) produce search-specific visualization.

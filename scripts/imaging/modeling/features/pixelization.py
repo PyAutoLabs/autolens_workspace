@@ -217,7 +217,7 @@ These plots use an `InversionPlotter`, which gets its name from the internals of
 the source code, where the linear algebra process which computes the source pixel fluxes is called an inversion.
 
 The `subplot_mappings` overlays colored circles in the image and source planes that map to one another, thereby
-allow one to assess how the mass model ray-traces image-pixels and therefore to assess how the source reconstruction
+allowing one to assess how the mass model ray-traces image-pixels and therefore to assess how the source reconstruction
 maps to the image.
 """
 inversion_plotter = fit_plotter.inversion_plotter_of_plane(plane_index=1)
@@ -298,8 +298,7 @@ search = af.Nautilus(
     name="pixelization",
     unique_tag=dataset_name,
     n_live=100,
-    iterations_per_update=200,
-    number_of_cores=1,
+    number_of_cores=4,
 )
 
 """
@@ -480,7 +479,7 @@ print(interpolated_errors_list[0].slim)
 """
 __Voronoi__
 
-The pixelization mesh which tests have revealed performs best is the `VoronoiNN` object, which uses a Voronoi
+The pixelization mesh which tests have revealed performs best is the `Voronoi` object, which uses a Voronoi
 mesh with a technique called natural neighbour interpolation (full details are provided in the **HowToLens**
 tutorials).
 
@@ -641,24 +640,6 @@ mapper_plotter.plot_source_from(pixel_values=image_to_source)
 
 
 """
-We can create a source-plane magnification map by passed the image-plane magnification map computed via the
-tracer.
-
-[CURRENTLY DOES NOT WORK, BECAUSE THE MAPPING FUNCTION NEEDS TO INCORPORATE THE VARYING VORONOI PIXEL AREA].
-"""
-tracer = result.max_log_likelihood_tracer
-
-tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=dataset.grid_pixelization)
-tracer_plotter.figures_2d(magnification=True)
-
-magnification_2d = tracer.magnification_2d_from(grid=dataset.grid_pixelization)
-
-magnification_to_source = mapper_list[0].mapped_to_source_from(array=magnification_2d)
-
-mapper_plotter = aplt.MapperPlotter(mapper=mapper_list[0])
-mapper_plotter.plot_source_from(pixel_values=magnification_2d)
-
-"""
 We can interpolate these arrays to output them to fits.
 
 Although the model-fit used a Voronoi mesh, there is no reason we need to use this pixelization to map the image-plane
@@ -675,7 +656,7 @@ mapper_grids = mesh.mapper_grids_from(mask=mask, source_plane_data_grid=dataset.
 
 mapper = al.Mapper(
     mapper_grids=mapper_grids,
-    over_sampler=dataset.over_sampler_pixelization,
+    over_sampler=dataset.grids.over_sampler_pixelization,
     regularization=None,
 )
 

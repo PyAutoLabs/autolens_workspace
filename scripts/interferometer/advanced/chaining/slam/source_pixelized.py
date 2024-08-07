@@ -222,7 +222,7 @@ over_sampling = al.OverSamplingUniform.from_adapt(
 )
 
 dataset.over_sampling_pixelization = over_sampling
-dataset.__dict__["grid_pixelization"] = None
+dataset.__dict__["grids.pixelization"] = None
 
 analysis = al.AnalysisImaging(
     dataset=dataset,

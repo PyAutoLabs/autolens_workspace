@@ -10,6 +10,7 @@ def run(
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
     lens_bulge: Optional[af.Model] = af.Model(al.lp.Sersic),
     lens_disk: Optional[af.Model] = af.Model(al.lp.Exponential),
+    lens_point: Optional[af.Model] = None,
     mass: af.Model = af.Model(al.mp.Isothermal),
     shear: af.Model(al.mp.ExternalShear) = af.Model(al.mp.ExternalShear),
     source_bulge: Optional[af.Model] = af.Model(al.lp.Sersic),
@@ -33,6 +34,9 @@ def run(
     lens_disk
         The model used to represent the light distribution of the lens galaxy's disk (set to
         None to omit a disk).
+    lens_point
+        The model used to represent the light distribution of point source emission in the lens galaxy (set to
+        None to omit a point).
     mass
         The `MassProfile` fitted by this pipeline.
     shear
@@ -79,6 +83,7 @@ def run(
                 redshift=redshift_lens,
                 bulge=lens_bulge,
                 disk=lens_disk,
+                point=lens_point,
                 mass=mass,
                 shear=shear,
             ),
@@ -93,7 +98,7 @@ def run(
     )
 
     search = af.Nautilus(
-        name="source_lp[1]_light[lp]_mass[total]_source[lp]",
+        name="source_lp[1]",
         **settings_search.search_dict,
         n_live=200,
     )

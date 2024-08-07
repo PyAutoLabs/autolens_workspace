@@ -26,11 +26,9 @@ First, lets load an example strong lens `PointDataset` object.
 dataset_name = "simple"
 dataset_path = path.join("dataset", "point_source", dataset_name)
 
-point_dict = al.PointDict.from_json(
-    file_path=path.join(dataset_path, "point_dict.json")
-)
+dataset = al.PointDict.from_json(file_path=path.join(dataset_path, "dataset.json"))
 
-point_dataset = point_dict["point_0"]
+point_dataset = dataset["point_0"]
 
 """
 __Figures__
@@ -38,7 +36,7 @@ __Figures__
 We now pass the point dataset to a `PointDatasetPlotter` and call various `figure_*` methods to plot different 
 attributes.
 """
-point_dataset_plotter = aplt.PointDatasetPlotter(point_dataset=point_dataset)
+point_dataset_plotter = aplt.PointDatasetPlotter(dataset=point_dataset)
 # point_dataset_plotter.figures_2d(positions=True, fluxes=True)
 
 """

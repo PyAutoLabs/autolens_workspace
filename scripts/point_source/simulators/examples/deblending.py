@@ -2,7 +2,7 @@
 Simulator: Debelending
 ======================
 
-This script simulations a `PointSource` dataset of a galaxy-scale strong lens which is identical to the dataset
+This script simulations a `Point` dataset of a galaxy-scale strong lens which is identical to the dataset
 simulated in the `start_here.ipynb` example, but where an image of the multiply imaged lensed point source (e.g.
 the quasar) and its lens galaxy are included.
 
@@ -73,16 +73,20 @@ Use these galaxies to setup a tracer, which will compute the multiple image posi
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 """
-We will use a `MultipleImageSolver` to locate the multiple images. 
+We will use a `PointSolver` to locate the multiple images. 
 
-We will use computationally slow but robust settings to ensure we accurately locate the image-plane positions.
+The `PointSolver` requires a starting grid of (y,x) coordinates in the image-plane, which are iteratively traced 
+and refined to locate the image-plane coordinates that map directly to the source-plane coordinate.
+
+The `pixel_scale_precision` is the resolution up to which the multiple images are computed. The lower the value, the
+longer the calculation, with a value of 0.001 being efficient but more than sufficient for most point-source datasets.
 """
 grid = al.Grid2D.uniform(
     shape_native=(100, 100),
     pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
-solver = al.MultipleImageSolver(
+solver = al.PointSolver(
     grid=grid, use_upscaling=True, pixel_scale_precision=0.001, upscale_factor=2
 )
 
@@ -121,10 +125,10 @@ point_dataset = al.PointDataset(
     fluxes_noise_map=al.ArrayIrregular(values=[1.0, 1.0, 1.0, 1.0]),
 )
 
-point_dict = al.PointDict(point_dataset_list=[point_dataset])
+dataset = al.PointDict(point_dataset_list=[point_dataset])
 
-point_dict.output_to_json(
-    file_path=path.join(dataset_path, "point_dict.json"), overwrite=True
+dataset.output_to_json(
+    file_path=path.join(dataset_path, "dataset.json"), overwrite=True
 )
 
 """
@@ -136,7 +140,7 @@ mat_plot_1d = aplt.MatPlot1D(output=aplt.Output(path=dataset_path, format="png")
 mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
 
 point_dataset_plotter = aplt.PointDatasetPlotter(
-    point_dataset=point_dataset, mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d
+    dataset=point_dataset, mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d
 )
 point_dataset_plotter.subplot_dataset()
 

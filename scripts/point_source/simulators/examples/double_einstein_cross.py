@@ -91,16 +91,20 @@ Use these galaxies to setup a tracer, which will compute the multiple image posi
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1])
 
 """
-We will use a `MultipleImageSolver` to locate the multiple images. 
+We will use a `PointSolver` to locate the multiple images. 
 
-We will use computationally slow but robust settings to ensure we accurately locate the image-plane positions.
+The `PointSolver` requires a starting grid of (y,x) coordinates in the image-plane, which are iteratively traced 
+and refined to locate the image-plane coordinates that map directly to the source-plane coordinate.
+
+The `pixel_scale_precision` is the resolution up to which the multiple images are computed. The lower the value, the
+longer the calculation, with a value of 0.001 being efficient but more than sufficient for most point-source datasets.
 """
 grid = al.Grid2D.uniform(
     shape_native=(100, 100),
     pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
-solver = al.MultipleImageSolver(
+solver = al.PointSolver(
     grid=grid,
     use_upscaling=True,
     upscale_factor=2,
@@ -119,7 +123,7 @@ positions_0 = solver.solve(
     upper_plane_index=1,
 )
 
-# We are still improving the MultipleImageSolver, this is a hack to get it to give sensible positions for now.
+# We are still improving the PointSolver, this is a hack to get it to give sensible positions for now.
 
 positions_0 = al.Grid2DIrregular(
     values=[
@@ -216,10 +220,10 @@ In this example there are two `PointDataset`'s, which are both stored in the `Po
 This means in the `modeling` script, because there are multiple sources it can fit each source's own unique multiple 
 images and therefore corresponding `PointDataset`.
 """
-point_dict = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
+dataset = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
 
-point_dict.output_to_json(
-    file_path=path.join(dataset_path, "point_dict.json"), overwrite=True
+dataset.output_to_json(
+    file_path=path.join(dataset_path, "dataset.json"), overwrite=True
 )
 
 """
@@ -230,11 +234,11 @@ Output a subplot of the simulated point source dictionary and the tracer's quant
 mat_plot_1d = aplt.MatPlot1D(output=aplt.Output(path=dataset_path, format="png"))
 mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
 
-point_dict_plotter = aplt.PointDictPlotter(
-    point_dict=point_dict, mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d
+dataset_plotter = aplt.PointDictPlotter(
+    dataset=dataset, mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d
 )
-point_dict_plotter.subplot_positions()
-point_dict_plotter.subplot_fluxes()
+dataset_plotter.subplot_positions()
+dataset_plotter.subplot_fluxes()
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
 tracer_plotter.subplot_tracer()

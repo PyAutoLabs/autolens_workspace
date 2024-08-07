@@ -1,18 +1,17 @@
 """
 __Log Likelihood Function: Inversion (Parametric)__
 
-This script provides a step-by-step guide of the **PyAutoLens** `log_likelihood_function` which is used to fit
-`Imaging` data with a parametric lens light profile and source light profile (specifically 
-an `Sersic`, elliptical Sersic, lens and source).
+This script provides a step-by-step guide of the `log_likelihood_function` which is used to fit `Imaging` data with 
+a parametric lens light profile and source light profile (e.g. an elliptical Sersic lens and source).
 
 This script has the following aims:
 
- - To provide a resource that authors can include in papers using **PyAutoLens**, so that readers can understand the
- likelihood function (including references to the previous literature from which it is defined) without having to
+ - To provide a resource that authors can include in papers using, so that readers can understand the likelihood 
+ function (including references to the previous literature from which it is defined) without having to
  write large quantities of text and equations.
 
 Accompanying this script is the `contributor_guide.py` which provides URL's to every part of the source-code that
-is illustrated in this guide. This gives contributors a linear run through of what source-code functions, modules and
+is illustrated in this guide. This gives contributors a sequential run through of what source-code functions, modules and
 packages are called when the likelihood is evaluated.
 """
 # %matplotlib inline
@@ -33,8 +32,7 @@ __Dataset__
 
 In order to perform a likelihood evaluation, we first load a dataset.
 
-This example fits a simulated strong lens which is simulated using a 0.1 arcsecond-per-pixel resolution (this is lower
-resolution than the best quality Hubble Space Telescope imaging and close to that of the Euclid space satellite).
+This example fits a simulated galaxy where the imaging resolution is 0.1 arcsecond-per-pixel resolution.
 """
 dataset_path = path.join("dataset", "imaging", "simple")
 
@@ -46,9 +44,9 @@ dataset = al.Imaging.from_fits(
 )
 
 """
-Throughout this guide, I will use **PyAutoLens**'s in-built visualization tools for plotting. 
+This guide uses in-built visualization tools for plotting. 
 
-For example, using the `ImagingPlotter` I can plot the imaging dataset we performed a likelihood evaluation on.
+For example, using the `ImagingPlotter` the imaging dataset we perform a likelihood evaluation on is plotted.
 """
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
@@ -89,12 +87,16 @@ masked_dataset = masked_dataset.apply_over_sampling(
 """
 __Masked Image Grid__
 
-To perform lensing calculations we first must define the 2D image-plane (y,x) coordinates used in the calculation.
+To perform galaxy calculations we define a 2D image-plane grid of (y,x) coordinates.
 
-These are given by `masked_dataset.grid`, which we can plot and see is a uniform grid of (y,x) Cartesian coordinates
-which have had the 3.0" circular mask applied.
+These are given by `masked_dataset.grids.uniform`, which we can plot and see is a uniform grid of (y,x) Cartesian 
+coordinates which have had the 3.0" circular mask applied.
+
+Each (y,x) coordinate coordinates to the centre of each image-pixel in the dataset, meaning that when this grid is
+used to perform ray-tracing and evaluate a light profile the intensity of the profile at the centre of each 
+image-pixel is computed, making it straight forward to compute the light profile's image to the image data.
 """
-grid_plotter = aplt.Grid2DPlotter(grid=masked_dataset.grid)
+grid_plotter = aplt.Grid2DPlotter(grid=masked_dataset.grids.uniform)
 grid_plotter.figure_2d()
 
 print(
@@ -108,13 +110,14 @@ To perform lensing calculations we convert this 2D (y,x) grid of coordinates to 
 
 Where:
 
- - $y$ and $x$ are the (y,x) arc-second coordinates of each unmasked image-pixel, given by `masked_dataset.grid`.
+ - $y$ and $x$ are the (y,x) arc-second coordinates of each unmasked image-pixel, given by `masked_dataset.grids.uniform`.
  - $y_c$ and $x_c$ are the (y,x) arc-second `centre` of the light or mass profile used to perform lensing calculations.
  - $q$ is the axis-ratio of the elliptical light or mass profile (`axis_ratio=1.0` for spherical profiles).
  - The elliptical coordinates is rotated by position angle $\phi$, defined counter-clockwise from the positive 
  x-axis.
 
-**PyAutoLens** does not use $q$ and $\phi$ to parameterize the lens model but expresses these as `elliptical_components`:
+$q$ and $\phi$ are not used to parameterize a light profile but expresses these  as "elliptical components", 
+or `ell_comps` for short:
 
 $\epsilon_{1} =\frac{1-q}{1+q} \sin 2\phi, \,\,$
 $\epsilon_{2} =\frac{1-q}{1+q} \cos 2\phi.$
@@ -124,10 +127,10 @@ Note that `Ell` is used as shorthand for elliptical and `Sph` for spherical.
 profile = al.EllProfile(centre=(0.1, 0.2), ell_comps=(0.1, 0.2))
 
 """
-First we transform `masked_dataset.grid ` to the centre of profile and rotate it using its angle `phi`.
+First we transform `masked_dataset.grids.uniform` to the centre of profile and rotate it using its angle `phi`.
 """
 transformed_grid = profile.transformed_to_reference_frame_grid_from(
-    grid=masked_dataset.grid
+    grid=masked_dataset.grids.uniform
 )
 
 grid_plotter = aplt.Grid2DPlotter(grid=transformed_grid)
@@ -164,8 +167,8 @@ Where:
  - $n$ is the ``sersic_index``, which via $k$ controls the steepness of the inner profile.
  - $R$ is the `effective_radius`, which defines the arc-second radius of a circle containing half the light.
 
-In this example, we assume our lens is composed of two light profiles, an elliptical Sersic and Exponential (a Sersic
-where `sersic_index=4`) which represent the bulge of the lens. 
+In this example, we assume our lens is composed of one light profile, an elliptical Sersic which represent the 
+bulge of the lens. 
 """
 bulge = al.lp.Sersic(
     centre=(0.0, 0.0),
@@ -294,10 +297,10 @@ values not within the mask, which are close enough to it that their flux blurs i
 To compute this, a `blurring_mask` and `blurring_grid` are used, corresponding to these pixels near the edge of the 
 actual mask whose light blurs into the image:
 """
-lens_blurring_image_2d = lens_galaxy.image_2d_from(grid=masked_dataset.blurring_grid)
+lens_blurring_image_2d = lens_galaxy.image_2d_from(grid=masked_dataset.grids.blurring)
 
 galaxy_plotter = aplt.GalaxyPlotter(
-    galaxy=lens_galaxy, grid=masked_dataset.blurring_grid
+    galaxy=lens_galaxy, grid=masked_dataset.grids.blurring
 )
 galaxy_plotter.figures_2d(image=True)
 
@@ -331,7 +334,7 @@ grid_plotter = aplt.Grid2DPlotter(grid=traced_grid, mat_plot_2d=mat_plot)
 grid_plotter.figure_2d()
 
 traced_blurring_grid = tracer.traced_grid_2d_list_from(
-    grid=masked_dataset.blurring_grid
+    grid=masked_dataset.grids.blurring
 )[-1]
 
 mat_plot = aplt.MatPlot2D(axis=aplt.Axis(extent=[-1.5, 1.5, -1.5, 1.5]))
@@ -383,7 +386,7 @@ array_2d_plotter = aplt.Array2DPlotter(array=convolved_image_2d)
 array_2d_plotter.figure_2d()
 
 """
-__Likelihood Step 7: Likelihood Function__
+__Likelihood Step 6: Likelihood Function__
 
 We now quantify the goodness-of-fit of our lens and source model.
 
@@ -429,7 +432,7 @@ array_2d_plotter = aplt.Array2DPlotter(array=chi_squared_map)
 array_2d_plotter.figure_2d()
 
 """
-__Likelihood Step 9: Noise Normalization Term__
+__Likelihood Step 7: Noise Normalization Term__
 
 Our likelihood function assumes the imaging data consists of independent Gaussian noise in every image pixel.
 
@@ -442,7 +445,7 @@ model we infer.
 noise_normalization = float(np.sum(np.log(2 * np.pi * masked_dataset.noise_map**2.0)))
 
 """
-__Likelihood Step 10: Calculate The Log Likelihood!__
+__Likelihood Step 8: Calculate The Log Likelihood!__
 
 We made it!
 

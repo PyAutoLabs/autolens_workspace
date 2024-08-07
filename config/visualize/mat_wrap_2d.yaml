@@ -59,9 +59,9 @@ GridErrorbar:        # wrapper for `plt.errrorbar()`: customize grids with error
     markersize: 8
 GridPlot:            # wrapper for `plt.plot()`: customize how grids plotted via this method appear.
   figure:
-    c: k
+    c: w
   subplot:
-    c: k
+    c: w
 GridScatter:        # wrapper for `plt.scatter()`: customize appearances of Grid2D.
   figure:
     c: k

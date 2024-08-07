@@ -50,10 +50,10 @@ afterwards.
 This ensures we don't double up on results if we run the script multiple times, and if new results are added to the
 output folder (e.g. download from a super computer) they are added to the database.
 """
-# try:
-#     os.remove(path.join("output", f"{database_name}.sqlite"))
-# except FileNotFoundError:
-#     pass
+try:
+    os.remove(path.join("output", f"{database_name}.sqlite"))
+except FileNotFoundError:
+    pass
 
 """
 Create the database file `subhalo_detect.sqlite` in the output folder.
@@ -65,19 +65,17 @@ agg = af.Aggregator.from_database(
 """
 Add all results in the directory "output" to the database, which we manipulate below via the aggregator.
 """
-# agg.add_directory(directory=path.join("output", database_name))
+agg.add_directory(directory=path.join("output", database_name))
 
 """
 __Agg No / With Subhalo__
 
-Standard aggregator querying can be used to get aggregates of results for lens models without and with a subhalo.
+Standard aggregator querying can be used to get aggregates of results for lens models with and without a subhalo.
 
 The easiest query uses the name of the subhalo searches in the SLaM subhalo pipeline.
 """
-agg_no_subhalo = agg.query(agg.search.name == "subhalo[1]_mass[total_refine]")
-agg_with_subhalo = agg.query(
-    agg.search.name == "subhalo[3]_subhalo[single_plane_refine]"
-)
+agg_no_subhalo = agg.query(agg.search.name == "subhalo[1]")
+agg_with_subhalo = agg.query(agg.search.name == "subhalo[3]_[single_plane_refine]")
 
 """
 We can extract the `log_evidence` values of the results with and without and DM subhalo via the aggregators.
@@ -119,12 +117,12 @@ From these, we can create the maximum likelihood instances of the lens model and
 
 These can then be passed to the `SubhaloPlotter` to visualize the results of the subhalo detection.
 """
-fit_no_subhalo_agg = al.agg.FitImagingAgg(aggregator=agg_no_subhalo)
-fit_no_subhalo_gen = fit_no_subhalo_agg.max_log_likelihood_gen_from()
+fit_agg_no_subhalo = al.agg.FitImagingAgg(aggregator=agg_no_subhalo)
+fit_no_subhalo_gen = fit_agg_no_subhalo.max_log_likelihood_gen_from()
 fit_no_subhalo = list(fit_no_subhalo_gen)[0]
 
-fit_with_subhalo_agg = al.agg.FitImagingAgg(aggregator=agg_with_subhalo)
-fit_with_subhalo_gen = fit_with_subhalo_agg.max_log_likelihood_gen_from()
+fit_agg_with_subhalo = al.agg.FitImagingAgg(aggregator=agg_with_subhalo)
+fit_with_subhalo_gen = fit_agg_with_subhalo.max_log_likelihood_gen_from()
 fit_with_subhalo = list(fit_with_subhalo_gen)[0]
 
 subhalo_plotter = al.subhalo.SubhaloPlotter(
@@ -144,9 +142,9 @@ We iterate over these results using a for loop below, where each iteration will 
 our analysis (e.g. if there are multiple lenses in the dataset that are fitted). In the `start_here.ipynb` example,
 only one lens is fitted, so this for loop is only iterated over once.
 """
-for agg_grid in agg.grid_searches():
-    search = list(agg_grid.values("search"))[0]
-
+for agg_grid, search in zip(
+    agg.grid_searches(), agg.grid_searches().best_fits().values("search")
+):
     # Extract the `GridSearchResult` which the `start_here.ipynb` example uses
     # for result inspection and visualization.
 
@@ -171,7 +169,20 @@ __Grid Search Visualization__
 
 The grid search visualization tools can also be used to plot the results of the grid search.
 """
-for agg_grid in agg.grid_searches():
+samples_no_subhalo_gen = agg_no_subhalo.values("samples")
+
+fit_agg_no_subhalo = al.agg.FitImagingAgg(aggregator=agg_no_subhalo)
+fit_no_subhalo_gen = fit_agg_no_subhalo.max_log_likelihood_gen_from()
+
+fit_agg_with_subhalo = al.agg.FitImagingAgg(aggregator=agg_with_subhalo)
+fit_with_subhalo_gen = fit_agg_with_subhalo.max_log_likelihood_gen_from()
+
+for agg_grid, fit_no_subhalo, fit_with_subhalo, samples_no_subhalo in zip(
+    agg.grid_searches(),
+    fit_no_subhalo_gen,
+    fit_with_subhalo_gen,
+    samples_no_subhalo_gen,
+):
     # Extract the `GridSearchResult` which the `start_here.ipynb` example uses
     # for result inspection and visualization.
 
@@ -186,13 +197,19 @@ for agg_grid in agg.grid_searches():
 
     subhalo_plotter = al.subhalo.SubhaloPlotter(
         result_subhalo_grid_search=result_subhalo_grid_search,
+        fit_imaging_no_subhalo=fit_no_subhalo[0],
+        fit_imaging_with_subhalo=fit_with_subhalo[0],
     )
 
     subhalo_plotter.figure_figures_of_merit_grid(
         use_log_evidences=True,
-        relative_to_value=result_no_subhalo.samples.log_evidence,
+        relative_to_value=samples.log_evidence,
         remove_zeros=True,
     )
+
+    subhalo_plotter.figure_mass_grid()
+    subhalo_plotter.subplot_detection_imaging()
+    subhalo_plotter.subplot_detection_fits()
 
 
 """

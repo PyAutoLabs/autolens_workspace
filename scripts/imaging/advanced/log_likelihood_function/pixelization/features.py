@@ -15,7 +15,7 @@ adaptively increases depending on a required fractional accuracy of the light pr
 # )
 #
 # image_iterate = lens_galaxy.image_2d_from(grid=masked_imaging_iterate.grid)
-# blurring_image_iterate = lens_galaxy.image_2d_from(grid=masked_dataset.blurring_grid)
+# blurring_image_iterate = lens_galaxy.image_2d_from(grid=masked_dataset.grids.blurring)
 
 
 """

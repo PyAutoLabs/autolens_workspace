@@ -108,7 +108,7 @@ class SimulateImagingPixelized:
         Loads source galaxy redshift and sets up a `galaxy` class object at that redshift.
         """
         source_image = self.inversion.interpolated_reconstruction_list_from(
-            shape_native=self.interpolated_pixelized_shape, extent=[-1, 1, -1, 1]
+            shape_native=self.interpolated_pixelized_shape,
         )[0]
 
         """
@@ -122,7 +122,9 @@ class SimulateImagingPixelized:
         grid = al.Grid2D.uniform(
             shape_native=self.mask.shape_native,
             pixel_scales=self.mask.pixel_scales,
-            sub_size=self.image_plane_subgrid_size,
+            over_sampling=al.OverSamplingUniform(
+                sub_size=self.image_plane_subgrid_size
+            ),
         )
 
         """
@@ -241,7 +243,6 @@ class SimulateImagingPixelized:
         )
 
         sensitivity_plotter = aplt.SubhaloSensitivityPlotter(
-            grid=grid,
             source_image=source_image,
             tracer_perturb=tracer,
             tracer_no_perturb=tracer_no_perturb,

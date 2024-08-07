@@ -130,10 +130,10 @@ result = search.fit(model=model, analysis=analysis)
 """
 __Result__
 
-We can use an `OptimizePlotter` to create a corner plot, which shows the probability density function (PDF) of every
+We can use an `MLEPlotter` to create a corner plot, which shows the probability density function (PDF) of every
 parameter in 1D and 2D.
 """
-pyswarms_plotter = aplt.OptimizePlotter(samples=result.samples)
+pyswarms_plotter = aplt.MLEPlotter(samples=result.samples)
 pyswarms_plotter.cost_history()
 
 """
@@ -157,7 +157,7 @@ search = af.PySwarmsLocal(
 
 result = search.fit(model=model, analysis=analysis)
 
-pyswarms_plotter = aplt.OptimizePlotter(samples=result.samples)
+pyswarms_plotter = aplt.MLEPlotter(samples=result.samples)
 pyswarms_plotter.cost_history()
 
 """

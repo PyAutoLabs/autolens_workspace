@@ -6,6 +6,7 @@ Files (Beginner)
 ----------------
 
 - ``data_structures.py``: How the NumPy arrays containing results are structured and the API for using them.
+- ``plotting.py``: How to customize the appearance of plots, for example matplotlib settings.
 - ``mass_to_light_ratio_units.py``: The units of light and mass profiles and how to convert between them.
 - ``over_sampling.py``: How to use over-sampling evaluate a light profile integral within a pixel more accurately.
 - ``units_and_cosmology.py``: Unit conversions and Cosmological quantities (converting to kiloparsecs, Einstein masses, etc.).

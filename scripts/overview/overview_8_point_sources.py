@@ -2,22 +2,25 @@
 Overview: Point Sources
 -----------------------
 
-So far, overview examples have shown strongly lensed galaxies, whose extended surface brightness is lensed into
+The overview examples so far have shown strongly lensed galaxies, whose extended surface brightness is lensed into
 the awe-inspiring giant arcs and Einstein rings we see in high quality telescope imaging. There are many lenses where
 the background source is not extended but is instead a point-source, for example strongly lensed quasars and supernovae.
 
-For these objects, it is invalid to model the source using light profiles, which implicitly assume an extended
-surface brightness distribution. Instead, we assume that the source is a point source with a centre (y,x).
+For these objects, it is invalid to model the source using light profiles, because they implicitly assume an extended
+surface brightness distribution. Point source modeling instead assumes the source has a (y,x) `centre`, but
+does not have other parameters like elliptical components or an effective radius.
 
-Our ray-tracing calculations no longer trace extended light rays from the source plane to the image-plane, but
-instead find the locations the point-source's multiple images appear in the image-plane.
+The ray-tracing calculations are now slightly different, whereby they find the locations the point-source's multiple
+images appear in the image-plane, given the source's (y,x) centre. Finding the multiple images of a mass model,
+given a (y,x) coordinate in the source plane, is an iterative problem that is different to evaluating a light profile.
 
-Finding the multiple images of a mass model given a (y,x) coordinate in the source plane is an iterative problem
-performed differently to ray-tracing a light profile. This example introduces the `MultipleImageSolver` object, which
-finds the image-plane multiple images of a point source and makes the analysis of strong lensed quasars, supernovae and
-other point-like source's possible.
+This example introduces the `PointSolver` object, which finds the image-plane multiple images of a point source by
+ray tracing triangles from the image-plane to the source-plane and calculating if the source-plane (y,x) centre is
+inside the triangle. The method gradually ray-traces smaller and smaller triangles so that the multiple images can
+be determine with sub-pixel precision.
 
-We also show how these tools can compute the fluxes and time delays of the point-source.
+This makes the analysis of strong lensed quasars, supernovae and other point-like source's possible. We also discuss
+how fluxes can be associated with the point-source and time delay information can be computed.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -92,29 +95,40 @@ source_galaxy = al.Galaxy(redshift=1.0, point_0=point_source)
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 """
-__Position Solving__
+__Multiple Image Solving__
 
 For a point source, our goal is to find the (y,x) coordinates in the image-plane that directly map to the centre
-of the point source in the source plane. 
+of the point source in the source plane, its "multiple images". This uses a `PointSolver`, which determines the 
+multiple-images of the mass model for a point source at location (y,x) in the source plane. 
 
-The number of solutions (e.g. the number of image-plane positions that map directly to the source-plane centre) depends
-on the mass model of the lens: 
+It does this by ray tracing triangles from the image-plane to the source-plane and calculating if the 
+source-plane (y,x) centre is inside the triangle. The method gradually ray-traces smaller and smaller triangles so 
+that the multiple images can be determine with sub-pixel precision.
 
- - For spherical mass profiles, there are three unique solutions, where one is a demagnified central image that is 
- typically so demagnified it is not observed in imaging data. 
- 
- - For elliptical mass profiles, there are typically 5 solutions, again including a demagnified central image.
- 
- - For lenses with multiple mass profiles (e.g. two galaxies) and more exotic mass distributions, the number of 
-   solutions can be even higher. 
+The `PointSolver` requires a starting grid of (y,x) coordinates in the image-plane which defines the first set
+of triangles that are ray-traced to the source-plane. It also requires that a `pixel_scale_precision` is input, 
+which is the resolution up to which the multiple images are computed. The lower the `pixel_scale_precision`, the
+longer the calculation, with the value of 0.001 below balancing efficiency with precision.
 
-This example uses an elliptical mass profile, so we should expect 5 solutions, which we compute below by creating a
-`MultipleImageSolver` object and passing it the tracer of our strong lens system.
+Strong lens mass models have a multiple image called the "central image". However, the image is nearly always 
+significantly demagnified, meaning that it is not observed and cannot constrain the lens model. As this image is a
+valid multiple image, the `PointSolver` will locate it irrespective of whether its so demagnified it is not observed.
+To ensure this does not occur, we set a `magnification_threshold=0.1`, which discards this image because its
+magnification will be well below this threshold.
+
+If your dataset contains a central image that is observed you should reduce to include it in
+the analysis.
+
+which we compute below by creating a
+`PointSolver` object and passing it the tracer of our strong lens system.
 """
-solver = al.MultipleImageSolver(
-    lensing_obj=tracer,
-    grid=grid,
-    pixel_scale_precision=0.001,
+grid = al.Grid2D.uniform(
+    shape_native=(100, 100),
+    pixel_scales=0.2,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+)
+
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
 )
 
 """
@@ -123,9 +137,9 @@ We now pass the tracer to the solver.
 This will then find the image-plane coordinates that map directly to the source-plane coordinate (0.07", 0.07"), 
 which we plot below.
 
-The plot is simply all 5 solved for positions on a scatter plot. To make the positions clearer, we increase
-the size of the markers to ensure they are visible and plot them as asterisks, which is the standard symbol used
-to denote multiple images of strong lenses in PyAutoLens.
+The plot is the 4 solved for multiple image positions (with the central image removed) on a scatter plot. To make 
+the positions clearer, we increase the size of the markers to ensure they are visible and plot them as asterisks, 
+which is the standard symbol used to denote multiple images of strong lenses in PyAutoLens.
 """
 positions = solver.solve(source_plane_coordinate=(0.07, 0.07))
 
@@ -149,6 +163,18 @@ tracer_plotter = aplt.TracerPlotter(
 tracer_plotter.figures_2d(image=True)
 
 """
+__Number of Solutions__
+
+The number of solutions (e.g. the number of image-plane multiple images that map to the source centre) depends
+on the mass model of the lens: 
+
+ - For spherical mass profiles, there are three unique solutions, including a demagnified central image.
+ 
+ - For elliptical mass profiles, there are five unique solutions, again including a demagnified central image.
+ 
+ - For lenses with multiple mass profiles (e.g. two galaxies) and more exotic mass distributions, the number of 
+   solutions can be even higher. 
+
 __Solving the Lens Equation__
 
 In the literature, the process of finding the multiple images of a source in the image-plane is often referred to as
@@ -170,7 +196,7 @@ The lens equation is non-linear, as the deflection angle $\hat{\alpha}$ depends 
 It is therefore called solving the lens equation because we are trying to find the image-plane (y,x) coordinates $\theta$
 that satisfies the equation above for a given source-plane (y,x) coordinate $\beta$.
 
-__How Does The Multiple Image Solver Work?__
+__Triangle Tracing__
 
 Computing the multiple image positions of a point source is a non-linear problem. Given a source-plane (y,x) coordinate,
 there are multiple image-plane (y,x) coordinates that trace to that source-plane coordinate, and there is no simple
@@ -189,24 +215,9 @@ Triangles of iteratively finer resolution are created until this precision is me
 `pixel_scale_precision` will lead to a more precise estimate of the multiple image positions at the expense of
 increased computational overhead.
 
-A full description of the triangulation approach alongside more customizations options can be found in the
-guide `autolens_workspace/notebooks/guides/multiple_image_solver.ipynb`.
+Here is a visualization of the triangulation approach:
 
-__Extended Source__
-
-This explains why extended light profiles are not used to model point sources. 
-
-When we simulate a lensed source using a light profile, its multiple images are visible as the brightest pixels in
-the image. 
-
-However, we cannot make a statement about the exact location of each multiple image to a greater precision
-than the pixel scale of the data we observe each multiple image on. For the data we simulated above, this pixel scale
-is 0.05".
-
-The multiple image solver can determine the positions of the multiple images to much higher precision than this, for
-example the `pixel_scale_precision` of 0.001" we used above. 
-
-This is why point sources are treated separately, using their own dedicated `MultipleImageSolver` object.
+[CODE]
 
 __Modeling__
 
@@ -227,7 +238,7 @@ standard practice in point-source modeling.
 
 It also contains the name `point_0`, which is an important label, as explained in more detail below.
 """
-point_dataset = al.PointDataset(
+dataset = al.PointDataset(
     name="point_0",
     positions=al.Grid2DIrregular(
         [
@@ -241,44 +252,20 @@ point_dataset = al.PointDataset(
 )
 
 """
+We can print this dictionary to see the dataset's `name`, `positions` and `fluxes` and noise-map values.
+"""
+print("Point Dataset Info:")
+print(dataset.info)
+
+"""
 The positions can be plotted over the observed image, to make sure they overlap with the multiple images we expect.
 """
-visuals = aplt.Visuals2D(positions=point_dataset.positions)
+visuals = aplt.Visuals2D(positions=dataset.positions)
 
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer_extended, grid=grid, visuals_2d=visuals
 )
 tracer_plotter.figures_2d(image=True)
-
-"""
-__Point Source Dictionary__
-
-We input this `PointDataset` into a `PointDict`, which is a dictionary containing the dataset. This is the object 
-used in the `modeling` scripts to perform lens modeling.
-
-In this example only one `PointDataset` is input into the `PointDict`, therefore the point dictionary seems somewhat
-redundant. 
-
-However, for datasets where the multiple images of multiple different point sources are observed in the strong lens
-system, each will have their own unique `PointDataset`, which are all stored in the `PointDict`.
-
-This occurs in group and cluster scale strong lenses, and very rare and exotic galaxy scale strong lenses.
-"""
-point_dict = al.PointDict(point_dataset_list=[point_dataset])
-
-"""
-We can print the `positions` of this dictionary and dataset, as well as their noise-map values.
-
-The key of the point dictionary we print corresponds to the name of the dataset, which was specified above as `point_0`.
-If there are multiple datasets in the `PointDict`, they would have different names, with their results accessible via
-using different keys in the dictionary corresponding to these names.
-"""
-print("Point Source Dataset Name:")
-print(point_dict["point_0"].name)
-print("Point Source Multiple Image (y,x) Arc-second Coordinates:")
-print(point_dict["point_0"].positions.in_list)
-print("Point Source Multiple Image Noise-map Values:")
-print(point_dict["point_0"].positions_noise_map.in_list)
 
 """
 __Name Pairing__
@@ -288,7 +275,7 @@ point sources in the lens model used to fit it.
 
 For example, when creating the tracer at the beginning of this script, we named the point source `point_0`:
 
-point_source = al.ps.PointSourceChi(centre=(0.07, 0.07))
+point_source = al.ps.Point(centre=(0.07, 0.07))
 source_galaxy = al.Galaxy(redshift=1.0, point_0=point_source)
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
@@ -314,12 +301,17 @@ source is fitted to each dataset.
 
 The fit is returned as a dictionary which mirrors the `PointDict`, where its keys are again the names of the datasets.
 """
-fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, solver=solver)
+fit = al.FitPointDataset(
+    dataset=dataset,
+    tracer=tracer,
+    solver=solver,
+    fit_positions_cls=al.FitPositionsImagePairRepeat,  # This input is describe below
+)
 
-print(fit["point_0"].positions.residual_map)
-print(fit["point_0"].positions.normalized_residual_map)
-print(fit["point_0"].positions.chi_squared_map)
-print(fit["point_0"].positions.log_likelihood)
+print(fit.positions.residual_map)
+print(fit.positions.normalized_residual_map)
+print(fit.positions.chi_squared_map)
+print(fit.positions.data.log_likelihood)
 
 """
 __Model__
@@ -353,58 +345,78 @@ model = af.Collection(galaxies=galaxies)
 
 search = af.Nautilus(path_prefix="overview", name="point_source")
 
-analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
+analysis = al.AnalysisPoint(dataset=dataset, solver=solver)
 
 result = search.fit(model=model, analysis=analysis)
 
 """
-__Source Plane Chi Squared__
+__Chi Squared__
 
-This example above performs point-source fitting and modeling using what is often referred to as an "image-plane 
-chi-squared". This means that the multiple image positions predicted by the model are computed in the image-plane
-and compared to the observed multiple image positions in the image-plane.
+For point-source modeling, there are many different ways to define the likelihood function, broadly referred to a
+an `image-plane chi-squared` or `source-plane chi-squared`. This determines whether the multiple images of the point
+source are used to compute the likelihood in the source-plane or image-plane.
 
-An alternative approach is to perform point-source modeling using a "source-plane chi-squared". This means that the
-multiple image positions predicted by the model are computed and compared in the source-plane.
+The default settings used above use the image-plane chi-squared, which uses the `PointSolver` to determine the 
+multiple images of the point source in the image-plane for the given mass model and compares the positions of these 
+model images to the observed images to compute the chi-squared and likelihood.
 
-This is often regarded as a less robust way to perform point-source modeling, which has been shown to produce biased
-and incorrect lens models. This is because a mass model may predict multiple images that are not observed in the 
-image-plane, which the source-plane chi-squared calculation fails to properly account for. 
+There are still many different ways the image-plane chi-squared can be computed, for example do we allow for 
+repeat image-pairs (i.e. the same multiple image being observed multiple times)? Do we pair all possible combinations
+of multiple images to observed images? This default settings use the simplest approach, which pair each multiple image
+with the observed image that is closest to it, allowing for repeat image pairs. 
 
-However, a source-plane chi-squared is much faster to compute than an image-plane chi-squared, as it does not require
-triangles to be iteratively traced to the source-plane to find the multiple images. In certain science cases, it is
-therefore useful, and therefore supported by **PyAutoLens**. 
-
-The advanced search chaining feature of PyAutoLens allows one initially fit a model quickly using a 
-source-plane chi-squared and then switch to an image-plane chi-squared for a robust final lens model.
-
-Using a source-plane chi-squared requires us to simply change the point source model input into the source
-galaxy to a `PointSourceChi` object
+For example, we can repeat the fit above whilst not allowing for repeat image pairs as follows:
 """
-point_source = al.ps.PointSourceChi(centre=(0.07, 0.07))
+fit = al.FitPointDataset(
+    dataset=dataset,
+    tracer=tracer,
+    solver=solver,
+    fit_positions_cls=al.FitPositionsImagePair,  # Different input to the one used above
+)
 
-source_galaxy = al.Galaxy(redshift=1.0, point_0=point_source)
-
-tracer_extended = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
-
-fit = al.FitPointDict(point_dict=point_dict, tracer=tracer, solver=solver)
-
-print(fit["point_0"].positions.residual_map)
-print(fit["point_0"].positions.normalized_residual_map)
-print(fit["point_0"].positions.chi_squared_map)
-print(fit["point_0"].positions.log_likelihood)
+print(fit.positions.data.log_likelihood)
 
 """
-__Result__
+For a "source-plane chi-squared", the likelihood is computed in the source-plane. The analysis basically just ray-traces
+the multiple images back to the source-plane and defines a chi-squared metric. For example, the default implementation 
+sums the Euclidean distance between the image positions and the point source centre in the source-plane.
 
-The **PyAutoLens** visualization library and `FitPoint` object includes specific methods for plotting the results.
+The source-plane chi-squared is significantly faster to compute than the image-plane chi-squared, however it is 
+less robust than the image-plane chi-squared and can lead to biased lens model results. 
+
+Here is an example of how to use the source-plane chi-squared:
+"""
+fit = al.FitPointDataset(
+    dataset=dataset,
+    tracer=tracer,
+    solver=solver,
+    fit_positions_cls=al.FitPositionsSource,  # Different input to the one used above
+)
+
+print(fit.positions.data.log_likelihood)
+
+"""
+Checkout the guide `autolens_workspace/*/guides/point_source.py` for more details and a full illustration of the
+different ways the chi-squared can be computed.
+
+__Fluxes and Time Delays__
+
+The point-source dataset can also include the fluxes and time-delays of each multiple image. 
+
+This information can be computed for a lens model via the `PointSolver`, and used in modeling to constrain the 
+lens model.
+
+A full description of how to include this information in the model-fit is given in 
+the `autolens_workspace/*/guides/point_source.py` and 
+the `autolens_workspace/*/point_sources/modeling/features/fluxes_and_time_delays.py` example script.
 
 __Wrap Up__
 
 The `point_source` package of the `autolens_workspace` contains numerous example scripts for performing point source
-modeling to datasets where there are only a couple of lenses and lensed sources, which fall under the category of
-'galaxy scale' objects.
+modeling. These focus on "galaxy scale" lenses, which are lenses that have a single lens galaxy, as opposed to
+"group scale" or "cluster scale" lenses which have multiple lens galaxies.
 
-This also includes examples of how to add and fit other information that are observed by a point-source source,
-for example the flux of each image.
+Point source modeling is at the heart of group and cluster scale lens modeling, and is the topic of the
+next overview script.
+
 """

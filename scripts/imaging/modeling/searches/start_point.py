@@ -137,7 +137,7 @@ We now define the start point of certain parameters in the model:
 For all parameters where the start-point is not specified (in this case the `ell_comps`, their 
 parameter values are drawn randomly from the prior when determining the initial locations of the parameters.
 """
-initializer = af.SpecificRangeInitializer(
+initializer = af.InitializerParamBounds(
     {
         model.galaxies.lens.mass.centre_0: (-0.01, 0.01),
         model.galaxies.lens.mass.centre_1: (-0.01, 0.01),
@@ -152,6 +152,11 @@ the priors or model info.
 """
 print(model.info)
 
+"""
+Information on the initializer can be extracted and printed, which is shown below, where the start points are
+clearly visible.
+"""
+print(initializer.info_from_model(model=model))
 
 """
 __Search + Analysis + Model-Fit__

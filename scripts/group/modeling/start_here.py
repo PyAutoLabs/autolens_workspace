@@ -61,21 +61,19 @@ which is a Python dictionary containing the positions and fluxes of every point 
 In this example there is just one point source, corresponding to the brightest pixel of each lensed multiple image. For
 other example point source datasets there are multiple sources.
 """
-point_dict = al.PointDict.from_json(
-    file_path=path.join(dataset_path, "point_dict.json")
-)
+dataset = al.PointDict.from_json(file_path=path.join(dataset_path, "dataset.json"))
 
 """
 We can print this dictionary to see the `name`, `positions` and `fluxes` of the dataset, as well as their noise-map 
 values.
 """
 print("Point Source Dict:")
-print(point_dict)
+print(dataset)
 
 """
 We can plot our positions dataset over the observed image.
 """
-visuals = aplt.Visuals2D(positions=point_dict.positions_list)
+visuals = aplt.Visuals2D(positions=dataset.positions_list)
 
 array_plotter = aplt.Array2DPlotter(array=data, visuals_2d=visuals)
 array_plotter.figure_2d()
@@ -83,23 +81,23 @@ array_plotter.figure_2d()
 """
 We can also just plot the positions, omitting the image.
 """
-grid_plotter = aplt.Grid2DPlotter(grid=point_dict["point_0"].positions)
+grid_plotter = aplt.Grid2DPlotter(grid=dataset["point_0"].data)
 grid_plotter.figure_2d()
 
 """
-__MultipleImageSolver__
+__PointSolver__
 
-For point-source modeling we also need to define our `MultipleImageSolver`. This object determines the multiple-images of 
+For point-source modeling we also need to define our `PointSolver`. This object determines the multiple-images of 
 a mass model for a point source at location (y,x) in the source plane, by iteratively ray-tracing light rays to the 
 source-plane. 
 
-Checkout the script ? for a complete description of this object, we will use the default `MultipleImageSolver` in this 
+Checkout the script ? for a complete description of this object, we will use the default `PointSolver` in this 
 example with a `point_scale_precision` half the value of the position noise-map, which should be sufficiently good 
 enough precision to fit the lens model accurately.
 """
 grid = al.Grid2D.uniform(shape_native=data.shape_native, pixel_scales=data.pixel_scales)
 
-solver = al.MultipleImageSolver(grid=grid, pixel_scale_precision=0.025)
+solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
 
 """
 __Model__
@@ -140,13 +138,13 @@ model = af.Collection(galaxies=galaxies)
 The `info` attribute shows the model in a readable format.
 
 The source does not use the ``Point`` class discussed in the previous overview example, but instead uses
-a ``PointSourceChi`` object.
+a ``Point`` object.
 
 This object changes the behaviour of how the positions in the point dataset are fitted. For a normal ``Point`` object,
 the positions are fitted in the image-plane, by mapping the source-plane back to the image-plane via the lens model
 and iteratively searching for the best-fit solution.
 
-The ``PointSourceChi`` object instead fits the positions directly in the source-plane, by mapping the image-plane
+The ``Point`` object instead fits the positions directly in the source-plane, by mapping the image-plane
 positions to the source just one. This is a much faster way to fit the positions,and for group scale lenses it
 typically sufficient to infer an accurate lens model.
 """
@@ -163,10 +161,10 @@ If there is no point-source in the model that has the same name as a `PointDatas
 the model-fit. If a point-source is included in the model whose name has no corresponding entry in 
 the `PointDataset` **PyAutoLens** will raise an error.
 
-In this example, where there is just one source, name pairing appears unecessary. However, point-source datasets may
+In this example, where there is just one source, name pairing appears unnecessary. However, point-source datasets may
 have many source galaxies in them, and name pairing is necessary to ensure every point source in the lens model is 
 fitted to its particular lensed images in the `PointDict`!
-**PyAutoLens** assumes that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
+The model fitting default settings assume that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
 
 If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that you either: 
 
@@ -232,7 +230,7 @@ __Analysis__
 The `AnalysisPoint` object defines the `log_likelihood_function` used by the non-linear search to fit the model 
 to the `PointDataset`.
 """
-analysis = al.AnalysisPoint(point_dict=point_dict, solver=solver)
+analysis = al.AnalysisPoint(dataset=dataset, solver=solver)
 
 """
 __Run Times__
@@ -261,11 +259,6 @@ The overall log likelihood evaluation time is given by the `fit_time` key.
 For this example, it is ~0.001 seconds, which is extremely fast for lens modeling. The source-plane chi-squared
 is possibly the fastest way to fit a lens model to a dataset, and therefore whilst it has limitations it is a good
 way to get a rough estimate of the lens model parameters quickly.
-
-Feel free to go ahead a print the full `run_time_dict` and `info_dict` to see the other information they contain. The
-former has a break-down of the run-time of every individual function call in the log likelihood function, whereas the 
-latter stores information about the data which drives the run-time (e.g. number of image-pixels in the mask, the
-shape of the PSF, etc.).
 """
 print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
 
@@ -273,7 +266,7 @@ print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
 To estimate the expected overall run time of the model-fit we multiply the log likelihood evaluation time by an 
 estimate of the number of iterations the non-linear search will perform. 
 
-Estimating this quantity is more tricky, as it varies depending on the lens model complexity (e.g. number of parameters)
+Estimating this is tricky, as it depends on the lens model complexity (e.g. number of parameters)
 and the properties of the dataset and model being fitted.
 
 For this example, we conservatively estimate that the non-linear search will perform ~10000 iterations per free 

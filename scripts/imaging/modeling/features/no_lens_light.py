@@ -220,8 +220,6 @@ print(
     / search.number_of_cores,
 )
 
-result = search.fit(model=model, analysis=analysis)
-
 """
 __Model-Fit__
 

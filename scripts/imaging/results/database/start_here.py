@@ -323,15 +323,6 @@ __Wrap Up__
 
 This example illustrates how to use the database.
 
-The `database/examples` folder contains examples illustrating the following:
-
-- ``samples.py``: Loads the non-linear search results from the SQLite3 database and inspect the 
-   samples (e.g. parameter estimates, posterior).
-   
-- ``queries.py``: Query the database to get certain  modeling results (e.g. all lens models where `
-   einstein_radius > 1.0`).
-
-- ``models.py``: Inspect the models in the database (e.g. visualize their deflection angles).
-
-- ``data_fitting.py``: Inspect the data-fitting results in the database (e.g. visualize the residuals).
+The API above can be combined with the `results/examples` scritps in order to use the database to load results and
+perform analysis on them.
 """

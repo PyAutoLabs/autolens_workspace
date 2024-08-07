@@ -8,14 +8,15 @@ from typing import Optional, Union
 def run(
     settings_search: af.SettingsSearch,
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
+    lp_chain_tracer: al.Tracer,
     source_result_for_lens: af.Result,
     source_result_for_source: af.Result,
     light_result: af.Result,
-    lens_bulge: Optional[af.Model] = af.Model(al.lp.Sersic),
-    lens_disk: Optional[af.Model] = None,
-    dark: af.Model = af.Model(al.mp.NFWMCRLudlow),
+    dark: Optional[af.Model] = af.Model(al.mp.NFWMCRLudlow),
     smbh: Optional[af.Model] = None,
-) -> af.ResultsCollection:
+    use_gradient: bool = False,
+    link_mass_to_light_ratios: bool = True,
+) -> af.Result:
     """
     The SLaM MASS LIGHT DARK PIPELINE, which fits a mass model where the stellar mass is modeled in a way linked
     to the stellar light alongside a dark matter halo.
@@ -73,21 +74,34 @@ def run(
     """
 
     lens_bulge = al.util.chaining.mass_light_dark_from(
-        lmp_model=lens_bulge,
-        result_light_component=light_result.model.galaxies.lens.bulge,
+        light_result=light_result,
+        lp_chain_tracer=lp_chain_tracer,
+        name="bulge",
+        use_gradient=use_gradient,
     )
     lens_disk = al.util.chaining.mass_light_dark_from(
-        lmp_model=lens_disk,
-        result_light_component=light_result.model.galaxies.lens.disk,
+        light_result=light_result,
+        lp_chain_tracer=lp_chain_tracer,
+        name="disk",
+        use_gradient=use_gradient,
     )
-    # lens_point = al.util.chaining.mass_light_dark_from(
-    #     lmp_model=lens_point,
-    #     result_light_component=light_result.model.galaxies.lens.point,
-    # )
 
-    dark.mass_at_200 = af.LogUniformPrior(lower_limit=1e10, upper_limit=1e15)
-    dark.redshift_object = light_result.instance.galaxies.lens.redshift
-    dark.redshift_source = light_result.instance.galaxies.source.redshift
+    lens_bulge, lens_disk = al.util.chaining.link_ratios(
+        link_mass_to_light_ratios=link_mass_to_light_ratios,
+        light_result=light_result,
+        bulge=lens_bulge,
+        disk=lens_disk,
+    )
+
+    if dark is not None:
+        try:
+            dark.centre = lens_bulge.centre
+        except AttributeError:
+            dark.centre = lens_bulge.profile_list[0].centre
+
+        dark.mass_at_200 = af.LogUniformPrior(lower_limit=1e10, upper_limit=1e15)
+        dark.redshift_object = light_result.instance.galaxies.lens.redshift
+        dark.redshift_source = light_result.instance.galaxies.source.redshift
 
     if smbh is not None:
         smbh.centre = lens_bulge.centre
@@ -103,7 +117,7 @@ def run(
                 redshift=light_result.instance.galaxies.lens.redshift,
                 bulge=lens_bulge,
                 disk=lens_disk,
-                #    point=lens_point,
+                point=light_result.instance.galaxies.lens.point,
                 dark=dark,
                 shear=source_result_for_lens.model.galaxies.lens.shear,
                 smbh=smbh,
@@ -116,9 +130,9 @@ def run(
     )
 
     search = af.Nautilus(
-        name="mass_light_dark[1]_light[lp]_mass[light_dark]_source",
+        name="mass_light_dark[1]",
         **settings_search.search_dict,
-        n_live=150,
+        n_live=250,
     )
 
     result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)

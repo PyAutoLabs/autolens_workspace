@@ -5,8 +5,3 @@ Files (Beginner)
 ----------------
 
 - ``start_here.py``: An overview of using the sqlite3 database tools.
-
-Folders (Beginner)
-------------------
-
-- ``examples``: Examples of how to use database functionality like loading results and querying.

@@ -62,19 +62,17 @@ __PointDict__
 
 Load and plot the `PointDict` dataset, which is the dataset used to perform lens modeling.
 """
-point_dict = al.PointDict.from_json(
-    file_path=path.join(dataset_path, "point_dict.json")
-)
+dataset = al.PointDict.from_json(file_path=path.join(dataset_path, "dataset.json"))
 
 print("Point Source Multiple Image (y,x) Arc-second Coordinates:")
-print(point_dict["point_0"].positions.in_list)
-print(point_dict["point_1"].positions.in_list)
+print(dataset["point_0"].data.in_list)
+print(dataset["point_1"].data.in_list)
 
-visuals = aplt.Visuals2D(positions=point_dict.positions_list)
+visuals = aplt.Visuals2D(positions=dataset.positions_list)
 
-point_dict_plotter = aplt.PointDictPlotter(point_dict=point_dict)
-point_dict_plotter.subplot_positions()
-point_dict_plotter.subplot_fluxes()
+dataset_plotter = aplt.PointDictPlotter(dataset=dataset)
+dataset_plotter.subplot_positions()
+dataset_plotter.subplot_fluxes()
 
 array_plotter = aplt.Array2DPlotter(array=data, visuals_2d=visuals)
 array_plotter.figure_2d()
@@ -87,13 +85,13 @@ The path the results of all chained searches are output:
 path_prefix = path.join("point_source", "chaining", "single_plane_to_double_plane")
 
 """
-__MultipleImageSolver__
+__PointSolver__
 
-Setup the `MultipleImageSolver`.
+Setup the `PointSolver`.
 """
 grid = al.Grid2D.uniform(shape_native=data.shape_native, pixel_scales=data.pixel_scales)
 
-solver = al.MultipleImageSolver(grid=grid, pixel_scale_precision=0.025)
+solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
 
 """
 __Model (Search 1)__
@@ -134,7 +132,7 @@ search_1 = af.Nautilus(
     n_live=100,
 )
 
-analysis_1 = al.AnalysisPoint(point_dict=point_dict, solver=solver)
+analysis_1 = al.AnalysisPoint(dataset=dataset, solver=solver)
 
 result_1 = search_1.fit(model=model_1, analysis=analysis_1)
 
@@ -196,7 +194,7 @@ search_2 = af.Nautilus(
     n_live=100,
 )
 
-analysis_2 = al.AnalysisPoint(point_dict=point_dict, solver=solver)
+analysis_2 = al.AnalysisPoint(dataset=dataset, solver=solver)
 
 result_2 = search_2.fit(model=model_2, analysis=analysis_2)
 

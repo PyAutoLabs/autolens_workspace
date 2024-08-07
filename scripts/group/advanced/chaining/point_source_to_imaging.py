@@ -55,11 +55,9 @@ dataset = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
-point_dict = al.PointDict.from_json(
-    file_path=path.join(dataset_path, "point_dict.json")
-)
+dataset = al.PointDict.from_json(file_path=path.join(dataset_path, "dataset.json"))
 
-visuals = aplt.Visuals2D(positions=point_dict.positions_list)
+visuals = aplt.Visuals2D(positions=dataset.positions_list)
 
 array_plotter = aplt.Array2DPlotter(array=dataset.data, visuals_2d=visuals)
 array_plotter.figure_2d()
@@ -72,7 +70,7 @@ The path the results of all chained searches are output:
 path_prefix = path.join("group", "chaining", "point_to_imaging")
 
 """
-__MultipleImageSolver__
+__PointSolver__
 
 Define the position solver used for the point source fitting.
 """
@@ -80,7 +78,7 @@ grid = al.Grid2D.uniform(
     shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales
 )
 
-solver = al.MultipleImageSolver(grid=grid, pixel_scale_precision=0.025)
+solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
 
 """
 __Model (Search 1)__
@@ -126,7 +124,7 @@ search_1 = af.Nautilus(
     number_of_cores=1,
 )
 
-analysis_1 = al.AnalysisPoint(point_dict=point_dict, solver=solver)
+analysis_1 = al.AnalysisPoint(dataset=dataset, solver=solver)
 
 result_1 = search_1.fit(model=model_1, analysis=analysis_1)
 
@@ -229,7 +227,7 @@ a `factor` to ensure it is not too small (and thus does not remove plausible mas
 multiplication, the threshold is below the `minimum_threshold`, it is rounded up to this minimum value.
 """
 positions_likelihood = al.PositionsLHPenalty(
-    threshold=1.0, positions=point_dict["point_0"].positions
+    threshold=1.0, positions=dataset["point_0"].data
 )
 
 """

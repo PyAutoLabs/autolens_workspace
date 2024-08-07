@@ -117,7 +117,10 @@ Faint residuals around the multiple images will be present, because the simulate
 whereas the model fitted is a cored Sersic.
 """
 search_1 = af.Nautilus(
-    path_prefix=path_prefix, name="search[1]__sersic_core", unique_tag=dataset_name, n_live=100
+    path_prefix=path_prefix,
+    name="search[1]__sersic_core",
+    unique_tag=dataset_name,
+    n_live=100,
 )
 
 analysis_1 = al.AnalysisImaging(dataset=dataset)
@@ -201,7 +204,10 @@ Faint residuals around the multiple images will be present, because the simulate
 whereas the model fitted is a cored Sersic.
 """
 search_2 = af.Nautilus(
-    path_prefix=path_prefix, name="search[2]__sersic_over_sampled", unique_tag=dataset_name, n_live=100
+    path_prefix=path_prefix,
+    name="search[2]__sersic_over_sampled",
+    unique_tag=dataset_name,
+    n_live=100,
 )
 
 analysis_2 = al.AnalysisImaging(dataset=dataset)

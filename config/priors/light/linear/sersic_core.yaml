@@ -68,15 +68,8 @@ SersicCore:
       lower: 0.8
       upper: 5.0
   radius_break:
-    type: Uniform
-    lower_limit: 0.0
-    upper_limit: 10.0
-    width_modifier:
-      type: Absolute
-      value: 0.1
-    gaussian_limits:
-      lower: 0.0
-      upper: inf
+    type: Constant
+    value: 0.025
   gamma:
     type: Constant
     value: 0.25
@@ -129,15 +122,8 @@ SersicSphCore:
       lower: 0.8
       upper: 5.0
   radius_break:
-    type: Uniform
-    lower_limit: 0.0
-    upper_limit: 10.0
-    width_modifier:
-      type: Absolute
-      value: 0.1
-    gaussian_limits:
-      lower: 0.0
-      upper: inf
+    type: Constant
+    value: 0.025
   gamma:
     type: Constant
     value: 0.25

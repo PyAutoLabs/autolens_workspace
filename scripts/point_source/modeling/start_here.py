@@ -1,57 +1,33 @@
 """
-Modeling: Point-Source
-======================
+Modeling: Start Here
+====================
 
-This script is the starting point for lens modeling of point-source lens datasets (E.g. the multiple image positions
-of a lensed quasar).
+This script is the starting point for lens modeling of point-source lens datasets, for example the multiple image
+positions of a lensed quasar.
 
 After reading this script, the `features`, `customize` and `searches` folders provide example for performing lens
 modeling in different ways and customizing the analysis.
 
 __Not Using Light Profiles__
 
-Users familiar with PyAutoLens who are familiar with analysing imaging data will be surprised to see that point-source
-based mass modeling does not use light profiles. The source galaxy's light is never modeled as a
-light profile (e.g. a `Sersic`) and a pixelized source reconstruction is equally inappropriate.
+Users familiar with PyAutoLens who are familiar with analysing imaging or interferometer data will be used to
+performing lens modeling using light profiles, which have parameter that describe the shape and size of the
+galaxy's luminous emission.
 
-This is because the source, as the name suggest, is a point-source of light. It has no extend emission and therefore
-should not be modeled as such.
+For point sources, for example a lensed quasar, it is invalid to model the source using light profiles, because they
+implicitly assume an extended surface brightness distribution. Point source modeling instead assumes the source
+has a (y,x) `centre` (y,x), but does not have other parameters like elliptical components or an effective radius.
 
-If this is a surprise to you or unclear, I recommend you read through the overview example
-`autolens_workspace/*/overview/overview_8_point_sources.py` before continuing. This example explains how point-source
-modeling differs from imaging data and why it is a completely different approach.
-
-__Source Plane Chi Squared__
-
-This example performs point-source modeling using a source-plane chi-squared. This means the likelihood of a model
-is evaluated based on how close the multiple image positions it predicts trace to the centre of the point source
-in the source-plane.
-
-This is often regard as a less robust way to perform point-source modeling than an image-plane chi-squared, and it
-means that other information about the multiple images of the point source (e.g. their fluxes) cannot be used. On
-the plus side, it is much faster to perform modeling using a source-plane chi-squared.
-
-Visualization of point-source modeling results are also limited, as the feature is still in development.
-
-__Image Plane Chi Squared (In Development)__
-
-An image-plane chi-squared is also available, however it is an in development feature with limitations. The main
-limitation is that the solver for the image-plane positions of a point-source in the source-plane is not robust. It
-often infers incorrect additional multiple image positions or fails to locate the correct ones.
-
-This is because I made the foolish decision to try and locate the positions by ray-tracing squares surrounding the
-image-plane positions to the source-plane and using a nearest neighbor based approach based on the Euclidean distance.
-This contrasts standard implementations elsewhere in the literature, which use a more robust approach based on ray
-tracing triangles to the source-plane and using whether the source-plane position lands within each triangle.
-
-This will one day be fixed, but we have so far not found time to do so.
+This changes how the ray-tracing calculations that go into point source modeling are performed. They are briefly
+touched on in this example, but for a more detailed explanation checkout the
+`autolens_workspace/*/overview/overview_8_point_sources.py` example.
 
 __Model__
 
-This script fits a `PointDict` data of a 'galaxy-scale' strong lens with a model where:
+This script fits a `PointDataset` data of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal`.
- - The source `Galaxy` is a point source `PointSourceChi`.
+ - The source `Galaxy` is a point source `Point`.
 
 The `ExternalShear` is also not included in the mass model, where it is for the `imaging` and `interferometer` examples.
 For a quadruply imaged point source (8 data points) there is insufficient information to fully constain a model with
@@ -71,52 +47,91 @@ import autolens.plot as aplt
 """
 __Dataset__
 
-Load the strong lens dataset `simple`, which is the dataset we will use to perform lens modeling.
-
-We begin by loading an image of the dataset. Although we are performing point-source modeling and will not use this
-data in the model-fit, it is useful to load it for visualization. By passing this dataset to the model-fit at the
-end of the script it will be used when visualizing the results. However, the use of an image in this way is entirely
-optional, and if it were not included in the model-fit visualization would simple be performed using grids without
-the image.
+Load the strong lens point-source dataset `simple`, which is the dataset we will use to perform point source 
+lens modeling.
 """
 dataset_name = "simple"
 dataset_path = path.join("dataset", "point_source", dataset_name)
 
+"""
+We now load the point source dataset we will fit using point source modeling. 
+
+We load this data as a `PointDataset`, which contains the positions and fluxes of every point source. 
+"""
+dataset = al.from_json(
+    file_path=path.join(dataset_path, "point_dataset.json"),
+)
+
+"""
+We can print this dictionary to see the dataset's `name`, `positions` and `fluxes` and noise-map values.
+"""
+print("Point Dataset Info:")
+print(dataset.info)
+
+"""
+We can also plot the positions and fluxes of the `PointDataset`.
+"""
+dataset_plotter = aplt.PointDatasetPlotter(dataset=dataset)
+dataset_plotter.subplot_dataset()
+
+"""
+We next load an image of the dataset. 
+
+Although we are performing point-source modeling and do not use this data in the actual modeling, it is useful to 
+load it for visualization, for example to see where the multiple images of the point source are located relative to the 
+lens galaxy.
+
+The image will also be passed to the analysis further down, meaning that visualization of the point-source model
+overlaid over the image will be output making interpretation of the results straight forward.
+
+Loading and inputting the image of the dataset in this way is entirely optional, and if you are only interested in
+performing point-source modeling you do not need to do this.
+"""
 data = al.Array2D.from_fits(
     file_path=path.join(dataset_path, "data.fits"), pixel_scales=0.05
 )
 
 """
-We now load the point source dataset we will fit using point source modeling. We load this data as a `PointDict`,
-which is a Python dictionary containing the positions and fluxes of every point source. 
-
-In this example there is just one point source, but point source model can be applied to datasets with any number 
-of source's.
+We can also plot the dataset's multiple image positions over the observed image, to ensure they overlap the
+lensed source's multiple images.
 """
-point_dict = al.PointDict.from_json(
-    file_path=path.join(dataset_path, "point_dict.json")
-)
-
-"""
-We can print this dictionary to see the `name`, `positions` and `fluxes` of the dataset, as well as their noise-map values.
-"""
-print("Point Source Dict:")
-print(point_dict)
-
-"""
-We can also just plot the positions and fluxes of the `PointDict`.
-"""
-point_dict_plotter = aplt.PointDictPlotter(point_dict=point_dict)
-point_dict_plotter.subplot_positions()
-point_dict_plotter.subplot_fluxes()
-
-"""
-We can also plot our positions dataset over the observed image.
-"""
-visuals = aplt.Visuals2D(positions=point_dict.positions_list)
+visuals = aplt.Visuals2D(positions=dataset.positions)
 
 array_plotter = aplt.Array2DPlotter(array=data, visuals_2d=visuals)
 array_plotter.figure_2d()
+
+"""
+__Point Solver__
+
+For point-source modeling we require a `PointSolver`, which determines the multiple-images of the mass model for a 
+point source at location (y,x) in the source plane. 
+
+It does this by ray tracing triangles from the image-plane to the source-plane and calculating if the 
+source-plane (y,x) centre is inside the triangle. The method gradually ray-traces smaller and smaller triangles so 
+that the multiple images can be determine with sub-pixel precision.
+
+The `PointSolver` requires a starting grid of (y,x) coordinates in the image-plane which defines the first set
+of triangles that are ray-traced to the source-plane. It also requires that a `pixel_scale_precision` is input, 
+which is the resolution up to which the multiple images are computed. The lower the `pixel_scale_precision`, the
+longer the calculation, with the value of 0.001 below balancing efficiency with precision.
+
+Strong lens mass models have a multiple image called the "central image". However, the image is nearly always 
+significantly demagnified, meaning that it is not observed and cannot constrain the lens model. As this image is a
+valid multiple image, the `PointSolver` will locate it irrespective of whether its so demagnified it is not observed.
+To ensure this does not occur, we set a `magnification_threshold=0.1`, which discards this image because its
+magnification will be well below this threshold.
+
+If your dataset contains a central image that is observed you should reduce to include it in
+the analysis.
+"""
+grid = al.Grid2D.uniform(
+    shape_native=(100, 100),
+    pixel_scales=0.2,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+)
+
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+)
 
 """
 __Model__
@@ -124,29 +139,27 @@ __Model__
 We compose a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
- - The source galaxy's light is a point `PointSourceChi` [2 parameters].
-
-The `PointSourceChi` model component indiciates that the chi-squared value of the point source is evaluated in the
-source-plane. By changing this component to a `Point`, the chi-squared value would instead be evaluated in the
-image-plane (this feature is in development and currently does not work well, as discussed at the top of this 
-example script).
+ - The source galaxy's light is a point `Point` [2 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=7.
 
 __Name Pairing__
 
-Every point-source dataset in the `PointDict` has a name, which in this example was `point_0`. This `name` pairs 
+Every point-source dataset in the `PointDataset` has a name, which in this example was `point_0`. This `name` pairs 
 the dataset to the `Point` in the model below. Because the name of the dataset is `point_0`, the 
 only `Point` object that is used to fit it must have the name `point_0`.
 
 If there is no point-source in the model that has the same name as a `PointDataset`, that data is not used in
 the model-fit. If a point-source is included in the model whose name has no corresponding entry in 
-the `PointDataset` **PyAutoLens** will raise an error.
+the `PointDataset` it will raise an error.
 
-In this example, where there is just one source, name pairing appears unecessary. However, point-source datasets may
+In this example, where there is just one source, name pairing appears unnecessary. However, point-source datasets may
 have many source galaxies in them, and name pairing is necessary to ensure every point source in the lens model is 
-fitted to its particular lensed images in the `PointDict`!
-**PyAutoLens** assumes that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
+fitted to its particular lensed images in the `PointDataset`.
+
+__Coordinates__
+
+The model fitting default settings assume that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
 
 If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that you either: 
 
@@ -161,7 +174,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
 
 # Source:
 
-point_0 = af.Model(al.ps.PointSourceChi)
+point_0 = af.Model(al.ps.Point)
 
 source = af.Model(al.Galaxy, redshift=1.0, point_0=point_0)
 
@@ -183,30 +196,13 @@ appear in a notebook).]
 print(model.info)
 
 """
-__Point Solver__
-
-For point-source modeling we also need to define our `MultipleImageSolver`. This object determines the multiple-images of 
-a mass model for a point source at location (y,x) in the source plane, by iteratively ray-tracing light rays to the 
-source-plane. 
-
-[For a source-plane chi-squared, we actually do not need to use a `MultipleImageSolver` at all, as its only purpose is to
-find the multiple-images of a source in the image-plane.
-
-Nevertheless, if you are feeling bold enough to try and use the current imaege-plage chi-squared feature, go ahead
-and use the `MultipleImageSolver` below.]
-"""
-grid = al.Grid2D.uniform(shape_native=data.shape_native, pixel_scales=data.pixel_scales)
-
-solver = al.MultipleImageSolver(grid=grid, pixel_scale_precision=0.025)
-
-"""
 __Search__
 
 The lens model is fitted to the data using a non-linear search. 
 
 All examples in the autolens workspace use the nested sampling algorithm 
-Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most accurate
-and efficient  modeling results.
+Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most 
+accurate and efficient modeling results.
 
 We make the following changes to the Nautilus settings:
 
@@ -255,20 +251,52 @@ For users on a Windows Operating system, using `number_of_cores>1` may lead to a
 reduced back to 1 to fix it.
 """
 search = af.Nautilus(
-    path_prefix=path.join("point_source"),
-    name="mass[sie]_source[point]",
+    path_prefix=path.join("point_source", "modeling"),
+    name="start_here",
     unique_tag=dataset_name,
-    n_live=150,
-    number_of_cores=1,
+    n_live=100,
+    number_of_cores=4,
 )
 
 """
+__Chi Squared__
+
+For point-source modeling, there are many different ways to define the likelihood function, broadly referred to a
+an `image-plane chi-squared` or `source-plane chi-squared`. This determines whether the multiple images of the point
+source are used to compute the likelihood in the source-plane or image-plane.
+
+We will use an "image-plane chi-squared", which uses the `PointSolver` to determine the multiple images of the point
+source in the image-plane for the given mass model and compares the positions of these model images to the observed
+images to compute the chi-squared and likelihood.
+
+There are still many different ways the image-plane chi-squared can be computed, for example do we allow for 
+repeat image-pairs (i.e. the same multiple image being observed multiple times)? Do we pair all possible combinations
+of multiple images to observed images? This example uses the simplest approach, which is to pair each multiple image
+with the observed image that is closest to it, allowing for repeat image pairs. 
+
+For a "source-plane chi-squared", the likelihood is computed in the source-plane. The analysis basically just ray-traces
+the multiple images back to the source-plane and defines a chi-squared metric. For example, the default implementation 
+sums the Euclidean distance between the image positions and the point source centre in the source-plane.
+
+The source-plane chi-squared is significantly faster to compute than the image-plane chi-squared, as it requires 
+only ray-tracing the ~4 observed image positions and does not require the iterative triangle ray-tracing approach
+of the image-plane chi-squared. However, the source-plane chi-squared is less robust than the image-plane chi-squared,
+and can lead to biased lens model results. If you are using the source-plane chi-squared, you should be aware of this
+and interpret the results with caution.
+
+Checkout the guide `autolens_workspace/*/guides/point_source.py` for more details and a full illustration of the
+different ways the chi-squared can be computed.
+
 __Analysis__
 
 The `AnalysisPoint` object defines the `log_likelihood_function` used by the non-linear search to fit the model 
 to the `PointDataset`.
 """
-analysis = al.AnalysisPoint(point_dict=point_dict, solver=None)
+analysis = al.AnalysisPoint(
+    dataset=dataset,
+    solver=solver,
+    fit_positions_cls=al.FitPositionsImagePairRepeat,  # Image-plane chi-squared with repeat image pairs.
+)
 
 """
 __Run Times__
@@ -288,20 +316,17 @@ The log likelihood evaluation time can be estimated before a fit using the `prof
 which returns two dictionaries containing the run-times and information about the fit.
 """
 run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-    instance=model.random_instance()
+    instance=model.instance_from_prior_medians()
 )
 
 """
 The overall log likelihood evaluation time is given by the `fit_time` key.
 
-For this example, it is ~0.001 seconds, which is extremely fast for lens modeling. The source-plane chi-squared
-is possibly the fastest way to fit a lens model to a dataset, and therefore whilst it has limitations it is a good
-way to get a rough estimate of the lens model parameters quickly.
+For this example, it is ~1.0 second, which is a modest run-time. This is because the iterative ray-tracing approach
+using triangles to compute the image-plane chi-squared is computationally quite slow. The source-plane chi-squared
+is significantly faster to compute (below 0.1 seconds), but as discussed above is less robust.
 
-Feel free to go ahead a print the full `run_time_dict` and `info_dict` to see the other information they contain. The
-former has a break-down of the run-time of every individual function call in the log likelihood function, whereas the 
-latter stores information about the data which drives the run-time (e.g. number of image-pixels in the mask, the
-shape of the PSF, etc.).
+
 """
 print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
 
@@ -309,11 +334,12 @@ print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
 To estimate the expected overall run time of the model-fit we multiply the log likelihood evaluation time by an 
 estimate of the number of iterations the non-linear search will perform. 
 
-Estimating this quantity is more tricky, as it varies depending on the lens model complexity (e.g. number of parameters)
+Estimating this is tricky, as it depends on the lens model complexity (e.g. number of parameters)
 and the properties of the dataset and model being fitted.
 
-For this example, we conservatively estimate that the non-linear search will perform ~10000 iterations per free 
-parameter in the model. This is an upper limit, with models typically converging in far fewer iterations.
+Testing has shown that point source datasets typically converge in fewer iterations than imaging or interferometer
+datasets. For this example, we conservatively estimate that the non-linear search will perform ~1000 iterations per 
+free parameter in the model. This is an upper limit, with models typically converging in far fewer iterations.
 
 If you perform the fit over multiple CPUs, you can divide the run time by the number of cores to get an estimate of
 the time it will take to fit the model. Parallelization with Nautilus scales well, it speeds up the model-fit by the 
@@ -322,7 +348,7 @@ for N> 50 CPUs, meaning that with super computing facilities you can always achi
 """
 print(
     "Estimated Run Time Upper Limit (seconds) = ",
-    (run_time_dict["fit_time"] * model.total_free_parameters * 10000)
+    (run_time_dict["fit_time"] * model.total_free_parameters * 1000)
     / search.number_of_cores,
 )
 

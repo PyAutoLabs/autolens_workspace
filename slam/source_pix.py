@@ -78,6 +78,7 @@ def run_1(
                 redshift=source_lp_result.instance.galaxies.lens.redshift,
                 bulge=source_lp_result.instance.galaxies.lens.bulge,
                 disk=source_lp_result.instance.galaxies.lens.disk,
+                point=source_lp_result.instance.galaxies.lens.point,
                 mass=mass,
                 shear=source_lp_result.model.galaxies.lens.shear,
             ),
@@ -96,7 +97,7 @@ def run_1(
     )
 
     search = af.Nautilus(
-        name="source_pix[1]_light[fixed]_mass[init]_source[pix_init_mag]",
+        name="source_pix[1]",
         **settings_search.search_dict,
         n_live=150,
     )
@@ -164,6 +165,7 @@ def run_2(
                 redshift=source_lp_result.instance.galaxies.lens.redshift,
                 bulge=source_lp_result.instance.galaxies.lens.bulge,
                 disk=source_lp_result.instance.galaxies.lens.disk,
+                point=source_lp_result.instance.galaxies.lens.point,
                 mass=source_pix_result_1.instance.galaxies.lens.mass,
                 shear=source_pix_result_1.instance.galaxies.lens.shear,
             ),
@@ -206,7 +208,7 @@ def run_2(
     is smooth.
     """
     search = af.DynestyStatic(
-        name="source_pix[2]_light[fixed]_mass[fixed]_source[pix]",
+        name="source_pix[2]",
         **settings_search.search_dict,
         nlive=100,
     )

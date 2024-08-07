@@ -193,7 +193,7 @@ lens_galaxy = al.Galaxy(
 
 pixelization = al.Pixelization(
     image_mesh=al.image_mesh.Overlay(shape=(25, 25)),
-    mesh=al.mesh.Voronoi(),
+    mesh=al.mesh.Delaunay(),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 

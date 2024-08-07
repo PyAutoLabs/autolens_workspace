@@ -53,7 +53,7 @@ def run_1_no_subhalo(
     )
 
     search = af.Nautilus(
-        name="subhalo[1]_mass[total_refine]",
+        name="subhalo[1]",
         **settings_search.search_dict,
         n_live=200,
     )
@@ -156,7 +156,7 @@ def run_2_grid_search(
     )
 
     search = af.Nautilus(
-        name=f"subhalo[2]_mass[total]_source_subhalo[{search_tag}]",
+        name=f"subhalo[2]_[{search_tag}]",
         **settings_search.search_dict,
         n_live=200,
     )
@@ -269,7 +269,7 @@ def run_3_subhalo(
     )
 
     search = af.Nautilus(
-        name=f"subhalo[3]_subhalo[{refine_tag}]",
+        name=f"subhalo[3]_[{refine_tag}]",
         **settings_search.search_dict,
         n_live=600,
     )

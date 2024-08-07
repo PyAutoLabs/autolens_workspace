@@ -98,15 +98,8 @@ SersicCore:
       lower: 0.0
       upper: inf
   radius_break:
-    type: Uniform
-    lower_limit: 0.0
-    upper_limit: 10.0
-    width_modifier:
-      type: Absolute
-      value: 0.1
-    gaussian_limits:
-      lower: 0.0
-      upper: inf
+    type: Constant
+    value: 0.025
   sersic_index:
     type: Uniform
     lower_limit: 0.8
@@ -193,15 +186,8 @@ SersicCoreSph:
       lower: 0.0
       upper: inf
   radius_break:
-    type: Uniform
-    lower_limit: 0.0
-    upper_limit: 10.0
-    width_modifier:
-      type: Absolute
-      value: 0.1
-    gaussian_limits:
-      lower: 0.0
-      upper: inf
+    type: Constant
+    value: 0.025
   sersic_index:
     type: Uniform
     lower_limit: 0.8

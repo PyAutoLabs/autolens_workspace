@@ -59,14 +59,12 @@ model and reduces the computational run-time of the model-fit.
 Lets the lens's point-source data, where the brightest pixels of the source are used as the locations of its
 centre:
 """
-point_dict = al.PointDict.from_json(
-    file_path=path.join(dataset_path, "point_dict.json")
-)
+dataset = al.PointDict.from_json(file_path=path.join(dataset_path, "dataset.json"))
 
 """
 We plot its positions over the observed image, using the `Visuals2D` object:
 """
-visuals = aplt.Visuals2D(positions=point_dict.positions_list)
+visuals = aplt.Visuals2D(positions=dataset.positions_list)
 
 array_plotter = aplt.Array2DPlotter(array=dataset.data, visuals_2d=visuals)
 array_plotter.figure_2d()
@@ -102,13 +100,13 @@ print(model.info)
 
 """
 The source does not use the `Point` class discussed in the previous overview example, but instead uses 
-a `PointSourceChi` object.
+a `Point` object.
 
 This object changes the behaviour of how the positions in the point dataset are fitted. For a normal `Point` object,
 the positions are fitted in the image-plane, by mapping the source-plane back to the image-plane via the lens model
 and iteratively searching for the best-fit solution.
 
-The `PointSourceChi` object instead fits the positions directly in the source-plane, by mapping the image-plane 
+The `Point` object instead fits the positions directly in the source-plane, by mapping the image-plane 
 positions to the source just one. This is a much faster way to fit the positions,and for group scale lenses it 
 typically sufficient to infer an accurate lens model.
 
@@ -119,7 +117,7 @@ overview.
 """
 search = af.Nautilus(path_prefix="overview", name="groups")
 
-analysis = al.AnalysisPoint(point_dict=point_dict, solver=None)
+analysis = al.AnalysisPoint(dataset=dataset, solver=None)
 
 result = search.fit(model=model, analysis=analysis)
 

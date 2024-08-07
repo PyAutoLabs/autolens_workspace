@@ -157,14 +157,13 @@ Using the samples method above can be slow, as the quantities have to be compute
 (e.g. computing errors requires that all samples are marginalized over). This information is stored directly in the
 samples summary and can therefore be accessed instantly.
 """
-# for samples_summary in agg.values("samples_summary"):
-#
-#     instance = samples_summary.max_log_likelihood()
-#
-#     print("Max Log Likelihood `Gaussian` Instance:")
-#     print("Centre = ", instance.centre)
-#     print("Normalization = ", instance.normalization)
-#     print("Sigma = ", instance.sigma, "\n")
+for samples_summary in agg.values("samples_summary"):
+    instance = samples_summary.max_log_likelihood()
+
+    print("Max Log Likelihood `Gaussian` Instance:")
+    print("Centre = ", instance.centre)
+    print("Normalization = ", instance.normalization)
+    print("Sigma = ", instance.sigma, "\n")
 
 """
 __Maximum Likelihood Model__

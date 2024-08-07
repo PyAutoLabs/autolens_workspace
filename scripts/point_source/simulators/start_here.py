@@ -82,34 +82,47 @@ Use these galaxies to setup a tracer, which will compute the multiple image posi
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 """
-Use the `MultipleImagePositions` object to find the multiple images of the `Point` source galaxy.
+__Point Solver__
 
-More specifcally, for the lens mass model defined above, it computes the multiple images of the source galaxy
+A `PointSolver` determines the multiple-images of the mass model for a point source at location (y,x) in the source 
+plane. It does this by iteratively ray-tracing light rays from the image-plane to the source-plane, until it finds 
+the image-plane coordinate that rays converge at for a given  source-plane (y,x).
+
+For the lens mass model defined above, it computes the multiple images of the source galaxy
 at the (y,x) source-plane coordinates (0.0", 0.0") of the point source.
 
-We will use computationally slow but robust settings to ensure we accurately locate the image-plane positions.
+The `PointSolver` requires a starting grid of (y,x) coordinates in the image-plane, which are iteratively traced 
+and refined to locate the image-plane coordinates that map directly to the source-plane coordinate.
+
+The `pixel_scale_precision` is the resolution up to which the multiple images are computed. The lower the value, the
+longer the calculation, with a value of 0.001 being efficient but more than sufficient for most point-source datasets.
+
+Strong lens mass models have a multiple image called the "central image", which is located at the centre of the lens.
+However, the image is nearly always demagnified due to the mass model, and is therefore not observed and not
+something we want to be included in the simulated dataset. The `maginification_threshold` removes this image, by
+discarding any image with a magnification below the threshold.
 """
 grid = al.Grid2D.uniform(
     shape_native=(100, 100),
     pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
-solver = al.MultipleImageSolver(
-    lensing_obj=tracer,
-    grid=grid,
-    pixel_scale_precision=0.001,
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
 )
 
 """
 We now pass the `Tracer` to the solver, which calculates the image-plane multiple image coordinates that map directly 
 to the source-plane coordinate (0.0", 0.0").
 """
-positions = solver.solve(source_plane_coordinate=source_galaxy.point_0.centre)
+positions = solver.solve(
+    tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
+)
 
 """
 __Fluxes__
 
-The flux of the multiple images is also simulated.
+The flux of the multiple images are also simulated.
 
 Given a mass model and (y,x) image-plane coordinates, the magnification at that point on the image-plane can be
 calculated. 
@@ -155,7 +168,7 @@ tracer_plotter.subplot_galaxies_images()
 """
 __Point Datasets__
 
-All of the quantities we've computed above are input into a `PointDataset` object, which collates all information
+All of the quantities computed above are input into a `PointDataset` object, which collates all information
 about the multiple images of a point-source strong lens system.
 
 In this example, it contains the image-plane coordinates of the multiple images, the fluxes of the multiple images,
@@ -165,10 +178,10 @@ It also contains the name `point_0`, which is a label given to the dataset to in
 point-source. This label is important, it is used for lens modeling in order to associate the dataset with the correct
 point-source in the model.
 """
-point_dataset = al.PointDataset(
+dataset = al.PointDataset(
     name="point_0",
     positions=positions,
-    positions_noise_map=al.ArrayIrregular(values=len(positions) * [grid.pixel_scale]),
+    positions_noise_map=grid.pixel_scale,
     fluxes=fluxes,
     fluxes_noise_map=al.ArrayIrregular(
         values=[np.sqrt(flux) for _ in range(len(fluxes))]
@@ -176,23 +189,15 @@ point_dataset = al.PointDataset(
 )
 
 """"
-__Point Dict__
+We now output the point dataset to the dataset path as a .json file, which is loaded in the point source modeling
+examples.
 
-We input this `PointDataset` into a `PointDict`, which is a dictionary containing the dataset. This is the object 
-used in the `modeling` scripts to perform lens modeling.
-
-In this example only one `PointDataset` is input into the `PointDict`, therefore the point dictionary seems somewhat
-redundant. 
-
-However, for datasets where the multiple images of multiple different point sources are observed in the strong lens
-system, each will have their own unique `PointDataset`, which are all stored in the `PointDict`.
-
-This occurs in group and cluster scale strong lenses, and very rare and exotic galaxy scale strong lenses.
+In this example, there is just one point source dataset. However, for group and cluster strong lenses there
+can be many point source datasets in a single dataset, and separate .json files are output for each.
 """
-point_dict = al.PointDict(point_dataset_list=[point_dataset])
-
-point_dict.output_to_json(
-    file_path=path.join(dataset_path, "point_dict.json"), overwrite=True
+al.output_to_json(
+    obj=dataset,
+    file_path=path.join(dataset_path, "point_dataset.json"),
 )
 
 """
@@ -204,7 +209,7 @@ mat_plot_1d = aplt.MatPlot1D(output=aplt.Output(path=dataset_path, format="png")
 mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
 
 point_dataset_plotter = aplt.PointDatasetPlotter(
-    point_dataset=point_dataset, mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d
+    dataset=dataset, mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d
 )
 point_dataset_plotter.subplot_dataset()
 

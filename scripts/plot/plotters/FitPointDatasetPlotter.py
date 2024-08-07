@@ -26,11 +26,9 @@ First, lets load an example strong lens `PointDataset` object.
 dataset_name = "simple"
 dataset_path = path.join("dataset", "point_source", dataset_name)
 
-point_dict = al.PointDict.from_json(
-    file_path=path.join(dataset_path, "point_dict.json")
-)
+dataset = al.PointDict.from_json(file_path=path.join(dataset_path, "dataset.json"))
 
-point_dataset = point_dict["point_0"]
+point_dataset = dataset["point_0"]
 
 """
 __Fit__
@@ -54,9 +52,9 @@ tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)
 
-solver = al.MultipleImageSolver(grid=grid, pixel_scale_precision=0.025)
+solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
 
-fit = al.FitPointDataset(point_dataset=point_dataset, tracer=tracer, solver=solver)
+fit = al.FitPointDataset(dataset=point_dataset, tracer=tracer, solver=solver)
 
 """
 __Figures__

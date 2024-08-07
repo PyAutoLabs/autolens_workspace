@@ -14,7 +14,7 @@ This script has the following aims:
  - To make inversions in **PyAutoLens** less of a "black-box" to users.
 
 Accompanying this script is the `contributor_guide.py` which provides URL's to every part of the source-code that
-is illustrated in this guide. This gives contributors a linear run through of what source-code functions, modules and
+is illustrated in this guide. This gives contributors a sequential run through of what source-code functions, modules and
 packages are called when the likelihood is evaluated.
 """
 # %matplotlib inline
@@ -87,7 +87,7 @@ a full description of over sampling and how to use it is given in `autolens_work
 masked_dataset = masked_dataset.apply_over_sampling(
     over_sampling=al.OverSamplingDataset(
         uniform=al.OverSamplingUniform(sub_size=1),
-        pixelization=al.OverSamplingUniform(sub_size=1)
+        pixelization=al.OverSamplingUniform(sub_size=1),
     )
 )
 
@@ -272,7 +272,7 @@ A constant regularization scheme is applied which applies a smoothness prior on 
 """
 pixelization = al.Pixelization(
     image_mesh=al.image_mesh.Overlay(shape=(30, 30)),
-    mesh=al.mesh.Voronoi(),
+    mesh=al.mesh.Delaunay(),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -298,10 +298,10 @@ values not within the mask, which are close enough to it that their flux blurs i
 To compute this, a `blurring_mask` and `blurring_grid` are used, corresponding to these pixels near the edge of the 
 actual mask whose light blurs into the image:
 """
-blurring_image_2d = lens_galaxy.image_2d_from(grid=masked_dataset.blurring_grid)
+blurring_image_2d = lens_galaxy.image_2d_from(grid=masked_dataset.grids.blurring)
 
 galaxy_plotter = aplt.GalaxyPlotter(
-    galaxy=lens_galaxy, grid=masked_dataset.blurring_grid
+    galaxy=lens_galaxy, grid=masked_dataset.grids.blurring
 )
 galaxy_plotter.figures_2d(image=True)
 
@@ -370,11 +370,18 @@ compute their $\beta$ values.
 """
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
+"""
+The source code gets quite complex when handling grids for a pixelization, but it is all handled in
+the `TracerToInversion` objects.
+
+The plots at the bottom of this cell show the traced grids used by the source pixelization, showing
+how the Delaunay mesh and traced image pixels are constructed.
+"""
 tracer_to_inversion = al.TracerToInversion(tracer=tracer, dataset=masked_dataset)
 
 # A list of every grid (e.g. image-plane, source-plane) however we only need the source plane grid with index -1.
 traced_grid_pixelization = tracer.traced_grid_2d_list_from(
-    grid=masked_dataset.grid_pixelization
+    grid=masked_dataset.grids.pixelization
 )[-1]
 
 # This functions a bit weird - it returns a list of lists of ndarrays. Best not to worry about it for now!
@@ -441,7 +448,7 @@ mapper_grids = al.MapperGrids(
 
 mapper = al.Mapper(
     mapper_grids=mapper_grids,
-    over_sampler=masked_dataset.over_sampler_pixelization,
+    over_sampler=masked_dataset.grids.over_sampler_pixelization,
     regularization=None,
 )
 
@@ -463,7 +470,7 @@ There are two steps in this calculation, which we show individually below.
 """
 mapper = al.Mapper(
     mapper_grids=mapper_grids,
-    over_sampler=masked_dataset.over_sampler_pixelization,
+    over_sampler=masked_dataset.grids.over_sampler_pixelization,
     regularization=None,
 )
 

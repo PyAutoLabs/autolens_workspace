@@ -152,7 +152,7 @@ https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 
 __Coordinates__
 
-**PyAutoLens** assumes that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
+The model fitting default settings assume that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
 
 If for your dataset the lens is not centred at (0.0", 0.0"), we recommend that you either: 
 
@@ -332,11 +332,6 @@ The overall log likelihood evaluation time is given by the `fit_time` key.
 For this example, it is ~0.01 seconds, which is extremely fast for lens modeling. More advanced lens
 modeling features (e.g. multi Gaussian expansions, pixelizations) have slower log likelihood evaluation
 times (0.1-3 seconds), and you should be wary of this when using these features.
-
-Feel free to go ahead a print the full `run_time_dict` and `info_dict` to see the other information they contain. The
-former has a break-down of the run-time of every individual function call in the log likelihood function, whereas the 
-latter stores information about the data which drives the run-time (e.g. number of image-pixels in the mask, the
-shape of the PSF, etc.).
 """
 print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
 
@@ -344,7 +339,7 @@ print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
 To estimate the expected overall run time of the model-fit we multiply the log likelihood evaluation time by an 
 estimate of the number of iterations the non-linear search will perform. 
 
-Estimating this quantity is more tricky, as it varies depending on the lens model complexity (e.g. number of parameters)
+Estimating this is tricky, as it depends on the lens model complexity (e.g. number of parameters)
 and the properties of the dataset and model being fitted.
 
 For this example, we conservatively estimate that the non-linear search will perform ~10000 iterations per free 
