@@ -5,6 +5,14 @@ Plots: VoronoiDrawer
 This example illustrates how to customize the appearance of the Voronoi mesh of a Voronoi mesh using the
 `VoronoiDrawer` object.
 
+__Natural Neighbor Interpolation__
+
+To run the Voronoi mesh plotter, you must install the Voronoi natural neighbor interpolation package by
+following these instructions:
+
+https://github.com/Jammy2211/PyAutoArray/tree/main/autoarray/util/nn
+
+
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
@@ -97,5 +105,8 @@ the `VoronoiDrawer` object.
 """
 inversion_plotter = aplt.InversionPlotter(inversion=inversion, mat_plot_2d=mat_plot)
 
-inversion_plotter.figures_2d_of_pixelization(pixelization_index=0, reconstruction=True)
-inversion_plotter.subplot_of_mapper(mapper_index=0)
+try:
+    inversion_plotter.figures_2d_of_pixelization(pixelization_index=0, reconstruction=True)
+    inversion_plotter.subplot_of_mapper(mapper_index=0)
+except ImportError:
+    print("You have not installed the Voronoi natural neighbor interpolation package, see instructions at top of notebook.")

@@ -390,7 +390,7 @@ __Likelihood Step 6: Likelihood Function__
 
 We now quantify the goodness-of-fit of our lens and source model.
 
-We compute the `log_likelihood` of the fit, which is the value returned by the **PyAutoLens** `log_likelihood_function`.
+We compute the `log_likelihood` of the fit, which is the value returned by the `log_likelihood_function`.
 
 The likelihood function for parametric lens modeling consists of two terms:
 
@@ -459,8 +459,7 @@ print(figure_of_merit)
 """
 __Fit__
 
-This 11 step process to perform a likelihood function evaluation is what is performed in the `FitImaging` object, which
-those of you familiar will have seen before.
+This 11 step process to perform a likelihood function evaluation is what is performed in the `FitImaging` object.
 """
 fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
 fit_figure_of_merit = fit.figure_of_merit
@@ -470,7 +469,7 @@ print(fit_figure_of_merit)
 """
 __Lens Modeling__
 
-To fit a lens model to data, **PyAutoLens** samples the likelihood function illustrated in this tutorial using a
+To fit a lens model to data, the likelihood function illustrated in this tutorial is sampled using a
 non-linear search algorithm.
 
 The default sampler is the nested sampling algorithm `Nautilus` (https://github.com/joshspeagle/Nautilus)

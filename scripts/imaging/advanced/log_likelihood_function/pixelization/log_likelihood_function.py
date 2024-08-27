@@ -626,7 +626,7 @@ For example:
  - $f_{0, 2} = 0.3$ indicates that image-pixel $2$ maps to source-pixel $0$ with a weight of $0.3$ after PSF convolution.
  - $f_{4, 8} = 0$ indicates that image-pixel $8$ does not map to source-pixel $4$, even after PSF convolution.
 
-In **PyAutoLens** the indexing of the `mapping_matrix` is reversed compared to the notation of WD03 (e.g. image pixels
+The indexing of the `mapping_matrix` is reversed compared to the notation of WD03 (e.g. image pixels
 are the first entry of `mapping_matrix` whereas for $f$ they are the second index).
 """
 print(f"Mapping between image pixel 0 and source pixel 2 = {mapping_matrix[0, 2]}")
@@ -634,9 +634,9 @@ print(f"Mapping between image pixel 0 and source pixel 2 = {mapping_matrix[0, 2]
 """
 __Likelihood Step 10: Data Vector (D)__
 
-To solve for the source pixel fluxes we now pose the problem as a linear inversion using NumPy linear algebra.
+To solve for the source pixel fluxes we now pose the problem as a linear inversion.
 
-This requires us to convert the `blurred_mapping_matrix` and our data / noise map into matrices of certain dimensions. 
+This requires us to convert the `blurred_mapping_matrix` and our `data` and `noise map` into matrices of certain dimensions. 
 
 The `data_vector`, $D$, is the first matrix and it has dimensions `(total_source_pixels,)`.
 
@@ -843,7 +843,7 @@ mapper_plotter = aplt.MapperPlotter(mapper=mapper)
 mapper_plotter.figure_2d(solution_vector=reconstruction, interpolate_to_uniform=False)
 
 """
-__Likelihood Step 15 Image Reconstruction__
+__Likelihood Step 15: Image Reconstruction__
 
 Using the reconstructed source pixel fluxes we can map the source reconstruction back to the image plane (via
 the `blurred mapping_matrix`) and produce a reconstruction of the image data.
@@ -866,7 +866,7 @@ __Likelihood Step 16: Likelihood Function__
 
 We now quantify the goodness-of-fit of our lens model and source reconstruction. 
 
-We compute the `log_likelihood` of the fit, which is the value returned by the **PyAutoLens** `log_likelihood_function`.
+We compute the `log_likelihood` of the fit, which is the value returned by the `log_likelihood_function`.
 
 The likelihood function for lens modeling consists of five terms:
 
@@ -1003,8 +1003,7 @@ print(log_evidence)
 """
 __Fit__
 
-This 21 step process to perform a likelihood function evaluation is what is performed in the `FitImaging` object, which
-those of you familiar will have seen before.
+This 21 step process to perform a likelihood function evaluation is what is performed in the `FitImaging` object.
 """
 fit = al.FitImaging(
     dataset=masked_dataset,
@@ -1020,7 +1019,7 @@ print(fit_log_evidence)
 """
 __Lens Modeling__
 
-To fit a lens model to data, **PyAutoLens** samples the likelihood function illustrated in this tutorial using a
+To fit a lens model to data, the likelihood function illustrated in this tutorial is sampled using a
 non-linear search algorithm.
 
 The default sampler is the nested sampling algorithm `Nautilus` (https://github.com/joshspeagle/Nautilus)

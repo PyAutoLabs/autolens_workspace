@@ -30,7 +30,7 @@ The functionality illustrated in this example only supports results loaded via t
 We therefore do not load results from hard-disk like other scritps, but build a .sqlite database in order
 to create the `Aggregator` object.
 
-If you have not used the .sqlite database before, the `database` package describes how to set it up and the API
+If you have not used the .sqlite database before, the `start_here.ipynb` example describes how to set it up and the API
 for the aggregator is identical from here on.
 """
 database_name = "results_folder"

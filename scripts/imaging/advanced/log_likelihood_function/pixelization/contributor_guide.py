@@ -21,7 +21,7 @@ The likelihood evaluation is spread over the following two GitHub repositories:
 
 __LH Setup: Lens Galaxy Light (Setup)__
 
-To see examples of all light profiles in **PyAutoLens** checkout  the `light_profiles` package:
+To see examples of all light profiles checkout  the `light_profiles` package:
 
  https://github.com/Jammy2211/PyAutoGalaxy/blob/main/autogalaxy/profiles/light_profiles
 
@@ -214,7 +214,7 @@ __LH Step 14: Source Reconstruction (S)__
  https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/inversion/inversion/matrices.py
 
 
-__LH Step 15 Image Reconstruction__
+__LH Step 15: Image Reconstruction__
 
  The calculation is performed by the method `mapped_reconstructed_data_via_mapping_matrix_from` at:
 

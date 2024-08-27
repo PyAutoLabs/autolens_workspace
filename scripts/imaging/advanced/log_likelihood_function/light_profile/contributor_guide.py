@@ -21,7 +21,7 @@ The likelihood evaluation is spread over the following two GitHub repositories:
 
 __LH Setup: Lens Galaxy Light (Setup)__
 
-To see examples of all light profiles in **PyAutoLens** checkout  the `light_profiles` package:
+To see examples of all light profiles checkout  the `light_profiles` package:
 
  https://github.com/Jammy2211/PyAutoGalaxy/blob/main/autogalaxy/profiles/light_profiles
 
@@ -106,10 +106,10 @@ Convlution uses the `Convolver` object and its method `convolve_image`
 
 __LH Step 6: Likelihood Function__
 
-The `model_image` computed previously was subtracted from the observed image, and the residuals, chi-squared
+The `model_image` was subtracted from the observed image, and the residuals, chi-squared
 and log likelihood computed.
 
-This is performed in the `FitImaging` object which is spread over **PyAutoArray** and **PyAutoGalaxy**:
+This is performed in the `FitImaging` object:
 
 https://github.com/Jammy2211/PyAutoGalaxy/blob/main/autogalaxy/imaging/fit_imaging.py
 
@@ -119,7 +119,7 @@ The following methods are relevant in this module:
 `model_data`: This is the blurred image, but the variable is renamed as for more advanced fits it is extended.
 
 The steps of subtracting the model image from the observed image and computing the residuals, chi-squared and
-log likelihood are performed in the `FitDataset` and `FitImaging` object of **PyAutoArray**:
+log likelihood are performed in the following `FitDataset` and `FitImaging` objects::
 
 https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/fit/fit_dataset.py
 https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/fit/fit_imaging.py
