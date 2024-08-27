@@ -413,7 +413,7 @@ The end of this example provides a detailed description of all result options fo
 print(result.max_log_likelihood_instance)
 
 tracer_plotter = aplt.TracerPlotter(
-    tracer=result.max_log_likelihood_tracer, grid=result.grid
+    tracer=result.max_log_likelihood_tracer, grid=result.grids.uniform
 )
 tracer_plotter.subplot_tracer()
 

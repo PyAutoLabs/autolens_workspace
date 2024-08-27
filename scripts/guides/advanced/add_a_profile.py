@@ -95,7 +95,6 @@ class Isothermal(MassProfile):
         self.slope = 2.0
 
     @aa.grid_dec.to_vector_yx
-    @aa.grid_dec.grid_2d_to_structure
     @aa.grid_dec.transform
     @aa.grid_dec.relocate_to_radial_minimum
     def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike):
@@ -335,7 +334,7 @@ class ExampleMass(EllProfile):
         super().__init__(centre=centre, ell_comps=ell_comps)
 
     @aa.grid_dec.transform
-    def deflections_2d_from(self, grid: aa.Grid2D):
+    def deflections_yx_2d_from(self, grid: aa.Grid2D, **kwargs):
         print(
             f"\n Grid In Deflections After Transform "
             f"Which is Same As Transformed Grid Above: {grid}"
@@ -343,7 +342,7 @@ class ExampleMass(EllProfile):
 
 
 mass = ExampleMass(centre=(0.5, 0.5), ell_comps=(0.5, 0.5))
-mass.deflections_2d_from(grid=grid)
+mass.deflections_yx_2d_from(grid=grid)
 
 """
 __Do I Rotate Back?__
@@ -455,7 +454,6 @@ class TemplateMass(EllProfile):
         # super().__init__(centre=centre, ell_comps=(0.0, 0.0))
 
     @aa.grid_dec.to_vector_yx
-    @aa.grid_dec.grid_2d_to_structure
     @aa.grid_dec.transform
     @aa.grid_dec.relocate_to_radial_minimum
     def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike):
@@ -464,7 +462,7 @@ class TemplateMass(EllProfile):
         """
         pass
 
-    @aa.grid_dec.grid_2d_to_structure
+    @aa.grid_dec.to_array
     @aa.grid_dec.transform
     @aa.grid_dec.relocate_to_radial_minimum
     def convergence_2d_from(self, grid: aa.type.Grid2DLike):
@@ -473,7 +471,7 @@ class TemplateMass(EllProfile):
         """
         pass
 
-    @aa.grid_dec.grid_2d_to_structure
+    @aa.grid_dec.to_array
     @aa.grid_dec.transform
     @aa.grid_dec.relocate_to_radial_minimum
     def potential_2d_from(self, grid: aa.type.Grid2DLike):
@@ -500,7 +498,7 @@ class TemplateMass(EllProfile):
             / ((1 - (1 - axis_ratio**2) * u) ** 0.5)
         )
 
-    @aa.grid_dec.grid_2d_to_structure
+    @aa.grid_dec.to_vector_yx
     @aa.grid_dec.transform
     @aa.grid_dec.relocate_to_radial_minimum
     def shear_yx_2d_from(self, grid: aa.type.Grid2DLike):

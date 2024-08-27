@@ -240,7 +240,7 @@ Plotting each result's tracer shows that the source appears different, owning to
 """
 for result in result_list:
     tracer_plotter = aplt.TracerPlotter(
-        tracer=result.max_log_likelihood_tracer, grid=result.grid
+        tracer=result.max_log_likelihood_tracer, grid=result.grids.uniform
     )
     tracer_plotter.subplot_tracer()
 

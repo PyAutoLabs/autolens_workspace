@@ -141,7 +141,7 @@ def fit():
     print(result.max_log_likelihood_instance)
 
     tracer_plotter = aplt.TracerPlotter(
-        tracer=result.max_log_likelihood_tracer, grid=result.grid
+        tracer=result.max_log_likelihood_tracer, grid=result.grids.uniform
     )
     tracer_plotter.subplot_tracer()
 
