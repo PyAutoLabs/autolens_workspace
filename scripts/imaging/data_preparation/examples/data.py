@@ -165,7 +165,7 @@ electrons per second, and that the same functions as above can be used to do thi
 __Resizing Data__
 
 The bigger the postage stamp cut-out of the image the more memory it requires to store. Visualization will be less 
-ideal too, as the lens galaxy will be a small blob in the centre relative to the large surrounding edges of the image. Why 
+ideal too, as the lens galaxy will be a smaller blob in the centre relative to the large surrounding edges of the image. Why 
 keep the edges surrounding the lens and sourcegalaxy if they are masked out anyway?
 
 Lets look at an example of a very large postage stamp - we can barely even see the lens and source galaxy!

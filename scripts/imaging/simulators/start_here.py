@@ -43,7 +43,7 @@ gives it a descriptive name. They define the folder the dataset is output to on 
  - The psf will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/psf.fits`.
 """
 dataset_type = "imaging"
-dataset_name = "simple"
+dataset_name = "simple__big_stamp"
 
 """
 The path where the dataset will be output, which in this case is:
@@ -82,7 +82,7 @@ Once you are more experienced, you should read up on over-sampling in more detai
 the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
 """
 grid = al.Grid2D.uniform(
-    shape_native=(100, 100),
+    shape_native=(400, 400),
     pixel_scales=0.1,
     over_sampling=al.OverSamplingIterate(
         fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]

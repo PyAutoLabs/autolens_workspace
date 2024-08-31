@@ -78,11 +78,26 @@ array_plotter = aplt.Array2DPlotter(
 array_plotter.figure_2d()
 
 """
+__Output__
+
+Save this as a .png image in the dataset folder for easy inspection later.
+"""
+mat_plot = aplt.MatPlot2D(
+    output=aplt.Output(path=dataset_path, filename="data_with_clumps", format="png")
+)
+visuals = aplt.Visuals2D(light_profile_centres=clump_centres)
+
+array_plotter = aplt.Array2DPlotter(
+    array=data, visuals_2d=visuals, mat_plot_2d=mat_plot
+)
+array_plotter.figure_2d()
+
+"""
 Now we`re happy with the clump centre(s), lets output them to the dataset folder of the lens, so that we can load them 
 from a .json file in our pipelines!
 """
-clump_centres.output_to_json(
-    file_path=path.join(dataset_path, "clump_centres.json"), overwrite=True
+al.output_to_json(
+    obj=clump_centres, file_path=path.join(dataset_path, "clump_centres.json")
 )
 
 """

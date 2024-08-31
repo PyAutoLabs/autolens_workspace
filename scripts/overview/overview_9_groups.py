@@ -36,15 +36,15 @@ must ultimately include them in the lens model.
 dataset_name = "lens_x3__source_x1"
 dataset_path = path.join("dataset", "group", dataset_name)
 
-dataset = al.Imaging.from_fits(
+imaging = al.Imaging.from_fits(
     data_path=path.join(dataset_path, "data.fits"),
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 
-dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
-dataset_plotter.subplot_dataset()
+imaging_plotter = aplt.ImagingPlotter(dataset=imaging)
+imaging_plotter.subplot_dataset()
 
 """
 __Point Source__
@@ -59,15 +59,31 @@ model and reduces the computational run-time of the model-fit.
 Lets the lens's point-source data, where the brightest pixels of the source are used as the locations of its
 centre:
 """
-dataset = al.PointDict.from_json(file_path=path.join(dataset_path, "dataset.json"))
+dataset = al.from_json(
+    file_path=path.join(dataset_path, "point_dataset.json"),
+)
 
 """
 We plot its positions over the observed image, using the `Visuals2D` object:
 """
-visuals = aplt.Visuals2D(positions=dataset.positions_list)
+visuals = aplt.Visuals2D(positions=dataset.positions)
 
-array_plotter = aplt.Array2DPlotter(array=dataset.data, visuals_2d=visuals)
+array_plotter = aplt.Array2DPlotter(array=imaging.data, visuals_2d=visuals)
 array_plotter.figure_2d()
+
+"""
+__PointSolver__
+
+Setup the `PointSolver`.
+"""
+grid = al.Grid2D.uniform(
+    shape_native=(100, 100),
+    pixel_scales=0.2,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+)
+
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+)
 
 """
 __Model__
@@ -117,7 +133,7 @@ overview.
 """
 search = af.Nautilus(path_prefix="overview", name="groups")
 
-analysis = al.AnalysisPoint(dataset=dataset, solver=None)
+analysis = al.AnalysisPoint(dataset=dataset, solver=solver)
 
 result = search.fit(model=model, analysis=analysis)
 

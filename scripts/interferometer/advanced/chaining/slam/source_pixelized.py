@@ -201,6 +201,7 @@ analysis = al.AnalysisInterferometer(
     positions_likelihood=source_lp_result.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),
+    adapt_image_maker=al.AdaptImageMaker(result=source_lp_result),
     settings_inversion=settings_inversion,
 )
 
