@@ -212,20 +212,7 @@ source_pix_result_1 = slam.source_pix.run_1(
     mesh_init=al.mesh.Delaunay,
 )
 
-adapt_image_maker = al.AdaptImageMaker(result=source_pix_result_1)
-adapt_image = adapt_image_maker.adapt_images.galaxy_name_image_dict[
-    "('galaxies', 'source')"
-]
-
-over_sampling = al.OverSamplingUniform.from_adapt(
-    data=adapt_image,
-    noise_map=dataset.noise_map,
-)
-
-dataset.over_sampling_pixelization = over_sampling
-dataset.__dict__["grids.pixelization"] = None
-
-analysis = al.AnalysisImaging(
+analysis = al.AnalysisInterferometer(
     dataset=dataset,
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
     settings_inversion=al.SettingsInversion(
@@ -269,7 +256,7 @@ __Settings__:
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
-    positions_likelihood=source_pix_result_1.last.positions_likelihood_from(
+    positions_likelihood=source_pix_result_1.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),
     settings_inversion=settings_inversion,

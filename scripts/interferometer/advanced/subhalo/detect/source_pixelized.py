@@ -220,8 +220,9 @@ over_sampling = al.OverSamplingUniform.from_adapt(
     noise_map=dataset.noise_map,
 )
 
-dataset.over_sampling_pixelization = over_sampling
-dataset.__dict__["grids.pixelization"] = None
+dataset = dataset.apply_over_sampling(
+    over_sampling=al.OverSamplingDataset(pixelization=over_sampling)
+)
 
 analysis = al.AnalysisImaging(
     dataset=dataset,

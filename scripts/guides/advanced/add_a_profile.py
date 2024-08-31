@@ -191,7 +191,7 @@ that are used to decorate it in the `Isothermal` profile above.
 There are 3 decorators which you don't really need to worry about, all `deflections_yx_2d_from` methods have them
 and you will pretty much just copy and paste them into your own profile:
 
-`@aa.grid_dec.grid_2d_to_structure`: 
+`@aa.grid_dec.to_array`: 
  
 Different grids can be input into each mass profile function (e.g. `Grid2D`, `Grid2DIrregular`). Depending on the input 
 grid, this changes the structure of the output array. 
