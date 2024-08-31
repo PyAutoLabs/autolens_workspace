@@ -57,7 +57,7 @@ However, for simulating a strong lens you may find it more intuitive to define t
 axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle, where angle is
 in degrees and defined counter clockwise from the positive x-axis.
 
-We can use the **PyAutoLens** `convert` module to determine the elliptical components from the axis-ratio and angle.
+We can use the `convert` module to determine the elliptical components from the axis-ratio and angle.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -103,7 +103,7 @@ something we want to be included in the simulated dataset. The `maginification_t
 discarding any image with a magnification below the threshold.
 """
 grid = al.Grid2D.uniform(
-    shape_native=(100, 100),
+    shape_native=(200, 200),
     pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
@@ -140,30 +140,6 @@ Each observed image has a flux that is the source's flux multiplied by the magni
 flux = 1.0
 fluxes = [flux * np.abs(magnification) for magnification in magnifications]
 fluxes = al.ArrayIrregular(values=fluxes)
-
-"""
-__Output__
-
-We now output the image of this strong lens to `.fits` which can be used for visualize when performing point-source 
-modeling and to `.png` for general inspection.
-"""
-visuals = aplt.Visuals2D(multiple_images=positions)
-
-tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, visuals_2d=visuals)
-tracer_plotter.figures_2d(image=True)
-
-mat_plot = aplt.MatPlot2D(
-    output=aplt.Output(path=dataset_path, filename="data", format="fits")
-)
-
-tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot)
-tracer_plotter.figures_2d(image=True)
-
-mat_plot = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
-
-tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot)
-tracer_plotter.subplot_tracer()
-tracer_plotter.subplot_galaxies_images()
 
 """
 __Point Datasets__
@@ -203,7 +179,7 @@ al.output_to_json(
 """
 __Visualize__
 
-Output a subplot of the simulated point source dataset and the tracer's quantities to the dataset path as .png files.
+Output a subplot of the simulated point source dataset as a .png file.
 """
 mat_plot_1d = aplt.MatPlot1D(output=aplt.Output(path=dataset_path, format="png"))
 mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
@@ -213,7 +189,14 @@ point_dataset_plotter = aplt.PointDatasetPlotter(
 )
 point_dataset_plotter.subplot_dataset()
 
-tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
+"""
+Output subplots of the tracer's images, including the positions of the multiple images on the image.
+"""
+visuals = aplt.Visuals2D(multiple_images=positions)
+
+tracer_plotter = aplt.TracerPlotter(
+    tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d, visuals_2d=visuals
+)
 tracer_plotter.subplot_tracer()
 tracer_plotter.subplot_galaxies_images()
 
@@ -229,6 +212,53 @@ al.output_to_json(
     obj=tracer,
     file_path=path.join(dataset_path, "tracer.json"),
 )
+
+"""
+__Imaging__
+
+Point-source data typically comes with imaging data of the strong lens, for example showing the 4 multiply
+imaged point-sources (e.g. the quasar images).
+
+Whilst this data may not be used for point-source modeling, it is often used to measure the locations of the point
+source multiple images in the first place, and is also useful for visually confirming the images we are using are in 
+right place. It may also contain emission from the lens galaxy's light, which can be used to perform point-source 
+modeling.
+
+We therefore simulate imaging dataset of this point source and output it to the dataset folder in an `imaging` folder
+as .fits and .png files. 
+
+If you are not familiar with the imaging simulator API, checkout the `imaging/simulators/start_here.py` example 
+in the `autolens_workspace`.
+"""
+psf = al.Kernel2D.from_gaussian(
+    shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
+)
+
+simulator = al.SimulatorImaging(
+    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_poisson_noise=True
+)
+
+imaging = simulator.via_tracer_from(tracer=tracer, grid=grid)
+
+imaging_path = path.join(dataset_path, "imaging")
+
+mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=imaging_path, format="png"))
+
+imaging_plotter = aplt.ImagingPlotter(
+    dataset=imaging, mat_plot_2d=mat_plot_2d, visuals_2d=visuals
+)
+imaging_plotter.subplot_dataset()
+
+imaging.output_to_fits(
+    data_path=path.join(dataset_path, "data.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    overwrite=True,
+)
+
+dataset_plotter = aplt.ImagingPlotter(dataset=imaging, mat_plot_2d=mat_plot_2d)
+dataset_plotter.subplot_dataset()
+dataset_plotter.figures_2d(data=True)
 
 """
 Finished.

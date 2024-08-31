@@ -303,7 +303,7 @@ It is not vital that you as a user understand the details of how the `log_likeli
 data, but interested readers can find a step-by-step guide of the likelihood 
 function at ``autolens_workspace/*/imaging/log_likelihood_function`
 """
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, title_prefix="Lens Name")
 
 """
 __Run Times__

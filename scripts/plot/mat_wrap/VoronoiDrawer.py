@@ -106,7 +106,11 @@ the `VoronoiDrawer` object.
 inversion_plotter = aplt.InversionPlotter(inversion=inversion, mat_plot_2d=mat_plot)
 
 try:
-    inversion_plotter.figures_2d_of_pixelization(pixelization_index=0, reconstruction=True)
+    inversion_plotter.figures_2d_of_pixelization(
+        pixelization_index=0, reconstruction=True
+    )
     inversion_plotter.subplot_of_mapper(mapper_index=0)
 except ImportError:
-    print("You have not installed the Voronoi natural neighbor interpolation package, see instructions at top of notebook.")
+    print(
+        "You have not installed the Voronoi natural neighbor interpolation package, see instructions at top of notebook."
+    )

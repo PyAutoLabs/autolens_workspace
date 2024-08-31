@@ -1,6 +1,6 @@
 """
-Modeling: Mass Total + Source Parametric
-========================================
+Modeling: Start Here
+====================
 
 This script is the starting point for lens modeling of interferometer datasets (e.g. ALMA, VLBI) with
 **PyAutoLens** and it provides an overview of the lens modeling API.
@@ -163,7 +163,7 @@ reduced back to 1 to fix it.
 """
 search = af.Nautilus(
     path_prefix=path.join("interferometer"),
-    name="mass[sie]_source[bulge]",
+    name="start_here",
     unique_tag=dataset_name,
     n_live=100,
     number_of_cores=1,

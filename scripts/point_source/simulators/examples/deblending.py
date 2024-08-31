@@ -73,33 +73,32 @@ Use these galaxies to setup a tracer, which will compute the multiple image posi
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 """
-We will use a `PointSolver` to locate the multiple images. 
+__Point Solver__
 
-The `PointSolver` requires a starting grid of (y,x) coordinates in the image-plane, which are iteratively traced 
-and refined to locate the image-plane coordinates that map directly to the source-plane coordinate.
-
-The `pixel_scale_precision` is the resolution up to which the multiple images are computed. The lower the value, the
-longer the calculation, with a value of 0.001 being efficient but more than sufficient for most point-source datasets.
+We use a `PointSolver` to locate the multiple images. 
 """
 grid = al.Grid2D.uniform(
-    shape_native=(100, 100),
+    shape_native=(200, 200),
     pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
-solver = al.PointSolver(
-    grid=grid, use_upscaling=True, pixel_scale_precision=0.001, upscale_factor=2
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
 )
+
 
 """
 We now pass the `Tracer` to the solver. This will then find the image-plane coordinates that map directly to the
 source-plane coordinate (0.0", 0.0").
 """
 positions = solver.solve(
-    lensing_obj=tracer, source_plane_coordinate=source_galaxy.point_0.centre
+    tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
 )
 
 
 """
+__Fluxes__
+
 Use the positions to compute the magnification of the `Tracer` at every position.
 """
 magnifications = tracer.magnification_2d_via_hessian_from(grid=positions)
@@ -117,19 +116,21 @@ __Point Datasets (Point Source)__
 
 Create the `PointDataset`  and `PointDict` objects using identical code to the `start_here.ipynb` example.
 """
-point_dataset = al.PointDataset(
+dataset = al.PointDataset(
     name="point_0",
     positions=positions,
-    positions_noise_map=al.ArrayIrregular(values=len(positions) * [grid.pixel_scale]),
+    positions_noise_map=grid.pixel_scale,
     fluxes=fluxes,
-    fluxes_noise_map=al.ArrayIrregular(values=[1.0, 1.0, 1.0, 1.0]),
+    fluxes_noise_map=al.ArrayIrregular(
+        values=[np.sqrt(flux) for _ in range(len(fluxes))]
+    ),
 )
 
-dataset = al.PointDict(point_dataset_list=[point_dataset])
-
-dataset.output_to_json(
-    file_path=path.join(dataset_path, "dataset.json"), overwrite=True
+al.output_to_json(
+    obj=dataset,
+    file_path=path.join(dataset_path, "point_dataset.json"),
 )
+
 
 """
 __Visualize (Point Source)__
@@ -140,11 +141,18 @@ mat_plot_1d = aplt.MatPlot1D(output=aplt.Output(path=dataset_path, format="png")
 mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
 
 point_dataset_plotter = aplt.PointDatasetPlotter(
-    dataset=point_dataset, mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d
+    dataset=dataset, mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d
 )
 point_dataset_plotter.subplot_dataset()
 
-tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
+"""
+Output subplots of the tracer's images, including the positions of the multiple images on the image.
+"""
+visuals = aplt.Visuals2D(multiple_images=positions)
+
+tracer_plotter = aplt.TracerPlotter(
+    tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d, visuals_2d=visuals
+)
 tracer_plotter.subplot_tracer()
 tracer_plotter.subplot_galaxies_images()
 

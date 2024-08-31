@@ -93,7 +93,7 @@ tracer_plotter.figures_2d(image=True)
 # the centres on figures where they are not an internal property, like an `Array2D`.
 # """
 # position_solver = al.PointSolver(grid=grid)
-# multiple_images = position_solver.solve(lensing_obj=tracer, source_plane_coordinate=(0.1, 0.1))
+# multiple_images = position_solver.solve(tracer=tracer, source_plane_coordinate=(0.1, 0.1))
 #
 # visuals = aplt.Visuals2D(multiple_images=multiple_images)
 # image = tracer.image_2d_from(grid=grid)

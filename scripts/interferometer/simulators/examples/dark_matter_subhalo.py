@@ -84,7 +84,7 @@ However, for simulating a strong lens you may find it more intuitive to define t
 axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle, where angle is
 in degrees and defined counter clockwise from the positive x-axis.
 
-We can use the **PyAutoLens** `convert` module to determine the elliptical components from the axis-ratio and angle.
+We can use the `convert` module to determine the elliptical components from the axis-ratio and angle.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,

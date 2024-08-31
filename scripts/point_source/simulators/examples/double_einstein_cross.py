@@ -52,7 +52,7 @@ However, for simulating a strong lens you may find it more intuitive to define t
 axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle, where angle is
 in degrees and defined counter clockwise from the positive x-axis.
 
-We can use the **PyAutoLens** `convert` module to determine the elliptical components from the axis-ratio and angle.
+We can use the `convert` module to determine the elliptical components from the axis-ratio and angle.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -91,66 +91,38 @@ Use these galaxies to setup a tracer, which will compute the multiple image posi
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1])
 
 """
-We will use a `PointSolver` to locate the multiple images. 
+__Point Solver__
 
-The `PointSolver` requires a starting grid of (y,x) coordinates in the image-plane, which are iteratively traced 
-and refined to locate the image-plane coordinates that map directly to the source-plane coordinate.
-
-The `pixel_scale_precision` is the resolution up to which the multiple images are computed. The lower the value, the
-longer the calculation, with a value of 0.001 being efficient but more than sufficient for most point-source datasets.
+We use a `PointSolver` to locate the multiple images. 
 """
 grid = al.Grid2D.uniform(
-    shape_native=(100, 100),
+    shape_native=(200, 200),
     pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
-solver = al.PointSolver(
-    grid=grid,
-    use_upscaling=True,
-    upscale_factor=2,
-    pixel_scale_precision=0.001,
-    distance_to_source_centre=0.001,
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
 )
 
 """
-We now pass the `Tracer` to the solver. This will then find the image-plane coordinates that map directly to the
-source-plane coordinate (0.0", 0.0").
-"""
+We now pass the `Tracer` to the solver. 
 
+This finds the image-plane coordinates that map directly to the source-plane centres (0.02", 0.03") and (0.0", 0.0").
+
+A double Einstein ring is a multi-plane lensing system, therefore for each source we also input their redshifts into
+the solver so that it finds the multiple images properly accounting for the multi-plane lensing.
+"""
 positions_0 = solver.solve(
-    lensing_obj=tracer,
+    tracer=tracer,
     source_plane_coordinate=source_galaxy_0.point_0.centre,
-    upper_plane_index=1,
-)
-
-# We are still improving the PointSolver, this is a hack to get it to give sensible positions for now.
-
-positions_0 = al.Grid2DIrregular(
-    values=[
-        positions_0.in_list[5],
-        positions_0.in_list[21],
-        positions_0.in_list[32],
-        positions_0.in_list[-2],
-    ]
+    source_plane_redshift=source_galaxy_0.redshift,
 )
 
 positions_1 = solver.solve(
-    lensing_obj=tracer,
+    tracer=tracer,
     source_plane_coordinate=source_galaxy_1.point_1.centre,
-    upper_plane_index=2,
+    source_plane_redshift=source_galaxy_1.redshift,
 )
-
-positions_1 = al.Grid2DIrregular(
-    values=[
-        positions_1.in_list[0],
-        positions_1.in_list[2],
-        positions_1.in_list[4],
-        positions_1.in_list[6],
-    ]
-)
-
-print(positions_0)
-print(positions_1)
 
 """
 Use the positions to compute the magnification of the `Tracer` at every position.
@@ -192,17 +164,17 @@ tracer_plotter.subplot_galaxies_images()
 """
 __Point Datasets__
 
-Create a point-source dictionary data object and output this to a `.json` file, which is the format used to load and
+Create a point-source data object and output this to a `.json` file, which is the format used to load and
 analyse the dataset.
 """
-point_dataset_0 = al.PointDataset(
+dataset_0 = al.PointDataset(
     name="point_0",
     positions=positions_0,
     positions_noise_map=al.ArrayIrregular(values=len(positions_0) * [grid.pixel_scale]),
     fluxes=fluxes_0,
     fluxes_noise_map=al.ArrayIrregular(values=[1.0, 1.0, 1.0, 1.0]),
 )
-point_dataset_1 = al.PointDataset(
+dataset_1 = al.PointDataset(
     name="point_1",
     positions=positions_1,
     positions_noise_map=al.ArrayIrregular(values=len(positions_1) * [grid.pixel_scale]),
@@ -212,18 +184,17 @@ point_dataset_1 = al.PointDataset(
 
 
 """"
-We now convert this `PointDataset` into a `PointDict`, which is a dictionary containing the dataset. This is
-the object used in the `modeling` scripts to perform lens modeling.
-
-In this example there are two `PointDataset`'s, which are both stored in the `PointDict` somewhat redundant.
-
-This means in the `modeling` script, because there are multiple sources it can fit each source's own unique multiple 
-images and therefore corresponding `PointDataset`.
+We now output the point datasets to the dataset path as a .json file, which is loaded in the point source modeling
+examples.
 """
-dataset = al.PointDict(point_dataset_list=[point_dataset_0, point_dataset_1])
+al.output_to_json(
+    obj=dataset_0,
+    file_path=path.join(dataset_path, "point_dataset_0.json"),
+)
 
-dataset.output_to_json(
-    file_path=path.join(dataset_path, "dataset.json"), overwrite=True
+al.output_to_json(
+    obj=dataset_1,
+    file_path=path.join(dataset_path, "point_dataset_1.json"),
 )
 
 """
@@ -234,11 +205,15 @@ Output a subplot of the simulated point source dictionary and the tracer's quant
 mat_plot_1d = aplt.MatPlot1D(output=aplt.Output(path=dataset_path, format="png"))
 mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
 
-dataset_plotter = aplt.PointDictPlotter(
-    dataset=dataset, mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d
+point_dataset_plotter = aplt.PointDatasetPlotter(
+    dataset=dataset_0, mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d
 )
-dataset_plotter.subplot_positions()
-dataset_plotter.subplot_fluxes()
+point_dataset_plotter.subplot_dataset()
+
+point_dataset_plotter = aplt.PointDatasetPlotter(
+    dataset=dataset_1, mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d
+)
+point_dataset_plotter.subplot_dataset()
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot_2d)
 tracer_plotter.subplot_tracer()

@@ -138,15 +138,31 @@ __Point Source__
 It is common for group-scale strong lens datasets to be modeled assuming that the source is a point-source. Even if 
 it isn't, this can be necessary due to computational run-time making it unfeasible to fit the imaging dataset outright.
 
-We will use a `PointSolver` to locate the multiple images, using computationally slow but robust settings to ensure w
-e accurately locate the image-plane positions.
+A `PointSolver` determines the multiple-images of the mass model for a point source at location (y,x) in the source 
+plane. It does this by iteratively ray-tracing light rays from the image-plane to the source-plane, until it finds 
+the image-plane coordinate that rays converge at for a given  source-plane (y,x).
+
+For the lens mass model defined above, it computes the multiple images of the source galaxy
+at the (y,x) source-plane coordinates (0.0", 0.0") of the point source.
+
+The `PointSolver` requires a starting grid of (y,x) coordinates in the image-plane, which are iteratively traced 
+and refined to locate the image-plane coordinates that map directly to the source-plane coordinate.
+
+The `pixel_scale_precision` is the resolution up to which the multiple images are computed. The lower the value, the
+longer the calculation, with a value of 0.001 being efficient but more than sufficient for most point-source datasets.
+
+Strong lens mass models have a multiple image called the "central image", which is located at the centre of the lens.
+However, the image is nearly always demagnified due to the mass model, and is therefore not observed and not
+something we want to be included in the simulated dataset. The `maginification_threshold` removes this image, by
+discarding any image with a magnification below the threshold.
 """
-solver = al.PointSolver(
-    grid=grid,
-    use_upscaling=True,
-    pixel_scale_precision=0.001,
-    upscale_factor=2,
-    magnification_threshold=1.0,
+grid = al.Grid2D.uniform(
+    shape_native=(300, 300),
+    pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+)
+
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
 )
 
 """
@@ -154,17 +170,11 @@ We now pass the `Tracer` to the solver. This will then find the image-plane coor
 source-plane coordinate (0.0", 0.0").
 """
 positions = solver.solve(
-    lensing_obj=tracer, source_plane_coordinate=source_galaxy.point_0.centre
+    tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
 )
 
-positions = al.Grid2DIrregular(
-    values=[
-        positions.in_list[0],
-        positions.in_list[2],
-        positions.in_list[3],
-        positions.in_list[-1],
-    ]
-)
+print(positions)
+
 
 """
 Use the positions to compute the magnification of the `Tracer` at every position.
@@ -179,21 +189,26 @@ fluxes = [flux * np.abs(magnification) for magnification in magnifications]
 fluxes = al.ArrayIrregular(values=fluxes)
 
 """
-Create a point-source dictionary data object and output this to a `.json` file, which is the format used to load and
-analyse the dataset.
+__Point Datasets__
+
+All of the quantities computed above are input into a `PointDataset` object, which collates all information
+about the multiple images of a point-source strong lens system.
+
+In this example, it contains the image-plane coordinates of the multiple images, the fluxes of the multiple images,
+and their associated noise-map values.
+
+It also contains the name `point_0`, which is a label given to the dataset to indicate that it is a dataset of a single
+point-source. This label is important, it is used for lens modeling in order to associate the dataset with the correct
+point-source in the model.
 """
-point_dataset = al.PointDataset(
+dataset = al.PointDataset(
     name="point_0",
     positions=positions,
-    positions_noise_map=al.ArrayIrregular(values=len(positions) * [grid.pixel_scale]),
+    positions_noise_map=grid.pixel_scale,
     fluxes=fluxes,
-    fluxes_noise_map=al.ArrayIrregular(values=[1.0, 1.0, 1.0, 1.0]),
-)
-
-dataset = al.PointDict(point_dataset_list=[point_dataset])
-
-dataset.output_to_json(
-    file_path=path.join(dataset_path, "dataset.json"), overwrite=True
+    fluxes_noise_map=al.ArrayIrregular(
+        values=[np.sqrt(flux) for _ in range(len(fluxes))]
+    ),
 )
 
 """
