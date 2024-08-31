@@ -141,7 +141,7 @@ The plot is the 4 solved for multiple image positions (with the central image re
 the positions clearer, we increase the size of the markers to ensure they are visible and plot them as asterisks, 
 which is the standard symbol used to denote multiple images of strong lenses in PyAutoLens.
 """
-positions = solver.solve(source_plane_coordinate=(0.07, 0.07))
+positions = solver.solve(tracer=tracer, source_plane_coordinate=(0.07, 0.07))
 
 grid_plotter = aplt.Grid2DPlotter(
     grid=positions,
@@ -311,7 +311,7 @@ fit = al.FitPointDataset(
 print(fit.positions.residual_map)
 print(fit.positions.normalized_residual_map)
 print(fit.positions.chi_squared_map)
-print(fit.positions.data.log_likelihood)
+print(fit.positions.log_likelihood)
 
 """
 __Model__
@@ -374,7 +374,7 @@ fit = al.FitPointDataset(
     fit_positions_cls=al.FitPositionsImagePair,  # Different input to the one used above
 )
 
-print(fit.positions.data.log_likelihood)
+print(fit.positions.log_likelihood)
 
 """
 For a "source-plane chi-squared", the likelihood is computed in the source-plane. The analysis basically just ray-traces
@@ -393,7 +393,7 @@ fit = al.FitPointDataset(
     fit_positions_cls=al.FitPositionsSource,  # Different input to the one used above
 )
 
-print(fit.positions.data.log_likelihood)
+print(fit.positions.log_likelihood)
 
 """
 Checkout the guide `autolens_workspace/*/guides/point_source.py` for more details and a full illustration of the

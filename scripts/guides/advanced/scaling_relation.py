@@ -197,9 +197,9 @@ class dPIESph(MassProfile):
         self.sigma_scale = sigma_scale
 
     @aa.grid_dec.to_vector_yx
-    @aa.grid_dec.grid_2d_to_structure
+    @aa.grid_dec.transform
     @aa.grid_dec.relocate_to_radial_minimum
-    def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike):
+    def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike, **kwargs):
         ys, xs = grid.T
         (ycen, xcen) = self.centre
         xoff, yoff = xs - xcen, ys - ycen
@@ -222,10 +222,10 @@ class dPIESph(MassProfile):
         defl_x = alpha * xoff / radii
         return aa.Grid2DIrregular.from_yx_1d(defl_y, defl_x)
 
-    @aa.grid_dec.grid_2d_to_structure
+    @aa.grid_dec.to_array
     @aa.grid_dec.transform
     @aa.grid_dec.relocate_to_radial_minimum
-    def convergence_2d_from(self, grid: aa.type.Grid2DLike):
+    def convergence_2d_from(self, grid: aa.type.Grid2DLike, **kwargs):
         # already transformed to center on profile centre so this works
         radsq = grid[:, 0] ** 2 + grid[:, 1] ** 2
         a, s = self.ra, self.rs
@@ -237,8 +237,8 @@ class dPIESph(MassProfile):
             * (1 / np.sqrt(a**2 + radsq) - 1 / np.sqrt(s**2 + radsq))
         )
 
-    @aa.grid_dec.grid_2d_to_structure
-    def potential_2d_from(self, grid: aa.type.Grid2DLike):
+    @aa.grid_dec.to_array
+    def potential_2d_from(self, grid: aa.type.Grid2DLike, **kwargs):
         return np.zeros(shape=grid.shape[0])
 
 
@@ -277,12 +277,12 @@ for clump_centre, clump_luminosity in zip(clump_centre_list, clump_luminosity_li
 """
 __Model__
 
-We compose the overall lens model using the normal **PyAutoLens** API.
+We compose the overall lens model using the normal API.
 """
 
 # Lens:
 
-bulge = af.Model(al.lp_linear.SersicSph)
+bulge = af.Model(al.lp.SersicSph)
 
 mass = af.Model(al.mp.IsothermalSph)
 
@@ -290,7 +290,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 """
 When creating the overall model, we include the clumps as a separate collection of galaxies, which we call `clumps`.

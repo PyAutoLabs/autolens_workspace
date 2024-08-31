@@ -268,16 +268,17 @@ __Settings__:
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
-    positions_likelihood=source_pix_results.last.positions_likelihood_from(
+    positions_likelihood=source_pix_result_1.last.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),
     settings_inversion=settings_inversion,
 )
 
-mass_results = slam.mass_total.run(
+mass_result = slam.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
-    source_results=source_pix_results,
+    source_result_for_lens=source_pix_result_1,
+    source_result_for_source=source_pix_result_2,
     light_result=None,
     mass=af.Model(al.mp.PowerLaw),
 )

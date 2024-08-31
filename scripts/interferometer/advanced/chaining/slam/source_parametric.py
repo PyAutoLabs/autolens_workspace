@@ -137,10 +137,11 @@ using the lens mass model and source model of the SOURCE PIPELINE to initialize 
 """
 analysis = al.AnalysisInterferometer(dataset=dataset)
 
-mass_results = slam.mass_total.run(
+mass_result = slam.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
-    source_results=source_lp_result,
+    source_result_for_lens=source_lp_result,
+    source_result_for_source=source_lp_result,
     light_result=None,
     mass=af.Model(al.mp.PowerLaw),
 )

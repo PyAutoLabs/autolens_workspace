@@ -48,18 +48,20 @@ Load the strong lens dataset `group` point source dataset and imaging, and plot 
 dataset_name = "lens_x3__source_x1"
 dataset_path = path.join("dataset", "group", dataset_name)
 
-dataset = al.Imaging.from_fits(
+imaging = al.Imaging.from_fits(
     data_path=path.join(dataset_path, "data.fits"),
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     psf_path=path.join(dataset_path, "psf.fits"),
     pixel_scales=0.1,
 )
 
-dataset = al.PointDict.from_json(file_path=path.join(dataset_path, "dataset.json"))
+dataset = al.from_json(
+    file_path=path.join(dataset_path, "point_dataset.json"),
+)
 
-visuals = aplt.Visuals2D(positions=dataset.positions_list)
+visuals = aplt.Visuals2D(positions=dataset.positions)
 
-array_plotter = aplt.Array2DPlotter(array=dataset.data, visuals_2d=visuals)
+array_plotter = aplt.Array2DPlotter(array=imaging.data, visuals_2d=visuals)
 array_plotter.figure_2d()
 
 """
@@ -75,10 +77,13 @@ __PointSolver__
 Define the position solver used for the point source fitting.
 """
 grid = al.Grid2D.uniform(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales
+    shape_native=(100, 100),
+    pixel_scales=0.2,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
-solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+)
 
 """
 __Model (Search 1)__
@@ -143,13 +148,13 @@ The model-fit to imaging data requires a `Mask2D`.
 Note how this has a radius of 9.0", much larger than most example lenses!
 """
 mask = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=9.0
+    shape_native=imaging.shape_native, pixel_scales=imaging.pixel_scales, radius=9.0
 )
 
-dataset = dataset.apply_mask(mask=mask)
+imaging = imaging.apply_mask(mask=mask)
 
-dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
-dataset_plotter.subplot_dataset()
+imaging_plotter = aplt.ImagingPlotter(dataset=imaging)
+imaging_plotter.subplot_dataset()
 
 """
 __Model (Search 2)__
@@ -226,9 +231,7 @@ trace to one another in the source-plane (using the best-fit mass model again). 
 a `factor` to ensure it is not too small (and thus does not remove plausible mass  models). If, after this 
 multiplication, the threshold is below the `minimum_threshold`, it is rounded up to this minimum value.
 """
-positions_likelihood = al.PositionsLHPenalty(
-    threshold=1.0, positions=dataset["point_0"].data
-)
+positions_likelihood = al.PositionsLHPenalty(threshold=1.0, positions=dataset.positions)
 
 """
 __Analysis + Positions__
@@ -242,7 +245,7 @@ Below, we use the point source dictionary positions and a threshold double the r
 sufficient for this analysis.
 """
 analysis_2 = al.AnalysisImaging(
-    dataset=dataset, positions_likelihood=positions_likelihood
+    dataset=imaging, positions_likelihood=positions_likelihood
 )
 
 """

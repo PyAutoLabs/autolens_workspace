@@ -58,21 +58,36 @@ data = al.Array2D.from_fits(
 )
 
 """
-__PointDict__
+__Dataset__
 
 Load and plot the `PointDict` dataset, which is the dataset used to perform lens modeling.
 """
-dataset = al.PointDict.from_json(file_path=path.join(dataset_path, "dataset.json"))
+dataset_0 = al.from_json(
+    file_path=path.join(dataset_path, "point_dataset_0.json"),
+)
 
-print("Point Source Multiple Image (y,x) Arc-second Coordinates:")
-print(dataset["point_0"].data.in_list)
-print(dataset["point_1"].data.in_list)
+print("Point Dataset Info:")
+print(dataset_0.info)
 
-visuals = aplt.Visuals2D(positions=dataset.positions_list)
+dataset_plotter = aplt.PointDatasetPlotter(dataset=dataset_0)
+dataset_plotter.subplot_dataset()
 
-dataset_plotter = aplt.PointDictPlotter(dataset=dataset)
-dataset_plotter.subplot_positions()
-dataset_plotter.subplot_fluxes()
+visuals = aplt.Visuals2D(positions=dataset_0.positions)
+
+array_plotter = aplt.Array2DPlotter(array=data, visuals_2d=visuals)
+array_plotter.figure_2d()
+
+dataset_1 = al.from_json(
+    file_path=path.join(dataset_path, "point_dataset_1.json"),
+)
+
+print("Point Dataset Info:")
+print(dataset_1.info)
+
+dataset_plotter = aplt.PointDatasetPlotter(dataset=dataset_1)
+dataset_plotter.subplot_dataset()
+
+visuals = aplt.Visuals2D(positions=dataset_1.positions)
 
 array_plotter = aplt.Array2DPlotter(array=data, visuals_2d=visuals)
 array_plotter.figure_2d()
@@ -89,9 +104,14 @@ __PointSolver__
 
 Setup the `PointSolver`.
 """
-grid = al.Grid2D.uniform(shape_native=data.shape_native, pixel_scales=data.pixel_scales)
+grid = al.Grid2D.uniform(
+    shape_native=(100, 100),
+    pixel_scales=0.2,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+)
 
-solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+)
 
 """
 __Model (Search 1)__
@@ -132,7 +152,7 @@ search_1 = af.Nautilus(
     n_live=100,
 )
 
-analysis_1 = al.AnalysisPoint(dataset=dataset, solver=solver)
+analysis_1 = al.AnalysisPoint(dataset=dataset_0, solver=solver)
 
 result_1 = search_1.fit(model=model_1, analysis=analysis_1)
 
@@ -194,9 +214,12 @@ search_2 = af.Nautilus(
     n_live=100,
 )
 
-analysis_2 = al.AnalysisPoint(dataset=dataset, solver=solver)
+analysis_2_0 = al.AnalysisPoint(dataset=dataset_0, solver=solver)
+analysis_2_1 = al.AnalysisPoint(dataset=dataset_1, solver=solver)
 
-result_2 = search_2.fit(model=model_2, analysis=analysis_2)
+analysis = sum([analysis_2_0, analysis_2_1])
+
+result_2 = search_2.fit(model=model_2, analysis=analysis)
 
 """
 __Result (Search 2)__
