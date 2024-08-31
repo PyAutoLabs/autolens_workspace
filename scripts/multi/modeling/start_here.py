@@ -165,7 +165,7 @@ __Search__
 """
 search = af.Nautilus(
     path_prefix=path.join("multi", "modeling"),
-    name="light[bulge]_mass[sie]_source[bulge]",
+    name="start_here",
     unique_tag=dataset_name,
     n_live=100,
     number_of_cores=1,

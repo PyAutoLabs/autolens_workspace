@@ -1,4 +1,12 @@
 input(
+    "############################################\n"
+    "### WELCOME TO THE AUTOLENS WORKSPACE ###\n"
+    "############################################\n\n"
+
+    "This script runs a few checks to ensure PyAutoLens is set up correctly.\n"
+    ""
+    "Once they pass, you should read through the autolens_workspace/start_here.ipynb notebook "
+    "(or autolens_workspace/start_here.py script if you prefer Python scripts) to get a full overview of PyAutoLens.\n\n"
     "\n"
     "############################################\n"
     "### AUTOLENS WORKSPACE WORKING DIRECTORY ###\n"
