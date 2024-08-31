@@ -31,7 +31,7 @@ We use a model with an initialized starting point, which is necessary for lens m
 dataset_name = "simple__no_lens_light"
 
 search = af.Zeus(
-    path_prefix=path.join("plot", "ZeusPlotter"),
+    path_prefix=path.join("plot"),
     name="ZeusPlotter",
     nwalkers=30,
     nsteps=500,

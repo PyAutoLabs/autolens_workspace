@@ -28,10 +28,10 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge_0=al.lp.SersiclCoreSph(
+    bulge_0=al.lp.SersicCoreSph(
         centre=(0.1, 0.1), intensity=0.3, effective_radius=1.0, sersic_index=2.5
     ),
-    bulge_1=al.lp.SersiclCoreSph(
+    bulge_1=al.lp.SersicCoreSph(
         centre=(0.4, 0.3), intensity=0.3, effective_radius=1.0, sersic_index=2.5
     ),
 )

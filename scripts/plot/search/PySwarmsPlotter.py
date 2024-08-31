@@ -118,7 +118,7 @@ The `contour` method shows a 2D projection of the particle trajectories.
 from pyswarms.utils import plotters
 
 plotters.plot_contour(
-    pos_history=search_internal,
+    pos_history=search_internal.pos_history,
     canvas=None,
     title="Trajectories",
     mark=None,

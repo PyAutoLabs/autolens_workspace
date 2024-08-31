@@ -154,7 +154,7 @@ for agg_grid, search in zip(
     # to plot the log evidence of each cell.
 
     result_subhalo_grid_search = al.subhalo.SubhaloGridSearchResult(
-        result_subhalo_grid_search=result_subhalo_grid_search
+        result=result_subhalo_grid_search
     )
 
     log_evidence_array = result_subhalo_grid_search.figure_of_merit_array(
@@ -192,11 +192,11 @@ for agg_grid, fit_no_subhalo, fit_with_subhalo, samples_no_subhalo in zip(
     # to plot the log evidence of each cell.
 
     result_subhalo_grid_search = al.subhalo.SubhaloGridSearchResult(
-        result_subhalo_grid_search=result_subhalo_grid_search
+        result=result_subhalo_grid_search
     )
 
     subhalo_plotter = al.subhalo.SubhaloPlotter(
-        result_subhalo_grid_search=result_subhalo_grid_search,
+        result=result_subhalo_grid_search,
         fit_imaging_no_subhalo=fit_no_subhalo[0],
         fit_imaging_with_subhalo=fit_with_subhalo[0],
     )

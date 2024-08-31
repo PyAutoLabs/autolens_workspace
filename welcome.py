@@ -2,7 +2,6 @@ input(
     "############################################\n"
     "### WELCOME TO THE AUTOLENS WORKSPACE ###\n"
     "############################################\n\n"
-
     "This script runs a few checks to ensure PyAutoLens is set up correctly.\n"
     ""
     "Once they pass, you should read through the autolens_workspace/start_here.ipynb notebook "

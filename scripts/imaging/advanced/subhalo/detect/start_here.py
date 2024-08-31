@@ -407,7 +407,7 @@ We compute these values relative to the `log_evidence` of the model-fit which di
 positive values indicate that including a subhalo increases the Bayesian evidence.
 """
 result_subhalo_grid_search = al.subhalo.SubhaloGridSearchResult(
-    result_subhalo_grid_search=result_subhalo_grid_search
+    result=result_subhalo_grid_search
 )
 
 log_evidence_array = result_subhalo_grid_search.figure_of_merit_array(
@@ -461,7 +461,7 @@ The input `remove_zeros` removes all grid-cells which have a log evidence value 
 clarity in the figure where including a DM subhalo makes a difference to the Bayesian evidence.
 """
 subhalo_plotter = al.subhalo.SubhaloPlotter(
-    result_subhalo_grid_search=result_subhalo_grid_search,
+    result=result_subhalo_grid_search,
     fit_imaging_with_subhalo=result_with_subhalo.max_log_likelihood_fit,
     fit_imaging_no_subhalo=result_no_subhalo.max_log_likelihood_fit,
 )

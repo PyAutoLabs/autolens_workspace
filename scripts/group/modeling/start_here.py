@@ -54,26 +54,26 @@ data = al.Array2D.from_fits(
     file_path=path.join(dataset_path, "data.fits"), pixel_scales=0.1
 )
 
-"""
-We now load the point source dataset we will fit using point source modeling. We load this data as a `PointDict`,
-which is a Python dictionary containing the positions and fluxes of every point source. 
-
-In this example there is just one point source, corresponding to the brightest pixel of each lensed multiple image. For
-other example point source datasets there are multiple sources.
-"""
-dataset = al.PointDict.from_json(file_path=path.join(dataset_path, "dataset.json"))
 
 """
-We can print this dictionary to see the `name`, `positions` and `fluxes` of the dataset, as well as their noise-map 
-values.
+We now load the point source dataset we will fit using point source modeling. 
+
+We load this data as a `PointDataset`, which contains the positions and fluxes of every point source. 
 """
-print("Point Source Dict:")
-print(dataset)
+dataset = al.from_json(
+    file_path=path.join(dataset_path, "point_dataset.json"),
+)
+
+"""
+We can print this dictionary to see the dataset's `name`, `positions` and `fluxes` and noise-map values.
+"""
+print("Point Dataset Info:")
+print(dataset.info)
 
 """
 We can plot our positions dataset over the observed image.
 """
-visuals = aplt.Visuals2D(positions=dataset.positions_list)
+visuals = aplt.Visuals2D(positions=dataset.positions)
 
 array_plotter = aplt.Array2DPlotter(array=data, visuals_2d=visuals)
 array_plotter.figure_2d()
@@ -81,23 +81,42 @@ array_plotter.figure_2d()
 """
 We can also just plot the positions, omitting the image.
 """
-grid_plotter = aplt.Grid2DPlotter(grid=dataset["point_0"].data)
+grid_plotter = aplt.Grid2DPlotter(grid=dataset.positions)
 grid_plotter.figure_2d()
 
+
 """
-__PointSolver__
+__Point Solver__
 
-For point-source modeling we also need to define our `PointSolver`. This object determines the multiple-images of 
-a mass model for a point source at location (y,x) in the source plane, by iteratively ray-tracing light rays to the 
-source-plane. 
+For point-source modeling we require a `PointSolver`, which determines the multiple-images of the mass model for a 
+point source at location (y,x) in the source plane. 
 
-Checkout the script ? for a complete description of this object, we will use the default `PointSolver` in this 
-example with a `point_scale_precision` half the value of the position noise-map, which should be sufficiently good 
-enough precision to fit the lens model accurately.
+It does this by ray tracing triangles from the image-plane to the source-plane and calculating if the 
+source-plane (y,x) centre is inside the triangle. The method gradually ray-traces smaller and smaller triangles so 
+that the multiple images can be determine with sub-pixel precision.
+
+The `PointSolver` requires a starting grid of (y,x) coordinates in the image-plane which defines the first set
+of triangles that are ray-traced to the source-plane. It also requires that a `pixel_scale_precision` is input, 
+which is the resolution up to which the multiple images are computed. The lower the `pixel_scale_precision`, the
+longer the calculation, with the value of 0.001 below balancing efficiency with precision.
+
+Strong lens mass models have a multiple image called the "central image". However, the image is nearly always 
+significantly demagnified, meaning that it is not observed and cannot constrain the lens model. As this image is a
+valid multiple image, the `PointSolver` will locate it irrespective of whether its so demagnified it is not observed.
+To ensure this does not occur, we set a `magnification_threshold=0.1`, which discards this image because its
+magnification will be well below this threshold.
+
+If your dataset contains a central image that is observed you should reduce to include it in
+the analysis.
 """
-grid = al.Grid2D.uniform(shape_native=data.shape_native, pixel_scales=data.pixel_scales)
+grid = al.Grid2D.uniform(
+    shape_native=(200, 200),
+    pixel_scales=0.2,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+)
 
-solver = al.PointSolver(grid=grid, pixel_scale_precision=0.025)
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+)
 
 """
 __Model__
@@ -218,7 +237,7 @@ reduced back to 1 to fix it.
 """
 search = af.Nautilus(
     path_prefix=path.join("group", "modeling"),
-    name="mass[sie]_source[point]",
+    name="start_here",
     unique_tag=dataset_name,
     n_live=100,
     number_of_cores=1,
@@ -302,7 +321,7 @@ The search returns a result object, which includes:
 print(result.max_log_likelihood_instance)
 
 tracer_plotter = aplt.TracerPlotter(
-    tracer=result.max_log_likelihood_tracer, grid=result.grids.uniform
+    tracer=result.max_log_likelihood_tracer, grid=result.grid
 )
 tracer_plotter.subplot_tracer()
 

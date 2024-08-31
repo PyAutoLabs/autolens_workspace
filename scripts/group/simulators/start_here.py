@@ -211,6 +211,31 @@ dataset = al.PointDataset(
     ),
 )
 
+""""
+We now output the point dataset to the dataset path as a .json file, which is loaded in the point source modeling
+examples.
+
+In this example, there is just one point source dataset. However, for group and cluster strong lenses there
+can be many point source datasets in a single dataset, and separate .json files are output for each.
+"""
+al.output_to_json(
+    obj=dataset,
+    file_path=path.join(dataset_path, "point_dataset.json"),
+)
+
+"""
+__Visualize__
+
+Output a subplot of the simulated point source dataset as a .png file.
+"""
+mat_plot_1d = aplt.MatPlot1D(output=aplt.Output(path=dataset_path, format="png"))
+mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
+
+point_dataset_plotter = aplt.PointDatasetPlotter(
+    dataset=dataset, mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d
+)
+point_dataset_plotter.subplot_dataset()
+
 """
 __Dataset__
 
@@ -250,10 +275,6 @@ mat_plot = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset, mat_plot_2d=mat_plot)
 dataset_plotter.subplot_dataset()
 dataset_plotter.figures_2d(data=True)
-
-tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot)
-tracer_plotter.subplot_tracer()
-tracer_plotter.subplot_galaxies_images()
 
 """
 __Tracer json__

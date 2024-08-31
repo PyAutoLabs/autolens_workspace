@@ -32,7 +32,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.SersiclCoreSph(
+    bulge=al.lp.SersicCoreSph(
         centre=(0.1, 0.1), intensity=0.3, effective_radius=1.0, sersic_index=2.5
     ),
 )
@@ -133,7 +133,7 @@ lens_galaxy_1 = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.SersiclCoreSph(
+    bulge=al.lp.SersicCoreSph(
         centre=(0.1, 0.1), intensity=0.3, effective_radius=1.0, sersic_index=2.5
     ),
 )
