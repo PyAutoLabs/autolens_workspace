@@ -196,10 +196,10 @@ __Settings__:
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_lp_result[0]),
     positions_likelihood=source_lp_result.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2
     ),
+    adapt_image_maker=al.AdaptImageMaker(result=source_lp_result),
     settings_inversion=settings_inversion,
 )
 
@@ -210,21 +210,7 @@ source_pix_result_1 = slam.source_pix.run_1(
     mesh_init=al.mesh.Delaunay,
 )
 
-adapt_image_maker = al.AdaptImageMaker(result=source_pix_result_1)
-adapt_image = adapt_image_maker.adapt_images.galaxy_name_image_dict[
-    "('galaxies', 'source')"
-]
-
-over_sampling = al.OverSamplingUniform.from_adapt(
-    data=adapt_image,
-    noise_map=dataset.noise_map,
-)
-
-dataset = dataset.apply_over_sampling(
-    over_sampling=al.OverSamplingDataset(pixelization=over_sampling)
-)
-
-analysis = al.AnalysisImaging(
+analysis = al.AnalysisInterferometer(
     dataset=dataset,
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
     settings_inversion=al.SettingsInversion(
@@ -268,16 +254,17 @@ In this example it:
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
-    positions_likelihood=source_pix_results.last.positions_likelihood_from(
-        factor=3.0, minimum_threshold=0.2, use_resample=True
+    positions_likelihood=source_pix_result_1.positions_likelihood_from(
+        factor=3.0, minimum_threshold=0.2
     ),
     settings_inversion=settings_inversion,
 )
 
-mass_results = slam.mass_total.run(
+mass_result = slam.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
-    source_results=source_pix_results,
+    source_result_for_lens=source_pix_result_1,
+    source_result_for_source=source_pix_result_2,
     light_result=None,
     mass=af.Model(al.mp.PowerLaw),
 )
@@ -298,22 +285,36 @@ For this modeling script the SUBHALO PIPELINE customizes:
  - The `number_of_cores` used for the gridsearch, where `number_of_cores > 1` performs the model-fits in paralle using
  the Python multiprocessing module.
 """
-analysis = al.AnalysisInterferometer(
+analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
     positions_likelihood=mass_result.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2, use_resample=True
     ),
-    settings_inversion=settings_inversion,
+    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
 )
 
-subhalo_results = slam.subhalo.detection.run(
+result_no_subhalo = slam.subhalo.detection.run_1_no_subhalo(
     settings_search=settings_search,
     analysis=analysis,
     mass_result=mass_result,
+)
+
+result_subhalo_grid_search = slam.subhalo.detection.run_2_grid_search(
+    settings_search=settings_search,
+    analysis=analysis,
+    mass_result=mass_result,
+    subhalo_result_1=result_no_subhalo,
     subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
     grid_dimension_arcsec=3.0,
-    number_of_steps=5,
+    number_of_steps=2,
+)
+
+result_with_subhalo = slam.subhalo.detection.run_3_subhalo(
+    settings_search=settings_search,
+    analysis=analysis,
+    subhalo_result_1=result_no_subhalo,
+    subhalo_grid_search_result_2=result_subhalo_grid_search,
+    subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
 )
 
 """

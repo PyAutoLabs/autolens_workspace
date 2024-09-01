@@ -263,14 +263,14 @@ __Tracer Composition__
 Lets quickly summarize what we've learnt by printing every object in the tracer:
 """
 print(tracer)
-print(tracer.planes[0]) # image plane
-print(tracer.planes[1]) # source plane
-print(tracer.planes[0][0]) # lens galaxy in image plane
-print(tracer.planes[1][0]) # source galaxy 0 in source plane
-print(tracer.planes[1][1]) # source galaxy 1 in source plane
-print(tracer.planes[0][0].mass) # lens galaxy mass profile
-print(tracer.planes[1][0].bulge) # source galaxy 0 bulge
-print(tracer.planes[1][1].bulge) # source galaxy 1 bulge
+print(tracer.planes[0])  # image plane
+print(tracer.planes[1])  # source plane
+print(tracer.planes[0][0])  # lens galaxy in image plane
+print(tracer.planes[1][0])  # source galaxy 0 in source plane
+print(tracer.planes[1][1])  # source galaxy 1 in source plane
+print(tracer.planes[0][0].mass)  # lens galaxy mass profile
+print(tracer.planes[1][0].bulge)  # source galaxy 0 bulge
+print(tracer.planes[1][1].bulge)  # source galaxy 1 bulge
 print()
 
 """
