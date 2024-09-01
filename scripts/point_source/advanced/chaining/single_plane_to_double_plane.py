@@ -2,7 +2,7 @@
 Chaining: Single-Plane to Double-Plane
 ======================================
 
-This script chains two searches to fit `PointDict` data of a 'galaxy-scale' strong lens with a model where:
+This script chains two searches to fit `PointDataset` data of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy is at `redshift=0.5` and its total mass distribution is an `Isothermal`.
  - An intermediate lens and source galaxy is at `redshift=1.0`, with an `Isothermal` total mass distribution
@@ -60,7 +60,7 @@ data = al.Array2D.from_fits(
 """
 __Dataset__
 
-Load and plot the `PointDict` dataset, which is the dataset used to perform lens modeling.
+Load and plot the `PointDataset` dataset, which is the dataset used to perform lens modeling.
 """
 dataset_0 = al.from_json(
     file_path=path.join(dataset_path, "point_dataset_0.json"),

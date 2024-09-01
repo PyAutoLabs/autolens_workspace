@@ -2,7 +2,7 @@
 Modeling: Lens x3 + Source x1
 =============================
 
-This script fits a `PointDict` dataset of a 'group-scale' strong lens where:
+This script fits a `PointDataset` dataset of a 'group-scale' strong lens where:
 
  - There are three lens galaxies whose light models are `SersicSph` profiles and total mass distributions
  are `IsothermalSph` models.
@@ -172,7 +172,7 @@ print(model.info)
 """
 __Name Pairing__
 
-Every point-source dataset in the `PointDict` has a name, which in this example was `point_0`. This `name` pairs 
+Every point-source dataset in the `PointDataset` has a name, which in this example was `point_0`. This `name` pairs 
 the dataset to the `Point` in the model below. Because the name of the dataset is `point_0`, the 
 only `Point` object that is used to fit it must have the name `point_0`.
 
@@ -182,7 +182,8 @@ the `PointDataset` **PyAutoLens** will raise an error.
 
 In this example, where there is just one source, name pairing appears unnecessary. However, point-source datasets may
 have many source galaxies in them, and name pairing is necessary to ensure every point source in the lens model is 
-fitted to its particular lensed images in the `PointDict`!
+fitted to its particular lensed images in the `PointDataset`!
+
 The model fitting default settings assume that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
 
 If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that you either: 

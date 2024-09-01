@@ -114,7 +114,7 @@ fluxes = al.ArrayIrregular(values=fluxes)
 """
 __Point Datasets (Point Source)__
 
-Create the `PointDataset`  and `PointDict` objects using identical code to the `start_here.ipynb` example.
+Create the `PointDataset`  and `PointDataset` objects using identical code to the `start_here.ipynb` example.
 """
 dataset = al.PointDataset(
     name="point_0",

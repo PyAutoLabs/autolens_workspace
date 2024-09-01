@@ -3,7 +3,7 @@ Modeling Features: Deblending
 =============================
 
 The image-plane multiple-image positions of a lensed point source (e.g. a quasar or supernova) are used as the
-dataset in point-source modeling. For example, simulated values were input into the `PointDict` object in the
+dataset in point-source modeling. For example, simulated values were input into the `PointDataset` object in the
 `point_source/modeling/start_here.ipynb` example.
 
 These positions must first be measured from imaging data of the lensed point-source. A simple way to do this is
@@ -322,7 +322,7 @@ the inversion process are accurate.
 print(result.max_log_likelihood_instance)
 
 tracer_plotter = aplt.TracerPlotter(
-    tracer=result.max_log_likelihood_tracer, grid=result.grid
+    tracer=result.max_log_likelihood_tracer, grid=result.grids.uniform
 )
 tracer_plotter.subplot_tracer()
 
@@ -347,7 +347,7 @@ After the analysis above is complete, the lens model infers the following inform
  - The lens galaxy's properties are measured via this analysis.
 
 The lensed source image-plane positions, inferred to sub-pixel precision, are printed below and output to a 
-`PointDict` object and .json file.
+`PointDataset` object and .json file.
 
 They can be used as input positions in a point-source model-fit, using an identical API to 
 the `point_source/modeling/start_here.ipynb` example, to perform mass modeling of the point source dataset.

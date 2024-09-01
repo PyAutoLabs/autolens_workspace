@@ -296,10 +296,10 @@ __Fitting__
 Just like we used a `Tracer` to fit imaging and interferometer data, we can use it to fit point-source data via the
 `FitPoint` object.
 
-The name pairing described above is used internally into the `FitPointDict` object to ensure that the correct point
+The name pairing described above is used internally into the `FitPointDataset` object to ensure that the correct point
 source is fitted to each dataset. 
 
-The fit is returned as a dictionary which mirrors the `PointDict`, where its keys are again the names of the datasets.
+The fit is returned as a dictionary which mirrors the `PointDataset`, where its keys are again the names of the datasets.
 """
 fit = al.FitPointDataset(
     dataset=dataset,
@@ -320,7 +320,7 @@ It is straight forward to fit a lens model to a point source dataset, using the 
 interferometer datasets.
 
 This uses an `AnalysisPoint` object which fits the lens model in the correct way for a point source dataset.
-This includes mapping the `name`'s of each dataset in the `PointDict` to the names of the point sources in
+This includes mapping the `name`'s of each dataset in the `PointDataset` to the names of the point sources in
 the lens model.
 """
 # Lens:

@@ -88,6 +88,12 @@ lens_galaxy = al.Galaxy(
         effective_radius=0.6,
         sersic_index=3.0,
     ),
+    disk=al.lp.Exponential(
+        centre=(0.0, 0.0),
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.7, angle=30.0),
+        intensity=0.1,
+        effective_radius=1.6,
+    ),
     mass=al.mp.Isothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
@@ -150,7 +156,9 @@ Each plane contains a list of galaxies, which are in order of how we specify the
 In order to extract the `bulge` and `disk` we therefore need the lens galaxy, which we can extract from 
 the `image_plane` and print to make sure it contains the correct light profiles.
 """
-lens_galaxy = image_plane.galaxies[0]
+print(image_plane)
+
+lens_galaxy = image_plane[0]
 
 print(lens_galaxy)
 
@@ -170,15 +178,20 @@ print(bulge_image_2d.slim[0])
 print(disk_image_2d.slim[0])
 
 """
-It is more concise to extract these quantities in one line of Python:
+It is more concise to extract these quantities in one line of Python.
+
+The way to think about index accessing of `planes`, as shown below is as follows:
+
+- The first index, `planes[0]` accesses the first plane (the image-plane).
+- The second index, `planes[0][0]` accesses the first galaxy in the first plane (the lens galaxy).
 """
-bulge_image_2d = tracer.planes[0].galaxies[0].bulge.image_2d_from(grid=grid)
+bulge_image_2d = tracer.planes[0][0].bulge.image_2d_from(grid=grid)
 
 """
 The `LightProfilePlotter` makes it straight forward to extract and plot an individual light profile component.
 """
 bulge_plotter = aplt.LightProfilePlotter(
-    light_profile=tracer.planes[0].galaxies[0].bulge, grid=grid
+    light_profile=tracer.planes[0][0].bulge, grid=grid
 )
 bulge_plotter.figures_2d(image=True)
 
@@ -194,7 +207,7 @@ The `MatPlot2D` object has an input `use_log10`, which will do this automaticall
 Below, we can see that the image plotted now appears more clearly, with the outskirts of the light profile more visible.
 """
 bulge_plotter = aplt.LightProfilePlotter(
-    light_profile=tracer.planes[0].galaxies[0].bulge,
+    light_profile=tracer.planes[0][0].bulge,
     grid=grid,
     mat_plot_2d=aplt.MatPlot2D(use_log10=True),
 )
@@ -209,7 +222,7 @@ We can just as easily extract each `Galaxy` and use it to perform the calculatio
 lens galaxy contains both the `bulge` and `disk`, the `image` we create below contains both components (and is therefore
 the same as `tracer.image_2d_from(grid=grid)`:
 """
-lens = tracer.planes[0].galaxies[0]
+lens = tracer.planes[0][0]
 
 lens_image_2d = lens.image_2d_from(grid=grid)
 lens_convergence_2d = lens.convergence_2d_from(grid=grid)
@@ -232,8 +245,8 @@ source are their unlensed source-plane images (we show have to create their lens
 """
 grid = al.Grid2D.uniform(shape_native=(50, 50), pixel_scales=0.05)
 
-source_0 = tracer.planes[1].galaxies[0]
-source_1 = tracer.planes[1].galaxies[1]
+source_0 = tracer.planes[1][0]
+source_1 = tracer.planes[1][1]
 
 # source_0 = tracer.galaxies.source_0
 # source_1 = tracer.galaxies.source_1
@@ -250,13 +263,14 @@ __Tracer Composition__
 Lets quickly summarize what we've learnt by printing every object in the tracer:
 """
 print(tracer)
-print(tracer.planes[0])
-print(tracer.planes[1])
-print(tracer.planes[0].galaxies[0])
-print(tracer.planes[1].galaxies[0])
-print(tracer.planes[0].galaxies[0].mass)
-print(tracer.planes[1].galaxies[0].bulge)
-print(tracer.planes[1].galaxies[1].bulge)
+print(tracer.planes[0]) # image plane
+print(tracer.planes[1]) # source plane
+print(tracer.planes[0][0]) # lens galaxy in image plane
+print(tracer.planes[1][0]) # source galaxy 0 in source plane
+print(tracer.planes[1][1]) # source galaxy 1 in source plane
+print(tracer.planes[0][0].mass) # lens galaxy mass profile
+print(tracer.planes[1][0].bulge) # source galaxy 0 bulge
+print(tracer.planes[1][1].bulge) # source galaxy 1 bulge
 print()
 
 """
@@ -276,10 +290,10 @@ source_plane_grid = traced_grid_list[1]
 """
 We can use the `source_plane_grid` to created an image of both lensed source galaxies.
 """
-source_0 = tracer.planes[1].galaxies[0]
+source_0 = tracer.planes[1][0]
 source_0_image_2d = source_0.image_2d_from(grid=source_plane_grid)
 
-source_0 = tracer.planes[1].galaxies[1]
+source_0 = tracer.planes[1][1]
 source_1_image_2d = source_1.image_2d_from(grid=source_plane_grid)
 
 galaxy_plotter = aplt.GalaxyPlotter(galaxy=source_0, grid=source_plane_grid)
@@ -342,11 +356,11 @@ We can also compute all these quantities in 1D, for inspection and visualization
 For example, from a light profile or galaxy we can compute its `image_1d`, which provides us with its image values
 (e.g. luminosity) as a function of radius.
 """
-lens = tracer.planes[0].galaxies[0]
+lens = tracer.planes[0][0]
 image_1d = lens.image_1d_from(grid=grid)
 print(image_1d)
 
-source_bulge = tracer.planes[1].galaxies[0].bulge
+source_bulge = tracer.planes[1][0].bulge
 image_1d = source_bulge.image_1d_from(grid=grid)
 print(image_1d)
 

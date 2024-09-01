@@ -76,7 +76,7 @@ allows us to compute the conversion factor `kpc_per_arcsec`.
 """
 cosmology = al.cosmo.Planck15()
 
-source = tracer.planes[1].galaxies[0]
+source = tracer.planes[1][0]
 source_plane_kpc_per_arcsec = cosmology.kpc_per_arcsec_from(redshift=source.redshift)
 source_effective_radius_kpc = (
     source.bulge.effective_radius * source_plane_kpc_per_arcsec
@@ -92,7 +92,7 @@ respectively converted units of kilo-parsec.
 This passes the plotting modules `Units` object a `ticks_convert_factor` and manually specified the new units of the
 plot ticks.
 """
-lens = tracer.planes[0].galaxies[0]
+lens = tracer.planes[0][0]
 image_plane_kpc_per_arcsec = cosmology.kpc_per_arcsec_from(redshift=lens.redshift)
 
 units = aplt.Units(ticks_convert_factor=image_plane_kpc_per_arcsec, ticks_label=" kpc")
@@ -144,8 +144,8 @@ print("Einstein Radius (kpc) = ", einstein_radius_kpc)
 We can also compute the Einstein radius of individual planes, galaxies and mass profiles.
 """
 print(tracer.planes[0].einstein_radius_from(grid=grid))
-print(tracer.planes[0].galaxies[0].einstein_radius_from(grid=grid))
-print(tracer.planes[0].galaxies[0].mass.einstein_radius_from(grid=grid))
+print(tracer.planes[0][0].einstein_radius_from(grid=grid))
+print(tracer.planes[0][0].mass.einstein_radius_from(grid=grid))
 
 """
 __Einstein Mass__
@@ -180,8 +180,8 @@ print("Einstein Mass (solMass) = ", "{:.4e}".format(einstein_mass_solar_mass))
 We can compute Einstein masses of individual components:
 """
 print(tracer.planes[0].einstein_mass_angular_from(grid=grid))
-print(tracer.planes[0].galaxies[0].einstein_mass_angular_from(grid=grid))
-print(tracer.planes[0].galaxies[0].mass.einstein_mass_angular_from(grid=grid))
+print(tracer.planes[0][0].einstein_mass_angular_from(grid=grid))
+print(tracer.planes[0][0].mass.einstein_mass_angular_from(grid=grid))
 
 """
 In principle, the Einstein Mass of a `Tracer` should be readily accessible in a `Tracer` object, given this contains
@@ -225,7 +225,7 @@ Lets compute the luminosity of the source galaxy in the default internal **PyAut
 Below, we compute the luminosity to infinite radius, which is the total luminosity of the galaxy, but one could
 easily compute the luminosity within a specified radius instead.
 """
-source = tracer.planes[1].galaxies[0]
+source = tracer.planes[1][0]
 
 luminosity = source.luminosity_within_circle_from(radius=np.inf)
 print("Luminosity (electrons / second) = ", luminosity)
