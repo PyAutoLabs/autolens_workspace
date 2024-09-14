@@ -216,7 +216,7 @@ Below, we can see that the image plotted now appears more clearly, with the outs
 """
 tracer_plotter = aplt.TracerPlotter(
     tracer=tracer,
-    grid=mask.derive_grid.all_false,
+    grid=grid.mask.derive_grid.all_false,
     mat_plot_2d=aplt.MatPlot2D(use_log10=True),
 )
 tracer_plotter.figures_2d(image=True)
@@ -330,10 +330,7 @@ access the same values in two ways, either indexing the galaxies list index or b
 It can be difficult to track which galaxy is which index in the list, so it is recommended to use the model
 composition to access the galaxies.
 """
-print(f"Einstein Radius via list index = {tracer.galaxies[0].mass.einstein_radius}")
-print(
-    f"Einstein Radius via model composition = {tracer.galaxies.lens.mass.einstein_radius}"
-)
+print(f"Einstein Radius via list index = {tracer.galaxies[1].mass.einstein_radius}")
 
 """
 __Lensing Quantities__

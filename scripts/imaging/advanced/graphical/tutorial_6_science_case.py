@@ -147,7 +147,8 @@ for model_index in range(total_datasets):
     source_1.bulge.intensity = af.GaussianPrior(mean=0.6, sigma=0.3)
     source_1.bulge.effective_radius = af.GaussianPrior(mean=0.07, sigma=0.07)
 
-    cosmology = af.Model(al.cosmo.model.Planck15Om0)
+    cosmology = af.Model(al.cosmo.FlatLambdaCDMWrap)
+    cosmology.Om0 = af.GaussianPrior(mean=0.3, sigma=0.1)
 
     model = af.Collection(
         galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),

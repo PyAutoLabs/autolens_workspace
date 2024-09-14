@@ -27,7 +27,7 @@ __Aggregator__
 
 The functionality illustrated in this example only supports results loaded via the .sqlite database.
 
-We therefore do not load results from hard-disk like other scritps, but build a .sqlite database in order
+We therefore do not load results from hard-disk like other scripts, but build a .sqlite database in order
 to create the `Aggregator` object.
 
 If you have not used the .sqlite database before, the `start_here.ipynb` example describes how to set it up and the API

@@ -157,16 +157,20 @@ source_1.bulge.effective_radius = af.GaussianPrior(mean=0.07, sigma=0.07)
 """
 __Cosmology__
 
-Double Einstein rings allow cosmological parameters to be constrained, because they provide informaiton on the
+Double Einstein rings allow cosmological parameters to be constrained, because they provide information on the
 different angular diameter distances between each source galaxy.
 
-We therefore create a Cosmology as a `Model` object where the cosmological parameter Omega_m is a free parameter
-in the fit.
-
-All other parameters assume the Planck15 cosmology values.
+We therefore create a Cosmology as a `Model` object in order to make the cosmological parameter Omega_m a free 
+parameter.
 """
-# cosmology = af.Model(al.cosmo.model.Planck15Om0)
-cosmology = af.Model(al.cosmo.model.Planck15FlatwCDM)
+cosmology = af.Model(al.cosmo.FlatwCDMWrap)
+
+"""
+By default, all parameters of a cosmology model are initialized as fixed values based on the Planck18 cosmology.
+
+In order to make Omega_m a free parameter, we must manually overwrite its prior.
+"""
+cosmology.Om0 = af.GaussianPrior(mean=0.3, sigma=0.1)
 
 # Overall Lens Model:
 

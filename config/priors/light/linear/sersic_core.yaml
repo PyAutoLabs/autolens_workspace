@@ -55,8 +55,8 @@ SersicCore:
       type: Absolute
       value: 0.2
     gaussian_limits:
-      lower: '-1.0'
-      upper: '1.0'
+      lower: -1.0
+      upper: 1.0
   sersic_index:
     type: Uniform
     lower_limit: 0.8
@@ -76,7 +76,7 @@ SersicCore:
   alpha:
     type: Constant
     value: 3.0
-SersicSphCore:
+SersicCoreSph:
   centre_0:
     type: Gaussian
     mean: 0.0

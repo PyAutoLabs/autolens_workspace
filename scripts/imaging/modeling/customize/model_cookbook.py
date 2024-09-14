@@ -276,11 +276,12 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 # (Assertions can only be added at the end of model composition, after all components
 # have been bright together in a `Collection`.
 model.add_assertion(
-    model.galaxies.bulge.effective_radius > model.galaxies.disk.effective_radius
+    model.galaxies.lens.bulge.effective_radius
+    > model.galaxies.lens.disk.effective_radius
 )
 
 # Assert that the Einstein Radius is below 3.0":
-model.add_assertion(model.galaxies.mass.einstein_radius < 3.0)
+model.add_assertion(model.galaxies.lens.mass.einstein_radius < 3.0)
 
 print(model.info)
 

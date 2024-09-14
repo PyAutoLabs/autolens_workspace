@@ -216,7 +216,7 @@ search = af.Nautilus(
     name="mass[sie]_source[pix]",
     unique_tag=dataset_name,
     n_live=100,
-    number_of_cores=1,
+    number_of_cores=4,
 )
 
 """

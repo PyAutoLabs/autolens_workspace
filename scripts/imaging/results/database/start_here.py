@@ -323,6 +323,6 @@ __Wrap Up__
 
 This example illustrates how to use the database.
 
-The API above can be combined with the `results/examples` scritps in order to use the database to load results and
+The API above can be combined with the `results/examples` scripts in order to use the database to load results and
 perform analysis on them.
 """
