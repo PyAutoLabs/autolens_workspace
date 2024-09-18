@@ -292,19 +292,22 @@ analysis = al.AnalysisImaging(
     ),
 )
 
+lp_chain_tracer = al.util.chaining.lp_chain_tracer_from(
+    light_result=light_result, settings_search=settings_search
+)
+
 lens_bulge = af.Model(al.lmp.Sersic)
 dark = af.Model(al.mp.NFWMCRLudlow)
 
 dark.centre = lens_bulge.centre
 
-mass_results = slam.mass_light_dark.run(
+mass_result = slam.mass_light_dark.run(
     settings_search=settings_search,
     analysis=analysis,
+    lp_chain_tracer=lp_chain_tracer,
     source_result_for_lens=source_pix_result_1,
     source_result_for_source=source_pix_result_2,
     light_result=light_result,
-    lens_bulge=lens_bulge,
-    lens_disk=None,
     dark=dark,
 )
 

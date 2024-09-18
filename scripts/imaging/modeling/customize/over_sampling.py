@@ -131,9 +131,9 @@ result = search.fit(model=model, analysis=analysis)
 """
 __Result__
 
-We can confirm that the `Result`'s grid used a sub-size of 4.
+We can confirm that the `Result`'s grid used an over sampling iterate object.
 """
-print(result.grid.sub_size)
+print(result.grids.uniform.over_sampling)
 
 fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_plotter.subplot_fit()

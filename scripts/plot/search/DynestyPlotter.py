@@ -28,7 +28,7 @@ the `modeling/start_here.py` example.
 """
 dataset_name = "simple__no_lens_light"
 
-search = af.Nautilus(
+search = af.DynestyStatic(
     path_prefix=path.join("plot"),
     name="DynestyPlotter",
     unique_tag=dataset_name,
@@ -227,32 +227,36 @@ except ValueError:
 The cornerplot plots a corner plot of the 1-D and 2-D marginalized posteriors.
 """
 
-dyplot.cornerplot(
-    results=search_internal.results,
-    labels=model.parameter_labels_with_superscripts_latex,
-    dims=None,
-    span=None,
-    quantiles=[0.025, 0.5, 0.975],
-    color="black",
-    smooth=0.02,
-    quantiles_2d=None,
-    hist_kwargs=None,
-    hist2d_kwargs=None,
-    label_kwargs={"fontsize": 16},
-    show_titles=True,
-    title_fmt=".2f",
-    title_kwargs={"fontsize": "10"},
-    truths=None,
-    truth_color="red",
-    truth_kwargs=None,
-    max_n_ticks=5,
-    top_ticks=False,
-    use_math_text=False,
-    verbose=False,
-)
+try:
+    dyplot.cornerplot(
+        results=search_internal.results,
+        labels=model.parameter_labels_with_superscripts_latex,
+        dims=None,
+        span=None,
+        quantiles=[0.025, 0.5, 0.975],
+        color="black",
+        smooth=0.02,
+        quantiles_2d=None,
+        hist_kwargs=None,
+        hist2d_kwargs=None,
+        label_kwargs={"fontsize": 16},
+        show_titles=True,
+        title_fmt=".2f",
+        title_kwargs={"fontsize": "10"},
+        truths=None,
+        truth_color="red",
+        truth_kwargs=None,
+        max_n_ticks=5,
+        top_ticks=False,
+        use_math_text=False,
+        verbose=False,
+    )
 
-plt.show()
-plt.close()
+    plt.show()
+    plt.close()
+
+except ValueError:
+    pass
 
 
 """

@@ -285,7 +285,7 @@ For this modeling script the SUBHALO PIPELINE customizes:
  - The `number_of_cores` used for the gridsearch, where `number_of_cores > 1` performs the model-fits in paralle using
  the Python multiprocessing module.
 """
-analysis = al.AnalysisImaging(
+analysis = al.AnalysisInterferometer(
     dataset=dataset,
     positions_likelihood=mass_result.positions_likelihood_from(
         factor=3.0, minimum_threshold=0.2, use_resample=True

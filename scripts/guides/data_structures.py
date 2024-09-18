@@ -63,13 +63,13 @@ and the pixel-scale is therefore the resolution of the image.
 
 We first create each data structure without a mask using the `no_mask` method:
 """
-arr = ag.Array2D.no_mask(
+arr = al.Array2D.no_mask(
     values=[[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]], pixel_scales=1.0
 )
 
 print(arr)
 
-grid = ag.Grid2D.no_mask(
+grid = al.Grid2D.no_mask(
     values=[
         [[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]],
         [[0.0, -1.0], [0.0, 0.0], [0.0, 1.0]],
@@ -84,7 +84,7 @@ grid = ag.Grid2D.no_mask(
 
 print(grid)
 
-vector_yx = ag.VectorYX2D.no_mask(
+vector_yx = al.VectorYX2D.no_mask(
     values=[
         [[5.0, -5.0], [5.0, 0.0], [5.0, 5.0]],
         [[0.0, -5.0], [0.0, 0.0], [0.0, 5.0]],
