@@ -152,16 +152,16 @@ This is the standard SOURCE LP PIPELINE described in the `slam/start_here.ipynb`
 """
 analysis = al.AnalysisImaging(dataset=dataset)
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 
-source_lp_result = slam.source_lp.run(
+source_lp_result = slam.source_lp_linear.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=bulge,
     lens_disk=None,
     mass=af.Model(al.mp.Isothermal),
     shear=af.Model(al.mp.ExternalShear),
-    source_bulge=af.Model(al.lp.SersicCore),
+    source_bulge=af.Model(al.lp_linear.SersicCore),
     mass_centre=(0.0, 0.0),
     redshift_lens=redshift_lens,
     redshift_source=redshift_source,
@@ -237,9 +237,9 @@ analysis = al.AnalysisImaging(
     dataset=dataset, adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1)
 )
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 
-light_result = slam.light_lp.run(
+light_result = slam.light_lp_linear.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_pix_result_1,

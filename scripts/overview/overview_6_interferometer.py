@@ -202,7 +202,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source:
 
-disk = af.Model(al.lp.ExponentialCore)
+disk = af.Model(al.lp_linear.ExponentialCore)
 
 source = af.Model(al.Galaxy, redshift=1.0, disk=disk)
 

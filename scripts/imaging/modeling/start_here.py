@@ -128,13 +128,25 @@ __Model__
 
 In this example we compose a lens model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
+ - The lens galaxy's light is a linear parametric `Sersic` bulge [7 parameters].
  
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `SersicCore` [7 parameters].
+ - The source galaxy's light is a linear parametric `SersicCore` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=21.
+
+__Linear Light Profiles__
+
+The model below uses a `linear light profile` for the bulge and disk, via the API `lp_linear`. This is a specific type 
+of light profile that solves for the `intensity` of each profile that best fits the data via a linear inversion. 
+This means it is not a free parameter, reducing the dimensionality of non-linear parameter space. 
+
+Linear light profiles significantly improve the speed, accuracy and reliability of modeling and they are used
+by default in every modeling example. A full description of linear light profiles is provided in the
+`autolens_workspace/*/imaging/modeling/features/linear_light_profiles.py` example.
+
+A standard light profile can be used if you change the `lp_linear` to `lp`, but it is not recommended.
 
 __Model Composition__
 
@@ -169,7 +181,7 @@ The over sampling guide fully explains how these choices, but new users should n
 """
 # Lens:
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 
 mass = af.Model(al.mp.Isothermal)
 
@@ -179,7 +191,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 # Overall Lens Model:
 

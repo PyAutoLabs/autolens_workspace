@@ -138,7 +138,7 @@ lens = af.Model(
 
 # Source:
 
-bulge = af.Model(al.lp.SersicCore)
+bulge = af.Model(al.lp_linear.SersicCore)
 
 bulge.centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 bulge.centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
@@ -198,7 +198,7 @@ lens.shear.gamma_2 = af.GaussianPrior(
 )
 
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 source.bulge.centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 source.bulge.centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
@@ -233,7 +233,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 # Overall Lens Model:
 

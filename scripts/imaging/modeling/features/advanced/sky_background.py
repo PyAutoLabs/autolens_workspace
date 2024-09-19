@@ -96,7 +96,7 @@ For the galaxies, we will use the true parameters used to simulate the data, for
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    bulge=al.lp.Sersic(
+    bulge=al.lp_linear.Sersic(
         centre=(0.0, 0.0),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
         intensity=2.0,
@@ -113,7 +113,7 @@ lens_galaxy = al.Galaxy(
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.SersicCore(
+    bulge=al.lp_linear.SersicCore(
         centre=(0.0, 0.0),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
         intensity=4.0,
@@ -161,7 +161,7 @@ prior depends on the dataset being fitted.
 """
 # Lens:
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 
 mass = af.Model(al.mp.Isothermal)
 
@@ -171,7 +171,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 dataset_model = af.Model(al.DatasetModel)
 dataset_model.background_sky_level = af.UniformPrior(lower_limit=0.0, upper_limit=5.0)

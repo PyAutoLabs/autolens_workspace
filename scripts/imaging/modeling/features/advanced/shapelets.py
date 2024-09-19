@@ -144,7 +144,7 @@ m_count = -1
 
 shapelets_bulge_list = []
 
-shapelet_0 = al.lp.ShapeletPolar(
+shapelet_0 = al.lp_linear.ShapeletPolar(
     n=0,
     m=0,
     centre=(0.0, 0.0),
@@ -156,7 +156,7 @@ shapelet_0 = al.lp.ShapeletPolar(
 shapelets_bulge_list.append(shapelet_0)
 
 for i in range(total_n + total_m):
-    shapelet = al.lp.ShapeletPolarSph(
+    shapelet = al.lp_linear.ShapeletPolarSph(
         n=n_count, m=m_count, centre=(0.0, 0.0), intensity=1.0, beta=1.0
     )
 
@@ -207,7 +207,7 @@ via linear algebra. Linear light profiles are described in the `linear_light_pro
 familiarize yourself with this example before using shapelets.
 
 We therefore again setup a `Basis` in an analogous fashion to the previous example, but this time we use linear
-shapelets (via the `lp.linear` module).
+shapelets (via the `lp_linear.linear` module).
 """
 total_n = 5
 total_m = sum(range(2, total_n + 1)) + 1
@@ -527,7 +527,7 @@ shapelets_bulge_list = []
 
 for x in range(total_xy):
     for y in range(total_xy):
-        shapelet = al.lp.ShapeletCartesian(
+        shapelet = al.lp_linear.ShapeletCartesian(
             n_y=y,
             n_x=x,
             centre=(0.0, 0.0),

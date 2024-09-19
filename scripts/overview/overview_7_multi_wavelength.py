@@ -135,7 +135,7 @@ We compose an initial lens model as per usual.
 """
 # Lens:
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 
 mass = af.Model(al.mp.Isothermal)
 mass.centre = (0.0, 0.0)
@@ -152,7 +152,7 @@ lens = af.Model(
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 # Overall Lens Model:
 

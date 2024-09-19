@@ -105,18 +105,19 @@ __Settings__:
 """
 analysis = al.AnalysisImaging(dataset=dataset)
 
-source_lp_result = slam.source_lp.run(
+source_lp_result = slam.source_lp_linear.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=None,
     lens_disk=None,
     mass=af.Model(al.mp.Isothermal),
     shear=af.Model(al.mp.ExternalShear),
-    source_bulge=af.Model(al.lp.SersicCore),
+    source_bulge=af.Model(al.lp_linear.SersicCore),
     mass_centre=(0.0, 0.0),
     redshift_lens=0.5,
     redshift_source=1.0,
 )
+
 
 """
 __SOURCE PIX PIPELINE__
@@ -239,15 +240,13 @@ __Settings__:
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
-    positions_likelihood=source_pix_result_2.positions_likelihood_from(
-        factor=3.0, minimum_threshold=0.2
-    ),
 )
 
-mass_results = slam.mass_total.run(
+mass_result = slam.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
-    source_results=source_pix_results,
+    source_result_for_lens=source_pix_result_1,
+    source_result_for_source=source_pix_result_2,
     light_result=None,
     mass=af.Model(al.mp.PowerLaw),
 )

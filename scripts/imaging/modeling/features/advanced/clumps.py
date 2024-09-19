@@ -119,7 +119,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source:
 
-bulge = af.Model(al.lp.SersicCore)
+bulge = af.Model(al.lp_linear.SersicCore)
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 """
@@ -147,7 +147,7 @@ mass of 10^9 solar masses corresponds to an `einstein_radius` of below 0.1", the
 clump_model = al.ClumpModel(
     redshift=0.5,
     centres=clump_centres,
-    light_cls=al.lp.SersicSph,
+    light_cls=al.lp_linear.SersicSph,
     mass_cls=al.mp.IsothermalSph,
     einstein_radius_upper_limit=0.1,
 )

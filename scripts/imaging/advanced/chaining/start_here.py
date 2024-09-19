@@ -100,7 +100,7 @@ The number of free parameters and therefore the dimensionality of non-linear par
 """
 lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 model_1 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

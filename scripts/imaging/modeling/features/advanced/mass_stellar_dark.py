@@ -124,7 +124,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, dark=dark, shear=shear)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 # Overall Model:
 

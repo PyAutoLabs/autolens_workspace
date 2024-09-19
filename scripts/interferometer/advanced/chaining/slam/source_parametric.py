@@ -107,14 +107,14 @@ this example:
 """
 analysis = al.AnalysisInterferometer(dataset=dataset)
 
-source_lp_result = slam.source_lp.run(
+source_lp_result = slam.source_lp_linear.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=None,
     lens_disk=None,
     mass=af.Model(al.mp.Isothermal),
     shear=af.Model(al.mp.ExternalShear),
-    source_bulge=af.Model(al.lp.SersicCore),
+    source_bulge=af.Model(al.lp_linear.SersicCore),
     mass_centre=(0.0, 0.0),
     redshift_lens=0.5,
     redshift_source=1.0,

@@ -132,7 +132,9 @@ for dataset_name in dataset_names:
     model = af.Collection(
         galaxies=af.Collection(
             lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
-            source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore, disk=None),
+            source=af.Model(
+                al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore, disk=None
+            ),
         )
     )
 

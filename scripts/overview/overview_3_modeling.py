@@ -82,7 +82,7 @@ We will fit our strong lens data with two galaxies:
 The redshifts of the lens (z=0.285) and source (z=0.575) are fixed.
 """
 # Lens:
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 bulge.centre = (0.0, 0.0)
 
 mass = af.Model(al.mp.Isothermal)
@@ -92,7 +92,7 @@ lens = af.Model(al.Galaxy, redshift=0.285, bulge=bulge, mass=mass)
 
 # Source:
 
-disk = af.Model(al.lp.ExponentialCore)
+disk = af.Model(al.lp_linear.ExponentialCore)
 
 source = af.Model(al.Galaxy, redshift=0.575, disk=disk)
 
@@ -281,7 +281,7 @@ The model can be fully customized, making it simple to parameterize and fit many
 using any combination of light and mass profiles.
 """
 lens = af.Model(
-    al.Galaxy, redshift=0.5, bulge=al.lp.DevVaucouleurs, mass=al.mp.Isothermal
+    al.Galaxy, redshift=0.5, bulge=al.lp_linear.DevVaucouleurs, mass=al.mp.Isothermal
 )
 
 """

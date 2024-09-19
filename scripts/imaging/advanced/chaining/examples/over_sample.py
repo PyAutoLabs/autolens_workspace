@@ -96,7 +96,7 @@ lens = af.Model(
     al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
 )
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 model_1 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -183,7 +183,7 @@ lens = af.Model(
     al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
 )
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.Sersic)
 
 model_2 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

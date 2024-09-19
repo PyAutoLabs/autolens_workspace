@@ -104,7 +104,7 @@ lens = af.Model(
     al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
 )
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 model_1 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
@@ -222,7 +222,7 @@ in a robust and efficient way.
 The following example pipelines fits a power-law, using the same approach demonstrated in this script of first 
 fitting an `Isothermal`:
 
- `autolens_workspace/imaging/chaining/pipelines/mass_total__source_lp.py`
+ `autolens_workspace/imaging/chaining/pipelines/mass_total__source_lp_linear.py`
  
  __SLaM (Source, Light and Mass)__
  

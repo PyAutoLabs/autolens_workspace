@@ -76,7 +76,7 @@ shear.gamma_2 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 
 # Source:
 
-bulge = af.Model(al.lp.SersicCore)
+bulge = af.Model(al.lp_linear.SersicCore)
 bulge.centre.centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 bulge.centre.centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 bulge.ell_comps.ell_comps_0 = af.UniformPrior(lower_limit=-0.3, upper_limit=0.3)

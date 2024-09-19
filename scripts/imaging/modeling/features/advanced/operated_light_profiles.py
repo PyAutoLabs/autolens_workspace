@@ -98,7 +98,7 @@ A full description of model composition, including lens model customization, is 
 
 https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 """
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 psf = af.Model(al.lp_operated.Gaussian)
 bulge.centre = psf.centre
 
@@ -110,7 +110,7 @@ lens = af.Model(
     mass=al.mp.Isothermal,
     shear=al.mp.ExternalShear,
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

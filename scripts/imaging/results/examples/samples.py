@@ -67,7 +67,7 @@ and `source`) should be noted, as it will be important when inspecting certain r
 model = af.Collection(
     galaxies=af.Collection(
         lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore),
     ),
 )
 
@@ -403,7 +403,7 @@ below using these.
 axis_ratio_list = []
 
 for sample in samples.sample_list:
-    instance = sample.instance_for_model(model=samples.model)
+    instance = sample.instance_for_model(model=samples.model, ignore_assertions=True)
 
     ell_comps = instance.galaxies.lens.mass.ell_comps
 

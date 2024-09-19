@@ -98,7 +98,7 @@ Search 1 fits a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
 """
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge)
 
@@ -164,7 +164,7 @@ lens = af.Model(
     mass=mass,
 )
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 model_2 = af.Collection(galaxies=af.Collection(lens=lens))
 

@@ -171,7 +171,7 @@ bulge_gaussian_list = []
 # Iterate over every Gaussian and create it, with it centered at (0.0", 0.0") and assuming spherical symmetry.
 
 for i in range(total_gaussians):
-    gaussian = al.lp.Gaussian(
+    gaussian = al.lp_linear.Gaussian(
         centre=(0.0, 0.0),
         ell_comps=(0.0, 0.0),
         intensity=1.0,
@@ -218,7 +218,7 @@ via linear algebra. Linear light profiles are described in the `linear_light_pro
 familiarize yourself with this example before using the multi-Gaussian expansion.
 
 We therefore again setup a `Basis` in an analogous fashion to the previous example, but this time we use linear
-Gaussians (via the `lp.linear` module).
+Gaussians (via the `lp_linear.linear` module).
 """
 total_gaussians = 30
 

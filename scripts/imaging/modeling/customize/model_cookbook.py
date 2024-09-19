@@ -31,7 +31,7 @@ a Sersic light profile:
 """
 # Lens:
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 mass = af.Model(al.mp.Isothermal)
 
 lens = af.Model(
@@ -43,7 +43,7 @@ lens = af.Model(
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 # Overall Lens Model:
 
@@ -70,8 +70,8 @@ The API above can be easily extended to compose lens models where each galaxy ha
 """
 # Lens:
 
-bulge = af.Model(al.lp.Sersic)
-disk = af.Model(al.lp.Exponential)
+bulge = af.Model(al.lp_linear.Sersic)
+disk = af.Model(al.lp_linear.Exponential)
 
 mass = af.Model(al.mp.Isothermal)
 shear = af.Model(al.mp.ExternalShear)
@@ -87,8 +87,8 @@ lens = af.Model(
 
 # Source:
 
-bulge = af.Model(al.lp.SersicCore)
-disk = af.Model(al.lp.ExponentialCore)
+bulge = af.Model(al.lp_linear.SersicCore)
+disk = af.Model(al.lp_linear.ExponentialCore)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk)
 
@@ -105,7 +105,7 @@ like, e.g. `bulge_0`, `bulge_1`, `mass_0`, `mass_1`, and the model will still be
 The API can also be extended to compose lens models where there are multiple galaxies:
 """
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 mass = af.Model(al.mp.Isothermal)
 
 lens_0 = af.Model(
@@ -115,7 +115,7 @@ lens_0 = af.Model(
     mass=mass,
 )
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 mass = af.Model(al.mp.Isothermal)
 
 lens_1 = af.Model(
@@ -127,13 +127,13 @@ lens_1 = af.Model(
 
 # Source 0:
 
-bulge = af.Model(al.lp.SersicCore)
+bulge = af.Model(al.lp_linear.SersicCore)
 
 source_0 = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Source 1 :
 
-bulge = af.Model(al.lp.SersicCore)
+bulge = af.Model(al.lp_linear.SersicCore)
 
 source_1 = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
@@ -165,14 +165,17 @@ removing the comments reading Lens / Source / Overall Lens Model to make the cod
 lens = af.Model(
     al.Galaxy,
     redshift=0.5,
-    bulge=al.lp.Sersic,
-    disk=al.lp.Sersic,
+    bulge=al.lp_linear.Sersic,
+    disk=al.lp_linear.Sersic,
     mass=al.mp.Isothermal,
     shear=al.mp.ExternalShear,
 )
 
 source = af.Model(
-    al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore, disk=al.lp.ExponentialCore
+    al.Galaxy,
+    redshift=1.0,
+    bulge=al.lp_linear.SersicCore,
+    disk=al.lp_linear.ExponentialCore,
 )
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
@@ -185,7 +188,7 @@ We can customize the priors of the lens model component individual parameters as
 """
 # Lens:
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 bulge.intensity = af.LogUniformPrior(lower_limit=1e-4, upper_limit=1e4)
 bulge.sersic_index = af.GaussianPrior(
     mean=4.0, sigma=1.0, lower_limit=1.0, upper_limit=8.0
@@ -209,7 +212,7 @@ lens = af.Model(
 
 # Source
 
-bulge = af.Model(al.lp.SersicCore)
+bulge = af.Model(al.lp_linear.SersicCore)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 source.effective_radius = af.GaussianPrior(
@@ -229,8 +232,8 @@ We can customize the lens model parameters in a number of different ways, as sho
 """
 # Lens:
 
-bulge = af.Model(al.lp.Sersic)
-disk = af.Model(al.lp.Exponential)
+bulge = af.Model(al.lp_linear.Sersic)
+disk = af.Model(al.lp_linear.Exponential)
 
 # Parameter Pairing: Pair the centre of the bulge and disk together, reducing
 # the complexity of non-linear parameter space by N = 2
@@ -263,8 +266,8 @@ lens = af.Model(
 
 # Source:
 
-bulge = af.Model(al.lp.SersicCore)
-disk = af.Model(al.lp.ExponentialCore)
+bulge = af.Model(al.lp_linear.SersicCore)
+disk = af.Model(al.lp_linear.ExponentialCore)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk)
 

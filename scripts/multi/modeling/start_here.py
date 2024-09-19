@@ -122,24 +122,39 @@ __Model__
 
 We compose a lens model where:
 
- - The lens galaxy's light is a parametric `Sersic`, where the `intensity` parameter of the lens galaxy
+ - The lens galaxy's light is a linear parametric `Sersic`, where the `intensity` parameter of the lens galaxy
  for each individual waveband of imaging is a different free parameter [8 parameters].
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `SersicCore`, where the `intensity` parameter of the source galaxy
+ - The source galaxy's light is a linear parametric `SersicCore`, where the `intensity` parameter of the source galaxy
  for each individual waveband of imaging is a different free parameter [8 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=23.
+
+__Linear Light Profiles__
+
+The model below uses a `linear light profile` for the bulge and disk, via the API `lp_linear`. This is a specific type 
+of light profile that solves for the `intensity` of each profile that best fits the data via a linear inversion. 
+This means it is not a free parameter, reducing the dimensionality of non-linear parameter space. 
+
+Linear light profiles significantly improve the speed, accuracy and reliability of modeling and they are used
+by default in every modeling example. A full description of linear light profiles is provided in the
+`autolens_workspace/*/imaging/modeling/features/linear_light_profiles.py` example.
+
+A standard light profile can be used if you change the `lp_linear` to `lp`, but it is not recommended.
+
+For multi wavelength dataset modeling, the `lp_linear` API is extremely powerful as the `intensity` varies across
+the datasets, meaning that making it linear reduces the dimensionality of parameter space significantly.
 """
 lens = af.Model(
     al.Galaxy,
     redshift=0.5,
-    bulge=al.lp.Sersic,
+    bulge=al.lp_linear.Sersic,
     mass=al.mp.Isothermal,
     shear=al.mp.ExternalShear,
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 

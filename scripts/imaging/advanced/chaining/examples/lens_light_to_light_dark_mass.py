@@ -98,7 +98,7 @@ Search 1 fits a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
 """
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge)
 
@@ -163,7 +163,7 @@ bulge.take_attributes(source=result_1.model)
 
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, dark=af.Model(al.mp.NFW))
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 model_2 = af.Collection(galaxies=af.Collection(lens=lens))
 
@@ -213,7 +213,7 @@ in a robust and efficient way.
 The following example pipelines exploit our ability to model separately the lens's light and its stellar mass to
 perform model-fits in non-linear parameter spaces of reduced complexity, as shown in this example:
 
- `autolens_workspace/imaging/chaining/pipelines/light_parametric__mass_light_dark__source_lp.py`
+ `autolens_workspace/imaging/chaining/pipelines/light_parametric__mass_light_dark__source_lp_linear.py`
  `autolens_workspace/imaging/chaining/pipelines/light_parametric__mass_light_dark__source_pixelization.py`
  
 __SLaM (Source, Light and Mass)__

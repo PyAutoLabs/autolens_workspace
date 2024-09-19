@@ -78,7 +78,7 @@ def fit():
     """
     # Lens:
 
-    bulge = af.Model(al.lp.Sersic)
+    bulge = af.Model(al.lp_linear.Sersic)
 
     mass = af.Model(al.mp.Isothermal)
 
@@ -88,7 +88,7 @@ def fit():
 
     # Source:
 
-    source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+    source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
     # Overall Lens Model:
 

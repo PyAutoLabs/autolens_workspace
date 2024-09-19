@@ -53,7 +53,7 @@ Set up the model, which follows the same API as the `start_here.ipynb` tutorial.
 """
 # Lens:
 
-bulge = af.Model(al.lp.Sersic)
+bulge = af.Model(al.lp_linear.Sersic)
 
 mass = af.Model(al.mp.Isothermal)
 
@@ -63,7 +63,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 # Overall Lens Model:
 

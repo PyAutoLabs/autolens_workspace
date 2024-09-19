@@ -459,10 +459,10 @@ Each of these `LightProfileLinearObjFuncList` objects contains its list of light
 `Sersic` is a single entry whereas for the `Basis` is 5 Gaussians.
 """
 print(
-    f"Linear Light Profile list (Basis -> x5 Gaussians) = {inversion.linear_obj_list[0].profile_list}"
+    f"Linear Light Profile list (Basis -> x5 Gaussians) = {inversion.linear_obj_list[0].light_profile_list}"
 )
 print(
-    f"Linear Light Profile list (Sersic) = {inversion.linear_obj_list[1].profile_list}"
+    f"Linear Light Profile list (Sersic) = {inversion.linear_obj_list[1].light_profile_list}"
 )
 
 

@@ -87,13 +87,13 @@ model = af.Collection(
         lens=af.Model(
             al.Galaxy,
             redshift=0.5,
-            bulge=al.lp.Sersic,
-            disk=al.lp.Exponential,
+            bulge=al.lp_linear.Sersic,
+            disk=al.lp_linear.Exponential,
             mass=al.mp.Isothermal,
             shear=al.mp.ExternalShear,
         ),
-        source_0=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore),
-        source_1=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore),
+        source_0=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore),
+        source_1=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore),
     ),
 )
 
