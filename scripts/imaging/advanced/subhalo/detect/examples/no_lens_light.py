@@ -96,7 +96,7 @@ This is the standard SOURCE LP PIPELINE described in the `slam/start_here.ipynb`
 """
 analysis = al.AnalysisImaging(dataset=dataset)
 
-source_lp_result = slam.source_lp_linear.run(
+source_lp_result = slam.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=None,

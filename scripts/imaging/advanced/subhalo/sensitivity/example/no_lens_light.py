@@ -98,7 +98,7 @@ This is the standard SOURCE LP PIPELINE described in the `slam/start_here.ipynb`
 """
 analysis = al.AnalysisImaging(dataset=dataset)
 
-source_lp_result = slam.source_lp_linear.run(
+source_lp_result = slam.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=None,
@@ -135,7 +135,7 @@ The SUBHALO PIPELINE (sensitivity mapping) performs sensitivity mapping of the d
 fitted above, so as to determine where subhalos of what mass could be detected in the data. A full description of
 Sensitivity mapping if given in the SLaM pipeline script `slam/subhalo/sensitivity_imaging.py`.
 """
-subhalo_results = slam.subhalo.sensitivity_imaging_lp_linear.run(
+subhalo_results = slam.subhalo.sensitivity_imaging_lp.run(
     settings_search=settings_search,
     mask=mask,
     psf=dataset.psf,

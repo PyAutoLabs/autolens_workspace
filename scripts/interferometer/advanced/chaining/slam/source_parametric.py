@@ -7,14 +7,14 @@ a specific aspect of the strong lens, first the Source, then the (lens) Light an
 pipelines has it own inputs which customize the model and analysis in that pipeline.
 
 The models fitted in earlier pipelines determine the model used in later pipelines. For example, if the SOURCE PIPELINE
-uses a parametric `Sersic` profile for the bulge, this will be used in the subsequent MASS TOTAL PIPELINE.
+uses a linear parametric `Sersic` profile for the bulge, this will be used in the subsequent MASS TOTAL PIPELINE.
 
 Using a SOURCE LP PIPELINE and a MASS TOTAL PIPELINE this SLaM script fits `Interferometer` of a strong lens system, where
 in the final model:
 
  - The lens galaxy's light is omitted from the data and model.
  - The lens galaxy's total mass distribution is an `PowerLaw`.
- - The source galaxy's light is a parametric `SersicCore`.
+ - The source galaxy's light is a linear parametric `SersicCore`.
 
 This uses the SLaM pipelines:
 
@@ -98,7 +98,7 @@ __SOURCE LP PIPELINE__
 The SOURCE LP PIPELINE uses one search to initialize a robust model for the source galaxy's light, which in
 this example:
  
- - Uses a parametric `Sersic` bulge for the source's light (omitting a disk / envelope).
+ - Uses a linear parametric `Sersic` bulge for the source's light (omitting a disk / envelope).
  - Uses an `Isothermal` model for the lens's total mass distribution with an `ExternalShear`.
 
  __Settings__:
@@ -107,7 +107,7 @@ this example:
 """
 analysis = al.AnalysisInterferometer(dataset=dataset)
 
-source_lp_result = slam.source_lp_linear.run(
+source_lp_result = slam.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=None,

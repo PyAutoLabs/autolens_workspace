@@ -84,10 +84,10 @@ sample. In this example, there are 3 lenses each with their own model, therefore
 
  - The first lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
  
- - The second lens / first source galaxy's light is a parametric `ExponentialSph` and its mass 
- a `IsothermalSph` [7 parameters].
+ - The second lens / first source galaxy's light is a linear parametric `ExponentialSph` and its mass 
+ a `IsothermalSph` [6 parameters].
  
- - The second source galaxy's light is a parametric `ExponentialSph` [4 parameters].
+ - The second source galaxy's light is a linear parametric `ExponentialSph` [3 parameters].
 
  - There is a single cosmological shared free parameter, Omage_m [1 parameter]
 

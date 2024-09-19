@@ -13,7 +13,7 @@ __Model__
 Using a SOURCE LP PIPELINE, LIGHT PIPELINE and a MASS LIGHT DARK PIPELINE this SLaM script  fits `Imaging` dataset of
 a strong lens system, where in the final model:
 
- - The lens galaxy's light is a bulge with a parametric `Sersic` light profile.
+ - The lens galaxy's light is a bulge with a linear parametric `Sersic` light profile.
  - The lens galaxy's stellar mass distribution is a bulge tied to the light model above.
  - The lens galaxy's dark matter mass distribution is modeled as a `NFWMCRLudlow`.
  - The source galaxy's light is a `Pixelization`.
@@ -99,7 +99,7 @@ __SOURCE LP PIPELINE__
 The SOURCE LP PIPELINE uses one search to initialize a robust model for the source galaxy's light, which in 
 this example:
 
- - Uses a parametric `Sersic` bulge for the lens galaxy's light.
+ - Uses a linear parametric `Sersic` bulge for the lens galaxy's light.
 
  - Uses an `Isothermal` model for the lens's total mass distribution with an `ExternalShear`.
 
@@ -112,7 +112,7 @@ analysis = al.AnalysisImaging(dataset=dataset)
 
 bulge = af.Model(al.lp_linear.Sersic)
 
-source_lp_result = slam.source_lp_linear.run(
+source_lp_result = slam.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=bulge,
@@ -231,7 +231,7 @@ lens mass model and source light model fixed to the maximum log likelihood resul
 
 In this example it:
 
- - Uses a parametric `Sersic` bulge [Fixed from SOURCE LP PIPELINE].
+ - Uses a linear parametric `Sersic` bulge [Fixed from SOURCE LP PIPELINE].
 
  - Uses an `Isothermal` model for the lens's total mass distribution [fixed from SOURCE LP PIPELINE].
 
@@ -247,7 +247,7 @@ analysis = al.AnalysisImaging(
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
 )
 
-light_result = slam.light_lp_linear.run(
+light_result = slam.light_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_pix_result_1,
@@ -265,7 +265,7 @@ initialize the model priors .
 
 In this example it:
 
- - Uses a parametric `Sersic` bulge for the lens galaxy's light and its stellar mass [12 parameters: fixed from 
+ - Uses a linear parametric `Sersic` bulge for the lens galaxy's light and its stellar mass [11 parameters: fixed from 
  LIGHT LP PIPELINE].
 
  - The lens galaxy's dark matter mass distribution is a `NFWMCRLudlow` whose centre is aligned with bulge of 

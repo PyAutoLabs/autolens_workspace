@@ -88,7 +88,6 @@ bulge.centre.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
 bulge.centre.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
 bulge.ell_comps.ell_comps_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
 bulge.ell_comps.ell_comps_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
-bulge.intensity = af.GaussianPrior(mean=0.3, sigma=0.3)
 bulge.effective_radius = af.GaussianPrior(mean=0.2, sigma=0.2)
 bulge.sersic_index = af.GaussianPrior(mean=1.0, sigma=1.0)
 

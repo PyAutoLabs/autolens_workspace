@@ -4,25 +4,25 @@ Modeling: Mass Total + Source Parametric
 
 This script fits a multi-wavelength `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge where the `intensity` varies across wavelength.
+ - The lens galaxy's light is a linear parametric `Sersic` bulge where the `effective_radius` varies across wavelength.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `SersicCore`.
+ - The source galaxy's light is a linear parametric `SersicCore`.
 
 Three images are fitted, corresponding to a green ('g' band), red (`r` band) and near infrared ('I' band) images.
 
 This script assumes previous knowledge of the `multi` modeling API found in other scripts in the `multi/modeling`
 package. If anything is unclear check those scripts out.
 
-__Intensity vs Wavelength__
+__Effective Radius vs Wavelength__
 
-Unlike other `multi` modeling scripts, the intensity of the lens and source galaxies as a user defined function of
-wavelength, for example following a relation `y = (m * x) + c` -> `intensity = (m * wavelength) + c`.
+Unlike other `multi` modeling scripts, the effective radius of the lens and source galaxies as a user defined function of
+wavelength, for example following a relation `y = (m * x) + c` -> `effective_radius = (m * wavelength) + c`.
 
 By using a linear relation `y = mx + c` the free parameters are `m` and `c`, which does not scale with the number
 of datasets. For datasets with multi-wavelength images (e.g. 5 or more) this allows us to parameterize the variation
 of parameters across the datasets in a way that does not lead to a very complex parameter space.
 
-For example, in other scripts, a free `intensity` is created for every datasets, which would add 5+ free parameters
+For example, in other scripts, a free `effective_radius` is created for every datasets, which would add 5+ free parameters
 to the model for 5+ datasets.
 
 
@@ -51,7 +51,7 @@ color_list = ["g", "r"]  # , "I"]
 """
 __Wavelengths__
 
-The intensity of each source galaxy is parameterized as a function of wavelength.
+The effective_radius of each source galaxy is parameterized as a function of wavelength.
 
 Therefore we define a list of wavelengths of each color above.
 """
@@ -119,8 +119,7 @@ We compose a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `SersicCore`, where the `intensity` parameter of the source galaxy
- for each individual waveband of imaging is a different free parameter [8 parameters].
+ - The source galaxy's light is a linear parametric `SersicCore` [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=15.
 """
@@ -138,25 +137,25 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 """
 __Model + Analysis__
 
-We now make the lens and source `intensity` a free parameter across every analysis object.
+We now make the lens and source `effective_radius` a free parameter across every analysis object.
 
-Unlike other scripts, where the `intensity` for every dataset is created as a free parameter, we will assume that 
-the `intensity` of the lens and source galaxies linearly varies as a function of wavelength, and therefore compute 
-the `intensity` value for each color image using a linear relation `y = mx + c`.
+Unlike other scripts, where the `effective_radius` for every dataset is created as a free parameter, we will assume that 
+the `effective_radius` of the lens and source galaxies linearly varies as a function of wavelength, and therefore compute 
+the `effective_radius` value for each color image using a linear relation `y = mx + c`.
 
-The function below is not used to compose the model, but illustrates how the `intensity` values were computed
+The function below is not used to compose the model, but illustrates how the `effective_radius` values were computed
 in the corresponding `wavelength_dependence` simulator script.
 """
 
 
-def lens_intensity_from(wavelength):
+def lens_effective_radius_from(wavelength):
     m = 1.0 / 100.0  # lens appears brighter with wavelength
     c = 3
 
     return m * wavelength + c
 
 
-def source_intensity_from(wavelength):
+def source_effective_radius_from(wavelength):
     m = -(1.2 / 100.0)  # source appears fainter with wavelength
     c = 10
 
@@ -174,7 +173,7 @@ source_m = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 source_c = af.UniformPrior(lower_limit=-10.0, upper_limit=10.0)
 
 """
-The free parameters of our model there are no longer `intensity` values, but the parameters `m` and `c` in the relation
+The free parameters of our model there are no longer `effective_radius` values, but the parameters `m` and `c` in the relation
 above. 
 
 The model complexity therefore does not increase as we add more parameters to the model.
@@ -187,15 +186,15 @@ We create an `Analysis` object for every dataset and sum it to combine the analy
 analysis_list = []
 
 for wavelength, dataset in zip(wavelength_list, dataset_list):
-    lens_intensity = (wavelength * lens_m) + lens_c
-    source_intensity = (wavelength * source_m) + source_c
+    lens_effective_radius = (wavelength * lens_m) + lens_c
+    source_effective_radius = (wavelength * source_m) + source_c
 
     analysis_list.append(
         al.AnalysisImaging(dataset=dataset).with_model(
             model.replacing(
                 {
-                    model.galaxies.lens.bulge.intensity: lens_intensity,
-                    model.galaxies.source.bulge.intensity: source_intensity,
+                    model.galaxies.lens.bulge.effective_radius: lens_effective_radius,
+                    model.galaxies.source.bulge.effective_radius: source_effective_radius,
                 }
             )
         )
@@ -230,7 +229,7 @@ The result object returned by this model-fit is a list of `Result` objects, beca
 Each result corresponds to each analysis, and therefore corresponds to the model-fit at that wavelength.
 
 For example, close inspection of the `max_log_likelihood_instance` of the two results shows that all parameters,
-except the `intensity` of the source galaxy's `bulge`, are identical.
+except the `effective_radius` of the source galaxy's `bulge`, are identical.
 """
 print(result_list[0].max_log_likelihood_instance)
 print(result_list[1].max_log_likelihood_instance)

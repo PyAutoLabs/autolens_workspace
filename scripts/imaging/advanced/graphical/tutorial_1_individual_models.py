@@ -126,7 +126,7 @@ We compose a lens model where:
  - The lens galaxy's total mass distribution is an `PowerLawSph` with its centre fixed to its true value of 
  (0.0, 0.0) [2 parameter].
  
- - The source galaxy's light is a parametric `ExponentialSph` [4 parameters].
+ - The source galaxy's light is a linear parametric `ExponentialSph` [3 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=6.
 

@@ -7,7 +7,7 @@ model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `SersicCore`.
+ - The source galaxy's light is a linear parametric `SersicCore`.
 
 This script demonstrates how PyAutoLens's multi-dataset modeling tools can also simultaneously analyse datasets
 observed at the same wavelength.
@@ -115,8 +115,7 @@ We compose a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `SersicCore`, where the `intensity` parameter of the source galaxy
- for each individual waveband of imaging is the same [7 parameters].
+ - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
@@ -164,9 +163,6 @@ __Result__
 
 The result object returned by this model-fit is a list of `Result` objects, because we used a combined analysis.
 Each result corresponds to each analysis, and therefore corresponds to the model-fit at that wavelength.
-
-For example, close inspection of the `max_log_likelihood_instance` of the two results shows that all parameters,
-except the `intensity` of the source galaxy's `bulge`, are identical.
 """
 print(result_list[0].max_log_likelihood_instance)
 print(result_list[1].max_log_likelihood_instance)

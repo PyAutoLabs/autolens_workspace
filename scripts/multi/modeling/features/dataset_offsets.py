@@ -40,9 +40,9 @@ __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a parametric linear `Sersic` bulge.
+ - The lens galaxy's light is a linear parametric linear `Sersic` bulge.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric linear `Sersic`.
+ - The source galaxy's light is a linear parametric linear `Sersic`.
 
 __Start Here Notebook__
 
@@ -159,13 +159,11 @@ We compose a lens model where:
  - Parameters which shift the second dataset's image (y_offset_0, x_offset_0) relative to the first dataset's image
  are included via the `DatasetModel` object [2 parameters].
 
- - The lens galaxy's light is a parametric `Sersic`, where the `intensity` parameter of the lens galaxy
- for each individual waveband of imaging is a different free parameter [8 parameters].
+ - The lens galaxy's light is a linear parametric `Sersic` [6 parameters].
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
 
- - The source galaxy's light is a parametric `SersicCore`, where the `intensity` parameter of the source galaxy
- for each individual waveband of imaging is a different free parameter [8 parameters].
+ - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=23.
 """
@@ -219,9 +217,6 @@ __Result__
 
 The result object returned by this model-fit is a list of `Result` objects, because we used a combined analysis.
 Each result corresponds to each analysis, and therefore corresponds to the model-fit at that wavelength.
-
-For example, close inspection of the `max_log_likelihood_instance` of the two results shows that all parameters,
-except the `intensity` of the source galaxy's `bulge`, are identical.
 """
 print(result_list[0].max_log_likelihood_instance)
 print(result_list[1].max_log_likelihood_instance)

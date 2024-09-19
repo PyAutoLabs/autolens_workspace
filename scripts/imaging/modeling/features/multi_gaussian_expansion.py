@@ -94,7 +94,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's bulge is a super position of 60 `Gaussian`` profiles.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `SersicCore`.
+ - The source galaxy's light is a linear parametric `SersicCore`.
 
 __Start Here Notebook__
 

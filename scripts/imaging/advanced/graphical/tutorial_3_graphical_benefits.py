@@ -104,7 +104,7 @@ We therefore fit a model where
  - The lens galaxy's total mass distribution is an `SphBrokenPowerLaw` with multiple parameters fixed to their true 
  values [3 parameter].
  
- - The source galaxy's light is a parametric `ExponentialSph` [4 parameters].
+ - The source galaxy's light is a linear parametric `ExponentialSph` [3 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=7.
 

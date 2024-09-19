@@ -83,7 +83,6 @@ bulge.centre.centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 bulge.centre.centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 bulge.ell_comps.ell_comps_0 = af.UniformPrior(lower_limit=-0.3, upper_limit=0.3)
 bulge.ell_comps.ell_comps_1 = af.UniformPrior(lower_limit=-0.3, upper_limit=0.3)
-bulge.intensity = af.UniformPrior(lower_limit=0.1, upper_limit=0.5)
 bulge.effective_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.4)
 bulge.sersic_index = af.UniformPrior(lower_limit=0.5, upper_limit=2.0)
 

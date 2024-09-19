@@ -10,12 +10,12 @@ This script chains two searches to fit `Imaging` data of a 'galaxy-scale' strong
 
 The two searches break down as follows:
 
- 1) Model the source galaxy using a parametric `Sersic` and lens galaxy mass as an `Isothermal`.
+ 1) Model the source galaxy using a linear parametric `Sersic` and lens galaxy mass as an `Isothermal`.
  2) Models the source galaxy using an `Inversion` and lens galaxy mass as an `Isothermal`.
 
 __Why Chain?__
 
-There are a number of benefits of chaining a parametric source model and `Inversion`, as opposed to fitting the
+There are a number of benefits of chaining a linear parametric source model and `Inversion`, as opposed to fitting the
 `Inversion` in one search:
 
  - Parametric sources are computationally faster to fit. Therefore, even though the `Sersic` has more
@@ -23,7 +23,7 @@ There are a number of benefits of chaining a parametric source model and `Invers
 
  - `Inversion`'s often go to unphysical solutions where the mass model goes to high / low normalization_list and the source
  is reconstructed as a demagnified version of the image. (see Chapter 4, tutorial 6 for a complete description of
- this effect). This does not occur for a parametric source, therefore the mass model can be initialized using a
+ this effect). This does not occur for a linear parametric source, therefore the mass model can be initialized using a
  parametric source, which sets up the search which fits an `Inversion` so as to not sample these unphysical solutions.
       
  - The positions and positions threshold can be updated to further ensure these unphysical solutions do not bias the
@@ -95,7 +95,7 @@ __Model (Search 1)__
 Search 1 fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
- - The source galaxy's light is a parametric `SersicCore` [7 parameters].
+ - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=13.
 """

@@ -189,7 +189,6 @@ We can customize the priors of the lens model component individual parameters as
 # Lens:
 
 bulge = af.Model(al.lp_linear.Sersic)
-bulge.intensity = af.LogUniformPrior(lower_limit=1e-4, upper_limit=1e4)
 bulge.sersic_index = af.GaussianPrior(
     mean=4.0, sigma=1.0, lower_limit=1.0, upper_limit=8.0
 )
@@ -380,7 +379,7 @@ https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/multi/mod
 __Relations (Advanced)__
 
 We can compose models where the free parameter(s) vary according to a user-specified function 
-(e.g. y = mx +c -> intensity = (m * wavelength) + c across the datasets.
+(e.g. y = mx +c -> effective_radius = (m * wavelength) + c across the datasets.
 
 The following example notebooks show how to compose and fit these models:
 

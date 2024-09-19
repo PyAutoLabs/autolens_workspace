@@ -4,7 +4,7 @@ Chaining: Lens Light To Mass
 
 This script chains two searches to fit `Imaging` data of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a bulge with a parametric `Sersic` light profile.
+ - The lens galaxy's light is a bulge with a linear parametric `Sersic` light profile.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is an `Exponential`.
 
@@ -93,7 +93,7 @@ __Model (Search 1)__
 
 Search 1 fits a lens model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
+ - The lens galaxy's light is a linear parametric `Sersic` bulge [6 parameters].
  - The lens galaxy's mass and source galaxy are omitted.
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
@@ -142,7 +142,7 @@ We use the results of search 1 to create the lens model fitted in search 2, wher
 
  - The lens galaxy's light is an `Sersic` bulge [Parameters fixed to results of search 1].
  - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
- - The source galaxy's light is a parametric `SersicCore` [7 parameters].
+ - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 

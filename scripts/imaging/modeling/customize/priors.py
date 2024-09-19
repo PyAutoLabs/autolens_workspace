@@ -86,7 +86,7 @@ We compose a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `SersicCore` [7 parameters].
+ - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
  
@@ -148,7 +148,6 @@ bulge.ell_comps.ell_comps_0 = af.GaussianPrior(
 bulge.ell_comps.ell_comps_1 = af.GaussianPrior(
     mean=0.05, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
 )
-bulge.intensity = af.LogUniformPrior(lower_limit=0.1, upper_limit=0.5)
 bulge.effective_radius = af.UniformPrior(lower_limit=0.05, upper_limit=0.15)
 bulge.sersic_index = af.GaussianPrior(mean=1.0, sigma=0.5)
 
@@ -208,7 +207,6 @@ source.bulge.ell_comps.ell_comps_0 = af.GaussianPrior(
 source.bulge.ell_comps.ell_comps_1 = af.GaussianPrior(
     mean=0.05, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
 )
-source.bulge.intensity = af.LogUniformPrior(lower_limit=0.1, upper_limit=0.5)
 source.bulge.effective_radius = af.UniformPrior(lower_limit=0.05, upper_limit=0.15)
 source.bulge.sersic_index = af.GaussianPrior(mean=1.0, sigma=0.5)
 
@@ -272,9 +270,6 @@ model.galaxies.source.bulge.ell_comps.ell_comps_0 = af.GaussianPrior(
 )
 model.galaxies.source.bulge.ell_comps.ell_comps_1 = af.GaussianPrior(
     mean=0.05, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
-)
-model.galaxies.source.bulge.intensity = af.LogUniformPrior(
-    lower_limit=0.1, upper_limit=0.5
 )
 model.galaxies.source.bulge.effective_radius = af.UniformPrior(
     lower_limit=0.05, upper_limit=0.15

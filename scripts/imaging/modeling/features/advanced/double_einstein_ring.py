@@ -17,8 +17,8 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a dou
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The first lens galaxy's total mass distribution is an `Isothermal`.
- - The second lens galaxy / first source galaxy's light is a parametric `ExponentialSph` and its mass a `IsothermalSph`.
- - The second source galaxy's light is a parametric `ExponentialSph`.
+ - The second lens galaxy / first source galaxy's light is a linear parametric `ExponentialSph` and its mass a `IsothermalSph`.
+ - The second source galaxy's light is a linear parametric `ExponentialSph`.
 
 __Start Here Notebook__
 
@@ -79,10 +79,10 @@ We compose a lens model where:
 
  - The first lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
  
- - The second lens / first source galaxy's light is a parametric `ExponentialSph` and its mass 
- a `IsothermalSph` [7 parameters].
+ - The second lens / first source galaxy's light is a linear parametric `ExponentialSph` and its mass 
+ a `IsothermalSph` [6 parameters].
 
- - The second source galaxy's light is a parametric `ExponentialSph` [4 parameters].
+ - The second source galaxy's light is a linear parametric `ExponentialSph` [3 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=16.
 

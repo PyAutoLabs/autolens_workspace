@@ -6,7 +6,7 @@ This script fits an `Interferometer` and `Imaging` dataset of a 'galaxy-scale' s
 
  - The lens galaxy's light is an `Sersic` (but is invisible in the interferometer data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `SersicCore`.
+ - The source galaxy's light is a linear parametric `SersicCore`.
 
 __Benefits__
 
@@ -140,9 +140,6 @@ different CPU.
 analysis.n_cores = 1
 
 """
-In other scripts in the `multi` package, we made the `intensity` a free parameter for each dataset, motivated by
-the notion that a galaxy will not change its appearance significantly across wavelength.
-
 Imaging and interferometer datasets observe completely different properties of the lens and source galaxy, where:
 
  - The lens galaxy is invisible at sub-mm wavelengths, meaning the lens light model should have zero `intensity`

@@ -4,9 +4,9 @@ Modeling: Mass Total + Source Parametric
 
 This script fits a multi-wavelength `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge where the `intensity` varies across wavelength.
+ - The lens galaxy's light is a linear parametric `Sersic` bulge where the `intensity` varies across wavelength.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `SersicCore` where the `intensity` varies across wavelength.
+ - The source galaxy's light is a linear parametric `SersicCore` where the `intensity` varies across wavelength.
 
 Two images are fitted, corresponding to a greener ('g' band) redder image (`r` band).
 
@@ -162,17 +162,18 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 Galaxies change appearance across wavelength, with the most significant change in their brightness.
 
 Models applied to summed analyses can be extended to include free parameters specific to each dataset. In this example,
-we want the lens and source brightnesses to vary across the g and r-band datasets.
+we want the lens and source effective radii to vary across the g and r-band datasets.
 
-The API for doing this is shown below, where by inputting the `intensity` model parameters to the `with_free_parameter` 
-method the intensity of the lens's bulge and source's bulge become free parameters across every analysis object.
+The API for doing this is shown below, where by inputting the `effective_radius` model parameters to the `with_free_parameter` 
+method the effective_radius of the lens's bulge and source's bulge become free parameters across every analysis object.
 
-NOTE: The size, shape and other aspects of galaxies as vary across wavelength, none of which are included in this
-example. The API below can easily be extended to include these additional parameters, and the `features` package
-explains other tools for extending the model across datasets.
+NOTE: Other aspects of galaxies may vary across wavelength, none of which are included in this example. The API below 
+can easily be extended to include these additional parameters, and the `features` package explains other tools for 
+extending the model across datasets.
 """
 analysis = analysis.with_free_parameters(
-    model.galaxies.lens.bulge.intensity, model.galaxies.source.bulge.intensity
+    model.galaxies.lens.bulge.effective_radius,
+    model.galaxies.source.bulge.effective_radius,
 )
 
 """
@@ -198,7 +199,7 @@ The result object returned by this model-fit is a list of `Result` objects, beca
 Each result corresponds to each analysis, and therefore corresponds to the model-fit at that wavelength.
 
 For example, close inspection of the `max_log_likelihood_instance` of the two results shows that all parameters,
-except the `intensity` of the source galaxy's `bulge`, are identical.
+except the `effective_radius` of the source galaxy's `bulge`, are identical.
 """
 print(result_list[0].max_log_likelihood_instance)
 print(result_list[1].max_log_likelihood_instance)

@@ -176,9 +176,6 @@ __Result__
 
 The result object returned by this model-fit is a list of `Result` objects, because we used a combined analysis.
 Each result corresponds to each analysis, and therefore corresponds to the model-fit at that wavelength.
-
-For example, close inspection of the `max_log_likelihood_instance` of the two results shows that all parameters,
-except the `intensity` of the source galaxy's `bulge`, are identical.
 """
 print(result_list[0].max_log_likelihood_instance)
 print(result_list[1].max_log_likelihood_instance)

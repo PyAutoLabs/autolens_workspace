@@ -14,7 +14,7 @@ __Model__
 Using a SOURCE LP PIPELINE, LIGHT LP PIPELINE, MASS TOTAL PIPELINE and SUBHALO PIPELINE this SLaM script
 fits `Imaging` of a strong lens system, where in the final model:
 
- - The lens galaxy's light is a bulge with a parametric `Sersic` light profile.
+ - The lens galaxy's light is a bulge with a linear parametric `Sersic` light profile.
  - The lens galaxy's total mass distribution is an `Isothermal`.
  - A dark matter subhalo near The lens galaxy mass is included as a`NFWMCRLudlowSph`.
  - The source galaxy is an `Inversion`.
@@ -104,7 +104,7 @@ analysis = al.AnalysisImaging(dataset=dataset)
 
 bulge = af.Model(al.lp_linear.Sersic)
 
-source_lp_result = slam.source_lp_linear.run(
+source_lp_result = slam.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=bulge,
@@ -186,7 +186,7 @@ This is the standard LIGHT LP PIPELINE described in the `slam/start_here.ipynb` 
 
 bulge = af.Model(al.lp_linear.Sersic)
 
-light_result = slam.light_lp_linear.run(
+light_result = slam.light_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_pix_result_1,

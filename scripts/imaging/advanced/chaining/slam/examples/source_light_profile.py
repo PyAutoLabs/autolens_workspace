@@ -15,9 +15,9 @@ __Model__
 Using a SOURCE LP PIPELINE, LIGHT PIPELINE and a MASS TOTAL PIPELINE this SLaM script  fits `Imaging` dataset of a strong
 lens system, where in the final model:
 
- - The lens galaxy's light is a bulge with a parametric `Sersic` light profile.
+ - The lens galaxy's light is a bulge with a linear parametric `Sersic` light profile.
  - The lens galaxy's total mass distribution is an `PowerLaw`.
- - The source galaxy's light is a parametric `SersicCore`.
+ - The source galaxy's light is a linear parametric `SersicCore`.
 
 This modeling script uses the SLaM pipelines:
 
@@ -96,7 +96,7 @@ __SOURCE LP PIPELINE__
 The SOURCE LP PIPELINE uses one search to initialize a robust model for the source galaxy's light, which in 
 this example:
 
- - Uses a parametric `Sersic` bulge for the lens galaxy's light.
+ - Uses a linear parametric `Sersic` bulge for the lens galaxy's light.
 
  - Uses an `Isothermal` model for the lens's total mass distribution with an `ExternalShear`.
 
@@ -108,7 +108,7 @@ analysis = al.AnalysisImaging(dataset=dataset)
 
 bulge = af.Model(al.lp_linear.Sersic)
 
-source_lp_result = slam.source_lp_linear.run(
+source_lp_result = slam.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=bulge,
@@ -128,7 +128,7 @@ The LIGHT LP PIPELINE uses one search to fit a complex lens light model to a hig
 lens mass model and source light model fixed to the maximum log likelihood result of the SOURCE LP PIPELINE.
 In this example it:
 
- - Uses a parametric `Sersic` bulge for the lens galaxy's light [Do not use the results of 
+ - Uses a linear parametric `Sersic` bulge for the lens galaxy's light [Do not use the results of 
    the SOURCE LP PIPELINE to initialize priors].
 
  - Uses an `Isothermal` model for the lens's total mass distribution [fixed from SOURCE LP PIPELINE].
@@ -144,7 +144,7 @@ analysis = al.AnalysisImaging(
 
 bulge = af.Model(al.lp_linear.Sersic)
 
-light_results = slam.light_lp_linear.run(
+light_results = slam.light_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_lp_result,
@@ -162,7 +162,7 @@ lens light model of the LIGHT LP PIPELINE.
 
 In this example it:
 
- - Uses a parametric `Sersic` bulge [fixed from LIGHT LP PIPELINE].
+ - Uses a linear parametric `Sersic` bulge [fixed from LIGHT LP PIPELINE].
 
  - Uses an `PowerLaw` model for the lens's total mass distribution [priors initialized from SOURCE 
  PARAMETRIC PIPELINE + centre unfixed from (0.0, 0.0)].

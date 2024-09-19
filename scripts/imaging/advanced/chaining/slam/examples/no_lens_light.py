@@ -95,7 +95,7 @@ __SOURCE LP PIPELINE__
 The SOURCE LP PIPELINE uses one search to initialize a robust model for the source galaxy's light, which in
 this example:
 
- - Uses a parametric `Sersic` bulge for the source's light.
+ - Uses a linear parametric `Sersic` bulge for the source's light.
  - Uses an `Isothermal` model for the lens's total mass distribution with an `ExternalShear`.
  
 __Settings__:
@@ -105,7 +105,7 @@ __Settings__:
 """
 analysis = al.AnalysisImaging(dataset=dataset)
 
-source_lp_result = slam.source_lp_linear.run(
+source_lp_result = slam.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=None,

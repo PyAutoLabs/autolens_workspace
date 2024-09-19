@@ -106,7 +106,7 @@ __Model (Search 1)__
 Search 1 fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
- - The first source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The first source galaxy's light is a linear parametric `Sersic` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=12.
 
@@ -174,9 +174,9 @@ __Model (Search 2)__
 We use the results of search 1 to create the lens model fitted in search 2, where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [parameters fixed to results of search 1].
- - The first source galaxy's light is a parametric `Sersic` [parameters fixed to results of search 1].
+ - The first source galaxy's light is a linear parametric `Sersic` [parameters fixed to results of search 1].
  - The first source galaxy's mass is a `IsothermalSph` [3 parameters].
- - The second source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The second source galaxy's light is a linear parametric `Sersic` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=10.
 
@@ -259,7 +259,7 @@ An even more advanced approach which uses search chaining are the SLaM pipelines
 processing into a series of fits that first perfect the source model, then the lens light model and finally the lens
 mass model. 
 
-The SLaM pipelines begin with a parametric Source pipeline, which then switches to an inversion Source pipeline, 
+The SLaM pipelines begin with a linear parametric Source pipeline, which then switches to an inversion Source pipeline, 
 exploiting the chaining technique demonstrated in this example.
 """
 
@@ -277,7 +277,7 @@ at two different redshifts, forming a double Einstein ring system. In the final 
 
 The three searches break down as follows:
 
- 1) Model the lens galaxy using a parametric `Sersic` to subtract its emission.
+ 1) Model the lens galaxy using a linear parametric `Sersic` to subtract its emission.
  2) Model the lens galaxy mass as an `Isothermal`  and first source galaxy using an `Sersic` light profiles.
  3) Model the lens, first and second source galaxies, where the first source's mass is an `IsothermalSph` and second
   source is an `Sersic`.
@@ -348,7 +348,7 @@ __Model (Search 1)__
 
 Search 1 fits a lens model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
+ - The lens galaxy's light is a linear parametric `Sersic` bulge [6 parameters].
  - The lens galaxy's mass and both source galaxies are omitted.
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=7.
@@ -382,7 +382,7 @@ We use the results of search 1 to create the lens model fitted in search 2, wher
 
  - The lens galaxy's light is an `Sersic` bulge [Parameters fixed to results of search 1].
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
- - The first source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The first source galaxy's light is a linear parametric `Sersic` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=12.
 
@@ -437,9 +437,9 @@ We use the results of searches 1 & 2 to create the lens model fitted in search 3
 
  - The lens galaxy's light is an `Sersic` bulge [Parameters fixed to results of search 1].
  - The lens galaxy's total mass distribution is an `Isothermal` [Parameters fixed to results of search 2].
- - The first source galaxy's light is a parametric `Sersic` [Parameters fixed to results of search 2].
+ - The first source galaxy's light is a linear parametric `Sersic` [Parameters fixed to results of search 2].
  - The first source galaxy's mass is a `IsothermalSph` [3 parameters].
- - The second source galaxy's light is a parametric `Sersic` [7 parameters].
+ - The second source galaxy's light is a linear parametric `Sersic` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=10.
 
@@ -488,9 +488,9 @@ We use the results of searches 1, 2 & 3 to create the lens model fitted in searc
  - The lens galaxy's light is an `Sersic` bulge [7 Parameters: we do not use the results of search 1 to 
  initialize priors].
  - The lens galaxy's total mass distribution is an `Isothermal` [5 Parameters: priors initialized from search 2].
- - The first source galaxy's light is a parametric `Sersic` [7 parameters: priors initialized from search 2].
+ - The first source galaxy's light is a linear parametric `Sersic` [6 parameters: priors initialized from search 2].
  - The first source galaxy's mass is a `IsothermalSph` [3 parameters: priors initialized from search 3].
- - The second source galaxy's light is a parametric `Sersic` [7 parameters: priors initialized from search 3].
+ - The second source galaxy's light is a linear parametric `Sersic` [6 parameters: priors initialized from search 3].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=29.
 

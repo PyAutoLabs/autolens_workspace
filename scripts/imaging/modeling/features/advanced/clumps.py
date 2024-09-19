@@ -175,9 +175,9 @@ Therefore, in this example fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
 
- - The source galaxy's light is a parametric `SersicCore` [7 parameters].
+ - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
 
- - Each clump's light is a parametric `SersicSph` profile with fixed centre [2 clumps x 3 parameters = 6 parameters].
+ - Each clump's light is a linear parametric `SersicSph` profile with fixed centre [2 clumps x 2 parameters = 5 parameters].
 
  - Each clump's total mass distribution is a `IsothermalSph` profile with fixed 
  centre [2 clumps x 1 parameters = 2 parameters].

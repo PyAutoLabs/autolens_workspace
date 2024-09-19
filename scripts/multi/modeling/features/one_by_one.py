@@ -37,9 +37,9 @@ __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a parametric linear `Sersic` bulge.
+ - The lens galaxy's light is a linear parametric linear `Sersic` bulge.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric linear `Sersic`.
+ - The source galaxy's light is a linear parametric linear `Sersic`.
 
 __Start Here Notebook__
 

@@ -47,7 +47,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `SersicCore`.
+ - The source galaxy's light is a linear parametric `SersicCore`.
 
 __Start Here Notebook__
 
@@ -142,7 +142,7 @@ We compose a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `SersicCore` [7 parameters].
+ - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 

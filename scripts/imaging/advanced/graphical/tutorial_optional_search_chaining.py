@@ -89,8 +89,8 @@ __Model__
 We compose our model using `Model` objects, which represent the lenses we fit to our data. In this 
 example we fit a model where:
 
- - The lens's bulge is a parametric `Sersic` bulge with its centre fixed to the input 
- value of (0.0, 0.0) [5 parameters]. 
+ - The lens's bulge is a linear parametric `Sersic` bulge with its centre fixed to the input 
+ value of (0.0, 0.0) [4 parameters]. 
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=5.
 """
@@ -131,7 +131,7 @@ __Model (Search 2)__
 
 We use the results of search 1 to create the lens models fitted in search 2, where:
 
- - The lens's bulge is again a parametric `Sersic` bulge [7 parameters: priors passed from search 1]. 
+ - The lens's bulge is again a linear parametric `Sersic` bulge [6 parameters: priors passed from search 1]. 
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=7.
 

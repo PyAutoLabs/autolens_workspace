@@ -99,7 +99,7 @@ sample. In this example, there are 3 lenses each with their own model, therefore
  - Each lens galaxy's total mass distribution is an `PowerLawSph` with its centre fixed to its true value of 
  (0.0, 0.0) [2 parameters].
  
- - Each source galaxy's light is a parametric `ExponentialSph` [4 parameters].
+ - Each source galaxy's light is a linear parametric `ExponentialSph` [3 parameters].
 
  - There are three lenses in our graphical model [3 x 1 = 3 parameters]. 
 

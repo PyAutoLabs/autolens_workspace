@@ -22,10 +22,10 @@ __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge.
- - The lens galaxy includes a parametric `Gaussian` psf.
+ - The lens galaxy's light is a linear parametric `Sersic` bulge.
+ - The lens galaxy includes a linear parametric `Gaussian` psf.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `SersicCore`.
+ - The source galaxy's light is a linear parametric `SersicCore`.
 
 __Start Here Notebook__
 
@@ -79,13 +79,13 @@ __Model__
 
 We compose a lens model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
+ - The lens galaxy's light is a linear parametric `Sersic` bulge [6 parameters].
  
- - The lens galaxy's point source emission is a parametric operated `Gaussian` centred on the bulge [4 parameters].
+ - The lens galaxy's point source emission is a linear parametric operated `Gaussian` centred on the bulge [3 parameters].
  
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `SersicCore` [7 parameters].
+ - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=25.
 

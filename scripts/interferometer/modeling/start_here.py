@@ -14,7 +14,7 @@ This script fits `Interferometer` dataset of a 'galaxy-scale' strong lens with a
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `SersicCore`.
+ - The source galaxy's light is a linear parametric `SersicCore`.
 """
 # %matplotlib inline
 # from pyprojroot import here

@@ -7,7 +7,7 @@
 # pipelines has it own inputs which customize the model and analysis in that pipeline.
 #
 # The models fitted in earlier pipelines determine the model used in later pipelines. For example, if the SOURCE PIPELINE
-# uses a parametric `Sersic` profile for the bulge, this will be used in the subsequent MASS TOTAL PIPELINE.
+# uses a linear parametric `Sersic` profile for the bulge, this will be used in the subsequent MASS TOTAL PIPELINE.
 #
 # Using a SOURCE LP PIPELINE, MASS TOTAL PIPELINE and SUBHALO PIPELINE this SLaM script fits `Interferometer` of a strong lens
 # system, where in the final model:
@@ -95,7 +95,7 @@
 # The SOURCE LP PIPELINE uses one search to initialize a robust model for the source galaxy's light, which in
 # this example:
 #
-#  - Uses a parametric `Sersic` bulge for the source's light (omitting a disk / envelope).
+#  - Uses a linear parametric `Sersic` bulge for the source's light (omitting a disk / envelope).
 #  - Uses an `Isothermal` model for the lens's total mass distribution with an `ExternalShear`.
 #
 #  __Settings__:

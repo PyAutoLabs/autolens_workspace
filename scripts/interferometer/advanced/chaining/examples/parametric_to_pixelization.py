@@ -10,7 +10,7 @@ This script chains two searches to fit `Interferometer` data of a 'galaxy-scale'
 
 The two searches break down as follows:
 
- 1) Model the source galaxy using a parametric `Sersic` and lens galaxy mass as an `Isothermal`.
+ 1) Model the source galaxy using a linear parametric `Sersic` and lens galaxy mass as an `Isothermal`.
  2) Models the source galaxy using an `Inversion` and lens galaxy mass as an `Isothermal`.
 
 __Why Chain?__

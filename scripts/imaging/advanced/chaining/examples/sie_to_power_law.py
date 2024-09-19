@@ -6,7 +6,7 @@ This script chains two searches to fit `Imaging` data of a 'galaxy-scale' strong
 
  - The lens galaxy's light is omitted.
  - The lens galaxy's total mass distribution is an `PowerLaw`.
- - The source galaxy's light is a parametric `SersicCore`.
+ - The source galaxy's light is a linear parametric `SersicCore`.
 
 The two searches break down as follows:
 
@@ -96,7 +96,7 @@ __Model (Search 1)__
 Search 1 fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
- - The source galaxy's light is a parametric `SersicCore` [7 parameters].
+ - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
@@ -143,7 +143,7 @@ We use the results of search 1 to create the lens model fitted in search 2, wher
 
  - The lens galaxy's total mass distribution is an `PowerLaw` with `ExternalShear` [8 parameters: priors 
  initialized from search 1].
- - The source galaxy's light is again a parametric `Sersic` [7 parameters: priors initialized from search 1].
+ - The source galaxy's light is again a linear parametric `Sersic` [6 parameters: priors initialized from search 1].
  
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=15.
 

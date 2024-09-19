@@ -4,7 +4,7 @@ Chaining: Chaining Lens Light To Mass
 
 This script chains two searches to fit `Imaging` data of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a bulge with a parametric `Sersic` light profile.
+ - The lens galaxy's light is a bulge with a linear parametric `Sersic` light profile.
  - The lens galaxy's stellar mass distribution is a bulge tied to the light model above.
  - The lens galaxy's dark matter mass distribution is a `NFWSph`.
  - The source galaxy's light is an `Sersic`.
@@ -93,7 +93,7 @@ __Model (Search 1)__
 
 Search 1 fits a lens model where:
 
- - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
+ - The lens galaxy's light is a linear parametric `Sersic` bulge [6 parameters].
  - The lens galaxy's mass and source galaxy are omitted.
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
@@ -140,12 +140,12 @@ __Model (Search 2)__
 
 We use the results of search 1 to create the lens model fitted in search 2, where:
 
- - The lens galaxy's light and stellar mass is a parametric `Sersic` bulge  [7 parameters: priors initialized from 
+ - The lens galaxy's light and stellar mass is a linear parametric `Sersic` bulge  [6 parameters: priors initialized from 
    search 1].
  - The lens galaxy's dark matter mass distribution is a `NFW` whose centre is aligned with the 
  `Sersic` bulge and stellar mass model above [5 parameters].
  - The lens mass model also includes an `ExternalShear` [2 parameters].
- - The source galaxy's light is a parametric `SersicCore` [7 parameters].
+ - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=22.
 

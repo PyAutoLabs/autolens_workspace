@@ -24,9 +24,9 @@ __Model__
 This script fits an `Imaging` dataset of a galaxy with a model where:
 
  - The sky background is included as part of a `DatasetModel`.
- - The lens galaxy's light is a parametric `Sersic` bulge.
+ - The lens galaxy's light is a linear parametric `Sersic` bulge.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric `SersicCore`.
+ - The source galaxy's light is a linear parametric `SersicCore`.
 
 __Start Here Notebook__
 
@@ -143,11 +143,11 @@ In this example we compose a lens model where:
 
  - The sky background is included as a `DatasetModel` [1 parameter].
 
- - The lens galaxy's light is a parametric `Sersic` bulge [7 parameters].
+ - The lens galaxy's light is a linear parametric `Sersic` bulge [6 parameters].
  
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
- - The source galaxy's light is a parametric `SersicCore` [7 parameters].
+ - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=22.
 
