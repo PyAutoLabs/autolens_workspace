@@ -189,16 +189,20 @@ for wavelength, dataset in zip(wavelength_list, dataset_list):
     lens_effective_radius = (wavelength * lens_m) + lens_c
     source_effective_radius = (wavelength * source_m) + source_c
 
-    analysis_list.append(
-        al.AnalysisImaging(dataset=dataset).with_model(
-            model.replacing(
-                {
-                    model.galaxies.lens.bulge.effective_radius: lens_effective_radius,
-                    model.galaxies.source.bulge.effective_radius: source_effective_radius,
-                }
-            )
-        )
-    )
+    # Currently buggy, need to fix
+
+    # analysis_list.append(
+    #     al.AnalysisImaging(dataset=dataset).with_model(
+    #         model.replacing(
+    #             {
+    #                 model.galaxies.lens.bulge.effective_radius: lens_effective_radius,
+    #                 model.galaxies.source.bulge.effective_radius: source_effective_radius,
+    #             }
+    #         )
+    #     )
+    # )
+
+    analysis_list.append(al.AnalysisImaging(dataset=dataset))
 
 analysis = sum(analysis_list)
 analysis.n_cores = 1

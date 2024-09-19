@@ -166,7 +166,7 @@ input(
     """
     PyAutoLens is now set up and you can begin exploring the workspace. 
     
-    We recommend new users begin by following the 'introduction.ipynb' notebook, which gives an overview 
+    We recommend new users begin by following the 'start_here.ipynb' notebook, which gives an overview 
     of **PyAutoLens** and the workspace.
     
     A full description of the workspace can be found in the `autolens_workspace/README.rst` file, which you should

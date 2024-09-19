@@ -171,7 +171,7 @@ bulge_gaussian_list = []
 # Iterate over every Gaussian and create it, with it centered at (0.0", 0.0") and assuming spherical symmetry.
 
 for i in range(total_gaussians):
-    gaussian = al.lp_linear.Gaussian(
+    gaussian = al.lp.Gaussian(
         centre=(0.0, 0.0),
         ell_comps=(0.0, 0.0),
         intensity=1.0,

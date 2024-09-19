@@ -119,7 +119,6 @@ source = al.Galaxy(
     bulge=al.lp_linear.SersicCore(
         centre=(0.0, 0.0),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
-        intensity=4.0,
         effective_radius=0.1,
         sersic_index=1.0,
     ),

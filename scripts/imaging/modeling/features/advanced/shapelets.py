@@ -144,7 +144,7 @@ m_count = -1
 
 shapelets_bulge_list = []
 
-shapelet_0 = al.lp_linear.ShapeletPolar(
+shapelet_0 = al.lp.ShapeletPolar(
     n=0,
     m=0,
     centre=(0.0, 0.0),
@@ -156,7 +156,7 @@ shapelet_0 = al.lp_linear.ShapeletPolar(
 shapelets_bulge_list.append(shapelet_0)
 
 for i in range(total_n + total_m):
-    shapelet = al.lp_linear.ShapeletPolarSph(
+    shapelet = al.lp.ShapeletPolarSph(
         n=n_count, m=m_count, centre=(0.0, 0.0), intensity=1.0, beta=1.0
     )
 
@@ -527,7 +527,7 @@ shapelets_bulge_list = []
 
 for x in range(total_xy):
     for y in range(total_xy):
-        shapelet = al.lp_linear.ShapeletCartesian(
+        shapelet = al.lp.ShapeletCartesian(
             n_y=y,
             n_x=x,
             centre=(0.0, 0.0),
