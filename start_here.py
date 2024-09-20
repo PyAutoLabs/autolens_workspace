@@ -28,7 +28,8 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-Lets illustrate a simple galaxy structure calculations creating an an image of a galaxy using a light profile.
+Lets illustrate a simple gravitational lensing calculation, creating an an image of a lensed galaxy using a 
+light profile and mass profile.
 
 __Grid__
 
@@ -440,7 +441,7 @@ Modeling is the processing of taking a dataset and inferring the model that best
 the galaxy light and mass profile(s) that best fits the light observed in the data or equivalently the combination
 of Sersic profile parameters that maximize the likelihood of the fit.
 
-Galaxy modeling uses the probabilistic programming language **PyAutoFit**, an open-source project that allows complex 
+Lens modeling uses the probabilistic programming language **PyAutoFit**, an open-source project that allows complex 
 model fitting techniques to be straightforwardly integrated into scientific modeling software. Check it out if you 
 are interested in developing your own software to perform advanced model-fitting:
 
@@ -629,9 +630,10 @@ recommended you go here before anywhere else!
 
 __Features__
 
-To wrap up, here is a brief overview of the advanced features of **PyAutoLens**, which is first listed with
-brief one sentence descriptions and then described in more detail below with a link to the relevant workspace
-package.
+Here is a brief overview of the advanced features of **PyAutoLens**. 
+
+Firstly, brief one sentence descriptions of each feature are given, with more detailed descriptions below including 
+links to the relevant workspace examples.
 
 **Pixelizations**: Reconstructing the source galaxy on a mesh of pixels, to capture extremely irregular structures like spiral arms.
 **Point Sources**: Modeling point sources (e.g. quasars) observed in the strong lens imaging data.
@@ -643,6 +645,7 @@ package.
 **Shapelets**: Decomposing a galaxy into a set of shapelet orthogonal basis functions, capturing more complex structures than simple light profiles.
 **Operated Light Profiles**: Assuming a light profile has already been convolved with the PSF, for when the PSF is a significant effect.
 **Sky Background**: Including the background sky in the model to ensure robust fits to the outskirts of galaxies.
+
 
 __Pixelizations__
 
@@ -668,17 +671,32 @@ There are many lenses where the background source is not extended but is instead
 lensed quasars and supernovae.
 
 For these objects, we do not want to model the source using a light profile, which implicitly assumes an extended
-surface brightness distribution. Instead, we assume that our source is a point source with a centre (y,x).
+surface brightness distribution. 
 
-An overview of point-source analysis is given in `notebooks/overview/overview_8_point_sources.ipynb` and
-the `autolens_workspace/*/point_source` package has example scripts for simulating datasets and lens modeling.
+Instead, we assume that our source is a point source with a centre (y,x), and ray-trace triangles at iteratively
+higher resolutions to determine the source's exact locations in the image-plane:
+
+![Point0](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_0.png)
+
+![Point1](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_1.png)
+
+![Point2](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_2.png)
+
+![Point3](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_3.png)
+
+![Point4](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_4.png)
+
+Note that the image positions above include the fifth central image of the strong lens, which is often not seen in 
+strong lens imaging data. It is easy to disable this image in the point source modeling.
+
+Checkout the`autolens_workspace/*/point_source` package to get started.
 
 
 __Interferometry__
 
 Modeling of interferometer data from submillimeter (e.g. ALMA) and radio (e.g. LOFAR) observatories:
 
-![ALMA Image](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/paper/almacombined.png)
+![ALMA Image](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/paper/almacombined.png)
 
 Visibilities data is fitted directly in the uv-plane, circumventing issues that arise when fitting a dirty image
 such as correlated noise. This uses the non-uniform fast fourier transform algorithm
@@ -691,12 +709,19 @@ __Multi Gaussian Expansion (MGE)__
 
 An MGE decomposes the light of a galaxy into tens or hundreds of two dimensional Gaussians:
 
+![MGE](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/mge.png)
+
+In the image above, 30 Gaussians are shown, where their sizes go from below the pixel scale (in order to resolve
+point emission) to beyond the size of the galaxy (to capture its extended emission).
+
 It is an extremely powerful way to model and subtract the light of the foreground lens galaxy in strong lens imaging,
 and makes it possible to model the stellar mass of the lens galaxy in a way that is tied to its light.
 
 Scientific Applications include capturing departures from elliptical symmetry in the light of galaxies, providing a 
 flexible model to deblend the emission of point sources (e.g. quasars) from the emission of their host galaxy and 
 deprojecting the light of a galaxy from 2D to 3D.
+
+The following paper gives a detailed overview of MGEs and their applications in strong lensing: https://arxiv.org/abs/2403.16253
 
 Checkout `autolens_workspace/notebooks/features/multi_gaussian_expansion.ipynb` to learn how to use an MGE.
 
@@ -706,7 +731,7 @@ __Groups__
 The strong lenses we've discussed so far have just a single lens galaxy responsible for the lensing. Group-scale
 strong lenses are systems where there two or more  lens galaxies deflecting one or more background sources:
 
-![Group](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_9_groups/1_array.png)
+![Group](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/group.png)
 
 **PyAutoLens** has built in tools for modeling group-scale lenses, with no limit on the number of
 lens and source galaxies!
@@ -720,9 +745,9 @@ __Multi-Wavelength__
 Modeling imaging datasets observed at different wavelengths (e.g. HST F814W and F150W) simultaneously or simultaneously
 analysing imaging and interferometer data:
 
-![g-band](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/g_image.png)
+![g-band](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/g_image.png)
 
-![r-band](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/multiwavelength/r_image.png)
+![r-band](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/r_image.png)
 
 The appearance of the strong changes as a function of wavelength, therefore multi-wavelength analysis means we can learn
 more about the different components in a galaxy (e.g a redder bulge and bluer disk) or when imaging and interferometer
@@ -732,23 +757,20 @@ Checkout the `autolens_workspace/*/multi` package to get started, however combin
 feature and it is recommended you first get to grips with the core API.
 
 
-__Features where description will be added (but fully implemented in **PyAutoLens**):__
-
-- Automated pipelines / SLaM.
-- Dark matter subhalos.
-- Graphical models.
-
-
 __Ellipse Fitting__
 
 Ellipse fitting is a technique which fits many ellipses to a galaxy's emission to determine its ellipticity, position
 angle and centre, without assuming a parametric form for its light (e.g. like a Seisc profile):
+
+![ellipse](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/ellipse.png)
 
 This provides complementary information to parametric light profile fitting, for example giving insights on whether
 the ellipticity and position angle are constant with radius or if the galaxy's emission is lopsided. 
 
 There are also multipole moment extensions to ellipse fitting, which determine higher order deviations from elliptical 
 symmetry providing even more information on the galaxy's structure.
+
+The following paper describes the technique in detail: https://arxiv.org/html/2407.12983v1
 
 Checkout `autolens_workspace/notebooks/features/ellipse_fitting.ipynb` to learn how to use ellipse fitting.
 
@@ -784,4 +806,12 @@ accounted for in the model to ensure robust and accurate fits.
 
 Checkout `autogalaxy_workspace/notebooks/features/sky_background.ipynb` to learn how to use include the sky
 background in your model.
+
+
+__Other:__
+
+- mass models (aris paper)
+- Automated pipelines / SLaM.
+- Dark matter subhalos.
+- Graphical models.
 """
