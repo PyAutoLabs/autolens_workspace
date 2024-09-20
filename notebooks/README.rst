@@ -1,22 +1,23 @@
 The ``scripts`` folder contains example scripts for using different **PyAutoLens** features.
 
+For new users, each package should be inspected in the order below, as described in the `new users guide <https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html>`_.
+
+
 Folders (Beginner)
 ------------------
 
-- ``howtolens``: The **HowToLens** lectures which teach you what strong lensing is how to use **PyAutoLens**.
-- ``overview``: A concise overview of **PyAutoLens**'s core features.
+- ``howtolens``: The **HowToLens** lectures which teach inexperienced scientists what strong lensing is how to use **PyAutoLens**.
 
-- ``imaging``: Examples for galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, Euclid).
-- ``interferometer``: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA).
-- ``multi``: Examples for multiple datasets simultaneously (E.g. multi-wavelength imaging, imaging and interferometry).
-- ``point_source``: Examples for strong lens point source datasets.
-- ``group``: Examples for group scale strong lenses with.
+- ``simulators``: Simulating example imaging strong lens datasets fitted throughout examples.
+- ``modeling``: Fitting simple lens models to imaging data.
+- ``data_preparation``: Preparing real imaging data before PyAutoLens analysis.
 
 - ``results``: How to use the results of a **PyAutoLens** model-fit (includes the ``database``).
 - ``plot``: How to plot lensing quantities and results.
 
+- ``features``: Features for detailed modeling and analysis of strong lenses (e.g. Multi Gaussian Expansion, Pixelizations).
+
 Folders (Advanced)
 ------------------
 
-- ``misc``: Miscellaneous PyAutoLens features.
-- ``multi``: Examples for multiple imaging datasets (e.g. multi-wavelength analysis).
+- ``advanced``: Advanced examples for more experienced users.
