@@ -571,47 +571,12 @@ the commented out code below shows how easy it is to plot the fit and posterior 
 We have now completed the API overview of **PyAutoLens**. This notebook has given a brief introduction to the core
 API for creating galaxies, simulating data, fitting data and performing galaxy modeling.
 
-__Workspace Tour__
+__New User Guide__
 
-We recommend that new users first read through the overview examples of interest (`autolens_workspace/notebooks/overview`)
-and then find a `start_here.ipynb` notebook for the feature they are interested in (for example, if you are looking to model
-CCD imaging data, go to `autolens_workspace/notebooks/imaging/modeling/start_here.ipynb`).
+Now you have a basic understanding of the PyAutoLens API, you should read the new user guide on the readthedocs
+to begin navigating the different examples in the workspace and learning how to use PyAutoLens:
 
-For users less experience with gravitational lensing, model fitting, Bayesian inference and scientific analysis
-you may wish to read through the **HowToLens** lectures. These teach you the basic principles of gravitational lensing
-and model fitting, with the target audience undergraduate students, masters students and above.
 
-You can install **PyAutoLens** on your system and clone the `autolens_workspace` tutorials
-following the instructions on our readthedocs:
-
- https://pyautolens.readthedocs.io/en/latest/installation/overview.html
-
-Alternatively, you can begin using **PyAutoLens** in a web browser at the following Binder
-link `https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/HEAD` .
-
-A full overview of the `autolens_workspace` folder structure is as follows:
-
-- `notebooks/overview`: A more detailed overview of **PyAutoLens**'s features .
-- `notebooks/howtolens`: A series of lectures aimed at undergraduates and above that teach gravitational lensing and
-  model fitting.
-- `notebooks/imaging/modeling`: Example scripts for fitting a lens model to CCD imaging data (e.g. HST).
-- `notebooks/imaging/data_preparation` A Preprocessing guide for preparing your CCD dataset for **PyAutoLens**.
-- `notebooks/imaging/simulators`: Simulating CCD imaging data.
-- `notebooks/imaging/results`: Tutorials explaining how to use the `Result` object returned after lens modeling.
-- `notebooks/interferometer`: Interferometer modeling and simulations.
-- `notebooks/point_source`: Point-source modeling and simulations.
-- `notebooks/group`: Group-scale lens modeling and simulations.
-- `notebooks/plot`: Plotting examples and API reference .
-
-Examples describing advanced **PyAutoLens** features are also located on the `autolens_workspace` (many are
-in packages named ``advanced``). We advise that new users omit these packages until familiar with the software:
-
-- `notebooks/multi`: Multi-wavelength modeling and simulations.
-- `notebooks/*/advanced/database`: Database tools for loading and analysing the results of large-scale lens model fits.
-- `notebooks/*/advanced/chaining`: Advanced modeling scripts which chain together multiple non-linear searches, including the SLaM (Source, Light and Mass) lens modeling pipelines.
-- `notebooks/*/advanced/log_likelihood_function`: A step-by-step guide to the log likelihood functions used by **PyAutoLens**.
-- `notebooks/*/advanced/graphcial`: Fitting graphical models to multiple imaging strong lens datasets simultaneously.
-- `notebooks/*/advanced/subhalo`: Dark matter subhalo modeling and simulations.
 
 __HowToLens Lectures__
 
@@ -625,8 +590,10 @@ The **HowToLens** Jupyter Notebook lectures are provide exactly this. They are a
 take you through the core concepts of strong lensing, teach you the principles of the statistical techniques 
 used in modeling and ultimately will allow you to undertake scientific research like a professional astronomer.
 
-If this sounds like it suits you, checkout the `autoglens_workspace/notebooks/howtolens` package now, its it
-recommended you go here before anywhere else!
+To complete thoroughly, they'll probably take 2-4 days, so you may want try moving ahead to the examples but can
+go back to these lectures if you find them hard to follow.
+
+If this sounds like it suits you, checkout the `autolens_workspace/notebooks/howtolens` package now.
 
 __Features__
 
