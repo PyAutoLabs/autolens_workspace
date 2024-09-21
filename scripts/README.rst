@@ -8,9 +8,9 @@ Folders (Beginner)
 
 - ``howtolens``: The **HowToLens** lectures which teach inexperienced scientists what strong lensing is how to use **PyAutoLens**.
 
-- ``simulators``: Simulating example imaging strong lens datasets fitted throughout examples.
-- ``modeling``: Fitting simple lens models to imaging data.
-- ``data_preparation``: Preparing real imaging data before PyAutoLens analysis.
+- ``simulators``: Simulating example strong lens datasets fitted throughout examples.
+- ``modeling``: Fitting simple lens models to data.
+- ``data_preparation``: Preparing real data before PyAutoLens analysis.
 
 - ``results``: How to use the results of a **PyAutoLens** model-fit (includes the ``database``).
 - ``plot``: How to plot lensing quantities and results.

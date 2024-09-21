@@ -28,25 +28,31 @@ our `readthedocs <https://pyautolens.readthedocs.io/>`_.
 Alternatively, you can try **PyAutoLens** out in a web browser by going to the `autolens workspace
 Binder <https://mybinder.org/v2/gh/Jammy2211/autolens_workspace/release?filepath=start_here.ipynb>`_.
 
-Where To Go?
-------------
+New Users
+---------
 
-We recommend that you start with the ``autolens_workspace/start_here.ipynb`` notebook, which will give you a concise
+New users should read the ``autolens_workspace/start_here.ipynb`` notebook, which will give you a concise
 overview of **PyAutoLens**'s core features and API.
 
-Next, read through the overview example notebooks of features you are interested in, in the folder: ``autolens_workspace/notebooks/overview``.
-
-Then, find the ``start_here.ipynb`` notebook for the feature you are interested in (for example, if you
-are looking to model CCD imaging data, go to ``autolens_workspace/notebooks/imaging/modeling/start_here.ipynb``).
+Then checkout the `new user starting guide <https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html>`_ to navigate the workspace for your science case.
 
 HowToLens
 ---------
 
-For users less familiar with gravitational lensing, Bayesian inference and scientific analysis
-you may wish to read through the **HowToLens** lectures. These teach you the basic principles of gravitational lensing
-and Bayesian inference, with the content pitched at undergraduate level and above.
+For experienced scientists, the workspace examples will be easy to follow. Concepts surrounding strong lensing were
+already familiar and the statistical techniques used for fitting and modeling already understood.
 
-A complete overview of the lectures `is provided on the HowToLens readthedocs page <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
+For those less familiar with these concepts (e.g. undergraduate students, new PhD students or interested members of the
+public), things may have been less clear and a slower more detailed explanation of each concept would be beneficial.
+
+The **HowToLens** Jupyter Notebook lectures are provide exactly this. They are a 3+ chapter guide which thoroughly
+take you through the core concepts of strong lensing, teach you the principles of the statistical techniques
+used in modeling and ultimately will allow you to undertake scientific research like a professional astronomer.
+
+To complete thoroughly, they'll probably take 2-4 days, so you may want try moving ahead to the examples but can
+go back to these lectures if you find them hard to follow.
+
+If this sounds like it suits you, checkout the ``autolens_workspace/notebooks/howtolens`` package.
 
 Workspace Structure
 -------------------
@@ -62,28 +68,27 @@ The workspace includes the following main directories:
 
 The examples in the ``notebooks`` and ``scripts`` folders are structured as follows:
 
-- ``overview``: Examples giving an overview of **PyAutoLens**'s core features.
-- ``howtolens``: Detailed step-by-step Jupyter notebook lectures on how to use **PyAutoLens**.
+- ``howtolens``: The **HowToLens** lectures which teach inexperienced scientists what strong lensing is how to use **PyAutoLens**.
 
-- ``imaging``: Examples for analysing and simulating CCD imaging data (e.g. Hubble, Euclid).
-- ``interferometer``: Examples for analysing and simulating interferometer datasets (e.g. ALMA, JVLA).
-- ``multi``: Modeling multiple datasets simultaneously (E.g. multi-wavelength imaging, imaging and interferometry).
-- ``point_source``: Modeling strong lens point source datasets.
-- ``group``: Group-scale lens modeling and simulations examples.
+- ``simulators``: Simulating example strong lens datasets fitted throughout examples.
+- ``modeling``: Fitting simple lens models to data.
+- ``data_preparation``: Preparing real data before PyAutoLens analysis.
 
-- ``plot``: An API reference guide for **PyAutoLens**'s plotting tools.
-- ``misc``: Miscellaneous scripts for specific lens analysis.
+- ``results``: How to use the results of a **PyAutoLens** model-fit (includes the ``database``).
+- ``plot``: How to plot lensing quantities and results.
 
-Inside these packages are packages titled ``advanced`` which only users familiar **PyAutoLens** should check out.
+- ``features``: Features for detailed modeling and analysis of strong lenses (e.g. Multi Gaussian Expansion, Pixelizations).
 
-In the ``imaging``, ``interferometer``, ``point_source``, ``multi`` and  ``group`` folders you'll find the following
-packages:
+Inside the ``simulators``, ``modeling`` and ``data_preparation`` packages are separate packages for each
+unique dataset type:
 
-- ``modeling``: Examples of how to fit a lens model to data via a non-linear search.
-- ``simulators``: Scripts for simulating realistic imaging and interferometer data of strong lenses.
-- ``data_preparation``: Tools to preprocess ``data`` before an analysis (e.g. convert units, create masks).
-- ``results``: Examples using the results of a model-fit.
-- ``advanced``: Advanced modeling scripts which use **PyAutoLens**'s advanced features.
+- ``imaging``: Examples for galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, Euclid).
+- ``interferometer``: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA).
+- ``point_source``: Examples for strong lens point source datasets.
+- ``group``: Examples for group scale strong lenses with.
+
+The ``advanced`` package contains examples which use **PyAutoLens**'s advanced features, such as the SLaM pipelines,
+which only experienced users should check out.
 
 The files ``README.rst`` distributed throughout the workspace describe what is in each folder.
 
