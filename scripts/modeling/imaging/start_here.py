@@ -299,7 +299,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,
     n_live=150,
     number_of_cores=4,
-    iterations_per_update=10000,
+    iterations_per_update=100,
 )
 
 """

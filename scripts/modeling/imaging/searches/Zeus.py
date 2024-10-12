@@ -110,7 +110,7 @@ search = af.Zeus(
     name="Zeus",
     unique_tag=dataset_name,
     nwalkers=30,
-    nsteps=200,
+    nsteps=20,
     initializer=af.InitializerBall(lower_limit=0.49, upper_limit=0.51),
     auto_correlations_settings=af.AutoCorrelationsSettings(
         check_for_convergence=True,
