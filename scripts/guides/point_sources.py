@@ -331,7 +331,9 @@ fit = al.FitPointDataset(
     fit_positions_cls=al.FitPositionsImagePair,  # Different input to the one used above
 )
 
-print("Minimum Distance Between Observed Multiple Images and Model Multiple Images Without Repeats:")
+print(
+    "Minimum Distance Between Observed Multiple Images and Model Multiple Images Without Repeats:"
+)
 print(fit.positions.residual_map)
 
 print("Log Likelihood Without Repeats:")
@@ -347,7 +349,9 @@ fit = al.FitPointDataset(
     fit_positions_cls=al.FitPositionsImagePairRepeat,  # Different input to the one used above
 )
 
-print("Minimum Distance Between Observed Multiple Images and Model Multiple Images With Repeats:")
+print(
+    "Minimum Distance Between Observed Multiple Images and Model Multiple Images With Repeats:"
+)
 print(fit.positions.residual_map)
 
 print("Log Likelihood With Repeats:")
@@ -370,7 +374,9 @@ fit = al.FitPointDataset(
     fit_positions_cls=al.FitPositionsSource,  # Different input to the one used above
 )
 
-print("Minimum Distance Between Source Plane Centre and Model Source Plane Images After Ray Tracing:")
+print(
+    "Minimum Distance Between Source Plane Centre and Model Source Plane Images After Ray Tracing:"
+)
 print(fit.positions.residual_map)
 
 print("Log Likelihood in the Source Plane:")

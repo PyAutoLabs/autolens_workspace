@@ -443,11 +443,12 @@ We set up the `MapperValued` object below, and illustrate how we can use it to i
 to a uniform grid of values, perform magnification calculations and other tasks.
 """
 inversion = result.max_log_likelihood_fit.inversion
-mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0] # Only one source-plane so only one mapper, would be a list if multiple source planes
+mapper = inversion.cls_list_from(cls=al.AbstractMapper)[
+    0
+]  # Only one source-plane so only one mapper, would be a list if multiple source planes
 
 mapper_valued = al.MapperValued(
-    mapper=mapper,
-    values=inversion.reconstruction_dict[mapper]
+    mapper=mapper, values=inversion.reconstruction_dict[mapper]
 )
 
 """
@@ -494,8 +495,7 @@ The interpolated errors on the source reconstruction can also be computed, in ca
 model-fitting of the source reconstruction.
 """
 mapper_valued_errors = al.MapperValued(
-    mapper=mapper,
-    values=inversion.errors_dict[mapper]
+    mapper=mapper, values=inversion.errors_dict[mapper]
 )
 
 interpolated_errors = mapper_valued_errors.interpolated_array_from(
@@ -563,7 +563,7 @@ mesh_pixel_mask = signal_to_noise_map < 5.0
 mapper_valued = al.MapperValued(
     mapper=mapper,
     values=inversion.reconstruction_dict[mapper],
-    mesh_pixel_mask=mesh_pixel_mask
+    mesh_pixel_mask=mesh_pixel_mask,
 )
 
 print("Magnification via Interpolation:")
