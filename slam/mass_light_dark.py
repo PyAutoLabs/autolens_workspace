@@ -124,7 +124,7 @@ def run(
             ),
             source=source,
         ),
-        clumps=al.util.chaining.extra_galaxies_from(
+        extra_galaxies=al.util.chaining.extra_galaxies_from(
             result=source_result_for_lens, mass_as_model=True
         ),
     )

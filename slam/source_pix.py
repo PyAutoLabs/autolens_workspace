@@ -93,7 +93,7 @@ def run_1(
                 ),
             ),
         ),
-        clumps=al.util.chaining.extra_galaxies_from(result=source_lp_result),
+        extra_galaxies=al.util.chaining.extra_galaxies_from(result=source_lp_result),
     )
 
     search = af.Nautilus(
@@ -180,7 +180,7 @@ def run_2(
                 ),
             ),
         ),
-        clumps=al.util.chaining.extra_galaxies_from(result=source_lp_result),
+        extra_galaxies=al.util.chaining.extra_galaxies_from(result=source_lp_result),
     )
 
     if image_mesh_pixels_fixed is not None:
