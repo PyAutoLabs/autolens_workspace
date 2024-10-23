@@ -85,7 +85,7 @@ The second example in this script therefore uses an MGE source. We strongly reco
 MGE lens light models and source models, instead of the elliptical Sersic profiles, as soon as possible!
 
 To capture the irregular and asymmetric features of the source's morphology, or reconstruct multiple source galaxies,
-we recommend using a pixelized source reconstruction (see `autolens_workspace/imaging/modeling/features/pixelization.py`).
+we recommend using a pixelized source reconstruction (see `autolens_workspace/modeling/imaging/features/pixelization.py`).
 Combining this with an MGE for the len's light can be a very powerful way to model strong lenses!
 
 __Model__
@@ -345,7 +345,7 @@ categories of models can be combined.
 
 __Model Cookbook__
 
-A full description of model composition, including lens model customization, is provided by the model cookbook: 
+A full description of model composition is provided by the model cookbook: 
 
 https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 """

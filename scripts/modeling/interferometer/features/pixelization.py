@@ -254,7 +254,7 @@ The threshold of 0.3" is large. For an accurate lens model we would anticipate t
 one another. The high threshold ensures only the initial mass models at the start of the fit are resampled.
 
 Position thresholding is described in more detail in the 
-script `autolens_workspace/*/imaging/modeling/customize/positions.py`
+script `autolens_workspace/*/modeling/imaging/customize/positions.py`
 """
 positions = al.Grid2DIrregular(
     al.from_json(file_path=path.join(dataset_path, "positions.json"))

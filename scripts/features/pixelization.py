@@ -249,7 +249,7 @@ pixelization.
 
 __Model Cookbook__
 
-A full description of model composition, including lens model customization, is provided by the model cookbook: 
+A full description of model composition is provided by the model cookbook: 
 
 https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 """
@@ -337,10 +337,10 @@ The threshold of 0.3" is large. For an accurate lens model we would anticipate t
 one another. The high threshold ensures only the initial mass models at the start of the fit are resampled.
 
 Position thresholding is described in more detail in the 
-script `autolens_workspace/*/imaging/modeling/customize/positions.py`
+script `autolens_workspace/*/modeling/imaging/customize/positions.py`
 
 The arc-second positions of the multiply imaged lensed source galaxy were drawn onto the
-image via the GUI described in the file `autolens_workspace/*/imaging/data_preparation/gui/positions.py`.
+image via the GUI described in the file `autolens_workspace/*/data_preparation/imaging/gui/positions.py`.
 """
 positions = al.Grid2DIrregular(
     al.from_json(file_path=path.join(dataset_path, "positions.json"))
@@ -424,6 +424,57 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
+__Mask Extra Galaxies__
+
+There may be extra galaxies nearby the lens and source galaxies, whose emission blends with the lens and source.
+
+If their emission is significant, and close enough to the lens and source, we may simply remove it from the data
+to ensure it does not impact the model-fit. A standard masking approach would be to remove the image pixels containing
+the emission of these galaxies altogether. This is analogous to what the circular masks used throughout the examples 
+does.
+
+For fits using a pixelization, masking regions of the image in a way that removes their image pixels entirely from 
+the fit. This can produce discontinuities in the pixelixation used to reconstruct the source and produce unexpected 
+systematics and unsatisfactory results. In this case, applying the mask in a way where the image pixels are not 
+removed from the fit, but their data and noise-map values are scaled such that they contribute negligibly to the fit, 
+is a better approach. 
+
+We illustrate the API for doing this below, using the `extra_galaxies` dataset which has extra galaxies whose emission
+needs to be removed via scaling in this way. We apply the scaling and show the subplot imaging where the extra 
+galaxies mask has scaled the data values to zeros, increasing the noise-map values to large values and in turn made 
+the signal to noise of its pixels effectively zero.
+"""
+dataset_name = "extra_galaxies"
+dataset_path = path.join("dataset", "imaging", dataset_name)
+
+dataset = al.Imaging.from_fits(
+    data_path=path.join(dataset_path, "data.fits"),
+    psf_path=path.join(dataset_path, "psf.fits"),
+    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    pixel_scales=0.1,
+)
+
+mask_extra_galaxies = al.Mask2D.from_fits(
+    file_path=path.join(dataset_path, "mask_extra_galaxies.fits"),
+    pixel_scales=0.1,
+    invert=True,  # Note that we invert the mask here as `True` means a pixel is scaled.
+)
+
+dataset = dataset.apply_noise_scaling(mask=mask_extra_galaxies)
+
+mask = al.Mask2D.circular(
+    shape_native=dataset.shape_native, pixel_scales=0.1, centre=(0.0, 0.0), radius=6.0
+)
+
+dataset = dataset.apply_mask(mask=mask)
+
+dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
+dataset_plotter.subplot_dataset()
+
+"""
+We do not explictly fit this data, for the sake of brevity, however if your data has these nearby galaxies you should
+apply the mask as above before fitting the data.
+
 __Pixelization / Mapper Calculations__
 
 The pixelized source reconstruction output by an `Inversion` is often on an irregular grid (e.g. a 

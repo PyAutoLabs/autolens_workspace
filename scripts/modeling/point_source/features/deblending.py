@@ -55,10 +55,10 @@ you please contact me on SLACK and I can write it!
 
 __Imaging__
 
-This example script fits `Imaging` data, using many of the features described in the `imaging/modeling` workspace
+This example script fits `Imaging` data, using many of the features described in the `modeling/imaging` workspace
 examples.
 
-It also uses the following features described in the `imaging/modeling/features` workspace examples:
+It also uses the following features described in the `modeling/imaging/features` workspace examples:
 
 - `linear_light_profiles.py`: The model includes light profiles which use linear algebra to solve for their
    intensity, reducing model complexity.
@@ -146,7 +146,7 @@ We note that our lens model therefore does not include:
 
 __Model Cookbook__
 
-A full description of model composition, including lens model customization, is provided by the model cookbook: 
+A full description of model composition is provided by the model cookbook: 
 
 https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 """

@@ -20,7 +20,7 @@ Links / Resources:
 The `examples/mask.ipynb` scripts shows how to create customize masked (e.g. annular, ellipses)
 which are tailored to match the lens or lensed source emission of your data.
 
-The script `data_prepration/gui/mask.ipynb` shows how to use a Graphical User Interface (GUI) to create an even
+The script `data_preparation/gui/mask.ipynb` shows how to use a Graphical User Interface (GUI) to create an even
 more custom mask.
 
 __Start Here Notebook__
@@ -62,7 +62,7 @@ Returns the path where the mask will be output, which in this case is
 dataset_path = path.join("dataset", dataset_type, dataset_name)
 
 """
-If you use this tool for your own dataset, you *must* double check this pixel scale is correct!
+The pixel scale of the imaging dataset.
 """
 pixel_scales = 0.1
 

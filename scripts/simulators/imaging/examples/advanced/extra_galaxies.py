@@ -1,48 +1,46 @@
 """
-Simulator: Clumps
-=================
+Simulator: Extra Galaxies
+=========================
 
 Certain lenses have small galaxies within their Einstein radius, or nearby the lensed source emission. 
 
 The emission of these galaxies may overlap the lensed source emission, and their mass may contribute to the lensing 
 of the source.
 
-We may therefore wish to include these additional galaxies in the lens model, as:
+We therefore will need to mask the emission of these extra galaxies or include them in the model as light profiles which
+fit and subtract the emission. We may also include these galaxies as mass profiles in the lens model, accounting for
+their lensing effects via ray-tracing.
 
- - Light profiles which fit and subtract the emission of these nearby galaxies.
- - Mass profiles which account for their lensing effects via ray-tracing.
- 
-This uses the **PyAutoLens** clump API, which is illustrated in 
-the  script `autolens_workspace/*/imaging/modeling/features/clumps.py`.
+This uses the modeling API, which is illustrated in 
+the script `autolens_workspace/*/modeling/imaging/features/extra_galaxies.py`.
 
-This script simulates an imaging dataset which includes line-of-sight galaxies / clumps near the lens and source 
-galaxies. This is used to illustrate the clump API in the script above.
+This script simulates an imaging dataset which includes extra galaxies near the lens and source
+galaxies. This is used to illustrate the extra galaxies API in the script above.
 
 __Model__
 
 This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
 
- - The lens galaxy's total mass distribution is an PowerLawBroken.
+ - The lens galaxy's total mass distribution is an `Isothermal`.
  - The source galaxy's light is an `Sersic`.
- - There are two clump objects whose light nearly obscures that of the strong lens and mass perturbs the lensed
- source's emission.
+ - There are two extra galaxies whose light is near the strong lens and their mass perturbs the lensed source's emission.
 
 __Other Scripts__
 
 This dataset is used in the following scripts:
 
- `autolens_workspace/*/imaging/data_preparation/examples/optional/scaled_dataset.ipynb`
+ `autolens_workspace/*/data_preparation/imaging/examples/optional/scaled_dataset.ipynb`
 
-To illustrate how to subtract and remove the light of clump objects in real strong lensing data, so that it does
+To illustrate how to subtract and remove the light of extra galaxies in real strong lensing data, so that it does
 not impact the lens model.
 
- `autolens_workspace/*/imaging/data_preparation/examples/optional/clump_centres.ipynb`
+ `autolens_workspace/*/data_preparation/imaging/examples/optional/extra_galaxies_centres.ipynb`
 
-To illustrate how mark clump centres on a dataset so they can be used in the lens model.
+To illustrate how mark extra galaxy centres on a dataset so they can be used in the lens model.
 
- `autolens_workspace/*/imaging/modeling/features/clumps.ipynb`
+ `autolens_workspace/*/modeling/imaging/features/extra_galaxies.ipynb`
 
-To illustrate how compose and fit a lens model which includes the clumps as light and mass profiles.
+To illustrate how compose and fit a lens model which includes the extra galaxies as light and mass profiles.
 
 __Start Here Notebook__
 
@@ -64,7 +62,7 @@ The `dataset_type` describes the type of data being simulated (in this case, `Im
 gives it a descriptive name. 
 """
 dataset_type = "imaging"
-dataset_name = "clumps"
+dataset_name = "extra_galaxies"
 dataset_path = path.join("dataset", dataset_type, dataset_name)
 
 """
@@ -95,31 +93,10 @@ simulator = al.SimulatorImaging(
 )
 
 """
+__Galaxies__
+
 Setup the lens galaxy's light, mass and source galaxy light for this simulated lens.
-
-This includes two clump objects, which must be modeled / masked / have their noise-map increased in preprocessing to 
-ensure they do not impact the fit.
 """
-clump_0_centre = (1.0, 3.5)
-
-clump_0 = al.Galaxy(
-    redshift=0.5,
-    light=al.lp.ExponentialSph(
-        centre=clump_0_centre, intensity=0.8, effective_radius=0.5
-    ),
-    mass=al.mp.IsothermalSph(centre=clump_0_centre, einstein_radius=0.1),
-)
-
-clump_1_centre = (-2.0, -3.5)
-
-clump_1 = al.Galaxy(
-    redshift=0.5,
-    light=al.lp.ExponentialSph(
-        centre=clump_1_centre, intensity=0.5, effective_radius=0.8
-    ),
-    mass=al.mp.IsothermalSph(centre=clump_1_centre, einstein_radius=0.2),
-)
-
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     bulge=al.lp.Sersic(
@@ -147,10 +124,46 @@ source_galaxy = al.Galaxy(
     ),
 )
 
+
+"""
+__Extra Galaxies__
+
+Includes two extra galaxies, which must be modeled or masked to ensure they do not impact the fit.
+
+Note that their redshift is the same as the main galaxy, which is not necessarily the case in real observations. 
+
+If they are at a different redshift, the tools for masking or modeling the luminous emission of the extra galaxies 
+are equipped to handle this.
+
+For mass modeling, their redshifts being different to the main galaxy will lead to multi-plane ray-tracing being
+performed.
+"""
+extra_galaxy_0_centre = (1.0, 3.5)
+
+extra_galaxy_0 = al.Galaxy(
+    redshift=0.5,
+    light=al.lp.ExponentialSph(
+        centre=extra_galaxy_0_centre, intensity=2.0, effective_radius=0.5
+    ),
+    mass=al.mp.IsothermalSph(centre=extra_galaxy_0_centre, einstein_radius=0.1),
+)
+
+extra_galaxy_1_centre = (-2.0, -3.5)
+
+extra_galaxy_1 = al.Galaxy(
+    redshift=0.5,
+    light=al.lp.ExponentialSph(
+        centre=extra_galaxy_1_centre, intensity=2.0, effective_radius=0.8
+    ),
+    mass=al.mp.IsothermalSph(centre=extra_galaxy_1_centre, einstein_radius=0.2),
+)
+
 """
 Use these galaxies to setup a tracer, which will generate the image for the simulated `Imaging` dataset.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, clump_0, clump_1, source_galaxy])
+tracer = al.Tracer(
+    galaxies=[lens_galaxy, extra_galaxy_0, extra_galaxy_1, source_galaxy]
+)
 
 """
 Lets look at the tracer`s image, this is the image we'll be simulating.
@@ -212,5 +225,5 @@ al.output_to_json(
 )
 
 """
-The dataset can be viewed in the folder `autolens_workspace/imaging/clumps`.
+The dataset can be viewed in the folder `autolens_workspace/imaging/extra_galaxies`.
 """

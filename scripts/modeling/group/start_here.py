@@ -189,7 +189,7 @@ The model fitting default settings assume that the lens galaxy centre is near th
 If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that you either: 
 
  - Reduce your data so that the centre is (`autolens_workspace/*/data_preparation`). 
- - Manually override the lens model priors (`autolens_workspace/*/imaging/modeling/customize/priors.py`).
+ - Manually override the lens model priors (`autolens_workspace/*/modeling/imaging/customize/priors.py`).
 """
 print(model)
 
@@ -201,8 +201,8 @@ full description).
 
 The folders: 
 
- - `autolens_workspace/*/imaging/modeling/searches`.
- - `autolens_workspace/*/imaging/modeling/customize`
+ - `autolens_workspace/*/modeling/imaging/searches`.
+ - `autolens_workspace/*/modeling/imaging/customize`
   
 Give overviews of the non-linear searches **PyAutoLens** supports and more details on how to customize the
 model-fit, including the priors on the model.

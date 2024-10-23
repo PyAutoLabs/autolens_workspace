@@ -130,4 +130,4 @@ roughly as follows:
   The notion of a 'main' lens galaxy is illposed and two or more main lens galaxies are required to fit an accurate model.
 
 If you have data which requires the lens model to include additional galaxies, whether it be a galaxy or group
-scale system, keep an eye out for **PyAutoLens**'s '**clump API**' which is designed to facilitate this.
+scale system, keep an eye out for **PyAutoLens**'s '**extra galaxies API**' which is designed to facilitate this.

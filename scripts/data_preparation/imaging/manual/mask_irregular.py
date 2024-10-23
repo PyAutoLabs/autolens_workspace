@@ -37,7 +37,7 @@ snr_cut = 10.0
 
 """
 Setup the path the datasets we'll use to illustrate preprocessing, which is the 
-folder `dataset/imaging/data_preparation/simple__no_lens_light`.
+folder `dataset/data_preparation/imaging/simple__no_lens_light`.
 """
 dataset_name = "simple__no_lens_light"
 dataset_path = path.join("dataset", "imaging", dataset_name)

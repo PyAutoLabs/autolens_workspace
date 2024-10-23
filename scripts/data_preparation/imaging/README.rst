@@ -1,4 +1,4 @@
-The ``imaging/data_preparation`` package provides tools for preparing an imaging
+The ``data_preparation/imaging`` package provides tools for preparing an imaging
 dataset (e.g. Hubble Space Telescope) before **PyAutoLens** analysis:
 
 Files (Beginner)

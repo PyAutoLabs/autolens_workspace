@@ -356,7 +356,7 @@ Note how this Shapelet model can capture features more complex than a Sersic, bu
 
 __Model Cookbook__
 
-A full description of model composition, including lens model customization, is provided by the model cookbook: 
+A full description of model composition is provided by the model cookbook: 
 
 https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 """

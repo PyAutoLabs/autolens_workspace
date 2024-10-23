@@ -9,7 +9,7 @@ an error).
 If parallelization does not work in a Jupyter notebook AND does not work when you run an example Python script, you
 must use the code format illustrated here to fix the problem.
 
-The code in this script is identical to the `autolens_workspace/scripts/imaging/modeling/start_here.py` script.
+The code in this script is identical to the `autolens_workspace/scripts/modeling/imaging/start_here.py` script.
 Comments have therefore been removed to avoid repetition and make the script more concise.
 
 __The Fix__

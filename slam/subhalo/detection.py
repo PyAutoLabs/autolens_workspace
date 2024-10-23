@@ -49,7 +49,9 @@ def run_1_no_subhalo(
 
     model = af.Collection(
         galaxies=af.Collection(lens=lens, source=source),
-        clumps=al.util.chaining.clumps_from(result=mass_result, mass_as_model=True),
+        clumps=al.util.chaining.extra_galaxies_from(
+            result=mass_result, mass_as_model=True
+        ),
     )
 
     search = af.Nautilus(
@@ -150,7 +152,7 @@ def run_2_grid_search(
 
     model = af.Collection(
         galaxies=af.Collection(lens=lens, subhalo=subhalo, source=source),
-        clumps=al.util.chaining.clumps_from(
+        clumps=al.util.chaining.extra_galaxies_from(
             result=subhalo_result_1, mass_as_model=True
         ),
     )
@@ -263,7 +265,7 @@ def run_3_subhalo(
             subhalo=subhalo,
             source=subhalo_grid_search_result_2.model.galaxies.source,
         ),
-        clumps=al.util.chaining.clumps_from(
+        clumps=al.util.chaining.extra_galaxies_from(
             result=subhalo_grid_search_result_2, mass_as_model=True
         ),
     )

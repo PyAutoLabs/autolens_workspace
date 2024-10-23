@@ -255,5 +255,5 @@ To print the exact value, the `sky` attribute of the result contains the `intens
 print(result.instance.dataset_model.background_sky_level)
 
 """
-Checkout `autogalaxy_workspace/*/imaging/modeling/results.py` for a full description of the result object.
+Checkout `autogalaxy_workspace/*/modeling/imaging/results.py` for a full description of the result object.
 """

@@ -18,7 +18,7 @@ lens light and / or mass centre to help the non-linear search find a good lens m
 
 Links / Resources:
 
-The script `data_prepration/gui/lens_light_centre.ipynb` shows how to use a Graphical User Interface (GUI) to mask the
+The script `data_preparation/gui/lens_light_centre.ipynb` shows how to use a Graphical User Interface (GUI) to mask the
 lens galaxy light centres.
 
 __Start Here Notebook__
@@ -44,19 +44,19 @@ dataset_name = "lens_sersic"
 dataset_path = path.join("dataset", dataset_type, dataset_name)
 
 """
-If you use this tool for your own dataset, you *must* double check this pixel scale is correct!
+The pixel scale of the imaging dataset.
 """
 pixel_scales = 0.1
 
 """
-First, load the `Imaging` dataset, so that the lens light centres can be plotted over the strong lens image.
+Load the `Imaging` dataset, so that the lens light centres can be plotted over the strong lens image.
 """
 data = al.Array2D.from_fits(
     file_path=path.join(dataset_path, "data.fits"), pixel_scales=pixel_scales
 )
 
 """
-Now, create a lens light centre, which is a Grid2DIrregular object of (y,x) values.
+Now, create a lens light centre, which is a `Grid2DIrregular` object of (y,x) values.
 """
 light_centre = al.Grid2DIrregular(values=[(0.0, 0.0)])
 

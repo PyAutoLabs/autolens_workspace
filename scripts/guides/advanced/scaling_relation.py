@@ -72,16 +72,16 @@ is not used.
 If you have redshift information on the line of sight galaxies and some of their redshifts are different to the lens
 galaxy, you can easily extend this example below to perform multi-plane lensing.
 
-You would simply define a `clump_redshift_list` and use this to set up the clump's `Galaxy` redshift.
+You would simply define a `redshift_list` and use this to set up the extra `Galaxy` redshifts.
 
-__Clump API__
+__Extra Galaxies API__
 
-**PyAutoLens** refers to all galaxies surrounded the strong lens as `clumps`, with the dedicated clump API used
+**PyAutoLens** refers to all galaxies surrounded the strong lens as `extra_galaxies`, with the modeling API extended
 to model them.
 
-The galaxies (and their parameters) included via a scaling relation and therefore prefixed with `clump_` to distinguish
-them from the lens galaxy and source galaxy, and in the model they are separate from the `galaxies` and use their
-own `clumps` attribute.
+The galaxies (and their parameters) included via a scaling relation are therefore prefixed with `extra_galaxy_` to 
+distinguish them from the lens galaxy and source galaxy, and in the model they are separate from the `galaxies` and 
+use their own `extra_galaxies` collection.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -125,13 +125,13 @@ Before composing our scaling relation model, we need to define the centres of th
 In this example, we know these centres perfectly from the simulated dataset. In a real analysis, we would have to
 determine these centres beforehand (see discussion above).
 """
-clump_centre_list = [(3.5, 2.5), (-4.4, -5.0)]
+extra_galaxies_centre_list = [(3.5, 2.5), (-4.4, -5.0)]
 
 """
 We can plot the centres over the strong lens dataset to check that they look like reasonable values.
 """
 visuals = aplt.Visuals2D(
-    light_profile_centres=al.Grid2DIrregular(values=clump_centre_list)
+    light_profile_centres=al.Grid2DIrregular(values=extra_galaxies_centre_list)
 )
 
 dataset_plotter = aplt.ImagingPlotter(
@@ -150,7 +150,7 @@ to determine these luminosities beforehand (see discussion above).
 
 This could be other measured properties, like stellar mass or velocity dispersion.
 """
-clump_luminosity_list = [0.9, 0.9]
+extra_galaxies_luminosity_list = [0.9, 0.9]
 
 """
 __dPIE__
@@ -248,31 +248,33 @@ __Scaling Relation__
 We now compose our scaling relation models, using **PyAutoFits** relational model API, which works as follows:
 
 - Define the free parameters of the scaling relation using priors (note how the priors below are outside the for loop,
-  meaning that every clump is associated with the same scailng relation prior and therefore parameters).
+  meaning that every extra galaxy is associated with the same scailng relation prior and therefore parameters).
 
-- For every clump centre and lumnosity, create a model mass profile (using `af.Model(dPIESph)`), where the centre
-  of the mass profile is the clump centre and its other parameters are set via the scaling relation priors.
+- For every extra galaxy centre and lumnosity, create a model mass profile (using `af.Model(dPIESph)`), where the centre
+  of the mass profile is the extra galaxy centres and its other parameters are set via the scaling relation priors.
   
-- Make each clumps a model galaxy (via `af.Model(Galaxy)`) and associate it with the model mass profile, where the
-  redshifts of the clumps are set to the same values as the lens galaxy.
+- Make each extra galaxy a model galaxy (via `af.Model(Galaxy)`) and associate it with the model mass profile, where the
+  redshifts of the extra galaxies are set to the same values as the lens galaxy.
 """
 ra_star = af.LogUniformPrior(lower_limit=1e8, upper_limit=1e11)
 rs_star = af.UniformPrior(lower_limit=-1.0, upper_limit=1.0)
 sigma_star = af.LogUniformPrior(lower_limit=1e5, upper_limit=1e7)
 luminosity_star = 1e9
 
-clump_galaxy_list = []
+extra_galaxies_list = []
 
-for clump_centre, clump_luminosity in zip(clump_centre_list, clump_luminosity_list):
+for extra_galaxy_centre, extra_galaxy_luminosity in zip(
+    extra_galaxies_centre_list, extra_galaxies_luminosity_list
+):
     mass = af.Model(dPIESph)
-    mass.centre = clump_centre
-    mass.ra = ra_star * (clump_luminosity / luminosity_star) ** 0.5
-    mass.rs = rs_star * (clump_luminosity / luminosity_star) ** 0.5
-    mass.sigma_scale = sigma_star * (clump_luminosity / luminosity_star) ** 0.25
+    mass.centre = extra_galaxy_centre
+    mass.ra = ra_star * (extra_galaxy_luminosity / luminosity_star) ** 0.5
+    mass.rs = rs_star * (extra_galaxy_luminosity / luminosity_star) ** 0.5
+    mass.sigma_scale = sigma_star * (extra_galaxy_luminosity / luminosity_star) ** 0.25
 
-    clump_galaxy = af.Model(al.Galaxy, redshift=0.5, mass=mass)
+    extra_galaxy = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
-    clump_galaxy_list.append(clump_galaxy)
+    extra_galaxies_list.append(extra_galaxy)
 
 """
 __Model__
@@ -293,7 +295,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 """
-When creating the overall model, we include the clumps as a separate collection of galaxies, which we call `clumps`.
+When creating the overall model, we include the extra galaxies as a separate collection of galaxies.
 
 This is not strictly necessary (e.g. if we input them into the `galaxies` attribute of the model the code would still
 function correctly).
@@ -301,7 +303,8 @@ function correctly).
 However, to ensure results are easier to interpret we keep them separate.
 """
 model = af.Collection(
-    galaxies=af.Collection(lens=lens, source=source) + af.Collection(clump_galaxy_list),
+    galaxies=af.Collection(lens=lens, source=source)
+    + af.Collection(extra_galaxies_list),
 )
 
 """
@@ -316,9 +319,9 @@ The number of free parameters is N=16, which breaks down as follows:
  - 6 for the source galaxy's `Sersic` bulge.
  - 3 for the scaling relation parameters.
  
-Had we modeled both clumps independently as dPIE profiles, we would of had 6 parameters per clump, giving N=19. 
-Furthermore, by using scaling relations we can add more clumps to the model without increasing the number of free
-parameters. 
+Had we modeled both extra galaxies independently as dPIE profiles, we would of had 6 parameters per extra galaxy, 
+giving N=19. Furthermore, by using scaling relations we can add more extra galaxies to the model without increasing the 
+number of free parameters. 
 """
 print(model.info)
 
@@ -351,10 +354,10 @@ __Wrap Up__
 
 This example has shown how to use **PyAutoLens**'s scaling relation API to model a strong lens. 
 
-We have seen how by measuring the centres and luminosities of galaxies (referred to as clumps) surrounding the lens
-galaxy, we can use scaling relations to define their mass profiles. This reduces the number of free parameters in the
-lens model, because we only need to infer the scaling relation parameters, rather than the individual parameters of
-each clump.
+We have seen how by measuring the centres and luminosities of galaxies (referred to as extra galaxies) surrounding the 
+lens galaxy, we can use scaling relations to define their mass profiles. This reduces the number of free parameters in 
+the lens model, because we only need to infer the scaling relation parameters, rather than the individual parameters of
+each extra galaxy.
 
 The API shown in this script is highly flexible and you should have no problem adapting it use any scaling relation
 you wish to use in your own strong lens models! 

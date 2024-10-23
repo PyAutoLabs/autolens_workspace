@@ -3,7 +3,7 @@ The ``modeling/features`` folder contains example scripts showing how to fit a l
 The majority of features are the same irrespective of the dataset fitted.
 
 Therefore, refer to the folder
-`autolens_workspace/*/imaging/modeling/features` for example scripts, which can be copy
+`autolens_workspace/*/modeling/imaging/features` for example scripts, which can be copy
 and pasted into scripts which model point source data.
 
 The following example scripts are specific to point source datasets:

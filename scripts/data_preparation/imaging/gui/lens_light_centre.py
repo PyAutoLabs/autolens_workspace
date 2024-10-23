@@ -26,7 +26,7 @@ dataset_name = "lens_sersic"
 dataset_path = path.join("dataset", "imaging", dataset_name)
 
 """
-If you use this tool for your own dataset, you *must* double check this pixel scale is correct!
+The pixel scale of the imaging dataset.
 """
 pixel_scales = 0.1
 

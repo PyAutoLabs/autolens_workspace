@@ -133,10 +133,11 @@ The following scripts are used to prepare components of an interferometer datase
 identical fashion for dataset datasets.
 
 Therefore, they are not located in the `interferometer/data_preparation` package, but instead in the
-`imaging/data_preparation` package, so refer there for a description of their usage.
+`data_preparation/imaging` package, so refer there for a description of their usage.
 
 Note that in order to perform some tasks (e.g. mark on the image where the source is), you will need to use an image
 of the interferometer data even though visibilities are used for the analysis.
+
 
 __Positions (Optional)__
 
@@ -153,17 +154,18 @@ and passing them to the `Analysis` object via a `PositionsLH` object.
 If your **PyAutoLens** analysis is struggling to converge to a good lens model, you should consider using positions
 to help the non-linear search find a good lens model.
 
-Links / Resources:
+**Links / Resources:**
 
 Position-based lens model resampling is particularly important for fitting pixelized source models, for the
 reasons disucssed in the following readthedocs 
 webapge  https://pyautolens.readthedocs.io/en/latest/general/demagnified_solutions.html
 
-The script `data_prepration/gui/positions.ipynb` shows how to use a Graphical User Interface (GUI) to mask the 
-positions on the lensed source.
+- `data_preparation/examples/optional/positions.ipynb`: input the positions manually into a Python script.
 
-See `autolens_workspace/*/interferometer/modeling/customize/positions.py` for an example.of how to use positions in a 
-`modeling` script.
+- `data_preparation/gui/positions.ipynb` use a Graphical User Interface (GUI) to mark the positions.
+
+- `modeling/imaging/customize/positions.py` for an example.of how to use positions in a `modeling` script.
+
 
 __Lens Light Centre (Optional)__
 
@@ -181,38 +183,70 @@ If you create a `light_centre` for your dataset, you must also update your model
 If your **PyAutoLens** analysis is struggling to converge to a good lens model, you should consider using a fixed
 lens light and / or mass centre to help the non-linear search find a good lens model.
 
-Links / Resources:
+**Links / Resources:**
 
-The script `data_prepration/gui/lens_light_centre.ipynb` shows how to use a Graphical User Interface (GUI) to mask the
+The example `data_preparation/examples/optional/lens_light_centre.py` shows how to input the lens galaxy light centre
+manually into a Python script.
+
+The script `data_preparation/gui/lens_light_centre.ipynb` shows how to use a Graphical User Interface (GUI) to mask the
 lens galaxy light centres.
 
-__Clumps (Optional)__
+
+__Extra Galaxies (Optional)__
 
 There may be galaxies nearby the lens and source galaxies, whose emission blends with that of the lens and source
 and whose mass may contribute to the ray-tracing and lens model.
 
 We can include these galaxies in the lens model, either as light profiles, mass profiles, or both, using the
-**PyAutoLens** clump API, where these nearby objects are given the term `clumps`.
+modeling API, where these nearby objects are denoted `extra_galaxies`.
 
-This script marks the (y,x) arcsecond locations of these clumps, so that when they are included in the lens model the
-centre of these clumps light and / or mass profiles are fixed to these values (or their priors are initialized
-surrounding these centres).
+The script `extra_galaxies_centres.py` marks the (y,x) arcsecond locations of these extra galaxies, so that when they 
+are included in the lens model the centre of these extra galaxies light and / or mass profiles are fixed to these 
+values (or their priors are  initialized surrounding these centres).
 
-The example `scaled_dataset.py` (see below) marks the regions of an image where clumps are present, but  but instead 
-remove their signal and increase their noise to make them not impact the fit. Which approach you use to account for 
-clumps depends on how significant the blending of their emission is and whether they are expected to impact the 
-ray-tracing.
+The example `mask_extra_galaxies.py` (see below) masks the regions of an image where extra galaxies are present. 
+This mask is used  to remove their signal from the data and increase their noise to make them not impact the fit. 
+This means their  luminous emission does not need to be included in the model, reducing the number of free parameters 
+and speeding up the analysis. It is still a choice whether their mass is included in the model.
 
-This tutorial closely mirrors tutorial 7, `lens_light_centre`, where the main purpose of this script is to mark the
-centres of every object we'll model as a clump. A GUI is also available to do this.
+**Links / Resources:**
 
-Links / Resources:
+- `data_preparation/examples/optional/extra_galaxies_centres.py`: input the extra galaxy centres manually into a 
+  Python script.
 
-The script `data_prepration/gui/clump_centres.ipynb` shows how to use a Graphical User Interface (GUI) to mark the
-clump centres in this way.
+- `data_preparation/gui/extra_galaxies_centres.ipynb`: use a Graphical User Interface (GUI) to mark the extra galaxy centres.
 
-The script `modeling/features/clumps.py` shows how to use clumps in a model-fit, including loading the clump centres
-created by this script.
+- `features/extra_galaxies.py` how to use extra galaxies in a model-fit, including loading the extra galaxy centres.
+
+
+__Mask Extra Galaxies (Optional)__
+
+There may be regions of an image that have signal near the lens and source that is from other galaxies not associated 
+with the strong lens we are studying. The emission from these images will impact our model fitting and needs to be 
+removed from the analysis.
+
+This script creates a mask of these regions of the image, called the `mask_extra_galaxies`, which can be used to
+prevent them from impacting a fit. This mask may also include emission from objects which are not technically galaxies,
+but blend with the galaxy we are studying in a similar way. Common examples of such objects are foreground stars
+or emission due to the data reduction process.
+
+The mask can be applied in different ways. For example, it could be applied such that the image pixels are discarded
+from the fit entirely, Alternatively the mask could be used to set the image values to (near) zero and increase their
+corresponding noise-map to large values.
+
+The exact method used depends on the nature of the model being fitted. For simple fits like a light profile a mask
+is appropriate, as removing image pixels does not change how the model is fitted. However, for more complex models
+fits, like those using a pixelization, masking regions of the image in a way that removes their image pixels entirely
+from the fit can produce discontinuities in the pixelixation. In this case, scaling the data and noise-map values
+may be a better approach.
+
+**Links / Resources:**
+
+- `data_preparation/examples/optional/mask_extra_galaxies.py`: create the extra galaxies mask manually via a Python script.
+
+- `data_preparation/gui/extra_galaxies_mask.ipynb` use a Graphical User Interface (GUI) to create the extra galaxies mask.
+
+- `features/extra_galaxies.py` how to use the extra galaxies mask in a model-fit.
 
 __Info (Optional)__
 
@@ -233,4 +267,8 @@ data might be:
 - The velocity dispersion of the lens galaxy.
 - The stellar mass of the lens galaxy.
 - The results of previous strong lens models to the lens performed in previous papers.
+
+**Links / Resources:**
+
+- `data_preparation/examples/optional/info.py`: create the info file manually via a Python script.
 """

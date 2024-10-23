@@ -69,7 +69,7 @@ __Positions__
 The positions are loaded from a `positions.json` file which is in the same folder as the dataset itself. 
 
 To create this file, we used a GUI to `draw on` the positions with our mouse. This GUI can be found in the 
-script `autolens_workspace/*/imaging/data_preparation/gui/positions.py`
+script `autolens_workspace/*/data_preparation/imaging/gui/positions.py`
 """
 positions = al.Grid2DIrregular(
     al.from_json(file_path=path.join(dataset_path, "positions.json"))

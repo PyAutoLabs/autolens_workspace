@@ -72,7 +72,7 @@ def run(
             ),
             source=source,
         ),
-        clumps=al.util.chaining.clumps_from(
+        clumps=al.util.chaining.extra_galaxies_from(
             result=source_result_for_lens, light_as_model=True
         ),
     )

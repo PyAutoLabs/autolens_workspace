@@ -22,7 +22,7 @@ If you are using your intuition to customize the priors, the priors you manually
 
 __Start Point__
 
-The `autolens_workspace/*/imaging/modeling/customize/start_point.ipynb` shows an alternative API, which
+The `autolens_workspace/*/modeling/imaging/customize/start_point.ipynb` shows an alternative API, which
 customizes where the non-linear search starts its search of parameter space.
 
 This cannot be used for a nested sampling method like `Nautilus` (whose parameter space search is dictated by priors)

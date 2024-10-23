@@ -21,10 +21,10 @@ Position-based lens model resampling is particularly important for fitting pixel
 reasons disucssed in the following readthedocs
 webapge  https://pyautolens.readthedocs.io/en/latest/general/demagnified_solutions.html
 
-The script `data_prepration/gui/positions.ipynb` shows how to use a Graphical User Interface (GUI) to mask the
+The script `data_preparation/gui/positions.ipynb` shows how to use a Graphical User Interface (GUI) to mask the
 positions on the lensed source.
 
-See `autolens_workspace/*/imaging/modeling/customize/positions.py` for an example.of how to use positions in a
+See `autolens_workspace/*/modeling/imaging/customize/positions.py` for an example.of how to use positions in a
 `modeling` script.
 
 __Start Here Notebook__
@@ -50,12 +50,12 @@ dataset_name = "simple__no_lens_light"
 dataset_path = path.join("dataset", dataset_type, dataset_name)
 
 """
-If you use this tool for your own dataset, you *must* double check this pixel scale is correct!
+The pixel scale of the imaging dataset.
 """
 pixel_scales = 0.1
 
 """
-First, load the `Imaging` dataset, so that the positions can be plotted over the strong lens image.
+Load the `Imaging` dataset, so that the positions can be plotted over the strong lens image.
 """
 data = al.Array2D.from_fits(
     file_path=path.join(dataset_path, "data.fits"), pixel_scales=pixel_scales

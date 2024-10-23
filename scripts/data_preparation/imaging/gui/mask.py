@@ -29,12 +29,12 @@ dataset_name = "simple__no_lens_light"
 dataset_path = path.join("dataset", "imaging", dataset_name)
 
 """
-If you use this tool for your own dataset, you *must* double check this pixel scale is correct!
+The pixel scale of the imaging dataset.
 """
 pixel_scales = 0.1
 
 """
-First, load the `Imaging` dataset, so that the mask can be plotted over the strong lens image.
+Load the `Imaging` dataset, so that the mask can be plotted over the strong lens image.
 """
 data = al.Array2D.from_fits(
     file_path=path.join(dataset_path, "data.fits"), pixel_scales=pixel_scales

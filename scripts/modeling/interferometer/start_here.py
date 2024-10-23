@@ -89,7 +89,7 @@ This means it is not a free parameter, reducing the dimensionality of non-linear
 
 Linear light profiles significantly improve the speed, accuracy and reliability of modeling and they are used
 by default in every modeling example. A full description of linear light profiles is provided in the
-`autolens_workspace/*/imaging/modeling/features/linear_light_profiles.py` example.
+`autolens_workspace/*/modeling/imaging/features/linear_light_profiles.py` example.
 
 A standard light profile can be used if you change the `lp_linear` to `lp`, but it is not recommended.
 
@@ -100,7 +100,7 @@ The model fitting default settings assume that the lens galaxy centre is near th
 If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that you either: 
 
  - Reduce your data so that the centre is (`autolens_workspace/*/data_preparation`). 
- - Manually override the lens model priors (`autolens_workspace/*/imaging/modeling/customize/priors.py`).
+ - Manually override the lens model priors (`autolens_workspace/*/modeling/imaging/customize/priors.py`).
 """
 # Lens:
 
@@ -138,8 +138,8 @@ full description).
 
 The folders: 
 
- - `autolens_workspace/*/imaging/modeling/searches`.
- - `autolens_workspace/*/imaging/modeling/customize`
+ - `autolens_workspace/*/modeling/imaging/searches`.
+ - `autolens_workspace/*/modeling/imaging/customize`
   
 Give overviews of the non-linear searches **PyAutoLens** supports and more details on how to customize the
 model-fit, including the priors on the model.
@@ -336,7 +336,7 @@ We recommend you now checkout the following two features for interferometer mode
 - ``linear_light_profiles.py``: The model light profiles use linear algebra to solve for their intensity, reducing model complexity.
 - ``pixelization.py``: The source is reconstructed using an adaptive Delaunay or Voronoi mesh.
 
-The folders `autolens_workspace/*/imaging/modeling/searches` and `autolens_workspace/*/imaging/modeling/customize`
+The folders `autolens_workspace/*/modeling/imaging/searches` and `autolens_workspace/*/modeling/imaging/customize`
 provide guides on how to customize many other aspects of the model-fit. Check them out to see if anything
 sounds useful, but for most users you can get by without using these forms of customization!
   

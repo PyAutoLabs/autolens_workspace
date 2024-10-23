@@ -10,6 +10,6 @@ Files (Advanced)
 - ``light_operated.py``: The lens galaxy light includes point source emission which is a Sersic profile already operated on by the PSF.
 - ``dark_matter_subhalo.py``: The lens galaxy mass includes a dark matter subhalo which overlaps the lensed source emission.
 - ``x2_lens_galaxies.py``: The lens galaxy is two galaxies with Sersic light profiles and Isothermal mass profiles.
-- ``clumps.py``: The lens galaxy has additional clumps of light and mass surrounding it.
+- ``extra_galaxies.py``: The lens galaxy has the emission of extra galaxies in the image and needs removing or modelling.
 - ``double_einstein_ring.py``: The lens is a double Einstein ring system with two lensed sources at different redshifts.
 - ``sky_background.py``: Simulate a strong lens with a sky background which is not subtracted from the image.

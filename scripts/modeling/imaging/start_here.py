@@ -37,7 +37,7 @@ The `Imaging` dataset fitted in this example confirms to a number of standard th
 **PyAutoLens**.
 
 If you are intending to fit your own strong lens data, you will need to ensure it conforms to these standards, which are
-described in the script `autolens_workspace/*/imaging/data_preparation/start_here.ipynb`.
+described in the script `autolens_workspace/*/data_preparation/imaging/start_here.ipynb`.
 """
 # %matplotlib inline
 # from pyprojroot import here
@@ -118,7 +118,7 @@ If we plot the masked data, the mask removes the exterior regions of the image w
 lens and lensed source galaxies.
 
 The mask used to fit the data can be customized, as described in 
-the script `autolens_workspace/*/imaging/modeling/customize/custom_mask.py`
+the script `autolens_workspace/*/modeling/imaging/customize/custom_mask.py`
 """
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
@@ -144,7 +144,7 @@ This means it is not a free parameter, reducing the dimensionality of non-linear
 
 Linear light profiles significantly improve the speed, accuracy and reliability of modeling and they are used
 by default in every modeling example. A full description of linear light profiles is provided in the
-`autolens_workspace/*/imaging/modeling/features/linear_light_profiles.py` example.
+`autolens_workspace/*/modeling/imaging/features/linear_light_profiles.py` example.
 
 A standard light profile can be used if you change the `lp_linear` to `lp`, but it is not recommended.
 
@@ -158,7 +158,7 @@ to the lens and source or using a different mass profile.
 
 __Model Cookbook__
 
-A full description of model composition, including lens model customization, is provided by the model cookbook: 
+A full description of model composition is provided by the model cookbook: 
 
 https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 
@@ -169,7 +169,7 @@ The model fitting default settings assume that the lens galaxy centre is near th
 If for your dataset the lens is not centred at (0.0", 0.0"), we recommend that you either: 
 
  - Reduce your data so that the centre is (`autolens_workspace/*/data_preparation`). 
- - Manually override the lens model priors (`autolens_workspace/*/imaging/modeling/customize/priors.py`).
+ - Manually override the lens model priors (`autolens_workspace/*/modeling/imaging/customize/priors.py`).
 
 __Over Sampling__
 
@@ -230,13 +230,13 @@ reduce the number of live points to 100 to speed up the run-time.
 
 __Customization__
 
-The folders `autolens_workspace/*/imaging/modeling/searches` gives an overview of alternative non-linear searches,
+The folders `autolens_workspace/*/modeling/imaging/searches` gives an overview of alternative non-linear searches,
 other than Nautilus, that can be used to fit lens models. They also provide details on how to customize the
 model-fit, for example the priors.
 
 The `name` and `path_prefix` below specify the path where results ae stored in the output folder:  
 
- `/autolens_workspace/output/imaging/modeling/simple/start_here/unique_identifier`.
+ `/autolens_workspace/output/modeling/imaging/simple/start_here/unique_identifier`.
 
 __Unique Identifier__
 
@@ -276,7 +276,7 @@ correctly, requiring a Python script to be run, often from a command line termin
 
 To fix these issues, the Python script needs to be adapted to use an `if __name__ == "__main__":` API, as this allows
 the Python `multiprocessing` module to allocate threads and jobs correctly. An adaptation of this example script 
-is provided at `autolens_workspace/scripts/imaging/modeling/customize/parallel.py`, which will hopefully run 
+is provided at `autolens_workspace/scripts/modeling/imaging/customize/parallel.py`, which will hopefully run 
 successfully in parallel on your computer!
 
 Therefore if paralellization for this script doesn't work, check out the `parallel.py` example. You will need to update
@@ -299,7 +299,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,
     n_live=150,
     number_of_cores=4,
-    iterations_per_update=100,
+    iterations_per_update=20000,
 )
 
 """
@@ -315,7 +315,7 @@ It is not vital that you as a user understand the details of how the `log_likeli
 data, but interested readers can find a step-by-step guide of the likelihood 
 function at ``autolens_workspace/*/imaging/log_likelihood_function`
 """
-analysis = al.AnalysisImaging(dataset=dataset, title_prefix="Lens Name")
+analysis = al.AnalysisImaging(dataset=dataset)
 
 """
 __Run Times__
@@ -452,7 +452,7 @@ So, what next?
 
 __Features__
 
-The examples in the `autolens_workspace/*/imaging/modeling/features` package illustrate other lens modeling features. 
+The examples in the `autolens_workspace/*/modeling/imaging/features` package illustrate other lens modeling features. 
 
 We recommend you checkout the following four features, because they make lens modeling in general more reliable and 
 efficient (you will therefore benefit from using these features irrespective of the quality of your data and 
@@ -465,14 +465,14 @@ We recommend you now checkout the following four features:
 - ``pixelization.py``: The source is reconstructed using an adaptive Delaunay or Voronoi mesh.
 - ``no_lens_light.py``: The foreground lens's light is not present in the data and thus omitted from the model.
 
-The folders `autolens_workspace/*/imaging/modeling/searches` and `autolens_workspace/*/imaging/modeling/customize`
+The folders `autolens_workspace/*/modeling/imaging/searches` and `autolens_workspace/*/modeling/imaging/customize`
 provide guides on how to customize many other aspects of the model-fit. Check them out to see if anything
 sounds useful, but for most users you can get by without using these forms of customization!
   
 __Data Preparation__
 
 If you are looking to fit your own CCD imaging data of a strong lens, checkout  
-the `autolens_workspace/*/imaging/data_preparation/start_here.ipynb` script for an overview of how data should be 
+the `autolens_workspace/*/data_preparation/imaging/start_here.ipynb` script for an overview of how data should be 
 prepared before being modeled.
 
 __HowToLens__
