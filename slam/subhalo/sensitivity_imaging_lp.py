@@ -71,6 +71,19 @@ class SimulateImaging:
         A simulated image of a strong lens, which id input into the fits of the sensitivity mapper.
         """
 
+        try:
+            dataset = al.Imaging.from_fits(
+                data_path=f"{simulate_path}/data.fits",
+                psf_path=f"{simulate_path}/psf.fits",
+                noise_map_path=f"{simulate_path}/noise_map.fits",
+                pixel_scales=self.mask.pixel_scales
+            )
+
+            return dataset.apply_mask(mask=self.mask)
+
+        except FileNotFoundError:
+            pass
+
         """
         __Ray Tracing__
         
@@ -133,6 +146,7 @@ class SimulateImaging:
         - A subplot of the simulated imaging dataset.
         - A subplot of the tracer used to simulate this imaging dataset.
         - A .json file containing the tracer galaxies.
+        - Output the simulated dataset to .fits files which are used to load the data if a run is resumed.
 
         Parameters
         ----------
@@ -159,6 +173,14 @@ class SimulateImaging:
             obj=tracer,
             file_path=os.path.join(simulate_path, "tracer.json"),
         )
+
+        dataset.output_to_fits(
+            data_path=os.path.join(simulate_path, "data.fits"),
+            psf_path=os.path.join(simulate_path, "psf.fits"),
+            noise_map_path=os.path.join(simulate_path, "noise_map.fits"),
+            overwrite=True,
+        )
+
 
 
 """

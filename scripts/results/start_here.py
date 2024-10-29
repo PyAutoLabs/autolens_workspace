@@ -300,7 +300,7 @@ This includes Basis objects such as a Multi-Gaussian expansion of Shapelets.
 These objects mostly behave identically to ordinary light profiles, but due to the linear algebra have their own
 specific functionality.
 
-The example script `autolens_workspace/*/modeling/imaging/linear_light_profiles.py` provides a detailed description of 
+The example script `autolens_workspace/*/features/linear_light_profiles.py` provides a detailed description of 
 using linear light profile results including:
 
  - Extracting individual quantities from the linear light profile, such as the coefficients of the basis functions.
@@ -314,7 +314,7 @@ __Pixelization__
 
 The lens model can reconstruct the source galaxy using a pixelization, for example on a Voronoi mesh.
 
-The example script `autolens_workspace/*/modeling/imaging/pixelization.py` describes using pixelization results including:
+The example script `autolens_workspace/*/features/pixelization.py` describes using pixelization results including:
 
  - Producing source reconstructions using the Voronoi mesh, Delaunay triangulation or whichever mesh is used.
  - Inspecting the evidence terms of the fit, which quantify how well the pixelization reconstructs fits the data whilst
