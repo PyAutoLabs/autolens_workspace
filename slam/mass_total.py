@@ -12,7 +12,6 @@ def run(
     source_result_for_source: af.Result,
     light_result: Optional[af.Result],
     mass: af.Model = af.Model(al.mp.Isothermal),
-    light_linear_to_standard: bool = False,
     multipole_1: Optional[af.Model] = None,
     multipole_3: Optional[af.Model] = None,
     multipole_4: Optional[af.Model] = None,

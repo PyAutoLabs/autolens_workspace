@@ -292,6 +292,10 @@ this can take up a large fraction of the run-time of the non-linear search.
 
 For this fit, the fit is very fast, thus we set a high value of `iterations_per_update=10000` to ensure these updates
 so not slow down the overall speed of the model-fit.
+
+**If the iteration per update is too low, the model-fit may be significantly slowed down by the time it takes to
+output results and visualization frequently to hard-disk. If your fit is consistent displaying a log saying that it
+is outputting results, try increasing this value to ensure the model-fit runs efficiently.**
 """
 search = af.Nautilus(
     path_prefix=path.join("imaging", "modeling"),

@@ -12,3 +12,4 @@ Files (Advanced)
 - ``sensitivity_imaging_lp.py``: Extends a SLaM pipeline with subhalo sensitivity mapping for imaging data and light profile source modeling.
 - ``sensitivity_imaging_pix.py``: Extends a SLaM pipeline with subhalo sensitivity mapping for imaging data and pixelized source modeling.
 - ``sensitivity_interferometer.py``: Extends a SLaM pipeline with subhalo sensitivity mapping for interferometer data.
+- ``subhalo_util.py``: Utility functions for the subhalo pipelines, for example visualizing the results of a subhalo pipeline run.

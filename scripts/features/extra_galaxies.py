@@ -231,7 +231,7 @@ __Extra Galaxies Centres__
 To set up a lens model including each extra galaxy with light and / or mass profile, we input manually the centres of
 the extra galaxies.
 
-In principle, a lens model including the extra galaxiess could be composed without these centres. For example, if 
+In principle, a lens model including the extra galaxies could be composed without these centres. For example, if 
 there were two extra galaxies in the data, we could simply add two additional light and mass profiles into the model. 
 The modeling API does support this, but we will not use it in this example.
 

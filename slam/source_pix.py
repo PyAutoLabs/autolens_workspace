@@ -19,12 +19,13 @@ def run_1(
     The first SLaM SOURCE PIX PIPELINE, which initializes a lens model which uses a pixelized source for the source
     analysis.
 
-    The first SOURCE PIX PIPELINE performs a fit using an initial pixelizaiton, which does not require an
-    adapt-image to perform the fit (e.g. it does not adapt the source's pixelization to the source's unlensed
-    morphology).
+    The first SOURCE PIX PIPELINE may require an adapt-image, for example to adapt the regularization scheme to the
+    source's unlensed morphology. The adapt image provided by the SOURCE LP PIPELINE may not cover the entire source
+    galaxy (e.g. because the MGE only captures part of the source) and produce a suboptimal fit.
 
     The result of this pipeline is used in the second SOURCE PIX PIPELINE to adapt the source pixelization to the
-    source's unlensed morphology via an adapt image.
+    source's unlensed morphology via an adapt image, where the adapt image produced in this pipeline will give a robust
+    source image because it uses a pixelized source.
 
     Parameters
     ----------
@@ -124,8 +125,9 @@ def run_2(
     analysis.
 
     The second SOURCE PIX PIPELINE performs a fit using an advanced pixelizaiton which adapt the source's pixelization
-    to the source's unlensed morphology. This feature requires an adapt-image, which is computed after the
-    first SOURCE PIX PIPELINE.
+    to the source's unlensed morphology.
+
+    This feature requires an adapt-image, which is computed after the first SOURCE PIX PIPELINE.
 
     Parameters
     ----------

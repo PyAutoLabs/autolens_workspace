@@ -4,3 +4,4 @@ from . import light_lp
 from . import mass_total
 from . import mass_light_dark
 from . import subhalo
+from . import slam_util

@@ -22,7 +22,7 @@ def run(
 ) -> af.Result:
     """
     The SlaM SOURCE LP PIPELINE, which provides an initial model for the lens's light, mass and source using a
-    parametric source model (e.g. Sersics, an MGE).
+    parametric source model (e.g. MGE, Sersics).
 
     Parameters
     ----------

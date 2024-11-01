@@ -7,9 +7,9 @@ from typing import Union, Tuple
 
 
 def run_1_no_subhalo(
-        settings_search: af.SettingsSearch,
-        analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
-        mass_result: af.Result,
+    settings_search: af.SettingsSearch,
+    analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
+    mass_result: af.Result,
 ) -> af.Result:
     """
     The first SLaM SUBHALO PIPELINE for fitting lens mass models which include a dark matter subhalo.
@@ -32,7 +32,7 @@ def run_1_no_subhalo(
     Search 1 of the SUBHALO PIPELINE fits a lens model where:
 
      - The lens galaxy mass is modeled using MASS PIPELINE's mass distribution [Priors initialized from MASS PIPELINE].
-
+     
      - The source galaxy's light is parametric or a pixelization depending on the previous MASS PIPELINE [Model and 
      priors initialized from MASS PIPELINE].
 
@@ -51,7 +51,9 @@ def run_1_no_subhalo(
 
     model = af.Collection(
         galaxies=af.Collection(lens=lens, source=source),
-        extra_galaxies=al.util.chaining.extra_galaxies_from(result=mass_result, mass_as_model=True),
+        extra_galaxies=al.util.chaining.extra_galaxies_from(
+            result=mass_result, mass_as_model=True
+        ),
     )
 
     search = af.Nautilus(
@@ -66,14 +68,14 @@ def run_1_no_subhalo(
 
 
 def run_2_grid_search(
-        settings_search: af.SettingsSearch,
-        analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
-        mass_result: af.Result,
-        subhalo_result_1: af.Result,
-        subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
-        free_redshift: bool = False,
-        grid_dimension_arcsec: float = 3.0,
-        number_of_steps: Union[Tuple[int], int] = 5,
+    settings_search: af.SettingsSearch,
+    analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
+    mass_result: af.Result,
+    subhalo_result_1: af.Result,
+    subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
+    free_redshift: bool = False,
+    grid_dimension_arcsec: float = 3.0,
+    number_of_steps: Union[Tuple[int], int] = 5,
 ) -> af.GridSearchResult:
     """
     The SLaM SUBHALO PIPELINE for fitting lens mass models which include a dark matter subhalo.
@@ -107,7 +109,7 @@ def run_2_grid_search(
     searches where:
 
      - The lens galaxy mass is modeled using MASS PIPELINE's mass distribution [Priors initialized from MASS PIPELINE].
-
+     
      - The source galaxy's light is parametric or a pixelization depending on the previous MASS PIPELINE [Model and 
      priors initialized from MASS PIPELINE].
 
@@ -190,12 +192,12 @@ def run_2_grid_search(
 
 
 def run_3_subhalo(
-        settings_search: af.SettingsSearch,
-        analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
-        subhalo_result_1: af.Result,
-        subhalo_grid_search_result_2: af.GridSearchResult,
-        subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
-        free_redshift: bool = False,
+    settings_search: af.SettingsSearch,
+    analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
+    subhalo_result_1: af.Result,
+    subhalo_grid_search_result_2: af.GridSearchResult,
+    subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
+    free_redshift: bool = False,
 ) -> af.Result:
     """
     The SLaM SUBHALO PIPELINE for fitting lens mass models which include a dark matter subhalo.
@@ -226,7 +228,7 @@ def run_3_subhalo(
     the subhalo model is initialized from the highest evidence model of the subhalo grid search.
 
      - The lens galaxy mass is modeled using MASS PIPELINE's mass distribution [Priors initialized from MASS PIPELINE].
-
+     
      - The source galaxy's light is parametric or a pixelization depending on the previous MASS PIPELINE [Model and 
      priors initialized from MASS PIPELINE].
 

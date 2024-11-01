@@ -12,6 +12,8 @@ Files (Advanced)
 - ``mass_total.py``: The mass pipeline which fits a total mass model (e.g. a single mass profile for the stellar and dark matter) following the source or LIGHT PIPELINE.
 - ``mass_light_dark.py``: The mass pipeline which fits a light plus dark mass model (e.g. separate mass profile for the stellar and dark matter) following the LIGHT PIPELINE.
 
+- ``slam_util.py``: Utility functions for the SLaM pipelines, for example outputting visualizations of the results.
+
 Folders (Advanced)
 ------------------
 
