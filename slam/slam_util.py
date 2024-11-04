@@ -282,7 +282,7 @@ def output_fit_multi_png(output_path: str, result_list, tag_list=None, filename=
             ),
         )
 
-        tag = tag_list[i] if tag_list is not None else None
+        tag = tag_list[i] if tag_list is not None else ""
 
         plot_fit_png_row(
             plotter_main=plotter,
@@ -439,7 +439,7 @@ def output_source_multi_png(
     )
 
     for i, fit in enumerate(fit_list):
-        tag = tag_list[i] if tag_list is not None else None
+        tag = tag_list[i] if tag_list is not None else ""
 
         plot_source_png_row(
             plotter_main=plotter_main,
@@ -593,7 +593,7 @@ def output_subplot_mge_only_png(
     )
 
     for i, fit in enumerate(fit_list):
-        tag = tag_list[i] if tag_list is not None else None
+        tag = tag_list[i] if tag_list is not None else ""
 
         plot_mge_only_row(
             plotter_main=plotter_main,
