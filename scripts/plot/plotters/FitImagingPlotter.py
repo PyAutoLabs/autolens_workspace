@@ -369,6 +369,8 @@ We now pass the FitImaging to an `FitImagingPlotter` and call various `figure_*`
 """
 fit_plotter = aplt.FitImagingPlotter(fit=fit)
 
+fit_plotter.set_mat_plots_for_subplot(is_for_subplot=False)
+
 fit_plotter.figures_2d(
     data=True,
     noise_map=True,

@@ -81,10 +81,9 @@ compose our own `Imaging` object. For large datasets, this would require us to u
 memory-light, which are cumbersome to write.
 
 This example therefore uses the `ImagingAgg` object, which conveniently loads the `Imaging` objects of every fit via 
-generators for us. Explicit examples of how to do this via generators is given in the `advanced/manual_generator.py` 
-tutorial.
+generators for us. 
 
-We get a dataset generator via the `ac.agg.ImagingAgg` object, where this `dataset_gen` contains the maximum log
+We get a dataset generator via the `al.agg.ImagingAgg` object, where this `dataset_gen` contains the maximum log
 likelihood `Imaging `object of every model-fit.
 
 The `dataset_gen` returns a list of `Imaging` objects, as opposed to just a single `Imaging` object. This is because

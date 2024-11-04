@@ -62,11 +62,13 @@ import autolens.plot as aplt
 """
 __Model Fit__
 
-The code below performs a model-fit using Nautilus. 
+To illustrate results, we need to perform a model-fit in order to create a `Result` object.
 
-You should be familiar with modeling already, if not read the `modeling/start_here.py` script before reading this one!
+The code below performs a model-fit using nautilus. 
+
+You should be familiar with modeling already, if not read the `modeling/start_here.py` script before reading this one.
 """
-dataset_name = "simple__source_x2"
+dataset_name = "simple__no_lens_light"
 dataset_path = path.join("dataset", "imaging", dataset_name)
 
 dataset = al.Imaging.from_fits(
@@ -84,29 +86,25 @@ dataset = dataset.apply_mask(mask=mask)
 
 model = af.Collection(
     galaxies=af.Collection(
-        lens=af.Model(
-            al.Galaxy,
-            redshift=0.5,
-            bulge=al.lp_linear.Sersic,
-            disk=al.lp_linear.Exponential,
-            mass=al.mp.Isothermal,
-            shear=al.mp.ExternalShear,
+        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
+        source=af.Model(
+            al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore, disk=None
         ),
-        source_0=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore),
-        source_1=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore),
     ),
 )
 
 search = af.Nautilus(
-    path_prefix=path.join("imaging", "modeling"),
-    name="light[bulge]_mass[sie]_source_x2[bulge]",
+    path_prefix=path.join("results_folder"),
+    name="results",
     unique_tag=dataset_name,
-    n_live=150,
+    n_live=100,
+    number_of_cores=1,
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)
 
 result = search.fit(model=model, analysis=analysis)
+
 
 """
 __Max Likelihood Tracer__
@@ -130,7 +128,10 @@ samples = result.samples
 
 instance = samples.from_sample_index(sample_index=-10)
 
+# Input to FitImaging to solve for linear light profile intensities, see `start_here.py` for details.
 tracer = al.Tracer(galaxies=instance.galaxies)
+fit = al.FitImaging(dataset=dataset, tracer=tracer)
+tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
 tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=mask.derive_grid.all_false)
 tracer_plotter.subplot_tracer()
@@ -141,7 +142,7 @@ __Samples API__
 In the first results tutorial, we used `Samples` objects to inspect the results of a model.
 
 We saw how these samples created instances, which include a `galaxies` property that mains the API of the `Model`
-creates above (e.g. `galaxies.lens.bulge`). 
+creates above (e.g. `galaxies.source.bulge`). 
 
 We can also use this instance to extract individual components of the model.
 """
@@ -149,7 +150,12 @@ samples = result.samples
 
 ml_instance = samples.max_log_likelihood()
 
-bulge = ml_instance.galaxies.lens.bulge
+# Input to FitImaging to solve for linear light profile intensities, see `start_here.py` for details.
+tracer = al.Tracer(galaxies=instance.galaxies)
+fit = al.FitImaging(dataset=dataset, tracer=tracer)
+tracer = fit.tracer_linear_light_profiles_to_light_profiles
+
+bulge = tracer.galaxies.source.bulge
 
 bulge_image_2d = bulge.image_2d_from(grid=dataset.grid)
 print(bulge_image_2d.slim[0])
@@ -162,7 +168,7 @@ In fact, if we create a `Tracer` from an instance (which is how `result.max_log_
 can choose whether to access its attributes using each API: 
 """
 tracer = result.max_log_likelihood_tracer
-print(tracer.galaxies.lens.bulge)
+print(tracer.galaxies.source.bulge)
 
 """
 __Max Likelihood Fit__

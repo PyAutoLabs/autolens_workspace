@@ -55,8 +55,7 @@ compose our own `Tracer` object. For large datasets, this would require us to us
 memory-light, which are cumbersome to write.
 
 This example therefore uses the `TracerAgg` object, which conveniently loads the `Tracer` objects of every fit via 
-generators for us. Explicit examples of how to do this via generators is given in the `advanced/manual_generator.py` 
-tutorial.
+generators for us. 
 
 We get a tracer generator via the `al.agg.TracerAgg` object, where this `tracer_gen` contains the maximum log
 likelihood tracer of every model-fit.
@@ -78,11 +77,21 @@ would contain multiple `Tracer` objects.
 The parameters of galaxies in the `Tracer` may vary across the datasets (e.g. different light profile intensities 
 for different wavelengths), which would be reflected in the tracer list.
 """
+dataset_agg = al.agg.ImagingAgg(aggregator=agg)
+dataset_gen = dataset_agg.dataset_gen_from()
+
 grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.1)
 
-for tracer_list in tracer_gen:
+for dataset_list, tracer_list in zip(dataset_gen, tracer_gen):
+    # Only one `Analysis` so take first and only dataset.
+    dataset = dataset_list[0]
+
     # Only one `Analysis` so take first and only tracer.
     tracer = tracer_list[0]
+
+    # Input to FitImaging to solve for linear light profile intensities, see `start_here.py` for details.
+    fit = al.FitImaging(dataset=dataset, tracer=tracer)
+    tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
     tracer_plotter.figures_2d(convergence=True, potential=True)
@@ -100,7 +109,10 @@ tracer_gen = tracer_agg.max_log_likelihood_gen_from()
 
 print("Maximum Log Likelihood Lens Einstein Masses:")
 
-for tracer_list in tracer_gen:
+for dataset_list, tracer_list in zip(dataset_gen, tracer_gen):
+    # Only one `Analysis` so take first and only dataset.
+    dataset = dataset_list[0]
+
     # Only one `Analysis` so take first and only tracer.
     tracer = tracer_list[0]
 
@@ -172,11 +184,14 @@ for tracer_gen, weight_gen in zip(tracer_list_gen, weight_list_gen):
 
     weight_list = [weight for weight in weight_gen]
 
-    median_axis_ratio, lower_axis_ratio, upper_axis_ratio = af.marginalize(
-        parameter_list=axis_ratio_list, sigma=3.0, weight_list=weight_list
-    )
+    if len(axis_ratio_list) > 1:
+        median_axis_ratio, lower_axis_ratio, upper_axis_ratio = af.marginalize(
+            parameter_list=axis_ratio_list, sigma=3.0, weight_list=weight_list
+        )
 
-    print(f"Axis-Ratio = {median_axis_ratio} ({upper_axis_ratio} {lower_axis_ratio}")
+        print(
+            f"Axis-Ratio = {median_axis_ratio} ({upper_axis_ratio} {lower_axis_ratio}"
+        )
 
 """
 __Errors (Random draws from PDF)__

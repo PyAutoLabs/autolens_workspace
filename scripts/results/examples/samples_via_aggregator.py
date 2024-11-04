@@ -159,10 +159,8 @@ samples summary and can therefore be accessed instantly.
 for samples_summary in agg.values("samples_summary"):
     instance = samples_summary.max_log_likelihood()
 
-    print("Max Log Likelihood `Gaussian` Instance:")
-    print("Centre = ", instance.centre)
-    print("Normalization = ", instance.normalization)
-    print("Sigma = ", instance.sigma, "\n")
+    print("Max Log Likelihood Instance:")
+    print("Centre = ", instance.galaxies.lens.mass.centre)
 
 """
 __Maximum Likelihood Model__
@@ -212,15 +210,15 @@ model composition.
 For example, we can return a list of the model instances corresponding to the maximum log likelihood sample.
 """
 print(ml_instances[0].galaxies)
-print(ml_instances[1].galaxies)
-print(ml_instances[2].galaxies)
+# print(ml_instances[1].galaxies)
+# print(ml_instances[2].galaxies)
 
 """
 These galaxies will be named according to the model composed and fitted by the search (in this case `lens` and `source`).
 """
 print(ml_instances[0].galaxies.lens)
 print()
-print(ml_instances[1].galaxies.source)
+# print(ml_instances[1].galaxies.source)
 
 """
 Their light and mass profiles are also named according to model composition allowing individual parameters to be 
@@ -420,15 +418,13 @@ The default ordering of the results can be a bit random, as it depends on how th
 The `order_by` method can be used to order by a property of the database that is a string, for example by ordering 
 using the `unique_tag` (which we set up in the search as the `dataset_name`) the database orders results alphabetically
 according to dataset name.
-"""
-agg = agg.order_by(agg.search.unique_tag)
 
-"""
+# agg = agg.order_by(agg.search.unique_tag)
+
 We can also order by a bool, for example making it so all completed results are at the front of the aggregator.
-"""
-agg = agg.order_by(agg.search.is_complete)
 
-"""
+# agg = agg.order_by(agg.search.is_complete)
+
 __Samples Filtering__
 
 The samples object has the results for all model parameter. It can be filtered to contain the results of specific 

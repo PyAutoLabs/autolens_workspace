@@ -41,14 +41,14 @@ input into the model-fit's search.
 By querying using the string `lens_sersic` the model-fit to only the second dataset is returned:
 """
 unique_tag = agg.search.unique_tag
-agg_query = agg.query(unique_tag == "lens_sersic")
+agg_query = agg.query(unique_tag == "simple__no_lens_light")
 samples_gen = agg_query.values("samples")
 
 """
 As expected, this list now has only 1 `SamplesNest` corresponding to the second dataset.
 """
 print("Directory Filtered DynestySampler Samples: \n")
-print("Total Samples Objects via unique tag = ", len(samples_gen), "\n\n")
+print("Total Samples Objects via unique tag = ", len(list(samples_gen)), "\n\n")
 
 """
 If we query using an incorrect dataset name we get no results:

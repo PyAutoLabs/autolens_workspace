@@ -52,7 +52,9 @@ dataset = dataset.apply_mask(mask=mask)
 model = af.Collection(
     galaxies=af.Collection(
         lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore),
+        source=af.Model(
+            al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore, disk=None
+        ),
     ),
 )
 
@@ -192,6 +194,55 @@ print(ue3_instance.galaxies.lens.mass, "\n")
 print(le3_instance.galaxies.lens.mass, "\n")
 
 """
+__Linear Light Profiles__
+
+In the model fit, linear light profiles are used, solving for the `intensity` of each profile through linear algebra.
+
+The `intensity` value is not a free parameter of the linear light profiles in the model, meaning that in the `Samples`
+object the `intensity` are always defaulted to values of 1.0 in the `Samples` object. 
+
+You can observe this by comparing the `intensity` values in the `Samples` object to those in 
+the `result.max_log_likelihood_galaxies` instance and `result.max_log_likelihood_fit` instance.
+"""
+samples = result.samples
+ml_instance = samples.max_log_likelihood()
+
+print(
+    "Intensity of source galaxy's bulge in the Samples object (before solving linear algebra):"
+)
+print(ml_instance.galaxies.source.bulge.intensity)
+
+print(
+    "Intensity of source galaxy's bulge in the max log likelihood galaxy (after solving linear algebra):"
+)
+print(result.max_log_likelihood_tracer.planes[1][0].bulge.intensity)
+print(
+    result.max_log_likelihood_fit.tracer_linear_light_profiles_to_light_profiles.planes[
+        1
+    ][0].bulge.intensity
+)
+
+"""
+To interpret results associated with the linear light profiles, you must input the `Samples` object into a `FitImaging`,
+which converts the linear light profiles to standard light profiles with `intensity` values solved for using the linear 
+algebra.
+"""
+ml_instance = samples.max_log_likelihood()
+
+tracer = al.Tracer(galaxies=ml_instance.galaxies)
+fit = al.FitImaging(dataset=dataset, tracer=tracer)
+tracer = fit.tracer_linear_light_profiles_to_light_profiles
+
+print("Intensity of source galaxy's bulge after conversion using FitImaging:")
+print(tracer.planes[1][0].bulge.intensity)
+
+"""
+Whenever possible, the result already containing the solved `intensity` values is used, for example
+the `Result` object returned by a search.
+
+However, when manually loading results from the `Samples` object, you must use the `FitImaging` object to convert
+the linear light profiles to their correct `intensity` values.
+
 __Tracer__
 
 The result's maximum likelihood `Tracer` object contains everything necessary to perform ray-tracing and other

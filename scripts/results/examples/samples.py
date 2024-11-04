@@ -56,26 +56,21 @@ mask = al.Mask2D.circular(
 
 dataset = dataset.apply_mask(mask=mask)
 
-"""
-__Model Composition__
-
-The code below composes the model fitted to the data (the API is described in the `modeling/start_here.py` example).
-
-The way the model is composed below (e.g. that the model has a `Collection` called `galaxies` and includes a `lens`
-and `source`) should be noted, as it will be important when inspecting certain results later in this example.
-"""
 model = af.Collection(
     galaxies=af.Collection(
         lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore),
+        source=af.Model(
+            al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore, disk=None
+        ),
     ),
 )
 
 search = af.Nautilus(
-    path_prefix=path.join("imaging", "modeling"),
-    name="mass[sie]_source[bulge]",
+    path_prefix=path.join("results_folder"),
+    name="results",
     unique_tag=dataset_name,
     n_live=100,
+    number_of_cores=1,
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)
@@ -200,6 +195,10 @@ max_lh_tracer = al.Tracer(galaxies=instance.galaxies)
 
 print(max_lh_tracer)
 print(mask.derive_grid.all_false)
+
+# Input to FitImaging to solve for linear light profile intensities, see `start_here.py` for details.
+fit = al.FitImaging(dataset=dataset, tracer=max_lh_tracer)
+max_lh_tracer = fit.tracer_linear_light_profiles_to_light_profiles
 
 tracer_plotter = aplt.TracerPlotter(
     tracer=max_lh_tracer, grid=mask.derive_grid.all_false
@@ -441,7 +440,8 @@ for i in range(random_draws):
     axis_ratio_list.append(axis_ratio)
 
 median_axis_ratio, lower_axis_ratio, upper_axis_ratio = af.marginalize(
-    parameter_list=axis_ratio_list, sigma=3.0, weight_list=samples.weight_list
+    parameter_list=axis_ratio_list,
+    sigma=3.0,
 )
 
 print(f"axis_ratio = {median_axis_ratio} ({upper_axis_ratio} {lower_axis_ratio}")

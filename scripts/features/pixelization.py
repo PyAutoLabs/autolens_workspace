@@ -171,7 +171,7 @@ reconstruction solution by penalizing solutions where neighboring pixels (Vorono
 large flux differences.
 """
 image_mesh = al.image_mesh.Overlay(shape=(30, 30))
-mesh = al.mesh.Voronoi()
+mesh = al.mesh.Delaunay()
 regularization = al.reg.ConstantSplit(coefficient=1.0)
 
 pixelization = al.Pixelization(
@@ -265,7 +265,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 image_mesh = af.Model(al.image_mesh.Overlay)
 image_mesh.shape = (30, 30)
 
-mesh = af.Model(al.mesh.Voronoi)
+mesh = af.Model(al.mesh.Delaunay)
 
 regularization = af.Model(al.reg.ConstantSplit)
 
