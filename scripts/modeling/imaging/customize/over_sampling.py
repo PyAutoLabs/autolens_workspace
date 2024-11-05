@@ -19,8 +19,15 @@ model of its image.
 **Benefit**: Higher level of over sampling provide a more accurate estimate of the surface brightness in every image-pixel.
 **Downside**: Higher levels of over sampling require longer calculations and higher memory usage.
 
-You should read up on over-sampling in more detail via  the `autolens_workspace/*/guides/over_sampling.ipynb`
-notebook before using this example to customize the over sampling of your model-fits.
+Over sampling is applied separately to the light profiles which compute the surface brightness of the lens galaxy,
+which are on a `uniform` grid, and the light profiles which compute the surface brightness of the source galaxy,
+which are on a `non-uniform` grid.
+
+__Prequisites__
+
+You should read `autolens_workspace/*/guides/advanced/over_sampling.ipynb` before running this script, which
+introduces the concept of over sampling in PyAutoLens and explains why the lens and source galaxy are evaluated
+on different grids.
 
 __Start Here Notebook__
 
@@ -38,27 +45,6 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-__Over Sampling API__
-
-To customize the sub-grid used by the model-fit, we create a `OverSamplingUniform` object and specify that the 
-`sub_size=4`. 
-
-This increases the sub grid size of the `Grid2D` used to evaluate the galaxy  galaxy `LightProfiles` 
-from the default value of 2 to 4.
-"""
-over_sampling = al.OverSamplingUniform(sub_size=4)
-
-"""
-We can alternatively use `OverSamplingIterate` object, where the sub-size of the grid is iteratively increased (in steps 
-of 2, 4, 8, 16, 24) until the input fractional accuracy of 99.99% is met.
-
-We will use these settings for the model-fit performed in this script.
-"""
-over_sampling = al.OverSamplingIterate(
-    fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
-)
-
-"""
 __Dataset + Masking__ 
 
 For this sub-grid to be used in the model-fit, we must pass the `settings_dataset` to the `Imaging` object,
@@ -74,10 +60,6 @@ dataset = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
-dataset = dataset.apply_over_sampling(
-    over_sampling=al.OverSamplingDataset(uniform=over_sampling),
-)
-
 """
 __Mask__
 
@@ -88,6 +70,50 @@ mask = al.Mask2D.circular(
 )
 
 dataset = dataset.apply_mask(mask=mask)
+
+"""
+__Over Sampling Lens Galaxy (Uniform)__
+
+The over sampling of the lens galaxy is controlled using the `OverSamplingUniform` object, where an adaptive
+over sampling grid is used to compute the surface brightness of the lens galaxy such that high levels of over sampling
+are used in the central regions of the lens galaxy at (0.0", 0.0").
+"""
+over_sampling_lens = al.OverSamplingUniform.from_radial_bins(
+    grid=dataset.grid,
+    sub_size_list=[8, 4, 1],
+    radial_list=[0.1, 0.3],
+    centre_list=[(0.0, 0.0)],
+)
+
+"""
+__Over Sampling Source Galaxy__
+
+To customize the sub-grid used by the model-fit, we create a `OverSamplingUniform` object and specify that the 
+`sub_size=4`. 
+
+This increases the sub grid size of the `Grid2D` used to evaluate the source galaxy light profiles from the default 
+value of 2 to 8.
+
+For many reasons, this uniform grid is not ideal, as we will use high levels of over sampling over the whole mask,
+including the regions where the lensed source is not located. This is inefficient and can lead to longer run times
+and higher memory usage.
+
+Checkout `autolens_workspace/*/guides/over_sampling.ipynb`
+and `autolens_workspace/*/advanced/chaining/examples/over_sample.py` for a discussion of how to use an adaptive
+over sampling grid to compute the surface brightness of the source galaxy.
+"""
+over_sampling_source = al.OverSamplingUniform(sub_size=8)
+
+"""
+__Over Sampling__
+
+We now apply the over sampling to the `Imaging` dataset.
+"""
+dataset = dataset.apply_over_sampling(
+    over_sampling=al.OverSamplingDataset(
+        uniform=over_sampling_lens, non_uniform=over_sampling_source
+    )
+)
 
 """
 __Model + Search + Analysis__ 
@@ -111,7 +137,7 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 search = af.Nautilus(
     path_prefix=path.join("imaging", "settings"),
-    name="sub_grid_size",
+    name="over_sampling",
     unique_tag=dataset_name,
 )
 
