@@ -1,7 +1,9 @@
 import copy
 import numpy as np
 from os import path
+from typing import List, Union
 
+import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
@@ -606,3 +608,79 @@ def output_subplot_mge_only_png(
 
     plotter_main.mat_plot_2d.output.subplot_to_figure(auto_filename=filename)
     plotter_main.close_subplot_figure()
+
+
+def analysis_multi_dataset_from(
+    analysis: Union[af.Analysis, af.CombinedAnalysis],
+    model,
+    multi_dataset_offset: bool = False,
+    multi_source_regularization: bool = False,
+    source_regularization_result=None,
+):
+    """
+    Updates the `Analysis` object to include free parameters for multi-dataset modeling.
+
+    The following updates can be made:
+
+    - The arc-second (y,x) offset between two datasets for multi-band fitting, where a different offset is used for each
+      dataset (e.g. 2 extra free parameters per dataset).
+
+    - The regularization parameters of the pixelization used to reconstruct the source, where different regularization
+      parameters are used for each dataset (e.g. 1-3 extra free parameters per dataset).
+
+    - The regularization parameters of the pixelization used to reconstruct the source are fixed to the max log likelihood
+      instance of the regularization from a previous model-fit (e.g. the SOURCE PIPELINE).
+
+    The function is quite rigid and should not be altered to change the behavior of the multi wavelength SLaM pipelines.
+    Future updates will add more flexibility, once multi wavelength modeling is better understood.
+
+    Parameters
+    ----------
+    analysis
+        The sum of analysis classes that are used to fit the data.
+    model
+        The model used to fit the data, which is extended to include the extra free parameters.
+    multi_dataset_offset
+        If True, a different (y,x) arc-second offset is used for each dataset.
+    multi_source_regularization
+        If True, a different regularization parameters are used for each dataset.
+    source_regularization_result
+        The result of a previous model-fit that is used to fix the regularization parameters of the source pixelization.
+
+    Returns
+    -------
+    The updated analysis object that includes the extra free parameters.
+    """
+    if not isinstance(analysis, af.CombinedAnalysis):
+        return analysis
+
+    if multi_dataset_offset and not multi_source_regularization:
+        analysis = analysis.with_free_parameters(model.dataset_model.grid_offset)
+    elif not multi_dataset_offset and multi_source_regularization:
+        analysis = analysis.with_free_parameters(
+            model.galaxies.source.pixelization.regularization
+        )
+    elif multi_dataset_offset and multi_source_regularization:
+        analysis = analysis.with_free_parameters(
+            model.dataset_model.grid_offset,
+            model.galaxies.source.pixelization.regularization,
+        )
+
+    for i in range(1, len(analysis)):
+        if multi_dataset_offset:
+            analysis[i][
+                model.dataset_model.grid_offset.grid_offset_0
+            ] = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+            analysis[i][
+                model.dataset_model.grid_offset.grid_offset_1
+            ] = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+
+    if source_regularization_result is not None:
+        for i in range(len(analysis)):
+            analysis[i][
+                model.galaxies.source.pixelization.regularization
+            ] = source_regularization_result[
+                i
+            ].instance.galaxies.source.pixelization.regularization
+
+    return analysis

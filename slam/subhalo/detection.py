@@ -1,15 +1,17 @@
 import autofit as af
 import autolens as al
 
+from slam import slam_util
 from . import subhalo_util
 
-from typing import Union, Tuple
+from typing import Optional, Union, Tuple
 
 
 def run_1_no_subhalo(
     settings_search: af.SettingsSearch,
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
     mass_result: af.Result,
+    dataset_model: Optional[af.Model] = None,
 ) -> af.Result:
     """
     The first SLaM SUBHALO PIPELINE for fitting lens mass models which include a dark matter subhalo.
@@ -24,6 +26,9 @@ def run_1_no_subhalo(
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
     mass_result
         The result of the SLaM MASS PIPELINE which ran before this pipeline.
+    dataset_model
+        Add aspects of the dataset to the model, for example the arc-second (y,x) offset between two datasets for
+        multi-band fitting or the background sky level.
     """
 
     """
@@ -54,6 +59,14 @@ def run_1_no_subhalo(
         extra_galaxies=al.util.chaining.extra_galaxies_from(
             result=mass_result, mass_as_model=True
         ),
+        dataset_model=dataset_model,
+    )
+
+    analysis = slam_util.analysis_multi_dataset_from(
+        analysis=analysis,
+        model=model,
+        multi_dataset_offset=True,
+        source_regularization_result=mass_result,
     )
 
     search = af.Nautilus(
@@ -76,6 +89,7 @@ def run_2_grid_search(
     free_redshift: bool = False,
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
+    dataset_model: Optional[af.Model] = None,
 ) -> af.GridSearchResult:
     """
     The SLaM SUBHALO PIPELINE for fitting lens mass models which include a dark matter subhalo.
@@ -100,6 +114,9 @@ def run_2_grid_search(
     number_of_cores
         The number of cores used to perform the non-linear search grid search. If 1, each model-fit on the grid is
         performed in serial, if > 1 fits are distributed in parallel using the Python multiprocessing module.
+    dataset_model
+        Add aspects of the dataset to the model, for example the arc-second (y,x) offset between two datasets for
+        multi-band fitting or the background sky level.
     """
 
     """
@@ -157,6 +174,14 @@ def run_2_grid_search(
         extra_galaxies=al.util.chaining.extra_galaxies_from(
             result=subhalo_result_1, mass_as_model=True
         ),
+        dataset_model=dataset_model,
+    )
+
+    analysis = slam_util.analysis_multi_dataset_from(
+        analysis=analysis,
+        model=model,
+        multi_dataset_offset=True,
+        source_regularization_result=mass_result,
     )
 
     search = af.Nautilus(
@@ -198,6 +223,7 @@ def run_3_subhalo(
     subhalo_grid_search_result_2: af.GridSearchResult,
     subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
     free_redshift: bool = False,
+    dataset_model: Optional[af.Model] = None,
 ) -> af.Result:
     """
     The SLaM SUBHALO PIPELINE for fitting lens mass models which include a dark matter subhalo.
@@ -219,6 +245,9 @@ def run_3_subhalo(
         all four directions extends to 3.0" giving it dimensions 6.0" x 6.0".
     free_redshift
         If `True` the redshift of the subhalo is a free parameter in the second and third searches.
+    dataset_model
+        Add aspects of the dataset to the model, for example the arc-second (y,x) offset between two datasets for
+        multi-band fitting or the background sky level.
     """
 
     """
@@ -277,6 +306,14 @@ def run_3_subhalo(
         extra_galaxies=al.util.chaining.extra_galaxies_from(
             result=subhalo_result_1, mass_as_model=True
         ),
+        dataset_model=dataset_model,
+    )
+
+    analysis = slam_util.analysis_multi_dataset_from(
+        analysis=analysis,
+        model=model,
+        multi_dataset_offset=True,
+        source_regularization_result=subhalo_result_1,
     )
 
     search = af.Nautilus(

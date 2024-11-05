@@ -1,6 +1,8 @@
 import autofit as af
 import autolens as al
 
+from . import slam_util
+
 from typing import Optional, Tuple, Union
 
 
@@ -14,6 +16,7 @@ def run_1(
     regularization_init: af.Model(al.AbstractRegularization) = af.Model(
         al.reg.AdaptiveBrightnessSplit
     ),
+    dataset_model: Optional[af.Model] = None,
 ) -> af.Result:
     """
     The first SLaM SOURCE PIX PIPELINE, which initializes a lens model which uses a pixelized source for the source
@@ -45,6 +48,9 @@ def run_1(
     regularization_init
         The regularization, which places a smoothness prior on the source reconstruction, used by the pixelization
         which fits the source light in the initialization search (`search[1]`).
+    dataset_model
+        Add aspects of the dataset to the model, for example the arc-second (y,x) offset between two datasets for
+        multi-band fitting or the background sky level.
     """
 
     """
@@ -95,6 +101,19 @@ def run_1(
             ),
         ),
         extra_galaxies=al.util.chaining.extra_galaxies_from(result=source_lp_result),
+        dataset_model=dataset_model,
+    )
+
+    """
+    For single-dataset analyses, the following code does not change the model or analysis and can be ignored.
+
+    For multi-dataset analyses, the following code updates the model and analysis.
+    """
+    analysis = slam_util.analysis_multi_dataset_from(
+        analysis=analysis,
+        model=model,
+        multi_dataset_offset=True,
+        multi_source_regularization=True,
     )
 
     search = af.Nautilus(
@@ -119,6 +138,7 @@ def run_2(
         al.reg.AdaptiveBrightnessSplit
     ),
     image_mesh_pixels_fixed: Optional[int] = 1000,
+    dataset_model: Optional[af.Model] = None,
 ) -> af.Result:
     """
     The second SLaM SOURCE PIX PIPELINE, which fits a fixed lens model which uses a pixelized source for the source
@@ -147,6 +167,9 @@ def run_2(
     image_mesh_pixels_fixed
         The fixed number of pixels in the image-mesh, if an image-mesh with an input number of pixels is used
         (e.g. `Hilbert`).
+    dataset_model
+        Add aspects of the dataset to the model, for example the arc-second (y,x) offset between two datasets for
+        multi-band fitting or the background sky level.
     """
 
     """
@@ -183,6 +206,7 @@ def run_2(
             ),
         ),
         extra_galaxies=al.util.chaining.extra_galaxies_from(result=source_lp_result),
+        dataset_model=dataset_model,
     )
 
     if image_mesh_pixels_fixed is not None:
@@ -190,6 +214,18 @@ def run_2(
             model.galaxies.source.pixelization.image_mesh.pixels = (
                 image_mesh_pixels_fixed
             )
+
+    """
+    For single-dataset analyses, the following code does not change the model or analysis and can be ignored.
+
+    For multi-dataset analyses, the following code updates the model and analysis.
+    """
+    analysis = slam_util.analysis_multi_dataset_from(
+        analysis=analysis,
+        model=model,
+        multi_dataset_offset=True,
+        multi_source_regularization=True,
+    )
 
     """
     __Search (Search 2)__
@@ -213,6 +249,116 @@ def run_2(
         name="source_pix[2]",
         **settings_search.search_dict,
         nlive=100,
+    )
+
+    result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
+
+    return result
+
+
+def run_1__mass_fixed(
+    settings_search: af.SettingsSearch,
+    analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
+    source_lp_result: af.Result,
+    image_mesh_init: af.Model(al.AbstractImageMesh) = af.Model(al.image_mesh.Overlay),
+    mesh_init: af.Model(al.AbstractMesh) = af.Model(al.mesh.Delaunay),
+    image_mesh_init_shape: Tuple[int, int] = (34, 34),
+    regularization_init: af.Model(al.AbstractRegularization) = af.Model(
+        al.reg.AdaptiveBrightnessSplit
+    ),
+    dataset_model: Optional[af.Model] = None,
+) -> af.Result:
+    """
+    A variant of the first SLaM SOURCE PIX PIPELINE, which using a fixed mass model initializes a lens model which
+    uses a pixelized source for the source analysis.
+
+    This pipeline is used for fits to multiple datasts where a fit to the first primaary dataset has already been
+    performed and its mass model is fixed and applied to all other datasets. This changes the first SOURCE PIX PIPELINE
+    to use fixed mass model instances.
+    Parameters
+    ----------
+    analysis
+        The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
+    source_lp_result
+        The results of the SLaM SOURCE LP PIPELINE which ran before this pipeline.
+    image_mesh_init
+        The image mesh, which defines how the mesh centres are computed in the image-plane, used by the pixelization
+        in the first search which initializes the source.
+    image_mesh_init_shape
+        The shape (e.g. resolution) of the image-mesh used in the initialization search (`search[1]`). This is only
+        used if the image-mesh has a `shape` parameter (e.g. `Overlay`).
+    mesh_init
+        The mesh, which defines how the source is reconstruction in the source-plane, used by the pixelization
+        in the first search which initializes the source.
+    regularization_init
+        The regularization, which places a smoothness prior on the source reconstruction, used by the pixelization
+        which fits the source light in the initialization search (`search[1]`).
+    dataset_model
+        Add aspects of the dataset to the model, for example the arc-second (y,x) offset between two datasets for
+        multi-band fitting or the background sky level.
+    """
+
+    """
+    __Model + Search + Analysis + Model-Fit (Search 1)__
+
+    Search 1 of the SOURCE PIX PIPELINE fits a lens model where:
+
+    - The lens galaxy light is modeled using light profiles [parameters fixed to result of SOURCE LP PIPELINE].
+
+     - The lens galaxy mass is modeled using a total mass distribution [parameters initialized from the results of the 
+     SOURCE LP PIPELINE].
+
+     - The source galaxy's light is the input initialization image mesh, mesh and regularization scheme [parameters of 
+     regularization free to vary].
+
+    This search improves the lens mass model by modeling the source using a pixelization and computes the adapt
+    images that are used in search 2.
+    """
+
+    image_mesh_init.shape = image_mesh_init_shape
+
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
+                redshift=source_lp_result.instance.galaxies.lens.redshift,
+                bulge=source_lp_result.instance.galaxies.lens.bulge,
+                disk=source_lp_result.instance.galaxies.lens.disk,
+                point=source_lp_result.instance.galaxies.lens.point,
+                mass=source_lp_result.instance.galaxies.lens.mass,
+                shear=source_lp_result.instance.galaxies.lens.shear,
+            ),
+            source=af.Model(
+                al.Galaxy,
+                redshift=source_lp_result.instance.galaxies.source.redshift,
+                pixelization=af.Model(
+                    al.Pixelization,
+                    image_mesh=image_mesh_init,
+                    mesh=mesh_init,
+                    regularization=regularization_init,
+                ),
+            ),
+        ),
+        extra_galaxies=al.util.chaining.extra_galaxies_from(result=source_lp_result),
+        dataset_model=dataset_model,
+    )
+
+    """
+    For single-dataset analyses, the following code does not change the model or analysis and can be ignored.
+
+    For multi-dataset analyses, the following code updates the model and analysis.
+    """
+    analysis = slam_util.analysis_multi_dataset_from(
+        analysis=analysis,
+        model=model,
+        multi_dataset_offset=True,
+        multi_source_regularization=True,
+    )
+
+    search = af.Nautilus(
+        name="source_pix[1]",
+        **settings_search.search_dict,
+        n_live=75,
     )
 
     result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)

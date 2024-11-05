@@ -1,6 +1,7 @@
 import autofit as af
 import autolens as al
 
+from . import slam_util
 
 from typing import Optional, Union
 
@@ -16,6 +17,7 @@ def run(
     smbh: Optional[af.Model] = None,
     use_gradient: bool = False,
     link_mass_to_light_ratios: bool = True,
+    dataset_model: Optional[af.Model] = None,
 ) -> af.Result:
     """
     The SLaM MASS LIGHT DARK PIPELINE, which fits a mass model where the stellar mass is modeled in a way linked
@@ -50,6 +52,9 @@ def run(
     dark
         The `MassProfile` `Model` used to represent the dark matter distribution of the lens galaxy's (set to None to
         omit dark matter).
+    dataset_model
+        Add aspects of the dataset to the model, for example the arc-second (y,x) offset between two datasets for
+        multi-band fitting or the background sky level.
     """
 
     """
@@ -127,6 +132,19 @@ def run(
         extra_galaxies=al.util.chaining.extra_galaxies_from(
             result=source_result_for_lens, mass_as_model=True
         ),
+        dataset_model=dataset_model,
+    )
+
+    """
+    For single-dataset analyses, the following code does not change the model or analysis and can be ignored.
+
+    For multi-dataset analyses, the following code updates the model and analysis.
+    """
+    analysis = slam_util.analysis_multi_dataset_from(
+        analysis=analysis,
+        model=model,
+        multi_dataset_offset=True,
+        source_regularization_result=source_result_for_source,
     )
 
     search = af.Nautilus(

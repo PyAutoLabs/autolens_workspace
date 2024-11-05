@@ -265,6 +265,10 @@ class BaseFit:
             The model instance which is fitted to the dataset, which does not include the perturbed feature.
         paths
             The `Paths` instance which contains the path to the folder where the results of the fit are written to.
+        instance
+            The simulation instance, which includes the perturbed feature that is used to simulate the dataset.
+            This is often not used, but may be useful for certain sensitivity mapping tasks, for example using
+            true values of the simulated instance to set up aspects of the model-fit (e.g. the priors).
         """
 
         search = af.Nautilus(
@@ -339,6 +343,10 @@ class PerturbFit:
             The model instance which is fitted to the dataset, which includes the perturbed feature.
         paths
             The `Paths` instance which contains the path to the folder where the results of the fit are written to.
+        instance
+            The simulation instance, which includes the perturbed feature that is used to simulate the dataset.
+            This is often not used, but may be useful for certain sensitivity mapping tasks, for example using
+            true values of the simulated instance to set up aspects of the model-fit (e.g. the priors).
         """
 
         search = af.Nautilus(
