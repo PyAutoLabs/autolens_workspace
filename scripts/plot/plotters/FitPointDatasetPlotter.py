@@ -39,7 +39,7 @@ lens_galaxy = al.Galaxy(
     redshift=0.5,
     mass=al.mp.Isothermal(
         centre=(0.0, 0.0),
-        einstein_radius=1.6,
+        einstein_radius=1.8,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
 )

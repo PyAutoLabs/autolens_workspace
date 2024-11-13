@@ -239,7 +239,7 @@ MassProfileCentresScatter:
     s: 26
 MultipleImagesScatter:
   figure:
-    c: k,r,g,b,m,y
+    c: r,g,b,m,y
     marker: '*'
     s: 100
   subplot:
