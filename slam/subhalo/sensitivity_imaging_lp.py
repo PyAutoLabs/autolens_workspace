@@ -82,6 +82,8 @@ class SimulateImaging:
         We therefore load it from the `simulate_path` instead.
         """
         try:
+            print(simulate_path)
+
             dataset = al.Imaging.from_fits(
                 data_path=f"{simulate_path}/data.fits",
                 psf_path=f"{simulate_path}/psf.fits",

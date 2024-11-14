@@ -107,6 +107,7 @@ def plot_fit_png_row(
     image_plane_extent,
     source_plane_extent,
     visuals_2d,
+    title_fontweight="normal",
 ):
     """
     Plots a row of a subplot which shows a fit to a list of datasets (e.g. varying across wavelengths) where each row
@@ -144,6 +145,7 @@ def plot_fit_png_row(
 
     plotter_main.mat_plot_2d.axis = aplt.Axis(extent=image_plane_extent)
     plotter_main.mat_plot_2d.cmap = aplt.Cmap()
+    plotter_main.mat_plot_2d.title = aplt.Title(fontweight=title_fontweight)
     plotter.mat_plot_2d = plotter_main.mat_plot_2d
     plotter.mat_plot_2d.use_log10 = True
     plotter.set_title(label=f"{tag} Data")
@@ -207,7 +209,13 @@ def plot_fit_png_row(
     plotter.mat_plot_2d.use_log10 = False
 
 
-def output_fit_multi_png(output_path: str, result_list, tag_list=None, filename="fit"):
+def output_fit_multi_png(
+    output_path: str,
+    result_list,
+    tag_list=None,
+    filename="fit",
+    main_dataset_index: int = 1e99,
+):
     """
     Outputs a .png subplot of a fit to multiple datasets (e.g. varying across wavelengths) where each row
     corresponds to a different dataset.
@@ -275,6 +283,8 @@ def output_fit_multi_png(output_path: str, result_list, tag_list=None, filename=
     )
 
     for i, fit in enumerate(fit_list):
+        title_fontweight = "bold" if i == main_dataset_index else "normal"
+
         visuals_2d = aplt.Visuals2D(
             light_profile_centres=al.Grid2DIrregular(
                 values=[fit.tracer.galaxies[0].bulge.profile_list[0].centre]
@@ -296,6 +306,7 @@ def output_fit_multi_png(output_path: str, result_list, tag_list=None, filename=
             image_plane_extent=image_plane_extent,
             source_plane_extent=source_plane_extent,
             visuals_2d=visuals_2d,
+            title_fontweight=title_fontweight,
         )
 
     plotter.mat_plot_2d.output.subplot_to_figure(auto_filename=filename)
@@ -303,11 +314,7 @@ def output_fit_multi_png(output_path: str, result_list, tag_list=None, filename=
 
 
 def plot_source_png_row(
-    plotter_main,
-    fit,
-    tag,
-    vmax,
-    source_plane_extent,
+    plotter_main, fit, tag, vmax, source_plane_extent, title_fontweight="normal"
 ):
     """
     Plots a row of a subplot which shows a source reconstruction to a list of datasets (e.g. varying across wavelengths)
@@ -336,6 +343,7 @@ def plot_source_png_row(
 
     plotter.mat_plot_2d = plotter_main.mat_plot_2d
     plotter_main.mat_plot_2d.cmap = aplt.Cmap(vmin=0.0, vmax=vmax)
+    plotter_main.mat_plot_2d.title = aplt.Title(fontweight=title_fontweight)
     plotter.set_title(label=f"{tag} Source Plane")
     plotter.figures_2d_of_planes(
         plane_index=1,
@@ -383,7 +391,11 @@ def plot_source_png_row(
 
 
 def output_source_multi_png(
-    output_path: str, result_list, tag_list=None, filename="source_reconstruction"
+    output_path: str,
+    result_list,
+    tag_list=None,
+    filename="source_reconstruction",
+    main_dataset_index: int = 1e99,
 ):
     """
     Outputs a .png subplot of the source-plane source reconstructions to multiple datasets (e.g. varying across
@@ -443,12 +455,15 @@ def output_source_multi_png(
     for i, fit in enumerate(fit_list):
         tag = tag_list[i] if tag_list is not None else ""
 
+        title_fontweight = "bold" if i == main_dataset_index else "normal"
+
         plot_source_png_row(
             plotter_main=plotter_main,
             fit=fit,
             tag=tag,
             vmax=vmax,
             source_plane_extent=source_plane_extent,
+            title_fontweight=title_fontweight,
         )
 
     plotter_main.mat_plot_2d.output.subplot_to_figure(auto_filename=filename)

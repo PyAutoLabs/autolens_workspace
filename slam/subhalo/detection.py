@@ -11,6 +11,7 @@ def run_1_no_subhalo(
     settings_search: af.SettingsSearch,
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
     mass_result: af.Result,
+    extra_galaxies: Optional[af.Collection] = None,
     dataset_model: Optional[af.Model] = None,
 ) -> af.Result:
     """
@@ -56,9 +57,7 @@ def run_1_no_subhalo(
 
     model = af.Collection(
         galaxies=af.Collection(lens=lens, source=source),
-        extra_galaxies=al.util.chaining.extra_galaxies_from(
-            result=mass_result, mass_as_model=True
-        ),
+        extra_galaxies=extra_galaxies,
         dataset_model=dataset_model,
     )
 
@@ -89,6 +88,7 @@ def run_2_grid_search(
     free_redshift: bool = False,
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
+    extra_galaxies: Optional[af.Collection] = None,
     dataset_model: Optional[af.Model] = None,
 ) -> af.GridSearchResult:
     """
@@ -171,9 +171,7 @@ def run_2_grid_search(
 
     model = af.Collection(
         galaxies=af.Collection(lens=lens, subhalo=subhalo, source=source),
-        extra_galaxies=al.util.chaining.extra_galaxies_from(
-            result=subhalo_result_1, mass_as_model=True
-        ),
+        extra_galaxies=extra_galaxies,
         dataset_model=dataset_model,
     )
 
@@ -223,6 +221,7 @@ def run_3_subhalo(
     subhalo_grid_search_result_2: af.GridSearchResult,
     subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
     free_redshift: bool = False,
+    extra_galaxies: Optional[af.Collection] = None,
     dataset_model: Optional[af.Model] = None,
 ) -> af.Result:
     """
@@ -303,9 +302,7 @@ def run_3_subhalo(
             subhalo=subhalo,
             source=subhalo_grid_search_result_2.model.galaxies.source,
         ),
-        extra_galaxies=al.util.chaining.extra_galaxies_from(
-            result=subhalo_result_1, mass_as_model=True
-        ),
+        extra_galaxies=extra_galaxies,
         dataset_model=dataset_model,
     )
 

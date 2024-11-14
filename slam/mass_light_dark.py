@@ -17,6 +17,7 @@ def run(
     smbh: Optional[af.Model] = None,
     use_gradient: bool = False,
     link_mass_to_light_ratios: bool = True,
+    extra_galaxies: Optional[af.Collection] = None,
     dataset_model: Optional[af.Model] = None,
 ) -> af.Result:
     """
@@ -52,6 +53,8 @@ def run(
     dark
         The `MassProfile` `Model` used to represent the dark matter distribution of the lens galaxy's (set to None to
         omit dark matter).
+    extra_galaxies
+        Additional extra galaxies containing light and mass profiles, which model nearby line of sight galaxies.
     dataset_model
         Add aspects of the dataset to the model, for example the arc-second (y,x) offset between two datasets for
         multi-band fitting or the background sky level.
@@ -129,9 +132,7 @@ def run(
             ),
             source=source,
         ),
-        extra_galaxies=al.util.chaining.extra_galaxies_from(
-            result=source_result_for_lens, mass_as_model=True
-        ),
+        extra_galaxies=extra_galaxies,
         dataset_model=dataset_model,
     )
 

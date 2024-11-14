@@ -14,6 +14,7 @@ def run(
     lens_bulge: Optional[af.Model] = af.Model(al.lp.Sersic),
     lens_disk: Optional[af.Model] = None,
     lens_point: Optional[af.Model] = None,
+    extra_galaxies: Optional[af.Collection] = None,
     dataset_model: Optional[af.Model] = None,
 ) -> af.Result:
     """
@@ -42,6 +43,8 @@ def run(
     lens_point
         The model used to represent the light distribution of the lens galaxy's point-source(s)
         emission (e.g. a nuclear star burst region) or compact central structures (e.g. an unresolved bulge).
+    extra_galaxies
+        Additional extra galaxies containing light and mass profiles, which model nearby line of sight galaxies.
     dataset_model
         Add aspects of the dataset to the model, for example the arc-second (y,x) offset between two datasets for
         multi-band fitting or the background sky level.
@@ -77,9 +80,7 @@ def run(
             ),
             source=source,
         ),
-        extra_galaxies=al.util.chaining.extra_galaxies_from(
-            result=source_result_for_lens, light_as_model=True
-        ),
+        extra_galaxies=extra_galaxies,
         dataset_model=dataset_model,
     )
 
