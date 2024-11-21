@@ -368,7 +368,7 @@ def plot_source_png_row(
     plotter.mat_plot_2d.use_log10 = False
     plotter.figures_2d_of_planes(
         plane_index=1,
-        plane_errors=True,
+        plane_noise_map=True,
     )
 
     plotter.set_title(label=f"{tag} Source Plane S/N (Zoomed)")

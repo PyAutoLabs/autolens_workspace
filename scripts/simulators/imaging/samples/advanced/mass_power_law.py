@@ -82,7 +82,7 @@ To simulate the `Imaging` dataset we first create a simulator, which defines the
 noise levels and psf of the dataset that is simulated.
 """
 simulator = al.SimulatorImaging(
-    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_poisson_noise=True
+    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_poisson_noise_to_data=True
 )
 
 """

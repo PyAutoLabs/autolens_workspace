@@ -44,8 +44,23 @@ data = al.Array2D.from_fits(
     file_path=path.join(dataset_path, "data.fits"), pixel_scales=pixel_scales
 )
 
-cmap = aplt.Cmap(
-    norm="log", vmin=1.0e-4, vmax=0.4 * np.max(data), linthresh=0.05, linscale=0.1
+data = al.Array2D(
+    values=np.nan_to_num(data, nan=0.0, posinf=0.0, neginf=0.0), mask=data.mask
+)
+
+cmap = aplt.Cmap(cmap="jet", norm="log", vmin=1.0e-3, vmax=np.max(data) / 3.0)
+
+"""
+__Mask__
+
+Create a 3.0" mask to plot over the image to guide where extra galaxy light needs its emission removed and noise scaled.
+"""
+mask_radius = 3.0
+
+mask = al.Mask2D.circular(
+    shape_native=data.shape_native,
+    pixel_scales=data.pixel_scales,
+    radius=mask_radius
 )
 
 """
@@ -55,7 +70,7 @@ Load the Scribbler GUI for spray painting the scaled regions of the dataset.
 
 Push Esc when you are finished spray painting.
 """
-scribbler = al.Scribbler(image=data.native, cmap=cmap)
+scribbler = al.Scribbler(image=data.native, cmap=cmap, mask_overlay=mask)
 mask = scribbler.show_mask()
 mask = al.Mask2D(mask=mask, pixel_scales=pixel_scales)
 

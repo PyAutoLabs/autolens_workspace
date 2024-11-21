@@ -113,7 +113,7 @@ To simulate the `Imaging` dataset we first create a simulator, which includes:
  - Whether the simulated dataset includes Poisson noise.
 """
 simulator = al.SimulatorImaging(
-    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_poisson_noise=True
+    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_poisson_noise_to_data=True
 )
 
 """

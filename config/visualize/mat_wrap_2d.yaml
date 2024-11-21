@@ -147,6 +147,15 @@ VectorYXQuiver:      # wrapper for `plt.quiver()`: customize (y,x) vectors appea
     linewidth: 5
     pivot: middle
     units: xy
+DelaunayDrawer:       # wrapper for `plt.fill()`: customize the appearance of Delaunay mesh's.
+  figure:
+    alpha: 0.7
+    edgecolor: k
+    linewidth: 0.0
+  subplot:
+    alpha: 0.7
+    edgecolor: k
+    linewidth: 0.0
 VoronoiDrawer:       # wrapper for `plt.fill()`: customize the appearance of Voronoi mesh's.
   figure:
     alpha: 0.7

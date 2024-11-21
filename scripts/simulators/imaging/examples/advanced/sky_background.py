@@ -74,7 +74,7 @@ simulator = al.SimulatorImaging(
     exposure_time=300.0,
     psf=psf,
     background_sky_level=5.0,
-    add_poisson_noise=True,
+    add_poisson_noise_to_data=True,
     subtract_background_sky=False,
 )
 
