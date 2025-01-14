@@ -413,7 +413,7 @@ The end of this example provides a detailed description of all result options fo
 print(result.max_log_likelihood_instance)
 
 tracer_plotter = aplt.TracerPlotter(
-    tracer=result.max_log_likelihood_tracer, grid=result.grids.uniform
+    tracer=result.max_log_likelihood_tracer, grid=result.grids.lp
 )
 tracer_plotter.subplot_tracer()
 
@@ -795,16 +795,13 @@ regular 2D array of data which could be output to .fits format.
 """
 mesh = al.mesh.Rectangular(shape=(50, 50))
 
-source_plane_grid = tracer.traced_grid_2d_list_from(
-    grid=dataset.grids.pixelization.over_sampler.over_sampled_grid
-)[1]
+source_plane_grid = tracer.traced_grid_2d_list_from(grid=dataset.grids.pixelization)[1]
 
 mapper_grids = mesh.mapper_grids_from(
     mask=mask, source_plane_data_grid=source_plane_grid
 )
 mapper = al.Mapper(
     mapper_grids=mapper_grids,
-    over_sampler=dataset.grids.over_sampler_pixelization,
     regularization=al.reg.Constant(coefficient=1.0),
 )
 

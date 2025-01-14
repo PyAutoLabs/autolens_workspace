@@ -114,6 +114,30 @@ dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
 """
+__Extra Galaxies Over Sampling__
+
+Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
+on a higher resolution grid than the image data to ensure the calculation is accurate. 
+
+For a new user, the details of over-sampling are not important, therefore just be aware that below we make it so that 
+all calculations use an adaptive over sampling scheme which ensures high accuracy and precision.
+
+Crucially, this over sampling is applied at the centre of both extra galaxy, ensuring the light of both are over 
+sampled correctly.
+
+Once you are more experienced, you should read up on over-sampling in more detail via 
+the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
+"""
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=dataset.grid,
+    sub_size_list=[8, 4, 1],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0), (1.0, 3.5), (-2.0, -3.5)],
+)
+
+dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
+
+"""
 We now perform a model-fit using the standard API, where the extra galaxies are not included in the model.
 
 The mask we have applied ensures the extra galaxies do not impact the fit, and the model-fit returns a good fit to the
@@ -253,6 +277,30 @@ extra_galaxies_centres = al.Grid2DIrregular(
 )
 
 print(extra_galaxies_centres)
+
+"""
+__Extra Galaxies Over Sampling__
+
+Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
+on a higher resolution grid than the image data to ensure the calculation is accurate. 
+
+For a new user, the details of over-sampling are not important, therefore just be aware that below we make it so that 
+all calculations use an adaptive over sampling scheme which ensures high accuracy and precision.
+
+Crucially, this over sampling is applied at the centre of both extra galaxy, ensuring the light of both are over 
+sampled correctly.
+
+Once you are more experienced, you should read up on over-sampling in more detail via 
+the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
+"""
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=dataset.grid,
+    sub_size_list=[8, 4, 1],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0), (1.0, 3.5), (-2.0, -3.5)],
+)
+
+dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
 
 """
 __Model__ 

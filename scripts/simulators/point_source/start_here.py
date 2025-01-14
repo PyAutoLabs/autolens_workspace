@@ -235,7 +235,10 @@ psf = al.Kernel2D.from_gaussian(
 )
 
 simulator = al.SimulatorImaging(
-    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_poisson_noise_to_data=True
+    exposure_time=300.0,
+    psf=psf,
+    background_sky_level=0.1,
+    add_poisson_noise_to_data=True,
 )
 
 imaging = simulator.via_tracer_from(tracer=tracer, grid=grid)

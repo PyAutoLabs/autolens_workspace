@@ -46,22 +46,16 @@ to create the `Aggregator` object.
 If you have not used the .sqlite database before, the `start_here.ipynb` example describes how to set it up and the API
 for the aggregator is identical from here on.
 """
-# database_name = "results_folder"
-#
-# if path.exists(path.join("output", f"{database_name}.sqlite")):
-#     os.remove(path.join("output", f"{database_name}.sqlite"))
-#
-# agg = af.Aggregator.from_database(
-#     filename=f"{database_name}.sqlite", completed_only=False
-# )
-#
-# agg.add_directory(directory=path.join("output", database_name))
+database_name = "results_folder"
 
-from autofit.aggregator.aggregator import Aggregator
+if path.exists(path.join("output", f"{database_name}.sqlite")):
+    os.remove(path.join("output", f"{database_name}.sqlite"))
 
-agg = Aggregator.from_directory(
-    directory=path.join("output", "results_folder"),
+agg = af.Aggregator.from_database(
+    filename=f"{database_name}.sqlite", completed_only=False
 )
+
+agg.add_directory(directory=path.join("output", database_name))
 
 """
 The masks we used to fit the lenses is accessible via the aggregator.

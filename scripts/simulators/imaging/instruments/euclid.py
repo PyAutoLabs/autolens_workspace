@@ -46,15 +46,21 @@ dataset_path = path.join("dataset", "imaging", dataset_type, dataset_instrument)
 """
 __Simulate__
 
-Simulate the image using a `Grid2D` with the `OverSamplingIterate` object.
+Simulate the image using a `Grid2D` with the adaptive over sampling scheme.
 """
 grid = al.Grid2D.uniform(
     shape_native=(100, 100),
     pixel_scales=0.1,
-    over_sampling=al.OverSamplingIterate(
-        fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
-    ),
 )
+
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=grid,
+    sub_size_list=[32, 8, 2],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0)],
+)
+
+grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
 
 """
 Simulate a simple Gaussian PSF for the image.
@@ -68,7 +74,10 @@ To simulate the `Imaging` dataset we first create a simulator, which defines the
 noise levels and psf of the dataset that is simulated.
 """
 simulator = al.SimulatorImaging(
-    exposure_time=2260.0, psf=psf, background_sky_level=0.04424, add_poisson_noise_to_data=True
+    exposure_time=2260.0,
+    psf=psf,
+    background_sky_level=0.04424,
+    add_poisson_noise_to_data=True,
 )
 
 """
@@ -134,8 +143,6 @@ dataset.output_to_fits(
 __Visualize__
 
 Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset path as .png files.
-
-For a faster run time, the tracer visualization uses the binned grid instead of the iterative grid.
 """
 mat_plot = aplt.MatPlot2D(
     title=aplt.Title(label="Euclid Image"),

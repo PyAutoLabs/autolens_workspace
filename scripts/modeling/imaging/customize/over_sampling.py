@@ -45,10 +45,9 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-__Dataset + Masking__ 
+__Dataset__ 
 
-For this sub-grid to be used in the model-fit, we must pass the `settings_dataset` to the `Imaging` object,
-which will be created using a `Grid2D` with a `sub-size value` of 4 (instead of the default of 2).
+We load the example dataset which will be used for customizing over sampling.
 """
 dataset_name = "simple__no_lens_light"
 dataset_path = path.join("dataset", "imaging", dataset_name)
@@ -72,50 +71,64 @@ mask = al.Mask2D.circular(
 dataset = dataset.apply_mask(mask=mask)
 
 """
-__Over Sampling Lens Galaxy (Uniform)__
+__Over Sampling Uniform__
 
-The over sampling of the lens galaxy is controlled using the `OverSamplingUniform` object, where an adaptive
-over sampling grid is used to compute the surface brightness of the lens galaxy such that high levels of over sampling
-are used in the central regions of the lens galaxy at (0.0", 0.0").
+The over sampling used to fit the data is customized using the `apply_over_sampling` method, which you may have
+seen in example `modeling` scripts.
+
+To apply uniform over sampling of degree 4x4, we simply input the integer 4.
+
+The grid this is applied to is called `lp`, to indicate that it is the grid used to evaluate the emission of light
+profiles for which this over sampling scheme is applied.
 """
-over_sampling_lens = al.OverSamplingUniform.from_radial_bins(
+dataset = dataset.apply_over_sampling(over_sample_size_lp=4)
+
+"""
+__Over Sampling Adaptive Lens Galaxy__
+
+Above, the `over_sample_size` input has been an integer, however it can also be an `ndarray` of values corresponding
+to each pixel. 
+
+Below, we create an `ndarray` of values which are high in the centre, but reduce to 2 at the outskirts, therefore 
+providing high levels of over sampling where we need it whilst using lower values which are computationally fast to 
+evaluate at the outskirts.
+
+Specifically, we define a 24 x 24 sub-grid within the central 0.3" of pixels, uses a 8 x 8 grid between
+0.3" and 0.6" and a 2 x 2 grid beyond that. 
+
+This will provide high levels of over sampling for the lens galaxy, whose emission peaks at the centre of the
+image near (0.0", 0.0"), but will not produce high levels of over sampling for the lensed source.
+"""
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,
-    sub_size_list=[8, 4, 1],
-    radial_list=[0.1, 0.3],
+    sub_size_list=[24, 8, 2],
+    radial_list=[0.3, 0.6],
     centre_list=[(0.0, 0.0)],
 )
+
+dataset = dataset.apply_over_sampling(
+    over_sampling=al.OverSamplingDataset(lp=over_sample_size)
+)
+
 
 """
 __Over Sampling Source Galaxy__
 
-To customize the sub-grid used by the model-fit, we create a `OverSamplingUniform` object and specify that the 
-`sub_size=4`. 
+By assuming the lens galaxy is near (0.0", 0.0"), it was simple to set up an adaptive over sampling grid which is
+applicable to all strong lens dataset.
 
-This increases the sub grid size of the `Grid2D` used to evaluate the source galaxy light profiles from the default 
-value of 2 to 8.
+There is no analogous define an adaptive over sampling grid for the lensed source, because for every dataset the
+source's light will appear in different regions of the image plane.
 
-For many reasons, this uniform grid is not ideal, as we will use high levels of over sampling over the whole mask,
-including the regions where the lensed source is not located. This is inefficient and can lead to longer run times
-and higher memory usage.
+This is why the majority of workspace examples use cored light profiles for the source galaxy. A cored light profile
+does not rapidly change in its central regions, and therefore can be evaluated accurately without over-sampling.
 
-Checkout `autolens_workspace/*/guides/over_sampling.ipynb`
-and `autolens_workspace/*/advanced/chaining/examples/over_sample.py` for a discussion of how to use an adaptive
-over sampling grid to compute the surface brightness of the source galaxy.
-"""
-over_sampling_source = al.OverSamplingUniform(sub_size=8)
+There is a way to set up an adaptive over sampling grid for a lensed source, however it requries one to use and
+understanding the advanced lens modeling feature search chaining.
 
-"""
-__Over Sampling__
+An example of how to use search chaining to over sample sources efficient is provided in 
+the `autolens_workspace/*/imaging/advanced/chaining/over_sampling.ipynb` example.
 
-We now apply the over sampling to the `Imaging` dataset.
-"""
-dataset = dataset.apply_over_sampling(
-    over_sampling=al.OverSamplingDataset(
-        uniform=over_sampling_lens, non_uniform=over_sampling_source
-    )
-)
-
-"""
 __Model + Search + Analysis__ 
 
 The code below performs the normal steps to set up a model-fit. We omit comments of this code as you should be 
@@ -159,7 +172,7 @@ __Result__
 
 We can confirm that the `Result`'s grid used an over sampling iterate object.
 """
-print(result.grids.uniform.over_sampling)
+print(result.grids.lp.over_sampled)
 
 fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_plotter.subplot_fit()

@@ -43,7 +43,7 @@ gives it a descriptive name. They define the folder the dataset is output to on 
  - The psf will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/psf.fits`.
 """
 dataset_type = "imaging"
-dataset_name = "simple__big_stamp"
+dataset_name = "simple"
 
 """
 The path where the dataset will be output, which in this case is:
@@ -60,7 +60,13 @@ on, via the inputs:
 
  - `shape_native`: The (y_pixels, x_pixels) 2D shape of the grid defining the shape of the data that is simulated.
  - `pixel_scales`: The arc-second to pixel conversion factor of the grid and data.
+"""
+grid = al.Grid2D.uniform(
+    shape_native=(100, 100),
+    pixel_scales=0.1,
+)
 
+"""
 __Over Sampling__
 
 Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
@@ -69,25 +75,29 @@ on a higher resolution grid than the image data to ensure the calculation is acc
 For lensing calculations, the high magnification regions of a lensed source galaxy require especially high levels of 
 over sampling to ensure the lensed images are evaluated accurately.
 
-An iterative algorithm is used to perform this efficiently by inputting the `OverSamplingIterate` object. Grids of 
-increasing resolution are used to evaluate the flux in each pixel from the galaxies, until the fractional accuracy of 
-the flux in each pixel meets a certain threshold, which we set below to 99.99%. This iterative process includes
-deflection angle calculations and ray-tracing for evaluating the light of the lensed source.
+Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
+on a higher resolution grid than the image data to ensure the calculation is accurate. 
 
-Iterative over sampling is relatively slow, but it provides a more accurate result. Slow run times are ok for 
-simulating data, but for tasks which require more rapid run times (e.g. model-fitting) an adaptive over sampling 
-algorithm is used, which provides high levels of over sampling only where it is necessary making the process much faster.
+An adaptive oversampling scheme is implemented, evaluating the central regions at (0.0", 0.0") of the light profile at a 
+resolution of 32x32, transitioning to 8x8 in intermediate areas, and 2x2 in the outskirts. This ensures precise and 
+accurate image simulation while focusing computational resources on the bright regions that demand higher oversampling.
+
+An adaptive oversampling grid cannot be defined for the lensed source because its light appears in different regions of 
+the image plane for each dataset. For this reason, most workspace examples utilize cored light profiles for the 
+source galaxy. Cored light profiles change gradually in their central regions, allowing accurate evaluation without 
+requiring oversampling.
 
 Once you are more experienced, you should read up on over-sampling in more detail via 
 the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
 """
-grid = al.Grid2D.uniform(
-    shape_native=(400, 400),
-    pixel_scales=0.1,
-    over_sampling=al.OverSamplingIterate(
-        fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
-    ),
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=grid,
+    sub_size_list=[32, 8, 2],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0)],
 )
+
+grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
 
 """
 All CCD imaging data (e.g. Hubble Space Telescope, Euclid) are blurred by the telescope optics when they are imaged.
@@ -113,7 +123,10 @@ To simulate the `Imaging` dataset we first create a simulator, which includes:
  - Whether the simulated dataset includes Poisson noise.
 """
 simulator = al.SimulatorImaging(
-    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_poisson_noise_to_data=True
+    exposure_time=300.0,
+    psf=psf,
+    background_sky_level=0.1,
+    add_poisson_noise_to_data=True,
 )
 
 """

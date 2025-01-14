@@ -58,9 +58,7 @@ Create a 3.0" mask to plot over the image to guide where extra galaxy light need
 mask_radius = 3.0
 
 mask = al.Mask2D.circular(
-    shape_native=data.shape_native,
-    pixel_scales=data.pixel_scales,
-    radius=mask_radius
+    shape_native=data.shape_native, pixel_scales=data.pixel_scales, radius=mask_radius
 )
 
 """

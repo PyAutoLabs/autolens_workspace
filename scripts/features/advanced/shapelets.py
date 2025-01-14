@@ -499,7 +499,7 @@ Checkout `autolens_workspace/*/imaging/results` for a full description of analys
 print(result.max_log_likelihood_instance)
 
 galaxies_plotter = aplt.GalaxiesPlotter(
-    galaxies=result.max_log_likelihood_galaxies, grid=result.grids.uniform
+    galaxies=result.max_log_likelihood_galaxies, grid=result.grids.lp
 )
 galaxies_plotter.subplot()
 

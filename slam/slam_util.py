@@ -8,7 +8,7 @@ import autolens as al
 import autolens.plot as aplt
 
 
-def output_model_to_fits(
+def output_result_to_fits(
     output_path: str,
     result,
     model_lens_light: bool = False,

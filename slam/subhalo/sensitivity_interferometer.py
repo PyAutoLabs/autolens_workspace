@@ -139,7 +139,7 @@ def run(
         Set up the grid, PSF and simulator settings used to simulate imaging of the strong lens. These should be tuned to
         match the S/N and noise properties of the observed data you are performing sensitivity mapping on.
         """
-        grid = al.Grid2DIterate.uniform(
+        grid = al.Grid2DIterate.lp(
             shape_native=real_space_mask.shape_native,
             pixel_scales=real_space_mask.pixel_scales,
             over_sampling=al.OverSamplingIterate(

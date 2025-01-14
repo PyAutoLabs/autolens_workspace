@@ -385,7 +385,7 @@ Full details of the API for this calculation are given in the `guides/over_sampl
 grid = al.Grid2D.uniform(
     shape_native=grid.shape_native,
     pixel_scales=grid.pixel_scales,
-    over_sampling=al.OverSamplingUniform(sub_size=2),
+    over_sample_size=2,
 )
 
 grid_sub = al.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1)

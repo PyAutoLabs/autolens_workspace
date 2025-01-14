@@ -22,8 +22,8 @@ __Default Over-Sampling__
 Examples throughout the workspace use a default over-sampling set up that should ensure accurate results for any
 analysis you have done. This default over-sampling is as follows:
 
-- When evaluating the image of the foreground lens galaxy, an adaptive over sampling grid is used which uses sub
-grids of size 32 x 32 in the central regions of the image, 4x4 further out and 2x2 beyond that.
+- When evaluating the image of a galaxy, an adaptive over sampling grid is used which uses sub grids of size 8 x 8 
+in the central regions of the image, 4x4 further out and 1x1 beyond that.
 
 - When evaluating the image of the source galaxy, no over-sampling (e.g. a 1 x 1 subgrid) is performed but instead
 cored light profiles for the source are used which can be evaluated accurate without over-sampling.
@@ -52,19 +52,17 @@ import autolens.plot as aplt
 """
 __Illustration__
 
-To illustrate over sampling, lets first create a uniform grid which does not over-sample the pixels, using 
-the `over_sampling` input.
+To illustrate over sampling, lets first create a uniform grid which does not over sample the pixels, using 
+the `over_sample_size` input.
 
-We input an `OverSamplingUniform` object, which for every pixel on the grid over-samples it using a uniform sub-grid 
-with dimensions specified by the input `sub_size`. 
-
-For example, the input below uses `sub_size=1`, therefore each pixel is split into a sub-grid of size 
-`sub_size x sub_size` = `1 x 1`. This is equivalent to not over-sampling the grid at all.  
+The input below uses `over_sample_size=1`, therefore each pixel is split into a sub-grid of 
+size  `over_sample_size x over_sample_size` = `1 x 1`. This means the light profile is evaluated once at the centre of each pixel, 
+which is equivalent to not over-sampling the grid at all.  
 """
 grid_sub_1 = al.Grid2D.uniform(
     shape_native=(40, 40),
     pixel_scales=0.1,
-    over_sampling=al.OverSamplingUniform(sub_size=1),
+    over_sample_size=1,
 )
 
 """
@@ -77,25 +75,48 @@ grid_plotter = aplt.Grid2DPlotter(grid=grid_sub_1, mat_plot_2d=mat_plot)
 grid_plotter.figure_2d(plot_grid_lines=True)
 
 """
-We now create and plot a uniform grid which does over-sample the pixels, using a `sub_size` of 2.
-
-The image shows that each pixel is now split into a 2x2 sub-grid of coordinates, which will be used to compute the
-intensity of the light profile and therefore more accurately estimate the total intensity within each pixel if 
-there is a significant gradient in intensity within the pixel.
+We now create and plot a uniform grid which does over-sample the pixels, by inputting `over_sample_size=2`.
 """
 grid_sub_2 = al.Grid2D.uniform(
     shape_native=(40, 40),
     pixel_scales=0.1,
-    over_sampling=al.OverSamplingUniform(sub_size=2),
+    over_sample_size=2,
 )
 
+"""
+If we print `grid_sub_2` and its shape, we will find it is actually identical to `grid_sub_1`, despite the change
+in `over_sample_size`:
+"""
+print(grid_sub_1)
+print(grid_sub_2)
+print(grid_sub_1.shape)
+print(grid_sub_2.shape)
+
+"""
+This is because the over sampled version of the grid is stored in a separate attribute, called `over_sampled`,
+which we print below.
+
+We see that for `grid_sub_1` and `grid_sub_2` the `over_sampled` grids are different, with the over sampled grid for
+`grid_sub_2` containing four times as many entries corresponding to each pixel being sub-gridded in a 2 x 2 shape.
+"""
+print(grid_sub_1.over_sampled)
+print(grid_sub_2.over_sampled)
+print(grid_sub_1.over_sampled.shape)
+print(grid_sub_2.over_sampled.shape)
+
+"""
+We now plot the over sampled grid over the image, showing that each pixel is now split into a 2x2 sub-grid of 
+coordinates. 
+
+These are used to compute the intensity of the light profile and therefore more accurately estimate the total 
+intensity within each pixel if there is a significant gradient in intensity within the pixel.
+
+In the code below, it is the input `plot_over_sampled_grid=True` which ensures we plot the over sampled grid.
+"""
 mat_plot = aplt.MatPlot2D(title=aplt.Title(label="Grid With 2x2 Over-Sampling"))
 
 grid_plotter = aplt.Grid2DPlotter(grid=grid_sub_2, mat_plot_2d=mat_plot)
 grid_plotter.figure_2d(plot_grid_lines=True, plot_over_sampled_grid=True)
-
-print(grid_sub_1)
-print(grid_sub_2.over_sampler.over_sampled_grid)
 
 """
 __Numerics__
@@ -105,29 +126,11 @@ Lets quickly check how the sub-grid is defined and stored numerically.
 The first four pixels of this sub-grid correspond to the first four sub-pixels in the first pixel of the grid. 
 
 The top-left pixel image above shows how the sub-pixels are spaced within the pixel. 
-
-The `grid_sub_2` object has the same shape as the `grid_sub_1` object, and its coordinates are identical. The 
-`grid_sub_2` object therefore does not naturally store the sub-pixel coordinates:
 """
 print("(y,x) pixel 0 of grid_sub_1:")
-print(grid_sub_1[0])
+print(grid_sub_1.over_sampled[0])
 print("(y,x) pixel 0 of grid_sub_2:")
-print(grid_sub_2[0])
-
-"""
-To numerically access the sub-pixel coordinates, we use the `over_sampler.over_sampled_grid` property of the grid,
-which uses the input `sub_size` to create a grid with the sub-pixel coordinates.
-
-We use this below and show that the grid created, has a shape of (400, 2), where the 400 corresponds to the 20x20
-sub-pixels of the original 10x10 grid.
-
-Notably, the grid is not stored in its native shape of (20, 20, 2) but instead as a 1D array of shape (400, 2).
-Below, we will explain why this is the case.
-"""
-over_sampled_grid = grid_sub_2.over_sampler.over_sampled_grid
-
-print("Over-sampled grid shape:")
-print(over_sampled_grid.shape)
+print(grid_sub_2.over_sampled[0])
 
 """
 We now confirm that the first four sub-pixels of the over-sampled grid correspond are contained within the 
@@ -136,13 +139,13 @@ first pixel of the grid.
 print("(y,x) pixel 0 (of original grid):")
 print(grid_sub_2[0])
 print("(y,x) sub-pixel 0 (of pixel 0):")
-print(over_sampled_grid[0])
+print(grid_sub_2.over_sampled[0])
 print("(y,x) sub-pixel 1 (of pixel 0):")
-print(over_sampled_grid[1])
+print(grid_sub_2.over_sampled[1])
 print("(y,x) sub-pixel 2 (of pixel 0):")
-print(over_sampled_grid[2])
+print(grid_sub_2.over_sampled[2])
 print("(y,x) sub-pixel 3 (of pixel 0):")
-print(over_sampled_grid[3])
+print(grid_sub_2.over_sampled[3])
 
 """
 Numerically, the over-sampled grid contains the sub-pixel coordinates of every pixel in the grid, going from the 
@@ -155,9 +158,13 @@ __Images__
 We now use over-sampling to compute the image of a Sersic light profile, which has a steep intensity gradient
 at its centre which a lack of over-sampling does not accurately capture.
 
-We create the light profile, input the two grids (with `sub_size=1` and `sub_size=2`) and compute the image of the
+We create the light profile, input the two grids (with `over_sample_size=1` and `over_sample_size=2`) and compute the image of the
 light profile using each grid. We then plot the residuals between the two images in order to show the difference
 between the two images and thus why over-sampling is important.
+
+Over sampling occurs automatically when a grid is input into a function like `image_2d_from`, therefore internally 
+the line of code, `image_sub_2 = light.image_2d_from(grid=grid_sub_2)`, is evaluating the light profile using the
+2 x 2 oversampled grid and internally binning it up in to fully perform over sampling.
 """
 light = al.lp.Sersic(
     centre=(0.0, 0.0),
@@ -173,7 +180,7 @@ image_sub_2 = light.image_2d_from(grid=grid_sub_2)
 plotter = aplt.Array2DPlotter(
     array=image_sub_1,
 )
-plotter.set_title("Image of Serisc Profile")
+plotter.set_title("Image of Sersic Profile")
 plotter.figure_2d()
 
 residual_map = image_sub_2 - image_sub_1
@@ -181,7 +188,7 @@ residual_map = image_sub_2 - image_sub_1
 plotter = aplt.Array2DPlotter(
     array=residual_map,
 )
-plotter.set_title("Residuals Due to Lack of Over-Sampling")
+plotter.set_title("Over-Sampling Residuals")
 plotter.figure_2d()
 
 
@@ -204,7 +211,7 @@ fractional_residual_map = residual_map / image_sub_2
 plotter = aplt.Array2DPlotter(
     array=fractional_residual_map,
 )
-plotter.set_title("Fractional Residuals Due to Lack of Over-Sampling")
+plotter.set_title("Fractional Over-Sampling Residuals")
 
 plotter.figure_2d()
 
@@ -219,14 +226,10 @@ for most scientific purposes (albeit you should think carefully about the level 
 your specific science case).
 """
 grid_sub_16 = al.Grid2D.uniform(
-    shape_native=(40, 40),
-    pixel_scales=0.1,
-    over_sampling=al.OverSamplingUniform(sub_size=16),
+    shape_native=(40, 40), pixel_scales=0.1, over_sample_size=16
 )
 grid_sub_32 = al.Grid2D.uniform(
-    shape_native=(40, 40),
-    pixel_scales=0.1,
-    over_sampling=al.OverSamplingUniform(sub_size=32),
+    shape_native=(40, 40), pixel_scales=0.1, over_sample_size=32
 )
 
 image_sub_16 = light.image_2d_from(grid=grid_sub_16)
@@ -249,7 +252,7 @@ plotter.set_title("Fractional Residuals With Over-Sampling")
 plotter.figure_2d()
 
 """
-__Iterative Over-Sampling__
+__Adaptive Over Sampling__
 
 We have shown that over-sampling is important for accurate image evaluation. However, there is a major drawback to
 over-sampling, which is that it is computationally expensive. 
@@ -261,96 +264,63 @@ we had not used over-sampling.
 Speeding up the calculation is crucial for model-fitting where the image is evaluated many times to fit the
 model to the data.
 
-Fortunately, there is an obvious solution to this problem. We saw above that the residuals rapidly decrease away
+Fortunately, there is a solution to this problem. We saw above that the residuals rapidly decrease away
 from the centre of the light profile. Therefore, we only need to over-sample the central regions of the image,
-where the intensity gradient is steep, and can use much lower levels of over-sampling away from the centre.
+where the intensity gradient is steep. We can use lower levels of over-sampling away from the centre, which
+will be fast to evaluate.
 
-The `OverSamplingIterate` object performs this iterative over-sampling by performing the following steps:
+Up to now, the `over_sample_size` input has been an integer, however it can also be an `ndarray` of values corresponding
+to each pixel. Below, we create an `ndarray` of values which are high in the centre, but reduce to 2 at the outskirts,
+therefore providing high levels of over sampling where we need it whilst using lower values which are computationally
+fast to evaluate at the outskirts.
 
- 1) It computes the image using a low level of over-sampling (e.g. `sub_size=1`).
- 2) It computes another image using a user input higher level of over-sampling (e.g. `sub_size=2`).
- 3) It computes the fractional residuals between the two images.
- 4) If the fractional residuals are above a threshold input by the user, it increases the level of over-sampling
-    in only those pixels where the residuals are above the threshold.
- 5) It then repeats this process using higher and higher levels of over-sampling in pixels which have not met the
-    accuracy threshold, until all pixels do or the user-defined maximum level of over-sampling is reached.
-
-This object is used throughout the workspace to simulate images of galaxies in the `simulators` package
-
-We now use this object and confirm that it can compute the image of the Sersic profile accurately by comparing
-to the image computed using a 32x32 degree of over-sampling.
-
-The object has the following inputs:
-
- - `fractional_accuracy`: The fractional accuracy threshold the iterative over-sampling aims to meet. The value of
-    0.9999 means that the fractional residuals in every pixel must be below 0.0001, or 0.01%.
- 
-  - `sub_steps`: The sub-size values that are iteratively increased which control the level of over-sampling used to
-    compute the image.
+Specifically, we define a 24 x 24 sub-grid within the central 0.3" of pixels, uses a 8 x 8 grid between
+0.3" and 0.6" and a 2 x 2 grid beyond that. 
 """
-grid_iterate = al.Grid2D.uniform(
-    shape_native=(40, 40),
-    pixel_scales=0.1,
-    over_sampling=al.OverSamplingIterate(
-        fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
-    ),
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=grid_sub_1, sub_size_list=[24, 8, 2], radial_list=[0.3, 0.6]
 )
 
-image_iterate = light.image_2d_from(grid=grid_iterate)
-
-residual_map = image_sub_32 - image_iterate
-
-fractional_residual_map = residual_map / image_sub_32
-
-plotter = aplt.Array2DPlotter(
-    array=fractional_residual_map,
+grid_adaptive = al.Grid2D.no_mask(
+    values=grid_sub_1.native,
+    pixel_scales=grid_sub_1.pixel_scales,
+    over_sample_size=over_sample_size,
 )
-plotter.set_title("Fractional Residuals Using Iterative Over-Sampling")
-plotter.figure_2d()
+
+mat_plot = aplt.MatPlot2D(title=aplt.Title(label="Adaptive Over-Sampling"))
+
+grid_plotter = aplt.Grid2DPlotter(grid=grid_adaptive, mat_plot_2d=mat_plot)
+grid_plotter.figure_2d(plot_grid_lines=True, plot_over_sampled_grid=True)
+
+print(over_sample_size)
+
 
 """
-The fractional residuals are below 0.01% in every pixel, showing that the `OverSamplingIterate` object has
-accurately computed the image of the Sersic profile.
+Modeling uses masked grids, therefore the code below shows how we would create this adaptive over sample grid via 
+a circular mask, which can be used for modeling.
 
-__Manual Adaptive Grid__
-
-The iterative over-sampling is a powerful tool, but it is still computationally expensive. This is because it
-has to evaluate the light profile image many times at increasing levels of over-sampling until the fractional
-residuals are below the threshold.
-
-For modeling, where the image is evaluated many times to fit the model to the data, this is not ideal. A faster
-approach which reap the benefits of over-sampling is to manually define a grid which over-samples the regions of
-the image where the intensity gradient is expected steep, and uses low levels of over-sampling elsewhere.
-
-For an unlensed galaxy (e.g. the foreground lens galaxy), this is simple. The intensity gradient is known to be steep 
-at its centre, therefore we just require a high level of over-sampling at its centre.
-
-Below, we define a grid which uses a 24 x 24 sub-grid within the central 0.3" of pixels, uses a 8 x 8 grid between
-0.3" and 0.6" and a 2 x 2 grid beyond that. By comparing this manual adaptive grid to the iterative over-sampling
-grid, we can confirm that the adaptive grid provides a good balance between accuracy and computational efficiency.
-
-Modeling uses masked grids, therefore the grid we use below is computed via a circular mask.
-
-Throughout the modeling examples in the workspace, we use this adaptive grid to ensure that the image of the lens
+Throughout the modeling examples in the workspace, we use this adaptive grid to ensure that the image of the
 galaxy is evaluated accurately and efficiently.
 """
 mask = al.Mask2D.circular(shape_native=(40, 40), pixel_scales=0.1, radius=5.0)
 
 grid = al.Grid2D.from_mask(mask=mask)
 
-grid_adaptive = al.Grid2D(
-    values=grid,
-    mask=mask,
-    over_sampling=al.OverSamplingUniform.from_radial_bins(
-        grid=grid, sub_size_list=[32, 8, 2], radial_list=[0.3, 0.6]
-    ),
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=grid, sub_size_list=[24, 8, 2], radial_list=[0.3, 0.6]
 )
 
-mat_plot = aplt.MatPlot2D(title=aplt.Title(label="Grid With Adaptive Over-Sampling"))
+grid_adaptive = al.Grid2D(values=grid, mask=mask, over_sample_size=over_sample_size)
+
+mat_plot = aplt.MatPlot2D(title=aplt.Title(label="Adaptive Over-Sampling"))
 
 grid_plotter = aplt.Grid2DPlotter(grid=grid_adaptive, mat_plot_2d=mat_plot)
 grid_plotter.figure_2d(plot_grid_lines=True, plot_over_sampled_grid=True)
 
+"""
+We can compare this adaptive grid to the grid with over sampling of 32 x 32 to confine it produces low amounts
+of residuals.
+"""
 image_adaptive = light.image_2d_from(grid=grid_adaptive)
 image_sub_32 = light.image_2d_from(grid=grid_sub_32)
 
@@ -361,75 +331,68 @@ fractional_residual_map = residual_map / image_sub_32
 plotter = aplt.Array2DPlotter(
     array=fractional_residual_map,
 )
-plotter.set_title("Adaptive Over-Sampling Residuals")
+
+plotter.set_title("Adaptive Fractional Residuals")
 plotter.figure_2d()
 
 """
 __Default Over-Sampling__
 
-The iterative over-sampling used above is accurate, but it is computationally expensive and not ideal
-for tasks like lens modeling which require the image to be evaluated many times.
+The default over-sampling scheme used by the source code is 4 x 4 uniform over sampling over the whole image. 
 
-The default over-sampling (e.g. if you do not manually input an over-sampling object) is created as follows:
+A uniform scheme is used, instead of the adaptive scheme above, because the adaptive scheme requires input knowledge of 
+where the centre of the galaxy is (e.g. above the centre is at (0.0", 0.0").
 
- 1) Extract the centre of the light or mass profiles being evaluated (a value of (0.5", 0.5") is used below).
- 2) Use the name of the light or mass profile to load pre defined over sampling values from `config/grid.yaml`.
- 3) Use these values to set up an adaptive over-sampling grid around the profile centre, which by default contains 3 
-    sub-size levels, a 32 x 32 sub-grid in the central regions, a 4 x 4 sub-grid further out and a 2 x 2 sub-grid 
-    beyond that.
+Uniform over sampling is precise enough for many calculations, especially when you are simply performing quick 
+calculations to investigate a problem. However, for detailed calculations you must ensure that high enough
+levels of over sampling are used.
 
-This default behaviour occurs whenever a light or mass profile is evaluated using a grid, and therefore you can be 
-confident that all calculations you have performed are over-sampled accurately and efficiently.
-
-We illustrate and plot this default adaptive over sampling grid below.
-"""
-grid = al.Grid2D.uniform(shape_native=(40, 40), pixel_scales=0.1, over_sampling=None)
-
-over_sampling = al.OverSamplingUniform.from_adaptive_scheme(
-    grid=grid, name="Sersic", centre=(0.5, 0.5)
-)
-
-grid = al.Grid2D.uniform(
-    shape_native=(40, 40), pixel_scales=0.1, over_sampling=over_sampling
-)
-
-mat_plot = aplt.MatPlot2D(title=aplt.Title(label="Grid With Default Over-Sampling"))
-
-grid_plotter = aplt.Grid2DPlotter(grid=grid, mat_plot_2d=mat_plot)
-grid_plotter.figure_2d(plot_grid_lines=True, plot_over_sampled_grid=True)
-
-"""
-This default over sampling scheme only works because the input grid is uniform, because this means the centre of the
-light or mass profile is where in the grid high levels of over sampling are required. This assumption is not true of a 
-grid which has been deflected via a mass model. 
-
-This adaptive over-sampling scheme therefore cannot be used for evaluating lensed sources and is only used to 
-evaluate the image of the foreground lens galaxy.
+For modeling, all example scripts begin by switching to an adaptive over sampling scheme, as modeling assumes
+the centre of the lens galaxy is at (0.0", 0.0").
 
 __Multiple Lens Galaxies__
 
 The analysis may contain multiple lens galaxies, each of which must be over-sampled accurately. 
 
-The default over-sampling can already handle this, as it uses the centre of each galaxy to set up the adaptive
-over-sampling grid. It does this for every light profile of every galaxy in the analysis, thus different adaptive
-grids will be used if the galaxies are at different centres.
 
-We therefore recommend you always use the default over-sampling for multi-galaxy modeling.
+There are two approaches you can take to over sampling multi-galaxy systems:
 
+1) Use a high level of uniform over sampling over the full image.
+
+2) Use an adaptive over sampling scheme with multiple centres of high over sampling levels, with the API shown below
+  for two galaxies with centres (1.0, 0.0) and (-1.0, 0.0).
+"""
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=grid_sub_1,
+    sub_size_list=[24, 8, 2],
+    radial_list=[0.3, 0.6],
+    centre_list=[(1.0, 0.0), (-1.0, 0.0)],
+)
+
+"""
 __Ray Tracing__
 
 So far, we have evaluated the image of a light profile using over-sampling on an unlensed uniform grid. 
 
-For lensing calculations, the grid is ray-traced via a mass model to an irregular grid in the source plane, which
-as discussed a moment ago means that the adaptive over-sampling scheme cannot be used.
+For lensing calculations, the grid is ray-traced via a mass model to an irregular grid in the source plane.
+
+The over sampling of lensed images is therefore describe as follows: 
+
+1) Splits each image-pixel into a sub-grid of pixels in the image-plane.
+2) Ray trace this sub-grid of pixels using the mass model.
+3) Evaluate the source light of each sub-pixel in the source-plane.
+4) Bin up the values to evaluate the over sampled values.
+
+For lensing calculations, over sampling therefore requires us to ray-trace (and therefore compute the deflecitons angles
+of) many more (y,x) coordinates!
 
 We now illustrate using over-sampling with a mass profile, noting that for lensing:
 
- 1) The fraction residuals due to differing over-sampling levels now occur in the lensed source's brightest multiply 
- imaged pixels. 
+1) The fractional residuals due to differing over-sampling levels now occur in the lensed source's brightest multiply 
+   imaged pixels. 
  
- 2) It is the combination of a rapidly changing source light profile and the magnification pattern of the mass model
-    which requires over sampling. The mass model focuses many image-pixels to the source's brightest regions.
+2) It is the combination of a rapidly changing source light profile and the magnification pattern of the mass model
+   which requires over sampling. The mass model focuses many image-pixels to the source's brightest regions.
 """
 mass = al.mp.Isothermal(centre=(0.0, 0.0), ell_comps=(0.1, 0.0), einstein_radius=1.0)
 
@@ -453,7 +416,7 @@ image_sub_2 = tracer.image_2d_from(grid=grid_sub_2)
 plotter = aplt.Array2DPlotter(
     array=image_sub_1,
 )
-plotter.set_title("Image of Lensed Source")
+plotter.set_title("Source Image 1x1")
 plotter.figure_2d()
 
 residual_map = image_sub_2 - image_sub_1
@@ -463,45 +426,38 @@ fractional_residual_map = residual_map / image_sub_2
 plotter = aplt.Array2DPlotter(
     array=fractional_residual_map,
 )
-plotter.set_title("Lensing Low Over-Sampling Residuals")
-plotter.figure_2d()
-
-"""
-The iterative over sampling grid can be used to perform lensing calculations accurately and efficiently.
-
-This reason this grid works, but the default adaptive over-sampling grid does not, is because the iterative grid
-recomputes the deflection angles and performs th ray-tracing at every level of over-sampling. This default grid
-cannot be defined in a way that does this, as one does not know where the brightest regions of the source will be
-before the ray-tracing is performed.
-"""
-image_sub_32 = tracer.image_2d_from(grid=grid_sub_32)
-image_iterate = tracer.image_2d_from(grid=grid_iterate)
-
-residual_map = image_sub_32 - image_iterate
-
-fractional_residual_map = residual_map / image_sub_32
-
-plotter = aplt.Array2DPlotter(
-    array=fractional_residual_map,
-)
-plotter.set_title("Lensing High Over-Sampling Residuals")
+plotter.set_title("Fractional Residuals")
 plotter.figure_2d()
 
 """
 __Default Ray Tracing__
 
-There is not default adaptive over sampling scheme that can work for ray tracing in an efficient and accurate manner.
+By assuming the lens galaxy is near (0.0", 0.0"), it was simple to set up an adaptive over sampling grid which is
+applicable to all strong lens dataset.
 
-This is why the majority of workspace examples use cored light profiles for the source galaxy. A cored light profile
-does not rapidly change in its central regions, and therefore can be evaluated accurately without over-sampling.
+An adaptive oversampling grid cannot be defined for the lensed source because its light appears in different regions of 
+the image plane for each dataset. For this reason, most workspace examples utilize cored light profiles for the 
+source galaxy. Cored light profiles change gradually in their central regions, allowing accurate evaluation without 
+requiring oversampling.
+
+__Adaptive Over Sampling__
+
+There is a way to set up an adaptive over sampling grid for a lensed source, however it requries one to use and
+understanding the advanced lens modeling feature search chaining.
+
+An example of how to use search chaining to over sample sources efficient is provided in 
+the `autolens_workspace/*/imaging/advanced/chaining/over_sampling.ipynb` example.
 
 __Dataset & Modeling__
 
 Throughout this guide, grid objects have been used to compute the image of light and mass profiles and illustrate
 over sampling.
 
-If you are performing calculations with imaging data or want to fit a lens model to the data with a specific
-over-sampling level, the following API is used:
+If you are performing calculations with imaging data or want to fit a model to the data with a specific
+over-sampling level, the `apply_over_sampling` method is used to update the over sampling scheme of the dataset.
+
+The grid this is applied to is called `lp`, to indicate that it is the grid used to evaluate the emission of light
+profiles for which this over sampling scheme is applied.
 """
 dataset_name = "simple__no_lens_light"
 dataset_path = path.join("dataset", "imaging", dataset_name)
@@ -515,19 +471,9 @@ dataset = al.Imaging.from_fits(
 
 # This can be any of the over-sampling objects we have used above.
 
-dataset = dataset.apply_over_sampling(
-    over_sampling=al.OverSamplingDataset(uniform=al.OverSamplingUniform(sub_size=4))
-)
+dataset = dataset.apply_over_sampling(over_sample_size_lp=4)
 
 """
-__Search Chaining__
-
-To efficiently perform lens modeling with appropriate over-sampling for the lensed source, we use the advanced
-lens modeling feature search chaining.
-
-An example of how to use search chaining to over sample sources efficient is provided in 
-the `autolens_workspace/*/imaging/advanced/chaining/over_sampling.ipynb` example.
-
 __Pixelization__
 
 Source galaxies can be reconstructed using pixelizations, which discretize the source's light onto a mesh,
@@ -536,14 +482,15 @@ for example a Voronoi mesh.
 Over sampling is used by pixelizations in an analogous way to light profiles. By default, a 4 x 4 sub-grid is used,
 whereby every image pixel is ray-traced on its 4 x 4 sub grid to the source mesh and fractional mappings are computed.
 
+A different grid and over sampling scheme is applied to light profiles and pixelizations, which is why
+there are separate inputs called `lp` and `pix`.
+
 This is explained in more detail in the pixelization examples.
 
 Here is an example of how to change the over sampling applied to a pixelization for a lens model fit:
 """
 dataset = dataset.apply_over_sampling(
-    over_sampling=al.OverSamplingDataset(
-        pixelization=al.OverSamplingUniform(sub_size=4)
-    )
+    over_sampling=al.OverSamplingDataset(pixelization=4)
 )
 
 """

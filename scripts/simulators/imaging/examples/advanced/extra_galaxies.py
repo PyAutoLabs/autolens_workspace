@@ -68,15 +68,24 @@ dataset_path = path.join("dataset", dataset_type, dataset_name)
 """
 __Simulate__
 
-Simulate the image using a `Grid2D` with the `OverSamplingIterate` object.
+Simulate the image using a `Grid2D` with the adaptive over sampling scheme.
+
+This simulated galaxy has additional galaxies and light profiles which are offset from the main galaxy centre 
+of (0.0", 0.0"). The adaptive over sampling grid has all centres input to account for this.
 """
 grid = al.Grid2D.uniform(
-    shape_native=(200, 200),
+    shape_native=(150, 150),
     pixel_scales=0.1,
-    over_sampling=al.OverSamplingIterate(
-        fractional_accuracy=0.9999, sub_steps=[2, 4, 8, 16]
-    ),
 )
+
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=grid,
+    sub_size_list=[32, 8, 2],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0), (1.0, 3.5), (-2.0, -3.5)],
+)
+
+grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
 
 """
 Simulate a simple Gaussian PSF for the image.
@@ -89,7 +98,10 @@ psf = al.Kernel2D.from_gaussian(
 Create the simulator for the imaging data, which defines the exposure time, background sky, noise levels and psf.
 """
 simulator = al.SimulatorImaging(
-    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_poisson_noise_to_data=True
+    exposure_time=300.0,
+    psf=psf,
+    background_sky_level=0.1,
+    add_poisson_noise_to_data=True,
 )
 
 """
@@ -198,8 +210,6 @@ dataset.output_to_fits(
 __Visualize__
 
 Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset path as .png files.
-
-For a faster run time, the tracer visualization uses the binned grid instead of the iterative grid.
 """
 mat_plot = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
 
