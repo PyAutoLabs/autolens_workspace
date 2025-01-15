@@ -107,7 +107,7 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
 )
 
 dataset = dataset.apply_over_sampling(
-    over_sampling=al.OverSamplingDataset(lp=over_sample_size)
+    over_sample_size_lp=over_sample_size
 )
 
 
