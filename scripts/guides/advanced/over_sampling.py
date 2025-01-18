@@ -489,9 +489,7 @@ This is explained in more detail in the pixelization examples.
 
 Here is an example of how to change the over sampling applied to a pixelization for a lens model fit:
 """
-dataset = dataset.apply_over_sampling(
-    over_sample_size_pixelization=4
-)
+dataset = dataset.apply_over_sampling(over_sample_size_pixelization=4)
 
 """
 Finish.

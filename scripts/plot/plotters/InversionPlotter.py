@@ -102,7 +102,7 @@ inversion_plotter.figures_2d_of_pixelization(
     pixelization_index=0,
     reconstructed_image=True,
     reconstruction=True,
-    errors=True,
+    reconstruction_noise_map=True,
     regularization_weights=True,
 )
 

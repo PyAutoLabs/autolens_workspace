@@ -56,7 +56,8 @@ centered, which is not the case of the galaxy is multiple merging systems or has
 
 - The linear algebra used to solve for the `intensity` of each shapelet has to allow for negative values of intensity
 in order for shapelets to work. Negative surface brightnesses are unphysical, and are often inferred in a shapelet
-decomposition, for example if the true galaxy has structure that cannot be captured by the shapelet basis.
+decomposition, for example if the true galaxy has structure that cannot be captured by the shapelet basis. Other
+approaches can force positive-only intensities on the solution, such as the Multi-Gaussian Expansion (MGE) or a pixelization.
 
 - Computationally slower than standard light profiles like the Sersic.
 
@@ -118,6 +119,24 @@ mask = al.Mask2D.circular_annular(
 )
 
 dataset = dataset.apply_mask(mask=mask)
+
+dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
+dataset_plotter.subplot_dataset()
+
+"""
+__Over Sampling__
+
+Apply adaptive over sampling to ensure the lens galaxy light calculation is accurate, you can read up on over-sampling 
+in more detail via the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
+"""
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=dataset.grid,
+    sub_size_list=[8, 4, 1],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0)],
+)
+
+dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
 
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
@@ -258,6 +277,21 @@ use it to fit data.
 We are applying shapelets to reconstruct the source galaxy's light, which means we need an accurate mass model of the
 lens galaxy. We use the true lens mass model from the simulator script to do this, noting that later in the example
 we will infer the lens mass model using a non-linear search.
+
+__Positive Negative Solver__
+
+In other examples which use linear algebra to fit the data, for example linear light profiles, the Multi Gaussian
+Expansion (MGE) and pixelization, we use a `positive_only` solver, which forces all solved for intensities to be
+positive. This is a physical and sensible approach, because the surface brightnesses of a galaxy cannot be negative.
+
+Shapelets cannot be solved for using a `positive_only` solver, because the shapelets ability to decompose the
+light of a galaxy relies on the ability to use negative intensities. This is because the shapelets are not
+physically motivated light profiles, but instead a mathematical basis that can represent any light profile.
+
+This means shapelets may include negative flux in the reconstructed source galaxy, which is unphysical, and
+a disadvantage of using shapelets.
+
+The `SettingsInversion` object below uses a `use_positive_only_solver=False` to allow for negative intensities.
 """
 lens = al.Galaxy(
     redshift=0.5,

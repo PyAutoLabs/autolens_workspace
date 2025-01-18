@@ -97,6 +97,10 @@ dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
 """
+__Over Sampling__
+
+Whereas we normally apply adaptive over sampling for the lens light, when its not present we do not need to.
+
 __Fit__
 
 This is to illustrate the API for performing a fit without lens light using standard autolens objects like 

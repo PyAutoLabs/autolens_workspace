@@ -150,6 +150,33 @@ dataset = dataset.apply_mask(mask=mask)
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
+
+"""
+__Over Sampling__
+
+Apply adaptive over sampling to ensure the calculation is accurate, you can read up on over-sampling in more detail via 
+the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
+
+A pixelization uses a separate grid with its own over sampling scheme, which below we set to a uniform grid of values
+of 4. The pixelization only reconstructs the source galaxy, therefore the adaptive over sampling used for the lens
+galaxy's light does not apply to the pixelization.
+
+Note that the over sampling is input into the `over_sample_size_pixelization` because we are using a `Pixelization`.
+"""
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=dataset.grid,
+    sub_size_list=[8, 4, 1],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0)],
+)
+
+dataset = dataset.apply_over_sampling(
+    over_sample_size_pixelization=over_sample_size,
+)
+
+dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
+dataset_plotter.subplot_dataset()
+
 """
 __Pixelization__
 
@@ -546,7 +573,7 @@ The interpolated errors on the source reconstruction can also be computed, in ca
 model-fitting of the source reconstruction.
 """
 mapper_valued_errors = al.MapperValued(
-    mapper=mapper, values=inversion.errors_dict[mapper]
+    mapper=mapper, values=inversion.reconstruction_noise_map_dict[mapper]
 )
 
 interpolated_errors = mapper_valued_errors.interpolated_array_from(
@@ -605,7 +632,7 @@ Below, we create a source-plane signal-to-noise map and use this to create a mas
 a signal-to-noise < 5.0.
 """
 reconstruction = inversion.reconstruction_dict[mapper]
-errors = inversion.errors_dict[mapper]
+errors = inversion.reconstruction_noise_map_dict[mapper]
 
 signal_to_noise_map = reconstruction / errors
 

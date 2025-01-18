@@ -200,6 +200,15 @@ class SimulateImagingPixelized:
             noise_seed=1,
         )
 
+        over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+            grid=grid,
+            sub_size_list=[32, 8, 2],
+            radial_list=[0.3, 0.6],
+            centre_list=[(0.0, 0.0)],
+        )
+
+        grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
+
         dataset = simulator.via_source_image_from(
             tracer=tracer, grid=grid, source_image=source_image
         )
@@ -212,6 +221,10 @@ class SimulateImagingPixelized:
         Therefore, we also apply the mask for the analysis before we return the simulated data.
         """
         dataset = dataset.apply_mask(mask=self.mask)
+
+        dataset = dataset.apply_over_sampling(
+            over_sample_size_lp=over_sample_size, over_sample_size_pixelization=4
+        )
 
         """
         Outputs info about the `Tracer` to the fit, so we know exactly how we simulated the image.

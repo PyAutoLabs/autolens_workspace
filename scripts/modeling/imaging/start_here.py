@@ -80,27 +80,6 @@ dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
 """
-__Over Sampling__
-
-Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
-on a higher resolution grid than the image data to ensure the calculation is accurate. 
-
-For lensing calculations, the high magnification regions of a lensed source galaxy require especially high levels of 
-over sampling to ensure the lensed images are evaluated accurately.
-
-For a new user, the details of over-sampling are not important, therefore just be aware that calculations either:
- 
- (i) use adaptive over sampling for the foregorund lens's light, which ensures high accuracy across. 
- (ii) use cored light profiles for the background source galaxy, where the core ensures low levels of over-sampling 
- produce numerically accurate but fast to compute results.
-
-This is why throughout the workspace the cored Sersic profile is used, instead of the regular Sersic profile which
-you may be more familiar with from the literature. Fitting a regular Sersic profile is possible, but you should
-read up on over-sampling to ensure the results are accurate.
-
-Once you are more experienced, you should read up on over-sampling in more detail via 
-the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
-
 __Mask__
 
 The model-fit requires a `Mask2D` defining the regions of the image we fit the lens model to the data. 
@@ -122,6 +101,48 @@ the script `autolens_workspace/*/modeling/imaging/customize/custom_mask.py`
 """
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
+
+"""
+__Over Sampling__
+
+Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
+on a higher resolution grid than the image data to ensure the calculation is accurate. 
+
+For lensing calculations, the high magnification regions of a lensed source galaxy require especially high levels of 
+over sampling to ensure the lensed images are evaluated accurately.
+
+For a new user, the details of over-sampling are not important, therefore just be aware that calculations either:
+
+ (i) use adaptive over sampling for the foregorund lens's light, which ensures high accuracy across. 
+ (ii) use cored light profiles for the background source galaxy, where the core ensures low levels of over-sampling 
+ produce numerically accurate but fast to compute results.
+
+This is why throughout the workspace the cored Sersic profile is used, instead of the regular Sersic profile which
+you may be more familiar with from the literature. Fitting a regular Sersic profile is possible, but you should
+read up on over-sampling to ensure the results are accurate.
+
+Once you are more experienced, you should read up on over-sampling in more detail via 
+the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
+"""
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=dataset.grid,
+    sub_size_list=[8, 4, 1],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0)],
+)
+
+dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
+
+"""
+The imaging subplot updates the bottom two panels to reflect the update to over sampling, which now uses a higher
+values in the centre.
+
+Whilst you may not yet understand the details of over-sampling, you can at least track it visually in the plots
+and later learnt more about it in the `over_sampling.ipynb` guide.
+"""
+dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
+dataset_plotter.subplot_dataset()
+
 
 """
 __Model__
