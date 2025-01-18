@@ -122,7 +122,7 @@ on a higher resolution grid than the image data to ensure the calculation is acc
 For a new user, the details of over-sampling are not important, therefore just be aware that below we make it so that 
 all calculations use an adaptive over sampling scheme which ensures high accuracy and precision.
 
-Crucially, this over sampling is applied at the centre of both extra galaxy, ensuring the light of both are over 
+Crucially, this over sampling is applied at the centre of both extra galaxies, ensuring the light of both are over 
 sampled correctly.
 
 Once you are more experienced, you should read up on over-sampling in more detail via 
@@ -284,23 +284,16 @@ print(extra_galaxies_centres)
 """
 __Extra Galaxies Over Sampling__
 
-Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
-on a higher resolution grid than the image data to ensure the calculation is accurate. 
+Over sampling was discussed above, below we show how to apply it using the loaded centres of the extra galaxies.
 
-For a new user, the details of over-sampling are not important, therefore just be aware that below we make it so that 
-all calculations use an adaptive over sampling scheme which ensures high accuracy and precision.
-
-Crucially, this over sampling is applied at the centre of both extra galaxy, ensuring the light of both are over 
-sampled correctly.
-
-Once you are more experienced, you should read up on over-sampling in more detail via 
-the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
+There is still a galaxy at the centre of the image so we include this in the `centre_list` with a centre 
+of (0.0", 0.0").
 """
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,
     sub_size_list=[8, 4, 1],
     radial_list=[0.3, 0.6],
-    centre_list=[(0.0, 0.0), (1.0, 3.5), (-2.0, -3.5)],
+    centre_list=[(0.0, 0.0)] + extra_galaxies_centres.in_list,
 )
 
 dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
