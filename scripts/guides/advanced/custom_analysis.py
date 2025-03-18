@@ -356,7 +356,7 @@ If you are unfamiliar with weak lensing, a brief summary is as follows:
  - Weak lensing is the small lensing signal induced into galaxies by lensing due to large-scale structure in the
    universe. 
    
-- This signal is much smaller than the strong lensing regime and is often summarized as the small change in the 
+- This signal is much smaller than the strong lensing regime and is often summarised as the small change in the 
   ellipticity of a source galaxy's light. 
   
 - This change in ellipticity can be measured and is called the `shear`, with the dataset our `Analysis` class will

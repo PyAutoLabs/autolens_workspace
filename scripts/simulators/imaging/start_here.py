@@ -221,7 +221,7 @@ dataset.output_to_fits(
 __Visualize__
 
 In the same folder as the .fits files, we also output subplots of the simulated dataset in .png format, as well as 
-other images which summarize the dataset.
+other images which summarise the dataset.
 
 Having .png files like this is useful, as they can be opened quickly and easily by the user to check the dataset.
 

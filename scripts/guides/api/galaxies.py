@@ -260,7 +260,7 @@ galaxy_plotter.figures_2d(image=True)
 """
 __Tracer Composition__
 
-Lets quickly summarize what we've learnt by printing every object in the tracer:
+Lets quickly summarise what we've learnt by printing every object in the tracer:
 """
 print(tracer)
 print(tracer.planes[0])  # image plane
