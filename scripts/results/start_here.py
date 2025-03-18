@@ -22,6 +22,7 @@ folder for examples.
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+from pathlib import Path
 from os import path
 import autofit as af
 import autolens as al
@@ -157,6 +158,44 @@ It is recommended you use hard-disk loading to begin, as it is simpler and easie
 See the package `results/database` for a full description of how to set up the database and the benefits it provides,
 especially if loading results from hard-disk is slow.
 
+__Workflow Examples__
+
+The `results/workflow` folder contains examples describing how to build a scientific workflow using the results
+of model-fits, in order to quickly and easily inspect and interpret results.
+
+These examples use functionality designed for modeling large dataset samples, with the following examples:
+
+- `csv_maker.py`: Make .csv files from the modeling results which summarize the results of a large sample of fits.
+- `png_maker.py`: Make .png files of every fit, to quickly check the quality of the fit and interpret the results.
+- `fits_maker.py`: Make .fits files of every fit, to quickly check the quality of the fit and interpret the results.
+
+The above examples work on the raw outputs of the model-fits that are stored in the `output` folder, for example
+the visualization .png files, the .fits files containing results and parameter inferences which make the .csv files.
+
+They are therefore often quick to run and allow you to make a large number of checks on the results of your model-fits
+in a short period of time.
+
+Below is a quick example, where we use code from the `csv_maker.py` and `png_maker.py` scripts to create a .csv file
+and .png files of the fit above in a folder you can inspect quickly.
+
+The `workflow_path` specifies where these files are output, in this case the .csv files which summarise the results.
+"""
+workflow_path = Path("output") / "results_folder_csv_png_fits" / "workflow_make_example"
+
+agg_csv = af.AggregateCSV(aggregator=agg)
+agg_csv.add_column(argument="galaxies.galaxy.bulge.sersic_index") # Example of adding a column
+agg_csv.save(path=workflow_path / "csv_very_simple.csv")
+
+agg_image = af.AggregateImages(aggregator=agg)
+image = agg_image.extract_image(
+    subplots=[
+        al.agg.subplot_fit.data,
+        al.agg.subplot_fit.model_image,
+    ],
+)
+image.save(workflow_path / "png_make_single_subplot.png")
+
+"""
 __Result__
 
 From here on we will use attributes contained in the `result` passed from the `search.fit` method above, as opposed
