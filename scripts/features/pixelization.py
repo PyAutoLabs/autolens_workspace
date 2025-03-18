@@ -32,6 +32,7 @@ __Contents__
 **Interpolated Source:** Interpolate the source reconstruction from an irregular Voronoi mesh to a uniform square grid and output to a .fits file.
 **Voronoi:** Using a Voronoi mesh pixelizaiton (instead of Voronoi), which provides better results but requires installing an external library.
 **Result (Advanced):** API for various pixelization outputs (magnifications, mappings) which requires some polishing.
+**Simulate (Advanced):** Simulating a strong lens dataset with the inferred pixelized source.
 
 __Advantages__
 
@@ -864,6 +865,100 @@ The individual terms of the evidence and accessed via the following properties:
 print(inversion.regularization_term)
 print(inversion.log_det_regularization_matrix_term)
 print(inversion.log_det_curvature_reg_matrix_term)
+
+"""
+__Simulated Imaging__
+
+We load the source galaxy image from the pixelized inversion of a previous fit, which was performed on an irregular 
+Delaunay or Voronoi mesh.  
+
+Since irregular meshes cannot be directly used to simulate lensed images, we interpolate the source onto a uniform 
+grid with shape `interpolated_pixelized_shape`. This grid should have a high resolution (e.g., 1000 × 1000) to preserve 
+all resolved structure from the original Delaunay or Voronoi mesh.  
+"""
+mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
+
+mapper_valued = al.MapperValued(
+    mapper=mapper,
+    values=inversion.reconstruction_dict[mapper],
+)
+
+source_image = mapper_valued.interpolated_array_from(
+    shape_native=(1000, 1000),
+)
+
+"""
+To create the lensed image, we ray-trace image pixels to the source plane and interpolate them onto the source 
+galaxy image.  
+
+This requires an image-plane grid of (y, x) coordinates. In this example, we use a grid with the same 
+resolution as the `Imaging` dataset, but without applying a mask.  
+
+To ensure accurate ray-tracing, we apply an 8×8 oversampling scheme. This means that for each pixel in the 
+image-plane grid, an 8×8 sub-pixel grid is ray-traced. This approach fully resolves how light is distributed 
+across each simulated image pixel, given the source pixelization.
+"""
+grid = al.Grid2D.uniform(
+    shape_native=mask.shape_native,
+    pixel_scales=mask.pixel_scales,
+    over_sample_size=8,
+)
+
+"""
+We create a tracer to generate the lensed grid onto which we overlay the interpolated source galaxy image, 
+producing the lensed source galaxy image.  
+
+The source-plane requires a source galaxy with a defined `redshift` for the tracer to function. Since the source’s 
+emission is entirely determined by the source galaxy image, this galaxy has no light profiles.
+"""
+tracer = al.Tracer(
+    galaxies=[
+        result.instance.galaxies.lens,
+        al.Galaxy(redshift=result.instance.galaxies.source.redshift),
+    ]
+)
+
+"""
+Using the tracer, we generate the lensed source galaxy image on the image-plane grid. This process incorporates 
+the `source_image`, preserving the irregular and asymmetric morphological features captured by the source reconstruction.  
+
+Next, we configure the grid, PSF, and simulator settings to match the signal-to-noise ratio (S/N) and noise properties 
+of the observed data used for sensitivity mapping.  
+
+The `SimulatorImaging` takes the generated strong lens image and convolves it with the PSF before adding noise. To 
+prevent edge effects, the image is padded before convolution and then trimmed to restore its original `shape_native`.
+"""
+simulator = al.SimulatorImaging(
+    exposure_time=300.0,
+    psf=dataset.psf,
+    background_sky_level=0.1,
+    add_poisson_noise_to_data=False,
+    noise_seed=1,
+)
+
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=grid,
+    sub_size_list=[32, 8, 2],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0)],
+)
+
+grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
+
+dataset = simulator.via_source_image_from(
+    tracer=tracer, grid=grid, source_image=source_image
+)
+
+plotter = aplt.ImagingPlotter(dataset=dataset)
+plotter.subplot_dataset()
+
+output = aplt.Output(path=".", filename="source_image", format="png")
+
+plotter = aplt.ImagingPlotter(
+    dataset=dataset, mat_plot_2d=aplt.MatPlot2D(output=output)
+)
+plotter.subplot_dataset()
+
 
 """
 __Future Ideas / Contributions__

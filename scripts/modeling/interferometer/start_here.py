@@ -55,7 +55,7 @@ dataset = al.Interferometer.from_fits(
     noise_map_path=path.join(dataset_path, "noise_map.fits"),
     uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
     real_space_mask=real_space_mask,
-    transformer_class=al.TransformerDFT,
+    transformer_class=al.TransformerNUFFT,
 )
 
 dataset_plotter = aplt.InterferometerPlotter(dataset=dataset)
@@ -187,7 +187,9 @@ __Analysis__
 The `AnalysisInterferometer` object defines the `log_likelihood_function` used by the non-linear search to fit the 
 model to the `Interferometer`dataset.
 """
-analysis = al.AnalysisInterferometer(dataset=dataset)
+analysis = al.AnalysisInterferometer(
+    dataset=dataset, settings_inversion=al.SettingsInversion(use_w_tilde=False)
+)
 
 """
 __Run Times__

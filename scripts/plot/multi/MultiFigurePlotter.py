@@ -87,6 +87,46 @@ multi_figure_plotter = aplt.MultiFigurePlotter(plotter_list=imaging_plotter_list
 multi_figure_plotter.subplot_of_figure(func_name="figures_2d", figure_name="data")
 
 """
+__Multi Fits__
+
+The `MultiFigurePlotter` object can also output a list of figures to a single `.fits` file, where each image 
+goes in each hdu extension as it is called.
+
+The interface is similiar to above using a list of plotters, however the inputs to `output_to_fits` are different
+and are:
+
+ - `func_name_list`: The list of the function names used to plot the figure in the `ImagingPlotter` (e.g. `figures_2d`).
+ - `figure_name_list`: The list of the figure names plotted by the function (e.g. `data`).
+ - `filename`: The name of the `.fits` file written to the output path.
+ - `tag_list`: The list of tags used to name the `.fits` file extensions.
+ - `remove_fits_first`: If the `.fits` file already exists, should it be overwritten?
+
+A `func_name` must be given for every `figure_name` and vice versa, so that the `MultiFigurePlotter` knows which
+pair of inputs to use.
+
+Therefore in the example below we input `figures_2d` twice in `func_name_list`, which correspond to the calls
+`figures_2d(data=True`) and `figures_2d(noise_map=True)` in the `ImagingPlotter` objects.   
+"""
+mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path="."))
+
+imaging_plotter_list = [
+    aplt.ImagingPlotter(dataset=dataset, mat_plot_2d=mat_plot_2d)
+    for dataset in dataset_list
+]
+
+multi_plotter = aplt.MultiFigurePlotter(
+    plotter_list=imaging_plotter_list,
+)
+
+multi_plotter.output_to_fits(
+    func_name_list=["figures_2d", "figures_2d"],
+    figure_name_list=["data", "noise_map"],
+    filename="data_and_noise_map",
+    tag_list=["DATA", "NOISE_MAP"],
+    remove_fits_first=True,
+)
+
+"""
 __Wrap Up__
 
 In the simple example above, we used a `MultiFigurePlotter` to plot the same figure from each `ImagingPlotter` on

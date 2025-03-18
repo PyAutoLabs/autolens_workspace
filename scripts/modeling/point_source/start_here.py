@@ -252,7 +252,7 @@ reduced back to 1 to fix it.
 """
 search = af.Nautilus(
     path_prefix=path.join("point_source", "modeling"),
-    name="start_here_source_mag_fixed",
+    name="start_here",
     unique_tag=dataset_name,
     n_live=100,
     number_of_cores=4,
@@ -295,7 +295,7 @@ to the `PointDataset`.
 analysis = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    fit_positions_cls=al.FitPositionsSource,  # Image-plane chi-squared with repeat image pairs.
+    fit_positions_cls=al.FitPositionsImagePairRepeat,  # Image-plane chi-squared with repeat image pairs.
 )
 
 """

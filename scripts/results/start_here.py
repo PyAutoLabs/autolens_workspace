@@ -149,7 +149,7 @@ __Database File__
 
 The aggregator can also load results from a `.sqlite` database file.
 
-This is benefitial when loading results for large numbers of model-fits (e.g. more than hundreds)
+This is beneficial when loading results for large numbers of model-fits (e.g. more than hundreds)
 because it is optimized for fast querying of results.
 
 It is recommended you use hard-disk loading to begin, as it is simpler and easier to use.
