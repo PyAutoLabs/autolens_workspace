@@ -4,6 +4,7 @@ import autolens.plot as aplt
 
 from . import subhalo_util
 
+import numpy as np
 import os
 from typing import List, Optional, Union, Tuple
 
@@ -112,7 +113,20 @@ class SimulateImagingPixelized:
                 check_noise_map=False,
             )
 
-            return dataset.apply_mask(mask=self.mask)
+            dataset = dataset.apply_mask(mask=self.mask)
+
+            over_sample_size = (
+                al.util.over_sample.over_sample_size_via_radial_bins_from(
+                    grid=dataset.grid,
+                    sub_size_list=[8, 4, 1],
+                    radial_list=[0.3, 0.6],
+                    centre_list=[(0.0, 0.0)],
+                )
+            )
+
+            return dataset.apply_over_sampling(
+                over_sample_size_lp=over_sample_size, over_sample_size_pixelization=4
+            )
 
         except FileNotFoundError:
             pass
@@ -120,7 +134,7 @@ class SimulateImagingPixelized:
         """
         __Source Galaxy Image__
 
-        Load the source galaxy image from the pixelized inversion of a previous fit, which could be on an irregular
+        We now load the source galaxy image from the pixelized inversion of a previous fit, which could be on an irregular
         Delaunay or Voronoi mesh. 
 
         Irregular meshes cannot be used to simulate lensed images of a source. Therefore, we interpolate the mesh to 
@@ -141,6 +155,7 @@ class SimulateImagingPixelized:
 
         source_image = mapper_valued.interpolated_array_from(
             shape_native=self.interpolated_pixelized_shape,
+            extent=(-2.0, 2.0, -2.0, 2.0),
         )
 
         """
@@ -154,7 +169,7 @@ class SimulateImagingPixelized:
         grid = al.Grid2D.uniform(
             shape_native=self.mask.shape_native,
             pixel_scales=self.mask.pixel_scales,
-            over_sampling=al.OverSampling(sub_size=self.image_plane_subgrid_size),
+            over_sample_size=self.image_plane_subgrid_size,
         )
 
         """
@@ -193,7 +208,7 @@ class SimulateImagingPixelized:
         edge effects and trimmed after the simulation so it retains the original `shape_native`.
         """
         simulator = al.SimulatorImaging(
-            exposure_time=300.0,
+            exposure_time=1000.0,
             psf=self.psf,
             background_sky_level=0.1,
             add_poisson_noise_to_data=True,
@@ -221,6 +236,13 @@ class SimulateImagingPixelized:
         Therefore, we also apply the mask for the analysis before we return the simulated data.
         """
         dataset = dataset.apply_mask(mask=self.mask)
+
+        over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+            grid=dataset.grid,
+            sub_size_list=[8, 4, 1],
+            radial_list=[0.3, 0.6],
+            centre_list=[(0.0, 0.0)],
+        )
 
         dataset = dataset.apply_over_sampling(
             over_sample_size_lp=over_sample_size, over_sample_size_pixelization=4
@@ -532,6 +554,7 @@ def run(
     adapt_images: Optional[al.AdaptImageMaker] = None,
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
+    batch_range: Tuple[int, int] = None,
     sensitivity_mask: Optional[Union[al.Mask2D, List]] = None,
 ):
     """
@@ -607,7 +630,10 @@ def run(
     # perturb_model.mass.mass_at_200 = af.UniformPrior(
     #     lower_limit=1e6, upper_limit=1e11
     # )
-    perturb_model.mass.mass_at_200 = 1e10
+    perturb_model.mass.log10m_vir = 9.0
+    perturb_model.mass.c_gNFW = 12.0
+    perturb_model.mass.overdens = 200.0
+    perturb_model.mass.inner_slope = 2.2
     perturb_model.mass.centre.centre_0 = af.UniformPrior(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
@@ -655,9 +681,7 @@ def run(
             upper_limit=perturb_instance.mass.centre[1] + b,
         )
 
-        perturb_model.mass.mass_at_200 = af.LogUniformPrior(
-            lower_limit=1e6, upper_limit=1e12
-        )
+        perturb_model.mass.log10m_vir = af.UniformPrior(lower_limit=6, upper_limit=12)
 
         return perturb_model
 
@@ -722,9 +746,13 @@ def run(
     """
 
     paths = af.DirectoryPaths(
-        name=f"subhalo__sensitivity__pix",
+        name=f"subhalo__sensitivity",
         path_prefix=settings_search.path_prefix,
         unique_tag=settings_search.unique_tag,
+    )
+
+    subhalo_util.visualize_sensitivity_mask(
+        mass_result=mass_result, sensitivity_mask=sensitivity_mask, paths=paths
     )
 
     simulate_cls = SimulateImagingPixelized(
@@ -746,6 +774,7 @@ def run(
         perturb_model_prior_func=perturb_model_prior_func,
         visualizer_cls=subhalo_util.Visualizer(mass_result=mass_result, mask=mask),
         number_of_steps=number_of_steps,
+        batch_range=batch_range,
         mask=sensitivity_mask,
         number_of_cores=1,
     )

@@ -4,6 +4,7 @@ import autolens.plot as aplt
 
 from . import subhalo_util
 
+import numpy as np
 import os
 from typing import Optional, List, Tuple, Union
 
@@ -75,15 +76,13 @@ class SimulateImaging:
 
         """
         __Resume Fit__
-        
+
         If sensitivity mapping already began on this grid cell, the dataset will have been simulated already and we
         do not want to resimulate it and change its noise properties. 
-        
+
         We therefore load it from the `simulate_path` instead.
         """
         try:
-            print(simulate_path)
-
             dataset = al.Imaging.from_fits(
                 data_path=f"{simulate_path}/data.fits",
                 psf_path=f"{simulate_path}/psf.fits",
@@ -92,7 +91,48 @@ class SimulateImaging:
                 check_noise_map=False,
             )
 
-            return dataset.apply_mask(mask=self.mask)
+            dataset = dataset.apply_mask(mask=self.mask)
+
+            tracer = al.Tracer(
+                galaxies=[
+                    instance.galaxies.lens,
+                    instance.perturb,
+                    instance.galaxies.source,
+                ]
+            )
+
+            traced_grid = tracer.traced_grid_2d_list_from(
+                grid=dataset.grid,
+            )[-1]
+
+            source_centre = instance.galaxies.source.bulge.centre
+
+            over_sample_size = (
+                al.util.over_sample.over_sample_size_via_radial_bins_from(
+                    grid=traced_grid,
+                    sub_size_list=[16, 8, 2],
+                    radial_list=[0.1, 0.3],
+                    centre_list=[source_centre],
+                )
+            )
+
+            over_sample_size_lens = (
+                al.util.over_sample.over_sample_size_via_radial_bins_from(
+                    grid=dataset.grid,
+                    sub_size_list=[8, 4, 1],
+                    radial_list=[0.3, 0.6],
+                    centre_list=[(0.0, 0.0)],
+                )
+            )
+
+            over_sample_size = np.where(
+                over_sample_size > over_sample_size_lens,
+                over_sample_size,
+                over_sample_size_lens,
+            )
+            over_sample_size = al.Array2D(values=over_sample_size, mask=self.mask)
+
+            return dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
 
         except FileNotFoundError:
             pass
@@ -132,7 +172,7 @@ class SimulateImaging:
         grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
 
         simulator = al.SimulatorImaging(
-            exposure_time=300.0,
+            exposure_time=1000.0,
             psf=self.psf,
             background_sky_level=0.1,
             add_poisson_noise_to_data=True,
@@ -149,6 +189,35 @@ class SimulateImaging:
         Therefore, we also apply the mask for the analysis before we return the simulated data.
         """
         dataset = dataset.apply_mask(mask=self.mask)
+
+        traced_grid = tracer.traced_grid_2d_list_from(
+            grid=dataset.grid,
+        )[-1]
+
+        source_centre = instance.galaxies.source.bulge.centre
+
+        over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+            grid=traced_grid,
+            sub_size_list=[16, 8, 2],
+            radial_list=[0.1, 0.3],
+            centre_list=[source_centre],
+        )
+
+        over_sample_size_lens = (
+            al.util.over_sample.over_sample_size_via_radial_bins_from(
+                grid=dataset.grid,
+                sub_size_list=[8, 4, 1],
+                radial_list=[0.3, 0.6],
+                centre_list=[(0.0, 0.0)],
+            )
+        )
+
+        over_sample_size = np.where(
+            over_sample_size > over_sample_size_lens,
+            over_sample_size,
+            over_sample_size_lens,
+        )
+        over_sample_size = al.Array2D(values=over_sample_size, mask=self.mask)
 
         dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
 
@@ -472,6 +541,7 @@ def run(
     adapt_images: Optional[al.AdaptImages] = None,
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
+    batch_range: Tuple[int, int] = None,
     sensitivity_mask: Optional[Union[al.Mask2D, List]] = None,
 ):
     """
@@ -544,10 +614,11 @@ def run(
     We will perform sensitivity mapping over a 2D grid of (y,x) values, where each lens model-fit is performed on a
     different (y,x) coordinate on the grid. The size and shape of the grid is set by the input `grid_dimension_arcsec`.
     """
-    # perturb_model.mass.mass_at_200 = af.UniformPrior(
-    #     lower_limit=1e6, upper_limit=1e11
-    # )
-    perturb_model.mass.mass_at_200 = 1e10
+    perturb_model.mass.log10m_vir = 9.0
+    perturb_model.mass.c_gNFW = 12.0
+    perturb_model.mass.overdens = 200.0
+    perturb_model.mass.inner_slope = 2.2
+
     perturb_model.mass.centre.centre_0 = af.UniformPrior(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
@@ -595,9 +666,7 @@ def run(
             upper_limit=perturb_instance.mass.centre[1] + b,
         )
 
-        perturb_model.mass.mass_at_200 = af.LogUniformPrior(
-            lower_limit=1e6, upper_limit=1e12
-        )
+        perturb_model.mass.log10m_vir = af.UniformPrior(lower_limit=6, upper_limit=12)
 
         return perturb_model
 
@@ -670,6 +739,10 @@ def run(
         unique_tag=settings_search.unique_tag,
     )
 
+    subhalo_util.visualize_sensitivity_mask(
+        mass_result=mass_result, sensitivity_mask=sensitivity_mask, paths=paths
+    )
+
     sensitivity = af.Sensitivity(
         paths=paths,
         simulation_instance=simulation_instance,
@@ -685,6 +758,7 @@ def run(
         perturb_model_prior_func=perturb_model_prior_func,
         visualizer_cls=subhalo_util.Visualizer(mass_result=mass_result, mask=mask),
         number_of_steps=number_of_steps,
+        batch_range=batch_range,
         mask=sensitivity_mask,
         number_of_cores=1,
     )

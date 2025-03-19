@@ -281,6 +281,8 @@ median PDF instance as input and returns the computed value.
 
 Below, we add a trivial example of a computed column, where the value is twice the sersic index of the bulge.
 """
+
+
 def einstein_radius_x2_from(samples):
     instance = samples.median_pdf()
 
