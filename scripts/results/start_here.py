@@ -183,7 +183,7 @@ The `workflow_path` specifies where these files are output, in this case the .cs
 workflow_path = Path("output") / "results_folder_csv_png_fits" / "workflow_make_example"
 
 agg_csv = af.AggregateCSV(aggregator=agg)
-agg_csv.add_column(argument="galaxies.galaxy.bulge.sersic_index") # Example of adding a column
+agg_csv.add_column(argument="galaxies.lens.mass.einstein_radius") # Example of adding a column
 agg_csv.save(path=workflow_path / "csv_very_simple.csv")
 
 agg_image = af.AggregateImages(aggregator=agg)

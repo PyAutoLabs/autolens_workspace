@@ -124,17 +124,6 @@ for i in range(2):
     result = search.fit(model=model, analysis=analysis)
 
 """
-__Aggregator__
-
-Set up the aggregator as shown in `start_here.py`.
-"""
-from autofit.aggregator.aggregator import Aggregator
-
-agg = Aggregator.from_directory(
-    directory=path.join("output", "results_folder_csv_png_fits"),
-)
-
-"""
 __Workflow Paths__
 
 The workflow examples are designed to take large libraries of results and distill them down to the key information
@@ -144,6 +133,17 @@ The `workflow_path` specifies where these files are output, in this case the .fi
 results we require.
 """
 workflow_path = Path("output") / "results_folder_csv_png_fits" / "workflow_make_example"
+
+"""
+__Aggregator__
+
+Set up the aggregator as shown in `start_here.py`.
+"""
+from autofit.aggregator.aggregator import Aggregator
+
+agg = Aggregator.from_directory(
+    directory=path.join("output", "results_folder_csv_png_fits"),
+)
 
 """
 Extract the `AggregateFITS` object, which has specific functions for loading .fits files and outputting results in 

@@ -112,6 +112,16 @@ for i in range(2):
     result = search.fit(model=model, analysis=analysis)
 
 """
+__Workflow Paths__
+
+The workflow examples are designed to take large libraries of results and distill them down to the key information
+required for your science, which are therefore placed in a single path for easy access.
+
+The `workflow_path` specifies where these files are output, in this case the .csv files which summarise the results.
+"""
+workflow_path = Path("output") / "results_folder_csv_png_fits" / "workflow_make_example"
+
+"""
 __Aggregator__
 
 Set up the aggregator as shown in `start_here.py`.
@@ -121,16 +131,6 @@ from autofit.aggregator.aggregator import Aggregator
 agg = Aggregator.from_directory(
     directory=path.join("output", "results_folder_csv_png_fits"),
 )
-
-"""
-__Workflow Paths__
-
-The workflow examples are designed to take large libraries of results and distill them down to the key information
-required for your science, which are therefore placed in a single path for easy access.
-
-The `workflow_path` specifies where these files are output, in this case the .csv files which summarise the results.
-"""
-workflow_path = Path("output") / "results_folder_csv_png_fits" / "workflow_make_example"
 
 """
 Extract the `AggregateCSV` object, which has specific functions for outputting results in a CSV format.
