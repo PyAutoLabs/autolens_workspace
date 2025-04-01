@@ -170,7 +170,7 @@ This runs on all results the `Aggregator` object has loaded from the `output` fo
 where two model-fits are loaded, the `image` object contains two images.
 """
 hdu_list = agg_fits.extract_fits(
-    hdus=[af.FITSFit.ModelImage, af.FITSFit.ResidualMap],
+    hdus=[al.agg.fits_fit.model_image, al.agg.fits_fit.residual_map],
 )
 
 """
@@ -207,7 +207,7 @@ We achieve this behaviour by inputting `name="unique_tag"` to the `output_to_fol
 agg_fits.output_to_folder(
     folder=workflow_path,
     name="unique_tag",
-    hdus=[af.FITSFit.ModelImage, af.FITSFit.ResidualMap],
+    hdus=[al.agg.fits_fit.model_image, al.agg.fits_fit.residual_map],
 )
 
 """
@@ -224,7 +224,7 @@ print([search.unique_tag for search in agg.values("search")])
 agg_fits.output_to_folder(
     folder=workflow_path,
     name=["hi_0.fits", "hi_1.fits"],
-    hdus=[af.FITSFit.ModelImage, af.FITSFit.ResidualMap],
+    hdus=[al.agg.fits_fit.model_image, al.agg.fits_fit.residual_map],
 )
 
 

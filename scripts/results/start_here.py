@@ -175,10 +175,11 @@ the visualization .png files, the .fits files containing results and parameter i
 They are therefore often quick to run and allow you to make a large number of checks on the results of your model-fits
 in a short period of time.
 
-Below is a quick example, where we use code from the `csv_maker.py` and `png_maker.py` scripts to create a .csv file
-and .png files of the fit above in a folder you can inspect quickly.
+Below is a quick example, where we use code from the `csv_maker.py` scripts to create a .csv file from the fit above,
+containing the inferred Einstein radius, in a folder you can inspect quickly.
 
-The `workflow_path` specifies where these files are output, in this case the .csv files which summarise the results.
+The `workflow_path` specifies where these files are output, in this case the .csv files which summarise the results,
+and the code below can easily be adapted to output the .png and .fits files.
 """
 workflow_path = Path("output") / "results_folder_csv_png_fits" / "workflow_make_example"
 
@@ -187,15 +188,6 @@ agg_csv.add_column(
     argument="galaxies.lens.mass.einstein_radius"
 )  # Example of adding a column
 agg_csv.save(path=workflow_path / "csv_very_simple.csv")
-
-agg_image = af.AggregateImages(aggregator=agg)
-image = agg_image.extract_image(
-    subplots=[
-        al.agg.subplot_fit.data,
-        al.agg.subplot_fit.model_image,
-    ],
-)
-image.save(workflow_path / "png_make_single_subplot.png")
 
 """
 __Result__

@@ -228,30 +228,30 @@ The method below adds two columns to the .csv file, corresponding to the values 
 # agg_csv.save(path="csv_simple_errors.csv")
 
 """
-__Column List__
+__Column Label List__
 
 We can add a list of values to the .csv file, provided the list is the same length as the number of model-fits
 in the aggregator.
 
-A useful example of this would be adding the name of every dataset to the .csv file in a column on the left,
-which would allow you to know which dataset each row corresponds to.
+A useful example is adding the name of every dataset to the .csv file in a column on the left, indicating 
+which dataset each row corresponds to.
 
 To make this list, we use the `Aggregator` to loop over the `search` objects and extract their `unique_tag`'s, which 
 when we fitted the model above used the dataset names. This API can also be used to extract the `name` or `path_prefix`
 of the search and build an informative list for the names of the subplots.
 
-We then pass this list to the `add_column` method, which will add a column to the .csv file.
+We then pass the column `name` and this list to the `add_label_column` method, which will add a column to the .csv file.
 """
-# unique_tag_list = [search.unique_tag for search in agg.values("search")]
+agg_csv = af.AggregateCSV(aggregator=agg)
 
-# agg_csv = af.AggregateCSV(aggregator=agg)
+unique_tag_list = [search.unique_tag for search in agg.values("search")]
 
-# agg_csv.add_column(
-#     argument=unique_tag_list,
-#     name="dataset_name",
-# )
+agg_csv.add_label_column(
+    name="lens_name",
+    values=unique_tag_list,
+)
 
-# agg_csv.save(path="csv_simple_dataset_name.csv")
+agg_csv.save(path=workflow_path / "csv_simple_dataset_name.csv")
 
 
 """
@@ -274,22 +274,21 @@ can be added to the .csv file using the same API as above.
 """
 __Computed Columns__
 
-We can also add columns to the .csv file that are computed from the median PDF instance values of the model.
+We can also add columns to the .csv file that are computed from the non-linear search samples (e.g. the nested sampling
+samples), for example a value derived from the median PDF instance values of the model.
 
 To do this, we write a function which is input into the `add_computed_column` method, where this function takes the
 median PDF instance as input and returns the computed value.
 
-Below, we add a trivial example of a computed column, where the value is twice the sersic index of the bulge.
+Below, we add a trivial example of a computed column, where the median PDF value that is twice lens Einstein radius
+is computed and added to the .csv file.
 """
-
+agg_csv = af.AggregateCSV(aggregator=agg)
 
 def einstein_radius_x2_from(samples):
     instance = samples.median_pdf()
 
     return 2.0 * instance.galaxies.lens.mass.einstein_radius
-
-
-agg_csv = af.AggregateCSV(aggregator=agg)
 
 agg_csv.add_computed_column(
     name="bulge_einstein_radius_x2_computed",
