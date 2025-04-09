@@ -285,10 +285,12 @@ is computed and added to the .csv file.
 """
 agg_csv = af.AggregateCSV(aggregator=agg)
 
+
 def einstein_radius_x2_from(samples):
     instance = samples.median_pdf()
 
     return 2.0 * instance.galaxies.lens.mass.einstein_radius
+
 
 agg_csv.add_computed_column(
     name="bulge_einstein_radius_x2_computed",
