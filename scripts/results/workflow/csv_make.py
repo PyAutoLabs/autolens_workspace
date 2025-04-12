@@ -105,7 +105,7 @@ for i in range(2):
 
     class AnalysisLatent(al.AnalysisImaging):
         def compute_latent_variables(self, instance):
-            return {"example_latent": instance.galaxies.lens.mass.einstein_radius * 2.0}
+            return {"example.latent": instance.galaxies.lens.mass.einstein_radius * 2.0}
 
     analysis = AnalysisLatent(dataset=dataset)
 
@@ -201,7 +201,7 @@ agg_csv = af.AggregateCSV(aggregator=agg)
 agg_csv.add_column(
     argument="galaxies.lens.mass.einstein_radius",
     name="mass_einstein_radius_max_lh",
-    use_max_log_likelihood=True,
+    value_types=[af.ValueType.MaxLogLikelihood],
 )
 
 agg_csv.save(path=workflow_path / "csv_simple_max_likelihood.csv")
@@ -210,22 +210,24 @@ agg_csv.save(path=workflow_path / "csv_simple_max_likelihood.csv")
 __Errors__
 
 We can also output PDF values at a given sigma confidence of each parameter to the .csv file, using 
-the `use_values_at_sigma` input and specifying the sigma confidence.
+the `af.ValueType.ValuesAt3Sigma` input and specifying the sigma confidence.
 
 Below, we add the values at 3.0 sigma confidence to the .csv file, in order to compute the errors you would 
-subtract the median value from these values.
+subtract the median value from these values. We add this after the median value, so that the overall inferred
+uncertainty of the parameter is clear.
 
-The method below adds two columns to the .csv file, corresponding to the values at the lower and upper sigma values.
+The method below adds three columns to the .csv file, corresponding to the values at the median, lower and upper sigma 
+values.
 """
-# agg_csv = af.AggregateCSV(aggregator=agg)
-#
-# agg_csv.add_column(
-#     argument="galaxies.lens.mass.effective_radius",
-#     name="bulge_effective_radius_sigma",
-#     use_values_at_sigma=3.0,
-# )
-#
-# agg_csv.save(path="csv_simple_errors.csv")
+agg_csv = af.AggregateCSV(aggregator=agg)
+
+agg_csv.add_variable(
+    argument="galaxies.lens.mass.einstein_radius",
+    name="mass_einstein_radius",
+    value_types=[af.ValueType.Median, af.ValueType.ValuesAt3Sigma],
+)
+
+agg_csv.save(path=workflow_path / "csv_simple_errors.csv")
 
 """
 __Column Label List__
@@ -263,13 +265,13 @@ Latent variables are not free model parameters but can be derived from the model
 This example was run with a latent variable called `example_latent`, and below we show that this latent variable
 can be added to the .csv file using the same API as above.
 """
-# agg_csv = af.AggregateCSV(aggregator=agg)
-#
-# agg_csv.add_column(
-#     argument="example_latent",
-# )
-#
-# agg_csv.save(path=workflow_path / "csv_example_latent.csv")
+agg_csv = af.AggregateCSV(aggregator=agg)
+
+agg_csv.add_variable(
+    argument="example.latent",
+)
+
+agg_csv.save(path=workflow_path / "csv_example_latent.csv")
 
 """
 __Computed Columns__
