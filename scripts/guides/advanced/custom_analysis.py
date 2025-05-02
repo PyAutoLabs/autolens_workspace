@@ -47,6 +47,7 @@ the **PyAutoLens** source code.
 
 We still recommend you take a look to see how things are structured!
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

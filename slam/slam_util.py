@@ -683,19 +683,19 @@ def analysis_multi_dataset_from(
 
     for i in range(1, len(analysis)):
         if multi_dataset_offset:
-            analysis[i][
-                model.dataset_model.grid_offset.grid_offset_0
-            ] = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
-            analysis[i][
-                model.dataset_model.grid_offset.grid_offset_1
-            ] = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+            analysis[i][model.dataset_model.grid_offset.grid_offset_0] = (
+                af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+            )
+            analysis[i][model.dataset_model.grid_offset.grid_offset_1] = (
+                af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+            )
 
     if source_regularization_result is not None:
         for i in range(len(analysis)):
-            analysis[i][
-                model.galaxies.source.pixelization.regularization
-            ] = source_regularization_result[
-                i
-            ].instance.galaxies.source.pixelization.regularization
+            analysis[i][model.galaxies.source.pixelization.regularization] = (
+                source_regularization_result[
+                    i
+                ].instance.galaxies.source.pixelization.regularization
+            )
 
     return analysis

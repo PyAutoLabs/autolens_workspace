@@ -7,6 +7,7 @@ This script simulates `Interferometer` data of a 'galaxy-scale' strong lens wher
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is an `Sersic`.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

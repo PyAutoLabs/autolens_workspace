@@ -3,7 +3,7 @@ Results: Samples
 ================
 
 After a non-linear search has completed, it returns a `Result` object that contains information on samples of
-the non-linear search, such as the maximum likelihood model instance, the errors on each parameter and the 
+the non-linear search, such as the maximum likelihood model instance, the errors on each parameter and the
 Bayesian evidence.
 
 This script illustrates how to use the result to inspect the non-linear search samples.
@@ -20,6 +20,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `results/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

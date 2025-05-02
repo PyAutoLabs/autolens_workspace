@@ -22,6 +22,7 @@ __Errors__
 To produce errors on unit converted quantities, you`ll may need to perform marginalization over samples of these
 converted quantities (see `results/examples/samples.ipynb`).
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

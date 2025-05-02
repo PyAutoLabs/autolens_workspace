@@ -20,6 +20,7 @@ This functionality is described here, and is then used in the `point_source` sim
 
 If you are a new user who will be analysing point sources strong lenses, this guide is the right starting point!
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

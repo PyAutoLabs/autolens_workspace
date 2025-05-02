@@ -22,7 +22,7 @@ __Default Over-Sampling__
 Examples throughout the workspace use a default over-sampling set up that should ensure accurate results for any
 analysis you have done. This default over-sampling is as follows:
 
-- When evaluating the image of a galaxy, an adaptive over sampling grid is used which uses sub grids of size 8 x 8 
+- When evaluating the image of a galaxy, an adaptive over sampling grid is used which uses sub grids of size 8 x 8
 in the central regions of the image, 4x4 further out and 1x1 beyond that.
 
 - When evaluating the image of the source galaxy, no over-sampling (e.g. a 1 x 1 subgrid) is performed but instead
@@ -39,6 +39,7 @@ The visualization API is straightforward but is explained in the `autolens_works
 This includes detailed guides on how to customize every aspect of the figures, which can easily be combined with the
 code outlined in this tutorial.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

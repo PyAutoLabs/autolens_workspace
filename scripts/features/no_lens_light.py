@@ -3,7 +3,7 @@ Modeling Features: No Lens Light
 ================================
 
 CCD imaging data of a strong lens may not have lens galaxy light emission present, for example if the lens galaxy light
-has already been subtracted from the image. 
+has already been subtracted from the image.
 
 This example illustrates how to fit a lens model to data where the lens galaxy's light is not present.
 
@@ -53,6 +53,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

@@ -10,6 +10,7 @@ This script simulates `Imaging` and a `PointDataset` of a 'group-scale' strong l
 
 The brightest pixels of the source in the image-plane are used to create a point-source dataset.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

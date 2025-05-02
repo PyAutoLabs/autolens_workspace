@@ -13,7 +13,7 @@ can also be easily passed on to other collaborators.
 __CSV, Png and Fits__
 
 Workflow functionality closely mirrors the `png_make.py` and `fits_make.py`  examples, which load results of
-model-fits and output th em as .png files and .fits files to quickly summarise results. 
+model-fits and output th em as .png files and .fits files to quickly summarise results.
 
 The same initial fit creating results in a folder called `results_folder_csv_png_fits` is therefore used.
 
@@ -41,6 +41,7 @@ because it is optimized for fast querying of results.
 See the package `results/database` for a full description of how to set up the database and the benefits it provides,
 especially if loading results from hard-disk is slow.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -88,7 +89,12 @@ for i in range(2):
 
     model = af.Collection(
         galaxies=af.Collection(
-            lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
+            lens=af.Model(
+                al.Galaxy,
+                redshift=0.5,
+                mass=al.mp.Isothermal,
+                shear=al.mp.ExternalShear,
+            ),
             source=af.Model(
                 al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore, disk=None
             ),
@@ -100,12 +106,22 @@ for i in range(2):
         name="results",
         unique_tag=f"simple__no_lens_light_{i}",
         n_live=100,
+        iterations_per_update=100,
         number_of_cores=1,
     )
 
     class AnalysisLatent(al.AnalysisImaging):
         def compute_latent_variables(self, instance):
-            return {"example.latent": instance.galaxies.lens.mass.einstein_radius * 2.0}
+            if hasattr(instance.galaxies.lens, "shear"):
+                magnitude, angle = al.convert.shear_magnitude_and_angle_from(
+                    gamma_1=instance.galaxies.lens.shear.gamma_1,
+                    gamma_2=instance.galaxies.lens.shear.gamma_2,
+                )
+
+                return {
+                    "galaxies.lens.shear.magnitude": magnitude,
+                    "galaxies.lens.shear.angle": angle,
+                }
 
     analysis = AnalysisLatent(dataset=dataset)
 
@@ -143,18 +159,18 @@ __Adding CSV Columns_
 We first make a simple .csv which contains two columns, corresponding to the inferred median PDF values for
 the y centre of the mass of the lens galaxy and its einstein radius.
 
-To do this, we use the `add_column` method, which adds a column to the .csv file we write at the end. Every time
-we call `add_column` we add a new column to the .csv file.
+To do this, we use the `add_variable` method, which adds a column to the .csv file we write at the end. Every time
+we call `add_variable` we add a new column to the .csv file.
 
 Note the API for the `centre`, which is a tuple parameter and therefore needs for `centre_0` to be specified.
 
-The `results_folder_csv_png_fits` contained two model-fits to two different datasets, meaning that each `add_column` 
+The `results_folder_csv_png_fits` contained two model-fits to two different datasets, meaning that each `add_variable` 
 call will add three rows, corresponding to the three model-fits.
 
 This adds the median PDF value of the parameter to the .csv file, we show how to add other values later in this script.
 """
-agg_csv.add_column(argument="galaxies.lens.mass.centre.centre_0")
-agg_csv.add_column(argument="galaxies.lens.mass.einstein_radius")
+agg_csv.add_variable(argument="galaxies.lens.mass.centre.centre_0")
+agg_csv.add_variable(argument="galaxies.lens.mass.einstein_radius")
 
 """
 __Saving the CSV__
@@ -172,18 +188,18 @@ __Customizing CSV Headers__
 
 The headers of the .csv file are by default the argument input above based on the model. 
 
-However, we can customize these headers using the `name` input of the `add_column` method, for example making them
+However, we can customize these headers using the `name` input of the `add_variable` method, for example making them
 shorter or more readable.
 
 We recreate the `agg_csv` first, so that we begin adding columns to a new .csv file.
 """
 agg_csv = af.AggregateCSV(aggregator=agg)
 
-agg_csv.add_column(
+agg_csv.add_variable(
     argument="galaxies.lens.mass.centre.centre_0",
     name="mass_centre_0",
 )
-agg_csv.add_column(
+agg_csv.add_variable(
     argument="galaxies.lens.mass.einstein_radius",
     name="mass_einstein_radius",
 )
@@ -198,7 +214,7 @@ input.
 """
 agg_csv = af.AggregateCSV(aggregator=agg)
 
-agg_csv.add_column(
+agg_csv.add_variable(
     argument="galaxies.lens.mass.einstein_radius",
     name="mass_einstein_radius_max_lh",
     value_types=[af.ValueType.MaxLogLikelihood],
@@ -268,7 +284,7 @@ can be added to the .csv file using the same API as above.
 agg_csv = af.AggregateCSV(aggregator=agg)
 
 agg_csv.add_variable(
-    argument="example.latent",
+    argument="galaxies.lens.shear.magnitude",
 )
 
 agg_csv.save(path=workflow_path / "csv_example_latent.csv")

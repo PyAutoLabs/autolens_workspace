@@ -2,12 +2,12 @@
 Modeling Features: Double Einstein Ring
 =======================================
 
-A double Einstein ring lens is a strong lens system where there are two source galaxies at different redshifts 
-behind the lens galaxy. They appear as two distinct Einstein rings in the image-plane, and can constrain 
+A double Einstein ring lens is a strong lens system where there are two source galaxies at different redshifts
+behind the lens galaxy. They appear as two distinct Einstein rings in the image-plane, and can constrain
 Cosmological parameters in a way single Einstein ring lenses cannot.
 
-To analyse these systems correctly the mass of the lens galaxy and the first source galaxy must be modeled 
-simultaneously, and the emission of both source galaxies must be modeled simultaneously. 
+To analyse these systems correctly the mass of the lens galaxy and the first source galaxy must be modeled
+simultaneously, and the emission of both source galaxies must be modeled simultaneously.
 
 This script illustrates the PyAutoLens API for modeling a double Einstein ring lens.
 
@@ -24,6 +24,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

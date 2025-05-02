@@ -4,6 +4,7 @@ Plots: Annotate
 
 This example illustrates how to customize annotations that appears on a figure or subplot displayed in PyAutoLens.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

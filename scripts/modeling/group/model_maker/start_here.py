@@ -15,6 +15,7 @@ This script makes the model that is fitted to the example `group` dataset, where
 
 To write your own group-scale lens model, you can easily adapt this script.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

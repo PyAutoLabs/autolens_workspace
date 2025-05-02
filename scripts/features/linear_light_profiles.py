@@ -71,9 +71,10 @@ If any code in this script is unclear, refer to the `modeling/start_here.ipynb` 
 
 __Notes__
 
-This script is identical to `modeling/start_here.py` except that the light profiles are switched to linear light 
+This script is identical to `modeling/start_here.py` except that the light profiles are switched to linear light
 profiles.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

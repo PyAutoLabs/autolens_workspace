@@ -78,6 +78,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -216,6 +217,7 @@ search = af.Nautilus(
     name="mass[sie]_source[pix]",
     unique_tag=dataset_name,
     n_live=100,
+    iterations_per_update=1000,
     number_of_cores=4,
 )
 

@@ -2,8 +2,8 @@
 Data Preparation: Extra Galaxies Mask (Optional)
 ================================================
 
-There may be regions of an image that have signal near the lens and source that is from other galaxies not associated 
-with the strong lens we are studying. The emission from these images will impact our model fitting and needs to be 
+There may be regions of an image that have signal near the lens and source that is from other galaxies not associated
+with the strong lens we are studying. The emission from these images will impact our model fitting and needs to be
 removed from the analysis.
 
 This script creates a mask of these regions of the image, called the `mask_extra_galaxies`, which can be used to
@@ -33,6 +33,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `data_preparation/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

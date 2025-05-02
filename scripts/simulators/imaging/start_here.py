@@ -22,6 +22,7 @@ code which produce high quality visualization of strong lenses.
 
 The `PLotter` API is described in the `autolens_workspace/*/plot/start_here.py` script.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

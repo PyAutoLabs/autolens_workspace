@@ -22,6 +22,7 @@ A fraction of this example repeats the API for manipulating samples given in the
 This is done so users can directly copy and paste Python code which loads results from the database and manipulates
 the samples.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

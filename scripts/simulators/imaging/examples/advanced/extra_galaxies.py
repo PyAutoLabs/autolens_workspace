@@ -2,16 +2,16 @@
 Simulator: Extra Galaxies
 =========================
 
-Certain lenses have small galaxies within their Einstein radius, or nearby the lensed source emission. 
+Certain lenses have small galaxies within their Einstein radius, or nearby the lensed source emission.
 
-The emission of these galaxies may overlap the lensed source emission, and their mass may contribute to the lensing 
+The emission of these galaxies may overlap the lensed source emission, and their mass may contribute to the lensing
 of the source.
 
 We therefore will need to mask the emission of these extra galaxies or include them in the model as light profiles which
 fit and subtract the emission. We may also include these galaxies as mass profiles in the lens model, accounting for
 their lensing effects via ray-tracing.
 
-This uses the modeling API, which is illustrated in 
+This uses the modeling API, which is illustrated in
 the script `autolens_workspace/*/modeling/imaging/features/extra_galaxies.py`.
 
 This script simulates an imaging dataset which includes extra galaxies near the lens and source
@@ -46,6 +46,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
+
 # from pyprojroot import here
 # workspace_path = str(here())
 # %cd $workspace_path

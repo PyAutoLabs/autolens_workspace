@@ -33,6 +33,7 @@ The `ExternalShear` is also not included in the mass model, where it is for the 
 For a quadruply imaged point source (8 data points) there is insufficient information to fully constain a model with
 an `Isothermal` and `ExternalShear` (9 parameters).
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

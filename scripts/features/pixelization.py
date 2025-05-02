@@ -5,7 +5,7 @@ Modeling Features: Pixelization
 A pixelization reconstructs the source's light using a pixel-grid, which is regularized using a prior that forces
 the solution to have a degree of smoothness.
 
-This script fits a source galaxy model which uses a pixelization to reconstruct the source's light. 
+This script fits a source galaxy model which uses a pixelization to reconstruct the source's light.
 
 A Voronoi mesh and constant regularization scheme are used, which are the simplest forms of mesh and regularization
 with provide computationally fast and accurate solutions in **PyAutoLens**.
@@ -30,7 +30,8 @@ __Contents__
 **Model-Fit:** Performs the model fit using standard API.
 **Result:** Pixelization results and visualizaiton.
 **Interpolated Source:** Interpolate the source reconstruction from an irregular Voronoi mesh to a uniform square grid and output to a .fits file.
-**Voronoi:** Using a Voronoi mesh pixelizaiton (instead of Voronoi), which provides better results but requires installing an external library.
+**Reconstruction CSV:** Output the source reconstruction to a .csv file, which can be used to perform calculations on the source reconstruction.
+**Voronoi:** Using a Voronoi mesh pixelizaiton (instead of Voronoi), which allows one to manipulate the source reconstruction without autolens installed.
 **Result (Advanced):** API for various pixelization outputs (magnifications, mappings) which requires some polishing.
 **Simulate (Advanced):** Simulating a strong lens dataset with the inferred pixelized source.
 
@@ -108,12 +109,14 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+import numpy as np
 from os import path
 import autofit as af
 import autolens as al
@@ -327,6 +330,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,
     n_live=100,
     number_of_cores=4,
+    iterations_per_update=100,
 )
 
 """
@@ -426,7 +430,7 @@ result = search.fit(model=model, analysis=analysis)
 """
 __Result__
 
-The search returns a result object, which whose `info` attribute shows the result in a readable format (if this 
+The search returns a result object, which whose `info` attribute shows the result in a readable format (if this
 does not display clearly on your screen refer to `start_here.ipynb` for a description of how to fix this):
 
 This confirms that the source galaxy's has a mesh and regularization scheme, which are combined into a pixelization.
@@ -458,18 +462,18 @@ There may be extra galaxies nearby the lens and source galaxies, whose emission 
 
 If their emission is significant, and close enough to the lens and source, we may simply remove it from the data
 to ensure it does not impact the model-fit. A standard masking approach would be to remove the image pixels containing
-the emission of these galaxies altogether. This is analogous to what the circular masks used throughout the examples 
+the emission of these galaxies altogether. This is analogous to what the circular masks used throughout the examples
 does.
 
-For fits using a pixelization, masking regions of the image in a way that removes their image pixels entirely from 
-the fit. This can produce discontinuities in the pixelixation used to reconstruct the source and produce unexpected 
-systematics and unsatisfactory results. In this case, applying the mask in a way where the image pixels are not 
-removed from the fit, but their data and noise-map values are scaled such that they contribute negligibly to the fit, 
-is a better approach. 
+For fits using a pixelization, masking regions of the image in a way that removes their image pixels entirely from
+the fit. This can produce discontinuities in the pixelixation used to reconstruct the source and produce unexpected
+systematics and unsatisfactory results. In this case, applying the mask in a way where the image pixels are not
+removed from the fit, but their data and noise-map values are scaled such that they contribute negligibly to the fit,
+is a better approach.
 
 We illustrate the API for doing this below, using the `extra_galaxies` dataset which has extra galaxies whose emission
-needs to be removed via scaling in this way. We apply the scaling and show the subplot imaging where the extra 
-galaxies mask has scaled the data values to zeros, increasing the noise-map values to large values and in turn made 
+needs to be removed via scaling in this way. We apply the scaling and show the subplot imaging where the extra
+galaxies mask has scaled the data values to zeros, increasing the noise-map values to large values and in turn made
 the signal to noise of its pixels effectively zero.
 """
 dataset_name = "extra_galaxies"
@@ -505,12 +509,12 @@ apply the mask as above before fitting the data.
 
 __Pixelization / Mapper Calculations__
 
-The pixelized source reconstruction output by an `Inversion` is often on an irregular grid (e.g. a 
-Voronoi triangulation or Voronoi mesh), making it difficult to manipulate and inspect after the lens modeling has 
+The pixelized source reconstruction output by an `Inversion` is often on an irregular grid (e.g. a
+Voronoi triangulation or Voronoi mesh), making it difficult to manipulate and inspect after the lens modeling has
 completed.
 
 Internally, the inversion stores a `Mapper` object to perform these calculations, which effectively maps pixels
-between the image-plane and source-plane. 
+between the image-plane and source-plane.
 
 After an inversion is complete, it has computed values which can be paired with the `Mapper` to perform calculations,
 most notably the `reconstruction`, which is the reconstructed source pixel values.
@@ -536,10 +540,10 @@ __Interpolated Source__
 A simple way to inspect the source reconstruction is to interpolate its values from the irregular
 pixelization o a uniform 2D grid of pixels.
 
-(if you do not know what the `slim` and `native` properties below refer too, it 
+(if you do not know what the `slim` and `native` properties below refer too, it
 is described in the `results/examples/data_structures.py` example.)
 
-We interpolate the Voronoi triangulation this source is reconstructed on to a 2D grid of 401 x 401 square pixels. 
+We interpolate the Voronoi triangulation this source is reconstructed on to a 2D grid of 401 x 401 square pixels.
 """
 interpolated_reconstruction = mapper_valued.interpolated_array_from(
     shape_native=(401, 401)
@@ -556,11 +560,11 @@ plotter = aplt.Array2DPlotter(
 plotter.figure_2d()
 
 """
-By inputting the arc-second `extent` of the source reconstruction, the interpolated array will zoom in on only these 
-regions of the source-plane. The extent is input via the notation (xmin, xmax, ymin, ymax), therefore  unlike the standard 
+By inputting the arc-second `extent` of the source reconstruction, the interpolated array will zoom in on only these
+regions of the source-plane. The extent is input via the notation (xmin, xmax, ymin, ymax), therefore  unlike the standard
 API it does not follow the (y,x) convention.
 
-Note that the output interpolated array will likely therefore be rectangular, with rectangular pixels, unless 
+Note that the output interpolated array will likely therefore be rectangular, with rectangular pixels, unless
 symmetric y and x arc-second extents are input.
 """
 interpolated_reconstruction = mapper_valued.interpolated_array_from(
@@ -570,7 +574,7 @@ interpolated_reconstruction = mapper_valued.interpolated_array_from(
 print(interpolated_reconstruction.slim)
 
 """
-The interpolated errors on the source reconstruction can also be computed, in case you are planning to perform 
+The interpolated errors on the source reconstruction can also be computed, in case you are planning to perform
 model-fitting of the source reconstruction.
 """
 mapper_valued_errors = al.MapperValued(
@@ -589,7 +593,7 @@ __Magnification__
 The magnification of the lens model and source reconstruction can also be computed via the `MapperValued` object,
 provided we pass it the reconstruction as the `values`.
 
-This magnification is the ratio of the surface brightness of image in the image-plane over the surface brightness 
+This magnification is the ratio of the surface brightness of image in the image-plane over the surface brightness
 of the source in the source-plane.
 
 In the image-plane, this is computed by mapping the reconstruction to the image, summing all reconstructed
@@ -600,8 +604,8 @@ In the source-plane, this is computed by interpolating the reconstruction to a r
 example a 2D grid of 401 x 401 pixels, and summing the reconstruction values multiplied by the area of each
 pixel. This calculation uses interpolation to compute the source-plane image.
 
-The calculation is relatively stable, but depends on subtle details like the resolution of the source-plane 
-pixelization and how exactly the interpolation is performed. 
+The calculation is relatively stable, but depends on subtle details like the resolution of the source-plane
+pixelization and how exactly the interpolation is performed.
 """
 mapper_valued = al.MapperValued(
     mapper=mapper,
@@ -613,7 +617,7 @@ print(mapper_valued.magnification_via_interpolation_from(shape_native=(401, 401)
 
 """
 The magnification calculated above used an interpolation of the source-plane reconstruction to a 2D grid of 401 x 401
-pixels. 
+pixels.
 
 For a `Rectangular` or `Voronoi` pixelization, the magnification can also be computed using the source-plane mesh
 directly, where the areas of the mesh pixels themselves are used to compute the magnification. In certain situations
@@ -627,7 +631,7 @@ it does not currently work for the `Delanuay` pixelization and is commented out 
 The magnification value computed can be impacted by faint source pixels at the edge of the source reconstruction.
 
 The input `mesh_pixel_mask` can be used to remove these pixels from the calculation, such that the magnification
-is based only on the brightest regions of the source reconstruction. 
+is based only on the brightest regions of the source reconstruction.
 
 Below, we create a source-plane signal-to-noise map and use this to create a mask that removes all pixels with
 a signal-to-noise < 5.0.
@@ -647,6 +651,74 @@ mapper_valued = al.MapperValued(
 
 print("Magnification via Interpolation:")
 print(mapper_valued.magnification_via_interpolation_from(shape_native=(401, 401)))
+
+"""
+__Reconstruction CSV__
+
+In the results `image` folder there is a .csv file called `source_plane_reconstruction_0.csv` which contains the
+y and x coordinates of the pixelization mesh, the reconstruct values and the noise map of these values.
+
+This file is provides all information on the source reconstruciton in a format that does not depend autolens
+and therefore be easily loaded to create images of the source or shared collaobrations who do not have PyAutoLens
+installed.
+
+First, lets load `reconstruction.csv` as a dictionary, using basic `csv` functionality in Python.
+"""
+import csv
+
+with open(search.paths.image_path / "reconstruction.csv", mode="r") as file:
+    reader = csv.reader(file)
+    header_list = next(reader)  # ['y', 'x', 'reconstruction', 'noise_map']
+
+    reconstruction_dict = {header: [] for header in header_list}
+
+    for row in reader:
+        for key, value in zip(header_list, row):
+            reconstruction_dict[key].append(float(value))
+
+    # Convert lists to NumPy arrays
+    for key in reconstruction_dict:
+        reconstruction_dict[key] = np.array(reconstruction_dict[key])
+
+print(reconstruction_dict["y"])
+print(reconstruction_dict["x"])
+print(reconstruction_dict["reconstruction"])
+print(reconstruction_dict["noise_map"])
+
+"""
+You can now use standard libraries to performed calculations with the reconstruction on the mesh, again avoiding
+the need to use autolens.
+
+For example, we can create a Delaunay mesh using the scipy.spatial library, which is a triangulation
+of the y and x coordinates of the pixelization mesh. This is useful for visualizing the pixelization
+and performing calculations on the mesh.
+"""
+import scipy
+
+points = np.stack(arrays=(reconstruction_dict["x"], reconstruction_dict["y"]), axis=-1)
+
+delaunay = scipy.spatial.Delaunay(points)
+
+"""
+Interpolating the result to a uniform grid is also possible using the scipy.interpolate library, which means the result
+can be turned into a uniform 2D image which can be useful to analyse the source with tools which require an uniform grid.
+
+Below, we interpolate the result onto a 201 x 201 grid of pixels with the extent spanning -1.0" to 1.0", which
+capture the majority of the source reconstruction without being too high resolution.
+
+It should be noted this inteprolation may not be as optimal as the interpolation perforemd above using `MapperValued`, 
+which uses specifc interpolation methods for a Delaunay mesh which are more accurate, but it should be sufficent for
+most use-cases.
+"""
+from scipy.interpolate import griddata
+
+values = reconstruction_dict["reconstruction"]
+
+interpolation_grid = al.Grid2D.from_extent(
+    extent=(-1.0, 1.0, -1.0, 1.0), shape_native=(201, 201)
+)
+
+interpolated_array = griddata(points=points, values=values, xi=interpolation_grid)
 
 """
 __Voronoi__

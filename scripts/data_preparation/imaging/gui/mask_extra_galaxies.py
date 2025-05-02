@@ -2,8 +2,8 @@
 GUI Preprocessing: Extra Galaxies Mask (Optional)
 =================================================
 
-There may be regions of an image that have signal near the lens and source that is from other galaxies not associated 
-with the strong lenswe are studying. The emission from these images will impact our model fitting and needs to be 
+There may be regions of an image that have signal near the lens and source that is from other galaxies not associated
+with the strong lenswe are studying. The emission from these images will impact our model fitting and needs to be
 removed from the analysis.
 
 The example `data_preparation/imaging/example/optional/extra_galaxies_mask.py` provides a full description of
@@ -13,6 +13,7 @@ using this script.
 This script uses a GUI to mark the regions of the image where these extra galaxies are located, in contrast to the
 example above which requires you to input these values manually.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

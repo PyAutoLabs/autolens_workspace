@@ -25,6 +25,7 @@ extended emission, however this requires familiarity's advanced feature called '
 which is covered in chapter 3 of **HowToLens**. This package also shows how to do this using a pixelized source
 reconstruction.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
