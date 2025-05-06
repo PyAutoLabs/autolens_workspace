@@ -118,18 +118,6 @@ def run_1(
         dataset_model=dataset_model,
     )
 
-    """
-    For single-dataset analyses, the following code does not change the model or analysis and can be ignored.
-
-    For multi-dataset analyses, the following code updates the model and analysis.
-    """
-    analysis = slam_util.analysis_multi_dataset_from(
-        analysis=analysis,
-        model=model,
-        multi_dataset_offset=True,
-        multi_source_regularization=True,
-    )
-
     search = af.Nautilus(
         name="source_pix[1]",
         **settings_search.search_dict,
@@ -230,18 +218,6 @@ def run_2(
             model.galaxies.source.pixelization.image_mesh.pixels = (
                 image_mesh_pixels_fixed
             )
-
-    """
-    For single-dataset analyses, the following code does not change the model or analysis and can be ignored.
-
-    For multi-dataset analyses, the following code updates the model and analysis.
-    """
-    analysis = slam_util.analysis_multi_dataset_from(
-        analysis=analysis,
-        model=model,
-        multi_dataset_offset=True,
-        multi_source_regularization=True,
-    )
 
     """
     __Search (Search 2)__

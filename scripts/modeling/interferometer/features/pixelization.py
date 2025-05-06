@@ -214,7 +214,7 @@ full description).
 """
 search = af.Nautilus(
     path_prefix=path.join("interferometer", "modeling"),
-    name="mass[sie]_source[pix]",
+    name="pixelization",
     unique_tag=dataset_name,
     n_live=100,
     iterations_per_update=1000,

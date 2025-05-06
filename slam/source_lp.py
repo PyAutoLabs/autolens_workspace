@@ -102,15 +102,6 @@ def run(
         dataset_model=dataset_model,
     )
 
-    """
-    For single-dataset analyses, the following code does not change the model or analysis and can be ignored.
-    
-    For multi-dataset analyses, the following code updates the model and analysis.
-    """
-    analysis = slam_util.analysis_multi_dataset_from(
-        analysis=analysis, model=model, multi_dataset_offset=True
-    )
-
     search = af.Nautilus(
         name="source_lp[1]",
         **settings_search.search_dict,

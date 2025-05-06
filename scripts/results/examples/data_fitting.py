@@ -194,8 +194,12 @@ fit_agg = al.agg.FitImagingAgg(aggregator=agg)
 fit_gen = fit_agg.randomly_drawn_via_pdf_gen_from(total_samples=2)
 
 
-for fit_list_gen in fit_gen:  # Total samples 2 so fit_list_gen contains 2 fits.
-    for fit_list in fit_list_gen:  # Iterate over each fit of total_samples=2
+for fit_list_gen in fit_gen:  # 1 Dataset so just one fit
+    for (
+        fit_list
+    ) in (
+        fit_list_gen
+    ):  #  Iterate over each total_samples=2, each with one fits for 1 analysis.
         # Only one `Analysis` so take first and only dataset.
         fit = fit_list[0]
 

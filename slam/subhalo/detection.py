@@ -61,13 +61,6 @@ def run_1_no_subhalo(
         dataset_model=dataset_model,
     )
 
-    analysis = slam_util.analysis_multi_dataset_from(
-        analysis=analysis,
-        model=model,
-        multi_dataset_offset=True,
-        source_regularization_result=mass_result,
-    )
-
     search = af.Nautilus(
         name="subhalo[1]",
         **settings_search.search_dict,
@@ -173,13 +166,6 @@ def run_2_grid_search(
         galaxies=af.Collection(lens=lens, subhalo=subhalo, source=source),
         extra_galaxies=extra_galaxies,
         dataset_model=dataset_model,
-    )
-
-    analysis = slam_util.analysis_multi_dataset_from(
-        analysis=analysis,
-        model=model,
-        multi_dataset_offset=True,
-        source_regularization_result=mass_result,
     )
 
     search = af.Nautilus(
@@ -304,13 +290,6 @@ def run_3_subhalo(
         ),
         extra_galaxies=extra_galaxies,
         dataset_model=dataset_model,
-    )
-
-    analysis = slam_util.analysis_multi_dataset_from(
-        analysis=analysis,
-        model=model,
-        multi_dataset_offset=True,
-        source_regularization_result=subhalo_result_1,
     )
 
     search = af.Nautilus(

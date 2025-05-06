@@ -195,7 +195,7 @@ cosmology.Om0 = af.GaussianPrior(mean=0.3, sigma=0.1)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),
-    cosmology=cosmology,
+    #    cosmology=cosmology,
 )
 
 """
@@ -218,6 +218,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,
     n_live=150,
     number_of_cores=1,
+    iterations_per_update=20000,
 )
 
 """
