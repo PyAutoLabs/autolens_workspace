@@ -185,7 +185,7 @@ and the code below can easily be adapted to output the .png and .fits files.
 workflow_path = Path("output") / "results_folder_csv_png_fits" / "workflow_make_example"
 
 agg_csv = af.AggregateCSV(aggregator=agg)
-agg_csv.add_column(
+agg_csv.add_variable(
     argument="galaxies.lens.mass.einstein_radius"
 )  # Example of adding a column
 agg_csv.save(path=workflow_path / "csv_very_simple.csv")

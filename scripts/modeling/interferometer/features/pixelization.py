@@ -217,7 +217,7 @@ search = af.Nautilus(
     name="pixelization",
     unique_tag=dataset_name,
     n_live=100,
-    iterations_per_update=1000,
+    iterations_per_update=10000,
     number_of_cores=4,
 )
 

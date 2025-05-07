@@ -41,7 +41,7 @@ class mass_profile(al.mp.Sersic):
         zero_point: float = 25.23,
         intensity: float = 1.0,  # units: counts/s/arcsec^2
         mass_to_light_ratio: float = 1.0,  # units: M_sun/L_sun
-        cosmo=ag.cosmo.FlatLambdaCDMWrap(),
+        cosmo=al.cosmo.FlatLambdaCDMWrap(),
     ) -> None:
         # critical surface density in solar mass / arcsec^2
         self.critical_surface_density = (

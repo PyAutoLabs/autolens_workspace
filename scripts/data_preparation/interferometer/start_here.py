@@ -84,7 +84,7 @@ __UV Wavelengths__
 The uv-wavelengths define the baselines of the interferometer. They are used to Fourier transform the image to the
 uv-plane, which is where the lens model is evaluated.
 """
-uv_wavelengths = al.util.array_2d.numpy_array_2d_via_fits_from(
+uv_wavelengths = al.ndarray_via_fits_from(
     file_path=path.join(dataset_path, "uv_wavelengths.fits"), hdu=0
 )
 

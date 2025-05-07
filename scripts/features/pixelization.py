@@ -330,7 +330,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,
     n_live=100,
     number_of_cores=4,
-    iterations_per_update=100,
+    iterations_per_update=2500,
 )
 
 """
@@ -662,11 +662,13 @@ This file is provides all information on the source reconstruciton in a format t
 and therefore be easily loaded to create images of the source or shared collaobrations who do not have PyAutoLens
 installed.
 
-First, lets load `reconstruction.csv` as a dictionary, using basic `csv` functionality in Python.
+First, lets load `source_plane_reconstruction_0.csv` as a dictionary, using basic `csv` functionality in Python.
 """
 import csv
 
-with open(search.paths.image_path / "reconstruction.csv", mode="r") as file:
+with open(
+    search.paths.image_path / "source_plane_reconstruction_0.csv", mode="r"
+) as file:
     reader = csv.reader(file)
     header_list = next(reader)  # ['y', 'x', 'reconstruction', 'noise_map']
 
