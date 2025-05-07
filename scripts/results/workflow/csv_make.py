@@ -53,7 +53,6 @@ from os import path
 
 import autofit as af
 import autolens as al
-import autolens.plot as aplt
 
 """
 __Model Fit__
@@ -106,7 +105,6 @@ for i in range(2):
         name="results",
         unique_tag=f"simple__no_lens_light_{i}",
         n_live=100,
-        iterations_per_update=100,
         number_of_cores=1,
     )
 

@@ -158,7 +158,7 @@ __Extract Images__
 
 We now extract 3 images from the `subplot_fit.png` file and make them together into a single image.
 
-We will extract the `data`, `model_image` and `normalized_residual_map` images, which are images you are used to
+We will extract the `data`, `model_data` and `normalized_residual_map` images, which are images you are used to
 plotting and inspecting in the `output` folder of a model-fit.
 
 We do this by simply passing the `agg_image.extract_image` method the `al.agg` attribute for each image we want to
@@ -173,7 +173,7 @@ is a single row of 3 subplots.
 image = agg_image.extract_image(
     subplots=[
         al.agg.subplot_fit.data,
-        al.agg.subplot_fit.model_image,
+        al.agg.subplot_fit.model_data,
         al.agg.subplot_fit.normalized_residual_map,
     ],
 )
@@ -215,7 +215,7 @@ agg_image.output_to_folder(
     name="unique_tag",
     subplots=[
         al.agg.subplot_fit.data,
-        al.agg.subplot_fit.model_image,
+        al.agg.subplot_fit.model_data,
         al.agg.subplot_fit.normalized_residual_map,
     ],
 )
@@ -236,7 +236,7 @@ agg_image.output_to_folder(
     name="unique_tag",
     subplots=[
         al.agg.subplot_fit.data,
-        al.agg.subplot_fit.model_image,
+        al.agg.subplot_fit.model_data,
         al.agg.subplot_fit.normalized_residual_map,
     ],
 )
@@ -257,7 +257,7 @@ image = agg_image.extract_image(
     subplots=[
         al.agg.subplot_dataset.data,
         al.agg.subplot_dataset.psf_log_10,
-        al.agg.subplot_fit.model_image,
+        al.agg.subplot_fit.model_data,
         al.agg.subplot_fit.chi_squared_map,
     ]
     # subplot_shape=(2, 2),

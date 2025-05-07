@@ -102,7 +102,12 @@ for i in range(2):
 
     model = af.Collection(
         galaxies=af.Collection(
-            lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
+            lens=af.Model(
+                al.Galaxy,
+                redshift=0.5,
+                mass=al.mp.Isothermal,
+                shear=al.mp.ExternalShear,
+            ),
             source=af.Model(
                 al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore, disk=None
             ),
@@ -114,10 +119,24 @@ for i in range(2):
         name="results",
         unique_tag=f"simple__no_lens_light_{i}",
         n_live=100,
+        iterations_per_update=100,
         number_of_cores=1,
     )
 
-    analysis = al.AnalysisImaging(dataset=dataset)
+    class AnalysisLatent(al.AnalysisImaging):
+        def compute_latent_variables(self, instance):
+            if hasattr(instance.galaxies.lens, "shear"):
+                magnitude, angle = al.convert.shear_magnitude_and_angle_from(
+                    gamma_1=instance.galaxies.lens.shear.gamma_1,
+                    gamma_2=instance.galaxies.lens.shear.gamma_2,
+                )
+
+                return {
+                    "galaxies.lens.shear.magnitude": magnitude,
+                    "galaxies.lens.shear.angle": angle,
+                }
+
+    analysis = AnalysisLatent(dataset=dataset)
 
     result = search.fit(model=model, analysis=analysis)
 
@@ -241,33 +260,36 @@ Below, we demonstrate a common use case for a pixelization. Each .csv file is lo
 that because it stores the irregular mesh values it is the most accurate way to store the data whilst also using
 much less hard-disk space than, for example. converting it to a 2D array and .fits file. We then use the
 loaded values to interpolate the data onto a regular grid and output it to .fits files in a folder.
+
+The code below is commented out because the model does not use a pixelization, but it does work if a
+pixelization is used.
 """
-reconstruction_dict_list = agg_fits.extract_csv(
-    filename="source_plane_reconstruction_0",
-)
-
-from scipy.interpolate import griddata
-
-for i, reconstruction_dict in enumerate(reconstruction_dict_list):
-
-    y = reconstruction_dict["y"]
-    x = reconstruction_dict["x"]
-    values = reconstruction_dict["reconstruction"]
-
-    points = np.stack(
-        arrays=(reconstruction_dict["x"], reconstruction_dict["y"]), axis=-1
-    )
-
-    interpolation_grid = al.Grid2D.from_extent(
-        extent=(-1.0, 1.0, -1.0, 1.0), shape_native=(201, 201)
-    )
-
-    interpolated_array = griddata(points=points, values=values, xi=interpolation_grid)
-
-    al.output_to_fits(
-        values=interpolated_array,
-        file_path=workflow_path / f"interpolated_reconstruction_{i}.fits",
-    )
+# reconstruction_dict_list = agg_fits.extract_csv(
+#     filename="source_plane_reconstruction_0",
+# )
+#
+# from scipy.interpolate import griddata
+#
+# for i, reconstruction_dict in enumerate(reconstruction_dict_list):
+#
+#     y = reconstruction_dict["y"]
+#     x = reconstruction_dict["x"]
+#     values = reconstruction_dict["reconstruction"]
+#
+#     points = np.stack(
+#         arrays=(reconstruction_dict["x"], reconstruction_dict["y"]), axis=-1
+#     )
+#
+#     interpolation_grid = al.Grid2D.from_extent(
+#         extent=(-1.0, 1.0, -1.0, 1.0), shape_native=(201, 201)
+#     )
+#
+#     interpolated_array = griddata(points=points, values=values, xi=interpolation_grid)
+#
+#     al.output_to_fits(
+#         values=interpolated_array,
+#         file_path=workflow_path / f"interpolated_reconstruction_{i}.fits",
+#     )
 
 
 """
