@@ -85,7 +85,7 @@ The second example in this script therefore uses an MGE source. We strongly reco
 MGE lens light models and source models, instead of the elliptical Sersic profiles, as soon as possible!
 
 To capture the irregular and asymmetric features of the source's morphology, or reconstruct multiple source galaxies,
-we recommend using a pixelized source reconstruction (see `autolens_workspace/modeling/imaging/features/pixelization.py`).
+we recommend using a pixelized source reconstruction (see `autolens_workspace/modeling/features/pixelization.py`).
 Combining this with an MGE for the len's light can be a very powerful way to model strong lenses!
 
 __Model__
@@ -501,7 +501,7 @@ print(result.info)
 """
 We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 
 In particular, checkout the results example `linear.py` which details how to extract all information about linear
 light profiles from a fit.

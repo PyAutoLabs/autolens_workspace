@@ -58,7 +58,7 @@ __Imaging__
 This example script fits `Imaging` data, using many of the features described in the `modeling/imaging` workspace
 examples.
 
-It also uses the following features described in the `modeling/imaging/features` workspace examples:
+It also uses the following features described in the `modeling/features` workspace examples:
 
 - `linear_light_profiles.py`: The model includes light profiles which use linear algebra to solve for their
    intensity, reducing model complexity.

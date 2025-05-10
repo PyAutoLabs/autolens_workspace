@@ -17,4 +17,4 @@ Notes
 
 These scripts show how to perform lens modeling but only give a brief overview of how to analyse and interpret the results a lens model fit.
 
-A full guide to result analysis is given at ``autolens_workspace/*/imaging/results``.
+A full guide to result analysis is given at ``autolens_workspace/*/results``.

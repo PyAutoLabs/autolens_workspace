@@ -105,7 +105,7 @@ lensed source.
 
 These three galaxies will be modeled using a scaling relation.
 """
-dataset_name = "lens_x3__source_x1"
+dataset_name = "simple"
 dataset_path = path.join("dataset", "group", dataset_name)
 
 dataset = al.Imaging.from_fits(

@@ -12,7 +12,7 @@ fit and subtract the emission. We may also include these galaxies as mass profil
 their lensing effects via ray-tracing.
 
 This uses the modeling API, which is illustrated in
-the script `autolens_workspace/*/modeling/imaging/features/extra_galaxies.py`.
+the script `autolens_workspace/*/modeling/features/extra_galaxies.py`.
 
 This script simulates an imaging dataset which includes extra galaxies near the lens and source
 galaxies. This is used to illustrate the extra galaxies API in the script above.
@@ -38,7 +38,7 @@ not impact the lens model.
 
 To illustrate how mark extra galaxy centres on a dataset so they can be used in the lens model.
 
- `autolens_workspace/*/modeling/imaging/features/extra_galaxies.ipynb`
+ `autolens_workspace/*/modeling/features/extra_galaxies.ipynb`
 
 To illustrate how compose and fit a lens model which includes the extra galaxies as light and mass profiles.
 

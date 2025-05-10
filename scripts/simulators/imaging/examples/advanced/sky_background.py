@@ -6,7 +6,7 @@ This script simulates `Imaging` of a strong lens where the sky background is not
 appears in the dataset.
 
 It is used to demonstrate sky background modeling in
-the `autolens_workspace/*/modeling/imaging/features/sky_background.py` example.
+the `autolens_workspace/*/modeling/features/sky_background.py` example.
 
 __Model__
 

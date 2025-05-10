@@ -90,7 +90,7 @@ This means it is not a free parameter, reducing the dimensionality of non-linear
 
 Linear light profiles significantly improve the speed, accuracy and reliability of modeling and they are used
 by default in every modeling example. A full description of linear light profiles is provided in the
-`autolens_workspace/*/modeling/imaging/features/linear_light_profiles.py` example.
+`autolens_workspace/*/modeling/features/linear_light_profiles.py` example.
 
 A standard light profile can be used if you change the `lp_linear` to `lp`, but it is not recommended.
 
@@ -293,7 +293,7 @@ print(result.info)
 """
 We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 """
 print(result.max_log_likelihood_instance)
 
@@ -323,8 +323,10 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
-This script gives a concise overview of the PyAutoLens modeling API, fitting one the simplest lens models possible.
-So, what next? 
+This script gives a concise overview of the basic modeling API, fitting one the simplest lens models possible.
+
+Lets now consider what features you should read about to improve your lens modeling, especially if you are aiming
+to fit more complex models to your data.
 
 __Features__
 

@@ -2,6 +2,10 @@
 Simulator: Group
 ================
 
+This script simulates an example strong lens on the 'group' scale, where there is a single primary lens galaxy
+and two smaller galaxies nearby, whose mass contributes significantly to the ray-tracing and is therefore included in
+the strong lens model.
+
 This script simulates `Imaging` and a `PointDataset` of a 'group-scale' strong lens where:
 
  - The group consists of three lens galaxies whose ligth distributions are `SersicSph` profiles and
@@ -33,7 +37,7 @@ gives it a descriptive name. They define the folder the dataset is output to on 
  - The psf will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/psf.fits`.
 """
 dataset_type = "group"
-dataset_name = "lens_x3__source_x1"
+dataset_name = "simple"
 
 """
 The path where the dataset will be output, which in this case is:
@@ -109,12 +113,30 @@ simulator = al.SimulatorImaging(
 )
 
 """
+__Main Galaxies and Extra Galaxies__
+
+For a group-scale lens, we designate there to be two types of lens galaxies in the system:
+
+ - `main_galaxies`: The main lens galaxies which likely make up the majority of light and mass in the lens system.
+ These are modeled individually with a unique name for each, with their light and mass distributions modeled using 
+ parametric models.
+ 
+ - `extra_galaxies`: The extra galaxies which are nearby the lens system and contribute to the lensing of the source
+  galaxy. These are modeled with a more restrictive model, for example with their centres fixed to the observed
+  centre of light and their mass distributions modeled using a scaling relation. These are grouped into a single 
+  `extra_galaxies` collection.
+  
+In this simple example group scale lens, there is one main lens galaxy and two extra galaxies. 
+
 __Ray Tracing__
 
-Setup the mass models of the three lens galaxies using the `IsothermalSph` model and the source galaxy light using 
-an elliptical Sersic for this simulated lens.
+Setup the mass models of the main lens galaxy (`Isothermal` and `ExternalShear1), source 
+galaxy (`SersicCore` and `Point`) and two extra galaxies using the `IsothermalSph` model and the source galaxy light 
+using an elliptical `Sersic`.
 """
-lens_galaxy_0 = al.Galaxy(
+# Main Lens:
+
+lens_galaxy = al.Galaxy(
     redshift=0.5,
     bulge=al.lp.SersicSph(
         centre=(0.0, 0.0), intensity=0.7, effective_radius=2.0, sersic_index=4.0
@@ -122,7 +144,9 @@ lens_galaxy_0 = al.Galaxy(
     mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=4.0),
 )
 
-lens_galaxy_1 = al.Galaxy(
+# Extra Galaxies
+
+extra_lens_galaxy_0 = al.Galaxy(
     redshift=0.5,
     bulge=al.lp.SersicSph(
         centre=(3.5, 2.5), intensity=0.9, effective_radius=0.8, sersic_index=3.0
@@ -130,7 +154,7 @@ lens_galaxy_1 = al.Galaxy(
     mass=al.mp.IsothermalSph(centre=(3.5, 2.5), einstein_radius=0.8),
 )
 
-lens_galaxy_2 = al.Galaxy(
+extra_lens_galaxy_1 = al.Galaxy(
     redshift=0.5,
     bulge=al.lp.SersicSph(
         centre=(-4.4, -5.0), intensity=0.9, effective_radius=0.8, sersic_index=3.0
@@ -138,9 +162,13 @@ lens_galaxy_2 = al.Galaxy(
     mass=al.mp.IsothermalSph(centre=(-4.4, -5.0), einstein_radius=1.0),
 )
 
+extra_galaxies = [extra_lens_galaxy_0, extra_lens_galaxy_1]
+
+# Source:
+
 source_galaxy = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.Sersic(
+    bulge=al.lp.SersicCore(
         centre=(0.0, 0.1),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
         intensity=3.0,
@@ -150,11 +178,12 @@ source_galaxy = al.Galaxy(
     point_0=al.ps.Point(centre=(0.0, 0.1)),
 )
 
+
 """
 Use these galaxies to setup a tracer, which will generate the image for the simulated `Imaging` dataset.
 """
 tracer = al.Tracer(
-    galaxies=[lens_galaxy_0, lens_galaxy_1, lens_galaxy_2, source_galaxy]
+    galaxies=[lens_galaxy, extra_lens_galaxy_0, extra_lens_galaxy_1, source_galaxy]
 )
 
 """
@@ -164,7 +193,7 @@ tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
 tracer_plotter.figures_2d(image=True)
 
 """
-__Point Source__
+__Point Solver__
 
 It is common for group-scale strong lens datasets to be modeled assuming that the source is a point-source. Even if 
 it isn't, this can be necessary due to computational run-time making it unfeasible to fit the imaging dataset outright.
@@ -189,7 +218,7 @@ discarding any image with a magnification below the threshold.
 """
 grid = al.Grid2D.uniform(
     shape_native=(300, 300),
-    pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+    pixel_scales=0.1,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
 solver = al.PointSolver.for_grid(

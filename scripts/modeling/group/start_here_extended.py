@@ -1,25 +1,50 @@
 """
-Modeling: Start Here
-====================
+Modeling: Group Start Here Extended
+===================================
 
-This script is the starting point for lens modeling of CCD imaging data (E.g. Hubble Space Telescope, Euclid) with
-**PyAutoLens** and it provides an overview of the lens modeling API.
+This script models an example strong lens on the 'group' scale, where there is a single primary lens galaxy
+and two smaller galaxies nearby, whose mass contributes significantly to the ray-tracing and is therefore included in
+the strong lens model.
 
-After reading this script, the `features`, `customize` and `searches` folders provide example for performing lens
-modeling in different ways and customizing the analysis.
+There are two methods for modeling group-scale strong lenses:
 
-__Model__
+- `point`: The source is modeled as a point source, where the positions of its multiple images are fitted.
+- `extended`: The source is modeled as an extended source, where the full emission is fitted, using imaging or interferometry data.
 
-This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
+This example demonstrates the `extended` method. For the `point` source modeling, refer to the `start_here_point.ipynb`
+example.
 
- - The lens galaxy's light is a linear parametric `Sersic` bulge.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+Consider which method is appropriate for your dataset and the scientific goals of your analysis.
+
+After completing this example, explore other relevant modeling packages for your
+approach (e.g., `modeling/point_source` for point sources, `modeling/imaging` or `modeling/interferometer` for extended sources).
+
+You may also want to explore the `features` package to extend the model for specific requirements (e.g., using a
+pixelized source). Details on available features are provided at the end of this example.
+
+__Scaling Relations__
+
+This example models the mass of each galaxy individually, which means the number of dimensions of the model increases
+as we model group scale lenses with more galaxies. This can lead to a model that is slow to fit and poorly constrained.
+
+A common approach to overcome this is to put many of the galaxies a scaling relation, where the mass of the galaxies
+are related to their light via a observationally motivated scaling relation. This means that as more galaxies are
+included in the lens model, the dimensionality of the model does not increase.
+
+Lens modeling using scaling relations is fully support and described in the `features/scaling_relation.ipynb` example,
+you will likely want to read this example as soon as you have finished this one.
+
+__Example__
+
+This script fits an `Imaging` dataset of a 'group-scale' strong lens where
+
+ - There is a main lens galaxy whose lens galaxy's light is a linear parametric `Sersic` bulge.
+ - There is a main lens galaxy whose total mass distribution is an `Isothermal` and `ExternalShear`.
+ - There are two extra lens galaxies whose light models are `SersicSph` profiles and total mass distributions
+   are `IsothermalSph` models.
  - The source galaxy's light is a linear parametric `SersicCore`.
 
-This lens model is simple and computationally fast to fit, and therefore acts as a good starting point for new
-users.
-
-__Plotters__
+ __Plotters__
 
 To produce images of the data `Plotter` objects are used, which are high-level wrappers of matplotlib
 code which produce high quality visualization of strong lenses.
@@ -54,13 +79,15 @@ import autolens.plot as aplt
 """
 __Dataset__
 
-Load the strong lens dataset `simple` via .fits files, which is a data format used by astronomers to store images.
+Load the strong lens group dataset `simple`, which is the dataset we will use to perform lens modeling.
+
+This is loaded via .fits files, which is a data format used by astronomers to store images.
 
 The `pixel_scales` define the arc-second to pixel conversion factor of the image, which for the dataset we are using 
 is 0.1" / pixel.
 """
 dataset_name = "simple"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = path.join("dataset", "group", dataset_name)
 
 dataset = al.Imaging.from_fits(
     data_path=path.join(dataset_path, "data.fits"),
@@ -88,7 +115,7 @@ The model-fit requires a `Mask2D` defining the regions of the image we fit the l
 Below, we create a 3.0 arcsecond circular mask and apply it to the `Imaging` object that the lens model fits.
 """
 mask = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=7.5
 )
 
 dataset = dataset.apply_mask(mask=mask)
@@ -102,6 +129,7 @@ the script `autolens_workspace/*/modeling/imaging/customize/custom_mask.py`
 """
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
+
 
 """
 __Over Sampling__
@@ -127,7 +155,7 @@ the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
 """
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,
-    sub_size_list=[8, 4, 1],
+    sub_size_list=[4, 4, 1],
     radial_list=[0.3, 0.6],
     centre_list=[(0.0, 0.0)],
 )
@@ -144,19 +172,63 @@ and later learnt more about it in the `over_sampling.ipynb` guide.
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
-
 """
+__Main Galaxies and Extra Galaxies__
+
+For a group-scale lens, we designate there to be two types of lens galaxies in the system:
+
+ - `main_galaxies`: The main lens galaxies which likely make up the majority of light and mass in the lens system.
+ These are modeled individually with a unique name for each, with their light and mass distributions modeled using 
+ parametric models.
+ 
+ - `extra_galaxies`: The extra galaxies which are nearby the lens system and contribute to the lensing of the source
+  galaxy. These are modeled with a more restrictive model, for example with their centres fixed to the observed
+  centre of light and their mass distributions modeled using a scaling relation. These are grouped into a single 
+  `extra_galaxies` collection.
+  
+In this simple example group scale lens, there is one main lens galaxy and two extra galaxies. 
+
+__Centres__
+
+If the centres of the extra galaxies are treated as free parameters, one can run into the problem of having too many 
+parameters and a model which is not fitted accurately.
+
+For group-scale lenses we therefore manually specify the centres of the extra galaxies, which are fixed to the observed
+centres of light of the galaxies. `centre_1` and `centre_2` are the observed centres of the extra galaxies.
+
+In a real analysis, one must determine the centres of the galaxies before modeling them, which can be done as follows:
+
+ - Use the GUI tool in the `data_preparation/point_source/gui/extra_galaxies_centres.py` script to determine the centres
+   of the extra galaxies. 
+
+ - Use image processing software like Source Extractor (https://sextractor.readthedocs.io/en/latest/).
+
+ - Fit every galaxy individually with a parametric light profile (e.g. an `Sersic`).
+
+__Redshifts__
+
+In this example all line of sight galaxies are at the same redshift as the lens galaxy, meaning multi-plane lensing
+is not used.
+
+If you have redshift information on the line of sight galaxies and some of their redshifts are different to the lens
+galaxy, you can easily extend this example below to perform multi-plane lensing.
+
+You would simply define a `redshift_list` and use this to set up the extra `Galaxy` redshifts.
+
 __Model__
 
-In this example we compose a lens model where:
+We compose a lens model where:
 
- - The lens galaxy's light is a linear parametric `Sersic` bulge [6 parameters].
- 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
- 
- - The source galaxy's light is a linear parametric `SersicCore` [7 parameters].
+  - The main lens galaxy's light is a linear parametric `Sersic` bulge [6 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=21.
+ - The main lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ 
+ - There are two extra lens galaxies with linear `SersicSph` light and `IsothermalSph` total mass distributions, with 
+   centres fixed to the observed centres of light [8 parameters].
+ 
+ - The source galaxy's light is a point `SersicCore` [6 parameters].
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=27.
 
 __Linear Light Profiles__
 
@@ -193,16 +265,16 @@ If for your dataset the lens is not centred at (0.0", 0.0"), we recommend that y
  - Reduce your data so that the centre is (`autolens_workspace/*/data_preparation`). 
  - Manually override the lens model priors (`autolens_workspace/*/modeling/imaging/customize/priors.py`).
 
-__Over Sampling__
+__Complexity__
 
-As discussed above, a cored Sersic is used to ensure over-sampling is not required for the source galaxy's light.
+A 27 parameter model is a high degree of complexity, and means that group-scale moodeling may be slow, converge poorly
+and be difficult to interpret.
 
-The lens galaxy is adaptively over sampled to a high degree, therefore a normal Sersic light profile is used.
-
-The over sampling guide fully explains how these choices, but new users should not worry for now.
+This example is illustrative, but to succeed with group scale modeling you will likely need to used advanced 
+autolens functionality to overcome this high dimensionality. These features and tools are described at the end
+of this example.
 """
-# Lens:
-
+# Main Lens:
 bulge = af.Model(al.lp_linear.Sersic)
 
 mass = af.Model(al.mp.Isothermal)
@@ -211,16 +283,50 @@ shear = af.Model(al.mp.ExternalShear)
 
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
+# Extra Galaxies
+
+extra_galaxies_centres = [(3.5, 2.5), (-4.4, -5.0)]
+
+extra_galaxies_list = []
+
+for extra_galaxy_centre in extra_galaxies_centres:
+
+    # Extra Galaxy Light
+
+    bulge = af.Model(al.lp_linear.SersicSph)
+
+    bulge.centre = extra_galaxy_centre
+
+    # Extra Galaxy Mass
+
+    mass = af.Model(al.mp.IsothermalSph)
+
+    mass.centre = extra_galaxy_centre
+    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+
+    # Extra Galaxy
+
+    extra_galaxy = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+
+    extra_galaxies_list.append(extra_galaxy)
+
+extra_galaxies = af.Collection(extra_galaxies_list)
+
 # Source:
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source), extra_galaxies=extra_galaxies
+)
 
 """
 The `info` attribute shows the model in a readable format.
+
+This shows the group scale model, with separate entries for the main lens galaxy, the source galaxy and the 
+extra galaxies.
 
 The `info` below may not display optimally on your computer screen, for example the whitespace between parameter
 names on the left and parameter priors on the right may lead them to appear across multiple lines. This is a
@@ -235,43 +341,29 @@ print(model.info)
 """
 __Search__
 
-The lens model is fitted to the data using a non-linear search. 
+The lens model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
+full description).
 
-All examples in the autolens workspace use the nested sampling algorithm 
-Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most 
-accurate and efficient modeling results.
+The folders: 
 
-Nautilus has one main setting that trades-off accuracy and computational run-time, the number of `live_points`. 
-A higher number of live points gives a more accurate result, but increases the run-time. A lower value give 
-less reliable lens modeling (e.g. the fit may infer a local maxima), but is faster. 
-
-The suitable value depends on the model complexity whereby models with more parameters require more live points. 
-The default value of 200 is sufficient for the vast majority of common lens models. Lower values often given reliable
-results though, and speed up the run-times. In this example, given the model is quite simple (N=21 parameters), we 
-reduce the number of live points to 100 to speed up the run-time.
-
-__Customization__
-
-The folders `autolens_workspace/*/modeling/imaging/searches` gives an overview of alternative non-linear searches,
-other than Nautilus, that can be used to fit lens models. They also provide details on how to customize the
-model-fit, for example the priors.
+ - `autolens_workspace/*/modeling/point_source/searches`.
+ - `autolens_workspace/*/modeling/point_source/customize`
+  
+Give overviews of the non-linear searches **PyAutoLens** supports and more details on how to customize the
+model-fit, including the priors on the model.
 
 The `name` and `path_prefix` below specify the path where results ae stored in the output folder:  
 
- `/autolens_workspace/output/modeling/imaging/simple/start_here/unique_identifier`.
+ `/autolens_workspace/output/group/simple/mass[sie]_source[point]/unique_identifier`.
 
 __Unique Identifier__
 
 In the path above, the `unique_identifier` appears as a collection of characters, where this identifier is generated 
 based on the model, search and dataset that are used in the fit.
- 
-An identical combination of model and search generates the same identifier, meaning that rerunning the script will use 
-the existing results to resume the model-fit. In contrast, if you change the model or search, a new unique identifier 
-will be generated, ensuring that the model-fit results are output into a separate folder.
 
-We additionally want the unique identifier to be specific to the dataset fitted, so that if we fit different datasets
-with the same model and search results are output to a different folder. We achieve this below by passing 
-the `dataset_name` to the search's `unique_tag`.
+An identical combination of model, search and dataset generates the same identifier, meaning that rerunning the
+script will use the existing results to resume the model-fit. In contrast, if you change the model, search or dataset,
+a new unique identifier will be generated, ensuring that the model-fit results are output into a separate folder. 
 
 __Number Of Cores__
 
@@ -298,7 +390,7 @@ correctly, requiring a Python script to be run, often from a command line termin
 
 To fix these issues, the Python script needs to be adapted to use an `if __name__ == "__main__":` API, as this allows
 the Python `multiprocessing` module to allocate threads and jobs correctly. An adaptation of this example script 
-is provided at `autolens_workspace/scripts/modeling/imaging/customize/parallel.py`, which will hopefully run 
+is provided at `autolens_workspace/scripts/modeling/point_source/customize/parallel.py`, which will hopefully run 
 successfully in parallel on your computer!
 
 Therefore if paralellization for this script doesn't work, check out the `parallel.py` example. You will need to update
@@ -320,12 +412,11 @@ output results and visualization frequently to hard-disk. If your fit is consist
 is outputting results, try increasing this value to ensure the model-fit runs efficiently.**
 """
 search = af.Nautilus(
-    path_prefix=path.join("imaging", "modeling"),
-    name="start_here",
+    path_prefix=path.join("group", "modeling"),
+    name="start_here_extended",
     unique_tag=dataset_name,
-    n_live=150,
+    n_live=300,  # Increased to higher value than many examples to account for the high dimensionality of the model.
     number_of_cores=4,
-    iterations_per_update=10000,
 )
 
 """
@@ -353,10 +444,10 @@ Run times are dictated by two factors:
 
  - The log likelihood evaluation time: the time it takes for a single `instance` of the lens model to be fitted to 
    the dataset such that a log likelihood is returned.
- 
+
  - The number of iterations (e.g. log likelihood evaluations) performed by the non-linear search: more complex lens
    models require more iterations to converge to a solution.
-   
+
 The log likelihood evaluation time can be estimated before a fit using the `profile_log_likelihood_function` method,
 which returns two dictionaries containing the run-times and information about the fit.
 """
@@ -367,9 +458,9 @@ run_time_dict, info_dict = analysis.profile_log_likelihood_function(
 """
 The overall log likelihood evaluation time is given by the `fit_time` key.
 
-For this example, it is ~0.01 seconds, which is extremely fast for lens modeling. More advanced lens
-modeling features (e.g. multi Gaussian expansions, pixelizations) have slower log likelihood evaluation
-times (0.1-3 seconds), and you should be wary of this when using these features.
+For this example, it is ~0.001 seconds, which is extremely fast for lens modeling. The source-plane chi-squared
+is possibly the fastest way to fit a lens model to a dataset, and therefore whilst it has limitations it is a good
+way to get a rough estimate of the lens model parameters quickly.
 """
 print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
 
@@ -397,8 +488,8 @@ print(
 """
 __Model-Fit__
 
-We can now begin the model-fit by passing the model and analysis object to the search, which performs the 
-Nautilus non-linear search in order to find which models fit the data with the highest likelihood.
+We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder
+for on-the-fly visualization and results).
 """
 result = search.fit(model=model, analysis=analysis)
 
@@ -412,21 +503,21 @@ search are written to hard-disk (in the `start_here` folder), where all outputs 
 As the fit progresses, results are written to the `output` folder on the fly using the highest likelihood model found
 by the non-linear search so far. This means you can inspect the results of the model-fit as it runs, without having to
 wait for the non-linear search to terminate.
- 
+
 The `output` folder includes:
 
  - `model.info`: Summarizes the lens model, its parameters and their priors discussed in the next tutorial.
- 
+
  - `model.results`: Summarizes the highest likelihood lens model inferred so far including errors.
- 
+
  - `images`: Visualization of the highest likelihood model-fit to the dataset, (e.g. a fit subplot showing the lens 
  and source galaxies, model data and residuals).
- 
+
  - `files`: A folder containing .fits files of the dataset, the model as a human-readable .json file, 
  a `.csv` table of every non-linear search sample and other files containing information about the model-fit.
- 
+
  - search.summary: A file providing summary statistics on the performance of the non-linear search.
- 
+
  - `search_internal`: Internal files of the non-linear search (in this case Nautilus) used for resuming the fit and
   visualizing the search.
 
@@ -445,7 +536,7 @@ The `Result` object also contains:
 
  - The model corresponding to the maximum log likelihood solution in parameter space.
  - The corresponding maximum log likelihood `Tracer` and `FitImaging` objects.
- 
+
 Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 """
 print(result.max_log_likelihood_instance)
@@ -478,7 +569,11 @@ This script gives a concise overview of the basic modeling API, fitting one the 
 Lets now consider what features you should read about to improve your lens modeling, especially if you are aiming
 to fit more complex models to your data.
 
+This is especially important for group scale modeling, in order to reduce the complexity of the model.
+
 __Features__
+
+The examples in the `autolens_workspace/*/modeling/features` package illustrate other lens modeling features. 
 
 The examples in the `autolens_workspace/*/modeling/features` package illustrate other lens modeling features. 
 
@@ -488,15 +583,18 @@ scientific topic of study).
 
 We recommend you now checkout the following features:
 
+- ``scaling_relation.ipynb``: This feature allows you to model the light and mass of the extra galaxies using a scaling relation.
 - ``linear_light_profiles.py``: The model light profiles use linear algebra to solve for their intensity, reducing model complexity.
 - ``multi_gaussian_expansion.py``: The lens (or source) light is modeled as ~25-100 Gaussian basis functions 
 - ``pixelization.py``: The source is reconstructed using an adaptive Delaunay or Voronoi mesh.
 - ``no_lens_light.py``: The foreground lens's light is not present in the data and thus omitted from the model.
 
-The folders `autolens_workspace/*/modeling/imaging/searches` and `autolens_workspace/*/modeling/imaging/customize`
-provide guides on how to customize many other aspects of the model-fit. Check them out to see if anything
-sounds useful, but for most users you can get by without using these forms of customization!
-  
+For group scale modeling, the multi Gaussian expansion is particularly important, as this can dramatically reduce the
+dimensionality of the model and improve the accuracy of the fit for both the lens and source galaxies.
+
+It is also recommended you read through the `imaging` package, to get a complete picture of how point-source 
+modeling works.
+
 __Data Preparation__
 
 If you are looking to fit your own CCD imaging data of a strong lens, checkout  
