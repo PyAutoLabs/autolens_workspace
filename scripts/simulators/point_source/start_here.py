@@ -13,6 +13,12 @@ This script simulates `PointDataset` data of a strong lens where:
 
  - The lens galaxy's total mass distribution is an `Isothermal`.
  - The source `Galaxy` is a `Point`.
+
+__Pre-requisites__
+
+It is strongly recommended you read the `autolens_workspace/scripts/guides/point_sources.ipyn` notebook before
+running this script, as it gives a full overview of the point source modeling API and how lensing calculations
+are performed.
 """
 
 # %matplotlib inline
@@ -21,7 +27,7 @@ This script simulates `PointDataset` data of a strong lens where:
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import numpy as np
 import autolens as al
 import autolens.plot as aplt
@@ -42,7 +48,7 @@ dataset_name = "simple"
 The path where the dataset will be output, which in this case is:
 `/autolens_workspace/dataset/positions/simple`
 """
-dataset_path = path.join("dataset", dataset_type, dataset_name)
+dataset_path = Path("dataset") / dataset_type / dataset_name
 
 """
 __Ray Tracing__
@@ -72,9 +78,9 @@ lens_galaxy = al.Galaxy(
 source_galaxy = al.Galaxy(
     redshift=1.0,
     light=al.lp.ExponentialCore(
-        centre=(0.0, 0.0), intensity=0.1, effective_radius=0.02, radius_break=0.025
+        centre=(0.07, 0.07), intensity=0.1, effective_radius=0.02, radius_break=0.025
     ),
-    point_0=al.ps.Point(centre=(0.0, 0.0)),
+    point_0=al.ps.Point(centre=(0.07, 0.07)),
 )
 
 """
@@ -85,23 +91,30 @@ tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 """
 __Point Solver__
 
-A `PointSolver` determines the multiple-images of the mass model for a point source at location (y,x) in the source 
-plane. It does this by iteratively ray-tracing light rays from the image-plane to the source-plane, until it finds 
-the image-plane coordinate that rays converge at for a given  source-plane (y,x).
+For a point source, our goal is to find the (y, x) coordinates in the image plane that map directly to the center of 
+the point source in the source plane—these are its "multiple images." This is achieved using a `PointSolver`, which 
+determines the multiple images of the mass model for a point source located at a given (y, x) position in the 
+source plane.
 
-For the lens mass model defined above, it computes the multiple images of the source galaxy
-at the (y,x) source-plane coordinates (0.0", 0.0") of the point source.
+The solver works by ray tracing triangles from the image plane back to the source plane and checking whether the 
+source-plane (y, x) center lies inside each triangle. It iteratively refines this process by ray tracing progressively 
+smaller triangles, allowing the multiple image positions to be determined with sub-pixel precision.
 
-The `PointSolver` requires a starting grid of (y,x) coordinates in the image-plane, which are iteratively traced 
-and refined to locate the image-plane coordinates that map directly to the source-plane coordinate.
+The `PointSolver` requires an initial grid of (y, x) coordinates in the image plane, which defines the first set of 
+triangles to ray trace. It also needs a `pixel_scale_precision` parameter, specifying the resolution at which the 
+multiple images are computed. Smaller values increase precision but require longer computation times. The value 
+of 0.001 used here balances efficiency and accuracy.
 
-The `pixel_scale_precision` is the resolution up to which the multiple images are computed. The lower the value, the
-longer the calculation, with a value of 0.001 being efficient but more than sufficient for most point-source datasets.
+Strong lens mass models often predict a "central image," a multiple image that is usually heavily demagnified and thus 
+not observed. Since the `PointSolver` finds all valid multiple images, it will locate this central image regardless of 
+its visibility. To avoid including this unobservable image, we set a `magnification_threshold=0.1`, which discards any 
+images with magnifications below this value.
 
-Strong lens mass models have a multiple image called the "central image", which is located at the centre of the lens.
-However, the image is nearly always demagnified due to the mass model, and is therefore not observed and not
-something we want to be included in the simulated dataset. The `maginification_threshold` removes this image, by
-discarding any image with a magnification below the threshold.
+If your dataset does include a detectable central image, you should lower this threshold accordingly to include it in 
+your analysis.
+
+We now compute the multiple image positions by creating a `PointSolver` object and passing it the tracer of our 
+strong lens system.
 """
 grid = al.Grid2D.uniform(
     shape_native=(200, 200),
@@ -113,56 +126,36 @@ solver = al.PointSolver.for_grid(
 )
 
 """
-We now pass the `Tracer` to the solver, which calculates the image-plane multiple image coordinates that map directly 
-to the source-plane coordinate (0.0", 0.0").
+We now pass the tracer to the solver.
+
+The solver will find the image-plane coordinates that map directly to the source-plane coordinate (0.07", 0.07").
 """
 positions = solver.solve(
     tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
 )
 
 """
-__Fluxes__
-
-The flux of the multiple images are also simulated.
-
-Given a mass model and (y,x) image-plane coordinates, the magnification at that point on the image-plane can be
-calculated. 
-
-This is performed below for every multiple image image-plane coordinate, which will be used to simulate the fluxes
-of the multiple images.
-"""
-magnifications = tracer.magnification_2d_via_hessian_from(grid=positions)
-
-"""
-To simulate the fluxes, we assume the source galaxy point-source has a total flux of 1.0.
-
-Each observed image has a flux that is the source's flux multiplied by the magnification at that image-plane coordinate.
-"""
-flux = 1.0
-fluxes = [flux * np.abs(magnification) for magnification in magnifications]
-fluxes = al.ArrayIrregular(values=fluxes)
-
-"""
 __Point Datasets__
 
-All of the quantities computed above are input into a `PointDataset` object, which collates all information
-about the multiple images of a point-source strong lens system.
+All the quantities computed above are stored in a `PointDataset` object, which organizes information about the multiple 
+images of a point-source strong lens system.
 
-In this example, it contains the image-plane coordinates of the multiple images, the fluxes of the multiple images,
-and their associated noise-map values.
+This dataset is labeled with the `name` `point_0`, identifying it as corresponding to a single point source called 
+`point_0`. The name is essential for associating the dataset with the correct point source in the lens model during 
+fitting.
 
-It also contains the name `point_0`, which is a label given to the dataset to indicate that it is a dataset of a single
-point-source. This label is important, it is used for lens modeling in order to associate the dataset with the correct
-point-source in the model.
+The dataset contains the image-plane coordinates of the multiple images and their corresponding noise-map values. 
+Typically, the noise value for each position is set to the pixel scale of the CCD image, representing the area the 
+point source occupies. Although sub-pixel accuracy can be achieved with more detailed analysis, this example does not 
+cover those techniques.
+
+Note also that this dataset does not contain fluxes or time delays, which are often included in point source datasets
+and are included in a separate simulation below.
 """
 dataset = al.PointDataset(
     name="point_0",
     positions=positions,
     positions_noise_map=grid.pixel_scale,
-    fluxes=fluxes,
-    fluxes_noise_map=al.ArrayIrregular(
-        values=[np.sqrt(flux) for _ in range(len(fluxes))]
-    ),
 )
 
 """"
@@ -174,7 +167,7 @@ can be many point source datasets in a single dataset, and separate .json files 
 """
 al.output_to_json(
     obj=dataset,
-    file_path=path.join(dataset_path, "point_dataset.json"),
+    file_path=dataset_path / "point_dataset_positions_only.json",
 )
 
 """
@@ -211,7 +204,7 @@ This can be loaded via the method `tracer = al.from_json()`.
 """
 al.output_to_json(
     obj=tracer,
-    file_path=path.join(dataset_path, "tracer.json"),
+    file_path=dataset_path / "tracer.json",
 )
 
 """
@@ -244,7 +237,7 @@ simulator = al.SimulatorImaging(
 
 imaging = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
-imaging_path = path.join(dataset_path, "imaging")
+imaging_path = dataset_path / "imaging"
 
 mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=imaging_path, format="png"))
 
@@ -254,15 +247,159 @@ imaging_plotter = aplt.ImagingPlotter(
 imaging_plotter.subplot_dataset()
 
 imaging.output_to_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     overwrite=True,
 )
 
 dataset_plotter = aplt.ImagingPlotter(dataset=imaging, mat_plot_2d=mat_plot_2d)
 dataset_plotter.subplot_dataset()
 dataset_plotter.figures_2d(data=True)
+
+"""
+__Fluxes__
+
+Another measurable quantity of a point source is its flux—the total amount of light received from each multiple image of 
+the point source (e.g., the quasar images).
+
+In practice, fluxes are often measured but not used directly when analyzing lensed point sources such as quasars or 
+supernovae. This is because fluxes can be significantly affected by microlensing, which many lens models do not 
+accurately capture. However, in this simulation, microlensing is not included, so the fluxes can be simulated and fitted reliably.
+
+We now simulate the fluxes of the multiple images of this point source.
+
+Given a mass model and the (y, x) image-plane coordinates of each image, the magnification at each point can be 
+calculated.
+
+Below, we compute the magnification for every multiple image coordinate, which will then be used to simulate their 
+fluxes.
+"""
+magnifications = tracer.magnification_2d_via_hessian_from(grid=positions)
+
+"""
+To simulate the fluxes, we assume the source galaxy point-source has a total flux of 1.0.
+
+Each observed image has a flux that is the source's flux multiplied by the magnification at that image-plane coordinate.
+"""
+flux = 1.0
+fluxes = [flux * np.abs(magnification) for magnification in magnifications]
+fluxes = al.ArrayIrregular(values=fluxes)
+
+"""
+The noise values of the fluxes are set to the square root of the flux, which is a common given that Poisson noise
+is expected to dominate the noise of the fluxes.
+"""
+fluxes_noise_map = al.ArrayIrregular(
+    values=[np.sqrt(flux) for _ in range(len(fluxes))]
+)
+
+"""
+__Point Dataset__
+
+The fluxes are not input a `PointDataset` object, alongside the image-plane coordinates of the multiple images
+and their associated noise-map values. 
+
+We again give the dataset the name `point_0`, which is a label given to the dataset to indicate that it is a dataset 
+of a single point-source.
+"""
+dataset = al.PointDataset(
+    name="point_0",
+    positions=positions,
+    positions_noise_map=grid.pixel_scale,
+    fluxes=fluxes,
+    fluxes_noise_map=fluxes_noise_map
+)
+
+""""
+We now output the point dataset to the dataset path as a .json file, which is loaded in the point source modeling
+examples.
+
+In this example, there is just one point source dataset. However, for group and cluster strong lenses there
+can be many point source datasets in a single dataset, and separate .json files are output for each.
+"""
+al.output_to_json(
+    obj=dataset,
+    file_path=dataset_path / "point_dataset_with_fluxes.json",
+)
+
+"""
+__Time Delays__
+
+Another measurable quantity of a point source is its time delay—the time it takes for light to travel from the
+source to the observer for each multiple image of the point source (e.g., the quasar images). This is often expressed
+as the relative time delay between each image and the image with the shortest time delay, which is often referred to as
+the "reference image."
+
+Time delays are commonly used in strong lensing analyses, for example to measure the Hubble constant, since
+they are less affected by microlensing and can provide robust cosmological constraints.
+
+We now simulate the same point source dataset, but this time including the time delays of the multiple images.
+
+Given a mass model and (y, x) image-plane coordinates, the time delay at each image-plane position can be
+calculated from the mass model. It includes the contribution of both the geometric time delay (the time it takes
+different light rays to travel from the source to the observer) and the Shapiro time delay (the time it takes
+light to travel through the gravitational potential of the lens galaxy).
+"""
+time_delays = tracer.time_delay_from(grid=positions)
+
+"""
+In real observations, times delays are measured by taking photometric measurements of the multiple images over time,
+aligning the light curves, and measuring the time delays between the images.
+
+This processes estimates with it uncertainties, which are often represented as noise-map values in the dataset.
+For simplicity, in this simulation we assume the time delays have a noise value which is a quarter of their
+measurement value, however it is not typical that the noise value is directly proportional to the time delay.
+"""
+time_delays_noise_map = al.ArrayIrregular(values=time_delays * 0.25)
+
+"""
+__Point Dataset__
+
+The time delays are input into a `PointDataset` object, alongside the image-plane coordinates of the multiple images
+and their associated noise-map values. 
+
+We again give the dataset the name `point_0`, which is a label given to the dataset to indicate that it is a dataset 
+of a single point-source.
+"""
+dataset = al.PointDataset(
+    name="point_0",
+    positions=positions,
+    positions_noise_map=grid.pixel_scale,
+    time_delays=time_delays,
+    time_delays_noise_map=time_delays_noise_map
+)
+
+"""
+We now output the point dataset to the dataset path as a .json file, which can be loaded in point source modeling
+examples.
+
+While this example contains one point source dataset, group and cluster lenses can contain multiple datasets,
+with separate .json files saved for each.
+"""
+al.output_to_json(
+    obj=dataset,
+    file_path=dataset_path / "point_dataset_with_time_delays.json",
+)
+
+"""
+We output a final point source dataset containing the positions, fluxes and time delays, which could be used
+to perform lens modeling of all measurements simultaneously.
+"""
+dataset = al.PointDataset(
+    name="point_0",
+    positions=positions,
+    positions_noise_map=grid.pixel_scale,
+    fluxes=fluxes,
+    fluxes_noise_map=fluxes_noise_map,
+    time_delays=time_delays,
+    time_delays_noise_map=time_delays_noise_map,
+)
+
+al.output_to_json(
+    obj=dataset,
+    file_path=dataset_path / "point_dataset_with_fluxes_and_time_delays.json",
+)
 
 """
 Finished.

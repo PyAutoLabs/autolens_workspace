@@ -505,6 +505,8 @@ tangential_caustic = tracer.tangential_caustic_list_from(grid=grid)
 
 radial_caustic = tracer.radial_caustic_list_from(grid=grid)
 
+time_delay = tracer.time_delay_2d_from(grid=grid)
+
 ### You should be able to comment this out and it work fine ###
 
 # area_within_tangential_critical_curve = (
