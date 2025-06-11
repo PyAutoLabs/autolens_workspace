@@ -199,10 +199,10 @@ model = af.Collection(
 )
 
 """
-The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
-`start_here.ipynb` for a description of how to fix this).
+The `info` attribute shows the model in a readable format.
 
-This confirms the model is composed of three galaxies, two of which are lensed source galaxies.
+This confirms the model is composed of three galaxies, two of which are lensed source galaxies, and that
+the cosmology is included as a model component.
 """
 print(model.info)
 

@@ -18,7 +18,7 @@ If any code in this script is unclear, refer to the `simulators/start_here.ipynb
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import numpy as np
 import autolens as al
 import autolens.plot as aplt
@@ -26,20 +26,15 @@ import autolens.plot as aplt
 """
 __Dataset Paths__
 
-The `dataset_type` describes the type of data being simulated (in this case, `PointDataset` data) and `dataset_name` 
-gives it a descriptive name. 
-
- - The image will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/positions.json`.
- - The noise-map will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/noise_map.json`.
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
 """
 dataset_type = "point_source"
 dataset_name = "double_einstein_cross"
 
 """
-The path where the dataset will be output, which in this case is:
-`/autolens_workspace/dataset/positions/simple`
+The path where the dataset will be output.
 """
-dataset_path = path.join("dataset", dataset_type, dataset_name)
+dataset_path = Path("dataset") / dataset_type / dataset_name
 
 """
 __Ray Tracing__
@@ -190,12 +185,12 @@ examples.
 """
 al.output_to_json(
     obj=dataset_0,
-    file_path=path.join(dataset_path, "point_dataset_0.json"),
+    file_path=dataset_path / "point_dataset_0.json",
 )
 
 al.output_to_json(
     obj=dataset_1,
-    file_path=path.join(dataset_path, "point_dataset_1.json"),
+    file_path=dataset_path / "point_dataset_1.json",
 )
 
 """
@@ -230,7 +225,7 @@ This can be loaded via the method `tracer = al.from_json()`.
 """
 al.output_to_json(
     obj=tracer,
-    file_path=path.join(dataset_path, "tracer.json"),
+    file_path=dataset_path / "tracer.json",
 )
 
 """

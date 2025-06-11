@@ -34,7 +34,7 @@ import autolens.plot as aplt
 """
 __Dataset Paths__
 
-The path where the dataset will be output.
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
 """
 dataset_type = "imaging"
 dataset_name = "sky_background"

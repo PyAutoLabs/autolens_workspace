@@ -198,6 +198,66 @@ The `info` attribute shows the model in a readable format (if this does not disp
 """
 print(result.info)
 
+
+"""
+__Cosmology__
+
+Time Delay lenses allow the Hubble constant to be constrained, because the difference between the geometric
+time delay and the physical time delay is proportional to the Hubble constant.
+
+We therefore create a Cosmology as a `Model` object in order to make the cosmological parameter Omega_m a free 
+parameter.
+"""
+cosmology = af.Model(al.cosmo.FlatwCDMWrap)
+
+"""
+By default, all parameters of a cosmology model are initialized as fixed values based on the Planck18 cosmology.
+
+In order to make the Hubble constant, we override the default value of the Hubble constant with uniform prior.
+"""
+cosmology.H0 = af.UniformPrior(lower_limit=0.0, upper_limit=150.0)
+
+# Overall Lens Model:
+
+lens.mass.centre.centre_0 = 0.0
+lens.mass.centre.centre_1 = 0.0
+lens.mass.einstein_radius = 1.6
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    cosmology=cosmology
+)
+
+
+"""
+The `info` attribute shows the model in a readable format
+
+This confirms the model includes the Cosmology, which has the Hubble constant as a free parameter.
+"""
+print(model.info)
+
+"""
+__Search__
+
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
+full description).
+"""
+search = af.Nautilus(
+    path_prefix=Path("point_source") / "modeling",
+    name="time_delays_hubble_constant2",
+    unique_tag=dataset_name,
+    n_live=150,
+    number_of_cores=4,
+)
+
+"""
+__Model-Fit__
+
+We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder
+for on-the-fly visualization and results).
+"""
+result = search.fit(model=model, analysis=analysis)
+
 """
 Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 """

@@ -29,8 +29,7 @@ import autolens.plot as aplt
 """
 __Dataset Paths__
 
-The `dataset_type` describes the type of data being simulated (in this case, `Imaging` data) and `dataset_name`
-gives it a descriptive name. They define the folder the dataset is output to on your hard-disk:
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. They define the folder the dataset is output to on your hard-disk:
 
  - The image will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/image.fits`.
  - The noise-map will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/noise_map.fits`.
@@ -40,8 +39,9 @@ dataset_type = "group"
 dataset_name = "simple"
 
 """
-The path where the dataset will be output, which in this case is:
-`/autolens_workspace/output/group`
+The path where the dataset will be output. 
+
+In this example, this is: `/autolens_workspace/dataset/group/simple`
 """
 dataset_path = path.join("dataset", dataset_type, dataset_name)
 

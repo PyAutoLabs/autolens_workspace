@@ -1,35 +1,30 @@
 """
-Simulator: Sample Double Einstein Ring
+Simulator: Hubble Constant Time Delays
 ======================================
 
-A double Einstein ring lens is a strong lens system where there are two source galaxies at different redshifts
-behind the lens galaxy. They appear as two distinct Einstein rings in the image-plane, and can constrain
-Cosmological parameters in a way single Einstein ring lenses cannot.
+A multiply imaged lensed quasar with time delays can measure the Hubble constant, which is a fundamental
+Cosmological parameter that describes the rate of expansion of the universe. This is because the
+the difference between the geometric time delay and the physical time delay is proportional to the Hubble constant.
 
-This script illustrates how to simulate a sample of `Imaging` datasets of double Einstein ring strong lenses, which
-can easily be used to simulate hundreds or thousands of strong lenses.
+This script illustrates how to simulate a sample of `PointDataset` datasets of lensed quasars, which
+can easily be used to simulate hundreds or thousands of strong lenses. These, as a sample, can be used to constrain
+the Hubble constant.
 
 To simulate the sample of lenses, each lens and source galaxies are set up using the `Model` object which is also used
 in  the `modeling` scripts. This means that the parameters of each simulated strong lens are drawn from the
 distributions  defined via priors, which can be customized to simulate a wider range of strong lenses.
 
-The sample is used in `autolens_workspace/notebooks/imaging/advanced/hierarchical` to illustrate how a hierarchical
+The sample is used in `autolens_workspace/notebooks/advanced/graphical` to illustrate how a graphical and hierarchical
 model can be fitted to a large sample of double Einstein ring strong lenses in order to improve the constraints on
 Cosmological parameters.
 
-This script uses the signal-to-noise based light profiles described in the
-script `imaging/simulators/misc/manual_signal_to_noise_ratio.ipynb`, to make it straight forward to ensure the lens
-and source galaxies are visible in each image.
-
 __Model__
 
-This script simulates a sample of `Imaging` data of 'galaxy-scale' with a double Einstein ring where:
+This script simulates a sample of `PointDataset` data of 'galaxy-scale' strong lenses where:
 
- - The first lens galaxy's light is omitted (and is not present in the simulated data).
- - The first lens galaxy's total mass distribution is an `Isothermal`.
- - The second lens galaxy / first source galaxy total mass distribution is a `IsothermalSph` and its light is
- a `SphExp`.
- - The second source galaxy light profile is a `SphExp`.
+ - The lens galaxy's total mass distribution is an `Isothermal`.
+ - The source `Galaxy` is a `Point`.
+ - The Cosmology is `Planck15` and has a Hubble constant which can be constrained by the time delays.
 
 __Start Here Notebook__
 
@@ -42,7 +37,7 @@ If any code in this script is unclear, refer to the `simulators/start_here.ipynb
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -50,51 +45,84 @@ import autolens.plot as aplt
 """
 __Dataset Paths__
 
-The `dataset_type` describes the type of data being simulated (in this case, `Imaging` data) and `dataset_name`
-gives it a descriptive name. 
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
 """
 dataset_label = "samples"
-dataset_type = "imaging"
-dataset_sample_name = "double_einstein_ring"
+dataset_type = "point_source"
+dataset_sample_name = "hubble_constant_time_delays"
 
 """
-The path where the dataset will be output, which in this case is:
-`/autolens_workspace/dataset/imaging/sample__mass_sis_0`
+The path where the dataset will be output.
 """
-dataset_path = path.join("dataset", dataset_type, dataset_label, dataset_sample_name)
+dataset_path = Path("dataset") / dataset_type / dataset_label / dataset_sample_name
+
+"""
+__Point Solver__
+
+We use a `PointSolver` to locate the multiple images. 
+"""
+grid = al.Grid2D.uniform(
+    shape_native=(200, 200),
+    pixel_scales=0.05,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+)
+
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+)
+
+"""
+__Sample Model Distributions__
+
+To simulate a sample, we draw random instances of lens and source galaxies where the parameters of their mass profiles 
+and point source profiles are drawn from distributions. These distributions are defined via priors -- the same objects 
+that are used when defining the priors of each parameter for a non-linear search.
+
+Below, we define the distributions the lens galaxy's mass profiles are drawn from alongside the source's point
+source centre.
+"""
+mass = af.Model(al.mp.Isothermal)
+
+mass.centre = (0.0, 0.0)
+mass.ell_comps.ell_comps_0 = af.GaussianPrior(mean=0.0, sigma=0.1)
+mass.ell_comps.ell_comps_1 = af.GaussianPrior(mean=0.0, sigma=0.1)
+mass.einstein_radius = af.UniformPrior(lower_limit=1.0, upper_limit=1.8)
+
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
+
+point = af.Model(al.ps.Point)
+
+point.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.1)
+point.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.1)
+
+
+"""
+We also include a light profile component of the source, which is to aid visualization of the simulated dataset
+by providing an image where the point source is located.
+"""
+bulge = af.Model(al.lp.ExponentialSph)
+
+bulge.centre_0 = point.centre_0
+bulge.centre_1 = point.centre_1
+bulge.intensity = 1.0
+bulge.effective_radius = 0.02
+bulge.signal_to_noise_ratio = 10.0
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, point=point)
 
 """
 __Simulate__
 
-Simulate the image using a `Grid2D` with the adaptive over sampling scheme.
+Simulate the image data using a `Grid2D` with the adaptive over sampling scheme.
 """
 grid = al.Grid2D.uniform(
     shape_native=(150, 150),
     pixel_scales=0.1,
 )
 
-over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
-    grid=grid,
-    sub_size_list=[32, 8, 2],
-    radial_list=[0.3, 0.6],
-    centre_list=[(0.0, 0.0)],
-)
-
-grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
-
-grid = al.Grid2D.uniform(shape_native=(150, 150), pixel_scales=0.1)
-
-"""
-Simulate a simple Gaussian PSF for the image.
-"""
 psf = al.Kernel2D.from_gaussian(
     shape_native=(11, 11), sigma=0.2, pixel_scales=grid.pixel_scales
 )
 
-"""
-To simulate the `Imaging` dataset we first create a simulator, which defines the exposure time, background sky,
-noise levels and psf of the dataset that is simulated.
-"""
 simulator = al.SimulatorImaging(
     exposure_time=300.0,
     psf=psf,
@@ -103,72 +131,79 @@ simulator = al.SimulatorImaging(
 )
 
 """
-__Sample Model Distributions__
-
-To simulate a sample, we draw random instances of lens and source galaxies where the parameters of their light and 
-mass profiles are drawn from distributions. These distributions are defined via priors -- the same objects that are used 
-when defining the priors of each parameter for a non-linear search.
-
-Below, we define the distributions the lens galaxy's bulge light and mass profiles are drawn from alongside
-the soruce's bulge. 
-"""
-
-mass = af.Model(al.mp.Isothermal)
-
-mass.centre = (0.0, 0.0)
-mass.einstein_radius = af.GaussianPrior(mean=1.8, sigma=0.3, lower_limit=0.0)
-
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
-
-bulge = af.Model(al.lp_snr.ExponentialSph)
-
-bulge.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.1)
-bulge.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.1)
-bulge.signal_to_noise_ratio = af.UniformPrior(lower_limit=20.0, upper_limit=30.0)
-bulge.effective_radius = af.GaussianPrior(
-    mean=0.2, sigma=0.2, lower_limit=0.01, upper_limit=3.0
-)
-
-mass = af.Model(al.mp.IsothermalSph)
-
-mass.centre_0 = bulge.centre_0
-mass.centre_1 = bulge.centre_1
-
-mass.einstein_radius = af.UniformPrior(lower_limit=0.3, upper_limit=0.5)
-
-source_0 = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, mass=mass)
-source_1 = af.Model(al.Galaxy, redshift=2.0, bulge=bulge)
-
-"""
 __Sample Instances__
 
 Within a for loop, we will now generate instances of the lens and source galaxies using the `Model`'s defined above.
 This loop will run for `total_datasets` iterations, which sets the number of lenses that are simulated.
 
-Each iteration of the for loop will then create a tracer and use this to simulate the imaging dataset.
+Each iteration of the for loop will then create a tracer and use this to simulate the point dataset.
 """
-total_datasets = 10
+total_datasets = 3
 
 for sample_index in range(total_datasets):
-    dataset_sample_path = path.join(dataset_path, f"dataset_{sample_index}")
+    
+    dataset_sample_path = dataset_path / f"dataset_{sample_index}"
 
-    lens_galaxy = lens.random_instance_from_priors_within_limits()
-    source_galaxy_0 = source_0.random_instance_from_priors_within_limits()
-    source_galaxy_1 = source_1.random_instance_from_priors_within_limits()
+    lens_galaxy = lens.random_instance()
+    source_galaxy = source.random_instance()
 
     """
     __Ray Tracing__
-    
-    Use the sample's lens and source galaxies to setup a tracer, which will generate the image for the 
-    simulated `Imaging` dataset.
-    
-    The steps below are expanded on in other `imaging/simulator` scripts, so check them out if anything below is unclear.
+
+    Use the sample's lens and source galaxies to setup a tracer, which will generate the multiple image positions 
+    and time delays for the simulated `PointDataset` dataset.
     """
-    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
     tracer_plotter.figures_2d(image=True)
 
+    """
+    __Positions__
+    
+    We now pass the `Tracer` to the solver to find the multiple image positions.
+    
+    """
+    positions = solver.solve(
+        tracer=tracer, source_plane_coordinate=source_galaxy.point.centre
+    )
+    positions_noise_map = grid.pixel_scale
+    
+    """
+    __Time Delays__
+    
+    We next compute the time delays of the multiple images, which are used to constrain the Hubble constant.
+    """
+    time_delays = tracer.time_delays_from(grid=positions)
+    time_delays_noise_map = al.ArrayIrregular(values=time_delays * 0.25)
+
+    """
+    __Point Dataset__
+
+    We now output the `PointDataset` dataset, which contains the multiple image positions, their noise levels,
+    the time delays and their noise levels.
+    
+    We output this to a .json file which can be loaded in point source modeling examples.
+    """
+    dataset = al.PointDataset(
+        name="point_0",
+        positions=positions,
+        positions_noise_map=grid.pixel_scale,
+        time_delays=time_delays,
+        time_delays_noise_map=time_delays_noise_map
+    )
+
+    al.output_to_json(
+        obj=dataset,
+        file_path=dataset_sample_path / "point_dataset_with_time_delays.json",
+    )
+
+    """
+    __Imaging__
+    
+    We also generate an `Imaging` dataset of the lens, which is used to visualize the lens and source galaxies
+    and the multiple image positions.
+    """
     dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
     dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
@@ -176,21 +211,21 @@ for sample_index in range(total_datasets):
 
     """
     __Output__
-    
+
     Output the simulated dataset to the dataset path as .fits files.
-    
+
     This uses the updated `dataset_path_sample` which outputs this sample lens to a unique folder.
     """
     dataset.output_to_fits(
-        data_path=path.join(dataset_sample_path, "data.fits"),
-        psf_path=path.join(dataset_sample_path, "psf.fits"),
-        noise_map_path=path.join(dataset_sample_path, "noise_map.fits"),
+        data_path=dataset_sample_path / "data.fits",
+        psf_path=dataset_sample_path / "psf.fits",
+        noise_map_path=dataset_sample_path / "noise_map.fits",
         overwrite=True,
     )
 
     """
     __Visualize__
-    
+
     Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset path as .png files.
     """
     mat_plot = aplt.MatPlot2D(
@@ -210,15 +245,16 @@ for sample_index in range(total_datasets):
 
     Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass profiles and galaxies
     are safely stored and available to check how the dataset was simulated in the future. 
-    
+
     This can be loaded via the method `tracer = al.from_json()`.
     """
     al.output_to_json(
         obj=tracer,
-        file_path=path.join(dataset_sample_path, "tracer.json"),
+        file_path=dataset_sample_path / "tracer.json",
     )
 
     """
     The dataset can be viewed in the 
-    folder `autolens_workspace/imaging/sample/mass_sie__source_sersic_{sample_index]`.
+    folder `autolens_workspace/dataset/point/samples/hubble_constant_time_delays/{sample_index]`.
     """
+

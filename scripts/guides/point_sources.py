@@ -495,7 +495,7 @@ calculated from the mass model. It includes the contribution of both the geometr
 different light rays to travel from the source to the observer) and the Shapiro time delay (the time it takes
 light to travel through the gravitational potential of the lens galaxy).
 """
-time_delays = tracer.time_delay_from(grid=positions)
+time_delays = tracer.time_delays_from(grid=positions)
 
 """
 In real observations, times delays are measured by taking photometric measurements of the multiple images over time,
