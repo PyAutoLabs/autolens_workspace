@@ -75,9 +75,7 @@ dataset_plotter.subplot_dataset()
 We next load an image of the dataset and plot the point source data over it, because as described in 
 the `modeling/start_here.ipynb` notebook, it is useful for visualizing the point source dataset.
 """
-data = al.Array2D.from_fits(
-    file_path=dataset_path / "data.fits", pixel_scales=0.05
-)
+data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.05)
 
 visuals = aplt.Visuals2D(positions=dataset.positions)
 
@@ -224,8 +222,7 @@ lens.mass.centre.centre_1 = 0.0
 lens.mass.einstein_radius = 1.6
 
 model = af.Collection(
-    galaxies=af.Collection(lens=lens, source=source),
-    cosmology=cosmology
+    galaxies=af.Collection(lens=lens, source=source), cosmology=cosmology
 )
 
 

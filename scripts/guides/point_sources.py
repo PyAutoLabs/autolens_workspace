@@ -417,9 +417,7 @@ fluxes = al.ArrayIrregular(values=fluxes)
 The noise values of the fluxes are set to the square root of the flux, which is a common given that Poisson noise
 is expected to dominate the noise of the fluxes.
 """
-fluxes_noise_map = al.ArrayIrregular(
-    values=[np.sqrt(flux) for _ in range(len(fluxes))]
-)
+fluxes_noise_map = al.ArrayIrregular(values=[np.sqrt(flux) for _ in range(len(fluxes))])
 """
 __Flux Point Dataset__
 
@@ -434,7 +432,7 @@ dataset = al.PointDataset(
     positions=positions,
     positions_noise_map=grid.pixel_scale,
     fluxes=fluxes,
-    fluxes_noise_map=fluxes_noise_map
+    fluxes_noise_map=fluxes_noise_map,
 )
 
 """
@@ -448,9 +446,7 @@ the `fluxes` and `fluxes_noise_map` to the fit.
 To fit fluxes, our model point source also needs a flux parameter, which is done by using the `PointFlux`
 component instead of the `Point` component. 
 """
-point = al.ps.PointFlux(
-    centre=(0.07, 0.07), flux=1.0
-)
+point = al.ps.PointFlux(centre=(0.07, 0.07), flux=1.0)
 
 source_galaxy = al.Galaxy(redshift=1.0, point_0=point)
 
@@ -519,7 +515,7 @@ dataset = al.PointDataset(
     positions=positions,
     positions_noise_map=grid.pixel_scale,
     time_delays=time_delays,
-    time_delays_noise_map=time_delays_noise_map
+    time_delays_noise_map=time_delays_noise_map,
 )
 
 """

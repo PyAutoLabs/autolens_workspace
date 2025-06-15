@@ -291,9 +291,7 @@ fluxes = al.ArrayIrregular(values=fluxes)
 The noise values of the fluxes are set to the square root of the flux, which is a common given that Poisson noise
 is expected to dominate the noise of the fluxes.
 """
-fluxes_noise_map = al.ArrayIrregular(
-    values=[np.sqrt(flux) for _ in range(len(fluxes))]
-)
+fluxes_noise_map = al.ArrayIrregular(values=[np.sqrt(flux) for _ in range(len(fluxes))])
 
 """
 __Point Dataset__
@@ -309,7 +307,7 @@ dataset = al.PointDataset(
     positions=positions,
     positions_noise_map=grid.pixel_scale,
     fluxes=fluxes,
-    fluxes_noise_map=fluxes_noise_map
+    fluxes_noise_map=fluxes_noise_map,
 )
 
 """"
@@ -368,7 +366,7 @@ dataset = al.PointDataset(
     positions=positions,
     positions_noise_map=grid.pixel_scale,
     time_delays=time_delays,
-    time_delays_noise_map=time_delays_noise_map
+    time_delays_noise_map=time_delays_noise_map,
 )
 
 """

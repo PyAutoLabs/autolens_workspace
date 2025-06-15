@@ -91,9 +91,7 @@ overlaid over the image will be output making interpretation of the results stra
 Loading and inputting the image of the dataset in this way is entirely optional, and if you are only interested in
 performing point-source modeling you do not need to do this.
 """
-data = al.Array2D.from_fits(
-    file_path=dataset_path / "data.fits", pixel_scales=0.05
-)
+data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.05)
 
 """
 We can also plot the dataset's multiple image positions over the observed image, to ensure they overlap the

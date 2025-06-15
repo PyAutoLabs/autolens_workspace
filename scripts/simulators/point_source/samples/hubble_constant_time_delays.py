@@ -141,7 +141,7 @@ Each iteration of the for loop will then create a tracer and use this to simulat
 total_datasets = 3
 
 for sample_index in range(total_datasets):
-    
+
     dataset_sample_path = dataset_path / f"dataset_{sample_index}"
 
     lens_galaxy = lens.random_instance()
@@ -168,7 +168,7 @@ for sample_index in range(total_datasets):
         tracer=tracer, source_plane_coordinate=source_galaxy.point.centre
     )
     positions_noise_map = grid.pixel_scale
-    
+
     """
     __Time Delays__
     
@@ -190,7 +190,7 @@ for sample_index in range(total_datasets):
         positions=positions,
         positions_noise_map=grid.pixel_scale,
         time_delays=time_delays,
-        time_delays_noise_map=time_delays_noise_map
+        time_delays_noise_map=time_delays_noise_map,
     )
 
     al.output_to_json(
@@ -257,4 +257,3 @@ for sample_index in range(total_datasets):
     The dataset can be viewed in the 
     folder `autolens_workspace/dataset/point/samples/hubble_constant_time_delays/{sample_index]`.
     """
-
