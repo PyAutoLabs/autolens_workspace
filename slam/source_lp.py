@@ -28,6 +28,9 @@ def run(
 
     Parameters
     ----------
+    settings_search
+        The settings used to set up the non-linear search which are general to all SLaM pipelines, for example
+        the `path_prefix`.
     analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
     lens_bulge
@@ -102,19 +105,95 @@ def run(
         dataset_model=dataset_model,
     )
 
-    """
-    For single-dataset analyses, the following code does not change the model or analysis and can be ignored.
-    
-    For multi-dataset analyses, the following code updates the model and analysis.
-    """
-    analysis = slam_util.analysis_multi_dataset_from(
-        analysis=analysis, model=model, multi_dataset_offset=True
-    )
-
     search = af.Nautilus(
         name="source_lp[1]",
         **settings_search.search_dict,
         n_live=200,
+    )
+
+    result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
+
+    return result
+
+
+def run_2_group(
+    settings_search: af.SettingsSearch,
+    analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
+    source_lp_result: af.Result,
+    extra_galaxies: Optional[af.Collection] = None,
+) -> af.Result:
+    """
+    The SlaM SOURCE LP PIPELINE 2 GROUP, which extends the SOURCE LP PIPELINE 1 to improve the light model of all of the
+    additional galaxies that are modeled in a group scale system.
+
+    This pipeline works as follows:
+
+    1) The main lens light, mass and source model, and light and mass of the extra galaxies, have been fitted in
+       SOURCE LP 1, meaning that most aspects of the model are good and do not need to be re-fitted.
+
+    2) However, there are many extra galaxies in the field of view outside the smaller circular mask used in `run_1`,
+       whose light needs an accurate model to ensure the lens light model is accurate.
+
+    3) This pipeline therefore refits the light of all extra galaxies, including those further out in the mask,
+       using the lens light and mass model from SOURCE LP 1.
+
+    This allows us to set up a light-to-mass scaling relationship for the extra galaxies, which is used to fit their
+    mass using fewer free parameters.
+
+    This is why the group SLaM pipeline performs fits using two masks, one which is much larger and used in this
+    pipeline (and LIGHT PIPLINE 2 GROUP) in order to fit the light of all surrounding extra galaxies.
+
+    Parameters
+    ----------
+    settings_search
+        The settings used to set up the non-linear search which are general to all SLaM pipelines, for example
+        the `path_prefix`.
+    analysis
+        The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
+    source_lp_result
+        The results of the SLaM SOURCE LP PIPELINE which ran before this pipeline.
+    extra_galaxies
+        Additional extra galaxies containing light and mass profiles, which model nearby line of sight galaxies.
+    """
+
+    """
+    __Model + Search + Analysis + Model-Fit (Search 1)__
+
+    Search 2 of the SOURCE LP PIPELINE fits a lens model where:
+
+     - The main lens galaxy is fixed from SOURCE LP 1 [instance]
+     - The lens extra galaxies light is modeled using light profiles [no prior initialization].
+     - The lens extra galaxies mass is fixed from SOURCE LP 1 [instance].
+     - The source galaxy's light is a light profiles [instance].
+
+    This search aims to accurately estimate an initial lens light model, mass model and source model.
+    """
+
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
+                redshift=source_lp_result.instance.galaxies.lens.redshift,
+                bulge=source_lp_result.instance.galaxies.lens.bulge,
+                disk=source_lp_result.instance.galaxies.lens.disk,
+                point=source_lp_result.instance.galaxies.lens.point,
+                mass=source_lp_result.instance.galaxies.lens.mass,
+                shear=source_lp_result.instance.galaxies.lens.shear,
+            ),
+            source=af.Model(
+                al.Galaxy,
+                redshift=source_lp_result.instance.galaxies.source.redshift,
+                bulge=source_lp_result.instance.galaxies.source.bulge,
+                disk=source_lp_result.instance.galaxies.source.disk,
+            ),
+        ),
+        extra_galaxies=extra_galaxies,
+    )
+
+    search = af.Nautilus(
+        name="source_lp[2]",
+        **settings_search.search_dict,
+        n_live=150,
     )
 
     result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)

@@ -23,8 +23,10 @@ def run_1_no_subhalo(
 
     Parameters
     ----------
+    settings_search
+        The settings used to set up the non-linear search which are general to all SLaM pipelines, for example
+        the `path_prefix`.
     analysis
-        The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
     mass_result
         The result of the SLaM MASS PIPELINE which ran before this pipeline.
     dataset_model
@@ -61,13 +63,6 @@ def run_1_no_subhalo(
         dataset_model=dataset_model,
     )
 
-    analysis = slam_util.analysis_multi_dataset_from(
-        analysis=analysis,
-        model=model,
-        multi_dataset_offset=True,
-        source_regularization_result=mass_result,
-    )
-
     search = af.Nautilus(
         name="subhalo[1]",
         **settings_search.search_dict,
@@ -96,6 +91,9 @@ def run_2_grid_search(
 
     Parameters
     ----------
+    settings_search
+        The settings used to set up the non-linear search which are general to all SLaM pipelines, for example
+        the `path_prefix`.
     analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
     mass_result
@@ -175,13 +173,6 @@ def run_2_grid_search(
         dataset_model=dataset_model,
     )
 
-    analysis = slam_util.analysis_multi_dataset_from(
-        analysis=analysis,
-        model=model,
-        multi_dataset_offset=True,
-        source_regularization_result=mass_result,
-    )
-
     search = af.Nautilus(
         name=f"subhalo[2]_[{search_tag}]",
         **settings_search.search_dict,
@@ -229,6 +220,9 @@ def run_3_subhalo(
 
     Parameters
     ----------
+    settings_search
+        The settings used to set up the non-linear search which are general to all SLaM pipelines, for example
+        the `path_prefix`.
     analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
     mass_result
@@ -304,13 +298,6 @@ def run_3_subhalo(
         ),
         extra_galaxies=extra_galaxies,
         dataset_model=dataset_model,
-    )
-
-    analysis = slam_util.analysis_multi_dataset_from(
-        analysis=analysis,
-        model=model,
-        multi_dataset_offset=True,
-        source_regularization_result=subhalo_result_1,
     )
 
     search = af.Nautilus(

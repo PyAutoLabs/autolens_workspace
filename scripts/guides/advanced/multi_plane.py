@@ -27,6 +27,7 @@ To illustrate multi-plane ray-tracing, we first set up a simple lens system, usi
 We'll make things simple and assume 3 galaxies at redshifts 0.5, 1.0 and 2.0. We'll use a singular isothermal sphere
 for each galaxy's mass profile.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

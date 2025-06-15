@@ -46,6 +46,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -236,7 +237,7 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 
 These examples include a results API with specific tools for visualizing and analysing decomposed mass model,
 for example 1D plots which separately show the density of stars and dark matter as a function of radius.

@@ -25,7 +25,7 @@ Internally, splicing uses standard Astorpy functions to open, edit and save .fit
 __CSV, Png and Fits__
 
 Workflow functionality closely mirrors the `png_make.py` and `fits_make.py`  examples, which load results of
-model-fits and output th em as .png files and .fits files to quickly summarise results. 
+model-fits and output th em as .png files and .fits files to quickly summarise results.
 
 The same initial fit creating results in a folder called `results_folder_csv_png_fits` is therefore used.
 
@@ -53,12 +53,14 @@ because it is optimized for fast querying of results.
 See the package `results/database` for a full description of how to set up the database and the benefits it provides,
 especially if loading results from hard-disk is slow.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+import numpy as np
 from os import path
 from pathlib import Path
 
@@ -100,7 +102,12 @@ for i in range(2):
 
     model = af.Collection(
         galaxies=af.Collection(
-            lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
+            lens=af.Model(
+                al.Galaxy,
+                redshift=0.5,
+                mass=al.mp.Isothermal,
+                shear=al.mp.ExternalShear,
+            ),
             source=af.Model(
                 al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore, disk=None
             ),
@@ -112,12 +119,22 @@ for i in range(2):
         name="results",
         unique_tag=f"simple__no_lens_light_{i}",
         n_live=100,
+        iterations_per_update=100,
         number_of_cores=1,
     )
 
     class AnalysisLatent(al.AnalysisImaging):
         def compute_latent_variables(self, instance):
-            return {"example_latent": instance.galaxies.galaxy.bulge.sersic_index * 2.0}
+            if hasattr(instance.galaxies.lens, "shear"):
+                magnitude, angle = al.convert.shear_magnitude_and_angle_from(
+                    gamma_1=instance.galaxies.lens.shear.gamma_1,
+                    gamma_2=instance.galaxies.lens.shear.gamma_2,
+                )
+
+                return {
+                    "galaxies.lens.shear.magnitude": magnitude,
+                    "galaxies.lens.shear.angle": angle,
+                }
 
     analysis = AnalysisLatent(dataset=dataset)
 
@@ -170,7 +187,7 @@ This runs on all results the `Aggregator` object has loaded from the `output` fo
 where two model-fits are loaded, the `image` object contains two images.
 """
 hdu_list = agg_fits.extract_fits(
-    hdus=[al.agg.fits_fit.model_image, al.agg.fits_fit.residual_map],
+    hdus=[al.agg.fits_fit.model_data, al.agg.fits_fit.residual_map],
 )
 
 """
@@ -207,7 +224,7 @@ We achieve this behaviour by inputting `name="unique_tag"` to the `output_to_fol
 agg_fits.output_to_folder(
     folder=workflow_path,
     name="unique_tag",
-    hdus=[al.agg.fits_fit.model_image, al.agg.fits_fit.residual_map],
+    hdus=[al.agg.fits_fit.model_data, al.agg.fits_fit.residual_map],
 )
 
 """
@@ -224,8 +241,55 @@ print([search.unique_tag for search in agg.values("search")])
 agg_fits.output_to_folder(
     folder=workflow_path,
     name=["hi_0.fits", "hi_1.fits"],
-    hdus=[al.agg.fits_fit.model_image, al.agg.fits_fit.residual_map],
+    hdus=[al.agg.fits_fit.model_data, al.agg.fits_fit.residual_map],
 )
+
+"""
+__CSV Files__
+
+In the results `image` folder .csv files containing the information to visualize aspects of a result may be present.
+
+A common example is the file `source_plane_reconstruction_0.csv`, which contains the y and x coordinates of the 
+pixelization mesh, the reconstruct values and the noise map of these values.
+
+The `AggregateFITS` object has a method `extract_csv` which extracts this table from each .csv file in the results,
+returning the extracted data as a list of dictionaries. This can then be used to visualize the data, and output
+it to a .fits file elsewhere.
+
+Below, we demonstrate a common use case for a pixelization. Each .csv file is loaded, benefitting from the fact
+that because it stores the irregular mesh values it is the most accurate way to store the data whilst also using
+much less hard-disk space than, for example. converting it to a 2D array and .fits file. We then use the
+loaded values to interpolate the data onto a regular grid and output it to .fits files in a folder.
+
+The code below is commented out because the model does not use a pixelization, but it does work if a
+pixelization is used.
+"""
+# reconstruction_dict_list = agg_fits.extract_csv(
+#     filename="source_plane_reconstruction_0",
+# )
+#
+# from scipy.interpolate import griddata
+#
+# for i, reconstruction_dict in enumerate(reconstruction_dict_list):
+#
+#     y = reconstruction_dict["y"]
+#     x = reconstruction_dict["x"]
+#     values = reconstruction_dict["reconstruction"]
+#
+#     points = np.stack(
+#         arrays=(reconstruction_dict["x"], reconstruction_dict["y"]), axis=-1
+#     )
+#
+#     interpolation_grid = al.Grid2D.from_extent(
+#         extent=(-1.0, 1.0, -1.0, 1.0), shape_native=(201, 201)
+#     )
+#
+#     interpolated_array = griddata(points=points, values=values, xi=interpolation_grid)
+#
+#     al.output_to_fits(
+#         values=interpolated_array,
+#         file_path=workflow_path / f"interpolated_reconstruction_{i}.fits",
+#     )
 
 
 """

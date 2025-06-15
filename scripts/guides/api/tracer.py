@@ -51,6 +51,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `results/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -503,6 +504,8 @@ radial_critical_curve = tracer.radial_critical_curve_list_from(grid=grid)
 tangential_caustic = tracer.tangential_caustic_list_from(grid=grid)
 
 radial_caustic = tracer.radial_caustic_list_from(grid=grid)
+
+time_delay = tracer.time_delay_2d_from(grid=grid)
 
 ### You should be able to comment this out and it work fine ###
 

@@ -27,6 +27,9 @@ def run(
 
     Parameters
     ----------
+    settings_search
+        The settings used to set up the non-linear search which are general to all SLaM pipelines, for example
+        the `path_prefix`.
     analysis
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
     source_result_for_lens
@@ -144,18 +147,6 @@ def run(
         ),
         extra_galaxies=extra_galaxies,
         dataset_model=dataset_model,
-    )
-
-    """
-    For single-dataset analyses, the following code does not change the model or analysis and can be ignored.
-
-    For multi-dataset analyses, the following code updates the model and analysis.
-    """
-    analysis = slam_util.analysis_multi_dataset_from(
-        analysis=analysis,
-        model=model,
-        multi_dataset_offset=True,
-        source_regularization_result=source_result_for_source,
     )
 
     search = af.Nautilus(

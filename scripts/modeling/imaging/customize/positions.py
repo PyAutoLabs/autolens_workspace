@@ -31,6 +31,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -123,7 +124,7 @@ search = af.Nautilus(
 """
 __Position Thresholding__
 
-Unlike other example scripts, we also pass the `AnalysisImaging` object below a `PositionsLHPenalty` object, which
+Unlike other example scripts, we also pass the `AnalysisImaging` object below a `PositionsLH` object, which
 includes the positions we loaded above, alongside a `threshold`.
 
 This is because `Inversion`'s suffer a bias whereby they fit unphysical lens models where the source galaxy is 
@@ -140,15 +141,15 @@ will converges towards an accurate mass model. It does this very fast, as ray-tr
 cheap. 
 
 The threshold of 0.5" is large. For an accurate lens model we would anticipate the positions trace within < 0.01" of
-one another. The high threshold ensures only the initial mass models at the start of the fit are resampled.
+one another. The high threshold ensures only the initial mass models at the start of the fit are penalized.
 """
-positions_likelihood = al.PositionsLHPenalty(positions=positions, threshold=0.3)
+positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
 """
 __Analysis__
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, positions_likelihood=positions_likelihood
+    dataset=dataset, positions_likelihood_list=[positions_likelihood]
 )
 
 """

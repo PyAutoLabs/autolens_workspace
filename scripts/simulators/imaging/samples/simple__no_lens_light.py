@@ -12,7 +12,7 @@ defined via priors, which can be customized to simulate a wider range of strong 
 This script simulate a sample of `Imaging` datasets of 'galaxy-scale' strong lenses, whose light and mass profiles are
 the same as those used in the `start_here` script, but without a lens light component.
 
-It is used in `autolens_workspace/notebooks/imaging/advanced/hierarchical` to illustrate how a hierarchical model can
+It is used in `autolens_workspace/notebooks/advanced/graphical` to illustrate how a hierarchical model can
 be fitted to a large sample of strong lenses in order to infer the glboal properties of the lens sample.
 
 This script uses the signal-to-noise based light profiles described in the
@@ -30,6 +30,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -44,16 +45,14 @@ import autolens.plot as aplt
 """
 __Dataset Paths__
 
-The `dataset_type` describes the type of data being simulated (in this case, `Imaging` data) and `dataset_name`
-gives it a descriptive name. 
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
 """
 dataset_label = "samples"
 dataset_type = "imaging"
 dataset_sample_name = "simple__no_lens_light"
 
 """
-The path where the dataset will be output, which in this case is:
-`/autolens_workspace/dataset/imaging/sample__mass_sis_0`
+The path where the dataset will be output.
 """
 dataset_path = path.join("dataset", dataset_type, dataset_label, dataset_sample_name)
 

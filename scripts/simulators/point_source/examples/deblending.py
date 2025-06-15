@@ -28,6 +28,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -42,7 +43,7 @@ import autolens.plot as aplt
 """
 __Dataset Paths__
 
-The path where the dataset will be output.
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
 """
 dataset_type = "point_source"
 dataset_name = "deblending"
@@ -214,7 +215,7 @@ The `positions` and `fluxes` above represent the location and brightnesses of th
 
 To include these multiple images in the imaging simulation, we add each multiple image individually in the image-plane. 
 These multiple images are assumed to have already been convolved with the PSF, which is why they use the `lp_operated` 
-profile (see `autolens_workspace/*/notebooks/modeling/imaging/features/advanced/operated_light_profiles.py`).
+profile (see `autolens_workspace/*/notebooks/modeling/features/advanced/operated_light_profiles.py`).
 
 The `Imaging` simulation procedure therefore does not place a point-source in the source-plane, and use ray-tracing
 to determine its image-plane multiple images. It is effectively doing this, because it uses the `positions` and

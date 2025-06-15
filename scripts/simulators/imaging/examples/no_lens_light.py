@@ -5,7 +5,7 @@ Simulator: No Lens Light
 This script simulates `Imaging` of a 'galaxy-scale' which is identical to the `simple` simulated in the `start_here.py`
 script, but where the lens galaxy's light is omitted.
 
-It is used in `autolens_workspace/notebooks/modeling/imaging/features/no_lens_light.ipynb` to illustrate how to fit a
+It is used in `autolens_workspace/notebooks/modeling/features/no_lens_light.ipynb` to illustrate how to fit a
 lens model to data where the lens galaxy's light is not present (e.g. because it is too faint to be detected).
 
 __Model__
@@ -14,11 +14,12 @@ This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is an `Sersic`.
- 
+
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -32,7 +33,7 @@ import autolens.plot as aplt
 """
 __Dataset Paths__
 
-The path where the dataset will be output.
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
 """
 dataset_type = "imaging"
 dataset_name = "simple__no_lens_light"

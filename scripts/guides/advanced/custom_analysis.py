@@ -47,6 +47,7 @@ the **PyAutoLens** source code.
 
 We still recommend you take a look to see how things are structured!
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -550,7 +551,7 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 
 __To Do List__
 

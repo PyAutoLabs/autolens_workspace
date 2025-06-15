@@ -30,6 +30,7 @@ arc seconds, luminosities in electrons per second and mass quantities (e.g. conv
 The guide `units_and_cosmology.ipynb` illustrates how to convert these quantities to physical units like
 kiloparsecs, magnitudes and solar masses.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

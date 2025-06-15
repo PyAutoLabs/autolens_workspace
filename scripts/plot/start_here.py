@@ -17,6 +17,7 @@ __Contents__
 - **Searches**: Visualize the results of a search using a `Plotter` object.
 - **Adding Plotter Objects Together**: Add `MatPlot` and `Visuals` objects together to customize the appearance of figures.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

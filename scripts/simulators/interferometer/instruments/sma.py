@@ -10,6 +10,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -34,8 +35,7 @@ dataset_type = "instruments"
 dataset_instrument = "sma"
 
 """
-The path where the dataset will be output, which in this case is
-`/autolens_workspace/dataset/interferometer/instruments/sma/simple`
+The path where the dataset will be output.
 """
 dataset_path = path.join("dataset", "interferometer", dataset_type, dataset_instrument)
 

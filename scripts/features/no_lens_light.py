@@ -3,7 +3,7 @@ Modeling Features: No Lens Light
 ================================
 
 CCD imaging data of a strong lens may not have lens galaxy light emission present, for example if the lens galaxy light
-has already been subtracted from the image. 
+has already been subtracted from the image.
 
 This example illustrates how to fit a lens model to data where the lens galaxy's light is not present.
 
@@ -53,6 +53,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -244,7 +245,7 @@ print(result.info)
 """
 We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 """
 print(result.max_log_likelihood_instance)
 
@@ -260,7 +261,7 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 
 __Wrap Up__
 

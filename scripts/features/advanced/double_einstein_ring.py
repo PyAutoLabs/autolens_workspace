@@ -2,12 +2,12 @@
 Modeling Features: Double Einstein Ring
 =======================================
 
-A double Einstein ring lens is a strong lens system where there are two source galaxies at different redshifts 
-behind the lens galaxy. They appear as two distinct Einstein rings in the image-plane, and can constrain 
+A double Einstein ring lens is a strong lens system where there are two source galaxies at different redshifts
+behind the lens galaxy. They appear as two distinct Einstein rings in the image-plane, and can constrain
 Cosmological parameters in a way single Einstein ring lenses cannot.
 
-To analyse these systems correctly the mass of the lens galaxy and the first source galaxy must be modeled 
-simultaneously, and the emission of both source galaxies must be modeled simultaneously. 
+To analyse these systems correctly the mass of the lens galaxy and the first source galaxy must be modeled
+simultaneously, and the emission of both source galaxies must be modeled simultaneously.
 
 This script illustrates the PyAutoLens API for modeling a double Einstein ring lens.
 
@@ -24,6 +24,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -194,14 +195,14 @@ cosmology.Om0 = af.GaussianPrior(mean=0.3, sigma=0.1)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),
-    cosmology=cosmology,
+    #    cosmology=cosmology,
 )
 
 """
-The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
-`start_here.ipynb` for a description of how to fix this).
+The `info` attribute shows the model in a readable format.
 
-This confirms the model is composed of three galaxies, two of which are lensed source galaxies.
+This confirms the model is composed of three galaxies, two of which are lensed source galaxies, and that
+the cosmology is included as a model component.
 """
 print(model.info)
 
@@ -217,6 +218,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,
     n_live=150,
     number_of_cores=1,
+    iterations_per_update=2000,
 )
 
 """
@@ -286,7 +288,7 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 
 These examples show how the results API can be extended to investigate double Einstein ring results.
 

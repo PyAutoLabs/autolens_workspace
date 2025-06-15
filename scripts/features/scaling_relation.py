@@ -79,10 +79,11 @@ __Extra Galaxies API__
 **PyAutoLens** refers to all galaxies surrounded the strong lens as `extra_galaxies`, with the modeling API extended
 to model them.
 
-The galaxies (and their parameters) included via a scaling relation are therefore prefixed with `extra_galaxy_` to 
-distinguish them from the lens galaxy and source galaxy, and in the model they are separate from the `galaxies` and 
+The galaxies (and their parameters) included via a scaling relation are therefore prefixed with `extra_galaxy_` to
+distinguish them from the lens galaxy and source galaxy, and in the model they are separate from the `galaxies` and
 use their own `extra_galaxies` collection.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -104,7 +105,7 @@ lensed source.
 
 These three galaxies will be modeled using a scaling relation.
 """
-dataset_name = "lens_x3__source_x1"
+dataset_name = "simple"
 dataset_path = path.join("dataset", "group", dataset_name)
 
 dataset = al.Imaging.from_fits(

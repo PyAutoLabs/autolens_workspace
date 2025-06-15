@@ -14,11 +14,12 @@ This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
  - The lens galaxy's light profiles are an `Sersic` and `Exponential`.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is an `Sersic`.
- 
+
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook. 
+If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -32,7 +33,7 @@ import autolens.plot as aplt
 """
 __Dataset Paths__
 
-The path where the dataset will be output.
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
 """
 dataset_type = "imaging"
 dataset_name = "simple__source_x2"

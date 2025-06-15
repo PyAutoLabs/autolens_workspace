@@ -6,7 +6,7 @@ This script simulates `Imaging` of a strong lens where the sky background is not
 appears in the dataset.
 
 It is used to demonstrate sky background modeling in
-the `autolens_workspace/*/modeling/imaging/features/sky_background.py` example.
+the `autolens_workspace/*/modeling/features/sky_background.py` example.
 
 __Model__
 
@@ -20,6 +20,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -33,7 +34,7 @@ import autolens.plot as aplt
 """
 __Dataset Paths__
 
-The path where the dataset will be output.
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
 """
 dataset_type = "imaging"
 dataset_name = "sky_background"

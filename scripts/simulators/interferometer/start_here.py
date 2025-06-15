@@ -7,6 +7,7 @@ This script simulates `Interferometer` data of a 'galaxy-scale' strong lens wher
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is an `Sersic`.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -29,8 +30,9 @@ dataset_type = "interferometer"
 dataset_name = "simple"
 
 """
-The path where the dataset will be output, which in this case is
-`/autolens_workspace/dataset/interferometer/simple`
+The path where the dataset will be output.
+
+In this example, this is: `/autolens_workspace/dataset/interferometer/simple`
 """
 dataset_path = path.join("dataset", dataset_type, dataset_name)
 

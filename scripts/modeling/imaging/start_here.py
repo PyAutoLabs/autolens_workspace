@@ -39,6 +39,7 @@ The `Imaging` dataset fitted in this example confirms to a number of standard th
 If you are intending to fit your own strong lens data, you will need to ensure it conforms to these standards, which are
 described in the script `autolens_workspace/*/data_preparation/imaging/start_here.ipynb`.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -149,7 +150,7 @@ __Model__
 
 In this example we compose a lens model where:
 
- - The lens galaxy's light is a linear parametric `Sersic` bulge [7 parameters].
+ - The lens galaxy's light is a linear parametric `Sersic` bulge [6 parameters].
  
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
  
@@ -165,7 +166,7 @@ This means it is not a free parameter, reducing the dimensionality of non-linear
 
 Linear light profiles significantly improve the speed, accuracy and reliability of modeling and they are used
 by default in every modeling example. A full description of linear light profiles is provided in the
-`autolens_workspace/*/modeling/imaging/features/linear_light_profiles.py` example.
+`autolens_workspace/*/modeling/features/linear_light_profiles.py` example.
 
 A standard light profile can be used if you change the `lp_linear` to `lp`, but it is not recommended.
 
@@ -324,7 +325,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,
     n_live=150,
     number_of_cores=4,
-    iterations_per_update=20000,
+    iterations_per_update=10000,
 )
 
 """
@@ -445,7 +446,7 @@ The `Result` object also contains:
  - The model corresponding to the maximum log likelihood solution in parameter space.
  - The corresponding maximum log likelihood `Tracer` and `FitImaging` objects.
  
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 """
 print(result.max_log_likelihood_instance)
 
@@ -472,18 +473,20 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
-This script gives a concise overview of the PyAutoLens modeling API, fitting one the simplest lens models possible.
-So, what next? 
+This script gives a concise overview of the basic modeling API, fitting one the simplest lens models possible.
+
+Lets now consider what features you should read about to improve your lens modeling, especially if you are aiming
+to fit more complex models to your data.
 
 __Features__
 
-The examples in the `autolens_workspace/*/modeling/imaging/features` package illustrate other lens modeling features. 
+The examples in the `autolens_workspace/*/modeling/features` package illustrate other lens modeling features. 
 
-We recommend you checkout the following four features, because they make lens modeling in general more reliable and 
+We recommend you checkout the following features, because they make lens modeling in general more reliable and 
 efficient (you will therefore benefit from using these features irrespective of the quality of your data and 
 scientific topic of study).
 
-We recommend you now checkout the following four features:
+We recommend you now checkout the following features:
 
 - ``linear_light_profiles.py``: The model light profiles use linear algebra to solve for their intensity, reducing model complexity.
 - ``multi_gaussian_expansion.py``: The lens (or source) light is modeled as ~25-100 Gaussian basis functions 

@@ -8,6 +8,9 @@ positions of a lensed quasar.
 After reading this script, the `features`, `customize` and `searches` folders provide example for performing lens
 modeling in different ways and customizing the analysis.
 
+The `features` folder contains examples of how to perform point source modeling using the fluxes and time delays
+of point sources, which are not covered in this example.
+
 __Not Using Light Profiles__
 
 Users familiar with PyAutoLens who are familiar with analysing imaging or interferometer data will be used to
@@ -33,13 +36,14 @@ The `ExternalShear` is also not included in the mass model, where it is for the 
 For a quadruply imaged point source (8 data points) there is insufficient information to fully constain a model with
 an `Isothermal` and `ExternalShear` (9 parameters).
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -51,25 +55,25 @@ Load the strong lens point-source dataset `simple`, which is the dataset we will
 lens modeling.
 """
 dataset_name = "simple"
-dataset_path = path.join("dataset", "point_source", dataset_name)
+dataset_path = Path("dataset") / "point_source" / dataset_name
 
 """
 We now load the point source dataset we will fit using point source modeling. 
 
-We load this data as a `PointDataset`, which contains the positions and fluxes of every point source. 
+We load this data as a `PointDataset`, which contains the positions of every point source. 
 """
 dataset = al.from_json(
-    file_path=path.join(dataset_path, "point_dataset.json"),
+    file_path=dataset_path / "point_dataset_positions_only.json",
 )
 
 """
-We can print this dictionary to see the dataset's `name`, `positions` and `fluxes` and noise-map values.
+We can print this dictionary to see the dataset's `name`, `positions`and noise-map values.
 """
 print("Point Dataset Info:")
 print(dataset.info)
 
 """
-We can also plot the positions and fluxes of the `PointDataset`.
+We can also plot the positions of the `PointDataset`.
 """
 dataset_plotter = aplt.PointDatasetPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
@@ -87,9 +91,7 @@ overlaid over the image will be output making interpretation of the results stra
 Loading and inputting the image of the dataset in this way is entirely optional, and if you are only interested in
 performing point-source modeling you do not need to do this.
 """
-data = al.Array2D.from_fits(
-    file_path=path.join(dataset_path, "data.fits"), pixel_scales=0.05
-)
+data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.05)
 
 """
 We can also plot the dataset's multiple image positions over the observed image, to ensure they overlap the
@@ -251,7 +253,7 @@ For users on a Windows Operating system, using `number_of_cores>1` may lead to a
 reduced back to 1 to fix it.
 """
 search = af.Nautilus(
-    path_prefix=path.join("point_source", "modeling"),
+    path_prefix=Path("point_source") / "modeling",
     name="start_here",
     unique_tag=dataset_name,
     n_live=100,
@@ -401,7 +403,7 @@ print(result.info)
 """
 We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 """
 print(result.max_log_likelihood_instance)
 
@@ -426,5 +428,5 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 """

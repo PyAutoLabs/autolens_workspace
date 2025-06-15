@@ -8,7 +8,7 @@ which will help you prepare your dataset to adhere to them if it does not alread
 
 __SLACK__
 
-The interferometer data preparation scripts are currently being developed and are not yet complete. If you are 
+The interferometer data preparation scripts are currently being developed and are not yet complete. If you are
 unsure of how to prepare your dataset, please message us on Slack and we will help you directly!
 
 __Pixel Scale__
@@ -29,6 +29,7 @@ The pixel scale of some common interferometers is as follows:
 It is absolutely vital you use a sufficently small pixel scale that all structure in the data is resolved after the
 Fourier transform. If the pixel scale is too large, the Fourier transform will smear out the data and the lens model.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -83,7 +84,7 @@ __UV Wavelengths__
 The uv-wavelengths define the baselines of the interferometer. They are used to Fourier transform the image to the
 uv-plane, which is where the lens model is evaluated.
 """
-uv_wavelengths = al.util.array_2d.numpy_array_2d_via_fits_from(
+uv_wavelengths = al.ndarray_via_fits_from(
     file_path=path.join(dataset_path, "uv_wavelengths.fits"), hdu=0
 )
 

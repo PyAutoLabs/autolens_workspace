@@ -27,7 +27,7 @@ capabilities.
 __CSV, Png and Fits__
 
 Workflow functionality closely mirrors the `png_make.py` and `fits_make.py`  examples, which load results of
-model-fits and output th em as .png files and .fits files to quickly summarise results. 
+model-fits and output th em as .png files and .fits files to quickly summarise results.
 
 The same initial fit creating results in a folder called `results_folder_csv_png_fits` is therefore used.
 
@@ -55,6 +55,7 @@ because it is optimized for fast querying of results.
 See the package `results/database` for a full description of how to set up the database and the benefits it provides,
 especially if loading results from hard-disk is slow.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -117,11 +118,7 @@ for i in range(2):
         number_of_cores=1,
     )
 
-    class AnalysisLatent(al.AnalysisImaging):
-        def compute_latent_variables(self, instance):
-            return {"example_latent": instance.galaxies.galaxy.bulge.sersic_index * 2.0}
-
-    analysis = AnalysisLatent(dataset=dataset)
+    analysis = al.AnalysisImaging(dataset=dataset)
 
     result = search.fit(model=model, analysis=analysis)
 
@@ -161,7 +158,7 @@ __Extract Images__
 
 We now extract 3 images from the `subplot_fit.png` file and make them together into a single image.
 
-We will extract the `data`, `model_image` and `normalized_residual_map` images, which are images you are used to
+We will extract the `data`, `model_data` and `normalized_residual_map` images, which are images you are used to
 plotting and inspecting in the `output` folder of a model-fit.
 
 We do this by simply passing the `agg_image.extract_image` method the `al.agg` attribute for each image we want to
@@ -176,7 +173,7 @@ is a single row of 3 subplots.
 image = agg_image.extract_image(
     subplots=[
         al.agg.subplot_fit.data,
-        al.agg.subplot_fit.model_image,
+        al.agg.subplot_fit.model_data,
         al.agg.subplot_fit.normalized_residual_map,
     ],
 )
@@ -218,7 +215,7 @@ agg_image.output_to_folder(
     name="unique_tag",
     subplots=[
         al.agg.subplot_fit.data,
-        al.agg.subplot_fit.model_image,
+        al.agg.subplot_fit.model_data,
         al.agg.subplot_fit.normalized_residual_map,
     ],
 )
@@ -239,7 +236,7 @@ agg_image.output_to_folder(
     name="unique_tag",
     subplots=[
         al.agg.subplot_fit.data,
-        al.agg.subplot_fit.model_image,
+        al.agg.subplot_fit.model_data,
         al.agg.subplot_fit.normalized_residual_map,
     ],
 )
@@ -260,7 +257,7 @@ image = agg_image.extract_image(
     subplots=[
         al.agg.subplot_dataset.data,
         al.agg.subplot_dataset.psf_log_10,
-        al.agg.subplot_fit.model_image,
+        al.agg.subplot_fit.model_data,
         al.agg.subplot_fit.chi_squared_map,
     ]
     # subplot_shape=(2, 2),

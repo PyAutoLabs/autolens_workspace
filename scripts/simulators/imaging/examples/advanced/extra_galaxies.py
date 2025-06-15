@@ -2,17 +2,17 @@
 Simulator: Extra Galaxies
 =========================
 
-Certain lenses have small galaxies within their Einstein radius, or nearby the lensed source emission. 
+Certain lenses have small galaxies within their Einstein radius, or nearby the lensed source emission.
 
-The emission of these galaxies may overlap the lensed source emission, and their mass may contribute to the lensing 
+The emission of these galaxies may overlap the lensed source emission, and their mass may contribute to the lensing
 of the source.
 
 We therefore will need to mask the emission of these extra galaxies or include them in the model as light profiles which
 fit and subtract the emission. We may also include these galaxies as mass profiles in the lens model, accounting for
 their lensing effects via ray-tracing.
 
-This uses the modeling API, which is illustrated in 
-the script `autolens_workspace/*/modeling/imaging/features/extra_galaxies.py`.
+This uses the modeling API, which is illustrated in
+the script `autolens_workspace/*/modeling/features/extra_galaxies.py`.
 
 This script simulates an imaging dataset which includes extra galaxies near the lens and source
 galaxies. This is used to illustrate the extra galaxies API in the script above.
@@ -38,7 +38,7 @@ not impact the lens model.
 
 To illustrate how mark extra galaxy centres on a dataset so they can be used in the lens model.
 
- `autolens_workspace/*/modeling/imaging/features/extra_galaxies.ipynb`
+ `autolens_workspace/*/modeling/features/extra_galaxies.ipynb`
 
 To illustrate how compose and fit a lens model which includes the extra galaxies as light and mass profiles.
 
@@ -46,6 +46,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
+
 # from pyprojroot import here
 # workspace_path = str(here())
 # %cd $workspace_path
@@ -58,8 +59,7 @@ import autolens.plot as aplt
 """
 __Dataset Paths__
 
-The `dataset_type` describes the type of data being simulated (in this case, `Imaging` data) and `dataset_name`
-gives it a descriptive name. 
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
 """
 dataset_type = "imaging"
 dataset_name = "extra_galaxies"

@@ -75,6 +75,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -528,7 +529,7 @@ print(result.info)
 """
 We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 """
 print(result.max_log_likelihood_instance)
 
@@ -710,7 +711,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **Pyautolens**, which 
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **Pyautolens**, which 
 includes a dedicated tutorial for linear objects like basis functions.
 
 __Regularization__

@@ -5,6 +5,7 @@ GUI Preprocessing: Lens Light Centre
 This tool allows one to input the lens light centre(s) of a strong lens(es) via a GUI, which can be used as a fixed
 value in pipelines.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

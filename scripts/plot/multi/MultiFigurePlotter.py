@@ -21,6 +21,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `plot/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -89,42 +90,23 @@ multi_figure_plotter.subplot_of_figure(func_name="figures_2d", figure_name="data
 """
 __Multi Fits__
 
-The `MultiFigurePlotter` object can also output a list of figures to a single `.fits` file, where each image 
-goes in each hdu extension as it is called.
+We can also output a list of figures to a single `.fits` file, where each image goes in each hdu extension as it is 
+called.
 
-The interface is similiar to above using a list of plotters, however the inputs to `output_to_fits` are different
-and are:
-
- - `func_name_list`: The list of the function names used to plot the figure in the `ImagingPlotter` (e.g. `figures_2d`).
- - `figure_name_list`: The list of the figure names plotted by the function (e.g. `data`).
- - `filename`: The name of the `.fits` file written to the output path.
- - `tag_list`: The list of tags used to name the `.fits` file extensions.
- - `remove_fits_first`: If the `.fits` file already exists, should it be overwritten?
-
-A `func_name` must be given for every `figure_name` and vice versa, so that the `MultiFigurePlotter` knows which
-pair of inputs to use.
-
-Therefore in the example below we input `figures_2d` twice in `func_name_list`, which correspond to the calls
-`figures_2d(data=True`) and `figures_2d(noise_map=True)` in the `ImagingPlotter` objects.   
+This interface uses a specific method from autoconf called `hdu_list_for_output_from`, which takes a list of
+values and a list of extension names, and returns a `HDUList` object that can be written to a `.fits` file.
 """
-mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path="."))
+from autoconf.fitsable import hdu_list_for_output_from
 
-imaging_plotter_list = [
-    aplt.ImagingPlotter(dataset=dataset, mat_plot_2d=mat_plot_2d)
-    for dataset in dataset_list
-]
+image_list = [dataset.data, dataset.noise_map]
 
-multi_plotter = aplt.MultiFigurePlotter(
-    plotter_list=imaging_plotter_list,
+hdu_list = hdu_list_for_output_from(
+    values_list=[image_list[0].mask.astype("float")] + image_list,
+    ext_name_list=["mask"] + ["data", "noise_map"],
+    header_dict=dataset.mask.header_dict,
 )
 
-multi_plotter.output_to_fits(
-    func_name_list=["figures_2d", "figures_2d"],
-    figure_name_list=["data", "noise_map"],
-    filename="data_and_noise_map",
-    tag_list=["DATA", "NOISE_MAP"],
-    remove_fits_first=True,
-)
+hdu_list.writeto("dataset.fits", overwrite=True)
 
 """
 __Wrap Up__

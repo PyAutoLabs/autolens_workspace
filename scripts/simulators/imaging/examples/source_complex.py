@@ -6,7 +6,7 @@ This script simulates `Imaging` of a 'galaxy-scale' strong lens where the source
 other examples, being composed of 4 Sersics.
 
 It is used to illustrate features which reconstruct the source galaxy's light using a pixelizaiton, for example
-in the script `autolens_workspace/notebooks/modeling/imaging/features/pixelization.ipynb`.
+in the script `autolens_workspace/notebooks/modeling/features/pixelization.ipynb`.
 
 __Model__
 
@@ -22,6 +22,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -35,8 +36,7 @@ import autolens.plot as aplt
 """
 __Dataset Paths__
 
-The `dataset_type` describes the type of data being simulated (in this case, `Imaging` data) and `dataset_name`
-gives it a descriptive name. 
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
 """
 dataset_type = "imaging"
 dataset_name = "source_complex"

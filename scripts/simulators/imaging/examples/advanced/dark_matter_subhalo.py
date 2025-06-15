@@ -22,6 +22,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
 """
+
 # from pyprojroot import here
 # workspace_path = str(here())
 # %cd $workspace_path
@@ -34,8 +35,7 @@ import autolens.plot as aplt
 """
 __Dataset Paths__
 
-The `dataset_type` describes the type of data being simulated (in this case, `Imaging` data) and `dataset_name`
-gives it a descriptive name. 
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
 """
 dataset_type = "imaging"
 dataset_name = "dark_matter_subhalo"

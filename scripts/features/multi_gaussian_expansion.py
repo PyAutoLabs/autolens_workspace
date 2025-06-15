@@ -2,8 +2,8 @@
 Modeling Features: Multi Gaussian Expansion
 ===========================================
 
-A multi Gaussian expansion (MGE) decomposes the lens light into ~15-100 Gaussians, where the `intensity` of every 
-Gaussian is solved for via a linear algebra using a process called an "inversion" (see the `light_parametric_linear.py` 
+A multi Gaussian expansion (MGE) decomposes the lens light into ~15-100 Gaussians, where the `intensity` of every
+Gaussian is solved for via a linear algebra using a process called an "inversion" (see the `light_parametric_linear.py`
 feature for a full description of this).
 
 This script fits a lens light model which uses an MGE consisting of 60 Gaussians. It is fitted to simulated data
@@ -31,13 +31,13 @@ __Contents__
 
 __Advantages__
 
-Symmetric light profiles (e.g. elliptical Sersics) may leave significant residuals, because they fail to capture 
-irregular and asymmetric morphological of galaxies (e.g. isophotal twists, an ellipticity which varies radially). 
+Symmetric light profiles (e.g. elliptical Sersics) may leave significant residuals, because they fail to capture
+irregular and asymmetric morphological of galaxies (e.g. isophotal twists, an ellipticity which varies radially).
 An MGE fully captures these features and can therefore much better represent the emission of complex lens galaxies.
 
 The MGE model can be composed in a way that has fewer non-linear parameters than an elliptical Sersic. In this example,
 two separate groups of Gaussians are used to represent the `bulge` and `disk` of the lens, which in total correspond
-to just N=6 non-linear parameters (a `bulge` and `disk` comprising two linear Sersics has N=10 parameters). 
+to just N=6 non-linear parameters (a `bulge` and `disk` comprising two linear Sersics has N=10 parameters).
 
 The MGE model parameterization is also composed such that neither the `intensity` parameters or any of the
 parameters controlling the size of the Gaussians (their `sigma` values) are non-linear parameters sampled by Nautilus.
@@ -85,7 +85,7 @@ The second example in this script therefore uses an MGE source. We strongly reco
 MGE lens light models and source models, instead of the elliptical Sersic profiles, as soon as possible!
 
 To capture the irregular and asymmetric features of the source's morphology, or reconstruct multiple source galaxies,
-we recommend using a pixelized source reconstruction (see `autolens_workspace/modeling/imaging/features/pixelization.py`).
+we recommend using a pixelized source reconstruction (see `autolens_workspace/modeling/features/pixelization.py`).
 Combining this with an MGE for the len's light can be a very powerful way to model strong lenses!
 
 __Model__
@@ -100,6 +100,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -500,7 +501,7 @@ print(result.info)
 """
 We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 
 In particular, checkout the results example `linear.py` which details how to extract all information about linear
 light profiles from a fit.

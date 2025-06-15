@@ -8,7 +8,7 @@ dataset in point-source modeling. For example, simulated values were input into 
 
 These positions must first be measured from imaging data of the lensed point-source. A simple way to do this is
 to locate the brightest 2 or 4 pixels of the lensed point-source (e.g. via a GUI or ds9) and use these values
-as the positions. 
+as the positions.
 
 For many users this will be sufficient, however it has downsides:
 
@@ -58,7 +58,7 @@ __Imaging__
 This example script fits `Imaging` data, using many of the features described in the `modeling/imaging` workspace
 examples.
 
-It also uses the following features described in the `modeling/imaging/features` workspace examples:
+It also uses the following features described in the `modeling/features` workspace examples:
 
 - `linear_light_profiles.py`: The model includes light profiles which use linear algebra to solve for their
    intensity, reducing model complexity.
@@ -81,6 +81,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

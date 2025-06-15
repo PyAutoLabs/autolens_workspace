@@ -78,6 +78,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -213,9 +214,10 @@ full description).
 """
 search = af.Nautilus(
     path_prefix=path.join("interferometer", "modeling"),
-    name="mass[sie]_source[pix]",
+    name="pixelization",
     unique_tag=dataset_name,
     n_live=100,
+    iterations_per_update=10000,
     number_of_cores=4,
 )
 
@@ -233,7 +235,7 @@ read this page in full if you are not familiar with the positions likelihood pen
 
 __Brief Description__
 
-Unlike other example scripts, we also pass the `AnalysisInterferometer` object below a `PositionsLHPenalty` object, 
+Unlike other example scripts, we also pass the `AnalysisInterferometer` object below a `PositionsLH` object, 
 whichincludes the positions we loaded above, alongside a `threshold`.
 
 This is because `Inversion`'s suffer a bias whereby they fit unphysical lens models where the source galaxy is 
@@ -251,7 +253,7 @@ source-plane, ensuring Nautilus converges towards an accurate mass model. It doe
 ray-tracing just a few multiple image positions is computationally cheap. 
 
 The threshold of 0.3" is large. For an accurate lens model we would anticipate the positions trace within < 0.01" of
-one another. The high threshold ensures only the initial mass models at the start of the fit are resampled.
+one another. The high threshold ensures only the initial mass models at the start of the fit are penalized.
 
 Position thresholding is described in more detail in the 
 script `autolens_workspace/*/modeling/imaging/customize/positions.py`
@@ -261,7 +263,7 @@ positions = al.Grid2DIrregular(
 )
 
 
-positions_likelihood = al.PositionsLHPenalty(positions=positions, threshold=0.3)
+positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
 """
 __Analysis__
@@ -271,7 +273,7 @@ model to the `Interferometer`dataset.
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    positions_likelihood=positions_likelihood,
+    positions_likelihood_list=[positions_likelihood],
     settings_inversion=settings_inversion,
 )
 
@@ -330,7 +332,7 @@ print(result.info)
 """
 We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 """
 print(result.max_log_likelihood_instance)
 
@@ -348,5 +350,5 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/imaging/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 """

@@ -23,6 +23,7 @@ The search fits each lens with:
  - An `Isothermal` `MassProfile` for the lens galaxy's mass.
  - An `Sersic` `LightProfile` for the source galaxy's light.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

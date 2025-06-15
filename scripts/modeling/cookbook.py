@@ -12,6 +12,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -356,8 +357,8 @@ profiles.
 
 The following example notebooks show how to compose and fit these models:
 
-https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/modeling/imaging/features/multi_gaussian_expansion.ipynb
-https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/modeling/imaging/features/shapelets.ipynb
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/modeling/features/multi_gaussian_expansion.ipynb
+https://github.com/Jammy2211/autolens_workspace/blob/release/notebooks/modeling/features/shapelets.ipynb
 
 __Model Linking (Advanced)__
 
