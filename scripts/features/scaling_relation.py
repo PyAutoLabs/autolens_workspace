@@ -90,7 +90,7 @@ use their own `extra_galaxies` collection.
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -106,12 +106,12 @@ lensed source.
 These three galaxies will be modeled using a scaling relation.
 """
 dataset_name = "simple"
-dataset_path = path.join("dataset", "group", dataset_name)
+dataset_path = Path("dataset") / "group" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
+    data_path=dataset_path / "data.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    psf_path=dataset_path / "psf.fits",
     pixel_scales=0.1,
 )
 
@@ -338,11 +338,10 @@ mask = al.Mask2D.circular(
 dataset = dataset.apply_mask(mask=mask)
 
 search = af.Nautilus(
-    path_prefix=path.join("imaging", "modeling"),
+    path_prefix=Path("imaging") / "modeling",
     name="scaling_relation",
     unique_tag=dataset_name,
     n_live=150,
-    number_of_cores=4,
     iterations_per_update=10000,
 )
 

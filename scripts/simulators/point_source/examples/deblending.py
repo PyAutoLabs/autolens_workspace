@@ -35,7 +35,7 @@ If any code in this script is unclear, refer to the `simulators/start_here.ipynb
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import numpy as np
 import autolens as al
 import autolens.plot as aplt
@@ -47,7 +47,7 @@ The `dataset_type` describes the type of data being simulated and `dataset_name`
 """
 dataset_type = "point_source"
 dataset_name = "deblending"
-dataset_path = path.join("dataset", dataset_type, dataset_name)
+dataset_path = Path("dataset", dataset_type, dataset_name)
 
 """
 __Ray Tracing (Point Source)__
@@ -129,7 +129,7 @@ dataset = al.PointDataset(
 
 al.output_to_json(
     obj=dataset,
-    file_path=path.join(dataset_path, "point_dataset.json"),
+    file_path=Path(dataset_path, "point_dataset.json"),
 )
 
 
@@ -167,7 +167,7 @@ This can be loaded via the method `tracer = al.from_json()`.
 """
 al.output_to_json(
     obj=tracer,
-    file_path=path.join(dataset_path, "tracer_point.json"),
+    file_path=Path(dataset_path, "tracer_point.json"),
 )
 
 """
@@ -284,9 +284,9 @@ __Output__
 Output the simulated dataset to the dataset path as .fits files.
 """
 dataset.output_to_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     overwrite=True,
 )
 
@@ -329,7 +329,7 @@ This can be loaded via the method `tracer = al.from_json()`.
 """
 al.output_to_json(
     obj=tracer,
-    file_path=path.join(dataset_path, "tracer_imaging.json"),
+    file_path=Path(dataset_path, "tracer_imaging.json"),
 )
 
 """

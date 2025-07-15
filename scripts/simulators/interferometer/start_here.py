@@ -14,7 +14,7 @@ This script simulates `Interferometer` data of a 'galaxy-scale' strong lens wher
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
@@ -34,7 +34,7 @@ The path where the dataset will be output.
 
 In this example, this is: `/autolens_workspace/dataset/interferometer/simple`
 """
-dataset_path = path.join("dataset", dataset_type, dataset_name)
+dataset_path = Path("dataset", dataset_type, dataset_name)
 
 """
 __Grid__
@@ -65,9 +65,9 @@ By default we use baselines from the Square Mile Array (SMA), which produces low
 can be fitted extremely efficiently. The `autolens_workspace` includes ALMA uv_wavelengths files for simulating
 much high resolution datasets (which can be performed by replacing "sma.fits" below with "alma.fits").
 """
-uv_wavelengths_path = path.join("dataset", dataset_type, "uv_wavelengths")
+uv_wavelengths_path = Path("dataset", dataset_type, "uv_wavelengths")
 uv_wavelengths = al.ndarray_via_fits_from(
-    file_path=path.join(uv_wavelengths_path, "sma.fits"), hdu=0
+    file_path=Path(uv_wavelengths_path, "sma.fits"), hdu=0
 )
 
 """
@@ -150,9 +150,9 @@ __Output__
 Output the simulated dataset to the dataset path as .fits files.
 """
 dataset.output_to_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
-    uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
+    data_path=dataset_path / "data.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    uv_wavelengths_path=Path(dataset_path, "uv_wavelengths.fits"),
     overwrite=True,
 )
 
@@ -182,7 +182,7 @@ This can be loaded via the method `tracer = al.from_json()`.
 """
 al.output_to_json(
     obj=tracer,
-    file_path=path.join(dataset_path, "tracer.json"),
+    file_path=Path(dataset_path, "tracer.json"),
 )
 
 """

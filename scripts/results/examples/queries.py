@@ -16,7 +16,7 @@ can be loaded.
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 
@@ -29,7 +29,7 @@ First, set up the aggregator as shown in `start_here.py`.
 from autofit.aggregator.aggregator import Aggregator
 
 agg = Aggregator.from_directory(
-    directory=path.join("output", "results_folder"),
+    directory=Path("output") / "results_folder",
 )
 
 """

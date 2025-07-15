@@ -28,7 +28,7 @@ If any code in this script is unclear, refer to the `plot/start_here.ipynb` note
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
@@ -45,13 +45,13 @@ dataset_type = "multi"
 dataset_label = "imaging"
 dataset_name = "lens_sersic"
 
-dataset_path = path.join("dataset", dataset_type, dataset_label, dataset_name)
+dataset_path = Path("dataset") / dataset_type / dataset_label / dataset_name
 
 dataset_list = [
     al.Imaging.from_fits(
-        data_path=path.join(dataset_path, f"{color}_data.fits"),
-        psf_path=path.join(dataset_path, f"{color}_psf.fits"),
-        noise_map_path=path.join(dataset_path, f"{color}_noise_map.fits"),
+        data_path=Path(dataset_path) / f"{color}_data.fits",
+        psf_path=Path(dataset_path) / f"{color}_psf.fits",
+        noise_map_path=Path(dataset_path) / f"{color}_noise_map.fits",
         pixel_scales=pixel_scales,
     )
     for color, pixel_scales in zip(color_list, pixel_scales_list)

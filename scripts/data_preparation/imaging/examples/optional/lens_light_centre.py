@@ -33,7 +33,7 @@ If any code in this script is unclear, refer to the `data_preparation/start_here
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 # %matplotlib inline
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
@@ -42,7 +42,7 @@ The path where the lens light centre is output, which is `dataset/imaging/simple
 """
 dataset_type = "imaging"
 dataset_name = "lens_sersic"
-dataset_path = path.join("dataset", dataset_type, dataset_name)
+dataset_path = Path("dataset", dataset_type, dataset_name)
 
 """
 The pixel scale of the imaging dataset.
@@ -53,7 +53,7 @@ pixel_scales = 0.1
 Load the `Imaging` dataset, so that the lens light centres can be plotted over the strong lens image.
 """
 data = al.Array2D.from_fits(
-    file_path=path.join(dataset_path, "data.fits"), pixel_scales=pixel_scales
+    file_path=dataset_path / "data.fits", pixel_scales=pixel_scales
 )
 
 """
@@ -78,7 +78,7 @@ load them from a .json file in our pipelines!
 """
 al.output_to_json(
     obj=light_centre,
-    file_path=path.join(dataset_path, "lens_light_centre.json"),
+    file_path=Path(dataset_path, "lens_light_centre.json"),
 )
 
 """

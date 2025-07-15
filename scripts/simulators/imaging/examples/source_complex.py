@@ -29,7 +29,7 @@ If any code in this script is unclear, refer to the `simulators/start_here.ipynb
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
@@ -40,7 +40,7 @@ The `dataset_type` describes the type of data being simulated and `dataset_name`
 """
 dataset_type = "imaging"
 dataset_name = "source_complex"
-dataset_path = path.join("dataset", dataset_type, dataset_name)
+dataset_path = Path("dataset", dataset_type, dataset_name)
 
 """
 __Simulate__
@@ -151,9 +151,9 @@ __Output__
 Output the simulated dataset to the dataset path as .fits files.
 """
 dataset.output_to_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     overwrite=True,
 )
 
@@ -182,7 +182,7 @@ This can be loaded via the method `tracer = al.from_json()`.
 """
 al.output_to_json(
     obj=tracer,
-    file_path=path.join(dataset_path, "tracer.json"),
+    file_path=Path(dataset_path, "tracer.json"),
 )
 
 """

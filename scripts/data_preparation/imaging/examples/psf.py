@@ -37,14 +37,14 @@ If any code in this script is unclear, refer to the `data_preparation/start_here
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 # %matplotlib
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
 """
 Setup the path the datasets we'll use to illustrate preprocessing, which is the folder `dataset/data_preparation/imaging`.
 """
-dataset_path = path.join("dataset", "imaging", "simple")
+dataset_path = Path("dataset", "imaging", "simple")
 
 """
 __Loading Data From Individual Fits Files__
@@ -54,7 +54,7 @@ Load a PSF from .fits files (a format commonly used by Astronomers) via the `Arr
 This image represents a good data-reduction that conforms **PyAutoLens** formatting standards!
 """
 psf = al.Kernel2D.from_fits(
-    file_path=path.join(dataset_path, "psf.fits"), hdu=0, pixel_scales=0.1
+    file_path=dataset_path / "psf.fits", hdu=0, pixel_scales=0.1
 )
 
 array_plotter = aplt.Array2DPlotter(array=psf)
@@ -97,7 +97,7 @@ In general we recommend the PSF size is 21 x 21. The example below is 11 x 11, w
 about acceptable but would be on the small side for many real telescopes.
 """
 psf = al.Kernel2D.from_fits(
-    file_path=path.join(dataset_path, "psf.fits"), hdu=0, pixel_scales=0.1
+    file_path=dataset_path / "psf.fits", hdu=0, pixel_scales=0.1
 )
 
 array_plotter = aplt.Array2DPlotter(array=psf)
@@ -142,7 +142,7 @@ Below, we show how to normalize a PSF when it is loaded from a .fits file, by si
 argument (the default value is `False`).
 """
 psf = al.Kernel2D.from_fits(
-    file_path=path.join(dataset_path, "psf.fits"),
+    file_path=dataset_path / "psf.fits",
     hdu=0,
     pixel_scales=0.1,
     normalize=True,

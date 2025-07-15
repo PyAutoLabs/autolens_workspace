@@ -55,7 +55,7 @@ If any code in this script is unclear, refer to the `results/start_here.ipynb` n
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 import numpy as np
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -70,12 +70,12 @@ The code below performs a model-fit using nautilus.
 You should be familiar with modeling already, if not read the `modeling/start_here.py` script before reading this one.
 """
 dataset_name = "simple__no_lens_light"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
@@ -95,11 +95,10 @@ model = af.Collection(
 )
 
 search = af.Nautilus(
-    path_prefix=path.join("results_folder"),
+    path_prefix=Path("results_folder"),
     name="results",
     unique_tag=dataset_name,
     n_live=100,
-    number_of_cores=1,
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)

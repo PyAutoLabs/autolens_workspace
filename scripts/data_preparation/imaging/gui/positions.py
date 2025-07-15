@@ -14,7 +14,7 @@ This GUI is adapted from the following code: https://gist.github.com/brikeats/4f
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 from matplotlib import pyplot as plt
@@ -27,7 +27,7 @@ Setup the path the datasets we'll use to illustrate preprocessing, which is the
 folder `dataset/imaging/simple__no_lens_light`.
 """
 dataset_name = "simple__no_lens_light"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 """
 The pixel scale of the imaging dataset.
@@ -38,7 +38,7 @@ pixel_scales = 0.1
 Load the image which we will use to mark the positions.
 """
 data = al.Array2D.from_fits(
-    file_path=path.join(dataset_path, "data.fits"), pixel_scales=pixel_scales
+    file_path=dataset_path / "data.fits", pixel_scales=pixel_scales
 )
 
 """
@@ -119,5 +119,5 @@ Output the positions to a .json file in the dataset folder, so we can load them 
 """
 al.output_to_json(
     obj=positions,
-    file_path=path.join(dataset_path, "positions.json"),
+    file_path=Path(dataset_path, "positions.json"),
 )

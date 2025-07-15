@@ -15,7 +15,7 @@ If any code in this script is unclear, refer to the `plot/start_here.ipynb` note
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 

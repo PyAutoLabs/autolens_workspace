@@ -15,7 +15,7 @@ This GUI is adapted from the following code: https://gist.github.com/brikeats/4f
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 import numpy as np
@@ -27,7 +27,7 @@ Setup the path the datasets we'll use to illustrate preprocessing, which is the
 folder `dataset/imaging/simple__no_lens_light`.
 """
 dataset_name = "simple__no_lens_light"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 """
 The pixel scale of the imaging dataset.
@@ -38,7 +38,7 @@ pixel_scales = 0.1
 Load the `Imaging` dataset, so that the mask can be plotted over the strong lens image.
 """
 data = al.Array2D.from_fits(
-    file_path=path.join(dataset_path, "data.fits"), pixel_scales=pixel_scales
+    file_path=dataset_path / "data.fits", pixel_scales=pixel_scales
 )
 
 """
@@ -76,4 +76,4 @@ array_2d_plotter.figure_2d()
 """
 Output it to the dataset folder of the lens, so that we can load it from a .fits in our modeling scripts.
 """
-mask.output_to_fits(file_path=path.join(dataset_path, "mask_gui.fits"), overwrite=True)
+mask.output_to_fits(file_path=Path(dataset_path, "mask_gui.fits"), overwrite=True)

@@ -8,6 +8,23 @@ The model cookbook provides a concise reference to lens model composition tools,
 Examples using different PyAutoLens API’s for model composition are provided, which produce more concise and
 readable code for different use-cases.
 
+__Contents__
+
+**Simple Lens Model:** Compose a simple lens model with a lens galaxy and source galaxy.
+**Concise API:** Compose a lens model using the concise API, which is more readable and concise.
+**Model Customization:** Customize the lens model parameters, including parameter pairing, fixing and offsets.
+**Redshift Free:** Make the redshift of a galaxy a free parameter in the model-fit.
+**Available Model Components:** List the available light profiles, mass profiles and other components that can be used for lens modeling.
+
+Advanced Features:
+
+**JSon Outputs:** Output a model to a .json file on hard-disk, which can be loaded and modified.
+**Many Profile Models:** Compose and fit models with many light profiles, such as the Multi Gaussian Expansion (MGE) and shapelets.
+**Model Linking:** Link the inferred model of one phase to the model in a non-linear search chain.
+**Across Datasets:** Compose models where the same model component is used across multiple datasets, with certain parameters free to vary.
+**Relations:** Compose models where the free parameter(s) vary according to a user-specified function.
+**PyAutoFit API:** Use the PyAutoFit API to compose lens models in more advanced ways.
+
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
@@ -19,7 +36,7 @@ If any code in this script is unclear, refer to the `modeling/start_here.ipynb` 
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -185,7 +202,20 @@ print(model.info)
 """
 __Prior Customization__
 
-We can customize the priors of the lens model component individual parameters as follows:
+We can customize the priors of the lens model component individual parameters, using the following three types
+of priors:
+
+`UniformPrior`: The values of a parameter are randomly drawn between a `lower_limit` and `upper_limit`. For example,
+  the effective radius of ellipitical Sersic profiles typically assumes a uniform prior between 0.0" and 30.0".
+
+`LogUniformPrior`: Like a `UniformPrior` this randomly draws values between a `limit_limit` and `upper_limit`, but the
+  values are drawn from a distribution with base 10. This is used for the `intensity` of a light profile, as the
+  luminosity of galaxies follows a log10 distribution.
+
+`GaussianPrior`: The values of a parameter are randomly drawn from a Gaussian distribution with a `mean` and width
+ `sigma`. For example, the $y$ and $x$ centre values in a light profile typically assume a mean of 0.0" and a
+ sigma of 0.3", indicating that we expect the profile centre to be located near the centre of the image.
+ 
 """
 # Lens:
 
@@ -328,11 +358,11 @@ After a model is composed, it can easily be output to a .json file on hard-disk 
 import os
 import json
 
-model_path = path.join("path", "to", "model", "json")
+model_path = Path("path", "to", "model", "json")
 
 os.makedirs(model_path, exist_ok=True)
 
-model_file = path.join(model_path, "model.json")
+model_file = Path(model_path, "model.json")
 
 with open(model_file, "w+") as f:
     json.dump(model.dict(), f, indent=4)

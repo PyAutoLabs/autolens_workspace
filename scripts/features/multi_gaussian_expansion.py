@@ -100,7 +100,6 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
-
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -108,7 +107,7 @@ If any code in this script is unclear, refer to the `modeling/start_here.ipynb` 
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 import numpy as np
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -119,12 +118,12 @@ __Dataset__
 Load and plot the strong lens dataset `simple` via .fits files.
 """
 dataset_name = "lens_light_asymmetric"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
@@ -145,7 +144,6 @@ dataset = dataset.apply_mask(mask=mask)
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
-
 """
 __Over Sampling__
 
@@ -159,10 +157,10 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     centre_list=[(0.0, 0.0)],
 )
 
-dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
-
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
+
+dataset.convolver
 
 """
 __Basis__
@@ -439,11 +437,11 @@ Owing to the simplicity of fitting an MGE we an use even fewer live points than 
 75 live points, speeding up convergence of the non-linear search.
 """
 search = af.Nautilus(
-    path_prefix=path.join("imaging", "modeling"),
+    path_prefix=Path("imaging") / "modeling",
     name="mge",
     unique_tag=dataset_name,
     n_live=75,
-    number_of_cores=1,
+    iterations_per_update=200
 )
 
 """
@@ -468,19 +466,7 @@ points, further speeding up the model-fit.
 Overall, it is difficult to state which approach will be faster overall. However, the MGE's ability to fit the data
 more accurately and the less complex parameter due to removing parameters that scale the lens galaxy make it the 
 superior approach.
-"""
-run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-    instance=model.random_instance()
-)
 
-print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
-print(
-    "Estimated Run Time Upper Limit (seconds) = ",
-    (run_time_dict["fit_time"] * model.total_free_parameters * 10000)
-    / search.number_of_cores,
-)
-
-"""
 __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder
@@ -625,11 +611,10 @@ print(model.info)
 We now fit this model, which includes the MGE source and lens light models.
 """
 search = af.Nautilus(
-    path_prefix=path.join("imaging", "modeling"),
+    path_prefix=Path("imaging") / "modeling",
     name="mge_including_source",
     unique_tag=dataset_name,
     n_live=75,
-    number_of_cores=1,
 )
 
 """
@@ -643,19 +628,7 @@ reduces the complexity of parameter space ensuring Nautilus converges even faste
 
 For initial model-fits where the lens model parameters are not known, a lens + source MGE is possibly the best
 model one can use. 
-"""
-run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-    instance=model.random_instance()
-)
 
-print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
-print(
-    "Estimated Run Time Upper Limit (seconds) = ",
-    (run_time_dict["fit_time"] * model.total_free_parameters * 10000)
-    / search.number_of_cores,
-)
-
-"""
 __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder
@@ -738,11 +711,11 @@ The `info` attribute shows the model, which has addition priors now associated w
 print(model.info)
 
 search = af.Nautilus(
-    path_prefix=path.join("imaging", "modeling"),
+    path_prefix=Path("imaging") / "modeling",
     name="mge_regularized",
     unique_tag=dataset_name,
     n_live=150,
-    number_of_cores=1,
+    force_x1_cpu=True,
 )
 
 """
@@ -750,19 +723,7 @@ __Run Time__
 
 Regularization has a small impact on the run-time of the model-fit, as the likelihood evaluation time does not
 change and it adds only 1 additional parameter.
-"""
-run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-    instance=model.random_instance()
-)
 
-print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
-print(
-    "Estimated Run Time Upper Limit (seconds) = ",
-    (run_time_dict["fit_time"] * model.total_free_parameters * 10000)
-    / search.number_of_cores,
-)
-
-"""
 __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder

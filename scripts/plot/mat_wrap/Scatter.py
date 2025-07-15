@@ -15,15 +15,15 @@ If any code in this script is unclear, refer to the `plot/start_here.ipynb` note
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
 """
 First, lets load an example Hubble Space Telescope image of a real strong lens as an `Array2D`.
 """
-dataset_path = path.join("dataset", "slacs", "slacs1430+4105")
-data_path = path.join(dataset_path, "data.fits")
+dataset_path = Path("dataset") / "slacs" / "slacs1430+4105"
+data_path = dataset_path / "data.fits"
 data = al.Array2D.from_fits(file_path=data_path, hdu=0, pixel_scales=0.03)
 
 """
@@ -38,8 +38,10 @@ origin_scatter = aplt.OriginScatter(marker="o", s=50)
 
 mat_plot = aplt.MatPlot2D(origin_scatter=origin_scatter)
 
+visuals = aplt.Visuals2D(origin=al.Grid2DIrregular(values=[(0.0, 0.0)]))
+
 array_plotter = aplt.Array2DPlotter(
-    array=data, include_2d=aplt.Include2D(origin=True), mat_plot_2d=mat_plot
+    array=data,  mat_plot_2d=mat_plot, visuals_2d=visuals
 )
 array_plotter.figure_2d()
 
@@ -48,5 +50,5 @@ There are numerous (y,x) grids of coordinates that PyAutoLens plots. For example
 there are grids like the multiple images of a strong lens, a source-plane grid of traced coordinates, etc.
 
 All of these grids are plotted using a `Scatter` object and they are described in more detail in the 
-`plot/include_2d` example scripts. 
+`plot/visuals_2d` example scripts. 
 """

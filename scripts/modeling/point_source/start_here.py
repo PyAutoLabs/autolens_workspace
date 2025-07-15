@@ -257,7 +257,6 @@ search = af.Nautilus(
     name="start_here",
     unique_tag=dataset_name,
     n_live=100,
-    number_of_cores=4,
 )
 
 """
@@ -329,10 +328,7 @@ using triangles to compute the image-plane chi-squared is computationally quite 
 is significantly faster to compute (below 0.1 seconds), but as discussed above is less robust.
 
 
-"""
-print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
 
-"""
 To estimate the expected overall run time of the model-fit we multiply the log likelihood evaluation time by an 
 estimate of the number of iterations the non-linear search will perform. 
 

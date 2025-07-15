@@ -117,7 +117,7 @@ If any code in this script is unclear, refer to the `modeling/start_here.ipynb` 
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 import numpy as np
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -128,12 +128,12 @@ __Dataset__
 Load and plot the strong lens dataset `simple__no_lens_light` via .fits files
 """
 dataset_name = "simple__no_lens_light"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
@@ -201,9 +201,13 @@ of the noise in the data and an unrealistically complex and strucutred source. R
 reconstruction solution by penalizing solutions where neighboring pixels (Voronoi triangles in this example) have
 large flux differences.
 """
-image_mesh = al.image_mesh.Overlay(shape=(30, 30))
-mesh = al.mesh.Delaunay()
-regularization = al.reg.ConstantSplit(coefficient=1.0)
+# image_mesh = al.image_mesh.Overlay(shape=(30, 30))
+# mesh = al.mesh.Delaunay()
+# regularization = al.reg.ConstantSplit(coefficient=1.0)
+
+image_mesh = None
+mesh = al.mesh.Rectangular(shape=(30, 30))
+regularization = al.reg.Constant(coefficient=1.0)
 
 pixelization = al.Pixelization(
     image_mesh=image_mesh, mesh=mesh, regularization=regularization
@@ -231,7 +235,11 @@ source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
 tracer = al.Tracer(galaxies=[lens, source])
 
-fit = al.FitImaging(dataset=dataset, tracer=tracer)
+fit = al.FitImaging(dataset=dataset, tracer=tracer, settings_inversion=al.SettingsInversion(force_edge_pixels_to_zeros=False))
+
+print(fit.log_likelihood)
+print(fit.figure_of_merit)
+gggg
 
 """
 By plotting the fit, we see that the pixelized source does a good job at capturing the appearance of the source galaxy
@@ -325,11 +333,10 @@ The model is fitted to the data using the nested sampling algorithm Nautilus (se
 full description).
 """
 search = af.Nautilus(
-    path_prefix=path.join("imaging", "modeling"),
+    path_prefix=Path("imaging") / "modeling",
     name="pixelization",
     unique_tag=dataset_name,
     n_live=100,
-    number_of_cores=4,
     iterations_per_update=2500,
 )
 
@@ -375,7 +382,7 @@ The arc-second positions of the multiply imaged lensed source galaxy were drawn 
 image via the GUI described in the file `autolens_workspace/*/data_preparation/imaging/gui/positions.py`.
 """
 positions = al.Grid2DIrregular(
-    al.from_json(file_path=path.join(dataset_path, "positions.json"))
+    al.from_json(file_path=Path(dataset_path, "positions.json"))
 )
 positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
@@ -407,19 +414,7 @@ the run-time of a a pixelization and can be changed to speed it up (at the expen
 This also serves to highlight why the positions threshold likelihood is so powerful. The likelihood evaluation time
 of this step is below 0.001 seconds, meaning that the initial parameter space sampling is extremely efficient even
 for a pixelization (this is not accounted for in the run-time estimate below)!
-"""
-run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-    instance=model.random_instance()
-)
 
-print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
-print(
-    "Estimated Run Time Upper Limit (seconds) = ",
-    (run_time_dict["fit_time"] * model.total_free_parameters * 10000)
-    / search.number_of_cores,
-)
-
-"""
 __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder
@@ -477,17 +472,17 @@ galaxies mask has scaled the data values to zeros, increasing the noise-map valu
 the signal to noise of its pixels effectively zero.
 """
 dataset_name = "extra_galaxies"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
 mask_extra_galaxies = al.Mask2D.from_fits(
-    file_path=path.join(dataset_path, "mask_extra_galaxies.fits"),
+    file_path=Path(dataset_path, "mask_extra_galaxies.fits"),
     pixel_scales=0.1,
     invert=True,  # Note that we invert the mask here as `True` means a pixel is scaled.
 )

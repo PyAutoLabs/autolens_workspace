@@ -17,7 +17,7 @@ If any code in this script is unclear, refer to the `plot/start_here.ipynb` note
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 import matplotlib.pyplot as plt
-from os import path
+from pathlib import Path
 
 import autofit as af
 import autolens as al
@@ -30,18 +30,18 @@ the `modeling/start_here.py` example.
 dataset_name = "simple__no_lens_light"
 
 search = af.PySwarmsGlobal(
-    path_prefix=path.join("plot", "MLEPlotter"),
+    path_prefix=Path("plot") / "MLEPlotter",
     name="PySwarms",
     n_particles=50,
     iters=10,
 )
 
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 

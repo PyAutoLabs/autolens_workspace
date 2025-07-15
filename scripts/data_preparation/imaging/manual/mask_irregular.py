@@ -9,7 +9,7 @@ Manual Preprocessing: Mask Irregular
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 import numpy as np
@@ -41,13 +41,13 @@ Setup the path the datasets we'll use to illustrate preprocessing, which is the
 folder `dataset/data_preparation/imaging/simple__no_lens_light`.
 """
 dataset_name = "simple__no_lens_light"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 data = al.Array2D.from_fits(
-    file_path=path.join(dataset_path, "data.fits"), pixel_scales=0.1
+    file_path=dataset_path / "data.fits", pixel_scales=0.1
 )
 noise_map = al.Array2D.from_fits(
-    file_path=path.join(dataset_path, "noise_map.fits"), pixel_scales=0.1
+    file_path=dataset_path / "noise_map.fits", pixel_scales=0.1
 )
 
 """
@@ -86,4 +86,4 @@ array_plotter.figure_2d()
 Now we`re happy with the mask, lets output it to the dataset folder of the lens, so that we can load it from a .fits
 file in our pipelines!
 """
-mask.output_to_fits(file_path=path.join(dataset_path, "mask.fits"), overwrite=True)
+mask.output_to_fits(file_path=Path(dataset_path, "mask.fits"), overwrite=True)

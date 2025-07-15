@@ -31,7 +31,7 @@ The search fits each lens with:
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 import json
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 
@@ -83,7 +83,7 @@ for dataset_name in dataset_names:
 
     Set up the config and output paths.
     """
-    dataset_path = path.join("dataset", "imaging", dataset_name)
+    dataset_path = Path("dataset") / "imaging" / dataset_name
 
     """
     __Dataset__
@@ -94,9 +94,9 @@ for dataset_name in dataset_names:
     command `name=dataset_name`. we'll use this name in the aggregator tutorials.
     """
     dataset = al.Imaging.from_fits(
-        data_path=path.join(dataset_path, "data.fits"),
-        psf_path=path.join(dataset_path, "psf.fits"),
-        noise_map_path=path.join(dataset_path, "noise_map.fits"),
+        data_path=dataset_path / "data.fits",
+        psf_path=dataset_path / "psf.fits",
+        noise_map_path=dataset_path / "noise_map.fits",
         pixel_scales=pixel_scales,
     )
 
@@ -122,7 +122,7 @@ for dataset_name in dataset_names:
 
     For fits to large datasets this ensures that all relevant information for interpreting results is accessible.
     """
-    with open(path.join(dataset_path, "info.json")) as json_file:
+    with open(Path(dataset_path, "info.json")) as json_file:
         info = json.load(json_file)
 
     """
@@ -146,7 +146,7 @@ for dataset_name in dataset_names:
     stored in the output folder and written to the .sqlite database. 
     """
     search = af.Nautilus(
-        path_prefix=path.join("database"),
+        path_prefix=Path("database"),
         name="database_example",
         unique_tag=dataset_name,  # This makes the unique identifier use the dataset name
         session=session,  # This can instruct the search to write to the .sqlite database.
@@ -180,7 +180,7 @@ agg = af.Aggregator.from_database(
     filename=f"{database_name}.sqlite", completed_only=False
 )
 
-agg.add_directory(directory=path.join("output", database_name))
+agg.add_directory(directory=Path("output") / database_name)
 
 """
 __Writing Directly To Database__
@@ -199,7 +199,7 @@ to large samples by writing directly to the database.
 # session = af.db.open_database("database.sqlite")
 #
 # search = af.Nautilus(
-#     path_prefix=path.join("database"),
+#     path_prefix=Path("database"),
 #     name="database_example",
 #     unique_tag=dataset_name,  # This makes the unique identifier use the dataset name
 #     session=session,  # This can instruct the search to write to the .sqlite database.

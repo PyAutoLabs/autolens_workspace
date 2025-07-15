@@ -39,7 +39,7 @@ If any code in this script is unclear, refer to the `modeling/start_here.ipynb` 
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -57,12 +57,12 @@ like other datasets but instead have values of 5.0 electrons per second, the sky
 the image.
 """
 dataset_name = "sky_background"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
@@ -215,11 +215,10 @@ The model is fitted to the data using the nested sampling algorithm Nautilus (se
 full description).
 """
 search = af.Nautilus(
-    path_prefix=path.join("imaging", "modeling"),
+    path_prefix=Path("imaging") / "modeling",
     name="sky_background",
     unique_tag=dataset_name,
     n_live=125,
-    number_of_cores=4,
 )
 
 """
@@ -238,19 +237,7 @@ For standard light profiles, the log likelihood evaluation time is of order ~0.0
 
 Adding the background sky model to the analysis has a negligible impact on the run time, as it requires simply adding
 a constant value to the data. The run time is therefore still of order ~0.01 seconds.
-"""
-run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-    instance=model.random_instance()
-)
 
-print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
-print(
-    "Estimated Run Time Upper Limit (seconds) = ",
-    (run_time_dict["fit_time"] * model.total_free_parameters * 10000)
-    / search.number_of_cores,
-)
-
-"""
 __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder

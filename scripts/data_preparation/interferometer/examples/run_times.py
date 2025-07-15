@@ -41,7 +41,7 @@ that is the cause.
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 import numpy as np
-from os import path
+from pathlib import Path
 import time
 
 import autofit as af
@@ -138,12 +138,12 @@ Load and plot the strong lens `Interferometer` dataset `simple` from .fits files
 with the lens model.
 """
 dataset_name = "simple"
-dataset_path = path.join("dataset", "interferometer", dataset_name)
+dataset_path = Path("dataset") / "interferometer" / dataset_name
 
 dataset = al.Interferometer.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
-    uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
+    data_path=dataset_path / "data.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    uv_wavelengths_path=Path(dataset_path, "uv_wavelengths.fits"),
     real_space_mask=real_space_mask,
 )
 
@@ -189,9 +189,9 @@ For datasets with > ~100 000 visibilities, the DFT uses a lot of memory and has 
 wish to profile it below, but it can use a lot of memory so proceed with caution!
 """
 dataset = al.Interferometer.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
-    uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
+    data_path=dataset_path / "data.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    uv_wavelengths_path=Path(dataset_path, "uv_wavelengths.fits"),
     real_space_mask=real_space_mask,
     transformer_class=al.TransformerDFT,
 )
@@ -227,9 +227,9 @@ You should now vary the settings below to determine the optimal settings for you
 optimal transformer determined above.
 """
 dataset = al.Interferometer.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
-    uv_wavelengths_path=path.join(dataset_path, "uv_wavelengths.fits"),
+    data_path=dataset_path / "data.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    uv_wavelengths_path=Path(dataset_path, "uv_wavelengths.fits"),
     real_space_mask=real_space_mask,
     transformer_class=al.TransformerNUFFT,
 )

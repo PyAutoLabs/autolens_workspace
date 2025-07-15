@@ -30,7 +30,7 @@ converted quantities (see `results/examples/samples.ipynb`).
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 import numpy as np
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt

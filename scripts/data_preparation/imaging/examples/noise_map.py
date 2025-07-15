@@ -37,7 +37,7 @@ If any code in this script is unclear, refer to the `data_preparation/start_here
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 # %matplotlib inline
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
@@ -48,10 +48,10 @@ Load a noise-map from .fits files (a format commonly used by Astronomers) via th
 
 This noise-map represents a good data-reduction that conforms **PyAutoLens** formatting standards!
 """
-dataset_path = path.join("dataset", "imaging", "simple")
+dataset_path = Path("dataset", "imaging", "simple")
 
 noise_map = al.Array2D.from_fits(
-    file_path=path.join(dataset_path, "noise_map.fits"), pixel_scales=0.1
+    file_path=dataset_path / "noise_map.fits", pixel_scales=0.1
 )
 
 array_plotter = aplt.Array2DPlotter(array=noise_map)

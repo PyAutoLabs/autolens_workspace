@@ -15,15 +15,15 @@ If any code in this script is unclear, refer to the `plot/start_here.ipynb` note
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
 """
 First, lets load an example Hubble Space Telescope image of a real strong lens as an `Array2D`.
 """
-dataset_path = path.join("dataset", "slacs", "slacs1430+4105")
-data_path = path.join(dataset_path, "data.fits")
+dataset_path = Path("dataset") / "slacs" / "slacs1430+4105"
+data_path = dataset_path / "data.fits"
 data = al.Array2D.from_fits(file_path=data_path, hdu=0, pixel_scales=0.03)
 
 """

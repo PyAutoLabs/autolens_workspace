@@ -30,7 +30,7 @@ Because GetDist is an optional library, you will likely have to install it manua
 
 import numpy as np
 import matplotlib.pyplot as plt
-from os import path
+from pathlib import Path
 
 from getdist import MCSamples
 from getdist import plots
@@ -50,15 +50,15 @@ the posterior could be used.
 dataset_name = "simple__no_lens_light"
 
 search = af.Nautilus(
-    path_prefix=path.join("plot"), name="GetDist", unique_tag=dataset_name, n_live=100
+    path_prefix=Path("plot"), name="GetDist", unique_tag=dataset_name, n_live=100
 )
 
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
@@ -227,9 +227,9 @@ gd_plotter = plots.get_single_plotter()
 
 gd_plotter.plot_3d(roots=gd_samples, params=["centre", "sigma", "normalization"])
 
-output_path = path.join("output")
+output_path = Path("output")
 
-plt.savefig(path.join(output_path, "getdist.png"))
+plt.savefig(Path(output_path, "getdist.png"))
 plt.close()
 
 """
