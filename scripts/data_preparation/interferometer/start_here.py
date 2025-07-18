@@ -50,9 +50,7 @@ The image is the image of your strong lens, which comes from a telescope like th
 
 Lets inspect an image which conforms to **PyAutoLens** standards:
 """
-visibilities = al.Visibilities.from_fits(
-    file_path=dataset_path / "data.fits", hdu=0
-)
+visibilities = al.Visibilities.from_fits(file_path=dataset_path / "data.fits", hdu=0)
 
 array_plotter = aplt.Grid2DPlotter(grid=visibilities.in_grid)
 array_plotter.figure_2d()

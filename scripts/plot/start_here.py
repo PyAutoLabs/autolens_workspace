@@ -112,8 +112,7 @@ Visuals can be added to any figure, using standard quantities.
 
 For example, we can plot a mask on the image above using a `Visuals2D` object.
 
-The `autolens.workspace.*.plot.visuals_2d` illustrates every `Visuals` object, for 
-example `MaskScatter`, `LightProfileCentreScatter`, etc.
+The `visuals` example illustrates every `Visuals` object, for example `MaskScatter`, `LightProfileCentreScatter`, etc.
 """
 mask = al.Mask2D.circular_annular(
     shape_native=data.shape_native,
@@ -130,7 +129,7 @@ array_plotter.figure_2d()
 """
 __Customize Visuals With Config__
 
-The default options used by `Inclare provided in the `config/visualize/include.yaml` config file, which you should
+The default options used are provided in the `config/visualize/include.yaml` config file, which you should
 checkout now.
 
 For example, you'll see the `mask` is set to `True` by default, which is why it appeared in the figure above. You can
@@ -140,7 +139,7 @@ __Searches__
 
 Model-fits using a non-linear search (e.g. Nautilus, Emcee) produce search-specific visualization.
 
-The `autolens.workspace.*.plot.search` illustrates how to perform this visualization for every search (e.g.
+The `searches` example illustrates how to perform this visualization for every search (e.g.
 `NestPlotter`.
 
 __Adding Plotter Objects Together__

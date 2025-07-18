@@ -254,7 +254,7 @@ grid_plotter.figure_2d()  # Source-plane grid.
 """
 __Extending Objects__
 
-The **PyAutoLens** API has been designed such that all of the objects introduced above are extensible. `Galaxy` 
+The API has been designed such that all of the objects introduced above are extensible. `Galaxy` 
 objects can take many `LightProfile`'s and `MassProfile`'s. `Tracer`' objects can take many `Galaxy`'s. 
 
 If the galaxies are at different redshifts a strong lensing system with multiple lens planes will be created, 

@@ -21,6 +21,7 @@ __Setup__
 
 To illustrate plotting, we require standard objects like a grid, tracer and dataset.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -262,8 +263,7 @@ image_plane_mesh_grid = mapper.image_plane_mesh_grid
 source_plane_mesh_grid = tracer.traced_grid_2d_list_from(grid=image_plane_mesh_grid)[-1]
 
 visuals_2d = aplt.Visuals2D(
-    grid=image_plane_mesh_grid,
-    mesh_grid=source_plane_mesh_grid
+    grid=image_plane_mesh_grid, mesh_grid=source_plane_mesh_grid
 )
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, visuals=visuals_2d)
@@ -370,6 +370,35 @@ inversion_plotter.figures_2d(reconstructed_image=True)
 inversion_plotter.figures_2d_of_pixelization(
     pixelization_index=0, reconstruction=True, regularization_weights=True
 )
+
+"""
+__DelaunayDrawer / VoronoiDrawer__
+
+We can customize the filling of Voronoi cells using the `VoronoiDrawer` object which wraps the 
+method `matplotlib.fill()`:
+
+https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.fill.html
+"""
+delaunay_drawer = aplt.DelaunayDrawer(edgecolor="b", linewidth=1.0, linestyle="--")
+# voronoi_drawer = aplt.VoronoiDrawer(edgecolor="b", linewidth=1.0, linestyle="--")
+
+mat_plot = aplt.MatPlot2D(delaunay_drawer=delaunay_drawer)
+
+"""
+We now pass the inversion to a `InversionPlotter` which we will use to illustrate customization with 
+the `VoronoiDrawer` object.
+"""
+inversion_plotter = aplt.InversionPlotter(inversion=inversion, mat_plot_2d=mat_plot)
+
+try:
+    inversion_plotter.figures_2d_of_pixelization(
+        pixelization_index=0, reconstruction=True
+    )
+    inversion_plotter.subplot_of_mapper(mapper_index=0)
+except ImportError:
+    print(
+        "You have not installed the Voronoi natural neighbor interpolation package, see instructions at top of notebook."
+    )
 
 """
 Finish.

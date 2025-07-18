@@ -235,7 +235,11 @@ source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
 tracer = al.Tracer(galaxies=[lens, source])
 
-fit = al.FitImaging(dataset=dataset, tracer=tracer, settings_inversion=al.SettingsInversion(force_edge_pixels_to_zeros=False))
+fit = al.FitImaging(
+    dataset=dataset,
+    tracer=tracer,
+    settings_inversion=al.SettingsInversion(force_edge_pixels_to_zeros=False),
+)
 
 print(fit.log_likelihood)
 print(fit.figure_of_merit)

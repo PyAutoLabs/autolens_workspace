@@ -41,9 +41,7 @@ Lets inspect an image which conforms to **PyAutoLens** standards:
 """
 dataset_path = Path("dataset") / "imaging" / "simple"
 
-data = al.Array2D.from_fits(
-    file_path=dataset_path / "data.fits", pixel_scales=0.1
-)
+data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.1)
 
 array_plotter = aplt.Array2DPlotter(array=data)
 array_plotter.figure_2d()

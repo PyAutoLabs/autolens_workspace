@@ -20,6 +20,7 @@ __Setup__
 
 To illustrate plotting, we require standard objects like a grid, tracer and dataset.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

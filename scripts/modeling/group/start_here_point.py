@@ -96,9 +96,7 @@ is 0.1" / pixel.
 dataset_name = "simple"
 dataset_path = Path("dataset", "group", dataset_name)
 
-data = al.Array2D.from_fits(
-    file_path=dataset_path / "data.fits", pixel_scales=0.1
-)
+data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.1)
 
 """
 We now load the point source dataset we will fit using point source modeling. 

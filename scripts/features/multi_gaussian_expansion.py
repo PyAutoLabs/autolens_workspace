@@ -100,6 +100,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -441,7 +442,7 @@ search = af.Nautilus(
     name="mge",
     unique_tag=dataset_name,
     n_live=75,
-    iterations_per_update=200
+    iterations_per_update=200,
 )
 
 """

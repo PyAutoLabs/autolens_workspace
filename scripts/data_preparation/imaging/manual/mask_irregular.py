@@ -43,9 +43,7 @@ folder `dataset/data_preparation/imaging/simple__no_lens_light`.
 dataset_name = "simple__no_lens_light"
 dataset_path = Path("dataset") / "imaging" / dataset_name
 
-data = al.Array2D.from_fits(
-    file_path=dataset_path / "data.fits", pixel_scales=0.1
-)
+data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.1)
 noise_map = al.Array2D.from_fits(
     file_path=dataset_path / "noise_map.fits", pixel_scales=0.1
 )
