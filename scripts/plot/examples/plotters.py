@@ -54,6 +54,12 @@ dataset = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
+mask = al.Mask2D.circular(
+    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+)
+
+dataset = dataset.apply_mask(mask=mask)
+
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     bulge=al.lp.Sersic(

@@ -80,7 +80,9 @@ tracer.
 
 For all `Plotter` objects, the `use_log10` input can be set to `True` to plot these quantities in log10 space.
 """
-array_plotter = aplt.Array2DPlotter(array=data, mat_plot_2d=aplt.MatPlot2D(use_log10=True))
+array_plotter = aplt.Array2DPlotter(
+    array=data, mat_plot_2d=aplt.MatPlot2D(use_log10=True)
+)
 array_plotter.figure_2d()
 
 """

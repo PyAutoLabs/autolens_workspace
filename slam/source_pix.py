@@ -93,7 +93,8 @@ def run_1(
         mass = source_lp_result.instance.galaxies.lens.mass
         shear = source_lp_result.instance.galaxies.lens.shear
 
-    image_mesh_init.shape = image_mesh_init_shape
+    if image_mesh_init is not None:
+        image_mesh_init.shape = image_mesh_init_shape
 
     model = af.Collection(
         galaxies=af.Collection(

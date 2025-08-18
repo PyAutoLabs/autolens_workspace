@@ -239,7 +239,7 @@ familiarize yourself with this example before using the multi-Gaussian expansion
 We therefore again setup a `Basis` in an analogous fashion to the previous example, but this time we use linear
 Gaussians (via the `lp_linear.linear` module).
 """
-total_gaussians = 30
+total_gaussians = 60
 
 # The sigma values of the Gaussians will be fixed to values spanning 0.01 to the mask radius, 3.0".
 
@@ -442,7 +442,7 @@ search = af.Nautilus(
     name="mge",
     unique_tag=dataset_name,
     n_live=75,
-    iterations_per_update=200,
+    iterations_per_update=20000,
 )
 
 """

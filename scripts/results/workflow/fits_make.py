@@ -119,7 +119,7 @@ for i in range(2):
         name="results",
         unique_tag=f"simple__no_lens_light_{i}",
         n_live=100,
-        iterations_per_update=100,
+        iterations_per_update=10000,
         number_of_cores=1,
     )
 

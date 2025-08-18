@@ -17,7 +17,7 @@ input(
     
     
     cd path/to/autolens_workspace (if you are not already in the autolens_workspace).
-    python3 scripts/imaging/modeling/start_here.py
+    python3 scripts/modeling/imaging/start_here.py
 
 
     The reasons for this are so that PyAutoLens can:

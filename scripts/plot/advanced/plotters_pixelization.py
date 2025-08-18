@@ -44,6 +44,12 @@ dataset = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
+mask = al.Mask2D.circular(
+    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+)
+
+dataset = dataset.apply_mask(mask=mask)
+
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     bulge=al.lp.Sersic(
@@ -250,9 +256,31 @@ mapper_plotter.subplot_image_and_mapper(image=dataset.data)
 """
 The Indexes of `Mapper` plots can be highlighted to show how certain image pixels map to the source plane.
 """
-visuals = aplt.Visuals2D(indexes=[0, 1, 2, 3, 4], pix_indexes=[[10, 11], [12, 13, 14]])
+visuals = aplt.Visuals2D(indexes=[0, 1, 2, 3, 4])
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, visuals_2d=visuals)
+mapper_plotter.subplot_image_and_mapper(image=dataset.data)
+
+"""
+The index of source plane pixels can be mapped to the image-plane to show mappings of source to image pixels.
+
+The pixels, plotted in red, extended beyond the central square pixel of the source-plane grid. This is because
+the pairing of data pixels to source pixels is not one-to-one, as an interpolation scheme is used to map pixels
+which land near the edges of the source-pixel, but outside them, to that source pixel with a weight.
+"""
+pix_indexes = [[312, 318], [412]]
+
+indexes = mapper.slim_indexes_for_pix_indexes(pix_indexes=pix_indexes)
+
+visuals = aplt.Visuals2D(
+    indexes=indexes,
+)
+
+mapper_plotter = aplt.MapperPlotter(
+    mapper=mapper,
+    visuals_2d=visuals,
+)
+
 mapper_plotter.subplot_image_and_mapper(image=dataset.data)
 
 """
