@@ -439,10 +439,11 @@ Owing to the simplicity of fitting an MGE we an use even fewer live points than 
 """
 search = af.Nautilus(
     path_prefix=Path("imaging") / "modeling",
-    name="mge",
+    name="mge_cpu_jax",
     unique_tag=dataset_name,
     n_live=75,
-    iterations_per_update=20000,
+    n_batch=50,
+    iterations_per_update=2000000,
 )
 
 """

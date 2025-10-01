@@ -39,7 +39,7 @@ __Dataset Paths__
 The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
 """
 dataset_type = "imaging"
-dataset_name = "source_complex"
+dataset_name = "source_complex_padded"
 dataset_path = Path("dataset", dataset_type, dataset_name)
 
 """
@@ -48,7 +48,7 @@ __Simulate__
 Simulate the image using a `Grid2D` with the adaptive over sampling scheme.
 """
 grid = al.Grid2D.uniform(
-    shape_native=(170, 170),
+    shape_native=(400, 400),
     pixel_scales=0.05,
 )
 
