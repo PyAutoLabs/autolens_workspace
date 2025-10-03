@@ -182,7 +182,6 @@ def run_2_grid_search(
     subhalo_grid_search = af.SearchGridSearch(
         search=search,
         number_of_steps=number_of_steps,
-        number_of_cores=1,
     )
 
     result = subhalo_grid_search.fit(

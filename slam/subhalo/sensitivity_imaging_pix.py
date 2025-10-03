@@ -786,7 +786,6 @@ def run(
         number_of_steps=number_of_steps,
         batch_range=batch_range,
         mask=sensitivity_mask,
-        number_of_cores=1,
     )
 
     result = sensitivity.run()
