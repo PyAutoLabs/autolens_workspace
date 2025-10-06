@@ -123,12 +123,12 @@ for i in range(2):
     )
 
     class AnalysisLatent(al.AnalysisImaging):
-        
+
         LATENT_KEYS = [
             "galaxies.lens.shear.magnitude",
             "galaxies.lens.shear.angle",
         ]
-        
+
         def compute_latent_variables(self, parameters, model):
             """
             A latent variable is not a model parameter but can be derived from the model. Its value and errors may be
