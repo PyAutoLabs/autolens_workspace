@@ -41,7 +41,7 @@ If any code in this script is unclear, refer to the `data_preparation/start_here
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 # %matplotlib inline
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
@@ -52,7 +52,7 @@ The path where the extra galaxy centres are output, which is `dataset/imaging/ex
 """
 dataset_type = "imaging"
 dataset_name = "extra_galaxies"
-dataset_path = path.join("dataset", dataset_type, dataset_name)
+dataset_path = Path("dataset", dataset_type, dataset_name)
 
 """
 The pixel scale of the imaging dataset.
@@ -63,7 +63,7 @@ pixel_scales = 0.1
 Load the dataset image, so that the location of galaxies is clear when scaling the noise-map.
 """
 data = al.Array2D.from_fits(
-    file_path=path.join(dataset_path, "data.fits"), pixel_scales=pixel_scales
+    file_path=dataset_path / "data.fits", pixel_scales=pixel_scales
 )
 
 array_plotter = aplt.Array2DPlotter(array=data)
@@ -108,7 +108,7 @@ array_plotter.figure_2d()
 Output the extra galaxies mask, which will be load and used before a model fit.
 """
 mask.output_to_fits(
-    file_path=path.join(dataset_path, "mask_extra_galaxies.fits"), overwrite=True
+    file_path=Path(dataset_path, "mask_extra_galaxies.fits"), overwrite=True
 )
 
 """

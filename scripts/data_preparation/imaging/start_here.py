@@ -28,7 +28,7 @@ It is absolutely vital you use the correct pixel scale, so double check this val
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
@@ -39,11 +39,9 @@ The image is the image of your strong lens, which comes from a telescope like th
 
 Lets inspect an image which conforms to **PyAutoLens** standards:
 """
-dataset_path = path.join("dataset", "imaging", "simple")
+dataset_path = Path("dataset") / "imaging" / "simple"
 
-data = al.Array2D.from_fits(
-    file_path=path.join(dataset_path, "data.fits"), pixel_scales=0.1
-)
+data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.1)
 
 array_plotter = aplt.Array2DPlotter(array=data)
 array_plotter.figure_2d()
@@ -78,7 +76,7 @@ RMS standard deviation in every pixel (not the variances, HST WHT-map values, et
 Lets inspect a noise-map which conforms to **PyAutoLens** standards:
 """
 noise_map = al.Array2D.from_fits(
-    file_path=path.join(dataset_path, "noise_map.fits"), pixel_scales=0.1
+    file_path=dataset_path / "noise_map.fits", pixel_scales=0.1
 )
 
 array_plotter = aplt.Array2DPlotter(array=noise_map)
@@ -123,7 +121,7 @@ for Hubble).
 Lets inspect a PSF which conforms to **PyAutoLens** standards:
 """
 psf = al.Kernel2D.from_fits(
-    file_path=path.join(dataset_path, "psf.fits"), hdu=0, pixel_scales=0.1
+    file_path=dataset_path / "psf.fits", hdu=0, pixel_scales=0.1
 )
 
 array_plotter = aplt.Array2DPlotter(array=psf)

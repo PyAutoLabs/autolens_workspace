@@ -49,7 +49,6 @@ especially if loading results from hard-disk is slow.
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 from pathlib import Path
-from os import path
 
 import autofit as af
 import autolens as al
@@ -71,12 +70,12 @@ more descriptive and easier to interpret.
 """
 for i in range(2):
     dataset_name = "simple__no_lens_light"
-    dataset_path = path.join("dataset", "imaging", dataset_name)
+    dataset_path = Path("dataset") / "imaging" / dataset_name
 
     dataset = al.Imaging.from_fits(
-        data_path=path.join(dataset_path, "data.fits"),
-        psf_path=path.join(dataset_path, "psf.fits"),
-        noise_map_path=path.join(dataset_path, "noise_map.fits"),
+        data_path=dataset_path / "data.fits",
+        psf_path=dataset_path / "psf.fits",
+        noise_map_path=dataset_path / "noise_map.fits",
         pixel_scales=0.1,
     )
 
@@ -101,25 +100,62 @@ for i in range(2):
     )
 
     search = af.Nautilus(
-        path_prefix=path.join("results_folder_csv_png_fits"),
+        path_prefix=Path("results_folder_csv_png_fits"),
         name="results",
         unique_tag=f"simple__no_lens_light_{i}",
         n_live=100,
-        number_of_cores=1,
+        iterations_per_update=10000,
     )
 
     class AnalysisLatent(al.AnalysisImaging):
-        def compute_latent_variables(self, instance):
+
+        LATENT_KEYS = [
+            "galaxies.lens.shear.magnitude",
+            "galaxies.lens.shear.angle",
+        ]
+
+        def compute_latent_variables(self, parameters, model):
+            """
+            A latent variable is not a model parameter but can be derived from the model. Its value and errors may be
+            of interest and aid in the interpretation of a model-fit.
+
+            This code implements a simple example of a latent variable, the magn
+
+            By overwriting this method we can manually specify latent variables that are calculated and output to
+            a `latent.csv` file, which mirrors the `samples.csv` file.
+
+            In the example below, the `latent.csv` file will contain at least two columns with the shear magnitude and
+            angle sampled by the non-linear search.
+
+            This function is called for every non-linear search sample, where the `instance` passed in corresponds to
+            each sample.
+
+            You can add your own custom latent variables here, if you have particular quantities that you
+            would like to output to the `latent.csv` file.
+
+            Parameters
+            ----------
+            parameters : array-like
+                The parameter vector of the model sample. This will typically come from the non-linear search.
+                Inside this method it is mapped back to a model instance via `model.instance_from_vector`.
+            model : Model
+                The model object defining how the parameter vector is mapped to an instance. Passed explicitly
+                so that this function can be used inside JAX transforms (`vmap`, `jit`) with `functools.partial`.
+
+            Returns
+            -------
+            A dictionary mapping every latent variable name to its value.
+
+            """
+            instance = model.instance_from_vector(vector=parameters)
+
             if hasattr(instance.galaxies.lens, "shear"):
                 magnitude, angle = al.convert.shear_magnitude_and_angle_from(
                     gamma_1=instance.galaxies.lens.shear.gamma_1,
                     gamma_2=instance.galaxies.lens.shear.gamma_2,
                 )
 
-                return {
-                    "galaxies.lens.shear.magnitude": magnitude,
-                    "galaxies.lens.shear.angle": angle,
-                }
+            return (magnitude, angle)
 
     analysis = AnalysisLatent(dataset=dataset)
 
@@ -143,7 +179,7 @@ Set up the aggregator as shown in `start_here.py`.
 from autofit.aggregator.aggregator import Aggregator
 
 agg = Aggregator.from_directory(
-    directory=path.join("output", "results_folder_csv_png_fits"),
+    directory=Path("output") / "results_folder_csv_png_fits",
 )
 
 """
@@ -276,7 +312,7 @@ __Latent Variables__
 Latent variables are not free model parameters but can be derived from the model, and they are described fully in
 ?.
 
-This example was run with a latent variable called `example_latent`, and below we show that this latent variable
+This example was run with a latent variable for the shear magnitude, and below we show that this latent variable
 can be added to the .csv file using the same API as above.
 """
 agg_csv = af.AggregateCSV(aggregator=agg)

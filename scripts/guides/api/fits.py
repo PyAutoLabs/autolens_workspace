@@ -59,7 +59,7 @@ If any code in this script is unclear, refer to the `results/start_here.ipynb` n
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 import numpy as np
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
@@ -73,12 +73,12 @@ The `autolens_workspace` comes distributed with simulated images of strong lense
 are made can be found in the `simulate.py` example, with all simulator scripts located in `autolens_workspac/simulators`.
 """
 dataset_name = "simple__no_lens_light"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
@@ -390,7 +390,7 @@ we could fit this source-only image again with an independent pipeline.
 """
 lens_subtracted_image_2d = fit.subtracted_images_of_planes_list[1]
 lens_subtracted_image_2d.output_to_fits(
-    file_path=path.join(dataset_path, "lens_subtracted_data.fits"), overwrite=True
+    file_path=dataset_path / "lens_subtracted_data.fits", overwrite=True
 )
 
 """

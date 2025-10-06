@@ -71,7 +71,7 @@ described in the script `autolens_workspace/*/data_preparation/imaging/start_her
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -87,12 +87,12 @@ The `pixel_scales` define the arc-second to pixel conversion factor of the image
 is 0.1" / pixel.
 """
 dataset_name = "simple"
-dataset_path = path.join("dataset", "group", dataset_name)
+dataset_path = Path("dataset", "group", dataset_name)
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
@@ -412,11 +412,10 @@ output results and visualization frequently to hard-disk. If your fit is consist
 is outputting results, try increasing this value to ensure the model-fit runs efficiently.**
 """
 search = af.Nautilus(
-    path_prefix=path.join("group", "modeling"),
+    path_prefix=Path("group", "modeling"),
     name="start_here_extended",
     unique_tag=dataset_name,
     n_live=300,  # Increased to higher value than many examples to account for the high dimensionality of the model.
-    number_of_cores=4,
 )
 
 """
@@ -448,23 +447,10 @@ Run times are dictated by two factors:
  - The number of iterations (e.g. log likelihood evaluations) performed by the non-linear search: more complex lens
    models require more iterations to converge to a solution.
 
-The log likelihood evaluation time can be estimated before a fit using the `profile_log_likelihood_function` method,
-which returns two dictionaries containing the run-times and information about the fit.
-"""
-run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-    instance=model.random_instance()
-)
-
-"""
-The overall log likelihood evaluation time is given by the `fit_time` key.
-
-For this example, it is ~0.001 seconds, which is extremely fast for lens modeling. The source-plane chi-squared
+For this analysis, the log likelihood evaluation time is ~0.001 seconds, which is extremely fast for lens modeling. The source-plane chi-squared
 is possibly the fastest way to fit a lens model to a dataset, and therefore whilst it has limitations it is a good
 way to get a rough estimate of the lens model parameters quickly.
-"""
-print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
 
-"""
 To estimate the expected overall run time of the model-fit we multiply the log likelihood evaluation time by an 
 estimate of the number of iterations the non-linear search will perform. 
 
@@ -478,14 +464,7 @@ If you perform the fit over multiple CPUs, you can divide the run time by the nu
 the time it will take to fit the model. Parallelization with Nautilus scales well, it speeds up the model-fit by the 
 `number_of_cores` for N < 8 CPUs and roughly `0.5*number_of_cores` for N > 8 CPUs. This scaling continues 
 for N> 50 CPUs, meaning that with super computing facilities you can always achieve fast run times!
-"""
-print(
-    "Estimated Run Time Upper Limit (seconds) = ",
-    (run_time_dict["fit_time"] * model.total_free_parameters * 10000)
-    / search.number_of_cores,
-)
 
-"""
 __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder

@@ -33,7 +33,7 @@ If any code in this script is unclear, refer to the `data_preparation/start_here
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 # %matplotlib inline
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
@@ -44,11 +44,9 @@ Load an image from .fits files (a format commonly used by Astronomers) via the `
 
 This image represents a good data-reduction that conforms **PyAutoLens** formatting standards!
 """
-dataset_path = path.join("dataset", "imaging", "simple")
+dataset_path = Path("dataset", "imaging", "simple")
 
-data = al.Array2D.from_fits(
-    file_path=path.join(dataset_path, "data.fits"), pixel_scales=0.1
-)
+data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.1)
 
 array_plotter = aplt.Array2DPlotter(array=data)
 array_plotter.figure_2d()
@@ -130,7 +128,7 @@ electrons per second instead.
 format.]
 """
 # exposure_time_map = al.Array2D.from_fits(
-#     file_path=path.join(dataset_path, "exposure_time_map.fits"),
+#     file_path=Path(dataset_path, "exposure_time_map.fits"),
 #     pixel_scales=data_eps.pixel_scales,
 # )
 #
@@ -171,10 +169,10 @@ keep the edges surrounding the lens and sourcegalaxy if they are masked out anyw
 
 Lets look at an example of a very large postage stamp - we can barely even see the lens and source galaxy!
 """
-dataset_path = path.join("dataset", "imaging", "simple__big_stamp")
+dataset_path = Path("dataset", "imaging", "simple__big_stamp")
 
 data_large_stamp = al.Array2D.from_fits(
-    file_path=path.join(dataset_path, "data.fits"), pixel_scales=0.1
+    file_path=dataset_path / "data.fits", pixel_scales=0.1
 )
 
 array_plotter = aplt.Array2DPlotter(array=data_large_stamp)

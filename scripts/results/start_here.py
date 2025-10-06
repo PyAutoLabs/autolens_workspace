@@ -24,7 +24,7 @@ folder for examples.
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 from pathlib import Path
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -36,12 +36,12 @@ The code below (which we have omitted comments from for brevity) performs a lens
 be familiar enough with lens modeling to understand this, if not you should go over the beginner model-fit script again!
 """
 dataset_name = "simple__no_lens_light"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
@@ -61,11 +61,10 @@ model = af.Collection(
 )
 
 search = af.Nautilus(
-    path_prefix=path.join("results_folder"),
+    path_prefix=Path("results_folder"),
     name="results",
     unique_tag=dataset_name,
     n_live=100,
-    number_of_cores=1,
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)
@@ -120,7 +119,7 @@ but if not you can revert to the `samples.
 from autofit.aggregator.aggregator import Aggregator
 
 agg = Aggregator.from_directory(
-    directory=path.join("output", "results_folder"),
+    directory=Path("output") / "results_folder",
 )
 
 """

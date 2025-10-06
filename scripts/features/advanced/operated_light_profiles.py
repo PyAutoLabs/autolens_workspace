@@ -38,7 +38,7 @@ If any code in this script is unclear, refer to the `modeling/start_here.ipynb` 
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -49,12 +49,12 @@ __Dataset__
 Load and plot the strong lens dataset `simple` via .fits files.
 """
 dataset_name = "light_operated"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
@@ -178,11 +178,10 @@ The model is fitted to the data using the nested sampling algorithm Nautilus (se
 full description).
 """
 search = af.Nautilus(
-    path_prefix=path.join("imaging", "modeling"),
+    path_prefix=Path("imaging") / "modeling",
     name="operated_light_profiles",
     unique_tag=dataset_name,
     n_live=150,
-    number_of_cores=1,
 )
 
 """
@@ -200,19 +199,7 @@ the computationally expensive PSF convolution step is omitted.
 
 The overall run-time may be a little slower than other models though, because the `psf` component adds a few
 extra parameters.
-"""
-run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-    instance=model.random_instance()
-)
 
-print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
-print(
-    "Estimated Run Time Upper Limit (seconds) = ",
-    (run_time_dict["fit_time"] * model.total_free_parameters * 10000)
-    / search.number_of_cores,
-)
-
-"""
 __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder

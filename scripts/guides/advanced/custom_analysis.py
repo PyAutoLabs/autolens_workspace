@@ -55,7 +55,7 @@ We still recommend you take a look to see how things are structured!
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 import numpy as np
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -317,12 +317,12 @@ The standard API for choosing a non-linear search and performing a model-fit can
 class.
 """
 dataset_name = "simple__no_lens_light"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
@@ -333,11 +333,10 @@ mask = al.Mask2D.circular(
 dataset = dataset.apply_mask(mask=mask)
 
 search = af.Nautilus(
-    path_prefix=path.join("custom_analysis"),
+    path_prefix=Path("custom_analysis"),
     name="strong_lensing_example",
     unique_tag=dataset_name,
     n_live=150,
-    number_of_cores=1,
     iterations_per_update=10000,
 )
 
@@ -485,18 +484,17 @@ class.
 NOTE: Felix can you send me an example shear catalogue so I can get this to run :)
 """
 dataset_name = "example_shear_catalogue"
-dataset_path = path.join("dataset", "weak_lensing", dataset_name)
+dataset_path = Path("dataset") / "weak_lensing" / dataset_name
 
 # data = load_shear()
 # noise_map = load_noise_map()
 # grid = load_grid()
 
 search = af.Nautilus(
-    path_prefix=path.join("custom_analysis"),
+    path_prefix=Path("custom_analysis"),
     name="weak_lensing_example",
     unique_tag=dataset_name,
     n_live=150,
-    number_of_cores=1,
     iterations_per_update=10000,
 )
 

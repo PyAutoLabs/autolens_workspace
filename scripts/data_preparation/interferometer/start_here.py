@@ -37,11 +37,11 @@ Fourier transform. If the pixel scale is too large, the Fourier transform will s
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 # %matplotlib inline
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
-dataset_path = path.join("dataset", "interferometer", "simple")
+dataset_path = Path("dataset") / "interferometer" / "simple"
 
 """
 __Visibilities__
@@ -50,9 +50,7 @@ The image is the image of your strong lens, which comes from a telescope like th
 
 Lets inspect an image which conforms to **PyAutoLens** standards:
 """
-visibilities = al.Visibilities.from_fits(
-    file_path=path.join(dataset_path, "data.fits"), hdu=0
-)
+visibilities = al.Visibilities.from_fits(file_path=dataset_path / "data.fits", hdu=0)
 
 array_plotter = aplt.Grid2DPlotter(grid=visibilities.in_grid)
 array_plotter.figure_2d()
@@ -72,7 +70,7 @@ It is common for all visibilities to have the same noise value, depending on the
 the data.
 """
 visibilities = al.VisibilitiesNoiseMap.from_fits(
-    file_path=path.join(dataset_path, "noise_map.fits"), hdu=0
+    file_path=dataset_path / "noise_map.fits", hdu=0
 )
 
 array_plotter = aplt.Grid2DPlotter(grid=visibilities.in_grid)
@@ -85,7 +83,7 @@ The uv-wavelengths define the baselines of the interferometer. They are used to 
 uv-plane, which is where the lens model is evaluated.
 """
 uv_wavelengths = al.ndarray_via_fits_from(
-    file_path=path.join(dataset_path, "uv_wavelengths.fits"), hdu=0
+    file_path=Path(dataset_path, "uv_wavelengths.fits"), hdu=0
 )
 
 uv_wavelengths = al.Grid2DIrregular.from_yx_1d(

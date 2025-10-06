@@ -37,7 +37,7 @@ kiloparsecs, magnitudes and solar masses.
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
@@ -231,12 +231,12 @@ For example, the `data` and `noise_map` in an `Imaging` object are stored as `Ar
 We load an imaging dataset and illustrate its data structures below.   
 """
 dataset_name = "lens_sersic"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 

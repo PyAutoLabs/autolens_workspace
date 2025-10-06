@@ -29,7 +29,7 @@ The `PLotter` API is described in the `autolens_workspace/*/plot/start_here.py` 
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
@@ -50,7 +50,7 @@ The path where the dataset will be output.
 
 In this example, this is: `/autolens_workspace/dataset/imaging/simple`
 """
-dataset_path = path.join("dataset", dataset_type, dataset_name)
+dataset_path = Path("dataset", dataset_type, dataset_name)
 
 """
 __Grid__
@@ -211,9 +211,9 @@ If you are unfamiliar with .fits files, this is the standard file format of astr
 them using the software ds9 (https://sites.google.com/cfa.harvard.edu/saoimageds9/home).
 """
 dataset.output_to_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     overwrite=True,
 )
 
@@ -247,7 +247,7 @@ This can be loaded via the method `tracer = al.from_json()`.
 """
 al.output_to_json(
     obj=tracer,
-    file_path=path.join(dataset_path, "tracer.json"),
+    file_path=Path(dataset_path, "tracer.json"),
 )
 
 """

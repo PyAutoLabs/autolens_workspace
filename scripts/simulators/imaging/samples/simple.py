@@ -38,7 +38,7 @@ If any code in this script is unclear, refer to the `simulators/start_here.ipynb
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -55,7 +55,7 @@ dataset_sample_name = "simple"
 """
 The path where the dataset will be output/
 """
-dataset_path = path.join("dataset", dataset_type, dataset_label, dataset_sample_name)
+dataset_path = Path("dataset", dataset_type, dataset_label, dataset_sample_name)
 
 """
 __Simulate__
@@ -166,7 +166,7 @@ Each iteration of the for loop will then create a tracer and use this to simulat
 total_datasets = 3
 
 for sample_index in range(total_datasets):
-    dataset_sample_path = path.join(dataset_path, f"dataset_{sample_index}")
+    dataset_sample_path = Path(dataset_path, f"dataset_{sample_index}")
 
     lens_galaxy = lens.random_instance()
     source_galaxy = source.random_instance()
@@ -197,9 +197,9 @@ for sample_index in range(total_datasets):
     This uses the updated `dataset_path_sample` which outputs this sample lens to a unique folder.
     """
     dataset.output_to_fits(
-        data_path=path.join(dataset_sample_path, "data.fits"),
-        psf_path=path.join(dataset_sample_path, "psf.fits"),
-        noise_map_path=path.join(dataset_sample_path, "noise_map.fits"),
+        data_path=Path(dataset_sample_path, "data.fits"),
+        psf_path=Path(dataset_sample_path, "psf.fits"),
+        noise_map_path=Path(dataset_sample_path, "noise_map.fits"),
         overwrite=True,
     )
 
@@ -230,7 +230,7 @@ for sample_index in range(total_datasets):
     """
     al.output_to_json(
         obj=tracer,
-        file_path=path.join(dataset_sample_path, "tracer.json"),
+        file_path=Path(dataset_sample_path, "tracer.json"),
     )
 
     """

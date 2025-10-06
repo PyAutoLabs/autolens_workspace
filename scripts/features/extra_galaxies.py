@@ -45,7 +45,7 @@ If any code in this script is unclear, refer to the `modeling/start_here.ipynb` 
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -56,12 +56,12 @@ __Dataset__
 Load and plot the strong lens dataset `extra_galaxies` via .fits files.
 """
 dataset_name = "extra_galaxies"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
@@ -103,7 +103,7 @@ We load the `mask_extra_galaxies.fits` from the dataset folder, combine it with 
 the dataset.
 """
 mask_extra_galaxies = al.Mask2D.from_fits(
-    file_path=path.join(dataset_path, "mask_extra_galaxies.fits"),
+    file_path=Path(dataset_path, "mask_extra_galaxies.fits"),
     pixel_scales=dataset.pixel_scales,
 )
 
@@ -164,11 +164,10 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 search = af.Nautilus(
-    path_prefix=path.join("imaging", "features"),
+    path_prefix=Path("imaging") / "features",
     name="extra_galaxies_simple_mask",
     unique_tag=dataset_name,
     n_live=150,
-    number_of_cores=4,
     iterations_per_update=20000,
 )
 
@@ -202,14 +201,14 @@ the data values to zeros, increasing the noise-map values to large values and in
 of its pixels effectively zero.
 """
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
 mask_extra_galaxies = al.Mask2D.from_fits(
-    file_path=path.join(dataset_path, "mask_extra_galaxies.fits"),
+    file_path=Path(dataset_path, "mask_extra_galaxies.fits"),
     pixel_scales=0.1,
     invert=True,  # Note that we invert the mask here as `True` means a pixel is scaled.
 )
@@ -241,9 +240,9 @@ We therefore reload the dataset and apply the 6.0" circular mask to it, but do n
 as the emission of the extra galaxies is included in the model.
 """
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
@@ -277,7 +276,7 @@ The `data_preparation` tutorial `autolens_workspace/*/data_preparation/imaging/e
 describes how to create these centres. Using this script they have been output to the `.json` file we load below.
 """
 extra_galaxies_centres = al.Grid2DIrregular(
-    al.from_json(file_path=path.join(dataset_path, "extra_galaxies_centres.json"))
+    al.from_json(file_path=Path(dataset_path, "extra_galaxies_centres.json"))
 )
 
 print(extra_galaxies_centres)
@@ -384,11 +383,10 @@ The code below performs the normal steps to set up a model-fit.
 Given the extra model parameters due to the extra gaxies, we increase the number of live points to 200.
 """
 search = af.Nautilus(
-    path_prefix=path.join("imaging", "features"),
+    path_prefix=Path("imaging") / "features",
     name="extra_galaxies_model",
     unique_tag=dataset_name,
     n_live=150,
-    number_of_cores=4,
     iterations_per_update=20000,
 )
 
@@ -405,19 +403,7 @@ increase in time is expected.
 
 The bigger hit on run time is due to the extra free parameters, which increases the dimensionality of non-linear
 parameter space. This means Nautilus takes longer to converge on the highest likelihood regions of parameter space.
-"""
-run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-    instance=model.random_instance()
-)
 
-print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
-print(
-    "Estimated Run Time Upper Limit (seconds) = ",
-    (run_time_dict["fit_time"] * model.total_free_parameters * 10000)
-    / search.number_of_cores,
-)
-
-"""
 __Model-Fit__
 
 We can now begin the model-fit by passing the model and analysis object to the search, which performs a non-linear

@@ -31,7 +31,7 @@ If any code in this script is unclear, refer to the `data_preparation/start_here
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 
 # %matplotlib inline
 
@@ -40,7 +40,7 @@ The path where info is output, which is `dataset/imaging/simple__no_lens_light`
 """
 dataset_type = "imaging"
 dataset_name = "simple__no_lens_light"
-dataset_path = path.join("dataset", dataset_type, dataset_name)
+dataset_path = Path("dataset", dataset_type, dataset_name)
 
 """
 The info is written as a Python dictionary and can have as many entries as desired added to it. Any information you
@@ -68,16 +68,16 @@ info_file = "info.json"
 with open(info_file, "w+") as f:
     json.dump(info, f, indent=4)
 
-if os.path.exists(path.join(dataset_path, "info.json")):
-    os.remove(path.join(dataset_path, "info.json"))
+if os.path.exists(Path(dataset_path, "info.json")):
+    os.remove(Path(dataset_path, "info.json"))
 
-shutil.move("info.json", path.join(dataset_path, "info.json"))
+shutil.move("info.json", Path(dataset_path, "info.json"))
 
 """
 For the info to be available to the results of a model-fit, the modeling script must load the info file from the .json and 
 pass it to the search.run() or pipeline.run() function:
 
-info_file = path.join(dataset_path, "info.json")
+info_file = Path(dataset_path, "info.json")
 
 with open(info_file, "r") as f:
     info = json.load(f)

@@ -470,52 +470,74 @@ def base_model_narrow_priors_from(base_model, result, stretch: float = 1.0):
     """
 
     if hasattr(base_model.galaxies.lens, "mass"):
-        base_model.galaxies.lens.mass.centre.centre_0 = result.model_bounded(
-            b=0.01 * stretch
-        ).galaxies.lens.mass.centre.centre_0
-        base_model.galaxies.lens.mass.centre.centre_1 = result.model_bounded(
-            b=0.01 * stretch
-        ).galaxies.lens.mass.centre.centre_1
-        base_model.galaxies.lens.mass.ell_comps.ell_comps_0 = result.model_bounded(
-            b=0.05 * stretch
-        ).galaxies.lens.mass.ell_comps.ell_comps_0
-        base_model.galaxies.lens.mass.ell_comps.ell_comps_1 = result.model_bounded(
-            b=0.05 * stretch
-        ).galaxies.lens.mass.ell_comps.ell_comps_1
-        base_model.galaxies.lens.mass.einstein_radius = result.model_bounded(
-            b=0.1 * stretch
-        ).galaxies.lens.mass.einstein_radius
-        base_model.galaxies.lens.mass.slope = result.model_bounded(
+        base_model.galaxies.lens.mass.centre.centre_0 = (
+            result.model_centred_max_lh_bounded(
+                b=0.01 * stretch
+            ).galaxies.lens.mass.centre.centre_0
+        )
+        base_model.galaxies.lens.mass.centre.centre_1 = (
+            result.model_centred_max_lh_bounded(
+                b=0.01 * stretch
+            ).galaxies.lens.mass.centre.centre_1
+        )
+        base_model.galaxies.lens.mass.ell_comps.ell_comps_0 = (
+            result.model_centred_max_lh_bounded(
+                b=0.05 * stretch
+            ).galaxies.lens.mass.ell_comps.ell_comps_0
+        )
+        base_model.galaxies.lens.mass.ell_comps.ell_comps_1 = (
+            result.model_centred_max_lh_bounded(
+                b=0.05 * stretch
+            ).galaxies.lens.mass.ell_comps.ell_comps_1
+        )
+        base_model.galaxies.lens.mass.einstein_radius = (
+            result.model_centred_max_lh_bounded(
+                b=0.1 * stretch
+            ).galaxies.lens.mass.einstein_radius
+        )
+        base_model.galaxies.lens.mass.slope = result.model_centred_max_lh_bounded(
             b=0.1 * stretch
         ).galaxies.lens.mass.slope
 
     if hasattr(base_model.galaxies.lens, "shear"):
-        base_model.galaxies.lens.shear.gamma_1 = result.model_bounded(
+        base_model.galaxies.lens.shear.gamma_1 = result.model_centred_max_lh_bounded(
             b=0.05 * stretch
         ).galaxies.lens.shear.gamma_1
-        base_model.galaxies.lens.shear.gamma_2 = result.model_bounded(
+        base_model.galaxies.lens.shear.gamma_2 = result.model_centred_max_lh_bounded(
             b=0.05 * stretch
         ).galaxies.lens.shear.gamma_2
 
     if hasattr(base_model.galaxies.source, "bulge"):
-        base_model.galaxies.source.bulge.centre.centre_0 = result.model_bounded(
-            b=0.1 * stretch
-        ).galaxies.source.bulge.centre.centre_0
-        base_model.galaxies.source.bulge.centre.centre_1 = result.model_bounded(
-            b=0.1 * stretch
-        ).galaxies.source.bulge.centre.centre_1
-        base_model.galaxies.source.bulge.ell_comps.ell_comps_0 = result.model_bounded(
-            b=0.1 * stretch
-        ).galaxies.source.bulge.ell_comps.ell_comps_0
-        base_model.galaxies.source.bulge.ell_comps.ell_comps_1 = result.model_bounded(
-            b=0.1 * stretch
-        ).galaxies.source.bulge.ell_comps.ell_comps_1
-        base_model.galaxies.source.bulge.effective_radius = result.model_bounded(
-            b=0.2 * stretch
-        ).galaxies.source.bulge.effective_radius
-        base_model.galaxies.source.bulge.sersic_index = result.model_bounded(
-            b=0.2 * stretch
-        ).galaxies.source.bulge.sersic_index
+        base_model.galaxies.source.bulge.centre.centre_0 = (
+            result.model_centred_max_lh_bounded(
+                b=0.1 * stretch
+            ).galaxies.source.bulge.centre.centre_0
+        )
+        base_model.galaxies.source.bulge.centre.centre_1 = (
+            result.model_centred_max_lh_bounded(
+                b=0.1 * stretch
+            ).galaxies.source.bulge.centre.centre_1
+        )
+        base_model.galaxies.source.bulge.ell_comps.ell_comps_0 = (
+            result.model_centred_max_lh_bounded(
+                b=0.1 * stretch
+            ).galaxies.source.bulge.ell_comps.ell_comps_0
+        )
+        base_model.galaxies.source.bulge.ell_comps.ell_comps_1 = (
+            result.model_centred_max_lh_bounded(
+                b=0.1 * stretch
+            ).galaxies.source.bulge.ell_comps.ell_comps_1
+        )
+        base_model.galaxies.source.bulge.effective_radius = (
+            result.model_centred_max_lh_bounded(
+                b=0.2 * stretch
+            ).galaxies.source.bulge.effective_radius
+        )
+        base_model.galaxies.source.bulge.sersic_index = (
+            result.model_centred_max_lh_bounded(
+                b=0.2 * stretch
+            ).galaxies.source.bulge.sersic_index
+        )
 
         if base_model.galaxies.source.bulge.effective_radius.lower_limit < 0.0:
             base_model.galaxies.source.bulge.effective_radius = af.UniformPrior(
@@ -760,7 +782,6 @@ def run(
         number_of_steps=number_of_steps,
         batch_range=batch_range,
         mask=sensitivity_mask,
-        number_of_cores=1,
     )
 
     result = sensitivity.run()

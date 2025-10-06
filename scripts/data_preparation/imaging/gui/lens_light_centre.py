@@ -12,7 +12,7 @@ value in pipelines.
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 from matplotlib import pyplot as plt
@@ -24,7 +24,7 @@ Setup the path the datasets we'll use to illustrate preprocessing, which is the
 folder `dataset/imaging/lens_sersic`.
 """
 dataset_name = "lens_sersic"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 """
 The pixel scale of the imaging dataset.
@@ -35,7 +35,7 @@ pixel_scales = 0.1
 Load the image which we will use to mark the lens light centre.
 """
 data = al.Array2D.from_fits(
-    file_path=path.join(dataset_path, "data.fits"), pixel_scales=pixel_scales
+    file_path=dataset_path / "data.fits", pixel_scales=pixel_scales
 )
 
 """
@@ -109,7 +109,7 @@ Output the lens light centres to a .json file in the dataset folder, so we can l
 """
 al.output_to_json(
     obj=lens_light_centre,
-    file_path=path.join(dataset_path, "lens_light_centre.json"),
+    file_path=Path(dataset_path, "lens_light_centre.json"),
 )
 
 """

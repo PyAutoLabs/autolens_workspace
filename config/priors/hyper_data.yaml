@@ -6,7 +6,7 @@ HyperBackgroundNoise:
     width_modifier:
       type: Absolute
       value: 0.1
-    gaussian_limits:
+    limits:
       lower: 0.0
       upper: inf
 HyperImageSky:
@@ -17,6 +17,6 @@ HyperImageSky:
     width_modifier:
       type: Absolute
       value: 0.1
-    gaussian_limits:
+    limits:
       lower: -inf
       upper: inf

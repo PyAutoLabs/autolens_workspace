@@ -46,7 +46,7 @@ code outlined in this tutorial.
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from os import path
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
@@ -461,12 +461,12 @@ The grid this is applied to is called `lp`, to indicate that it is the grid used
 profiles for which this over sampling scheme is applied.
 """
 dataset_name = "simple__no_lens_light"
-dataset_path = path.join("dataset", "imaging", dataset_name)
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
