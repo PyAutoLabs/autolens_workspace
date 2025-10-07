@@ -235,22 +235,6 @@ will be generated, ensuring that the model-fit results are output into a separat
 We additionally want the unique identifier to be specific to the dataset fitted, so that if we fit different datasets
 with the same model and search results are output to a different folder. We achieve this below by passing 
 the `dataset_name` to the search's `unique_tag`.
-
-__Number Of Cores__
-
-We include an input `number_of_cores`, which when above 1 means that Nautilus uses parallel processing to sample multiple 
-lens models at once on your CPU. When `number_of_cores=2` the search will run roughly two times as
-fast, for `number_of_cores=3` three times as fast, and so on. The downside is more cores on your CPU will be in-use
-which may hurt the general performance of your computer.
-
-You should experiment to figure out the highest value which does not give a noticeable loss in performance of your 
-computer. If you know that your processor is a quad-core processor you should be able to use `number_of_cores=4`. 
-
-Above `number_of_cores=4` the speed-up from parallelization diminishes greatly. We therefore recommend you do not
-use a value above this.
-
-For users on a Windows Operating system, using `number_of_cores>1` may lead to an error, in which case it should be 
-reduced back to 1 to fix it.
 """
 search = af.Nautilus(
     path_prefix=Path("point_source") / "modeling",
@@ -309,48 +293,17 @@ Run times are dictated by two factors:
 
  - The log likelihood evaluation time: the time it takes for a single `instance` of the lens model to be fitted to 
    the dataset such that a log likelihood is returned.
-
+ 
  - The number of iterations (e.g. log likelihood evaluations) performed by the non-linear search: more complex lens
    models require more iterations to converge to a solution.
-
-The log likelihood evaluation time can be estimated before a fit using the `profile_log_likelihood_function` method,
-which returns two dictionaries containing the run-times and information about the fit.
-"""
-run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-    instance=model.instance_from_prior_medians()
-)
-
-"""
-The overall log likelihood evaluation time is given by the `fit_time` key.
-
-For this example, it is ~1.0 second, which is a modest run-time. This is because the iterative ray-tracing approach
-using triangles to compute the image-plane chi-squared is computationally quite slow. The source-plane chi-squared
-is significantly faster to compute (below 0.1 seconds), but as discussed above is less robust.
-
-
+   
+For this analysis, the log likelihood evaluation time is ~0.01 seconds on CPU, < 0.001 seconds on GPU, which is 
+extremely fast for lens modeling. 
 
 To estimate the expected overall run time of the model-fit we multiply the log likelihood evaluation time by an 
-estimate of the number of iterations the non-linear search will perform. 
+estimate of the number of iterations the non-linear search will perform. For this model, this is typically around
+? iterations, meaning that this script takes ? on CPU and ? on GPU.
 
-Estimating this is tricky, as it depends on the lens model complexity (e.g. number of parameters)
-and the properties of the dataset and model being fitted.
-
-Testing has shown that point source datasets typically converge in fewer iterations than imaging or interferometer
-datasets. For this example, we conservatively estimate that the non-linear search will perform ~1000 iterations per 
-free parameter in the model. This is an upper limit, with models typically converging in far fewer iterations.
-
-If you perform the fit over multiple CPUs, you can divide the run time by the number of cores to get an estimate of
-the time it will take to fit the model. Parallelization with Nautilus scales well, it speeds up the model-fit by the 
-`number_of_cores` for N < 8 CPUs and roughly `0.5*number_of_cores` for N > 8 CPUs. This scaling continues 
-for N> 50 CPUs, meaning that with super computing facilities you can always achieve fast run times!
-"""
-print(
-    "Estimated Run Time Upper Limit (seconds) = ",
-    (run_time_dict["fit_time"] * model.total_free_parameters * 1000)
-    / search.number_of_cores,
-)
-
-"""
 __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder

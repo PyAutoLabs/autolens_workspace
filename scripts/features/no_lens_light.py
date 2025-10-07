@@ -194,7 +194,6 @@ def fit():
         name="no_lens_light__mp_spawn",
         unique_tag=dataset_name,
         n_live=100,
-        number_of_cores=4,
         #        iterations_per_update=1000
     )
 

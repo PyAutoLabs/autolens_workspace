@@ -107,10 +107,10 @@ the soruce's bulge.
 mass = af.Model(al.mp.PowerLaw)
 
 mass.centre = (0.0, 0.0)
-mass.ell_comps.ell_comps_0 = af.GaussianPrior(
+mass.ell_comps.ell_comps_0 = af.TruncatedGaussianPrior(
     mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
 )
-mass.ell_comps.ell_comps_1 = af.GaussianPrior(
+mass.ell_comps.ell_comps_1 = af.TruncatedGaussianPrior(
     mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
 )
 mass.einstein_radius = af.UniformPrior(lower_limit=0.4, upper_limit=1.8)

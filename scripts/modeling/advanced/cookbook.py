@@ -220,7 +220,7 @@ of priors:
 # Lens:
 
 bulge = af.Model(al.lp_linear.Sersic)
-bulge.sersic_index = af.GaussianPrior(
+bulge.sersic_index = af.TruncatedGaussianPrior(
     mean=4.0, sigma=1.0, lower_limit=1.0, upper_limit=8.0
 )
 

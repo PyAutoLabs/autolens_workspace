@@ -134,12 +134,12 @@ mapper = fit.inversion.cls_list_from(cls=al.AbstractMapper)[0]
 
 image_plane_mesh_grid = mapper.image_plane_mesh_grid
 visuals_2d = aplt.Visuals2D(mesh_grid=image_plane_mesh_grid)
-fit_plotter = aplt.FitImagingPlotter(fit=fit, visuals=visuals_2d)
+fit_plotter = aplt.FitImagingPlotter(fit=fit, visuals_2d=visuals_2d)
 fit_plotter.figures_2d_of_planes(plane_index=0, plane_image=True)
 
 source_plane_mesh_grid = tracer.traced_grid_2d_list_from(grid=image_plane_mesh_grid)[-1]
 visuals_2d = aplt.Visuals2D(mesh_grid=source_plane_mesh_grid)
-fit_plotter = aplt.FitImagingPlotter(fit=fit, visuals=visuals_2d)
+fit_plotter = aplt.FitImagingPlotter(fit=fit, visuals_2d=visuals_2d)
 fit_plotter.figures_2d_of_planes(plane_index=1, plane_image=True)
 
 """
@@ -216,12 +216,12 @@ mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
 
 image_plane_mesh_grid = mapper.image_plane_mesh_grid
 visuals_2d = aplt.Visuals2D(mesh_grid=image_plane_mesh_grid)
-inversion_plotter = aplt.InversionPlotter(inversion=inversion, visuals=visuals_2d)
+inversion_plotter = aplt.InversionPlotter(inversion=inversion, visuals_2d=visuals_2d)
 inversion_plotter.figures_2d(reconstructed_image=True)
 
 source_plane_mesh_grid = tracer.traced_grid_2d_list_from(grid=image_plane_mesh_grid)[-1]
 visuals_2d = aplt.Visuals2D(mesh_grid=source_plane_mesh_grid)
-inversion_plotter = aplt.InversionPlotter(inversion=inversion, visuals=visuals_2d)
+inversion_plotter = aplt.InversionPlotter(inversion=inversion, visuals_2d=visuals_2d)
 inversion_plotter.figures_2d_of_pixelization(pixelization_index=0, reconstruction=True)
 
 """
@@ -294,7 +294,7 @@ visuals_2d = aplt.Visuals2D(
     grid=image_plane_mesh_grid, mesh_grid=source_plane_mesh_grid
 )
 
-mapper_plotter = aplt.MapperPlotter(mapper=mapper, visuals=visuals_2d)
+mapper_plotter = aplt.MapperPlotter(mapper=mapper, visuals_2d=visuals_2d)
 mapper_plotter.subplot_image_and_mapper(image=dataset.data)
 
 """
@@ -380,12 +380,12 @@ mapper = fit.inversion.cls_list_from(cls=al.AbstractMapper)[0]
 
 image_plane_mesh_grid = mapper.image_plane_mesh_grid
 visuals_2d = aplt.Visuals2D(mesh_grid=image_plane_mesh_grid)
-fit_plotter = aplt.FitInterferometerPlotter(fit=fit, visuals=visuals_2d)
+fit_plotter = aplt.FitInterferometerPlotter(fit=fit, visuals_2d=visuals_2d)
 fit_plotter.figures_2d_of_planes(plane_index=0, plane_image=True)
 
 source_plane_mesh_grid = tracer.traced_grid_2d_list_from(grid=image_plane_mesh_grid)[-1]
 visuals_2d = aplt.Visuals2D(mesh_grid=source_plane_mesh_grid)
-fit_plotter = aplt.FitInterferometerPlotter(fit=fit, visuals=visuals_2d)
+fit_plotter = aplt.FitInterferometerPlotter(fit=fit, visuals_2d=visuals_2d)
 fit_plotter.figures_2d_of_planes(plane_index=1, plane_image=True)
 
 

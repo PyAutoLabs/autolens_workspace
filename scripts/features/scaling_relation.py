@@ -199,7 +199,6 @@ class dPIESph(MassProfile):
 
     @aa.grid_dec.to_vector_yx
     @aa.grid_dec.transform
-    @aa.grid_dec.relocate_to_radial_minimum
     def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike, **kwargs):
         ys, xs = grid.T
         (ycen, xcen) = self.centre
@@ -225,7 +224,6 @@ class dPIESph(MassProfile):
 
     @aa.grid_dec.to_array
     @aa.grid_dec.transform
-    @aa.grid_dec.relocate_to_radial_minimum
     def convergence_2d_from(self, grid: aa.type.Grid2DLike, **kwargs):
         # already transformed to center on profile centre so this works
         radsq = grid[:, 0] ** 2 + grid[:, 1] ** 2

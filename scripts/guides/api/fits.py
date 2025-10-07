@@ -359,7 +359,7 @@ mask = al.Mask2D.circular(
 
 normalized_residuals = fit.normalized_residual_map.apply_mask(mask=mask)
 
-print(np.mean(np.abs(normalized_residuals.slim)))
+print(np.mean(np.abs(normalized_residuals.slim.array)))
 
 """
 __Pixel Counting__
@@ -378,7 +378,7 @@ mask = al.Mask2D.circular(
 
 chi_squared_map = fit.chi_squared_map.apply_mask(mask=mask)
 
-print(np.sum(chi_squared_map > 10.0))
+print(np.sum(chi_squared_map.array > 10.0))
 
 """
 __Outputting Results__

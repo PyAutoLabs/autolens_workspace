@@ -151,7 +151,6 @@ for dataset_name in dataset_names:
         unique_tag=dataset_name,  # This makes the unique identifier use the dataset name
         session=session,  # This can instruct the search to write to the .sqlite database.
         n_live=100,
-        number_of_cores=6,
         n_like_max=5000,
     )
 

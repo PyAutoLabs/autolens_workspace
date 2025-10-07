@@ -97,7 +97,6 @@ class Isothermal(MassProfile):
 
     @aa.grid_dec.to_vector_yx
     @aa.grid_dec.transform
-    @aa.grid_dec.relocate_to_radial_minimum
     def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike):
         """
         Calculate the deflection angles on a grid of (y,x) arc-second coordinates.
@@ -210,18 +209,6 @@ another vector quantity which uses this decorator is the `shear`).
 
 For example, if a `Grid2D` is input, the output deflection angles will be an `VectorYX2D` object. If 
 a `Grid2DIrregular` is input, the output deflection angles will be an `VectorYX2DIrregular` object.
- 
- 
-`@aa.grid_dec.relocate_to_radial_minimum`: 
-
-For certain mass profiles, if a (y,x) coordinate is numerically (0.0, 0.0) this can lead the code to crash (e.g. a 
-divide by zero). 
-
-This decorator relocates any coordinate near (0.0, 0.0) to a small offset from (0.0, 0.0), ensuring this does not 
-happen. 
-
-The size of the offset is provided in the `autolens_workspace/config/grids.yaml` file. You should add your mass 
-profile to this file, and set the offset to a value that ensures your code does not crash.
  
 __Transform Decorator__
   
@@ -456,7 +443,6 @@ class TemplateMass(EllProfile):
 
     @aa.grid_dec.to_vector_yx
     @aa.grid_dec.transform
-    @aa.grid_dec.relocate_to_radial_minimum
     def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike):
         """
         REQUIRED: The function is key for all lensing calculations and must be implemented.
@@ -465,7 +451,6 @@ class TemplateMass(EllProfile):
 
     @aa.grid_dec.to_array
     @aa.grid_dec.transform
-    @aa.grid_dec.relocate_to_radial_minimum
     def convergence_2d_from(self, grid: aa.type.Grid2DLike):
         """
         RECOMMENDED: The convergence is used for visualization and inspecting properties of the mass profile.
@@ -474,7 +459,6 @@ class TemplateMass(EllProfile):
 
     @aa.grid_dec.to_array
     @aa.grid_dec.transform
-    @aa.grid_dec.relocate_to_radial_minimum
     def potential_2d_from(self, grid: aa.type.Grid2DLike):
         """
         RECOMMENDED: The gravitational potential is used for visualization and inspecting properties of the mass
@@ -501,7 +485,6 @@ class TemplateMass(EllProfile):
 
     @aa.grid_dec.to_vector_yx
     @aa.grid_dec.transform
-    @aa.grid_dec.relocate_to_radial_minimum
     def shear_yx_2d_from(self, grid: aa.type.Grid2DLike):
         """
         OPTIONAL: Shears are used for weak lensing calculations and inspection properties of the mass profile.

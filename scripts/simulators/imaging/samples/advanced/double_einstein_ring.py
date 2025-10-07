@@ -114,7 +114,7 @@ the soruce's bulge.
 mass = af.Model(al.mp.Isothermal)
 
 mass.centre = (0.0, 0.0)
-mass.einstein_radius = af.GaussianPrior(mean=1.8, sigma=0.3, lower_limit=0.0)
+mass.einstein_radius = af.TruncatedGaussianPrior(mean=1.8, sigma=0.3, lower_limit=0.0)
 
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
@@ -123,7 +123,7 @@ bulge = af.Model(al.lp_snr.ExponentialSph)
 bulge.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.1)
 bulge.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.1)
 bulge.signal_to_noise_ratio = af.UniformPrior(lower_limit=20.0, upper_limit=30.0)
-bulge.effective_radius = af.GaussianPrior(
+bulge.effective_radius = af.TruncatedGaussianPrior(
     mean=0.2, sigma=0.2, lower_limit=0.01, upper_limit=3.0
 )
 

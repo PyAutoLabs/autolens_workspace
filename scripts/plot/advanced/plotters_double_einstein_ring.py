@@ -163,6 +163,8 @@ fit = al.FitImaging(dataset=dataset, tracer=tracer)
 We can even extract an `InversionPlotter` (described below) from the `FitImagingPlotter` and use it to plot all of its usual methods, 
 which will now include the caustic and border.
 """
+fit_plotter = aplt.FitImagingPlotter(fit=fit)
+
 inversion_plotter = fit_plotter.inversion_plotter_of_plane(plane_index=1)
 inversion_plotter.figures_2d_of_pixelization(
     pixelization_index=0, reconstruction=True, regularization_weights=True
