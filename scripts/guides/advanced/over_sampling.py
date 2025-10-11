@@ -271,7 +271,7 @@ where the intensity gradient is steep. We can use lower levels of over-sampling 
 will be fast to evaluate.
 
 Up to now, the `over_sample_size` input has been an integer, however it can also be an `ndarray` of values corresponding
-to each pixel. Below, we create an `ndarray` of values which are high in the centre, but reduce to 2 at the outskirts,
+to each pixel. We create an `ndarray` of values which are high in the centre, but reduce to 2 at the outskirts,
 therefore providing high levels of over sampling where we need it whilst using lower values which are computationally
 fast to evaluate at the outskirts.
 

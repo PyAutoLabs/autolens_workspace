@@ -161,8 +161,6 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
-dataset.convolver
-
 """
 __Basis__
 
@@ -412,7 +410,9 @@ bulge = af.Model(
 
 mass = af.Model(al.mp.Isothermal)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+shear = af.Model(al.mp.ExternalShear)
+
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
@@ -439,7 +439,7 @@ Owing to the simplicity of fitting an MGE we an use even fewer live points than 
 """
 search = af.Nautilus(
     path_prefix=Path("imaging") / "modeling",
-    name="mge_cpu_jax",
+    name="mge",
     unique_tag=dataset_name,
     n_live=75,
     n_batch=50,
@@ -573,8 +573,8 @@ gaussian_per_basis = 1
 
 # By defining the centre here, it creates two free parameters that are assigned to the source Gaussians.
 
-centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
-centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
+centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
 
 log10_sigma_list = np.linspace(-2, np.log10(1.0), total_gaussians)
 

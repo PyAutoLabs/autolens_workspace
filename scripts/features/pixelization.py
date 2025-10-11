@@ -108,6 +108,17 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
+
+__JAX Slowdown__
+
+Pixelizations currently have limited JAX support, meaning GPU acceleration is not yet possible. We therefore disable JAX
+at the start of this script.
+
+Note that speed up on CPU is still possible, by both using the library `numba` (if you do not have this installed an
+Exception will be raised explaining how to install it) and by using Python multiprocessing multi-core parallelization
+by passing a `number_of_cores` to Nautilus.
+
+JAX supported for pixelization is close and expected to be ready by mid November 2025.
 """
 
 # %matplotlib inline
@@ -153,7 +164,6 @@ dataset = dataset.apply_mask(mask=mask)
 
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
-
 
 """
 __Over Sampling__
@@ -201,13 +211,9 @@ of the noise in the data and an unrealistically complex and strucutred source. R
 reconstruction solution by penalizing solutions where neighboring pixels (Voronoi triangles in this example) have
 large flux differences.
 """
-# image_mesh = al.image_mesh.Overlay(shape=(30, 30))
-# mesh = al.mesh.Delaunay()
-# regularization = al.reg.ConstantSplit(coefficient=1.0)
-
-image_mesh = None
-mesh = al.mesh.Rectangular(shape=(30, 30))
-regularization = al.reg.Constant(coefficient=1.0)
+image_mesh = al.image_mesh.Overlay(shape=(30, 30))
+mesh = al.mesh.Delaunay()
+regularization = al.reg.ConstantSplit(coefficient=1.0)
 
 pixelization = al.Pixelization(
     image_mesh=image_mesh, mesh=mesh, regularization=regularization
@@ -238,12 +244,7 @@ tracer = al.Tracer(galaxies=[lens, source])
 fit = al.FitImaging(
     dataset=dataset,
     tracer=tracer,
-    settings_inversion=al.SettingsInversion(force_edge_pixels_to_zeros=False),
 )
-
-print(fit.log_likelihood)
-print(fit.figure_of_merit)
-gggg
 
 """
 By plotting the fit, we see that the pixelized source does a good job at capturing the appearance of the source galaxy
@@ -337,11 +338,11 @@ The model is fitted to the data using the nested sampling algorithm Nautilus (se
 full description).
 """
 search = af.Nautilus(
-    path_prefix=Path("imaging") / "modeling",
+    path_prefix=Path("features"),
     name="pixelization",
     unique_tag=dataset_name,
     n_live=100,
-    iterations_per_update=2500,
+    iterations_per_update=5000,
 )
 
 """
@@ -632,7 +633,7 @@ The magnification value computed can be impacted by faint source pixels at the e
 The input `mesh_pixel_mask` can be used to remove these pixels from the calculation, such that the magnification
 is based only on the brightest regions of the source reconstruction.
 
-Below, we create a source-plane signal-to-noise map and use this to create a mask that removes all pixels with
+We create a source-plane signal-to-noise map and use this to create a mask that removes all pixels with
 a signal-to-noise < 5.0.
 """
 reconstruction = inversion.reconstruction_dict[mapper]

@@ -110,9 +110,9 @@ dataset_plotter.subplot_dataset()
 """
 __Mask__
 
-The model-fit requires a `Mask2D` defining the regions of the image we fit the lens model to the data. 
+The model-fit requires a 2D mask defining the regions of the image we fit the lens model to the data. 
 
-Below, we create a 3.0 arcsecond circular mask and apply it to the `Imaging` object that the lens model fits.
+We create a 3.0 arcsecond circular mask and apply it to the `Imaging` object that the lens model fits.
 """
 mask = al.Mask2D.circular(
     shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=7.5

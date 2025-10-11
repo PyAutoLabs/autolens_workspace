@@ -65,7 +65,7 @@ incorrectly predicting flux in these image-pixels (As the mask has removed them 
 We first show an example using an annular masks, which because the data does not contain lens light can be
 used to remove the central pixels containing no emission and thus only fit the source.
 """
-mask = al.Mask2D.annular(
+mask = al.Mask2D.circular_annular(
     shape_native=dataset.shape_native,
     pixel_scales=dataset.pixel_scales,
     inner_radius=0.5,
@@ -144,7 +144,7 @@ dataset = dataset.apply_over_sampling(over_sample_size_lp=4)
 Above, the `over_sample_size` input has been an integer, however it can also be an `ndarray` of values corresponding
 to each pixel. 
 
-Below, we create an `ndarray` of values which are high in the centre, but reduce to 2 at the outskirts, therefore 
+We create an `ndarray` of values which are high in the centre, but reduce to 2 at the outskirts, therefore 
 providing high levels of over sampling where we need it whilst using lower values which are computationally fast to 
 evaluate at the outskirts.
 

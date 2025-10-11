@@ -278,8 +278,8 @@ class AnalysisImaging(af.Analysis):
         """
         # model_data = tracer.blurred_image_2d_from(
         #    grid=self.dataset.grid,
-        #    convolver=self.dataset.convolver,
         #    blurring_grid=self.dataset.grids.blurring,
+        #    psf=self.dataset.psf,
         # )
 
         # residual_map = self.dataset.data - model_data

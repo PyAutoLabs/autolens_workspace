@@ -121,7 +121,7 @@ __Refitting__
 
 Using the API introduced in the first tutorial, we can also refit the data locally. 
 
-This allows us to inspect how the tracer changes for models with similar log likelihoods. Below, we create and plot
+This allows us to inspect how the tracer changes for models with similar log likelihoods. We create and plot
 the tracer of the 100th last accepted model by Nautilus.
 """
 samples = result.samples

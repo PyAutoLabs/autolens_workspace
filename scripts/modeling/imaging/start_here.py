@@ -46,7 +46,9 @@ described in the script `autolens_workspace/*/data_preparation/imaging/start_her
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+import numpy as np
 from pathlib import Path
+
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -83,12 +85,16 @@ dataset_plotter.subplot_dataset()
 """
 __Mask__
 
-The model-fit requires a `Mask2D` defining the regions of the image we fit the lens model to the data. 
+The model-fit requires a 2D mask defining the regions of the image we fit the lens model to the data. 
 
-Below, we create a 3.0 arcsecond circular mask and apply it to the `Imaging` object that the lens model fits.
+We create a 3.0 arcsecond circular mask and apply it to the `Imaging` object that the lens model fits.
 """
+mask_radius = 3.0
+
 mask = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
 )
 
 dataset = dataset.apply_mask(mask=mask)
@@ -158,18 +164,6 @@ In this example we compose a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=21.
 
-__Linear Light Profiles__
-
-The model below uses a `linear light profile` for the bulge and disk, via the API `lp_linear`. This is a specific type 
-of light profile that solves for the `intensity` of each profile that best fits the data via a linear inversion. 
-This means it is not a free parameter, reducing the dimensionality of non-linear parameter space. 
-
-Linear light profiles significantly improve the speed, accuracy and reliability of modeling and they are used
-by default in every modeling example. A full description of linear light profiles is provided in the
-`autolens_workspace/*/modeling/features/linear_light_profiles.py` example.
-
-A standard light profile can be used if you change the `lp_linear` to `lp`, but it is not recommended.
-
 __Model Composition__
 
 The API below for composing a lens model uses the `Model` and `Collection` objects, which are imported from 
@@ -203,7 +197,7 @@ The over sampling guide fully explains how these choices, but new users should n
 """
 # Lens:
 
-bulge = af.Model(al.lp_linear.Sersic)
+bulge = af.Model(al.lp.Sersic)
 
 mass = af.Model(al.mp.Isothermal)
 
@@ -213,7 +207,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 # Overall Lens Model:
 
@@ -229,6 +223,133 @@ common issue in Jupyter notebooks.
 The`info_whitespace_length` parameter in the file `config/general.yaml` in the [output] section can be changed to 
 increase or decrease the amount of whitespace (The Jupyter notebook kernel will need to be reset for this change to 
 appear in a notebook).
+"""
+print(model.info)
+
+"""
+__Improved Lens Model__
+
+The previous model used Sérsic light profiles for the lens and source galaxies. This makes the model API concise, 
+readable, and easy to follow.
+
+However, single Sérsic profiles perform poorly for most strong lenses. Symmetric profiles (e.g. elliptical Sérsics) 
+typically leave significant residuals because they cannot capture the irregular and asymmetric morphology of real 
+galaxies (e.g. isophotal twists, radially varying ellipticity).
+
+The PyAutoLens `start_here` modeling examples therefore demonstrate a lens model that combines two features, described 
+in detail elsewhere (but a brief overview is provided below):
+
+- **Linear light profiles**  (see ``autolens_workspace/*/modeling/features/linear_light_profiles.py``)
+- **Multi-Gaussian Expansion (MGE) light profiles**  (see ``autolens_workspace/*/modeling/features/multi_gaussian_expansion.py``)
+
+These features avoid wasted effort trying to fit Sérsic profiles to complex data, which is likely to fail unless the 
+lens is extremely simple. This does mean the model composition is more complex and as a user its a steeper learning
+curve to understand the API, but its worth it for the improved accuracy and speed of lens modeling.
+
+__Multi-Gaussian Expansion (MGE)__
+
+A Multi-Gaussian Expansion (MGE) decomposes the lens and source light into ~50–100 Gaussians with varying ellipticities 
+and sizes. An MGE captures irregular features far more effectively than Sérsic profiles, leading to more accurate lens models.
+
+Remarkably, modeling with MGEs is also significantly faster than using Sérsics: they remain efficient in JAX (on CPU 
+or GPU), require fewer non-linear parameters despite their flexibility, and yield simpler parameter spaces that
+sample in far fewer iterations. 
+
+__Linear Light Profiles__
+
+The MGE model below uses a **linear light profile** for the bulge and disk via the ``lp_linear`` API, instead of the 
+standard ``lp`` light profiles used above.
+
+A linear light profile solves for the *intensity* of each component via a linear inversion, rather than treating it as 
+a free parameter. This reduces the dimensionality of the non-linear parameter space: a model with ~80 Gaussians
+does not introduce ~80 additional free parameters.
+
+Linear light profiles therefore improve speed and accuracy, and they are used by default in all modeling example.
+"""
+total_gaussians = 20
+gaussian_per_basis = 1
+
+# The sigma values of the Gaussians will be fixed to values spanning 0.01 to the mask radius, 3.0".
+mask_radius = 3.0
+log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
+
+# By defining the centre here, it creates two free parameters that are assigned below to all Gaussians.
+
+centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+
+bulge_gaussian_list = []
+
+for j in range(gaussian_per_basis):
+    # A list of Gaussian model components whose parameters are customized belows.
+
+    gaussian_list = af.Collection(
+        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
+    )
+
+    # Iterate over every Gaussian and customize its parameters.
+
+    for i, gaussian in enumerate(gaussian_list):
+        gaussian.centre.centre_0 = centre_0  # All Gaussians have same y centre.
+        gaussian.centre.centre_1 = centre_1  # All Gaussians have same x centre.
+        gaussian.ell_comps = gaussian_list[
+            0
+        ].ell_comps  # All Gaussians have same elliptical components.
+        gaussian.sigma = (
+            10 ** log10_sigma_list[i]
+        )  # All Gaussian sigmas are fixed to values above.
+
+    bulge_gaussian_list += gaussian_list
+
+# The Basis object groups many light profiles together into a single model component.
+
+bulge = af.Model(
+    al.lp_basis.Basis,
+    profile_list=bulge_gaussian_list,
+)
+mass = af.Model(al.mp.Isothermal)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+
+# Source:
+
+total_gaussians = 20
+gaussian_per_basis = 1
+
+# By defining the centre here, it creates two free parameters that are assigned to the source Gaussians.
+
+centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
+centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
+
+log10_sigma_list = np.linspace(-2, np.log10(1.0), total_gaussians)
+
+bulge_gaussian_list = []
+
+for j in range(gaussian_per_basis):
+    gaussian_list = af.Collection(
+        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
+    )
+
+    for i, gaussian in enumerate(gaussian_list):
+        gaussian.centre.centre_0 = centre_0
+        gaussian.centre.centre_1 = centre_1
+        gaussian.ell_comps = gaussian_list[0].ell_comps
+        gaussian.sigma = 10 ** log10_sigma_list[i]
+
+    bulge_gaussian_list += gaussian_list
+
+source_bulge = af.Model(
+    al.lp_basis.Basis,
+    profile_list=bulge_gaussian_list,
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
+
+# Overall Lens Model:
+
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+"""
+Printing the model info confirms the model has Gaussians for both the lens and source galaxies.
 """
 print(model.info)
 
@@ -307,8 +428,9 @@ search = af.Nautilus(
     path_prefix=Path("imaging") / "modeling",
     name="start_here",
     unique_tag=dataset_name,
-    n_live=150,
-    iterations_per_update=10000,
+    n_live=100,
+    n_batch=50,
+    iterations_per_update=100000,
 )
 
 """
@@ -340,12 +462,13 @@ Run times are dictated by two factors:
  - The number of iterations (e.g. log likelihood evaluations) performed by the non-linear search: more complex lens
    models require more iterations to converge to a solution.
    
-For this analysis, the log likelihood evaluation time is ~0.01 seconds on CPU, < 0.001 seconds on GPU, which is 
+For this analysis, the log likelihood evaluation time is < 0.01 seconds on CPU, < 0.001 seconds on GPU, which is 
 extremely fast for lens modeling. 
 
 To estimate the expected overall run time of the model-fit we multiply the log likelihood evaluation time by an 
 estimate of the number of iterations the non-linear search will perform. For this model, this is typically around
-? iterations, meaning that this script takes ? on CPU and ? on GPU.
+70000 iterations, meaning that this script takes < 0.01 * 70000 = 700 seconds, or ~12 minutes on CPU, or < 0.001 * 70000
+= 70 seconds, or ~1 minute on GPU.
 
 __Model-Fit__
 

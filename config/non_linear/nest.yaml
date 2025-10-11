@@ -13,7 +13,7 @@ Nautilus:
     n_points_min:                   # The minimum number of points each ellipsoid should have. Effectively, ellipsoids with less than twice that number will not be split further.
     split_threshold: 100            # Threshold used for splitting the multi-ellipsoidal bound used for sampling.
     n_networks: 4                   # Number of networks used in the estimator.
-    n_batch: 100                    # Number of likelihood evaluations that are performed at each step. If likelihood evaluations are parallelized, should be multiple of the number of parallel processes.
+    n_batch: 50                     # Number of likelihood evaluations that are performed at each step. If likelihood evaluations are parallelized, should be multiple of the number of parallel processes.
     n_like_new_bound:               # The maximum number of likelihood calls before a new bounds is created. If None, use 10 times n_live.
     vectorized: false               # If True, the likelihood function can receive multiple input sets at once.
     seed:                           # Seed for random number generation used for reproducible results accross different runs.

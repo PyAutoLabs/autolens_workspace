@@ -421,7 +421,7 @@ galaxy_plotter.figures_1d(image=True, convergence=True, potential=True)
 If we want a specific 1D grid of a certain length over a certain range of coordinates, we can manually input a `Grid1D`
 object.
 
-Below, we create a `Grid1D` starting from 0 which plots the image and convergence over the radial range 0.0" -> 10.0".
+We create a `Grid1D` starting from 0 which plots the image and convergence over the radial range 0.0" -> 10.0".
 """
 grid_1d = al.Grid1D.uniform_from_zero(shape_native=(1000,), pixel_scales=0.01)
 

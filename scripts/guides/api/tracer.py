@@ -505,7 +505,11 @@ tangential_caustic = tracer.tangential_caustic_list_from(grid=grid)
 
 radial_caustic = tracer.radial_caustic_list_from(grid=grid)
 
-time_delay = tracer.time_delay_2d_from(grid=grid)
+tracer = al.Tracer(
+    galaxies=[lens_galaxy_0, lens_galaxy_1]
+)  # No support for multi plane tracer time delays yet
+
+time_delay = tracer.time_delays_from(grid=grid)
 
 ### You should be able to comment this out and it work fine ###
 
