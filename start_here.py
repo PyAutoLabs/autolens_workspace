@@ -22,8 +22,8 @@ You'll see these imports in the majority of workspace examples.
 
 # %matplotlib inline
 
+from pathlib import Path
 import matplotlib.pyplot as plt
-from os import path
 
 import autolens as al
 import autolens.plot as aplt
@@ -75,7 +75,7 @@ an image of the Sersic light profile.
 """
 image = sersic_light_profile.image_2d_from(grid=grid)
 
-plt.imshow(image.native)  # Dont worry about the use of .native for now.
+plt.imshow(image.native.array)  # Dont worry about the use of .native.array for now.
 
 """
 __Plotting__
@@ -273,14 +273,76 @@ tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
 tracer_plotter.figures_2d(image=True)
 
 """
+__Simulator__
+
+Let’s now switch gears and simulate our own strong lens imaging. This is a great way to:
+
+- Practice lens modeling before using real data.
+- Build large training sets (e.g. for machine learning).
+- Test lensing theory in a controlled environment.
+
+In this example. we simulate “perfect” images without telescope effects. This means no blurring
+from a PSF and no noise — just the raw light from galaxies and deflections from gravity.
+
+In fact, this exactly what the image above is: a perfect image of a double Einstein ring system. The only
+thing we need to do then, is output it to a .fits file so we can load it elsewhere.
+"""
+al.output_to_fits(
+    values=image.native,
+    file_path=Path("image.fits"),
+    overwrite=True,
+)
+
+"""
+__Sample__
+
+Often we want to simulate *many* strong lenses — for example, to train a neural network
+or to explore population-level statistics.
+
+This uses the model composition API to define the distribution of the light and mass profiles
+of the lens and source galaxies we draw from. The model composition is a little too complex for
+the first example, thus we use a helper function to create a simple lens and source model.
+
+We then generate 3 lenses for speed, and plot their images so you can see the variety of lenses
+we create.
+
+If you want to simulate lenses yourself (e.g. for training a neural network), checkout the
+`autolens_workspace/simulators` package for a full description of how to do this and customize
+the simulated lenses to your science.
+
+The images below are perfect lenses of strong lenses, the next examples will show us how to 
+instead output realistic observations of strong lenses (e.g. CCD imaging, interferometer data, etc).
+"""
+lens_model, source_model = al.model_util.simulator_start_here_model_from()
+
+print(lens_model.info)
+print(source_model.info)
+
+"""
+We now simulate a sample of strong lens, we just do 3 for efficiency here but you can increase this to any number.
+"""
+total_datasets = 3
+
+for sample_index in range(total_datasets):
+
+
+    lens_galaxy = lens_model.random_instance()
+    source_galaxy = source_model.random_instance()
+
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+
+    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+    tracer_plotter.figures_2d(image=True)
+
+"""
 You’ve now completed the introductory API overview of PyAutoLens, which covered the basics of creating galaxies and 
 performing ray-tracing calculations.
 
 The next step is to explore a start_here notebook, which introduces the two main tasks in PyAutoLens:
 
-Lens Modeling: Fit data of a strong lens with a model to infer the properties of the lens and source galaxies.
+**Lens Modeling**: Fit data of a strong lens with a model to infer the properties of the lens and source galaxies.
 
-Simulators: Generate simulated strong lens datasets, for testing model accuracy or exploring lensing behavior.
+**Simulators**: Generate simulated strong lens datasets, for testing model accuracy or exploring lensing behavior.
 
 The animation below shows the modeling process: many lens models are fitted iteratively, gradually improving the 
 fit until the model image closely matches the observed data.
@@ -317,18 +379,18 @@ modeling of a group-scale system, or perform point source modeling of a group sc
 
 __HowToLens Lectures__
 
-For experienced scientists, the run through above will have been a breeze. Concepts surrounding strong lensing were 
-already familiar and the statistical techniques used for fitting and modeling already understood.
+For experienced scientists, the above start_here examples will be straight forward to follow. Concepts surrounding 
+strong lensing ware already familiar and the statistical techniques used for fitting and modeling already understood.
 
 For those less familiar with these concepts (e.g. undergraduate students, new PhD students or interested members of the 
-public), things may have been less clear and a slower more detailed explanation of each concept would be beneficial.
+public), things may be less clear and a slower more detailed explanation of each concept would be beneficial.
 
 The **HowToLens** Jupyter Notebook lectures are provide exactly this. They are a 3+ chapter guide which thoroughly 
 take you through the core concepts of strong lensing, teach you the principles of the statistical techniques 
 used in modeling and ultimately will allow you to undertake scientific research like a professional astronomer.
 
-To complete thoroughly, they'll probably take 2-4 days, so you may want try moving ahead to the examples but can
-go back to these lectures if you find them hard to follow.
+To complete thoroughly, they'll probably take 2-4 days. The recommendation is you first look at the start_here
+example relevant to your science, then go through the lectures to understand the concepts in more detail.
 
 If this sounds like it suits you, checkout the `autolens_workspace/notebooks/howtolens` package now.
 
@@ -336,7 +398,10 @@ __Features__
 
 Here is a brief overview of the advanced features of **PyAutoLens**. 
 
-Firstly, brief one sentence descriptions of each feature are given, with more detailed descriptions below including 
+You won't look at these for a while, you should find your relevant start_here notebook and work through that first,
+but a quick look through these will give you a sense of the breadth of **PyAutoLens**'s capabilities.
+
+Brief one sentence descriptions of each feature are given, with more detailed descriptions below including 
 links to the relevant workspace examples.
 
 **Pixelizations**: Reconstructing the source galaxy on a mesh of pixels, to capture extremely irregular structures like spiral arms.

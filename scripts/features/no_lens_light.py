@@ -90,8 +90,11 @@ def fit():
     
     Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
     """
+    mask_radius = 3.0
     mask = al.Mask2D.circular(
-        shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+        shape_native=dataset.shape_native,
+        pixel_scales=dataset.pixel_scales,
+        radius=mask_radius,
     )
 
     dataset = dataset.apply_mask(mask=mask)
@@ -169,7 +172,13 @@ def fit():
 
     # Source:
 
-    source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
+    bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius,
+        total_gaussians=20,
+        gaussian_per_basis=1,
+        centre_prior_is_uniform=False,
+    )
+    source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
     # Overall Lens Model:
 
@@ -191,7 +200,7 @@ def fit():
     """
     search = af.Nautilus(
         path_prefix=Path("imaging") / "modeling",
-        name="no_lens_light__mp_spawn",
+        name="no_lens_light",
         unique_tag=dataset_name,
         n_live=100,
         #        iterations_per_update=1000

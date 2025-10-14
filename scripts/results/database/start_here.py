@@ -105,8 +105,12 @@ for dataset_name in dataset_names:
 
     The `Mask2D` we fit this data-set with, which will be available via the aggregator.
     """
+    mask_radius = 3.0
+
     mask = al.Mask2D.circular(
-        shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+        shape_native=dataset.shape_native,
+        pixel_scales=dataset.pixel_scales,
+        radius=mask_radius,
     )
 
     dataset = dataset.apply_mask(mask=mask)
@@ -130,12 +134,17 @@ for dataset_name in dataset_names:
 
     Set up the model as per usual, and will see in tutorial 3 why we have included `disk=None`.
     """
+    bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius,
+        total_gaussians=20,
+        gaussian_per_basis=1,
+        centre_prior_is_uniform=False,
+    )
+
     model = af.Collection(
         galaxies=af.Collection(
             lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
-            source=af.Model(
-                al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore, disk=None
-            ),
+            source=af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=None),
         )
     )
 

@@ -133,7 +133,7 @@ the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
 """
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,
-    sub_size_list=[8, 4, 1],
+    sub_size_list=[4, 2, 1],
     radial_list=[0.3, 0.6],
     centre_list=[(0.0, 0.0)],
 )
@@ -197,7 +197,9 @@ The over sampling guide fully explains how these choices, but new users should n
 """
 # Lens:
 
-bulge = af.Model(al.lp.Sersic)
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
+)
 
 mass = af.Model(al.mp.Isothermal)
 
@@ -207,7 +209,14 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=1,
+    centre_prior_is_uniform=False,
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
@@ -236,8 +245,8 @@ However, single Sérsic profiles perform poorly for most strong lenses. Symmetri
 typically leave significant residuals because they cannot capture the irregular and asymmetric morphology of real 
 galaxies (e.g. isophotal twists, radially varying ellipticity).
 
-The PyAutoLens `start_here` modeling examples therefore demonstrate a lens model that combines two features, described 
-in detail elsewhere (but a brief overview is provided below):
+This example therefore uses a lens model that combines two features, described in detail elsewhere (but a brief 
+overview is provided below):
 
 - **Linear light profiles**  (see ``autolens_workspace/*/modeling/features/linear_light_profiles.py``)
 - **Multi-Gaussian Expansion (MGE) light profiles**  (see ``autolens_workspace/*/modeling/features/multi_gaussian_expansion.py``)
@@ -265,84 +274,34 @@ a free parameter. This reduces the dimensionality of the non-linear parameter sp
 does not introduce ~80 additional free parameters.
 
 Linear light profiles therefore improve speed and accuracy, and they are used by default in all modeling example.
+
+__Concise API__
+
+The MGE model composition API is quite long and technical, so we simply load the MGE models for the lens and source 
+below via a utility function `mge_model_from` which hides the API to make the code in this introduction example ready 
+to read. We then use the PyAutoLens Model API to compose the over lens model.
+
+The full MGE composition API is given in the `multi_gaussian_expansion.py` example.
 """
-total_gaussians = 20
-gaussian_per_basis = 1
+# Lens:
 
-# The sigma values of the Gaussians will be fixed to values spanning 0.01 to the mask radius, 3.0".
-mask_radius = 3.0
-log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
-
-# By defining the centre here, it creates two free parameters that are assigned below to all Gaussians.
-
-centre_0 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
-centre_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
-
-bulge_gaussian_list = []
-
-for j in range(gaussian_per_basis):
-    # A list of Gaussian model components whose parameters are customized belows.
-
-    gaussian_list = af.Collection(
-        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
-    )
-
-    # Iterate over every Gaussian and customize its parameters.
-
-    for i, gaussian in enumerate(gaussian_list):
-        gaussian.centre.centre_0 = centre_0  # All Gaussians have same y centre.
-        gaussian.centre.centre_1 = centre_1  # All Gaussians have same x centre.
-        gaussian.ell_comps = gaussian_list[
-            0
-        ].ell_comps  # All Gaussians have same elliptical components.
-        gaussian.sigma = (
-            10 ** log10_sigma_list[i]
-        )  # All Gaussian sigmas are fixed to values above.
-
-    bulge_gaussian_list += gaussian_list
-
-# The Basis object groups many light profiles together into a single model component.
-
-bulge = af.Model(
-    al.lp_basis.Basis,
-    profile_list=bulge_gaussian_list,
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
 )
+
 mass = af.Model(al.mp.Isothermal)
+
+shear = af.Model(al.mp.ExternalShear)
+
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 
 # Source:
 
-total_gaussians = 20
-gaussian_per_basis = 1
-
-# By defining the centre here, it creates two free parameters that are assigned to the source Gaussians.
-
-centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
-centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
-
-log10_sigma_list = np.linspace(-2, np.log10(1.0), total_gaussians)
-
-bulge_gaussian_list = []
-
-for j in range(gaussian_per_basis):
-    gaussian_list = af.Collection(
-        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
-    )
-
-    for i, gaussian in enumerate(gaussian_list):
-        gaussian.centre.centre_0 = centre_0
-        gaussian.centre.centre_1 = centre_1
-        gaussian.ell_comps = gaussian_list[0].ell_comps
-        gaussian.sigma = 10 ** log10_sigma_list[i]
-
-    bulge_gaussian_list += gaussian_list
-
-source_bulge = af.Model(
-    al.lp_basis.Basis,
-    profile_list=bulge_gaussian_list,
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
 )
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
@@ -565,7 +524,7 @@ We recommend you now checkout the following features:
 
 - ``linear_light_profiles.py``: The model light profiles use linear algebra to solve for their intensity, reducing model complexity.
 - ``multi_gaussian_expansion.py``: The lens (or source) light is modeled as ~25-100 Gaussian basis functions 
-- ``pixelization.py``: The source is reconstructed using an adaptive Delaunay or Voronoi mesh.
+- ``pixelization.py``: The source is reconstructed using an adaptive Rectangular or Voronoi mesh.
 - ``no_lens_light.py``: The foreground lens's light is not present in the data and thus omitted from the model.
 
 The folders `autolens_workspace/*/modeling/imaging/searches` and `autolens_workspace/*/modeling/imaging/customize`

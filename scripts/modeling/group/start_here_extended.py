@@ -114,8 +114,12 @@ The model-fit requires a 2D mask defining the regions of the image we fit the le
 
 We create a 3.0 arcsecond circular mask and apply it to the `Imaging` object that the lens model fits.
 """
+mask_radius = 7.5
+
 mask = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=7.5
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
 )
 
 dataset = dataset.apply_mask(mask=mask)
@@ -275,7 +279,9 @@ autolens functionality to overcome this high dimensionality. These features and 
 of this example.
 """
 # Main Lens:
-bulge = af.Model(al.lp_linear.Sersic)
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
+)
 
 mass = af.Model(al.mp.Isothermal)
 
@@ -293,7 +299,9 @@ for extra_galaxy_centre in extra_galaxies_centres:
 
     # Extra Galaxy Light
 
-    bulge = af.Model(al.lp_linear.SersicSph)
+    bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius, total_gaussians=10, centre_prior_is_uniform=True
+    )
 
     bulge.centre = extra_galaxy_centre
 
@@ -314,7 +322,14 @@ extra_galaxies = af.Collection(extra_galaxies_list)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=1,
+    centre_prior_is_uniform=False,
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
@@ -549,7 +564,7 @@ We recommend you now checkout the following features:
 - ``scaling_relation.ipynb``: This feature allows you to model the light and mass of the extra galaxies using a scaling relation.
 - ``linear_light_profiles.py``: The model light profiles use linear algebra to solve for their intensity, reducing model complexity.
 - ``multi_gaussian_expansion.py``: The lens (or source) light is modeled as ~25-100 Gaussian basis functions 
-- ``pixelization.py``: The source is reconstructed using an adaptive Delaunay or Voronoi mesh.
+- ``pixelization.py``: The source is reconstructed using an adaptive Rectangular or Voronoi mesh.
 - ``no_lens_light.py``: The foreground lens's light is not present in the data and thus omitted from the model.
 
 For group scale modeling, the multi Gaussian expansion is particularly important, as this can dramatically reduce the

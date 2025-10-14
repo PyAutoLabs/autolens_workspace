@@ -34,8 +34,10 @@ __Mask__
 
 We define the ‘real_space_mask’ which defines the grid the image the strong lens is evaluated using.
 """
+mask_radius = 4.0
+
 real_space_mask = al.Mask2D.circular(
-    shape_native=(800, 800), pixel_scales=0.05, radius=4.0
+    shape_native=(800, 800), pixel_scales=0.05, radius=mask_radius
 )
 
 """
@@ -112,7 +114,14 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=10,
+    gaussian_per_basis=1,
+    centre_prior_is_uniform=False,
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
@@ -292,7 +301,7 @@ quality of your data and scientific topic of study).
 We recommend you now checkout the following two features for interferometer modeling:
 
 - ``linear_light_profiles.py``: The model light profiles use linear algebra to solve for their intensity, reducing model complexity.
-- ``pixelization.py``: The source is reconstructed using an adaptive Delaunay or Voronoi mesh.
+- ``pixelization.py``: The source is reconstructed using an adaptive Rectangular or Voronoi mesh.
 
 The folders `autolens_workspace/*/modeling/imaging/searches` and `autolens_workspace/*/modeling/imaging/customize`
 provide guides on how to customize many other aspects of the model-fit. Check them out to see if anything

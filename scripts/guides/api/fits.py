@@ -101,8 +101,12 @@ We now mask the data, so that regions where there is no signal (e.g. the edges) 
 
 We use a ``Mask2D`` object, which for this example is a 3.0" circular mask.
 """
+mask_radius = 3.0
+
 mask = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
 )
 
 """

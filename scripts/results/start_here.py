@@ -45,18 +45,27 @@ dataset = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
+mask_radius = 3.0
+
 mask = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
 )
 
 dataset = dataset.apply_mask(mask=mask)
 
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=1,
+    centre_prior_is_uniform=False,
+)
+
 model = af.Collection(
     galaxies=af.Collection(
         lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
-        source=af.Model(
-            al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore, disk=None
-        ),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=None),
     ),
 )
 
@@ -400,7 +409,7 @@ The lens model can reconstruct the source galaxy using a pixelization, for examp
 
 The example script `autolens_workspace/*/features/pixelization.py` describes using pixelization results including:
 
- - Producing source reconstructions using the Voronoi mesh, Delaunay triangulation or whichever mesh is used.
+ - Producing source reconstructions using the Voronoi mesh, Rectangular triangulation or whichever mesh is used.
  - Inspecting the evidence terms of the fit, which quantify how well the pixelization reconstructs fits the data whilst
    accounting for the complexity of the pixelization.
  - Estimating the magnification of the source galaxy's image using the pixelization.

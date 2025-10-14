@@ -280,10 +280,13 @@ __Model__
 
 We compose the overall lens model using the normal API.
 """
+mask_radius = 9.0
 
 # Lens:
 
-bulge = af.Model(al.lp.SersicSph)
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
+)
 
 mass = af.Model(al.mp.IsothermalSph)
 
@@ -291,7 +294,13 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
 # Source:
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=1,
+    centre_prior_is_uniform=False,
+)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 """
 When creating the overall model, we include the extra galaxies as a separate collection of galaxies.
@@ -330,7 +339,9 @@ __Model Fit__
 We now perform the usual steps to perform a model-fit, to see our scaling relation based fit in action!
 """
 mask = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=9.0
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
 )
 
 dataset = dataset.apply_mask(mask=mask)

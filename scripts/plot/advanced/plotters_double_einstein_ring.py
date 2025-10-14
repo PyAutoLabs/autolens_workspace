@@ -41,8 +41,12 @@ dataset = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
+mask_radius = 3.5
+
 mask = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.5
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
 )
 dataset = dataset.apply_mask(mask=mask)
 
@@ -140,8 +144,8 @@ We can also plot a `FitImaging` which uses a `Pixelization`.
 source_galaxy_0 = al.Galaxy(
     redshift=1.0,
     pixelization=al.Pixelization(
-        image_mesh=al.image_mesh.Overlay(shape=(25, 25)),
-        mesh=al.mesh.Delaunay(),
+        image_mesh=None,
+        mesh=al.mesh.Rectangular(),
         regularization=al.reg.Constant(coefficient=1.0),
     ),
 )
@@ -149,8 +153,8 @@ source_galaxy_0 = al.Galaxy(
 source_galaxy_1 = al.Galaxy(
     redshift=2.0,
     pixelization=al.Pixelization(
-        image_mesh=al.image_mesh.Overlay(shape=(25, 25)),
-        mesh=al.mesh.Delaunay(),
+        image_mesh=None,
+        mesh=al.mesh.Rectangular(),
         regularization=al.reg.Constant(coefficient=1.0),
     ),
 )

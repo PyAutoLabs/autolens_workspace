@@ -14,7 +14,7 @@ The following example scripts illustrating lens modeling where:
 - ``extra_galaxies.py``: Modeling which account for the light and mass of extra nearby galaxies.
 - ``linear_light_profiles.py``: The model includes light profiles which use linear algebra to solve for their intensity, reducing model complexity.
 - ``multi_gaussian_expansion.py``: The lens (or source) light is modeled as ~25-100 Gaussian basis functions
-- ``pixelization.py``: The source is reconstructed using an adaptive Delaunay or Voronoi mesh.
+- ``pixelization.py``: The source is reconstructed using an adaptive Rectangular or Voronoi mesh.
 - ``scaling_relation.py``: Use scaling relations, for example relating light and mass, to compose lens models with few parameters for many galaxies.
 
 Notes

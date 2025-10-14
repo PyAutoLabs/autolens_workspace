@@ -19,6 +19,7 @@ a GPU locally, consider Google Colab to get started quickly.
 Finally, we also show how to simulate strong lens imaging. This is useful for practice, for
 building training datasets, or for investigating lensing effects in a controlled way.
 """
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -106,15 +107,44 @@ and the mass profile of the lens galaxy.
 A brilliant lens model to start with is one which uses a Multi Gaussian Expansion (MGE) to model the lens and source
 light, and a Singular Isothermal Ellipsoid (SIE) plus shear to model the lens mass. 
 
-Full details of which this models is so good are provided in the main workspace docs, but in a nutshell it 
-provides a brilliant balance of being fast to fit, flexible enough to capture complex galaxy morphologies and 
+Full details of why this models is so good are provided in the main workspace docs, but in a nutshell it 
+provides an excellent balance of being fast to fit, flexible enough to capture complex galaxy morphologies and 
 providing accurate fits to the vast majority of strong lenses.
 
-The MGE model composiiton API is quite long and technical, so we simply load the model below via a utility function
+The MGE model composition API is quite long and technical, so we simply load the MGE models for the lens and source 
+below via a utility function `mge_model_from` which hides the API to make the code in this introduction example ready 
+to read. We then use the PyAutoLens Model API to compose the over lens model.
+ 
 and print `model.info` to show the parameters that the model is composed of.
 """
-model = al.model_util.mge_start_here_lens_model_from(mask_radius=mask_radius)
+# Lens:
 
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
+)
+
+mass = af.Model(al.mp.Isothermal)
+
+shear = af.Model(al.mp.ExternalShear)
+
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+
+# Source:
+
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+
+# Overall Lens Model:
+
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+"""
+We can print the model to show the parameters that the model is composed of, which shows many of the MGE's fixed
+parameter values the API above hided the composition of.
+"""
 print(model.info)
 
 """
@@ -126,12 +156,12 @@ This requires an `AnalysisImaging` object, which defines the `log_likelihood_fun
 the model to the imaigng data.
 """
 search = af.Nautilus(
-    path_prefix=Path("imaging"), # The path where results and output
-    name="start_here", # The name of the fit and folder results are output to.
-    unique_tag=dataset_name, # A unique tag which also defines the folder.
-    n_live=100, # The number of Nautilus "live" points, increase for more complex models.
-    n_batch=50, # For fast GPU fitting lens model fits are batched and run simultaneously.
-    iterations_per_update=20000, # Every N iterations the results are written to hard-disk for inspection.
+    path_prefix=Path("imaging"),  # The path where results and output
+    name="start_here",  # The name of the fit and folder results are output to.
+    unique_tag=dataset_name,  # A unique tag which also defines the folder.
+    n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
+    n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
+    iterations_per_update=20000,  # Every N iterations the results are written to hard-disk for inspection.
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)
@@ -288,16 +318,16 @@ The code below performs the simulation, plots the simulated imaging data and out
 files included for easy visualization.
 """
 psf = al.Kernel2D.from_gaussian(
-    shape_native=(11, 11), # The 2D shape of the PSF array.
-    sigma=0.1, # The size of the Gaussian PSF, where FWHM = 2.35 * sigma.
-    pixel_scales=grid.pixel_scales # The pixel scale of the PSF, matches the image's pixel scale.
+    shape_native=(11, 11),  # The 2D shape of the PSF array.
+    sigma=0.1,  # The size of the Gaussian PSF, where FWHM = 2.35 * sigma.
+    pixel_scales=grid.pixel_scales,  # The pixel scale of the PSF, matches the image's pixel scale.
 )
 
 simulator = al.SimulatorImaging(
-    exposure_time=300.0, # The exposure time of the observation, increases the S/N of the image.
-    psf=psf, # The PSF which blurs the image.
-    background_sky_level=0.1, # The background sky level of the image, increases the noise.
-    add_poisson_noise_to_data=True, # Whether Poisson noise is added to the image or not.
+    exposure_time=300.0,  # The exposure time of the observation, increases the S/N of the image.
+    psf=psf,  # The PSF which blurs the image.
+    background_sky_level=0.1,  # The background sky level of the image, increases the noise.
+    add_poisson_noise_to_data=True,  # Whether Poisson noise is added to the image or not.
 )
 
 dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
@@ -314,10 +344,6 @@ dataset.output_to_fits(
 
 mat_plot = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
 
-tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot)
-tracer_plotter.subplot_tracer()
-tracer_plotter.subplot_galaxies_images()
-
 """
 We can now inspect the simulated dataset: image, noise-map, and PSF. These can also be
 written to FITS files and visualized as PNGs. This is exactly the same format as real data,
@@ -333,9 +359,14 @@ __Sample__
 Often we want to simulate *many* strong lenses — for example, to train a neural network
 or to explore population-level statistics.
 
-To do this we use the model API to draw galaxies randomly from realistic distributions.
-Below we generate just 3 lenses for speed, but you can easily scale this to hundreds or
-thousands.
+This uses the model composition API to define the distribution of the light and mass profiles
+of the lens and source galaxies we draw from. The model composition is a little too complex for
+the first example, thus we use a helper function to create a simple lens and source model.
+
+We then generate 3 lenses for speed, and plot their images so you can see the variety of lenses
+we create.
+
+Each lens is simulated as if it were observed with CD imaging, therefore with a PSF and noise-map.
 """
 lens_model, source_model = al.model_util.simulator_start_here_model_from()
 
@@ -349,40 +380,15 @@ total_datasets = 3
 
 for sample_index in range(total_datasets):
 
-    dataset_sample_path = Path(dataset_path, f"dataset_{sample_index}")
-
     lens_galaxy = lens_model.random_instance()
     source_galaxy = source_model.random_instance()
 
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
-    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-    tracer_plotter.figures_2d(image=True)
-
     dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
     dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
     dataset_plotter.subplot_dataset()
-
-    dataset.output_to_fits(
-        data_path=Path(dataset_sample_path, "data.fits"),
-        psf_path=Path(dataset_sample_path, "psf.fits"),
-        noise_map_path=Path(dataset_sample_path, "noise_map.fits"),
-        overwrite=True,
-    )
-
-
-    mat_plot = aplt.MatPlot2D(
-        output=aplt.Output(path=dataset_sample_path, format="png")
-    )
-
-    dataset_plotter = aplt.ImagingPlotter(dataset=dataset, mat_plot_2d=mat_plot)
-    dataset_plotter.subplot_dataset()
-    dataset_plotter.figures_2d(data=True)
-
-    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot)
-    tracer_plotter.subplot_tracer()
-    tracer_plotter.subplot_galaxies_images()
 
 """
 __Wrap Up__

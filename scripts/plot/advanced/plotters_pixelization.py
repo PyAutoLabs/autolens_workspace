@@ -44,8 +44,12 @@ dataset = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
+mask_radius = 3.0
+
 mask = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
 )
 
 dataset = dataset.apply_mask(mask=mask)
@@ -68,8 +72,8 @@ lens_galaxy = al.Galaxy(
 )
 
 pixelization = al.Pixelization(
-    image_mesh=al.image_mesh.Overlay(shape=(25, 25)),
-    mesh=al.mesh.Delaunay(),
+    image_mesh=None,
+    mesh=al.mesh.Rectangular(),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -110,7 +114,7 @@ fit_plotter.figures_2d_of_planes(
 )
 
 """
-An irregular mesh like the Delaunay or Voronoi can be plotted in two ways, using the irregular grid of cells or
+An irregular mesh like the Rectangular or Voronoi can be plotted in two ways, using the irregular grid of cells or
 by interpolating the reconstructed source-plane image onto a uniform grid of pixels.
 
 By default, the irregular grid is plotted, but the interpolated image can be plotted by changing the
@@ -330,8 +334,8 @@ lens_galaxy = al.Galaxy(
 )
 
 pixelization = al.Pixelization(
-    image_mesh=al.image_mesh.Overlay(shape=(25, 25)),
-    mesh=al.mesh.Delaunay(),
+    image_mesh=None,
+    mesh=al.mesh.Rectangular(),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -342,7 +346,7 @@ tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 fit = al.FitInterferometer(dataset=dataset, tracer=tracer)
 
 """
-The visualization plottes the reconstructed source on the Delaunay mesh, and you'll have seen it zoomed in to
+The visualization plottes the reconstructed source on the Rectangular mesh, and you'll have seen it zoomed in to
 its brightest pixels. 
 
 This is so the galaxy can be clearly seen and is the default behavior of the `InversionPlotter`, given the
@@ -400,17 +404,19 @@ inversion_plotter.figures_2d_of_pixelization(
 )
 
 """
-__DelaunayDrawer / VoronoiDrawer__
+__RectangularDrawer / VoronoiDrawer__
 
 We can customize the filling of Voronoi cells using the `VoronoiDrawer` object which wraps the 
 method `matplotlib.fill()`:
 
 https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.fill.html
 """
-delaunay_drawer = aplt.DelaunayDrawer(edgecolor="b", linewidth=1.0, linestyle="--")
+Rectangular_drawer = aplt.RectangularDrawer(
+    edgecolor="b", linewidth=1.0, linestyle="--"
+)
 # voronoi_drawer = aplt.VoronoiDrawer(edgecolor="b", linewidth=1.0, linestyle="--")
 
-mat_plot = aplt.MatPlot2D(delaunay_drawer=delaunay_drawer)
+mat_plot = aplt.MatPlot2D(Rectangular_drawer=Rectangular_drawer)
 
 """
 We now pass the inversion to a `InversionPlotter` which we will use to illustrate customization with 

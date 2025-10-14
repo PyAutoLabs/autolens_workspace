@@ -15,6 +15,22 @@ straightforward to include the lens galaxy's light in the model.
 
 Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
 
+__JAX Slowdown__
+
+Pixelizations currently have limited JAX support. GPU acceleration works, but fast run times are only possible on
+either very modern GPUs with large amounts of VRAM or using  low resolution pixelizations with a small memory footprint.
+
+This script therefore uses an adaptive 20 x 20 rectangular mesh, which is low resolution for a pixelization and may
+lead to unreliable lens modeling results. The mesh is adaptive -- it puts more rectangular pixels in high magnification
+source plane regions, but results will still be unreliable.
+
+If you need to use pixelizations for your science right now, and the results given in this script do not look reliable,
+you should revert to version `2025.5.10.1` which does not use JAX but has an efficient `numba` implementation which
+runs fast on CPUs but does not support GPUs.
+
+First class JAX support for pixelization, which will run over x20 faster than the `numba` CPU implementation, will be
+released mid November 2025!
+
 __Contents__
 
 **Advantages & Disadvantages:** Benefits and drawbacks of using an MGE.
@@ -103,22 +119,11 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's surface-brightness is reconstructed using a `Voronoi` mesh, `Overlay` image-mesh
-   and `ConstantSplit` regularization scheme.
+   and `Constant` regularization scheme.
 
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
-
-__JAX Slowdown__
-
-Pixelizations currently have limited JAX support, meaning GPU acceleration is not yet possible. We therefore disable JAX
-at the start of this script.
-
-Note that speed up on CPU is still possible, by both using the library `numba` (if you do not have this installed an
-Exception will be raised explaining how to install it) and by using Python multiprocessing multi-core parallelization
-by passing a `number_of_cores` to Nautilus.
-
-JAX supported for pixelization is close and expected to be ready by mid November 2025.
 """
 
 # %matplotlib inline
@@ -156,8 +161,12 @@ __Mask__
 
 Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
 """
+mask_radius = 3.0
+
 mask = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
 )
 
 dataset = dataset.apply_mask(mask=mask)
@@ -168,28 +177,55 @@ dataset_plotter.subplot_dataset()
 """
 __Over Sampling__
 
-Apply adaptive over sampling to ensure the calculation is accurate, you can read up on over-sampling in more detail via 
-the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
+A pixelization uses a separate grid for ray tracing, with its own over sampling scheme, which below we set to a 
+uniform grid of values of 2. 
 
-A pixelization uses a separate grid with its own over sampling scheme, which below we set to a uniform grid of values
-of 4. The pixelization only reconstructs the source galaxy, therefore the adaptive over sampling used for the lens
-galaxy's light does not apply to the pixelization.
+The pixelization only reconstructs the source galaxy, therefore the adaptive over sampling used for the lens galaxy's 
+light in other examples is not applied to the pixelization. 
+
+This example does not model lens light, for examples which combine lens light and a pixelization both over sampling 
+schemes should be used, with the lens light adaptive and the pixelization uniform.
 
 Note that the over sampling is input into the `over_sample_size_pixelization` because we are using a `Pixelization`.
 """
-over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
-    grid=dataset.grid,
-    sub_size_list=[8, 4, 1],
-    radial_list=[0.3, 0.6],
-    centre_list=[(0.0, 0.0)],
-)
-
 dataset = dataset.apply_over_sampling(
-    over_sample_size_pixelization=over_sample_size,
+    over_sample_size_pixelization=4,
 )
 
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
+
+"""
+__JAX & Preloads__
+
+In JAX, calculations must use static shaped arrays with known and fixed indexes. For certain calculations in the
+pixelization, this information has to be passed in before the pixelization is performed. Below, we do this for 3
+inputs:
+
+- `total_linear_light_profiles`: The number of linear light profiles in the model. This is 0 because we are not
+  fitting any linear light profiles to the data, primarily because the lens light is omitted.
+  
+- `total_mapper_pixels`: The number of source pixels in the rectangular pixelization mesh. This is required to set up 
+  the arrays that perform the linear algebra of the pixelization.
+  
+- `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
+  are forced to values of zero, a technique tests have shown are required to give accruate lens models.
+  
+The `image_mesh` can be ignored, it is legacy API from previous versions which may or may not be reintegrated in future
+versions.
+"""
+image_mesh = None
+mesh_shape = (20, 20)
+total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
+
+preloads = al.Preloads(
+    mapper_indices=al.mapper_indices_from(
+        total_linear_light_profiles=0, total_mapper_pixels=total_mapper_pixels
+    ),
+    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+        mesh_shape
+    ),
+)
 
 """
 __Pixelization__
@@ -211,9 +247,8 @@ of the noise in the data and an unrealistically complex and strucutred source. R
 reconstruction solution by penalizing solutions where neighboring pixels (Voronoi triangles in this example) have
 large flux differences.
 """
-image_mesh = al.image_mesh.Overlay(shape=(30, 30))
-mesh = al.mesh.Delaunay()
-regularization = al.reg.ConstantSplit(coefficient=1.0)
+mesh = al.mesh.Rectangular(shape=mesh_shape)
+regularization = al.reg.Constant(coefficient=1.0)
 
 pixelization = al.Pixelization(
     image_mesh=image_mesh, mesh=mesh, regularization=regularization
@@ -244,6 +279,7 @@ tracer = al.Tracer(galaxies=[lens, source])
 fit = al.FitImaging(
     dataset=dataset,
     tracer=tracer,
+    preloads=preloads,
 )
 
 """
@@ -281,7 +317,7 @@ example fits a lens model where:
  - The mesh centres of the `Voronoi` mesh are computed using a `Overlay` image-mesh, with a fixed resolution of 
    30 x 30 pixels [0 parameters].
  
- - This pixelization is regularized using a `ConstantSplit` scheme which smooths every source pixel equally [1 parameter]. 
+ - This pixelization is regularized using a `Constant` scheme which smooths every source pixel equally [1 parameter]. 
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=6. 
  
@@ -305,13 +341,8 @@ shear = af.Model(al.mp.ExternalShear)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
-
-image_mesh = af.Model(al.image_mesh.Overlay)
-image_mesh.shape = (30, 30)
-
-mesh = af.Model(al.mesh.Delaunay)
-
-regularization = af.Model(al.reg.ConstantSplit)
+mesh = af.Model(al.mesh.Rectangular(shape=mesh_shape))
+regularization = af.Model(al.reg.Constant)
 
 pixelization = af.Model(
     al.Pixelization, image_mesh=image_mesh, mesh=mesh, regularization=regularization
@@ -342,7 +373,8 @@ search = af.Nautilus(
     name="pixelization",
     unique_tag=dataset_name,
     n_live=100,
-    iterations_per_update=5000,
+    n_batch=10,
+    iterations_per_update=50000,
 )
 
 """
@@ -397,8 +429,7 @@ __Analysis__
 Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data. 
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset,
-    positions_likelihood_list=[positions_likelihood],
+    dataset=dataset, positions_likelihood_list=[positions_likelihood], preloads=preloads
 )
 
 """
@@ -691,7 +722,7 @@ print(reconstruction_dict["noise_map"])
 You can now use standard libraries to performed calculations with the reconstruction on the mesh, again avoiding
 the need to use autolens.
 
-For example, we can create a Delaunay mesh using the scipy.spatial library, which is a triangulation
+For example, we can create a Rectangular mesh using the scipy.spatial library, which is a triangulation
 of the y and x coordinates of the pixelization mesh. This is useful for visualizing the pixelization
 and performing calculations on the mesh.
 """
@@ -699,7 +730,7 @@ import scipy
 
 points = np.stack(arrays=(reconstruction_dict["x"], reconstruction_dict["y"]), axis=-1)
 
-delaunay = scipy.spatial.Delaunay(points)
+mesh = scipy.spatial.Rectangular(points)
 
 """
 Interpolating the result to a uniform grid is also possible using the scipy.interpolate library, which means the result
@@ -709,7 +740,7 @@ Below, we interpolate the result onto a 201 x 201 grid of pixels with the extent
 capture the majority of the source reconstruction without being too high resolution.
 
 It should be noted this inteprolation may not be as optimal as the interpolation perforemd above using `MapperValued`, 
-which uses specifc interpolation methods for a Delaunay mesh which are more accurate, but it should be sufficent for
+which uses specifc interpolation methods for a Rectangular mesh which are more accurate, but it should be sufficent for
 most use-cases.
 """
 from scipy.interpolate import griddata
@@ -944,11 +975,11 @@ print(inversion.log_det_curvature_reg_matrix_term)
 __Simulated Imaging__
 
 We load the source galaxy image from the pixelized inversion of a previous fit, which was performed on an irregular 
-Delaunay or Voronoi mesh.  
+Rectangular or Voronoi mesh.  
 
 Since irregular meshes cannot be directly used to simulate lensed images, we interpolate the source onto a uniform 
 grid with shape `interpolated_pixelized_shape`. This grid should have a high resolution (e.g., 1000 × 1000) to preserve 
-all resolved structure from the original Delaunay or Voronoi mesh.  
+all resolved structure from the original Rectangular or Voronoi mesh.  
 """
 mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
 

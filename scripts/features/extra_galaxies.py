@@ -77,8 +77,12 @@ __Mask__
 We define a bigger circular mask of 6.0" than the 3.0" masks used in other tutorials, to ensure the extra galaxy's 
 emission is included.
 """
+mask_radius = 6.0
+
 mask_main = al.Mask2D.circular(
-    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=6.0
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
 )
 
 dataset = dataset.apply_mask(mask=mask_main)
@@ -134,7 +138,7 @@ the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
 """
 # over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
 #     grid=dataset.grid,
-#     sub_size_list=[8, 4, 1],
+#     sub_size_list=[4, 2, 1],
 #     radial_list=[0.3, 0.6],
 #     centre_list=[(0.0, 0.0), (1.0, 3.5), (-2.0, -3.5)],
 # )
@@ -152,7 +156,7 @@ lensed source.
 """
 # Lens:
 
-# bulge = af.Model(al.lp_linear.Sersic)
+# bulge = al.model_util.mge_model_from(mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True)
 #
 # mass = af.Model(al.mp.Isothermal)
 #
@@ -294,7 +298,7 @@ of (0.0", 0.0").
 """
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,
-    sub_size_list=[8, 4, 1],
+    sub_size_list=[4, 2, 1],
     radial_list=[0.3, 0.6],
     centre_list=[(0.0, 0.0)] + extra_galaxies_centres.in_list,
 )
@@ -315,13 +319,20 @@ https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 """
 # Lens:
 
-bulge = af.Model(al.lp_linear.Sersic)
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
+)
 mass = af.Model(al.mp.Isothermal)
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
 # Source:
 
-bulge = af.Model(al.lp_linear.SersicCore)
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=1,
+    centre_prior_is_uniform=False,
+)
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 """
@@ -353,6 +364,11 @@ Extra galaxy mass profiles often to go unphysically high `einstein_radius` value
 extra_galaxies_list = []
 
 for extra_galaxy_centre in extra_galaxies_centres:
+
+    bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius, total_gaussians=10, centre_prior_is_uniform=True
+    )
+
     extra_galaxy = af.Model(
         al.Galaxy, redshift=0.5, bulge=al.lp_linear.SersicSph, mass=al.mp.IsothermalSph
     )
