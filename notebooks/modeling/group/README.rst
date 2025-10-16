@@ -3,4 +3,5 @@ The ``modeling`` folder contains example scripts showing how to fit a lens model
 Files
 -----
 
-- ``start_here``: A simple example illustrating how to fit a group-scale strong lens model using CCD imaging data.
+- ``start_here_extended``: A simple example illustrating how to fit a group-scale strong lens model using extending imaging data.
+- ``start_here_point``: A simple example illustrating how to fit a group-scale strong lens model using point source data.
