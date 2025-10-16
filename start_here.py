@@ -325,7 +325,6 @@ total_datasets = 3
 
 for sample_index in range(total_datasets):
 
-
     lens_galaxy = lens_model.random_instance()
     source_galaxy = source_model.random_instance()
 
