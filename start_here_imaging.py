@@ -30,10 +30,7 @@ running the code below state you are not in a Colab environment and skip the set
 """
 from autoconf import setup_colab
 
-try:
-    setup_colab.setup_colab_autolens()
-except RuntimeError:
-    pass
+setup_colab.for_autolens()
 
 """
 __Imports__
