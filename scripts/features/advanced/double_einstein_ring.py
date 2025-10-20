@@ -102,8 +102,7 @@ We compose a lens model where:
 
  - The first lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
  
- - The second lens / first source galaxy's light is a linear parametric `ExponentialSph` and its mass 
- a `IsothermalSph` [6 parameters].
+ - The second lens / first source galaxy's light are MGE models [8 parameters].
 
  - The second source galaxy's light is a linear parametric `ExponentialSph` [3 parameters].
 
@@ -111,6 +110,8 @@ The number of free parameters and therefore the dimensionality of non-linear par
 
 Note that the galaxies are assigned redshifts of 0.5, 1.0 and 2.0. This ensures the multi-plane ray-tracing necessary
 for the double Einstein ring lens system is performed correctly.
+
+The `centre` values input into `mge_model_from` are explained below.
 
 __Model Cookbook__
 
@@ -121,7 +122,10 @@ https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 # Lens:
 
 bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    centre_prior_is_uniform=True,
+    centre=(0.0, 0.0),
 )
 mass = af.Model(al.mp.Isothermal)
 
@@ -132,13 +136,15 @@ lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 bulge = af.Model(al.lp_linear.ExponentialCoreSph)
 mass = af.Model(al.mp.IsothermalSph)
 
-source_0 = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, mass=mass)
+source_0 = af.Model(
+    al.Galaxy, redshift=1.0, bulge=bulge, mass=mass, centre=(0.15, 0.15)
+)
 
 # Source 1:
 
 bulge = af.Model(al.lp_linear.ExponentialCoreSph)
 
-source_1 = af.Model(al.Galaxy, redshift=2.0, bulge=bulge)
+source_1 = af.Model(al.Galaxy, redshift=2.0, bulge=bulge, centre=(0.0, 0.0))
 
 """
 __Cheating__
@@ -147,7 +153,7 @@ Initializing a double Einstein ring lens model is difficult, due to the complexi
 infer local maxima, which this script does if default broad priors on every model parameter are assumed.
 
 To infer the correct model, we "cheat" and overwrite all of the priors of the model parameters to start centred on 
-their true values.
+their true values. This is why the true `centre` values were input into the `mge_model_from` functions above.
 
 For real data, we obviously do not know the true parameters and therefore cannot cheat in this way. Readers should
 checkout the **PyAutoLens**'s advanced feature `chaining`, which chains together multiple non-linear searches. 
@@ -155,29 +161,13 @@ checkout the **PyAutoLens**'s advanced feature `chaining`, which chains together
 This feature is described in HowToLens chapter 3 and specific examples for a double Einstein ring are given in
 the script `imaging/advanced/chaining/double_einstein_ring.py`.
 """
-lens.bulge.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.1)
-lens.bulge.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.1)
-lens.bulge.ell_comps.ell_comps_0 = af.GaussianPrior(mean=0.052, sigma=0.1)
-lens.bulge.ell_comps.ell_comps_1 = af.GaussianPrior(mean=0.0, sigma=0.1)
-lens.bulge.effective_radius = af.GaussianPrior(mean=0.8, sigma=0.2)
-lens.bulge.sersic_index = af.GaussianPrior(mean=4.0, sigma=0.2)
-
 lens.mass.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.1)
 lens.mass.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.1)
-lens.mass.ell_comps.ell_comps_0 = af.GaussianPrior(mean=0.052, sigma=0.1)
-lens.mass.ell_comps.ell_comps_1 = af.GaussianPrior(mean=0.0, sigma=0.1)
-lens.mass.einstein_radius = af.GaussianPrior(mean=1.5, sigma=0.2)
 
 source_0.mass.centre_0 = af.GaussianPrior(mean=-0.15, sigma=0.2)
 source_0.mass.centre_1 = af.GaussianPrior(mean=-0.15, sigma=0.2)
 source_0.mass.einstein_radius = af.GaussianPrior(mean=0.4, sigma=0.1)
-source_0.bulge.centre_0 = af.GaussianPrior(mean=-0.15, sigma=0.2)
-source_0.bulge.centre_1 = af.GaussianPrior(mean=-0.15, sigma=0.2)
-source_0.bulge.effective_radius = af.GaussianPrior(mean=0.1, sigma=0.1)
 
-source_1.bulge.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.2)
-source_1.bulge.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.2)
-source_1.bulge.effective_radius = af.GaussianPrior(mean=0.07, sigma=0.07)
 
 """
 __Cosmology__
@@ -223,7 +213,7 @@ search = af.Nautilus(
     name="double_einstein_ring",
     unique_tag=dataset_name,
     n_live=150,
-    iterations_per_update=2000,
+    iterations_per_quick_update=2000,
 )
 
 """

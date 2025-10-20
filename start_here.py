@@ -13,6 +13,44 @@ https://www.astro.caltech.edu/~george/qsolens/
 
 This notebook gives a starting overview of **PyAutoLens**'s features and API.
 
+__Google Colab Setup__
+
+The introduction `start_here` examples are available on Google Colab, which allows you to run them in a web browser
+without manual local PyAutoLens installation.
+
+The code below should only been run if you are using Google Colab, it will install autolens and download
+files required to run the notebook.
+"""
+import subprocess
+import sys
+
+try:
+    import google.colab
+    in_colab = True
+except ImportError:
+    in_colab = False
+
+if in_colab:
+
+    # Install required packages
+    subprocess.check_call([sys.executable, "-m", "pip", "install",
+                           "autoconf", "autofit", "autoarray", "autogalaxy", "autolens",
+                           "pyvis==0.3.2", "dill==0.4.0", "jaxnnls",
+                           "pyprojroot==0.2.0", "nautilus-sampler==1.0.4",
+                           "timeout_decorator==0.5.0", "anesthetic==2.8.14",
+                           "--no-deps"])
+
+    import os
+    from autoconf import conf
+
+    os.chdir("/content/autolens_workspace")
+
+    conf.instance.push(
+        new_path="/content/autolens_workspace/config",
+        output_path="/content/autolens_workspace/output",
+    )
+
+"""
 __Imports__
 
 Lets first import autolens, its plotting module and the other libraries we'll need.
@@ -337,7 +375,9 @@ for sample_index in range(total_datasets):
 You’ve now completed the introductory API overview of PyAutoLens, which covered the basics of creating galaxies and 
 performing ray-tracing calculations.
 
-The next step is to explore a start_here notebook, which introduces the two main tasks in PyAutoLens:
+__Where To Next__
+
+The next workspace example will introduce the two main tasks one performs with **PyAutoLens**:
 
 **Lens Modeling**: Fit data of a strong lens with a model to infer the properties of the lens and source galaxies.
 
@@ -353,28 +393,49 @@ fit until the model image closely matches the observed data.
 
 **Credit: Amy Etherington**
 
-Before diving in, you should decide what type of strong lens system and data you’re working with. The approach 
-depends on whether your system is dominated by a single lens galaxy (galaxy-scale) or by multiple lens galaxies 
-(group or cluster-scale). The kind of data you have (imaging, interferometer, or point source) also determines 
-which notebook you should go to.
+The `autolens_workspace` has five `start_here.ipynb` notebooks, and you need to determine which is most relevant
+to your scientific interests:
 
-**Galaxy-scale lenses (a single dominant lens galaxy):**
+ - `start_here_imaging.ipynb`: Galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, James Webb).
+ - `start_here_interferometer.ipynb`: Galaxy scale strong lenses observed with interferometer data (e.g. ALMA).
+ - `start_here_point_source.ipynb`: Galaxy scale strong lenses with a lensed point source (e.g. lensed quasars).
+ - `start_here_group.ipynb`: Group scale strong lenses where there are 2-10 lens galaxies.
+ - `start_here_cluster.ipynb`: Cluster scale strong lenses with 2+ lenses and 5+ source galaxies.
 
-- `start_here_imaging.ipynb`: For CCD imaging data such as Hubble, James Webb, or ground-based telescopes.
+If you are still unsure based on the brief descriptions above, answer the following two questions to work out
+where to start
 
-- `start_here_interferometer.ipynb`: For radio / sub-mm interferometer data, e.g. ALMA.
+__What Scale Lens?__
 
-- `start_here_point_source.ipynb`: For strongly lensed point sources like lensed quasars or supernovae.
+What size and scale of strong lens system are you expecting to work with? 
 
-**Group- and cluster-scale lenses (multiple lens galaxies):**
+There are three scales to choose from:
 
-- `start_here_group.ipynb `: Groups typically contain 2–10 lens galaxies. These are modeled with pixel-based methods and may involve multiple sources.
+- **Galaxy Scale**: Made up of a single lens galaxy lensing a single source galaxy, the simplest strong lens you can get!
+  If you're interested in galaxy scale lenses, go to the question below called "What Data Type?".
+  
+- **Group Scale**: Strong Lens Groups contains 2-10 lens galaxies, normally with one main large galaxy responsible for the majority of lensing.
+  They also typically lens just one source galaxy. If you are interested in groups, go to the `start_here_group.ipynb` notebook.
+  
+- **Cluster Scale**: Strong Lens Galaxy clusters often contained 20-50, or more, lens galaxies, lensing 10, or more, sources galaxies.
+  If you are interested in clusters, go to the `start_here_cluster.ipynb` notebook.
 
-- `start_here_cluster.ipynb`: Clusters contain 10+ lens galaxies and are usually modeled using position-based methods with many lensed sources. 
+__What Data Type?__
 
-If you’re unsure which category applies, don’t worry — each notebook is short and self-contained, so you can quickly 
-skim all you think are relevent. Notebooks can also be combined. For example, you might perform interferometer lens 
-modeling of a group-scale system, or perform point source modeling of a group scale lens.
+If you are interested in galaxy-scale strong lenses, you now need to decide what type of strong lens data you are
+interested in:
+
+- **CDD Imaging**: For image data from telescopes like Hubble and James Webb, go to `start_here_imaging.ipynb`.
+
+- **Interferometer**: For radio / sub-mm interferometer from instruments like ALMA, go to `start_here_interferometer.ipynb`.
+
+- **Point Sources**: For strongly lensed point sources (e.g. lensed quasars, supernovae), go to `start_here_point_source.ipynb`.
+
+__Still Unsure?__
+
+Each notebook is short and self-contained, and can be completed and adapted quickly to your particular task. 
+Therefore, if you're unsure exactly which scale of lensing applies to you, or quite what data you want to use, you 
+should just read through a few different notebooks and go from there.
 
 __HowToLens Lectures__
 

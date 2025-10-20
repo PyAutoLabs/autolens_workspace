@@ -447,7 +447,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,
     n_live=75,
     n_batch=50,
-    iterations_per_update=2000000,
+    iterations_per_quick_update=2000000,
 )
 
 """

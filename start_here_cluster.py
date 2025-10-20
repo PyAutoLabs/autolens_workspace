@@ -32,8 +32,51 @@ However, the PyAutoLens cluster implementation has a key feature which means you
 more established software. For lens modeling, the JAX GPU likelihood evaluation (which for those familiar with cluster
 modeling uses an image plane chi squared) is over 50 times faster than existing established cluster modeling software.
 It also fully supports multi-plane ray tracing of any complexity.
-"""
 
+__Google Colab Setup__
+
+The introduction `start_here` examples are available on Google Colab, which allows you to run them in a web browser
+without manual local PyAutoLens installation.
+
+The code below should only been run if you are using Google Colab, it will install autolens and download
+files required to run the notebook.
+"""
+import subprocess
+import sys
+
+try:
+    import google.colab
+    in_colab = True
+except ImportError:
+    in_colab = False
+
+if in_colab:
+
+    # Install required packages
+    subprocess.check_call([sys.executable, "-m", "pip", "install",
+                           "autoconf", "autofit", "autoarray", "autogalaxy", "autolens",
+                           "pyvis==0.3.2", "dill==0.4.0", "jaxnnls",
+                           "pyprojroot==0.2.0", "nautilus-sampler==1.0.4",
+                           "timeout_decorator==0.5.0", "anesthetic==2.8.14",
+                           "--no-deps"])
+
+    import os
+    from autoconf import conf
+
+    os.chdir("/content/autolens_workspace")
+
+    conf.instance.push(
+        new_path="/content/autolens_workspace/config",
+        output_path="/content/autolens_workspace/output",
+    )
+
+"""
+__Imports__
+
+Lets first import autolens, its plotting module and the other libraries we'll need.
+
+You'll see these imports in the majority of workspace examples.
+"""
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -231,7 +274,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
-    iterations_per_update=100000,  # Every N iterations the results are written to hard-disk for inspection.
+    iterations_per_quick_update=2500,  # Every N iterations the max likelihood model is visualized and written to output folder.
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)
@@ -239,7 +282,7 @@ analysis = al.AnalysisImaging(dataset=dataset)
 result = search.fit(model=model, analysis=analysis)
 
 """
-__Result_
+__Result__
 
 Now this is running you should checkout the `autolens_workspace/output` folder, where many results of the fit
 are written in a human readable format (e.g. .json files) and .fits and .png images of the fit are stored.

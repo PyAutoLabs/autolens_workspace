@@ -1,49 +1,34 @@
 """
-Modeling: Group Start Here Point
-================================
+Modeling: Cluster Start Here
+============================
 
-This script models an example strong lens on the 'group' scale, where there is a single primary lens galaxy
-and two smaller galaxies nearby, whose mass contributes significantly to the ray-tracing and is therefore included in
-the strong lens model.
+This script models an example strong lens on the 'cluster' scale, where there is a Brightest Cluster Galaxy (BCG),
+large dark matter halo, 20 extra galaxies in the cluster whose collective mass contributes significantly to the
+ray-tracing and 5 background source galaxies.
 
-There are two methods for modeling group-scale strong lenses:
-
-- `point`: The source is modeled as a point source, where the positions of its multiple images are fitted.
-- `extended`: The source is modeled as an extended source, where the full emission is fitted, using imaging or interferometry data.
-
-This example demonstrates the `point` method. For the `extended` source modeling, refer to
-the `start_here_extended.ipynb` example.
-
-Consider which method is appropriate for your dataset and the scientific goals of your analysis.
-
-After completing this example, explore other relevant modeling packages for your
-approach (e.g., `modeling/point_source` for point sources, `modeling/imaging` or `modeling/interferometer` for extended sources).
-
-You may also want to explore the `features` package to extend the model for specific requirements (e.g., using a
-pixelized source). Details on available features are provided at the end of this example.
+The primary method for modeling cluster scale strong lenses uses `point` source modeling, where each source is modeled
+as a point source, where the positions of its multiple images are fitted (but not the extended emission observed at a
+pixel level).
 
 __Scaling Relations__
 
-This example models the mass of each galaxy individually, which means the number of dimensions of the model increases
-as we model group scale lenses with more galaxies. This can lead to a model that is slow to fit and poorly constrained.
-
-A common appraoch to overcome this is to put many of the galaxies a scaling relation, where the mass of the galaxies
-are related to their light via a observationally motivated scaling relation. This means that as more galaxies are
-included in the lens model, the dimensionality of the model does not increase.
-
-Lens modeling using scaling relations is fully support and described in the `features/scaling_relation.ipynb` example,
-you will likely want to read this example as soon as you have finished this one.
+This example models the mass of the cluster galaxies by putting them on a scaling relation which links light (measured
+luminosity) to mass. This means the number of dimensions of the model does not increase as we add more and more
+galaxies to the cluster lens model. Given the largest clusters have 100+ galaxies, this avoids our model complexity
+blowing up to 100 of free parameter and is therefore key.
 
 __Example__
 
-This script fits a `PointDataset` dataset of a 'group-scale' strong lens where:
+This script fits a `PointDataset` dataset of a 'cluster-scale' strong lens where:
 
- - There is a main lens galaxy whose total mass distribution is an `Isothermal` and `ExternalShear`.
- - There are two extra lens galaxies whose total mass distributions are `IsothermalSph` models.
- - The source `Galaxy` is modeled as a point source `Point`.
+ - There is a main Brightest Cluster Galaxy lens whose total mass distribution is an `Isothermal` and `ExternalShear`.
+ - There is a large scale dark matter halo modeled as an `NFWSph`.
+ - There are ten extra lens galaxies in the cluster whose total mass distributions are `DPIEPotential` models where
+   their mass is linked to their light via a scaling relation.
+ - There are 5 source galaxies modeled as point sources.
 
-The point-source dataset used in this example consists of the positions of the lensed source's multiple images and
-their fluxes, however only the positions are used in the model-fit.
+The point-source dataset used in this example consists of the positions of every lensed source's multiple images
+(their fluxes are not used).
 
 __Plotters__
 
@@ -54,8 +39,8 @@ The `PLotter` API is described in the script `autolens_workspace/*/plot/start_he
 
 __Simulation__
 
-This script fits a simulated `Imaging` dataset of a strong lens, which is produced in the
-script `autolens_workspace/*/imaging/simulators/start_here.py`
+This script fits a simulated cluster dataset of a strong lens, which is produced in the
+script `autolens_workspace/*/simulators/cluster/start_here.py`
 
 __Data Preparation__
 
@@ -72,6 +57,7 @@ described in the script `autolens_workspace/*/data_preparation/imaging/start_her
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+import numpy as np
 from pathlib import Path
 import autofit as af
 import autolens as al
@@ -80,13 +66,14 @@ import autolens.plot as aplt
 """
 __Dataset__
 
-Load the strong lens dataset `group`, which is the dataset we will use to perform lens modeling.
+Load the strong lens dataset `cluster`, which is the dataset we will use to perform lens modeling.
 
-We begin by loading an image of the dataset. Although we perform point-source modeling and will not use this data in 
+We begin by loading a CCD image of the dataset. Although we perform point-source modeling and will not use this data in 
 the model-fit, it is useful to load it for visualization. By passing this dataset to the model-fit at the
-end of the script it will be used when visualizing the results. However, the use of an image in this way is entirely
-optional, and if it were not included in the model-fit visualization would simple be performed using grids without
-the image.
+end of the script it will be used when visualizing the results. 
+
+The use of an image in this way is entirely optional, and if it were not included in the model-fit visualization would 
+performed without the image.
 
 This is loaded via .fits files, which is a data format used by astronomers to store images.
 
@@ -94,29 +81,43 @@ The `pixel_scales` define the arc-second to pixel conversion factor of the image
 is 0.1" / pixel.
 """
 dataset_name = "simple"
-dataset_path = Path("dataset", "group", dataset_name)
+dataset_path = Path("dataset", "cluster", dataset_name)
 
 data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.1)
 
 """
-We now load the point source dataset we will fit using point source modeling. 
+We now load the point source datasets we will fit using point source modeling. 
 
-We load this data as a `PointDataset`, which contains the positions and fluxes of every point source. 
+We load this data as a list of `PointDataset` object, which contains the positions of every point source. 
 """
-dataset = al.from_json(
-    file_path=Path(dataset_path, "point_dataset.json"),
-)
+dataset_list = []
+
+for i in range(5):
+
+    dataset = al.from_json(
+        file_path=Path(dataset_path, f"point_dataset_{i}.json"),
+    )
+
+    dataset_list.append(dataset)
 
 """
-We can print this dictionary to see the dataset's `name`, `positions` and `fluxes` and noise-map values.
+We can print this dictionary to see the dataset's `name` and `positions` and noise-map values.
 """
-print("Point Dataset Info:")
-print(dataset.info)
+for dataset in dataset_list:
+
+    print("Point Dataset Info:")
+    print(dataset.info)
 
 """
-We can plot our positions dataset over the observed image.
+We can plot the positions of each dataset over the observed image.
 """
-visuals = aplt.Visuals2D(positions=dataset.positions)
+positions_list = []
+
+for dataset in dataset_list:
+
+    positions_list.append(dataset.positions)
+
+visuals = aplt.Visuals2D(positions=positions_list)
 
 array_plotter = aplt.Array2DPlotter(array=data, visuals_2d=visuals)
 array_plotter.figure_2d()
@@ -124,9 +125,41 @@ array_plotter.figure_2d()
 """
 We can also just plot the positions, omitting the image.
 """
-grid_plotter = aplt.Grid2DPlotter(grid=dataset.positions)
+grid_plotter = aplt.Grid2DPlotter(grid=positions_list)
 grid_plotter.figure_2d()
 
+"""
+__Centres__
+
+The centre of every extra lens galaxy is used to compose the lens model, fixing their mass distributions
+to their centres of light.
+
+We load these centres below and plot them on the image to confirm they are located correctly and
+cover all galaxies.
+"""
+extra_galaxies_centre_list = al.Grid2DIrregular(
+    al.from_json(file_path=Path(dataset_path, "extra_galaxies_centre_list.json"))
+)
+
+visuals = aplt.Visuals2D(light_profile_centres=extra_galaxies_centre_list)
+
+array_plotter = aplt.Array2DPlotter(array=data, visuals_2d=visuals)
+array_plotter.figure_2d()
+
+"""
+__Luminosities__
+
+We also need the luminosity of each galaxy, which in this example is the measured property we relate to mass via
+the scaling relation.
+
+We again uses the true values of the luminosities from the simulated dataset, but in a real analysis we would have
+to determine these luminosities beforehand (see discussion above).
+
+This could be other measured properties, like stellar mass or velocity dispersion.
+"""
+extra_galaxies_luminosity_list = al.from_json(
+    file_path=Path(dataset_path, "extra_galaxies_luminosities.json")
+)
 
 """
 __Point Solver__
@@ -138,8 +171,8 @@ It does this by ray tracing triangles from the image-plane to the source-plane a
 source-plane (y,x) centre is inside the triangle. The method gradually ray-traces smaller and smaller triangles so 
 that the multiple images can be determine with sub-pixel precision.
 
-The `PointSolver` requires a starting grid of (y,x) coordinates in the image-plane which defines the first set
-of triangles that are ray-traced to the source-plane. It also requires that a `pixel_scale_precision` is input, 
+The `PointSolver` requires an initial grid of (y, x) coordinates in the image plane (defined above), which defines the 
+first set of triangles to ray trace spanning the whole cluster.It also requires that a `pixel_scale_precision` is input, 
 which is the resolution up to which the multiple images are computed. The lower the `pixel_scale_precision`, the
 longer the calculation, with the value of 0.001 below balancing efficiency with precision.
 
@@ -166,8 +199,8 @@ The `modeling/point_source` package provides full details of how the `PointSolve
 chi squared definitions available.
 """
 grid = al.Grid2D.uniform(
-    shape_native=(200, 200),
-    pixel_scales=0.2,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
+    shape_native=(100, 100),
+    pixel_scales=1.0,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
 solver = al.PointSolver.for_grid(
@@ -177,33 +210,33 @@ solver = al.PointSolver.for_grid(
 """
 __Main Galaxies and Extra Galaxies__
 
-For a group-scale lens, we designate there to be two types of lens galaxies in the system:
+For a cluster-scale lens, we designate there to be the following lensing objects in the system:
 
- - `main_galaxies`: The main lens galaxies which likely make up the majority of light and mass in the lens system.
- These are modeled individually with a unique name for each, with their light and mass distributions modeled using 
- parametric models.
+ - `main_galaxies`: The main lens galaxies which are the brightest and highest mass galaxies in the lens system. In
+ clusters they are often BCGs. These are modeled individually with a unique name for each, with their mass distributions 
+ modeled using parametric models. The cluster scale dark matter halo is also tied to the BCG.
  
- - `extra_galaxies`: The extra galaxies which are nearby the lens system and contribute to the lensing of the source
-  galaxy. These are modeled with a more restrictive model, for example with their centres fixed to the observed
-  centre of light and their mass distributions modeled using a scaling relation. These are grouped into a single 
-  `extra_galaxies` collection.
+ - `extra_galaxies`: The extra galaxies which make up the cluster, whose masses individually don't contirbute too much
+ lensing but they collectively contribute to the lensing of the source galaxies a lot. These are modeled with a
+  more restrictive model, for example with their centres fixed to the observed centre of light and their mass 
+  distributions modeled using a scaling relation. These are grouped into a single  `extra_galaxies` collection.
   
-In this simple example group scale lens, there is one main lens galaxy and two extra galaxies. 
+In this simple example cluster scale lens, there is one main lens galaxy and ten extra galaxies. 
 
 for point source modeling, we do not model the light of the lens galaxies, as it is not necessary when only the 
 positions of the multiple images are used to fit the model.
 
 __Centres__
 
-If the centres of the extra galaxies are treated as free parameters, one can run into the problem of having too many 
-parameters and a model which is not fitted accurately.
+If the centres of the extra galaxies are treated as free parameters, there are too many 
+parameters and the model may not be fitted accurately.
 
-For group-scale lenses we therefore manually specify the centres of the extra galaxies, which are fixed to the observed
-centres of light of the galaxies. `centre_1` and `centre_2` are the observed centres of the extra galaxies.
+For cluster-scale lenses we therefore manually specify the centres of the extra galaxies (which we loaded above) which 
+are fixed to the observed centres of light of the galaxies.
 
 In a real analysis, one must determine the centres of the galaxies before modeling them, which can be done as follows:
 
- - Use the GUI tool in the `data_preparation/point_source/gui/extra_galaxies_centres.py` script to determine the centres
+ - Use the GUI tool in the `data_preparation/point_source/gui/extra_galaxies_centre_list.py` script to determine the centres
    of the extra galaxies. 
 
  - Use image processing software like Source Extractor (https://sextractor.readthedocs.io/en/latest/).
@@ -212,8 +245,7 @@ In a real analysis, one must determine the centres of the galaxies before modeli
 
 __Redshifts__
 
-In this example all line of sight galaxies are at the same redshift as the lens galaxy, meaning multi-plane lensing
-is not used.
+In this example all galaxies are at the same redshift in the image-plane, meaning multi-plane lensing is not used.
 
 If you have redshift information on the line of sight galaxies and some of their redshifts are different to the lens
 galaxy, you can easily extend this example below to perform multi-plane lensing.
@@ -224,63 +256,85 @@ __Model__
 
 We compose a lens model where:
 
- - The main lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The main lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`  with a large
+ - `NFWSph` dark matter halo [9 parameters].
  
- - There are two extra lens galaxies with `IsothermalSph` total mass distributions, with centres fixed to the observed
-   centres of light [2 parameters].
+ - There are ten extra lens galaxies with `DPIEPotentialSph` total mass distributions, with centres fixed to the 
+   observed centres of light and masses linked to light via a scaling relation whose parameters are fitted 
+   for [3 parameters].
  
- - The source galaxy's light is a point `PointFlux` [2 parameters].
+ - There are five source galaxies whose light is a `Point` [10 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=22.
 """
 # Main Lens:
 
-mass = af.Model(al.mp.Isothermal)
-shear = af.Model(al.mp.ExternalShear)
+lens_centre = (0.0, 0.0)
 
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+mass = af.Model(al.mp.Isothermal)
+
+mass.centre.centre_0 = af.GaussianPrior(mean=lens_centre[0], sigma=0.3)
+mass.centre.centre_1 = af.GaussianPrior(mean=lens_centre[1], sigma=0.3)
+
+shear = af.Model(al.mp.ExternalShear)
+dark = af.Model(al.mp.NFWSph)
+
+dark.centre.centre_0 = af.GaussianPrior(mean=lens_centre[0], sigma=0.3)
+dark.centre.centre_1 = af.GaussianPrior(mean=lens_centre[1], sigma=0.3)
+
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear, dark=dark)
 
 # Extra Galaxies
 
-extra_galaxies_centres = [(3.5, 2.5), (-4.4, -5.0)]
+ra_star = af.LogUniformPrior(lower_limit=1e8, upper_limit=1e11)
+rs_star = af.UniformPrior(lower_limit=-1.0, upper_limit=1.0)
+b0_star = af.LogUniformPrior(lower_limit=1e5, upper_limit=1e7)
+luminosity_star = 1e9
 
-extra_galaxies_list = []
+extra_galaxies_dict = {}
 
-for extra_galaxy_centre in extra_galaxies_centres:
+for i, extra_galaxy_centre, extra_galaxy_luminosity in enumerate(
+    zip(extra_galaxies_centre_list, extra_galaxies_luminosity_list)
+):
 
-    # Extra Galaxy Mass
-
-    mass = af.Model(al.mp.IsothermalSph)
-
+    mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = extra_galaxy_centre
-    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
-
-    # Extra Galaxy
+    mass.ra = ra_star * (extra_galaxy_luminosity / luminosity_star) ** 0.5
+    mass.rs = rs_star * (extra_galaxy_luminosity / luminosity_star) ** 0.5
+    mass.b0 = b0_star * (extra_galaxy_luminosity / luminosity_star) ** 0.25
 
     extra_galaxy = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
-    extra_galaxies_list.append(extra_galaxy)
-
-extra_galaxies = af.Collection(extra_galaxies_list)
+    extra_galaxies_dict[f"extra_galaxy_{i}"] = extra_galaxy
 
 # Source:
 
-point_0 = af.Model(al.ps.Point)
-point_0.centre_0 = af.GaussianPrior(mean=0.0, sigma=3.0)
-point_0.centre_1 = af.GaussianPrior(mean=0.0, sigma=3.0)
+source_galaxies_dict = {}
 
-source = af.Model(al.Galaxy, redshift=1.0, point_0=point_0)
+for i, positions in enumerate(positions_list):
+
+    positions_centre_y = np.mean(positions, axis=0)
+    positions_centre_x = np.mean(positions, axis=1)
+
+    point = af.Model(al.ps.Point)
+    point.centre_0 = af.GaussianPrior(mean=positions_centre_y, sigma=3.0)
+    point.centre_1 = af.GaussianPrior(mean=positions_centre_x, sigma=3.0)
+
+    source = af.Model(al.Galaxy, redshift=1.0, **{f"point_{i}": point})
+
+    source_galaxies_dict[f"source_{i}"] = source
 
 # Overall Lens Model:
 
 model = af.Collection(
-    galaxies=af.Collection(lens=lens, source=source), extra_galaxies=extra_galaxies
+    galaxies=af.Collection(lens=lens, **source_galaxies_dict),
+    extra_galaxies=af.Collection(**extra_galaxies_dict),
 )
 
 """
 The `info` attribute shows the model in a readable format.
 
-This shows the group scale model, with separate entries for the main lens galaxy, the source galaxy and the 
+This shows the cluster scale model, with separate entries for the main lens galaxy, the source galaxies and the 
 extra galaxies.
 
 The `info` below may not display optimally on your computer screen, for example the whitespace between parameter
@@ -296,7 +350,7 @@ print(model.info)
 """
 __Name Pairing__
 
-Every point-source dataset in the `PointDataset` has a name, which in this example was `point_0`. This `name` pairs 
+Every point-source dataset in the `PointDataset` has a name, (e.g. `point_0`, `point_1`). This `name` pairs 
 the dataset to the `Point` in the model below. Because the name of the dataset is `point_0`, the 
 only `Point` object that is used to fit it must have the name `point_0`.
 
@@ -304,11 +358,10 @@ If there is no point-source in the model that has the same name as a `PointDatas
 the model-fit. If a point-source is included in the model whose name has no corresponding entry in 
 the `PointDataset` **PyAutoLens** will raise an error.
 
-In this example, where there is just one source, name pairing appears unnecessary. However, point-source datasets may
-have many source galaxies in them, and name pairing is necessary to ensure every point source in the lens model is 
-fitted to its particular lensed images in the `PointDataset`!
+In cluster lenses, point-source datasets may have many source galaxies in them, and name pairing is necessary to 
+ensure every point source in the lens model is  fitted to its particular lensed images in the `PointDataset`!
 
-The model fitting default settings assume that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
+The model fitting default settings assume that the BCG lens galaxy centre is near the coordinates (0.0", 0.0"). 
 
 If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that you either: 
 
@@ -361,22 +414,18 @@ all scripts you run to use the this format and API.
 
 __Iterations Per Update__
 
-Every N iterations, the non-linear search outputs the current results to the folder `autolens_workspace/output`,
-which includes producing visualization. 
+Every N iterations, the non-linear search outputs the maximum likelihood model and its best fit image to the 
+Notebook visualizer and to hard-disk.
 
-Depending on how long it takes for the model to be fitted to the data (see discussion about run times below), 
-this can take up a large fraction of the run-time of the non-linear search.
+This process takes around ~10 seconds, so we don't want it to happen too often so as to slow down the overall
+fit, but we also want it to happen frequently enough that we can track the progress.
 
-For this fit, the fit is very fast, thus we set a high value of `iterations_per_update=10000` to ensure these updates
-so not slow down the overall speed of the model-fit.
-
-**If the iteration per update is too low, the model-fit may be significantly slowed down by the time it takes to
-output results and visualization frequently to hard-disk. If your fit is consistent displaying a log saying that it
-is outputting results, try increasing this value to ensure the model-fit runs efficiently.**
+On GPU, a value of ~2500 will see this output happens every minute, a good balance. On CPU it'll be a little
+longer, but still a good balance.
 """
 search = af.Nautilus(
-    path_prefix=Path("group", "modeling"),
-    name="start_here_point",
+    path_prefix=Path("cluster", "modeling"),
+    name="start_here",
     unique_tag=dataset_name,
     n_live=100,
 )
@@ -384,17 +433,60 @@ search = af.Nautilus(
 """
 __Analysis__
 
-We next create an `AnalysisPoint` object, which can be given many inputs customizing how the lens model is 
+We next create  `AnalysisPoint` objects, which can be given many inputs customizing how the lens model is 
 fitted to the data (in this example they are omitted for simplicity).
 
 Internally, this object defines the `log_likelihood_function` used by the non-linear search to fit the model to 
 the `Imaging` dataset. 
 
+We create a list of analysis objects, one for each dataset, which means that the lens modeling will fit each
+set of multiple images one-by-one and then sum their likelihoods. 
+
 It is not vital that you as a user understand the details of how the `log_likelihood_function` fits a lens model to 
 data, but interested readers can find a step-by-step guide of the likelihood 
 function at ``autolens_workspace/*/point/log_likelihood_function`
 """
-analysis = al.AnalysisPoint(dataset=dataset, solver=solver)
+analysis_list = [
+    al.AnalysisPoint(dataset=dataset, solver=solver) for dataset in dataset_list
+]
+
+"""
+__Analysis Factor__
+
+Each analysis object is wrapped in an `AnalysisFactor`, which pairs each analysis it with the model.
+
+For this simple cluster examples, the API below in a very simple way. However, the factor graph API below is used for
+many advanced lens modeling tasks elsewhere in the workspace.
+"""
+analysis_factor_list = []
+
+for analysis in analysis_list:
+
+    analysis_factor = af.AnalysisFactor(prior_model=model_analysis, analysis=analysis)
+
+    analysis_factor_list.append(analysis_factor)
+
+"""
+__Factor Graph__
+
+All `AnalysisFactor` objects are combined into a `FactorGraphModel`, which represents a global model fit to 
+multiple datasets using a graphical model structure.
+
+The key outcomes of this setup are:
+
+ - The individual log likelihoods from each `Analysis` object are summed to form the total log likelihood 
+   evaluated during the model-fitting process.
+
+ - Results from all datasets are output to a unified directory, with subdirectories for visualizations 
+   from each analysis object, as defined by their `visualize` methods.
+"""
+factor_graph = af.FactorGraphModel(*analysis_factor_list)
+
+"""
+To inspect this new model, with extra parameters for each dataset created, we 
+print `factor_graph.global_prior_model.info`.
+"""
+print(factor_graph.global_prior_model.info)
 
 """
 __Run Times__
@@ -406,34 +498,25 @@ Run times are dictated by two factors:
 
  - The log likelihood evaluation time: the time it takes for a single `instance` of the lens model to be fitted to 
    the dataset such that a log likelihood is returned.
-
+ 
  - The number of iterations (e.g. log likelihood evaluations) performed by the non-linear search: more complex lens
    models require more iterations to converge to a solution.
-
-For this analysis, the log likelihood evaluation time is ~0.001 seconds, which is extremely fast for lens modeling. The source-plane chi-squared
-is possibly the fastest way to fit a lens model to a dataset, and therefore whilst it has limitations it is a good
-way to get a rough estimate of the lens model parameters quickly.
+   
+For this analysis, the log likelihood evaluation time is < 1 seconds on CPU, < 0.02 seconds on GPU, which is 
+fast for cluster scale lens modeling. 
 
 To estimate the expected overall run time of the model-fit we multiply the log likelihood evaluation time by an 
 estimate of the number of iterations the non-linear search will perform. 
 
-Estimating this is tricky, as it depends on the lens model complexity (e.g. number of parameters)
-and the properties of the dataset and model being fitted.
-
-For this example, we conservatively estimate that the non-linear search will perform ~10000 iterations per free 
-parameter in the model. This is an upper limit, with models typically converging in far fewer iterations.
-
-If you perform the fit over multiple CPUs, you can divide the run time by the number of cores to get an estimate of
-the time it will take to fit the model. Parallelization with Nautilus scales well, it speeds up the model-fit by the 
-`number_of_cores` for N < 8 CPUs and roughly `0.5*number_of_cores` for N > 8 CPUs. This scaling continues 
-for N> 50 CPUs, meaning that with super computing facilities you can always achieve fast run times!
+For this model, this is typically around > iterations, meaning that this script takes < ? seconds, 
+or ? minutes on CPU, or < ? seconds, or ? minute on GPU.
 
 __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder
 for on-the-fly visualization and results).
 """
-result = search.fit(model=model, analysis=analysis)
+result_list = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
 
 """
 __Output Folder__
@@ -471,7 +554,7 @@ The search returns a result object, which whose `info` attribute shows the resul
 the `model.info` attribute display optimally on your computer. This attribute also controls the whitespace of the
 `result.info` attribute.]
 """
-print(result.info)
+print(result_list[0].info)
 
 """
 The `Result` object also contains:
@@ -481,15 +564,12 @@ The `Result` object also contains:
 
 Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
 """
-print(result.max_log_likelihood_instance)
+print(result_list[0].max_log_likelihood_instance)
 
 tracer_plotter = aplt.TracerPlotter(
-    tracer=result.max_log_likelihood_tracer, grid=result.grids.lp
+    tracer=result_list[0].max_log_likelihood_tracer, grid=result_list[0].grids.lp
 )
 tracer_plotter.subplot_tracer()
-
-fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
-fit_plotter.subplot_fit()
 
 """
 It also contains information on the posterior as estimated by the non-linear search (in this example `Nautilus`). 
@@ -502,25 +582,14 @@ parameter `n`). These mappings ate specified in the `config/notation.yaml` file 
 The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
 mass its name `mass` defined when making the `Model` above is used).
 """
-plotter = aplt.NestPlotter(samples=result.samples)
+plotter = aplt.NestPlotter(samples=result_list[0].samples)
 plotter.corner_anesthetic()
 
 """
-This script gives a concise overview of the basic modeling API, fitting one the simplest lens models possible.
+This script gives a concise overview of the basic cluster modeling API, fitting one the simplest lens models possible.
 
-Lets now consider what features you should read about to improve your lens modeling, especially if you are aiming
+Lets now consider what features you should read about to improve your cluster lens modeling, especially if you are aiming
 to fit more complex models to your data.
-
-__Features__
-
-The examples in the `autolens_workspace/*/modeling/features` package illustrate other lens modeling features. 
-
-For point-source group scale modeling, we recommend you now checkout the following feature:
-
-- ``scaling_relation.ipynb``: This feature allows you to model the light and mass of the extra galaxies using a scaling relation.
-
-It is also recommended you read through the `point_source` package, to get a complete picture of how point-source 
-modeling works.
 
 __Data Preparation__
 

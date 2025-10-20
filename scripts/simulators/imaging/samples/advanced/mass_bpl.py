@@ -17,7 +17,7 @@ It is used in `autolens_workspace/notebooks/advanced/graphical` to illustrate ho
 be fitted to a large sample of strong lenses in order to infer the glboal properties of the lens sample.
 
 This script uses the signal-to-noise based light profiles described in the
-script `imaging/simulators/misc/manual_signal_to_noise_ratio.ipynb`, to make it straight forward to ensure the lens
+script `simulators/imaging/misc/manual_signal_to_noise_ratio.ipynb`, to make it straight forward to ensure the lens
 and source galaxies are visible in each image.
 
 __Model__

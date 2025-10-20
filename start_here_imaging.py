@@ -18,8 +18,51 @@ a GPU locally, consider Google Colab which provides free GPUs, so your modeling 
 
 We also show how to simulate strong lens imaging. This is useful for building machine learning training datasets,
 or for investigating lensing effects in a controlled way.
-"""
 
+__Google Colab Setup__
+
+The introduction `start_here` examples are available on Google Colab, which allows you to run them in a web browser
+without manual local PyAutoLens installation.
+
+The code below should only been run if you are using Google Colab, it will install autolens and download
+files required to run the notebook.
+"""
+import subprocess
+import sys
+
+try:
+    import google.colab
+    in_colab = True
+except ImportError:
+    in_colab = False
+
+if in_colab:
+
+    # Install required packages
+    subprocess.check_call([sys.executable, "-m", "pip", "install",
+                           "autoconf", "autofit", "autoarray", "autogalaxy", "autolens",
+                           "pyvis==0.3.2", "dill==0.4.0", "jaxnnls",
+                           "pyprojroot==0.2.0", "nautilus-sampler==1.0.4",
+                           "timeout_decorator==0.5.0", "anesthetic==2.8.14",
+                           "--no-deps"])
+
+    import os
+    from autoconf import conf
+
+    os.chdir("/content/autolens_workspace")
+
+    conf.instance.push(
+        new_path="/content/autolens_workspace/config",
+        output_path="/content/autolens_workspace/output",
+    )
+
+"""
+__Imports__
+
+Lets first import autolens, its plotting module and the other libraries we'll need.
+
+You'll see these imports in the majority of workspace examples.
+"""
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -42,21 +85,47 @@ We begin by loading the dataset. Three ingredients are needed for lens modeling:
 2. A noise-map (per-pixel RMS noise).
 3. The PSF (Point Spread Function).
 
-Here we use HST imaging of a SLACS strong lens. Replace these FITS paths with your own to
-immediately try modeling your data.
+Here we use James Webb Space Telescope imaging of a strong lens called the COSMOS-Web ring. Replace these FITS paths 
+with your own to immediately try modeling your data.
 
 The `pixel_scales` value converts pixel units into arcseconds. It is critical you set this
 correctly for your data.
 """
-dataset_name = "slacs1430+4105"
+dataset_name = "cosmos_web_ring"
 dataset_path = Path("dataset") / "imaging" / dataset_name
 
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",
     psf_path=dataset_path / "psf.fits",
     noise_map_path=dataset_path / "noise_map.fits",
-    pixel_scales=0.05,
+    pixel_scales=0.06,
 )
+
+dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
+dataset_plotter.subplot_dataset()
+
+"""
+__Extra Galaxy Removal GUI__
+
+There may be regions of an image that have signal near the lens and source that is from other galaxies not associated
+with the strong lens we are studying. The emission from these images will impact our model fitting and needs to be
+removed from the analysis.
+
+This `mask_extra_galaxies` is used to prevent them from impacting a fit by scaling the RMS noise map values to
+large values. This mask may also include emission from objects which are not technically galaxies,
+but blend with the galaxy we are studying in a similar way. Common examples of such objects are foreground stars
+or emission due to the data reduction process.
+
+After performing lens modeling to this strong lens, the script further down provides a GUI to create such a mask
+for your own data, if necessary.
+"""
+mask_extra_galaxies = al.Mask2D.from_fits(
+    file_path=f"{dataset_path}/mask_extra_galaxies.fits",
+    pixel_scales=dataset.pixel_scales,
+    invert=True,
+)
+
+dataset = dataset.apply_noise_scaling(mask=mask_extra_galaxies)
 
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
@@ -73,7 +142,7 @@ source light. We therefore define a circular mask around the lens.
 We’ll also oversample the central pixels, which improves modeling accuracy without adding
 unnecessary cost far from the lens.
 """
-mask_radius = 3.0
+mask_radius = 2.5
 
 mask = al.Mask2D.circular(
     shape_native=dataset.shape_native,
@@ -162,7 +231,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
-    iterations_per_update=50000,  # Every N iterations the results are written to hard-disk for inspection.
+    iterations_per_quick_update=2500,  # Every N iterations the max likelihood model is visualized and written to output folder.
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)
@@ -170,7 +239,7 @@ analysis = al.AnalysisImaging(dataset=dataset)
 result = search.fit(model=model, analysis=analysis)
 
 """
-__Result_
+__Result__
 
 Now this is running you should checkout the `autolens_workspace/output` folder, where many results of the fit
 are written in a human readable format (e.g. .json files) and .fits and .png images of the fit are stored.
@@ -196,8 +265,47 @@ The result object contains pretty much everything you need to do science with yo
 of all the information it contains are beyond the scope of this introductory script. The `guides` and `result` 
 packages of the workspace contains all the information you need to analyze your results yourself.
 
-__Extra Galaxy Removal__
+__Extra Galaxy Removal GUI__
 
+The model-fit above removed a region of the image to the south-east of the lens, which contains light from
+another galaxy not associated with the strong lens system.
+
+This GUI below provides the tool you need to produce such a mask for your own data, if necessary, with which you can
+then use the `apply_noise_scaling` function.
+"""
+cmap = aplt.Cmap(cmap="jet", norm="log", vmin=1.0e-3, vmax=np.max(dataset.data) / 3.0)
+
+try:
+    scribbler = al.Scribbler(
+        image=dataset.data.native,
+        cmap=cmap,
+        brush_width=0.04,
+        mask_overlay=mask,
+    )
+    mask = scribbler.show_mask()
+    mask = al.Mask2D(mask=mask, pixel_scales=dataset.pixel_scales)
+
+    data = dataset.data.apply_mask(mask=mask)
+
+    mask.output_to_fits(
+        file_path=dataset_path / "mask_extra_galaxies.fits",
+        overwrite=True,
+    )
+except Exception as e:
+    print(
+        """
+        Problem loading GUI, probably an issue with TKinter or your matplotlib TKAgg backend.
+
+        You will likely need to try and fix or reinstall various GUI / visualization libraries, or try
+        running this example not via a Jupyter notebook.
+
+        There are also manual tools for performing this task in the workspace.
+        """
+    )
+    print()
+    print(e)
+
+"""
 __Model Your Own Lens__
 
 If you have your own strong lens imaging data, you are now ready to model it yourself by adapting the code above
@@ -209,6 +317,7 @@ A few things to note, with full details on data preparation provided in the main
 - Ensure the lens galaxy is roughly centered in the image.
 - Double-check `pixel_scales` for your telescope/detector.
 - Adjust the mask radius to include all relevant light.
+- Remove extra light from galaxies and other objects using the extra galaxies mask GUI above.
 - Start with the default model — it works very well for pretty much all galaxy scale lenses!
 
 __Simulator__
@@ -398,5 +507,5 @@ The following locations of the workspace are good places to checkout next:
 - `autolens_workspace/*/data_preparation/imaging`: How to load and prepare your own imaging data for lens modeling.
 - `autolens_workspace/results`: How to load and analyze the results of your lens model fits, including tools for large samples.
 - `autolens_workspace/guides`: A complete description of the API and information on lensing calculations and units.
-- `autolens_workspace/feature`: A description of advanced features for lens modeling, for example pixelized source reconstructions, read this once you're confident with the basics!
+- `autolens_workspace/features`: A description of advanced features for lens modeling, for example pixelized source reconstructions, read this once you're confident with the basics!
 """

@@ -25,8 +25,51 @@ a GPU locally, consider Google Colab which provides free GPUs, so your modeling 
 
 Finally, we also show how to simulate strong lens groups. This is useful for practice, for
 building training datasets, or for investigating lensing effects in a controlled way.
-"""
 
+__Google Colab Setup__
+
+The introduction `start_here` examples are available on Google Colab, which allows you to run them in a web browser
+without manual local PyAutoLens installation.
+
+The code below should only been run if you are using Google Colab, it will install autolens and download
+files required to run the notebook.
+"""
+import subprocess
+import sys
+
+try:
+    import google.colab
+    in_colab = True
+except ImportError:
+    in_colab = False
+
+if in_colab:
+
+    # Install required packages
+    subprocess.check_call([sys.executable, "-m", "pip", "install",
+                           "autoconf", "autofit", "autoarray", "autogalaxy", "autolens",
+                           "pyvis==0.3.2", "dill==0.4.0", "jaxnnls",
+                           "pyprojroot==0.2.0", "nautilus-sampler==1.0.4",
+                           "timeout_decorator==0.5.0", "anesthetic==2.8.14",
+                           "--no-deps"])
+
+    import os
+    from autoconf import conf
+
+    os.chdir("/content/autolens_workspace")
+
+    conf.instance.push(
+        new_path="/content/autolens_workspace/config",
+        output_path="/content/autolens_workspace/output",
+    )
+
+"""
+__Imports__
+
+Lets first import autolens, its plotting module and the other libraries we'll need.
+
+You'll see these imports in the majority of workspace examples.
+"""
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -230,9 +273,9 @@ search = af.Nautilus(
     path_prefix=Path("group"),  # The path where results and output are stored.
     name="start_here",  # The name of the fit and folder results are output to.
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
-    n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
+    n_live=150,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
-    iterations_per_update=100000,  # Every N iterations the results are written to hard-disk for inspection.
+    iterations_per_full_update=100000,  # Every N iterations the results are written to hard-disk for inspection.
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)
@@ -240,7 +283,7 @@ analysis = al.AnalysisImaging(dataset=dataset)
 result = search.fit(model=model, analysis=analysis)
 
 """
-__Result_
+__Result__
 
 Now this is running you should checkout the `autolens_workspace/output` folder, where many results of the fit
 are written in a human readable format (e.g. .json files) and .fits and .png images of the fit are stored.
@@ -268,6 +311,47 @@ packages of the workspace contains all the information you need to analyze your 
 
 __Centre Input GUI__
 
+The centres of the extra galaxies above were loaded from a .json file, which was create using a GUI where one simply
+clicks the centres of the extra galaxies on the image. 
+
+For your own group lens, if you do not know the centres of the extra galaxies already, you can use the GUI below
+to do this yourself. It will output a .json file in the dataset folder you can then load and use in the model above.
+"""
+search_box_size = (
+    3  # Size of the search box to find the brightest pixel around your click
+)
+
+try:
+    clicker = al.Clicker(
+        image=dataset.data,
+        pixel_scales=dataset.pixel_scales,
+        search_box_size=search_box_size,
+    )
+
+    extra_galaxies_centres = clicker.start(
+        data=dataset.data,
+        pixel_scales=dataset.pixel_scales,
+    )
+
+    al.output_to_json(
+        file_path=dataset_path / "extra_galaxies_centres.json",
+        obj=extra_galaxies_centres,
+    )
+except Exception as e:
+    print(
+        """
+        Problem loading GUI, probably an issue with TKinter or your matplotlib TKAgg backend.
+        
+        You will likely need to try and fix or reinstall various GUI / visualization libraries, or try
+        running this example not via a Jupyter notebook.
+        
+        There are also manual tools for performing this task in the workspace.
+        """
+    )
+    print()
+    print(e)
+
+"""
 __Model Your Own Lens__
 
 If you have your own strong lens imaging data, you are now ready to model it yourself by adapting the code above
@@ -391,7 +475,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
-    iterations_per_update=100000,  # Every N iterations the results are written to hard-disk for inspection.
+    iterations_per_full_update=100000,  # Every N iterations the results are written to hard-disk for inspection.
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)

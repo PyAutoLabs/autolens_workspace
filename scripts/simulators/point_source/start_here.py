@@ -127,7 +127,7 @@ solver = al.PointSolver.for_grid(
 )
 
 """
-We now pass the tracer to the solver.
+We now pass the tracer to the solver, to determine the image-plane multiple images for the source centre.
 
 The solver will find the image-plane coordinates that map directly to the source-plane coordinate (0.07", 0.07").
 """
@@ -222,7 +222,7 @@ modeling.
 We therefore simulate imaging dataset of this point source and output it to the dataset folder in an `imaging` folder
 as .fits and .png files. 
 
-If you are not familiar with the imaging simulator API, checkout the `imaging/simulators/start_here.py` example 
+If you are not familiar with the imaging simulator API, checkout the `simulators/imaging/start_here.py` example 
 in the `autolens_workspace`.
 """
 psf = al.Kernel2D.from_gaussian(

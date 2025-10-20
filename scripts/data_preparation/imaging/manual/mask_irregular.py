@@ -61,7 +61,7 @@ blurring_gaussian = al.Kernel2D.from_gaussian(
 """
 Blur the image with this Gaussian smoothing kernel and plot the resulting image.
 """
-blurred_image = blurring_gaussian.convolved_array_from(array=data)
+blurred_image = blurring_gaussian.convolved_image_from(image=data, blurring_image=None)
 aplt.Array2DPlotter(array=blurred_image)
 
 """
