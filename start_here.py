@@ -19,12 +19,15 @@ The introduction `start_here` examples are available on Google Colab, which allo
 without manual local PyAutoLens installation.
 
 The code below sets up your environment if you are using Google Colab, including installing autolens and downloading
-files required to run the notebook. If you are running this script not in Colab (e.g. locally on your own computer), 
+files required to run the notebook. If you are running this script not in Colab (e.g. locally on your own computer),
 running the code below state you are not in a Colab environment and skip the setup.
 """
+
 from autoconf import setup_colab
 
-setup_colab.for_autolens()
+setup_colab.for_autolens(
+    raise_error_if_not_gpu=True  # Switch to False for CPU Google Colab
+)
 
 """
 __Imports__
@@ -377,6 +380,14 @@ to your scientific interests:
  - `start_here_point_source.ipynb`: Galaxy scale strong lenses with a lensed point source (e.g. lensed quasars).
  - `start_here_group.ipynb`: Group scale strong lenses where there are 2-10 lens galaxies.
  - `start_here_cluster.ipynb`: Cluster scale strong lenses with 2+ lenses and 5+ source galaxies.
+
+You can access them via Google Colab using the following URLs:
+
+- `start_here_imaging.ipynb`: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here_imaging.ipynb
+- `start_here_interferometer.ipynb`: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here_interferometer.ipynb
+- `start_here_point_source.ipynb`: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here_point_source.ipynb
+- `start_here_group.ipynb`: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here_group.ipynb
+- `start_here_cluster.ipynb`: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here_cluster.ipynb
 
 If you are still unsure based on the brief descriptions above, answer the following two questions to work out
 where to start

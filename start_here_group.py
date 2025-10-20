@@ -32,12 +32,15 @@ The introduction `start_here` examples are available on Google Colab, which allo
 without manual local PyAutoLens installation.
 
 The code below sets up your environment if you are using Google Colab, including installing autolens and downloading
-files required to run the notebook. If you are running this script not in Colab (e.g. locally on your own computer), 
+files required to run the notebook. If you are running this script not in Colab (e.g. locally on your own computer),
 running the code below state you are not in a Colab environment and skip the setup.
 """
+
 from autoconf import setup_colab
 
-setup_colab.for_autolens()
+setup_colab.for_autolens(
+    raise_error_if_not_gpu=True  # Switch to False for CPU Google Colab
+)
 
 """
 __Imports__
