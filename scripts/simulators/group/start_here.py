@@ -6,13 +6,11 @@ This script simulates an example strong lens on the 'group' scale, where there i
 and two smaller galaxies nearby, whose mass contributes significantly to the ray-tracing and is therefore included in
 the strong lens model.
 
-This script simulates `Imaging` and a `PointDataset` of a 'group-scale' strong lens where:
+This script simulates `Imaging` of a 'group-scale' strong lens where:
 
  - The group consists of three lens galaxies whose ligth distributions are `SersicSph` profiles and
  total mass distributions are `IsothermalSph` profiles.
  - A single source galaxy is observed whose `LightProfile` is an `Sersic`.
-
-The brightest pixels of the source in the image-plane are used to create a point-source dataset.
 """
 
 # %matplotlib inline
@@ -175,7 +173,6 @@ source_galaxy = al.Galaxy(
         effective_radius=0.4,
         sersic_index=1.0,
     ),
-    point_0=al.ps.Point(centre=(0.0, 0.1)),
 )
 
 
@@ -193,110 +190,6 @@ tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
 tracer_plotter.figures_2d(image=True)
 
 """
-__Point Solver__
-
-It is common for group-scale strong lens datasets to be modeled assuming that the source is a point-source. Even if 
-it isn't, this can be necessary due to computational run-time making it unfeasible to fit the imaging dataset outright.
-
-A `PointSolver` determines the multiple-images of the mass model for a point source at location (y,x) in the source 
-plane. It does this by iteratively ray-tracing light rays from the image-plane to the source-plane, until it finds 
-the image-plane coordinate that rays converge at for a given  source-plane (y,x).
-
-For the lens mass model defined above, it computes the multiple images of the source galaxy
-at the (y,x) source-plane coordinates (0.0", 0.0") of the point source.
-
-The `PointSolver` requires a starting grid of (y,x) coordinates in the image-plane, which are iteratively traced 
-and refined to locate the image-plane coordinates that map directly to the source-plane coordinate.
-
-The `pixel_scale_precision` is the resolution up to which the multiple images are computed. The lower the value, the
-longer the calculation, with a value of 0.001 being efficient but more than sufficient for most point-source datasets.
-
-Strong lens mass models have a multiple image called the "central image", which is located at the centre of the lens.
-However, the image is nearly always demagnified due to the mass model, and is therefore not observed and not
-something we want to be included in the simulated dataset. The `maginification_threshold` removes this image, by
-discarding any image with a magnification below the threshold.
-"""
-grid = al.Grid2D.uniform(
-    shape_native=(300, 300),
-    pixel_scales=0.1,  # <- The pixel-scale describes the conversion from pixel units to arc-seconds.
-)
-
-solver = al.PointSolver.for_grid(
-    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
-)
-
-"""
-We now pass the `Tracer` to the solver. This will then find the image-plane coordinates that map directly to the
-source-plane coordinate (0.0", 0.0").
-"""
-positions = solver.solve(
-    tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
-)
-
-print(positions)
-
-
-"""
-Use the positions to compute the magnification of the `Tracer` at every position.
-"""
-magnifications = tracer.magnification_2d_via_hessian_from(grid=positions)
-
-"""
-We can now compute the observed fluxes of the `Point`, give we know how much each is magnified.
-"""
-flux = 1.0
-fluxes = [flux * np.abs(magnification) for magnification in magnifications]
-fluxes = al.ArrayIrregular(values=fluxes)
-
-"""
-__Point Datasets__
-
-All of the quantities computed above are input into a `PointDataset` object, which collates all information
-about the multiple images of a point-source strong lens system.
-
-In this example, it contains the image-plane coordinates of the multiple images, the fluxes of the multiple images,
-and their associated noise-map values.
-
-It also contains the name `point_0`, which is a label given to the dataset to indicate that it is a dataset of a single
-point-source. This label is important, it is used for lens modeling in order to associate the dataset with the correct
-point-source in the model.
-"""
-dataset = al.PointDataset(
-    name="point_0",
-    positions=positions,
-    positions_noise_map=grid.pixel_scale,
-    fluxes=fluxes,
-    fluxes_noise_map=al.ArrayIrregular(
-        values=[np.sqrt(flux) for _ in range(len(fluxes))]
-    ),
-)
-
-""""
-We now output the point dataset to the dataset path as a .json file, which is loaded in the point source modeling
-examples.
-
-In this example, there is just one point source dataset. However, for group and cluster strong lenses there
-can be many point source datasets in a single dataset, and separate .json files are output for each.
-"""
-al.output_to_json(
-    obj=dataset,
-    file_path=Path(dataset_path, "point_dataset.json"),
-)
-
-"""
-__Visualize__
-
-Output a subplot of the simulated point source dataset as a .png file.
-"""
-mat_plot_1d = aplt.MatPlot1D(output=aplt.Output(path=dataset_path, format="png"))
-mat_plot_2d = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
-
-point_dataset_plotter = aplt.PointDatasetPlotter(
-    dataset=dataset, mat_plot_1d=mat_plot_1d, mat_plot_2d=mat_plot_2d
-)
-point_dataset_plotter.subplot_dataset()
-
-"""
 __Dataset__
 
 Pass the simulator a tracer, which creates the image which is simulated as an imaging dataset.
@@ -304,16 +197,11 @@ Pass the simulator a tracer, which creates the image which is simulated as an im
 dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
 """
-Lets plot the simulated `Imaging` dataset before we output it to fits, including the (y,x) coordinates of the multiple
-images in the image-plane.
+Lets plot the simulated `Imaging` dataset before we output it to fits.
 """
-visuals = aplt.Visuals2D(multiple_images=positions)
 
-dataset_plotter = aplt.ImagingPlotter(
-    dataset=dataset, visuals_2d=visuals, mat_plot_2d=aplt.MatPlot2D()
-)
+dataset_plotter = aplt.ImagingPlotter(dataset=dataset, mat_plot_2d=aplt.MatPlot2D())
 dataset_plotter.subplot_dataset()
-
 
 """
 Output the simulated dataset to the dataset path as .fits files.

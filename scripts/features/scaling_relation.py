@@ -25,16 +25,15 @@ __Mass Model And Scaling Relation__
 This example shows how to compose a scaling-relation lens model using the dual Pseudo-Isothermal Elliptical (dPIE)
 mass distribution introduced in Eliasdottir 2007: https://arxiv.org/abs/0710.5636.
 
-It relates the luminosity of every galaxy to a cut radius (r_cut), a core radius (r_core) and a velocity dispersion
-(sigma):
+It relates the luminosity of every galaxy to a cut radius (r_cut), a core radius (r_core) and a mass normaliaton b0:
 
 $r_cut = r_cut^* (L/L^*)^{0.5}$
 
 $r_core = r_core^* (L/L^*)^{0.5}$
 
-$\sigma = \sigma^* (L/L^*)^{0.25}$
+$b0 = b0^* (L/L^*)^{0.25}$
 
-The free parameters are therefore L^*, r_cut^*, r_core^* and \sigma^*.
+The free parameters are therefore L^*, r_cut^*, r_core^* and b0^*.
 
 This mass model differs from the `Isothermal` profile used commonly throughout the **PyAutoLens** examples. The dPIE
 is more commonly used in strong lens cluster studies where scaling relations are used to model the lensing contribution
@@ -154,94 +153,6 @@ This could be other measured properties, like stellar mass or velocity dispersio
 extra_galaxies_luminosity_list = [0.9, 0.9]
 
 """
-__dPIE__
-
-The dPIE is not yet implemented in the source code so I am copy and pasting it in here below.
-
-This part of the example will be removed, once its in the source code.
-"""
-from typing import Tuple
-import numpy as np
-
-import autoarray as aa
-from autogalaxy.profiles.mass.abstract.abstract import MassProfile
-
-
-class dPIESph(MassProfile):
-    """
-    The dual Pseudo-Isothermal Elliptical mass distribution introduced in
-    Eliasdottir 2007: https://arxiv.org/abs/0710.5636
-
-    This version is without ellipticity, so perhaps the "E" is a misnomer.
-
-    Corresponds to a projected density profile that looks like:
-
-        \\Sigma(R) = \\Sigma_0 (ra * rs) / (rs - ra) *
-                      (1 / \\sqrt(ra^2 + R^2) - 1 / \\sqrt(rs^2 + R^2))
-
-    (c.f. Eliasdottir '07 eqn. A3)
-
-    In this parameterization, ra and rs are the scale radii above in angular
-    units (arcsec). The parameter is \\Sigma_0 / \\Sigma_crit.
-    """
-
-    def __init__(
-        self,
-        centre: Tuple[float, float] = (0.0, 0.0),
-        ra: float = 0.1,
-        rs: float = 2.0,
-        sigma_scale: float = 0.1,
-    ):
-        super(MassProfile, self).__init__(centre, (0.0, 0.0))
-        self.ra = ra
-        self.rs = rs
-        self.sigma_scale = sigma_scale
-
-    @aa.grid_dec.to_vector_yx
-    @aa.grid_dec.transform
-    def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike, **kwargs):
-        ys, xs = grid.T
-        (ycen, xcen) = self.centre
-        xoff, yoff = xs - xcen, ys - ycen
-        radii = np.sqrt(xoff**2 + yoff**2)
-
-        r_ra = radii / self.ra
-        r_rs = radii / self.rs
-        # c.f. Eliasdottir '07 eq. A20
-        f = r_ra / (1 + np.sqrt(1 + r_ra * r_ra)) - r_rs / (
-            1 + np.sqrt(1 + r_rs * r_rs)
-        )
-
-        ra, rs = self.ra, self.rs
-        # c.f. Eliasdottir '07 eq. A19
-        # magnitude of deflection
-        alpha = 2 * self.sigma_scale * ra * rs / (rs - ra) * f
-
-        # now we decompose the deflection into y/x components
-        defl_y = alpha * yoff / radii
-        defl_x = alpha * xoff / radii
-        return aa.Grid2DIrregular.from_yx_1d(defl_y, defl_x)
-
-    @aa.grid_dec.to_array
-    @aa.grid_dec.transform
-    def convergence_2d_from(self, grid: aa.type.Grid2DLike, **kwargs):
-        # already transformed to center on profile centre so this works
-        radsq = grid[:, 0] ** 2 + grid[:, 1] ** 2
-        a, s = self.ra, self.rs
-        # c.f. Eliasdottir '07 eqn (A3)
-        return (
-            self.sigma_scale
-            * (a * s)
-            / (s - a)
-            * (1 / np.sqrt(a**2 + radsq) - 1 / np.sqrt(s**2 + radsq))
-        )
-
-    @aa.grid_dec.to_array
-    def potential_2d_from(self, grid: aa.type.Grid2DLike, **kwargs):
-        return np.zeros(shape=grid.shape[0])
-
-
-"""
 __Scaling Relation__
 
 We now compose our scaling relation models, using **PyAutoFits** relational model API, which works as follows:
@@ -249,15 +160,16 @@ We now compose our scaling relation models, using **PyAutoFits** relational mode
 - Define the free parameters of the scaling relation using priors (note how the priors below are outside the for loop,
   meaning that every extra galaxy is associated with the same scailng relation prior and therefore parameters).
 
-- For every extra galaxy centre and lumnosity, create a model mass profile (using `af.Model(dPIESph)`), where the centre
-  of the mass profile is the extra galaxy centres and its other parameters are set via the scaling relation priors.
+- For every extra galaxy centre and lumnosity, create a model mass profile (using `af.Model(dPIEPotentialSph)`), where 
+  the centre of the mass profile is the extra galaxy centres and its other parameters are set via the scaling relation 
+  priors.
   
 - Make each extra galaxy a model galaxy (via `af.Model(Galaxy)`) and associate it with the model mass profile, where the
   redshifts of the extra galaxies are set to the same values as the lens galaxy.
 """
 ra_star = af.LogUniformPrior(lower_limit=1e8, upper_limit=1e11)
 rs_star = af.UniformPrior(lower_limit=-1.0, upper_limit=1.0)
-sigma_star = af.LogUniformPrior(lower_limit=1e5, upper_limit=1e7)
+b0_star = af.LogUniformPrior(lower_limit=1e5, upper_limit=1e7)
 luminosity_star = 1e9
 
 extra_galaxies_list = []
@@ -265,11 +177,12 @@ extra_galaxies_list = []
 for extra_galaxy_centre, extra_galaxy_luminosity in zip(
     extra_galaxies_centre_list, extra_galaxies_luminosity_list
 ):
-    mass = af.Model(dPIESph)
+
+    mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = extra_galaxy_centre
     mass.ra = ra_star * (extra_galaxy_luminosity / luminosity_star) ** 0.5
     mass.rs = rs_star * (extra_galaxy_luminosity / luminosity_star) ** 0.5
-    mass.sigma_scale = sigma_star * (extra_galaxy_luminosity / luminosity_star) ** 0.25
+    mass.b0 = b0_star * (extra_galaxy_luminosity / luminosity_star) ** 0.25
 
     extra_galaxy = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
@@ -347,11 +260,11 @@ mask = al.Mask2D.circular(
 dataset = dataset.apply_mask(mask=mask)
 
 search = af.Nautilus(
-    path_prefix=Path("imaging") / "modeling",
+    path_prefix=Path("features"),
     name="scaling_relation",
     unique_tag=dataset_name,
     n_live=150,
-    iterations_per_update=10000,
+    iterations_per_quick_update=10000,
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)

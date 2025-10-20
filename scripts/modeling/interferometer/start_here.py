@@ -168,11 +168,11 @@ script will use the existing results to resume the model-fit. In contrast, if yo
 a new unique identifier will be generated, ensuring that the model-fit results are output into a separate folder.
 """
 search = af.Nautilus(
-    path_prefix=Path("interferometer"),
+    path_prefix=Path("interferometer") / "modeling",
     name="start_here",
     unique_tag=dataset_name,
-    n_live=100,
-    iterations_per_update=10000,
+    n_live=75,
+    iterations_per_quick_update=50000,
 )
 
 """

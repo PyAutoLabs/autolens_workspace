@@ -65,7 +65,7 @@ search = af.DynestyStatic(
     path_prefix=Path("searches"),
     name="DynestyStatic",
     unique_tag="example",
-    iterations_per_update=2500,
+    iterations_per_quick_update=2500,
     # search specific settings
     nlive=50,
     sample="rwalk",
@@ -84,7 +84,7 @@ search = af.DynestyDynamic(
     path_prefix=Path("searches"),
     name="DynestyDynamic",
     unique_tag="example",
-    iterations_per_update=2500,
+    iterations_per_quick_update=2500,
     # search specific settings
     nlive=50,
     sample="rwalk",
@@ -117,7 +117,7 @@ search = af.Emcee(
     path_prefix=Path("imaging", "searches"),
     name="Emcee",
     unique_tag="example",
-    iterations_per_update=5000,
+    iterations_per_quick_update=5000,
     # search specific settings
     nwalkers=30,
     nsteps=500,
@@ -148,7 +148,7 @@ search = af.Zeus(
     path_prefix=Path("imaging", "searches"),
     name="Zeus",
     unique_tag="example",
-    iterations_per_update=5000,
+    iterations_per_quick_update=5000,
     # search specific settings
     nwalkers=30,
     nsteps=20,
@@ -199,7 +199,7 @@ search = af.PySwarmsGlobal(
     social=0.3,
     inertia=0.9,
     ftol=-np.inf,
-    iterations_per_update=1000,
+    iterations_per_quick_update=1000,
 )
 
 """

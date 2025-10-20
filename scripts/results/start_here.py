@@ -372,7 +372,7 @@ description of this object, including:
 This guide is not in the `results` package but the `guides` package, as it is a general guide to the
 **PyAutoLens** API. However, it may be useful when inspecting results.
  
-Below, is an example of how to convert the effective radius of the source galaxy from arcseconds to kiloparsecs.
+Below, is an example of how to convert the y centre of the source galaxy from arcseconds to kiloparsecs.
 """
 tracer = result.max_log_likelihood_tracer
 
@@ -380,7 +380,7 @@ cosmology = al.cosmo.Planck15()
 
 source = tracer.planes[1][0]
 source_kpc_per_arcsec = cosmology.kpc_per_arcsec_from(redshift=source.redshift)
-source_effective_radius_kpc = source.bulge.effective_radius * source_kpc_per_arcsec
+source_centre_0_kpc = source.bulge.centre[0] * source_kpc_per_arcsec
 
 """
 __Linear Light Profiles / Basis Objects__

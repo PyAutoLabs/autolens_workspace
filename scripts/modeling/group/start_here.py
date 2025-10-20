@@ -1,50 +1,49 @@
 """
-Modeling: Group Start Here Extended
-===================================
+Modeling: Group Start Here
+==========================
 
-This script models an example strong lens on the 'group' scale, where there is a single primary lens galaxy
-and two smaller galaxies nearby, whose mass contributes significantly to the ray-tracing and is therefore included in
-the strong lens model.
+This script models an example strong lens on the 'group' scale, which typically have a single "main" lens galaxy
+and smaller extra galaxies nearby, whose light may blur with the source light and whose mass contributes significantly
+to the ray-tracing, meaning both are therefore included in the strong lens model.
 
-There are two methods for modeling group-scale strong lenses:
+This example's lens has two extra galaxies whose light and mass are modeled, but this approach is expected to scale
+well to group-scale systems with ~10 extra galaxies. Scaling above 10 is possible with **PyAutoLens**, but advanced
+features described elsewhere in the workspace are likely required to ensure the model is accurate and efficient.
 
-- `point`: The source is modeled as a point source, where the positions of its multiple images are fitted.
-- `extended`: The source is modeled as an extended source, where the full emission is fitted, using imaging or interferometry data.
+The source is modeled as an extended source, where the full emission is fitted. This example use imaging data
+for illustration, but the same approach can be used for interferometer data.
 
-This example demonstrates the `extended` method. For the `point` source modeling, refer to the `start_here_point.ipynb`
-example.
-
-Consider which method is appropriate for your dataset and the scientific goals of your analysis.
-
-After completing this example, explore other relevant modeling packages for your
-approach (e.g., `modeling/point_source` for point sources, `modeling/imaging` or `modeling/interferometer` for extended sources).
-
-You may also want to explore the `features` package to extend the model for specific requirements (e.g., using a
-pixelized source). Details on available features are provided at the end of this example.
+Group scale lenses can be more complex than this example, for example with mutliple "main" lens galaxies, 20+ extra
+galaxies, multiply sources. However, there is a point where the system should be regarded as a galaxy cluster-scale
+lenses, and therefore techniques in the `cluster` section of the workspace should be used. The distinction between
+group and cluster scale lenses is not well defined, so you may want to read the `cluster` section of the workspace too.
 
 __Scaling Relations__
 
 This example models the mass of each galaxy individually, which means the number of dimensions of the model increases
 as we model group scale lenses with more galaxies. This can lead to a model that is slow to fit and poorly constrained.
+There may also not be enough information in the data to constrain every galaxy's mass.
 
-A common approach to overcome this is to put many of the galaxies a scaling relation, where the mass of the galaxies
-are related to their light via a observationally motivated scaling relation. This means that as more galaxies are
-included in the lens model, the dimensionality of the model does not increase.
+A common approach to overcome this is to put many of the extra galaxies a scaling relation, where the mass of the
+galaxies are related to their light via a observationally motivated scaling relation. This means that as more
+galaxies are included in the lens model, the dimensionality of the model does not increase. Furthermore, their
+luminosities act as priors on their masses, which helps ensure the model is well constrained.
 
-Lens modeling using scaling relations is fully support and described in the `features/scaling_relation.ipynb` example,
-you will likely want to read this example as soon as you have finished this one.
+Lens modeling using scaling relations is fully support and described in the `features/scaling_relation.ipynb` example.
+If your group has many extra galaxies (e.g. more than 5) you probably want to read this example once you are confident
+with this one.
 
 __Example__
 
 This script fits an `Imaging` dataset of a 'group-scale' strong lens where
 
- - There is a main lens galaxy whose lens galaxy's light is a linear parametric `Sersic` bulge.
+ - There is a main lens galaxy whose lens galaxy's light is an MGE.
  - There is a main lens galaxy whose total mass distribution is an `Isothermal` and `ExternalShear`.
  - There are two extra lens galaxies whose light models are `SersicSph` profiles and total mass distributions
    are `IsothermalSph` models.
- - The source galaxy's light is a linear parametric `SersicCore`.
+ - The source galaxy's light is an MGE.
 
- __Plotters__
+__Plotters__
 
 To produce images of the data `Plotter` objects are used, which are high-level wrappers of matplotlib
 code which produce high quality visualization of strong lenses.
@@ -54,7 +53,7 @@ The `PLotter` API is described in the script `autolens_workspace/*/plot/start_he
 __Simulation__
 
 This script fits a simulated `Imaging` dataset of a strong lens, which is produced in the
-script `autolens_workspace/*/imaging/simulators/start_here.py`
+script `autolens_workspace/*/simulators/imaging/start_here.py`
 
 __Data Preparation__
 
@@ -112,7 +111,7 @@ __Mask__
 
 The model-fit requires a 2D mask defining the regions of the image we fit the lens model to the data. 
 
-We create a 3.0 arcsecond circular mask and apply it to the `Imaging` object that the lens model fits.
+We create a 7.5 arcsecond circular mask and apply it to the `Imaging` object that the lens model fits.
 """
 mask_radius = 7.5
 
@@ -130,48 +129,6 @@ lens and lensed source galaxies.
 
 The mask used to fit the data can be customized, as described in 
 the script `autolens_workspace/*/modeling/imaging/customize/custom_mask.py`
-"""
-dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
-dataset_plotter.subplot_dataset()
-
-
-"""
-__Over Sampling__
-
-Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
-on a higher resolution grid than the image data to ensure the calculation is accurate. 
-
-For lensing calculations, the high magnification regions of a lensed source galaxy require especially high levels of 
-over sampling to ensure the lensed images are evaluated accurately.
-
-For a new user, the details of over-sampling are not important, therefore just be aware that calculations either:
-
- (i) use adaptive over sampling for the foregorund lens's light, which ensures high accuracy across. 
- (ii) use cored light profiles for the background source galaxy, where the core ensures low levels of over-sampling 
- produce numerically accurate but fast to compute results.
-
-This is why throughout the workspace the cored Sersic profile is used, instead of the regular Sersic profile which
-you may be more familiar with from the literature. Fitting a regular Sersic profile is possible, but you should
-read up on over-sampling to ensure the results are accurate.
-
-Once you are more experienced, you should read up on over-sampling in more detail via 
-the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
-"""
-over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
-    grid=dataset.grid,
-    sub_size_list=[4, 4, 1],
-    radial_list=[0.3, 0.6],
-    centre_list=[(0.0, 0.0)],
-)
-
-dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
-
-"""
-The imaging subplot updates the bottom two panels to reflect the update to over sampling, which now uses a higher
-values in the centre.
-
-Whilst you may not yet understand the details of over-sampling, you can at least track it visually in the plots
-and later learnt more about it in the `over_sampling.ipynb` guide.
 """
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
@@ -194,8 +151,8 @@ In this simple example group scale lens, there is one main lens galaxy and two e
 
 __Centres__
 
-If the centres of the extra galaxies are treated as free parameters, one can run into the problem of having too many 
-parameters and a model which is not fitted accurately.
+If the centres of the extra galaxies are treated as free parameters, there are too many 
+parameters and the model may not be fitted accurately.
 
 For group-scale lenses we therefore manually specify the centres of the extra galaxies, which are fixed to the observed
 centres of light of the galaxies. `centre_1` and `centre_2` are the observed centres of the extra galaxies.
@@ -234,17 +191,30 @@ We compose a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=27.
 
+__Multi-Gaussian Expansion (MGE)__
+
+A Multi-Gaussian Expansion (MGE) decomposes the lens and source light into ~50–100 Gaussians with varying ellipticities 
+and sizes. An MGE captures irregular features far more effectively than Sérsic profiles, leading to more accurate lens m
+odels.
+
+Remarkably, modeling with MGEs is also significantly faster than using Sérsics: they remain efficient in JAX (on CPU 
+or GPU), require fewer non-linear parameters despite their flexibility, and yield simpler parameter spaces that
+sample in far fewer iterations. 
+
+The MGE is extremely important for group-scale lenses. Every time we add an extra galaxy, the MGE does not add
+any extra non-linear parameters, unlike light profiles like Sersics. This means we can model the light of many
+extra galaxies, ensuring the lens light model is accurate, without making the model slow to fit or poorly constrained.
+
 __Linear Light Profiles__
 
-The model below uses a `linear light profile` for the bulge and disk, via the API `lp_linear`. This is a specific type 
-of light profile that solves for the `intensity` of each profile that best fits the data via a linear inversion. 
-This means it is not a free parameter, reducing the dimensionality of non-linear parameter space. 
+The MGE model below uses a **linear light profile** for the bulge and disk via the ``lp_linear`` API, instead of the 
+standard ``lp`` light profiles used above.
 
-Linear light profiles significantly improve the speed, accuracy and reliability of modeling and they are used
-by default in every modeling example. A full description of linear light profiles is provided in the
-`autolens_workspace/*/modeling/features/linear_light_profiles.py` example.
+A linear light profile solves for the *intensity* of each component via a linear inversion, rather than treating it as 
+a free parameter. This reduces the dimensionality of the non-linear parameter space: a model with ~80 Gaussians
+does not introduce ~80 additional free parameters.
 
-A standard light profile can be used if you change the `lp_linear` to `lp`, but it is not recommended.
+Linear light profiles therefore improve speed and accuracy, and they are used by default in all modeling example.
 
 __Model Composition__
 
@@ -268,17 +238,9 @@ If for your dataset the lens is not centred at (0.0", 0.0"), we recommend that y
 
  - Reduce your data so that the centre is (`autolens_workspace/*/data_preparation`). 
  - Manually override the lens model priors (`autolens_workspace/*/modeling/imaging/customize/priors.py`).
-
-__Complexity__
-
-A 27 parameter model is a high degree of complexity, and means that group-scale moodeling may be slow, converge poorly
-and be difficult to interpret.
-
-This example is illustrative, but to succeed with group scale modeling you will likely need to used advanced 
-autolens functionality to overcome this high dimensionality. These features and tools are described at the end
-of this example.
 """
 # Main Lens:
+
 bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
 )
@@ -300,10 +262,8 @@ for extra_galaxy_centre in extra_galaxies_centres:
     # Extra Galaxy Light
 
     bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius, total_gaussians=10, centre_prior_is_uniform=True
+        mask_radius=mask_radius, total_gaussians=10, centre_fixed=extra_galaxy_centre
     )
-
-    bulge.centre = extra_galaxy_centre
 
     # Extra Galaxy Mass
 
@@ -336,6 +296,45 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source), extra_galaxies=extra_galaxies
 )
+
+"""
+__Over Sampling__
+
+Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
+on a higher resolution grid than the image data to ensure the calculation is accurate. 
+
+For lensing calculations, the high magnification regions of a lensed source galaxy require especially high levels of 
+over sampling to ensure the lensed images are evaluated accurately.
+
+For a new user, the details of over-sampling are not important, therefore just be aware that calculations either:
+
+ (i) use adaptive over sampling for the foregorund lens's light, which ensures high accuracy across. 
+ (ii) use cored light profiles for the background source galaxy, where the core ensures low levels of over-sampling 
+ produce numerically accurate but fast to compute results.
+
+Over sampling at each extra galaxy centre is performed to ensure the lens calculations are accurate.
+
+Once you are more experienced, you should read up on over-sampling in more detail via 
+the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
+"""
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=dataset.grid,
+    sub_size_list=[4, 2, 1],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0)],
+)
+
+dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
+
+"""
+The imaging subplot updates the bottom two panels to reflect the update to over sampling, which now uses a higher
+values in the centre.
+
+Whilst you may not yet understand the details of over-sampling, you can at least track it visually in the plots
+and later learnt more about it in the `over_sampling.ipynb` guide.
+"""
+dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
+dataset_plotter.subplot_dataset()
 
 """
 The `info` attribute shows the model in a readable format.
@@ -397,24 +396,20 @@ all scripts you run to use the this format and API.
 
 __Iterations Per Update__
 
-Every N iterations, the non-linear search outputs the current results to the folder `autolens_workspace/output`,
-which includes producing visualization. 
+Every N iterations, the non-linear search outputs the maximum likelihood model and its best fit image to the 
+Notebook visualizer and to hard-disk.
 
-Depending on how long it takes for the model to be fitted to the data (see discussion about run times below), 
-this can take up a large fraction of the run-time of the non-linear search.
+This process takes around ~10 seconds, so we don't want it to happen too often so as to slow down the overall
+fit, but we also want it to happen frequently enough that we can track the progress.
 
-For this fit, the fit is very fast, thus we set a high value of `iterations_per_update=10000` to ensure these updates
-so not slow down the overall speed of the model-fit.
-
-**If the iteration per update is too low, the model-fit may be significantly slowed down by the time it takes to
-output results and visualization frequently to hard-disk. If your fit is consistent displaying a log saying that it
-is outputting results, try increasing this value to ensure the model-fit runs efficiently.**
+On GPU, a value of ~2500 will see this output happens every minute, a good balance. On CPU it'll be a little
+longer, but still a good balance.
 """
 search = af.Nautilus(
     path_prefix=Path("group", "modeling"),
-    name="start_here_extended",
+    name="start_here",
     unique_tag=dataset_name,
-    n_live=300,  # Increased to higher value than many examples to account for the high dimensionality of the model.
+    n_live=150,
 )
 
 """

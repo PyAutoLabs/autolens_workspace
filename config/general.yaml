@@ -1,7 +1,8 @@
 jax:
   use_jax: true                       # If True, uses JAX internally, whereas False uses normal Numpy.
-analysis:
-  n_cores: 1                        # The number of cores a parallelized sum of Analysis classes uses by default.
+updates:
+  iterations_per_quick_update: 1e99 # Non-linear search iterations between every quick update, which just displays the maximum likelihood model fit.
+  iterations_per_full_update: 1e99  # Non-linear search iterations between every full update, which outputs all visuals and result fits (e.g. model.result, search.summary), this exits the search and can be slow.
   preload_attempts: 250
 fits:
   flip_for_ds9: true
@@ -19,7 +20,8 @@ inversion:
   reconstruction_vmax_factor: 0.5   # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.
 hpc:
   hpc_mode: false                   # If True, use HPC mode, which disables GUI visualization, logging to screen and other settings which are not suited to running on a super computer.
-  iterations_per_update: 5000       # The number of iterations between every update (visualization, results output, etc) in HPC mode.
+  iterations_per_quick_update: 10000 #  Non-linear search iterations between every quick update, which just displays the maximum likelihood model fit.  
+  iterations_per_full_update: 1e99  # Non-linear search iterations between every full update, which outputs all visuals and result fits (e.g. model.result, search.summary), this exits the search and can be slow.
 adapt:
   adapt_minimum_percent: 0.01
   adapt_noise_limit: 100000000.0

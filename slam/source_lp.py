@@ -109,14 +109,14 @@ def run(
         name="source_lp[1]",
         **settings_search.search_dict,
         nlive=200,
-        iterations_per_update=20000,
+        iterations_per_full_update=20000,
     )
 
     # search = af.Nautilus(
     #     name="source_lp[1]",
     #     **settings_search.search_dict,
     #     n_live=200,
-    #     iterations_per_update=200
+    #     iterations_per_full_update=200
     # )
 
     result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)

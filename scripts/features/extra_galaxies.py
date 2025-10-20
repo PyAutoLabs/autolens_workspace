@@ -175,7 +175,7 @@ lensed source.
 #     name="extra_galaxies_simple_mask",
 #     unique_tag=dataset_name,
 #     n_live=150,
-#     iterations_per_update=20000,
+#     iterations_per_quick_update=20000,
 # )
 #
 # analysis = al.AnalysisImaging(dataset=dataset)
@@ -406,7 +406,7 @@ search = af.Nautilus(
     name="extra_galaxies_model",
     unique_tag=dataset_name,
     n_live=150,
-    iterations_per_update=20000,
+    iterations_per_quick_update=20000,
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)

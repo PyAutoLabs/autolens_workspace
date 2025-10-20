@@ -203,7 +203,7 @@ def fit():
         name="no_lens_light",
         unique_tag=dataset_name,
         n_live=100,
-        #        iterations_per_update=1000
+        #        iterations_per_quick_update=1000
     )
 
     """

@@ -18,7 +18,7 @@ model can be fitted to a large sample of double Einstein ring strong lenses in o
 Cosmological parameters.
 
 This script uses the signal-to-noise based light profiles described in the
-script `imaging/simulators/misc/manual_signal_to_noise_ratio.ipynb`, to make it straight forward to ensure the lens
+script `simulators/imaging/misc/manual_signal_to_noise_ratio.ipynb`, to make it straight forward to ensure the lens
 and source galaxies are visible in each image.
 
 __Model__

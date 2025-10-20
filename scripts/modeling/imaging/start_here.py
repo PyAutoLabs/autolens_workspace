@@ -29,7 +29,7 @@ The `PLotter` API is described in the script `autolens_workspace/*/plot/start_he
 __Simulation__
 
 This script fits a simulated `Imaging` dataset of a strong lens, which is produced in the
-script `autolens_workspace/*/imaging/simulators/start_here.py`
+script `autolens_workspace/*/simulators/imaging/start_here.py`
 
 __Data Preparation__
 
@@ -124,9 +124,6 @@ For a new user, the details of over-sampling are not important, therefore just b
  (ii) use cored light profiles for the background source galaxy, where the core ensures low levels of over-sampling 
  produce numerically accurate but fast to compute results.
 
-This is why throughout the workspace the cored Sersic profile is used, instead of the regular Sersic profile which
-you may be more familiar with from the literature. Fitting a regular Sersic profile is possible, but you should
-read up on over-sampling to ensure the results are accurate.
 
 Once you are more experienced, you should read up on over-sampling in more detail via 
 the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
@@ -258,7 +255,8 @@ curve to understand the API, but its worth it for the improved accuracy and spee
 __Multi-Gaussian Expansion (MGE)__
 
 A Multi-Gaussian Expansion (MGE) decomposes the lens and source light into ~50–100 Gaussians with varying ellipticities 
-and sizes. An MGE captures irregular features far more effectively than Sérsic profiles, leading to more accurate lens models.
+and sizes. An MGE captures irregular features far more effectively than Sérsic profiles, leading to more accurate lens m
+odels.
 
 Remarkably, modeling with MGEs is also significantly faster than using Sérsics: they remain efficient in JAX (on CPU 
 or GPU), require fewer non-linear parameters despite their flexibility, and yield simpler parameter spaces that
@@ -286,7 +284,10 @@ The full MGE composition API is given in the `multi_gaussian_expansion.py` examp
 # Lens:
 
 bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=2,
+    centre_prior_is_uniform=True,
 )
 
 mass = af.Model(al.mp.Isothermal)
@@ -370,18 +371,14 @@ all scripts you run to use the this format and API.
 
 __Iterations Per Update__
 
-Every N iterations, the non-linear search outputs the current results to the folder `autolens_workspace/output`,
-which includes producing visualization. 
+Every N iterations, the non-linear search outputs the maximum likelihood model and its best fit image to the 
+Notebook visualizer and to hard-disk.
 
-Depending on how long it takes for the model to be fitted to the data (see discussion about run times below), 
-this can take up a large fraction of the run-time of the non-linear search.
+This process takes around ~10 seconds, so we don't want it to happen too often so as to slow down the overall
+fit, but we also want it to happen frequently enough that we can track the progress.
 
-For this fit, the fit is very fast, thus we set a high value of `iterations_per_update=10000` to ensure these updates
-so not slow down the overall speed of the model-fit.
-
-**If the iteration per update is too low, the model-fit may be significantly slowed down by the time it takes to
-output results and visualization frequently to hard-disk. If your fit is consistent displaying a log saying that it
-is outputting results, try increasing this value to ensure the model-fit runs efficiently.**
+On GPU, a value of ~2500 will see this output happens every minute, a good balance. On CPU it'll be a little
+longer, but still a good balance.
 """
 search = af.Nautilus(
     path_prefix=Path("imaging") / "modeling",
@@ -389,7 +386,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,
     n_live=100,
     n_batch=50,
-    iterations_per_update=100000,
+    iterations_per_quick_update=100000,
 )
 
 """
@@ -425,9 +422,10 @@ For this analysis, the log likelihood evaluation time is < 0.01 seconds on CPU, 
 extremely fast for lens modeling. 
 
 To estimate the expected overall run time of the model-fit we multiply the log likelihood evaluation time by an 
-estimate of the number of iterations the non-linear search will perform. For this model, this is typically around
-70000 iterations, meaning that this script takes < 0.01 * 70000 = 700 seconds, or ~12 minutes on CPU, or < 0.001 * 70000
-= 70 seconds, or ~1 minute on GPU.
+estimate of the number of iterations the non-linear search will perform. 
+
+For this model, this is typically around 70000 iterations, meaning that this script takes < 0.01 * 70000 = 700 seconds, 
+or ~12 minutes on CPU, or < 0.001 * 70000 = 70 seconds, or ~1 minute on GPU.
 
 __Model-Fit__
 

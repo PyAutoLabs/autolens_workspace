@@ -131,7 +131,7 @@ solver = al.PointSolver.for_grid(
 )
 
 """
-We now pass the tracer to the solver.
+We now pass the tracer to the solver, to determine the image-plane multiple images for the source centre.
 
 The solver will find the image-plane coordinates that map directly to the source-plane coordinate (0.07", 0.07"), 
 which we plot below.

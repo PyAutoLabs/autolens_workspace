@@ -85,7 +85,8 @@ unique dataset type:
 - ``imaging``: Examples for galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, Euclid).
 - ``interferometer``: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA).
 - ``point_source``: Examples for strong lens point source datasets.
-- ``group``: Examples for group scale strong lenses with.
+- ``group``: Examples for group scale strong lenses.
+- ``cluster``: Examples for cluster scale strong lenses.
 
 The ``advanced`` package contains examples which use **PyAutoLens**'s advanced features, such as the SLaM pipelines,
 which only experienced users should check out.

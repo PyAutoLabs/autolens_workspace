@@ -341,7 +341,7 @@ search = af.Nautilus(
     name="strong_lensing_example",
     unique_tag=dataset_name,
     n_live=150,
-    iterations_per_update=10000,
+    iterations_per_quick_update=10000,
 )
 
 # We are using the Analysis class above here!
@@ -499,7 +499,7 @@ search = af.Nautilus(
     name="weak_lensing_example",
     unique_tag=dataset_name,
     n_live=150,
-    iterations_per_update=10000,
+    iterations_per_quick_update=10000,
 )
 
 # We are using the Analysis class above here!
