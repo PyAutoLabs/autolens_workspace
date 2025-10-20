@@ -28,9 +28,12 @@ The code below sets up your environment if you are using Google Colab, including
 files required to run the notebook. If you are running this script not in Colab (e.g. locally on your own computer),
 running the code below state you are not in a Colab environment and skip the setup.
 """
+
 from autoconf import setup_colab
 
-setup_colab.for_autolens()
+setup_colab.for_autolens(
+    raise_error_if_not_gpu=True  # Switch to False for CPU Google Colab
+)
 
 """
 __Imports__
@@ -81,7 +84,7 @@ dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
 """
-__Extra Galaxy Removal GUI__
+__Extra Galaxy Removal__
 
 There may be regions of an image that have signal near the lens and source that is from other galaxies not associated
 with the strong lens we are studying. The emission from these images will impact our model fitting and needs to be
@@ -92,11 +95,15 @@ large values. This mask may also include emission from objects which are not tec
 but blend with the galaxy we are studying in a similar way. Common examples of such objects are foreground stars
 or emission due to the data reduction process.
 
+In this example, the noise is scaled over all regions of the image, even those quite far away from the strong lens
+in the centre. We are next going to apply a 2.5" circular mask which means we only analyse the central region of
+the image. It only in these central regions where for the actual lens analysis it matters that we scaled the noise.
+
 After performing lens modeling to this strong lens, the script further down provides a GUI to create such a mask
 for your own data, if necessary.
 """
 mask_extra_galaxies = al.Mask2D.from_fits(
-    file_path=f"{dataset_path}/mask_extra_galaxies.fits",
+    file_path=dataset_path / "mask_extra_galaxies.fits",
     pixel_scales=dataset.pixel_scales,
     invert=True,
 )

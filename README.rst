@@ -34,7 +34,12 @@ New Users
 New users should read the ``autolens_workspace/start_here.ipynb`` notebook, which will give you a concise
 overview of **PyAutoLens**'s core features and API.
 
-Then checkout the `new user starting guide <https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html>`_ to navigate the workspace for your science case.
+This can be done via a web browser by going to the following Google Colab link:
+
+https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here.ipynb
+
+Then checkout the `new user starting guide <https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html>`_ to navigate the
+workspace for your science case.
 
 HowToLens
 ---------
