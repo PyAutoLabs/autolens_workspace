@@ -24,37 +24,13 @@ __Google Colab Setup__
 The introduction `start_here` examples are available on Google Colab, which allows you to run them in a web browser
 without manual local PyAutoLens installation.
 
-The code below should only been run if you are using Google Colab, it will install autolens and download
-files required to run the notebook.
+The code below sets up your environment if you are using Google Colab, including installing autolens and downloading
+files required to run the notebook. If you are running this script not in Colab (e.g. locally on your own computer),
+running the code below state you are not in a Colab environment and skip the setup.
 """
-import subprocess
-import sys
+from autoconf import setup_colab
 
-try:
-    import google.colab
-    in_colab = True
-except ImportError:
-    in_colab = False
-
-if in_colab:
-
-    # Install required packages
-    subprocess.check_call([sys.executable, "-m", "pip", "install",
-                           "autoconf", "autofit", "autoarray", "autogalaxy", "autolens",
-                           "pyvis==0.3.2", "dill==0.4.0", "jaxnnls",
-                           "pyprojroot==0.2.0", "nautilus-sampler==1.0.4",
-                           "timeout_decorator==0.5.0", "anesthetic==2.8.14",
-                           "--no-deps"])
-
-    import os
-    from autoconf import conf
-
-    os.chdir("/content/autolens_workspace")
-
-    conf.instance.push(
-        new_path="/content/autolens_workspace/config",
-        output_path="/content/autolens_workspace/output",
-    )
+setup_colab.for_autolens()
 
 """
 __Imports__
@@ -435,6 +411,8 @@ dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
+
+dataset_path = Path("dataset") / "imaging" / "simulated_lens"
 
 dataset.output_to_fits(
     data_path=dataset_path / "data.fits",
