@@ -253,7 +253,9 @@ dataset_model = af.Model(al.DatasetModel)
 
 # Overall Lens Model:
 
-model = af.Collection(dataset_model=dataset_model, galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    dataset_model=dataset_model, galaxies=af.Collection(lens=lens, source=source)
+)
 
 """
 We can print the model to show the parameters that the model is composed of, which shows many of the MGE's fixed
@@ -307,7 +309,9 @@ This requires an `AnalysisImaging` object, which defines the `log_likelihood_fun
 the model to the imaging data.
 """
 search = af.Nautilus(
-    path_prefix=Path("multi_wavelength"),  # The path where results and output are stored.
+    path_prefix=Path(
+        "multi_wavelength"
+    ),  # The path where results and output are stored.
     name="start_here",  # The name of the fit and folder results are output to.
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=150,  # The number of Nautilus "live" points, increase for more complex models.

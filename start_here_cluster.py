@@ -1,30 +1,37 @@
 """
-Start Here: Group
-=================
+Start Here: Cluster
+===================
 
-Group scale lenses typically have a single "main" lens galaxy and 2-10 smaller extra galaxies nearby, whose light
-may blur with the source light and whose mass contributes significantly to the ray-tracing, meaning both are
-therefore included in the analysis, Groups typically also have just one lensed source.
+Cluster scale lenses are composed of:
 
-This script shows you how to model a group lens system using **PyAutoLens** with as little setup
-as possible. In about 15 minutes you’ll be able to point the code at your own FITS files and
-fit your first group-scale lens.
+ - Brightest Cluster Galaxies (BCG) which are modeled individually.
+ - One or more large scale dark matter halos (typically > 1e14 MSun) which are modeled individually.
+ - 50 - 100 member galaxies, whose collective mass contributes to ray tracing significantly and therefore all are modeled.
+ - 5-50 source galaxies, all at different redshifts, which are all modeled individually.
 
-We focus on a *group-scale* lens (a single lens galaxy with some extra galaxies nearby). If you have a single
-lens galaxy, see the `start_here_imaging.ipynb` example, if your system has many lens and sources galaxies
-see `start_here_cluster.ipynb` example.
+This script shows you how to model cluster lens system using **PyAutoLens** with as little setup
+as possible. In about 15 minutes you’ll be able to point the code at your own cluster catalogue and FITS files and
+fit your first cluster-scale lens.
 
-This example uses Euclid CCD imaging data, but the workflow for interferometer data on group scale lenses is similar.
-The lens has only 2 extra galaxies, so the model is not too complex, meaning this example runs in about 10 minutes on a
-good GPU. More complex groups with more extra galaxies will take longer to fit, but the workflow is identical and
-PyAutoLens can efficient scale to these more complex systems.
+We focus on a *cluster-scale* lens (20 + lenses, many sources). If you have a single lens galaxy responsible for
+most th lensing, lensing a single source, you should instead checlout the `start_here_group.ipynb` example.
 
 PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
 support, your fits will run much faster (a few minutes instead of an hour). If you don’t have
 a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 
-Finally, we also show how to simulate strong lens groups. This is useful for practice, for
-building training datasets, or for investigating lensing effects in a controlled way.
+__Beta Feature__
+
+Modeling strong lens clusters with PyAutoLens is a feature in beta testing, and there are many deficiencies with
+the current implementation:
+
+- Visualization is not optimal for cluster models with many lens and sources.
+- Documentation on the workspace is limited compared to other features.
+
+However, the PyAutoLens cluster implementation has a key feature which means you may still want to use it over
+more established software. For lens modeling, the JAX GPU likelihood evaluation (which for those familiar with cluster
+modeling uses an image plane chi squared) is over 50 times faster than existing established cluster modeling software.
+It also fully supports multi-plane ray tracing of any complexity.
 
 __Google Colab Setup__
 
@@ -77,30 +84,22 @@ import autolens.plot as aplt
 """
 __Dataset__
 
-We begin by loading the dataset. Three ingredients are needed for lens modeling:
-
-1. The image itself (CCD counts).
-2. A noise-map (per-pixel RMS noise).
-3. The PSF (Point Spread Function).
-
-Here we use HST imaging of a Euclid group-scale strong lens. Replace these FITS paths with your own to
-immediately try modeling your data.
+We begin by loading CCD imaging of the cluster dataset. 
 
 The `pixel_scales` value converts pixel units into arcseconds. It is critical you set this
 correctly for your data.
+
+The image itself is not used for cluster modeling, but plotting it shows the cluster configuration
+and where the lens and source galaxies are.
 """
-dataset_name = "102021990_NEG650312660474055399"
-dataset_path = Path("dataset") / "group" / dataset_name
+dataset_name = "simple"
+dataset_path = Path("dataset") / "cluster" / dataset_name
 
-dataset = al.Imaging.from_fits(
-    data_path=dataset_path / "data.fits",
-    psf_path=dataset_path / "psf.fits",
-    noise_map_path=dataset_path / "noise_map.fits",
-    pixel_scales=0.1,
-)
+data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.05)
 
-dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
-dataset_plotter.subplot_dataset()
+array_plotter = aplt.Array2DPlotter(array=data)
+array_plotter.figure_2d()
+
 
 """
 __Main Galaxies and Extra Galaxies__
@@ -264,9 +263,9 @@ search = af.Nautilus(
     path_prefix=Path("group"),  # The path where results and output are stored.
     name="start_here",  # The name of the fit and folder results are output to.
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
-    n_live=150,  # The number of Nautilus "live" points, increase for more complex models.
+    n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
-    iterations_per_full_update=100000,  # Every N iterations the results are written to hard-disk for inspection.
+    iterations_per_quick_update=2500,  # Every N iterations the max likelihood model is visualized and written to output folder.
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)
@@ -302,47 +301,6 @@ packages of the workspace contains all the information you need to analyze your 
 
 __Centre Input GUI__
 
-The centres of the extra galaxies above were loaded from a .json file, which was create using a GUI where one simply
-clicks the centres of the extra galaxies on the image. 
-
-For your own group lens, if you do not know the centres of the extra galaxies already, you can use the GUI below
-to do this yourself. It will output a .json file in the dataset folder you can then load and use in the model above.
-"""
-search_box_size = (
-    3  # Size of the search box to find the brightest pixel around your click
-)
-
-try:
-    clicker = al.Clicker(
-        image=dataset.data,
-        pixel_scales=dataset.pixel_scales,
-        search_box_size=search_box_size,
-    )
-
-    extra_galaxies_centres = clicker.start(
-        data=dataset.data,
-        pixel_scales=dataset.pixel_scales,
-    )
-
-    al.output_to_json(
-        file_path=dataset_path / "extra_galaxies_centres.json",
-        obj=extra_galaxies_centres,
-    )
-except Exception as e:
-    print(
-        """
-        Problem loading GUI, probably an issue with TKinter or your matplotlib TKAgg backend.
-        
-        You will likely need to try and fix or reinstall various GUI / visualization libraries, or try
-        running this example not via a Jupyter notebook.
-        
-        There are also manual tools for performing this task in the workspace.
-        """
-    )
-    print()
-    print(e)
-
-"""
 __Model Your Own Lens__
 
 If you have your own strong lens imaging data, you are now ready to model it yourself by adapting the code above
@@ -357,123 +315,6 @@ A few things to note, with full details on data preparation provided in the main
 - Adjust the mask radius to include all relevant light.
 - Start with the default model — it works very well for pretty much all group with < 5 extra galaxies!
 
-__Scaling Relations__
-
-This example above models the mass of each galaxy individually, which means the number of dimensions of the model 
-increases as we model group scale lenses with more galaxies. This can lead to a model that is slow to fit and poorly 
-constrained. There may also not be enough information in the data to constrain every galaxy's mass.
-
-A common approach to overcome this is to put many of the extra galaxies a scaling relation, where the mass of the 
-galaxies are related to their light via a observationally motivated scaling relation. This means that as more 
-galaxies are included in the lens model, the dimensionality of the model does not increase. Furthermore, their 
-luminosities act as priors on their masses, which helps ensure the model is well constrained.
-
-We now perform a fit using this scaling relation approach. Instead of the SIE model used for extra galaxies above,
-we instead model the mass of ech extra galaxy using the dual Pseudo-Isothermal Elliptical (dPIE)
-mass distribution introduced in Eliasdottir 2007: https://arxiv.org/abs/0710.5636.
-
-It relates the luminosity of every galaxy to a cut radius (r_cut), a core radius (r_core) and a mass normaliaton b0:
-
-$r_cut = r_cut^* (L/L^*)^{0.5}$
-
-$r_core = r_core^* (L/L^*)^{0.5}$
-
-$b0 = b0^* (L/L^*)^{0.25}$
-
-The free parameters are therefore L^*, r_cut^*, r_core^* and b0^*.
-
-We use this model because it is commonly used in studies of lensing groups and clusters to put member galaxies on a
-scaling relation, thus it is more consistent with previous literature!
-
-To perform scaling relation lens modeling, the luminosity of every member galaxy must have been measured and is input
-below. If you want to put your own lens into this example, you'll need to have the luminosities measured yourself
-already. Note also that the code below could easily be adapted to use stellar masses or velocity dispersions,
-if you have those measurements instead.
-"""
-extra_galaxies_luminosity_list = [1e9, 1e9]
-
-ra_star = af.LogUniformPrior(lower_limit=1e8, upper_limit=1e11)
-rs_star = af.UniformPrior(lower_limit=-1.0, upper_limit=1.0)
-b0_star = af.LogUniformPrior(lower_limit=1e5, upper_limit=1e7)
-luminosity_star = 1e9
-
-extra_galaxies_list = []
-
-for extra_galaxy_centre, extra_galaxy_luminosity in zip(
-    extra_galaxies_centres.in_list, extra_galaxies_luminosity_list
-):
-
-    mass = af.Model(al.mp.dPIEMassSph)
-
-    mass.centre = extra_galaxy_centre
-
-    mass.ra = ra_star * (extra_galaxy_luminosity / luminosity_star) ** 0.5
-    mass.rs = rs_star * (extra_galaxy_luminosity / luminosity_star) ** 0.5
-    mass.b0 = b0_star * (extra_galaxy_luminosity / luminosity_star) ** 0.25
-
-    extra_galaxy = af.Model(al.Galaxy, redshift=0.5, mass=mass)
-
-    extra_galaxies_list.append(extra_galaxy)
-
-"""
-__Model Fit__
-
-We now compose the model using the same API as before.
-"""
-# Main Lens:
-
-bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
-)
-
-mass = af.Model(al.mp.Isothermal)
-
-shear = af.Model(al.mp.ExternalShear)
-
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
-
-# Source:
-
-bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius,
-    total_gaussians=20,
-    gaussian_per_basis=1,
-    centre_prior_is_uniform=False,
-)
-
-source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
-
-# Overall Lens Model:
-
-model = af.Collection(
-    galaxies=af.Collection(lens=lens, source=source), extra_galaxies=extra_galaxies
-)
-
-"""
-the `model.info` shows that this scaling relation has been used to setup the galaxy parameters.
-
-Note how, although there are only 2 extra galaxies, adding extra galaxies now *no longer adds any free parameters** to
-the model complexity!
-"""
-print(model.info)
-
-"""
-We now fit the model using the scaling relation.
-"""
-search = af.Nautilus(
-    path_prefix=Path("group"),  # The path where results and output are stored.
-    name="start_here_scaling_relation",  # The name of the fit and folder results are output to.
-    unique_tag=dataset_name,  # A unique tag which also defines the folder.
-    n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
-    n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
-    iterations_per_full_update=100000,  # Every N iterations the results are written to hard-disk for inspection.
-)
-
-analysis = al.AnalysisImaging(dataset=dataset)
-
-result = search.fit(model=model, analysis=analysis)
-
-"""
 __Simulator__
 
 In the galaxy-scale examples (`start_here_imaging.ipynb`, `start_here_interferometer.ipynb`, `start_here_point_source.ipynb`)
@@ -481,6 +322,25 @@ we illustrate how to simulate strong lens images.
 
 For group scale lenses, we omit this, as it is quite techinical and long. The `autolens_workspace/*/group/simulator` 
 package has examples of how to simulate group scale lenses if you are interested.
+
+__Scaling Relations__
+
+This example models the mass of each galaxy individually, which means the number of dimensions of the model increases
+as we model group scale lenses with more galaxies. This can lead to a model that is slow to fit and poorly constrained.
+There may also not be enough information in the data to constrain every galaxy's mass.
+
+A common approach to overcome this is to put many of the extra galaxies a scaling relation, where the mass of the 
+galaxies are related to their light via a observationally motivated scaling relation. This means that as more 
+galaxies are included in the lens model, the dimensionality of the model does not increase. Furthermore, their 
+luminosities act as priors on their masses, which helps ensure the model is well constrained.
+
+Lens modeling using scaling relations is fully support and described in the `features/scaling_relation.ipynb` example.
+If your group has many extra galaxies (e.g. more than 5) you probably want to read this example once you are confident
+with this one.
+
+In the near future (Novembver 2026) we will provide more extensive group scale lens modeling examples which ensure
+that complex groups with 10+ extra galaxies can be fitted efficiently and robustly using scaling relations. PyAutoLens
+can do a good jbo now, but big improvements are coming!
 
 __Wrap Up__
 
