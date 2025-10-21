@@ -321,7 +321,7 @@ simulator = al.SimulatorInterferometer(
     transformer_class=al.TransformerDFT,  # keep consistent with your modeling choice
 )
 
-dataset = simulator.via_tracer_from(tracer=tracer, grid=real_space_mask.derive_grid)
+dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 
 dataset_plotter = aplt.InterferometerPlotter(dataset=dataset)
 dataset_plotter.figures_2d(dirty_image=True)

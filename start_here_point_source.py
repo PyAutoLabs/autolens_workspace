@@ -212,6 +212,8 @@ We now fit the data with the lens model using the non-linear fitting method and 
 
 This requires an `AnalysisPoint` object, which defines the `log_likelihood_function` used by Nautilus to fit
 the model to the point source data.
+
+NOTE: QUICK UPDATES DO NOT CURRENTLY WORK WITH POINT SOURCES, BUT THEY RUN VERY FAST ANYWAY.
 """
 search = af.Nautilus(
     path_prefix=Path("point_source"),  # The path where results and output are stored.
@@ -219,7 +221,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=75,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
-    iterations_per_quick_update=2500,  # Every N iterations the max likelihood model is visualized and written to output folder.
+    iterations_per_quick_update=250000,  # Every N iterations the max likelihood model is visualized and written to output folder.
 )
 
 analysis = al.AnalysisPoint(dataset=dataset, solver=solver)

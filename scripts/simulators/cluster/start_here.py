@@ -160,7 +160,7 @@ luminosity_star = 1e9
 extra_galaxies_list = []
 
 for extra_galaxy_centre, extra_galaxy_luminosity in zip(
-        extra_galaxies_centre_list, extra_galaxies_luminosity_list
+    extra_galaxies_centre_list, extra_galaxies_luminosity_list
 ):
     bulge = al.lp.SersicSph(
         centre=extra_galaxy_centre,

@@ -114,7 +114,12 @@ for i in range(2):
 
     model = af.Collection(
         galaxies=af.Collection(
-            lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
+            lens=af.Model(
+                al.Galaxy,
+                redshift=0.5,
+                mass=al.mp.Isothermal,
+                shear=al.mp.ExternalShear,
+            ),
             source=af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=None),
         ),
     )
@@ -124,12 +129,62 @@ for i in range(2):
         name="results",
         unique_tag=f"simple__no_lens_light_{i}",
         n_live=100,
+        iterations_per_quick_update=10000,
     )
 
-    analysis = al.AnalysisImaging(dataset=dataset)
+    class AnalysisLatent(al.AnalysisImaging):
+
+        LATENT_KEYS = [
+            "galaxies.lens.shear.magnitude",
+            "galaxies.lens.shear.angle",
+        ]
+
+        def compute_latent_variables(self, parameters, model):
+            """
+            A latent variable is not a model parameter but can be derived from the model. Its value and errors may be
+            of interest and aid in the interpretation of a model-fit.
+
+            This code implements a simple example of a latent variable, the magn
+
+            By overwriting this method we can manually specify latent variables that are calculated and output to
+            a `latent.csv` file, which mirrors the `samples.csv` file.
+
+            In the example below, the `latent.csv` file will contain at least two columns with the shear magnitude and
+            angle sampled by the non-linear search.
+
+            This function is called for every non-linear search sample, where the `instance` passed in corresponds to
+            each sample.
+
+            You can add your own custom latent variables here, if you have particular quantities that you
+            would like to output to the `latent.csv` file.
+
+            Parameters
+            ----------
+            parameters : array-like
+                The parameter vector of the model sample. This will typically come from the non-linear search.
+                Inside this method it is mapped back to a model instance via `model.instance_from_vector`.
+            model : Model
+                The model object defining how the parameter vector is mapped to an instance. Passed explicitly
+                so that this function can be used inside JAX transforms (`vmap`, `jit`) with `functools.partial`.
+
+            Returns
+            -------
+            A dictionary mapping every latent variable name to its value.
+
+            """
+            instance = model.instance_from_vector(vector=parameters)
+
+            if hasattr(instance.galaxies.lens, "shear"):
+                magnitude, angle = al.convert.shear_magnitude_and_angle_from(
+                    gamma_1=instance.galaxies.lens.shear.gamma_1,
+                    gamma_2=instance.galaxies.lens.shear.gamma_2,
+                )
+
+            return (magnitude, angle)
+
+    analysis = AnalysisLatent(dataset=dataset)
 
     result = search.fit(model=model, analysis=analysis)
-
 
 """
 __Workflow Paths__
@@ -271,56 +326,14 @@ image = agg_image.extract_image(
     # subplot_shape=(2, 2),
 )
 
-image.save("png_make_multi_subplot.png")
-
-
-"""
-__Add Extra Png__
-
-We can also add an extra .png image to the subplot, for example an RGB image of the dataset.
-
-We create an image of shape (1, 2) and add the RGB image to the left of the subplot, so that the new subplot has
-shape (1, 3).
-
-When we add a single .png, we cannot extract or make it, it simply gets added to the subplot.
-"""
-# image_rgb = Image.open(Path(dataset_path, "rgb.png"))
-#
-# image = agg_image.extract_image(
-#     al.agg.subplot_dataset.data,
-#     al.agg.subplot_dataset.psf_log_10,
-#     subplot_shape=(1, 2),
-# )
-
-# image = al.add_image_to_left(image, additional_img)
-
-# image.save("png_make_with_rgb.png")
-
-"""
-__Shape Customization__
-
-The example above had an original subplot shape of (1, 2) and we added an extra .png to the left of the subplot
-to make it shape (1, 3).
-
-An extra image can be added with more customization, for example we may want to RGB to be double the size of the
-subplot images.
-"""
-# I dont have a code example, will try add but is an important feature
-
-"""
-__Zoom Png__
-
-We can also zoom into a specific region of the image, for example the central 20 x 20 pixels of the image.
-"""
+image.save(workflow_path / "png_make_multi_subplot.png")
 
 """
 __Custom Subplots in Analysis__
 
 Describe how a user can extend the `Analysis` class to compute custom images that are output to the .png files,
 which they can then extract and make together.
-"""
 
-"""
 __Path Navigation__
 
 Example combinng `subplot_fit.png` from `source_lp[1]` and `mass_total[0]`.

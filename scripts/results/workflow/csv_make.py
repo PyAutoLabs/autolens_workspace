@@ -197,6 +197,14 @@ Extract the `AggregateCSV` object, which has specific functions for outputting r
 agg_csv = af.AggregateCSV(aggregator=agg)
 
 """
+__Model Paths__
+
+The paths are the tuples which define how model parameters are accessed from the model.
+"""
+model = [model for model in agg.values("model")][0]
+print(model.paths)
+
+"""
 __Adding CSV Columns_
 
 We first make a simple .csv which contains two columns, corresponding to the inferred median PDF values for

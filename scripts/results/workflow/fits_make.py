@@ -151,18 +151,11 @@ for i in range(2):
             In the example below, the `latent.csv` file will contain at least two columns with the shear magnitude and
             angle sampled by the non-linear search.
 
+            This function is called for every non-linear search sample, where the `instance` passed in corresponds to
+            each sample.
+
             You can add your own custom latent variables here, if you have particular quantities that you
             would like to output to the `latent.csv` file.
-
-            This function is called at the end of search, following one of two schemes depending on the settings in
-            `output.yaml`:
-
-            1) Call for every search sample, which produces a complete `latent/samples.csv` which mirrors the normal
-            `samples.csv` file but takes a long time to compute.
-
-            2) Call only for N random draws from the posterior inferred at the end of the search, which only produces a
-            `latent/latent_summary.json` file with the median and 1 and 3 sigma errors of the latent variables but is
-            fast to compute.
 
             Parameters
             ----------

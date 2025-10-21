@@ -33,14 +33,27 @@ without manual local PyAutoLens installation.
 
 The code below sets up your environment if you are using Google Colab, including installing autolens and downloading
 files required to run the notebook. If you are running this script not in Colab (e.g. locally on your own computer),
-running the code below state you are not in a Colab environment and skip the setup.
+running the code will still check correctly that your environment is set up and ready to go.
 """
+
+import subprocess
+import sys
+
+try:
+    import google.colab
+
+    subprocess.check_call(
+        [sys.executable, "-m", "pip", "install", "autoconf", "--no-deps"]
+    )
+except ImportError:
+    pass
 
 from autoconf import setup_colab
 
 setup_colab.for_autolens(
-    raise_error_if_not_gpu=True  # Switch to False for CPU Google Colab
+    raise_error_if_not_gpu=False  # Switch to False for CPU Google Colab
 )
+
 
 """
 __Imports__
@@ -80,7 +93,12 @@ correctly for your data.
 **Multi-wavelength Specific**: Note how each waveband and its corresponding pixel scale are put into a list and dictionary, 
 which we use to load all 4 wavelength images in a list of imaging datasets.
 """
-waveband_list = ["F115W", "F150W", "F277W", "F444W"]
+waveband_list = [
+    #    "F115W",  # Commented out to make code run fast, but can be included to show 4 wavebad modeling.
+    #    "F150W",
+    "F277W",
+    "F444W",
+]
 pixel_scale_dict = {
     "F115W": 0.03,
     "F150W": 0.03,
@@ -109,7 +127,7 @@ for dataset_waveband in waveband_list:
     dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
     dataset_plotter.subplot_dataset()
 
-    dataset_list.append(dataset_plotter)
+    dataset_list.append(dataset)
 
 """
 __Extra Galaxy Removal__
@@ -139,7 +157,7 @@ for dataset, dataset_waveband in zip(dataset_list, waveband_list):
     dataset_waveband_path = dataset_path / dataset_waveband
 
     mask_extra_galaxies = al.Mask2D.from_fits(
-        file_path=dataset_path / "mask_extra_galaxies.fits",
+        file_path=dataset_waveband_path / "mask_extra_galaxies.fits",
         pixel_scales=dataset.pixel_scales,
         invert=True,
     )
@@ -149,7 +167,7 @@ for dataset, dataset_waveband in zip(dataset_list, waveband_list):
     dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
     dataset_plotter.subplot_dataset()
 
-    dataset_scaled_list.append(dataset_plotter)
+    dataset_scaled_list.append(dataset)
 
 """
 __Masking__
@@ -316,7 +334,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=150,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
-    iterations_per_quick_update=2500,  # Every N iterations the max likelihood model is visualized and written to output folder.
+    iterations_per_quick_update=5000,  # Every N iterations the max likelihood model is visualized and written to output folder.
 )
 
 result_list = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
