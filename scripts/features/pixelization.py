@@ -425,6 +425,7 @@ image via the GUI described in the file `autolens_workspace/*/data_preparation/i
 positions = al.Grid2DIrregular(
     al.from_json(file_path=Path(dataset_path, "positions.json"))
 )
+
 positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
 """
@@ -721,6 +722,7 @@ print(reconstruction_dict["y"])
 print(reconstruction_dict["x"])
 print(reconstruction_dict["reconstruction"])
 print(reconstruction_dict["noise_map"])
+
 
 """
 You can now use standard libraries to performed calculations with the reconstruction on the mesh, again avoiding

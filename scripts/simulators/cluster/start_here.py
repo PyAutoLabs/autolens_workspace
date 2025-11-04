@@ -228,9 +228,8 @@ in degrees and defined counter clockwise from the positive x-axis.
 
 We can use the `convert` module to determine the elliptical components from the axis-ratio and angle.
 """
-dark = al.mp.NFWMCRLudlow(
+dark = al.mp.NFWMCRLudlowSph(
     centre=(0.0, 0.0),
-    ell_comps=(0.1, 0.05),
     mass_at_200=1e14,
     redshift_object=0.5,
     redshift_source=1.0,

@@ -403,7 +403,7 @@ source_galaxy = al.Galaxy(
         effective_radius=0.1,
         sersic_index=1.0,
     ),
-    point_0=al.ps.Point(centre=source_centre, flux=1.0)
+    point_0=al.ps.Point(centre=source_centre, flux=1.0),
 )
 
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])

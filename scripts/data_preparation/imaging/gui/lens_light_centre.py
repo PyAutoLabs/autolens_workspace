@@ -108,7 +108,7 @@ array_2d_plotter.figure_2d()
 Output the lens light centres to a .json file in the dataset folder, so we can load them in modeling scripts.
 """
 al.output_to_json(
-    obj=lens_light_centre,
+    obj=lens_light_centres,
     file_path=Path(dataset_path, "lens_light_centre.json"),
 )
 

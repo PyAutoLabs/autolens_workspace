@@ -205,7 +205,7 @@ model = [model for model in agg.values("model")][0]
 print(model.paths)
 
 """
-__Adding CSV Columns_
+__Adding CSV Columns__
 
 We first make a simple .csv which contains two columns, corresponding to the inferred median PDF values for
 the y centre of the mass of the lens galaxy and its einstein radius.
@@ -355,7 +355,10 @@ is computed and added to the .csv file.
 agg_csv = af.AggregateCSV(aggregator=agg)
 
 
-def einstein_radius_x2_from(samples):
+def einstein_radius_x2_from(result):
+
+    samples = result.samples
+
     instance = samples.median_pdf()
 
     return 2.0 * instance.galaxies.lens.mass.einstein_radius
