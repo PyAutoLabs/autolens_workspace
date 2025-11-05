@@ -403,7 +403,7 @@ source_galaxy = al.Galaxy(
         effective_radius=0.1,
         sersic_index=1.0,
     ),
-    point_0=al.ps.Point(centre=source_centre, flux=1.0),
+    point_0=al.ps.PointFlux(centre=source_centre, flux=1.0),
 )
 
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
@@ -537,6 +537,7 @@ for sample_index in range(total_datasets):
     time_delays_noise_map = al.ArrayIrregular(values=time_delays * 0.25)
 
     dataset = al.PointDataset(
+        name=f"point_0",
         positions=positions,
         fluxes=fluxes,
         time_delays=time_delays,
