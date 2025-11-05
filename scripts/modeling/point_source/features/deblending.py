@@ -278,25 +278,13 @@ analysis = al.AnalysisImaging(dataset=dataset)
 """
 __Run Time__
 
-For standard light profiles, the log likelihood evaluation time is of order ~0.01 seconds for this dataset.
+For standard light profiles, the log likelihood evaluation time is of order ~0.0001 seconds for this dataset.
 
-For linear light profiles, the log likelihood evaluation increases to around ~0.05 seconds per likelihood evaluation.
+For linear light profiles, the log likelihood evaluation increases to around ~0.001 seconds per likelihood evaluation.
 This is still fast, but it does mean that the fit may take around five times longer to run.
 
-The run time to perform deblending are therefore still relatively fast.
-"""
-run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-    instance=model.random_instance()
-)
+The run time to perform deblending modeling re around 30 minutes on CPU, under 10 minutes on GPU.
 
-print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
-print(
-    "Estimated Run Time Upper Limit (seconds) = ",
-    (run_time_dict["fit_time"] * model.total_free_parameters * 10000)
-    / search.number_of_cores,
-)
-
-"""
 __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder

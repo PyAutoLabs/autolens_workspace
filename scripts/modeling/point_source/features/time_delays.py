@@ -164,23 +164,12 @@ analysis = al.AnalysisPoint(
 """
 __Run Times__
 
-For the positions-only fit, the run time of the log likelihood function was ~0.4 seconds, which is a modest run-time.
+For the positions-only fit, the run time of the log likelihood function was ~0.01 seconds, which is fast
 
-Evaluating the flux does not increase this much, with a value of around ~0.5 seconds estimated, because evaluating the
-time delays is a simple calculation using the potential of the mass model.
-"""
-run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-    instance=model.random_instance()
-)
+Evaluating the time delays does not increase this much, with a value of around ~0.01 seconds still expected.
 
-print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
-print(
-    "Estimated Run Time Upper Limit (seconds) = ",
-    (run_time_dict["fit_time"] * model.total_free_parameters * 10000)
-    / search.number_of_cores,
-)
+Overall modeling run times should therefore be around 20 minutes on CPU, under 5 minutes on GPU.
 
-"""
 __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder

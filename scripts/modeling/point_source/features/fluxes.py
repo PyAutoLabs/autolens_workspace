@@ -167,10 +167,11 @@ analysis = al.AnalysisPoint(
 """
 __Run Times__
 
-For the positions-only fit, the run time of the log likelihood function was ~0.4 seconds, which is a modest run-time.
+For the positions-only fit, the run time of the log likelihood function was ~0.01 seconds, which is a modest run-time.
 
-Evaluating the flux does not increase this much, with a value of around ~0.5 seconds estimated, because evaluating the
-fluxes is a simple multiplication of the magnification at each position by the flux of the point source.
+Evaluating the time delays does not increase this much, with a value of around ~0.01 seconds still expected.
+
+Overall modeling run times should therefore be around 20 minutes on CPU, under 5 minutes on GPU.
 """
 run_time_dict, info_dict = analysis.profile_log_likelihood_function(
     instance=model.random_instance()

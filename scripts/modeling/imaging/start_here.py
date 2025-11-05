@@ -422,10 +422,9 @@ For this analysis, the log likelihood evaluation time is < 0.01 seconds on CPU, 
 extremely fast for lens modeling. 
 
 To estimate the expected overall run time of the model-fit we multiply the log likelihood evaluation time by an 
-estimate of the number of iterations the non-linear search will perform. 
+estimate of the number of iterations the non-linear search will perform, which is around 10000 to 30000 for this model.
 
-For this model, this is typically around 70000 iterations, meaning that this script takes < 0.01 * 70000 = 700 seconds, 
-or ~12 minutes on CPU, or < 0.001 * 70000 = 70 seconds, or ~1 minute on GPU.
+Tests thus far reveal CPU run times are around 30 minutes, and GPU run times around 10 minutes.
 
 __Model-Fit__
 
