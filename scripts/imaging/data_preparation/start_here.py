@@ -66,7 +66,7 @@ you noise-map and PSF conform to standards first!).
 
 **Links / Resources:**
 
- - `data_preparation/imaging/examples/data.ipynb`: tools to process the data to conform to these standards.
+ - `imaging/data_preparation/examples/data.ipynb`: tools to process the data to conform to these standards.
 
 __Noise Map__
 
@@ -108,7 +108,7 @@ you image and PSF conform to standards first!).
 
 **Links / Resources:**
 
- - `data_preparation/imaging/examples/noise_map.ipynb`: tools to process the noise-map to conform to these standards.
+ - `imaging/data_preparation/examples/noise_map.ipynb`: tools to process the noise-map to conform to these standards.
 
 __PSF__
 
@@ -152,7 +152,7 @@ you noise-map and image conform to standards first!).
 
 **Links / Resources:**
 
- - `data_preparation/imaging/examples/psf.ipynb`: tools to process the PSF to conform to these standards.
+ - `imaging/data_preparation/examples/psf.ipynb`: tools to process the PSF to conform to these standards.
 
 __Data Processing Complete__
 

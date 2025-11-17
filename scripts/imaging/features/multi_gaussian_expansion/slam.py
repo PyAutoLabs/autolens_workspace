@@ -191,10 +191,10 @@ In this example it:
  - Uses a MGE bulge with 2 x 30 Gaussians [fixed from LIGHT LP PIPELINE].
 
  - Uses an `PowerLaw` model for the lens's total mass distribution [priors initialized from SOURCE 
- PARAMETRIC PIPELINE + centre unfixed from (0.0, 0.0)].
+ LIGHT PROFILE PIPELINE + centre unfixed from (0.0, 0.0)].
 
  - Uses the an MGE model representing a bulge for the source's light [priors initialized from SOURCE 
- PARAMETRIC PIPELINE].
+ LIGHT PROFILE PIPELINE].
 
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL PIPELINE.
 """

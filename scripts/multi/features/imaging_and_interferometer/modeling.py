@@ -179,7 +179,7 @@ for analysis in [analysis_imaging, analysis_interferometer]:
 
     analysis_factor_list.append(analysis_factor)
 
-factor_graph = af.FactorGraphModel(*analysis_factor_list)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 """
 The `info` of the model shows us there are two models, one for the imaging dataset and one for the interferometer
@@ -236,5 +236,5 @@ plotter = aplt.NestPlotter(samples=result_list.samples)
 plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 """

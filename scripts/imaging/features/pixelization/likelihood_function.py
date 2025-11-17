@@ -18,7 +18,7 @@ packages are called when the likelihood is evaluated.
 
 __Prerequisites__
 
-The likelihood function of a pixelization builds on that used for standard parametric light profiles and
+The likelihood function of a pixelization builds on that used for standard light profiles and
 linear light profiles, therefore you must read the following notebooks before this script:
 
 - `imaging/likelihood_function.ipynb`.

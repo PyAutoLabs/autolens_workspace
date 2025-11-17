@@ -56,7 +56,7 @@ There are a number of ways to do this:
 
  - Use image processing software like Source Extractor (https://sextractor.readthedocs.io/en/latest/).
 
- - Fit every galaxy individually with a parametric light profile (e.g. an `Sersic`).
+ - Fit every galaxy individually with a light profile (e.g. an `Sersic`).
 
  - Use a moment's based analysis of the data.
 

@@ -44,7 +44,7 @@ Visualization is performed in these internal units, however, the `Units` object 
 units of the figure (e.g. convert arc-seconds to kiloparsecs).
 
 However, how to use the `Units` object to customize the units of a figure is not described here, but instead
-in`autolens_workspace/*/results/examples/units_and_cosmology.ipynb`. Unit conversions in general is
+in`autolens_workspace/*/guides/results/examples/units_and_cosmology.ipynb`. Unit conversions in general is
 described in this script.
 
 __Output__

@@ -24,9 +24,9 @@ __Model__
 This script fits an `Imaging` dataset of a galaxy with a model where:
 
  - The sky background is included as part of a `DatasetModel`.
- - The lens galaxy's light is a linear parametric `Sersic` bulge.
+ - The lens galaxy's light is a linear `Sersic` bulge.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a linear parametric `SersicCore`.
+ - The source galaxy's light is a linear `SersicCore`.
 
 __Start Here Notebook__
 

@@ -89,7 +89,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's bulge is a super position of 60 `Gaussian`` profiles.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a linear parametric `SersicCore`.
+ - The source galaxy's light is a linear `SersicCore`.
 
 __Start Here Notebook__
 
@@ -168,13 +168,13 @@ fitting the lens's mass and source galaxies.
 
 We compose a lens model where:
 
- - The galaxy's bulge is 60 parametric linear `Gaussian` profiles [6 parameters]. 
+ - The galaxy's bulge is 60 linear `Gaussian` profiles [6 parameters]. 
  - The centres and elliptical components of the Gaussians are all linked together in two groups of 30.
  - The `sigma` size of the Gaussians increases in log10 increments.
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
 
- - The source galaxy's light is a parametric linear `Sersic` [6 parameters].
+ - The source galaxy's light is a linear `Sersic` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=19.
 
@@ -263,7 +263,7 @@ Owing to the simplicity of fitting an MGE we an use even fewer live points than 
 75 live points, speeding up convergence of the non-linear search.
 """
 search = af.Nautilus(
-    path_prefix=Path("imaging") / "modeling",
+    path_prefix=Path("imaging") / "features",
     name="mge",
     unique_tag=dataset_name,
     n_live=75,
@@ -314,7 +314,7 @@ print(result.info)
 """
 We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 
 In particular, checkout the results example `linear.py` which details how to extract all information about linear
 light profiles from a fit.
@@ -438,7 +438,7 @@ print(model.info)
 We now fit this model, which includes the MGE source and lens light models.
 """
 search = af.Nautilus(
-    path_prefix=Path("imaging") / "modeling",
+    path_prefix=Path("imaging") / "features",
     name="mge_including_source",
     unique_tag=dataset_name,
     n_live=75,
@@ -538,7 +538,7 @@ The `info` attribute shows the model, which has addition priors now associated w
 print(model.info)
 
 search = af.Nautilus(
-    path_prefix=Path("imaging") / "modeling",
+    path_prefix=Path("imaging") / "features",
     name="mge_regularized",
     unique_tag=dataset_name,
     n_live=150,

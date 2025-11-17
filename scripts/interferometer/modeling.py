@@ -5,16 +5,13 @@ Modeling: Start Here
 This script is the starting point for lens modeling of interferometer datasets (e.g. ALMA, VLBI) with
 **PyAutoLens** and it provides an overview of the lens modeling API.
 
-After reading this script, the `features`, `customize` and `searches` folders provide example for performing lens
-modeling in different ways and customizing the analysis.
-
 __Model__
 
 This script fits `Interferometer` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a linear parametric `SersicCore`.
+ - The source galaxy's light is a Multi Gaussian Expansion.
 """
 
 # %matplotlib inline
@@ -84,18 +81,6 @@ example our lens model is:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 
-__Linear Light Profiles__
-
-The model below uses a `linear light profile` for the bulge and disk, via the API `lp_linear`. This is a specific type 
-of light profile that solves for the `intensity` of each profile that best fits the data via a linear inversion. 
-This means it is not a free parameter, reducing the dimensionality of non-linear parameter space. 
-
-Linear light profiles significantly improve the speed, accuracy and reliability of modeling and they are used
-by default in every modeling example. A full description of linear light profiles is provided in the
-`autolens_workspace/*/modeling/features/linear_light_profiles.py` example.
-
-A standard light profile can be used if you change the `lp_linear` to `lp`, but it is not recommended.
-
 __Coordinates__
 
 The model fitting default settings assume that the lens galaxy centre is near the coordinates (0.0", 0.0"). 
@@ -108,18 +93,14 @@ If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that 
 # Lens:
 
 mass = af.Model(al.mp.Isothermal)
+
 shear = af.Model(al.mp.ExternalShear)
 
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
 
-bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius,
-    total_gaussians=10,
-    gaussian_per_basis=1,
-    centre_prior_is_uniform=False,
-)
+bulge = af.Model(al.lp.SersicCore)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
@@ -140,46 +121,150 @@ appear in a notebook).]
 """
 print(model.info)
 
+
+"""
+__Improved Lens Model__
+
+The previous model used Sérsic light profiles for the source galaxy. This makes the model API concise, readable, and 
+easy to follow.
+
+However, single Sérsic profiles perform poorly for most strong lenses. Symmetric profiles (e.g. elliptical Sérsics) 
+typically leave significant residuals because they cannot capture the irregular and asymmetric morphology of real 
+galaxies (e.g. isophotal twists, radially varying ellipticity).
+
+This example therefore uses a lens model that combines two features, described in detail elsewhere (but a brief 
+overview is provided below):
+
+- **Linear light profiles**  (see ``autolens_workspace/*/interferometer/features/linear_light_profiles``)
+- **Multi-Gaussian Expansion (MGE) light profiles**  (see ``autolens_workspace/*/interferometer/features/multi_gaussian_expansion``)
+
+These features avoid wasted effort trying to fit Sérsic profiles to complex data, which is likely to fail unless the 
+lens is extremely simple. This does mean the model composition is more complex and as a user its a steeper learning
+curve to understand the API, but its worth it for the improved accuracy and speed of lens modeling.
+
+__Multi-Gaussian Expansion (MGE)__
+
+A Multi-Gaussian Expansion (MGE) decomposes the source light into ~50–100 Gaussians with varying ellipticities 
+and sizes. An MGE captures irregular features far more effectively than Sérsic profiles, leading to more accurate lens m
+odels.
+
+Remarkably, modeling with MGEs is also significantly faster than using Sérsics: they remain efficient in JAX (on CPU 
+or GPU), require fewer non-linear parameters despite their flexibility, and yield simpler parameter spaces that
+sample in far fewer iterations. 
+
+__Linear Light Profiles__
+
+The MGE model below uses a **linear light profile** for the bulge via the ``lp_linear`` API, instead of the 
+standard ``lp`` light profiles used above.
+
+A linear light profile solves for the *intensity* of each component via a linear inversion, rather than treating it as 
+a free parameter. This reduces the dimensionality of the non-linear parameter space: a model with ~80 Gaussians
+does not introduce ~80 additional free parameters.
+
+Linear light profiles therefore improve speed and accuracy, and they are used by default in all modeling example.
+
+__Concise API__
+
+The MGE model composition API is quite long and technical, so we simply load the MGE models for the lens and source 
+below via a utility function `mge_model_from` which hides the API to make the code in this introduction example ready 
+to read. We then use the PyAutoLens Model API to compose the over lens model.
+
+The full MGE composition API is given in the `features/multi_gaussian_expansion` package.
+"""
+# Lens:
+
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=2,
+    centre_prior_is_uniform=True,
+)
+
+mass = af.Model(al.mp.Isothermal)
+
+shear = af.Model(al.mp.ExternalShear)
+
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+
+# Source:
+
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+
+# Overall Lens Model:
+
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+"""
+Printing the model info confirms the model has Gaussians for both the lens and source galaxies.
+"""
+print(model.info)
+
 """
 __Search__
 
-The lens model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
-full description).
+The lens model is fitted to the data using a non-linear search. 
 
-The folders: 
+All examples in the autolens workspace use the nested sampling algorithm 
+Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most 
+accurate and efficient modeling results.
 
- - `autolens_workspace/*/guides/modeling/searches`.
- - `autolens_workspace/*/guides/modeling/customize`
-  
-Give overviews of the non-linear searches **PyAutoLens** supports and more details on how to customize the
-model-fit, including the priors on the model.
+Nautilus has one main setting that trades-off accuracy and computational run-time, the number of `live_points`. 
+A higher number of live points gives a more accurate result, but increases the run-time. A lower value give 
+less reliable lens modeling (e.g. the fit may infer a local maxima), but is faster. 
 
-The `name` and `path_prefix` below specify the path where results are stored in the output folder:  
-
- `/autolens_workspace/output/imaging/simple/mass[sie]_source[bulge]/unique_identifier`.
+The suitable value depends on the model complexity whereby models with more parameters require more live points. 
+The default value of 200 is sufficient for the vast majority of common lens models. Lower values often given reliable
+results though, and speed up the run-times. In this example, given the model is quite simple (N=21 parameters), we 
+reduce the number of live points to 100 to speed up the run-time.
 
 __Unique Identifier__
 
 In the path above, the `unique_identifier` appears as a collection of characters, where this identifier is generated 
 based on the model, search and dataset that are used in the fit.
  
-An identical combination of model, search and dataset generates the same identifier, meaning that rerunning the
-script will use the existing results to resume the model-fit. In contrast, if you change the model, search or dataset,
-a new unique identifier will be generated, ensuring that the model-fit results are output into a separate folder.
+An identical combination of model and search generates the same identifier, meaning that rerunning the script will use 
+the existing results to resume the model-fit. In contrast, if you change the model or search, a new unique identifier 
+will be generated, ensuring that the model-fit results are output into a separate folder.
+
+We additionally want the unique identifier to be specific to the dataset fitted, so that if we fit different datasets
+with the same model and search results are output to a different folder. We achieve this below by passing 
+the `dataset_name` to the search's `unique_tag`.
+
+__Iterations Per Update__
+
+Every `iterations_per_quick_update`, the non-linear search outputs the maximum likelihood model and its best fit 
+image to the Jupyter Notebook display and to hard-disk.
+
+This process takes around ~10 seconds, so we don't want it to happen too often so as to slow down the overall
+fit, but we also want it to happen frequently enough that we can track the progress.
+
+The value of 10000 below means this output happens every few minutes on GPU and every ~10 minutes on CPU, a good balance.
 """
 search = af.Nautilus(
-    path_prefix=Path("interferometer") / "modeling",
-    name="start_here",
-    unique_tag=dataset_name,
-    n_live=75,
-    iterations_per_quick_update=50000,
+    path_prefix=Path("interferometer"),  # The path where results and output are stored.
+    name="modeling",  # The name of the fit and folder results are output to.
+    unique_tag=dataset_name,  # A unique tag which also defines the folder.
+    n_live=75,  # The number of Nautilus "live" points, increase for more complex models.
+    n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
+    iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
 )
 
 """
 __Analysis__
 
-The `AnalysisInterferometer` object defines the `log_likelihood_function` used by the non-linear search to fit the 
-model to the `Interferometer`dataset.
+We next create an `AnalysisInterferometer` object, which can be given many inputs customizing how the lens model is 
+fitted to the data (in this example they are omitted for simplicity).
+
+Internally, this object defines the `log_likelihood_function` used by the non-linear search to fit the model to 
+the `Interferometer` dataset. 
+
+It is not vital that you as a user understand the details of how the `log_likelihood_function` fits a lens model to 
+data, but interested readers can find a step-by-step guide of the likelihood 
+function at ``autolens_workspace/*/interferometer/log_likelihood_function`
 
 __JAX__
 
@@ -209,19 +294,35 @@ Run times are dictated by two factors:
  - The number of iterations (e.g. log likelihood evaluations) performed by the non-linear search: more complex lens
    models require more iterations to converge to a solution.
    
-For this analysis, the log likelihood evaluation time is ~0.01 seconds on CPU, < 0.001 seconds on GPU, which is 
+For this analysis, the log likelihood evaluation time is < 0.001 seconds on GPU, < 0.01 seconds on CPU, which is 
 extremely fast for lens modeling. 
 
 To estimate the expected overall run time of the model-fit we multiply the log likelihood evaluation time by an 
-estimate of the number of iterations the non-linear search will perform. For this model, this is typically around
-? iterations, meaning that this script takes ? on CPU and ? on GPU.
+estimate of the number of iterations the non-linear search will perform, which is around 10000 to 30000 for this model.
+
+GPU run times are around 10 minutes, CPU run times are around 30 minutes.
 
 __Model-Fit__
 
 We can now begin the model-fit by passing the model and analysis object to the search, which performs the 
 Nautilus non-linear search in order to find which models fit the data with the highest likelihood.
+
+**Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce 
+an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
 """
+print(
+    """
+    The non-linear search has begun running.
+
+    This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
+
+    On-the-fly updates every iterations_per_quick_update are printed to the notebook.
+    """
+)
+
 result = search.fit(model=model, analysis=analysis)
+
+print("The search has finished run - you may now continue the notebook.")
 
 """
 __Output Folder__
@@ -240,11 +341,11 @@ The `output` folder includes:
  
  - `model.results`: Summarizes the highest likelihood lens model inferred so far including errors.
  
- - `images`: Visualization of the highest likelihood model-fit to the dataset, (e.g. a fit subplot showing the lens 
- and source galaxies, model data and residuals).
+ - `image`: Visualization of the highest likelihood model-fit to the dataset, (e.g. a fit subplot showing the lens 
+ and source galaxies, model data and residuals) in .png and .fits formats.
  
- - `files`: A folder containing .fits files of the dataset, the model as a human-readable .json file, 
- a `.csv` table of every non-linear search sample and other files containing information about the model-fit.
+ - `files`: A folder containing human-readable .json file describing the model, search and other aspects of the fit and 
+   a `.csv` table of every non-linear search sample.
  
  - search.summary: A file providing summary statistics on the performance of the non-linear search.
  
@@ -264,7 +365,7 @@ print(result.info)
 """
 We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 """
 print(result.max_log_likelihood_instance)
 
@@ -301,7 +402,7 @@ to fit more complex models to your data.
 
 __Features__
 
-The examples in the `autolens_workspace/*/interferometer/modeling/features` package illustrate other lens modeling 
+The examples in the `autolens_workspace/*/interferometer/features` package illustrate other lens modeling 
 features. 
 
 We recommend you checkout the following two features, because they make lens modeling of interferometer datasets 
@@ -311,6 +412,7 @@ quality of your data and scientific topic of study).
 We recommend you now checkout the following two features for interferometer modeling:
 
 - ``linear_light_profiles``: The model light profiles use linear algebra to solve for their intensity, reducing model complexity.
+- ``multi_gaussian_expansion``: The lens (or source) light is modeled as ~25-100 Gaussian basis functions.
 - ``pixelization``: The source is reconstructed using an adaptive RectangularMagnification or Voronoi mesh.
 
 The files `autolens_workspace/*/guides/modeling/searches` and `autolens_workspace/*/guides/modeling/customize`
@@ -339,4 +441,11 @@ This deeper insight is offered by the **HowToLens** Jupyter notebook lectures, f
 at `autolens_workspace/*/howtolens`. 
 
 I recommend that you check them out if you are interested in more details!
+
+__Modeling Customization__
+
+The folders `autolens_workspace/*/guides/modeling/searches` gives an overview of alternative non-linear searches,
+other than Nautilus, that can be used to fit lens models. 
+
+They also provide details on how to customize the model-fit, for example the priors.
 """

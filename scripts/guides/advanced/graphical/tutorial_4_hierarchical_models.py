@@ -195,7 +195,9 @@ Note that in previous tutorials, when we created the `FactorGraphModel` we only 
 which contained the necessary information on the model create the factor graph that was fitted. The `AnalysisFactor`'s
 were created before we composed the `HierachicalFactor` and we pass it separately when composing the factor graph.
 """
-factor_graph = af.FactorGraphModel(*analysis_factor_list, hierarchical_factor)
+factor_graph = af.FactorGraphModel(
+    *analysis_factor_list, hierarchical_factor, use_jax=True
+)
 
 """
 The factor graph model `info` attribute shows that the hierarchical factor's parameters are included in the model.

@@ -249,5 +249,5 @@ for on-the-fly visualization and results).
 result = search.fit(model=model, analysis=analysis)
 
 """
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 """

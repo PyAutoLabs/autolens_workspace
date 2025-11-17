@@ -27,7 +27,7 @@ act as part of the main lens galaxy's mass distribution.
 Therefore, when modeling extra galaxies we input the centre of each, in order to fix their light and mass profile
 centres or set up priors centre around these values.
 
-The `data_preparation` tutorial `autolens_workspace/*/data_preparation/imaging/examples/optional/extra_galaxies_centres.py`
+The `data_preparation` tutorial `autolens_workspace/*/imaging/data_preparation/examples/optional/extra_galaxies_centres.py`
 describes how to create these centres. Using this script they have been output to the `.json` file we load below.
 
 __Preqrequisites__

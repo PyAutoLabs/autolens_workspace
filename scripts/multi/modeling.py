@@ -225,7 +225,7 @@ The key outcomes of this setup are:
 This is a basic use of **PyAutoFit**'s graphical modeling capabilities, which support advanced hierarchical 
 and probabilistic modeling for large, multi-dataset analyses.
 """
-factor_graph = af.FactorGraphModel(*analysis_factor_list)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 """
 To inspect this new model, with extra parameters for each dataset created, we 
@@ -237,11 +237,14 @@ print(factor_graph.global_prior_model.info)
 __Search__
 """
 search = af.Nautilus(
-    path_prefix=Path("multi") / "modeling",
-    name="start_here",
-    unique_tag=dataset_name,
-    n_live=150,
-    iterations_per_quick_update=1000,
+    path_prefix=Path(
+        "multi_wavelength"
+    ),  # The path where results and output are stored.
+    name="modeling",  # The name of the fit and folder results are output to.
+    unique_tag=dataset_name,  # A unique tag which also defines the folder.
+    n_live=150,  # The number of Nautilus "live" points, increase for more complex models.
+    n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
+    iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
 )
 
 """
@@ -253,8 +256,24 @@ Unlike single-dataset fitting, we now pass the `factor_graph.global_prior_model`
 the `factor_graph` itself as the analysis object.
 
 This structure enables simultaneous fitting of multiple datasets in a consistent and scalable way.
+
+**Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce 
+an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
 """
+print(
+    """
+    The non-linear search has begun running.
+
+    This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
+
+    On-the-fly updates every iterations_per_quick_update are printed to the notebook.
+    """
+)
+
 result_list = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
+
+print("The search has finished run - you may now continue the notebook.")
+
 
 """
 __Result__

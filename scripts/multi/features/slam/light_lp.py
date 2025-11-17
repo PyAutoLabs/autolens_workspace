@@ -92,7 +92,7 @@ def run(
 
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
     search = af.DynestyStatic(
         name="light[1]",

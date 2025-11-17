@@ -29,12 +29,12 @@ __Other Scripts__
 
 This dataset is used in the following scripts:
 
- `autolens_workspace/*/data_preparation/imaging/examples/optional/scaled_dataset.ipynb`
+ `autolens_workspace/*/imaging/data_preparation/examples/optional/scaled_dataset.ipynb`
 
 To illustrate how to subtract and remove the light of extra galaxies in real strong lensing data, so that it does
 not impact the lens model.
 
- `autolens_workspace/*/data_preparation/imaging/examples/optional/extra_galaxies_centres.ipynb`
+ `autolens_workspace/*/imaging/data_preparation/examples/optional/extra_galaxies_centres.ipynb`
 
 To illustrate how mark extra galaxy centres on a dataset so they can be used in the lens model.
 

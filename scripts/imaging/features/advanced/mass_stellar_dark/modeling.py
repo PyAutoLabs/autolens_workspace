@@ -37,10 +37,10 @@ __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a linear parametric `Sersic`.
+ - The lens galaxy's light is a linear `Sersic`.
  - The lens galaxy's stellar mass distribution is tied to the light model above.
  - The lens galaxy's dark matter mass distribution is a `NFW`.
- - The source galaxy's light is a linear parametric `SersicCore`.
+ - The source galaxy's light is a Multi Gaussian Expansion.
 
 __Start Here Notebook__
 
@@ -114,14 +114,14 @@ __Model__
 
 We compose a lens model where:
 
- - The lens galaxy's light and stellar mass is a linear parametric `Sersic` [7 parameters].
+ - The lens galaxy's light and stellar mass is a linear `Sersic` [7 parameters].
 
  - The lens galaxy's dark matter mass distribution is a `NFW` whose centre is aligned with the 
  `Sersic` bulge of the light and stellar mass model above [5 parameters].
 
  - The lens mass model also includes an `ExternalShear` [2 parameters].
 
- - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
+ - The source galaxy's light is a Multi Gaussian Expansion [4 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=22.
 
@@ -176,7 +176,7 @@ The model is fitted to the data using the nested sampling algorithm Nautilus (se
 description).
 """
 search = af.Nautilus(
-    path_prefix=Path("imaging") / "modeling",
+    path_prefix=Path("imaging") / "features",
     name="mass_stellar_dark",
     unique_tag=dataset_name,
     n_live=150,
@@ -235,7 +235,7 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 
 These examples include a results API with specific tools for visualizing and analysing decomposed mass model,
 for example 1D plots which separately show the density of stars and dark matter as a function of radius.

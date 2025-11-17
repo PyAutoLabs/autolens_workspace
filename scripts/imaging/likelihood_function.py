@@ -2,7 +2,7 @@
 __Log Likelihood Function: Inversion (Parametric)__
 
 This script provides a step-by-step guide of the `log_likelihood_function` which is used to fit `Imaging` data with
-a parametric lens light profile and source light profile (e.g. an elliptical Sersic lens and source).
+a lens light profile and source light profile (e.g. an elliptical Sersic lens and source).
 
 This script has the following aims:
 

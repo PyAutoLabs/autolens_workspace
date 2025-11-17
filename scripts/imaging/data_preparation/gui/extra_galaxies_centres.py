@@ -5,7 +5,7 @@ GUI Preprocessing: Extra Galaxies Centres
 There may be extra galaxies nearby the lens and source galaxies, whose emission blends with the lens and source
 and whose mass may contribute to the ray-tracing and lens model.
 
-The example `data_preparation/imaging/example/optional/extra_galaxies_centres.py` provides a full description of
+The example `imaging/data_preparation/example/optional/extra_galaxies_centres.py` provides a full description of
 what the extra galaxies are and how they are used in the model-fit. You should read this script first before
 using this script.
 

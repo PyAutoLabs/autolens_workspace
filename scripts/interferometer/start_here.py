@@ -184,21 +184,43 @@ support, your fits will run much faster (around 10 minutes instead of an hour). 
 JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
 
 If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
+
+**Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce 
+an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
 """
 search = af.Nautilus(
-    path_prefix=Path("interferometer"),
-    name="start_here",
+    path_prefix=Path("interferometer"),  # The path where results and output are stored.
+    name="start_here",  # The name of the fit and folder results are output to.
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=75,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
-    iterations_per_quick_update=2500,  # Every N iterations the max likelihood model is visualized and written to output folder.
+    iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
 )
 
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
+
+"""
+The code below begins the model-fit. This will take around 10 minutes with a GPU, or 20-30 minutes with a CPU.
+
+**Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce 
+an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
+"""
+print(
+    """
+    The non-linear search has begun running.
+
+    This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
+
+    On-the-fly updates every iterations_per_quick_update are printed to the notebook.
+    """
+)
+
 result = search.fit(model=model, analysis=analysis)
+
+print("The search has finished run - you may now continue the notebook.")
 
 """
 __Result__

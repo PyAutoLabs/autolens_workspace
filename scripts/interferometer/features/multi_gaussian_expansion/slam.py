@@ -137,10 +137,10 @@ The MASS TOTAL PIPELINE uses one search to fits a complex lens mass model to a h
 using the lens mass model and source model of the SOURCE PIPELINE to initialize the model priors. In this example it:
 
  - Uses an `PowerLaw` model for the lens's total mass distribution [priors initialized from SOURCE 
- PARAMETRIC PIPELINE + The centre if unfixed from (0.0, 0.0)].
+ LIGHT PROFILE PIPELINE + The centre if unfixed from (0.0, 0.0)].
  
  - Uses the an MGE model representing a bulge for the source's light [priors initialized from SOURCE 
- PARAMETRIC PIPELINE].
+ LIGHT PROFILE PIPELINE].
  
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL PIPELINE.
 """

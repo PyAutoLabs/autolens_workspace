@@ -71,7 +71,7 @@ def run_1_no_subhalo(
 
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
     search = af.DynestyStatic(
         name="subhalo[1]",
@@ -193,7 +193,7 @@ def run_2_grid_search(
 
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
     search = af.DynestyStatic(
         name=f"subhalo[2]_[{search_tag}]",
@@ -335,7 +335,7 @@ def run_3_subhalo(
 
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
     search = af.DynestyStatic(
         name=f"subhalo[3]_[{refine_tag}]",

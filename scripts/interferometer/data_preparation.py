@@ -132,7 +132,7 @@ The following scripts are used to prepare components of an interferometer datase
 identical fashion for dataset datasets.
 
 Therefore, they are not located in the `interferometer/data_preparation` package, but instead in the
-`data_preparation/imaging` package, so refer there for a description of their usage.
+`imaging/data_preparation` package, so refer there for a description of their usage.
 
 Note that in order to perform some tasks (e.g. mark on the image where the source is), you will need to use an image
 of the interferometer data even though visibilities are used for the analysis.

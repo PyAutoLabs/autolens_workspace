@@ -141,6 +141,6 @@ mask.output_to_fits(file_path=Path(dataset_path, "mask.fits"), overwrite=True)
 
 """
 The workspace also includes a GUI for drawing a mask, which can be found at 
-`autolens_workspace/*/data_preparation/imaging/gui/mask.py`. This tools allows you to draw the mask via a `spray paint` mouse
+`autolens_workspace/*/imaging/data_preparation/gui/mask.py`. This tools allows you to draw the mask via a `spray paint` mouse
 icon, such that you can draw irregular masks more tailored to the source's light.
 """

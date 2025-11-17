@@ -74,7 +74,7 @@ __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' point-source strong lens with a model where:
 
- - The lens galaxy's light is a parametric linear `Sersic` bulge.
+ - The lens galaxy's light is a linear `Sersic` bulge.
  - The multiple images of the lensed source are each fitted with a `Gaussian` operated linear light profile.
 
 __Start Here Notebook__
@@ -130,7 +130,8 @@ __Model__
 
 We compose a lens model where:
 
- - The lens galaxy's light is a linear parametric `Sersic` bulge [6 parameters].
+ - The lens galaxy's light is a linear `Sersic` bulge [6 parameters].
+ 
  - The four image-plane multiple images of the lensed source are each fitted with a `Gaussian` operated linear light 
  profile [4 x 5 = 20 parameters].
 

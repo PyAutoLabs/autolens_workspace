@@ -4,7 +4,7 @@ __Log Likelihood Function: Multi Gaussian Expansion__
 This script provides a step-by-step guide of the `log_likelihood_function` which is used to fit `Imaging` data with
 a multi-Gaussian expansion (MGE), which is a superposition of multiple 2D Gaussian linear light profiles.
 
-You should be familiar with the `log_likelihood_function` of a parametric linear light profile before reading this script,
+You should be familiar with the `log_likelihood_function` of a linear light profile before reading this script,
 which is described in the `log_likelihood_function/imaging/linear_light_profile/likelihood_function.ipynb` notebook.
 
 This script has the following aims:
@@ -19,7 +19,7 @@ packages are called when the likelihood is evaluated.
 
 __Prerequisites__
 
-The likelihood function of a multi Gaussian expansion builds on that used for standard parametric light profiles and
+The likelihood function of a multi Gaussian expansion builds on that used for standard light profiles and
 linear light profiles, therefore you must read the following notebooks before this script:
 
 - `light_profile/likelihood_function.ipynb`.

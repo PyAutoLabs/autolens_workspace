@@ -93,7 +93,7 @@ for dataset in dataset_list:
 __Positions__
 
 This fit also uses the arc-second positions of the multiply imaged lensed source galaxy, which were drawn onto the
-image via the GUI described in the file `autolens_workspace/*/data_preparation/imaging/gui/positions.py`.
+image via the GUI described in the file `autolens_workspace/*/imaging/data_preparation/gui/positions.py`.
 """
 positions = al.Grid2DIrregular(
     al.from_json(file_path=Path(dataset_path, "positions.json"))
@@ -151,7 +151,7 @@ for analysis in analysis_list:
 
     analysis_factor_list.append(analysis_factor)
 
-factor_graph = af.FactorGraphModel(*analysis_factor_list)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 """
 The `info` of the model shows us there are two models each with their own regularization coefficient as a free parameter.
@@ -207,5 +207,5 @@ for result in result_list:
     plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 """

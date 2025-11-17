@@ -112,7 +112,7 @@ al.output_to_json(
 
 """
 The workspace also includes a GUI for drawing extra galaxy centres, which can be found at 
-`autolens_workspace/*/data_preparation/imaging/gui/extra_galaxies_centres.py`. 
+`autolens_workspace/*/imaging/data_preparation/gui/extra_galaxies_centres.py`. 
 
 This tools allows you `click` on the image where an image of the lensed source is, and it will use the brightest pixel 
 within a 5x5 box of pixels to select the coordinate.

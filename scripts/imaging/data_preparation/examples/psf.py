@@ -42,7 +42,7 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-Setup the path the datasets we'll use to illustrate preprocessing, which is the folder `dataset/data_preparation/imaging`.
+Setup the path the datasets we'll use to illustrate preprocessing, which is the folder `dataset/imaging/data_preparation`.
 """
 dataset_path = Path("dataset", "imaging", "simple")
 

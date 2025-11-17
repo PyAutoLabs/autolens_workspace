@@ -49,7 +49,7 @@ __Contents__
 __Advantages__
 
 Many strongly lensed source galaxies are complex, and have asymmetric and irregular morphologies. These morphologies
-cannot be well approximated by a parametric light profiles like a Sersic, or many Sersics, and thus a pixelization
+cannot be well approximated by a light profiles like a Sersic, or many Sersics, and thus a pixelization
 is required to reconstruct the source's irregular light.
 
 Even basis functions like shapelets or a multi-Gaussian expansion cannot reconstruct a source-plane accurately
@@ -578,7 +578,7 @@ The source reconstruction(s) are mapped to the image-plane in order to fit the l
 
 These mapped reconstructed images are also accessible via the `Inversion`. 
 
-Note that any parametric light profiles in the lens model (e.g. the `bulge` and `disk` of a lens galaxy) are not 
+Note that any light profiles in the lens model (e.g. the `bulge` and `disk` of a lens galaxy) are not 
 included in this image -- it only contains the source.
 """
 print(inversion.mapped_reconstructed_image.native)

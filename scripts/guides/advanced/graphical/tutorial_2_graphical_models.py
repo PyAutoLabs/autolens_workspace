@@ -140,7 +140,7 @@ sample. In this example, there are 3 lenses each with their own model, therefore
  - Each lens galaxy's total mass distribution is an `PowerLawSph` with its centre fixed to its true value of 
  (0.0, 0.0) [1 parameter].
  
- - Each source galaxy's light is a linear parametric `ExponentialSph` [3 parameters].
+ - Each source galaxy's light is a linear `ExponentialSph` [3 parameters].
 
  - There are three lenses in our graphical model [3 x 1 = 3 parameters]. 
 
@@ -224,7 +224,7 @@ our overall graphical model. This is effectively the `AnalysisFactor` objects we
 - Links: these define the model components and parameters that are shared across different nodes and thus retain the 
 same values when fitting different datasets.
 """
-factor_graph = af.FactorGraphModel(*analysis_factor_list)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 """
 The fit will use the factor graph's `global_prior_model`, which uses the models contained in every analysis factor 

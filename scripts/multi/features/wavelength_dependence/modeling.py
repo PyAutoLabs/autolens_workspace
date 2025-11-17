@@ -206,7 +206,7 @@ for wavelength, analysis in zip(wavelength_list, analysis_list):
 """
 The factor graph is created and its info can be printed after the relational model has been defined.
 """
-factor_graph = af.FactorGraphModel(*analysis_factor_list)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 print(factor_graph.global_prior_model.info)
 
@@ -262,5 +262,5 @@ for result in result_list:
     plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 """

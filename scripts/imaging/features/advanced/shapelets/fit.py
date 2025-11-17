@@ -379,7 +379,7 @@ We compose our model using `Model` objects, which represent the galaxies we fit 
 example we fit a model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
- - The source galaxy's bulge is a superposition of 10 parametric linear `ShapeletCartesianSph` profiles [3 parameters]. 
+ - The source galaxy's bulge is a superposition of 10 linear `ShapeletCartesianSph` profiles [3 parameters]. 
  - The centres of the Shapelets are all linked together.
  - The size of the Shapelet basis is controlled by a `beta` parameter, which is the same for all Shapelet basis 
    functions.
@@ -460,7 +460,7 @@ The model is fitted to the data using the nested sampling algorithm Nautilus (se
 full description).
 """
 search = af.Nautilus(
-    path_prefix=Path("imaging") / "modeling",
+    path_prefix=Path("imaging") / "features",
     name="shapelets",
     unique_tag=dataset_name,
     n_live=150,
@@ -516,7 +516,7 @@ print(result.info)
 """
 We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 """
 print(result.max_log_likelihood_instance)
 

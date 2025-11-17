@@ -85,7 +85,7 @@ to the source emission than the annular masks above..
 
 To create the .fits file of a mask, we use a GUI tool which is described in the following script:
 
- `autolens_workspace/*/data_preparation/imaging/gui/mask.py`
+ `autolens_workspace/*/imaging/data_preparation/gui/mask.py`
 """
 mask = al.Mask2D.from_fits(
     file_path=Path(dataset_path, "mask_gui.fits"),
@@ -200,7 +200,7 @@ the dataset itself.
 
 To create this file, we used a GUI to `draw on` the positions with our mouse. This GUI can be found in the script:
 
- `autolens_workspace/*/data_preparation/imaging/gui/positions.py`
+ `autolens_workspace/*/imaging/data_preparation/gui/positions.py`
 
 If you wish to use positions for modeling your own lens data, you should use this script to draw on the positions of
 every lens in you dataset.

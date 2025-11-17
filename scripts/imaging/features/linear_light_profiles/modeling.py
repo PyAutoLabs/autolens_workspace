@@ -61,9 +61,9 @@ __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a parametric linear `Sersic` bulge.
+ - The lens galaxy's light is a linear `Sersic` bulge.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric linear `Sersic`.
+ - The source galaxy's light is a linear `Sersic`.
 
 __Start Here Notebook__
 
@@ -145,11 +145,11 @@ __Model__
 
 We compose a lens model where:
 
- - The lens galaxy's light is a linear parametric `Sersic` bulge [6 parameters].
+ - The lens galaxy's light is a linear `Sersic` bulge [6 parameters].
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
 
- - The source galaxy's light is a linear parametric `Sersic` [6 parameters].
+ - The source galaxy's light is a linear `Sersic` [6 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=19.
 
@@ -200,7 +200,7 @@ light profiles this is reduced to 100, as the simpler parameter space means we n
 accurately. This will lead to faster run times.
 """
 search = af.Nautilus(
-    path_prefix=Path("imaging") / "modeling",
+    path_prefix=Path("imaging") / "features",
     name="linear_light_profiles",
     unique_tag=dataset_name,
     n_live=100,
@@ -320,7 +320,7 @@ galaxy_plotter.figures_2d(image=True)
 """
 __Wrap Up__
 
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 
 In particular, checkout the results example `linear.py` which details how to extract all information about linear
 light profiles from a fit.

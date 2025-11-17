@@ -219,7 +219,7 @@ for i, analysis in enumerate(analysis_list):
 
     analysis_factor_list.append(analysis_factor)
 
-factor_graph = af.FactorGraphModel(*analysis_factor_list)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 """
 __Search__
@@ -267,5 +267,5 @@ for result in result_list:
     plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 """

@@ -58,7 +58,7 @@ __Contents__
 __Advantages__
 
 Many strongly lensed source galaxies are complex, and have asymmetric and irregular morphologies. These morphologies
-cannot be well approximated by a parametric light profiles like a Sersic, or many Sersics, and thus a pixelization
+cannot be well approximated by a light profiles like a Sersic, or many Sersics, and thus a pixelization
 is required to reconstruct the source's irregular light.
 
 Even basis functions like shapelets or a multi-Gaussian expansion cannot reconstruct a source-plane accurately
@@ -73,11 +73,11 @@ enables this.
 
 __Disadvantages__
 
-Pixelizations are computationally slow and run times are typically longer than a parametric source model. It is not
+Pixelizations are computationally slow and run times are typically longer than a source model. It is not
 uncommon for lens models using a pixelization to take hours or even days to fit high resolution imaging
 data (e.g. Hubble Space Telescope imaging).
 
-Lens modeling with pixelizations is also more complex than parametric source models, with there being more things
+Lens modeling with pixelizations is also more complex than source models, with there being more things
 that can go wrong. For example, there are solutions where a demagnified version of the lensed source galaxy is
 reconstructed, using a mass model which effectively has no mass or too much mass. These are described in detail below.
 
@@ -347,7 +347,7 @@ Position thresholding is described in more detail in the
 script `autolens_workspace/*/guides/modeling/customize`
 
 The arc-second positions of the multiply imaged lensed source galaxy were drawn onto the
-image via the GUI described in the file `autolens_workspace/*/data_preparation/imaging/gui/positions.py`.
+image via the GUI described in the file `autolens_workspace/*/imaging/data_preparation/gui/positions.py`.
 """
 positions = al.Grid2DIrregular(
     al.from_json(file_path=Path(dataset_path, "positions.json"))

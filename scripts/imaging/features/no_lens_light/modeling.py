@@ -47,7 +47,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a linear parametric `SersicCore`.
+ - The source galaxy's light is a Multi Gaussian Expansion.
 
 __Start Here Notebook__
 
@@ -65,217 +65,208 @@ import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
+"""
+__Dataset__
 
-def fit():
-    """
-    __Dataset__
+Load and plot the strong lens dataset `simple__no_lens_light` via .fits files
+"""
+dataset_name = "simple__no_lens_light"
+dataset_path = Path("dataset") / "imaging" / dataset_name
 
-    Load and plot the strong lens dataset `simple__no_lens_light` via .fits files
-    """
-    dataset_name = "simple__no_lens_light"
-    dataset_path = Path("dataset") / "imaging" / dataset_name
+dataset = al.Imaging.from_fits(
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    pixel_scales=0.1,
+)
 
-    dataset = al.Imaging.from_fits(
-        data_path=dataset_path / "data.fits",
-        psf_path=dataset_path / "psf.fits",
-        noise_map_path=dataset_path / "noise_map.fits",
-        pixel_scales=0.1,
-    )
+dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
+dataset_plotter.subplot_dataset()
 
-    dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
-    dataset_plotter.subplot_dataset()
+"""
+__Mask__
 
-    """
-    __Mask__
+Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
+"""
+mask_radius = 3.0
+mask = al.Mask2D.circular(
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
+)
 
-    Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
-    """
-    mask_radius = 3.0
-    mask = al.Mask2D.circular(
-        shape_native=dataset.shape_native,
-        pixel_scales=dataset.pixel_scales,
-        radius=mask_radius,
-    )
+dataset = dataset.apply_mask(mask=mask)
 
-    dataset = dataset.apply_mask(mask=mask)
+dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
+dataset_plotter.subplot_dataset()
 
-    dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
-    dataset_plotter.subplot_dataset()
+"""
+__Over Sampling__
 
-    """
-    __Over Sampling__
+Whereas we normally apply adaptive over sampling for the lens light, when its not present we do not need to.
 
-    Whereas we normally apply adaptive over sampling for the lens light, when its not present we do not need to.
+__Fit__
 
-    __Fit__
+This is to illustrate the API for performing a fit without lens light using standard autolens objects like 
+the `Galaxy`, `Tracer` and `FitImaging`.
 
-    This is to illustrate the API for performing a fit without lens light using standard autolens objects like 
-    the `Galaxy`, `Tracer` and `FitImaging`.
+We simply do not input a `bulge` with a light profile into the `lens`.
+"""
+lens = al.Galaxy(
+    redshift=0.5,
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.6,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+    ),
+    shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
+)
 
-    We simply do not input a `bulge` with a light profile into the `lens`.
-    """
-    lens = al.Galaxy(
-        redshift=0.5,
-        mass=al.mp.Isothermal(
-            centre=(0.0, 0.0),
-            einstein_radius=1.6,
-            ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
-        ),
-        shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
-    )
+source = al.Galaxy(
+    redshift=1.0,
+    bulge=al.lp_linear.SersicCore(
+        centre=(0.0, 0.0),
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
+        effective_radius=0.1,
+        sersic_index=1.0,
+    ),
+)
 
-    source = al.Galaxy(
-        redshift=1.0,
-        bulge=al.lp_linear.SersicCore(
-            centre=(0.0, 0.0),
-            ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
-            effective_radius=0.1,
-            sersic_index=1.0,
-        ),
-    )
+tracer = al.Tracer(galaxies=[lens, source])
 
-    tracer = al.Tracer(galaxies=[lens, source])
+fit = al.FitImaging(dataset=dataset, tracer=tracer)
 
-    fit = al.FitImaging(dataset=dataset, tracer=tracer)
+"""
+By plotting the fit, we see that the lens light is not included in the model fit.
+"""
+fit_plotter = aplt.FitImagingPlotter(fit=fit)
+fit_plotter.subplot_fit()
 
-    """
-    By plotting the fit, we see that the lens light is not included in the model fit.
-    """
-    fit_plotter = aplt.FitImagingPlotter(fit=fit)
-    fit_plotter.subplot_fit()
+"""
+__Model__
 
-    """
-    __Model__
+We compose a lens model where:
 
-    We compose a lens model where:
+ - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
 
-     - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The source galaxy's light is a Multi Gaussian Expansion [6 parameters].
 
-     - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 
-    The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
+The lens galaxy does not include a light profile `bulge` or `disk` component, and thus its emission is not fitted for.
 
-    The lens galaxy does not include a light profile `bulge` or `disk` component, and thus its emission is not fitted for.
+__Model Cookbook__
 
-    __Model Cookbook__
+A full description of model composition is provided by the model cookbook: 
 
-    A full description of model composition is provided by the model cookbook: 
+https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
+"""
+# Lens:
 
-    https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
-    """
-    # Lens:
+mass = af.Model(al.mp.Isothermal)
+shear = af.Model(al.mp.ExternalShear)
 
-    mass = af.Model(al.mp.Isothermal)
-    shear = af.Model(al.mp.ExternalShear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
-    lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+# Source:
 
-    # Source:
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=1,
+    centre_prior_is_uniform=False,
+)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
-    bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius,
-        total_gaussians=20,
-        gaussian_per_basis=1,
-        centre_prior_is_uniform=False,
-    )
-    source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+# Overall Lens Model:
 
-    # Overall Lens Model:
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
-    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+"""
+The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
+`start_here.ipynb` for a description of how to fix this).
 
-    """
-    The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
-    `start_here.ipynb` for a description of how to fix this).
+This confirms that the lens galaxy's light is omitted from the model-fit.
+"""
+print(model.info)
 
-    This confirms that the lens galaxy's light is omitted from the model-fit.
-    """
-    print(model.info)
+"""
+__Search__
 
-    """
-    __Search__
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
+full description).
+"""
+search = af.Nautilus(
+    path_prefix=Path("imaging") / "features",
+    name="no_lens_light",
+    unique_tag=dataset_name,
+    n_live=100,
+    #        iterations_per_quick_update=1000
+)
 
-    The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
-    full description).
-    """
-    search = af.Nautilus(
-        path_prefix=Path("imaging") / "modeling",
-        name="no_lens_light",
-        unique_tag=dataset_name,
-        n_live=100,
-        #        iterations_per_quick_update=1000
-    )
+"""
+__Analysis__
 
-    """
-    __Analysis__
+Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
+"""
+analysis = al.AnalysisImaging(dataset=dataset)
 
-    Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
-    """
-    analysis = al.AnalysisImaging(dataset=dataset)
+"""
+__Run Time__
 
-    """
-    __Run Time__
+The likelihood evaluation time for fits to data without lens light are only small bit faster than fits to data with
+lens light. This is because the most computationally expensive steps (e.g. computing the deflection angles, blurring
+the image with the PSF) are performed for both model-fits.
 
-    The likelihood evaluation time for fits to data without lens light are only small bit faster than fits to data with
-    lens light. This is because the most computationally expensive steps (e.g. computing the deflection angles, blurring
-    the image with the PSF) are performed for both model-fits.
+However, the overall run-time will be faster than before, as the removal of the lens light reduces the dimensionality
+of non-linear parameter space by 7 or more parameters. This means that the non-linear search will more efficiently
+converge on the highest likelihood regions of parameter space.
 
-    However, the overall run-time will be faster than before, as the removal of the lens light reduces the dimensionality
-    of non-linear parameter space by 7 or more parameters. This means that the non-linear search will more efficiently
-    converge on the highest likelihood regions of parameter space.
+__Model-Fit__
 
-    __Model-Fit__
+We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder
+for on-the-fly visualization and results).
+"""
+result = search.fit(model=model, analysis=analysis)
 
-    We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder
-    for on-the-fly visualization and results).
-    """
-    result = search.fit(model=model, analysis=analysis)
+"""
+__Result__
 
-    """
-    __Result__
+The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
+`start_here.ipynb` for a description of how to fix this).
 
-    The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
-    `start_here.ipynb` for a description of how to fix this).
+This confirms there is no lens galaxy light in the model-fit.
+"""
+print(result.info)
 
-    This confirms there is no lens galaxy light in the model-fit.
-    """
-    print(result.info)
+"""
+We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
-    """
-    We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
+"""
+print(result.max_log_likelihood_instance)
 
-    Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
-    """
-    print(result.max_log_likelihood_instance)
+tracer_plotter = aplt.TracerPlotter(
+    tracer=result.max_log_likelihood_tracer, grid=result.grids.lp
+)
+tracer_plotter.subplot_tracer()
 
-    tracer_plotter = aplt.TracerPlotter(
-        tracer=result.max_log_likelihood_tracer, grid=result.grids.lp
-    )
-    tracer_plotter.subplot_tracer()
+fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
+fit_plotter.subplot_fit()
 
-    fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
-    fit_plotter.subplot_fit()
+plotter = aplt.NestPlotter(samples=result.samples)
+plotter.corner_anesthetic()
 
-    plotter = aplt.NestPlotter(samples=result.samples)
-    plotter.corner_anesthetic()
+"""
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 
-    """
-    Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+__Wrap Up__
 
-    __Wrap Up__
+This script shows how to fit a lens model to data where the lens galaxy's light is not present.
 
-    This script shows how to fit a lens model to data where the lens galaxy's light is not present.
+It was a straightforward extension to the modeling API illustrated in `start_here.ipynb`, where one simply removed
+the light profiles from the lens galaxy's model.
 
-    It was a straightforward extension to the modeling API illustrated in `start_here.ipynb`, where one simply removed
-    the light profiles from the lens galaxy's model.
-
-    Models where the source has no light, or other components of the model are omitted can also be easily composed using
-    the same API manipulation.
-    """
-
-
-if __name__ == "__main__":
-    import multiprocessing as mp
-
-    mp.set_start_method("spawn", force=True)
-    fit()
+Models where the source has no light, or other components of the model are omitted can also be easily composed using
+the same API manipulation.
+"""

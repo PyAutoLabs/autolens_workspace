@@ -210,7 +210,7 @@ __Samples__
 The result's `Samples` object contains the complete set of non-linear search Nautilus samples, where each sample 
 corresponds to a set of a model parameters that were evaluated and accepted. 
 
-The examples script `autolens_workspace/*/results/examples/samples.py` provides a detailed description of 
+The examples script `autolens_workspace/*/guides/results/examples/samples.py` provides a detailed description of 
 this object, including:
 
  - Extracting the maximum likelihood lens model.
@@ -296,7 +296,7 @@ The guide `autolens_workspace/*/guides/tracer.py` provides a detailed descriptio
  - Inspecting mass model components like the convergence, potential and deflection angles.
  - Other lensing quantities like the critical curve and caustics.
 
-The examples script `autolens_workspace/*/results/examples/galaxies_fit.py` show how to use 
+The examples script `autolens_workspace/*/guides/results/examples/galaxies_fit.py` show how to use 
 model-fitting results specific functionality of galaxies, including:
 
  - Drawing tracers from the samples and plotting their images.
@@ -320,7 +320,7 @@ The guide `autolens_workspace/*/guides/fits.py` provides a detailed description 
  - Inspecting the model data, residual-map, chi-squared, noise-map of the fit.
  - Other properties of the fit that inspect how good it is.
 
-The examples script `autolens_workspace/*/results/examples/galaxies_fits.py` provides a detailed description of this 
+The examples script `autolens_workspace/*/guides/results/examples/galaxies_fits.py` provides a detailed description of this 
 object, including:
 
  - Repeating fits using the results contained in the samples.
@@ -344,7 +344,7 @@ The guide `autolens_workspace/*/guides/fits.py` provides a detailed description 
  - Extracting the lens and source galaixes from a tracer.
  - Extracting the individual light and mass profiles of the galaxies.
 
-The examples script `autolens_workspace/*/results/examples/galaxies_fits.py` shows how to use 
+The examples script `autolens_workspace/*/guides/results/examples/galaxies_fits.py` shows how to use 
 model-fitting results specific functionality of galaxies, including:
 
  - Repeating fits using the results contained in the samples.

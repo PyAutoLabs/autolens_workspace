@@ -136,7 +136,7 @@ def run_1(
 
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
     search = af.DynestyStatic(
         name="source_pix[1]",
@@ -250,7 +250,7 @@ def run_2(
 
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
     """
     __Search (Search 2)__

@@ -174,7 +174,7 @@ for model, analysis in zip(model_list, analysis_list):
 """
 We again combine our `AnalysisFactors` into one, to compose the factor graph.
 """
-factor_graph = af.FactorGraphModel(*analysis_factor_list)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 """
 The factor graph model `info` attribute shows the complex model we are fitting, including both cosmological parameters.
@@ -217,7 +217,7 @@ for model, analysis in zip(model_list, analysis_list):
 
     analysis_factor_list.append(analysis_factor)
 
-factor_graph = af.FactorGraphModel(*analysis_factor_list)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 laplace = af.LaplaceOptimiser()
 

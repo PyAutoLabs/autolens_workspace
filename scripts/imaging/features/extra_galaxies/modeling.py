@@ -27,11 +27,11 @@ To perform modeling which accounts for extra galaxies, a mask of their emission 
 galaxy are used to set up the model-fit. For the example dataset used here, these tasks have already been performed and
 the metadata (`mask_extra_galaxies.fits` and `extra_galaxies_centres.json` are already included in results folder.
 
-The tutorial `autolens_workspace/*/data_preparation/imaging/optional/extra_galaxies_centres.py`
+The tutorial `autolens_workspace/*/imaging/data_preparation/optional/extra_galaxies_centres.py`
 describes how to create these centres and output them to a `.json` file.
 
 To mask the emission of extra galaxies and omit them from the fit, a `mask_extra_galaxies.fits` file is required.
-The `data_preparation` tutorial `autolens_workspace/*/data_preparation/imaging/optional/mask_extra_galaxies.py`
+The `data_preparation` tutorial `autolens_workspace/*/imaging/data_preparation/optional/mask_extra_galaxies.py`
 describes how to create this mask.
 
 __Start Here Notebook__
@@ -279,7 +279,7 @@ act as part of the main lens galaxy's mass distribution.
 Therefore, when modeling extra galaxies we input the centre of each, in order to fix their light and mass profile 
 centres or set up priors centre around these values.
 
-The `data_preparation` tutorial `autolens_workspace/*/data_preparation/imaging/examples/optional/extra_galaxies_centres.py` 
+The `data_preparation` tutorial `autolens_workspace/*/imaging/data_preparation/examples/optional/extra_galaxies_centres.py` 
 describes how to create these centres. Using this script they have been output to the `.json` file we load below.
 """
 extra_galaxies_centres = al.Grid2DIrregular(
@@ -347,9 +347,9 @@ Therefore, in this example fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
 
- - The source galaxy's light is a linear parametric `SersicCore` [6 parameters].
+ - The source galaxy's light is a Multi Gaussian Expansion [4 parameters].
 
- - Each extra galaxy's light is a linear parametric `SersicSph` profile with fixed centre [2 extra galaxies x 2 parameters = 5 parameters].
+ - Each extra galaxy's light is a linear `SersicSph` profile with fixed centre [2 extra galaxies x 2 parameters = 5 parameters].
 
  - Each extra galaxy's total mass distribution is a `IsothermalSph` profile with fixed 
  centre [2 extra galaxies x 1 parameters = 2 parameters].
@@ -438,7 +438,7 @@ fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_plotter.subplot_fit()
 
 """
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 
 These examples show how the results API can be extended to investigate extra galaxies in the results.
 

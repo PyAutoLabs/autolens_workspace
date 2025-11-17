@@ -35,7 +35,7 @@ __Plotters__
 To produce images of the data `Plotter` objects are used, which are high-level wrappers of matplotlib
 code which produce high quality visualization of strong lenses.
 
-The `PLotter` API is described in the script `autolens_workspace/*/plot/start_here.py`.
+The `PLotter` API is described in the script `autolens_workspace/*/guides/plot`.
 
 __Simulation__
 
@@ -48,7 +48,7 @@ The `Imaging` dataset fitted in this example confirms to a number of standard th
 **PyAutoLens**.
 
 If you are intending to fit your own strong lens data, you will need to ensure it conforms to these standards, which are
-described in the script `autolens_workspace/*/data_preparation/imaging/start_here.ipynb`.
+described in the script `autolens_workspace/*/imaging/data_preparation/start_here.ipynb`.
 """
 
 # %matplotlib inline
@@ -242,7 +242,7 @@ In a real analysis, one must determine the centres of the galaxies before modeli
 
  - Use image processing software like Source Extractor (https://sextractor.readthedocs.io/en/latest/).
 
- - Fit every galaxy individually with a parametric light profile (e.g. an `Sersic`).
+ - Fit every galaxy individually with a light profile (e.g. an `Sersic`).
 
 __Redshifts__
 
@@ -398,21 +398,6 @@ An identical combination of model, search and dataset generates the same identif
 script will use the existing results to resume the model-fit. In contrast, if you change the model, search or dataset,
 a new unique identifier will be generated, ensuring that the model-fit results are output into a separate folder. 
 
-__Parallel Script__
-
-Depending on the operating system (e.g. Linux, Mac, Windows), Python version, if you are running a Jupyter notebook 
-and other factors, this script may not run a successful parallel fit (e.g. running the script 
-with `number_of_cores` > 1 will produce an error). It is also common for Jupyter notebooks to not run in parallel 
-correctly, requiring a Python script to be run, often from a command line terminal.
-
-To fix these issues, the Python script needs to be adapted to use an `if __name__ == "__main__":` API, as this allows
-the Python `multiprocessing` module to allocate threads and jobs correctly. An adaptation of this example script 
-is provided at `autolens_workspace/scripts/guides/modeling/customize`, which will hopefully run 
-successfully in parallel on your computer!
-
-Therefore if paralellization for this script doesn't work, check out the `parallel.py` example. You will need to update
-all scripts you run to use the this format and API. 
-
 __Iterations Per Update__
 
 Every N iterations, the non-linear search outputs the maximum likelihood model and its best fit image to the 
@@ -425,10 +410,12 @@ On GPU, a value of ~2500 will see this output happens every minute, a good balan
 longer, but still a good balance.
 """
 search = af.Nautilus(
-    path_prefix=Path("cluster", "modeling"),
-    name="start_here",
-    unique_tag=dataset_name,
-    n_live=100,
+    path_prefix=Path("cluster"),  # The path where results and output are stored.
+    name="modeling",  # The name of the fit and folder results are output to.
+    unique_tag=dataset_name,  # A unique tag which also defines the folder.
+    n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
+    n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
+    iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
 )
 
 """
@@ -494,7 +481,7 @@ The key outcomes of this setup are:
  - Results from all datasets are output to a unified directory, with subdirectories for visualizations 
    from each analysis object, as defined by their `visualize` methods.
 """
-factor_graph = af.FactorGraphModel(*analysis_factor_list)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 """
 To inspect this new model, with extra parameters for each dataset created, we 
@@ -529,8 +516,23 @@ __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder
 for on-the-fly visualization and results).
+
+**Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce 
+an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
 """
-result_list = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
+print(
+    """
+    The non-linear search has begun running.
+
+    This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
+
+    On-the-fly updates every iterations_per_quick_update are printed to the notebook.
+    """
+)
+
+result = search.fit(model=model, analysis=analysis)
+
+print("The search has finished run - you may now continue the notebook.")
 
 """
 __Output Folder__
@@ -576,7 +578,7 @@ The `Result` object also contains:
  - The model corresponding to the maximum log likelihood solution in parameter space.
  - The corresponding maximum log likelihood `Tracer` and `FitImaging` objects.
 
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 """
 print(result_list[0].max_log_likelihood_instance)
 

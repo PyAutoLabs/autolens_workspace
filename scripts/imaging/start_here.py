@@ -231,6 +231,16 @@ support, your fits will run much faster (around 10 minutes instead of an hour). 
 JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
 
 If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
+
+__Iterations Per Update__
+
+Every `iterations_per_quick_update`, the non-linear search outputs the maximum likelihood model and its best fit 
+image to the Jupyter Notebook display and to hard-disk.
+
+This process takes around ~10 seconds, so we don't want it to happen too often so as to slow down the overall
+fit, but we also want it to happen frequently enough that we can track the progress.
+
+The value of 10000 below means this output happens every few minutes on GPU and every ~10 minutes on CPU, a good balance.
 """
 search = af.Nautilus(
     path_prefix=Path("imaging"),  # The path where results and output are stored.
@@ -238,7 +248,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
-    iterations_per_quick_update=2500,  # Every N iterations the max likelihood model is visualized, reduce for on the fly visualization.
+    iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
 )
 
 analysis = al.AnalysisImaging(
@@ -246,7 +256,25 @@ analysis = al.AnalysisImaging(
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 
+"""
+The code below begins the model-fit. This will take around 10 minutes with a GPU, or 20-30 minutes with a CPU.
+
+**Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce 
+an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
+"""
+print(
+    """
+    The non-linear search has begun running.
+
+    This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
+
+    On-the-fly updates every iterations_per_quick_update are printed to the notebook.
+    """
+)
+
 result = search.fit(model=model, analysis=analysis)
+
+print("The search has finished run - you may now continue the notebook.")
 
 """
 __Result__

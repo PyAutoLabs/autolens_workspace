@@ -2,7 +2,7 @@
 __Log Likelihood Function: Linear Light Profile__
 
 This script provides a step-by-step guide of the `log_likelihood_function` which is used to fit `Imaging` data with
-parametric linear light profiles (e.g. a Sersic bulge and Exponential disk).
+linear light profiles (e.g. a Sersic bulge and Exponential disk).
 
 A "linear light profile" is a variant of a standard light profile where the `intensity` parameter is solved for
 via linear algebra every time the model is fitted to the data. This uses a process called an "inversion" and it
@@ -21,7 +21,7 @@ packages are called when the likelihood is evaluated.
 
 __Prerequisites__
 
-The likelihood function of a linear light profile builds on that used for standard parametric light profiles,
+The likelihood function of a linear light profile builds on that used for standard light profiles,
 therefore you must read the following notebooks before this script:
 
 - `light_profile/likelihood_function.ipynb`.
@@ -664,7 +664,7 @@ iterations and is less likely to infer a local maximum.
 
 __Wrap Up__
 
-We have presented a visual step-by-step guide to the parametric linear light profile likelihood function, which uses 
+We have presented a visual step-by-step guide to the linear light profile likelihood function, which uses 
 analytic light profiles to fit the galaxies light and solve for the `intensity` values via linear algebra.
 
 There are a number of other inputs features which slightly change the behaviour of this likelihood function, which

@@ -116,7 +116,7 @@ We therefore fit a model where
  - The lens galaxy's total mass distribution is an `SphBrokenPowerLaw` with multiple parameters fixed to their true 
  values [3 parameter].
  
- - The source galaxy's light is a linear parametric `ExponentialSph` [3 parameters].
+ - The source galaxy's light is a linear `ExponentialSph` [3 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=7.
 
@@ -339,7 +339,7 @@ __Factor Graph__
 
 The analysis factors are then used to create the factor graph.
 """
-factor_graph = af.FactorGraphModel(*analysis_factor_list)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 """
 The factor graph model can again be printed via the `info` attribute, which shows that there are two shared

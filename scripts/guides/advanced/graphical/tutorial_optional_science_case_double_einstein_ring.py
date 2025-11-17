@@ -96,10 +96,10 @@ sample. In this example, there are 3 lenses each with their own model, therefore
 
  - The first lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
  
- - The second lens / first source galaxy's light is a linear parametric `ExponentialSph` and its mass 
+ - The second lens / first source galaxy's light is a linear `ExponentialSph` and its mass 
  a `IsothermalSph` [6 parameters].
  
- - The second source galaxy's light is a linear parametric `ExponentialSph` [3 parameters].
+ - The second source galaxy's light is a linear `ExponentialSph` [3 parameters].
 
  - There is a single cosmological shared free parameter, Omage_m [1 parameter]
 
@@ -214,7 +214,7 @@ for model, analysis in zip(model_list, analysis_list):
 """
 We again combine our `AnalysisFactors` into one, to compose the factor graph.
 """
-factor_graph = af.FactorGraphModel(*analysis_factor_list)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 """
 The factor graph model `info` attribute shows the complex model we are fitting, including both cosmological parameters.

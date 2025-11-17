@@ -5,15 +5,9 @@ Modeling: Start Here
 This script is the starting point for lens modeling of point-source lens datasets, for example the multiple image
 positions of a lensed quasar.
 
-After reading this script, the `features`, `customize` and `searches` folders provide example for performing lens
-modeling in different ways and customizing the analysis.
-
-The `features` folder contains examples of how to perform point source modeling using the fluxes and time delays
-of point sources, which are not covered in this example.
-
 __Not Using Light Profiles__
 
-Users familiar with PyAutoLens who are familiar with analysing imaging or interferometer data will be used to
+Users who are familiar with analysing imaging or interferometer data will be used to
 performing lens modeling using light profiles, which have parameter that describe the shape and size of the
 galaxy's luminous emission.
 
@@ -133,7 +127,10 @@ grid = al.Grid2D.uniform(
 )
 
 solver = al.PointSolver.for_grid(
-    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1, xp=jnp
+    grid=grid,
+    pixel_scale_precision=0.001,
+    magnification_threshold=0.1,
+    xp=jnp,  # Requried input for JAX acceleration to be enabled.
 )
 
 """
@@ -142,9 +139,22 @@ __Model__
 We compose a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
+ 
  - The source galaxy's light is a point `Point` [2 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=7.
+
+__Model Composition__
+
+The API below for composing a lens model uses the `Model` and `Collection` objects, which are imported from 
+**PyAutoLens**'s parent project **PyAutoFit** 
+
+The API is fairly self explanatory and is straight forward to extend, for example adding more light profiles
+to the lens and source or using a different mass profile.
+
+A full description of model composition is provided by the model cookbook: 
+
+https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 
 __Name Pairing__
 
@@ -207,22 +217,14 @@ All examples in the autolens workspace use the nested sampling algorithm
 Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most 
 accurate and efficient modeling results.
 
-We make the following changes to the Nautilus settings:
+Nautilus has one main setting that trades-off accuracy and computational run-time, the number of `live_points`. 
+A higher number of live points gives a more accurate result, but increases the run-time. A lower value give 
+less reliable lens modeling (e.g. the fit may infer a local maxima), but is faster. 
 
- - Increase the number of live points, `n_live`, from the default value of 50 to 100. 
-
-These are the two main Nautilus parameters that trade-off slower run time for a more reliable and accurate fit.
-Increasing both of these parameter produces a more reliable fit at the expense of longer run-times.
-
-__Customization__
-
-The folders `autolens_workspace/*/point_source/modeling/searches` gives an overview of alternative non-linear searches,
-other than Nautilus, that can be used to fit lens models. They also provide details on how to customize the
-model-fit, for example the priors.
-
-The `name` and `path_prefix` below specify the path where results ae stored in the output folder:  
-
- `/autolens_workspace/output/point_source/modeling/simple/mass[sie]_source[point]/unique_identifier`.
+The suitable value depends on the model complexity whereby models with more parameters require more live points. 
+The default value of 200 is sufficient for the vast majority of common lens models. Lower values often given reliable
+results though, and speed up the run-times. In this example, given the model is quite simple (N=21 parameters), we 
+reduce the number of live points to 100 to speed up the run-time.
 
 __Unique Identifier__
 
@@ -238,10 +240,12 @@ with the same model and search results are output to a different folder. We achi
 the `dataset_name` to the search's `unique_tag`.
 """
 search = af.Nautilus(
-    path_prefix=Path("point_source") / "modeling",
-    name="start_here",
-    unique_tag=dataset_name,
-    n_live=100,
+    path_prefix=Path("point_source"),  # The path where results and output are stored.
+    name="modeling",  # The name of the fit and folder results are output to.
+    unique_tag=dataset_name,  # A unique tag which also defines the folder.
+    n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
+    n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
+    iterations_per_quick_update=10000,  # Every N iterations the max likelihood model, is visualized in the Jupter Notebook and output to hard-disk.
 )
 
 """
@@ -275,8 +279,15 @@ different ways the chi-squared can be computed.
 
 __Analysis__
 
-The `AnalysisPoint` object defines the `log_likelihood_function` used by the non-linear search to fit the model 
-to the `PointDataset`.
+We next create an `AnalysisPoint` object, which can be given many inputs customizing how the lens model is 
+fitted to the data, which in this example includes the solver and the chi-squared method.
+
+Internally, this object defines the `log_likelihood_function` used by the non-linear search to fit the model to 
+the `Imaging` dataset. 
+
+It is not vital that you as a user understand the details of how the `log_likelihood_function` fits a lens model to 
+data, but interested readers can find a step-by-step guide of the likelihood 
+function at ``autolens_workspace/*/point_source/log_likelihood_function`
 
 __JAX__
 
@@ -307,19 +318,35 @@ Run times are dictated by two factors:
  - The number of iterations (e.g. log likelihood evaluations) performed by the non-linear search: more complex lens
    models require more iterations to converge to a solution.
    
-For this analysis, the log likelihood evaluation time is ~0.01 seconds on CPU, < 0.001 seconds on GPU, which is 
+For this analysis, the log likelihood evaluation time is < 0.001 seconds on GPU, ~0.01 seconds on CPU, which is 
 extremely fast for lens modeling. 
 
 To estimate the expected overall run time of the model-fit we multiply the log likelihood evaluation time by an 
-estimate of the number of iterations the non-linear search will perform. For this model, this is typically around
-? iterations, meaning that this script takes ? on CPU and ? on GPU.
+estimate of the number of iterations the non-linear search will perform, which is around 10000 to 30000 for this model.
+
+GPU run times are around 10 minutes, CPU run times are around 30 minutes.
 
 __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder
 for on-the-fly visualization and results).
+
+**Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce 
+an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
 """
+print(
+    """
+    The non-linear search has begun running.
+
+    This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
+
+    On-the-fly updates every iterations_per_quick_update are printed to the notebook.
+    """
+)
+
 result = search.fit(model=model, analysis=analysis)
+
+print("The search has finished run - you may now continue the notebook.")
 
 """
 __Output Folder__
@@ -338,11 +365,11 @@ The `output` folder includes:
  
  - `model.results`: Summarizes the highest likelihood lens model inferred so far including errors.
  
- - `images`: Visualization of the highest likelihood model-fit to the dataset, (e.g. a fit subplot showing the lens 
- and source galaxies, model data and residuals).
+ - `image`: Visualization of the highest likelihood model-fit to the dataset, (e.g. a fit subplot showing the lens 
+ and source galaxies, model data and residuals) in .png and .fits formats.
  
- - `files`: A folder containing .fits files of the dataset, the model as a human-readable .json file, 
- a `.csv` table of every non-linear search sample and other files containing information about the model-fit.
+ - `files`: A folder containing human-readable .json file describing the model, search and other aspects of the fit and 
+   a `.csv` table of every non-linear search sample.
  
  - search.summary: A file providing summary statistics on the performance of the non-linear search.
  
@@ -362,7 +389,7 @@ print(result.info)
 """
 We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 """
 print(result.max_log_likelihood_instance)
 
@@ -387,5 +414,14 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+__Results__
+
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
+
+__Modeling Customization__
+
+The folders `autolens_workspace/*/guides/modeling/searches` gives an overview of alternative non-linear searches,
+other than Nautilus, that can be used to fit lens models. 
+
+They also provide details on how to customize the model-fit, for example the priors.
 """

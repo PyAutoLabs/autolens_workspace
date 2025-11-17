@@ -334,7 +334,7 @@ for i, analysis in enumerate(analysis_list):
     analysis_factor_list.append(analysis_factor)
 
 # Required to set up a fit with mutliple datasets.
-factor_graph = af.FactorGraphModel(*analysis_factor_list)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 """
 __Model Fit__
@@ -343,6 +343,9 @@ We now fit the data with the lens model using the non-linear fitting method and 
 
 This requires an `AnalysisImaging` object, which defines the `log_likelihood_function` used by Nautilus to fit
 the model to the imaging data.
+
+**Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce 
+an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
 """
 search = af.Nautilus(
     path_prefix=Path(
@@ -352,10 +355,28 @@ search = af.Nautilus(
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=150,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
-    iterations_per_quick_update=5000,  # Every N iterations the max likelihood model is visualized and written to output folder.
+    iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
 )
 
-result_list = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
+"""
+The code below begins the model-fit. This will take around 10 minutes with a GPU, or 20-30 minutes with a CPU.
+
+**Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce 
+an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
+"""
+print(
+    """
+    The non-linear search has begun running.
+
+    This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
+
+    On-the-fly updates every iterations_per_quick_update are printed to the notebook.
+    """
+)
+
+result = search.fit(model=model, analysis=analysis)
+
+print("The search has finished run - you may now continue the notebook.")
 
 """
 __Result__

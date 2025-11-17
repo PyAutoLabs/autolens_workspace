@@ -426,7 +426,7 @@ In this example it:
  - Uses a linear Multi Gaussian Expansion bulge [fixed from LIGHT LP PIPELINE].
 
  - Uses an `PowerLaw` model for the lens's total mass distribution [priors initialized from SOURCE 
- PARAMETRIC PIPELINE + centre unfixed from (0.0, 0.0)].
+ LIGHT PROFILE PIPELINE + centre unfixed from (0.0, 0.0)].
 
  - Uses a `Pixelization` for the source's light [fixed from SOURCE PIX PIPELINE].
 

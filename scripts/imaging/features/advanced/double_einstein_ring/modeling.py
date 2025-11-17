@@ -17,8 +17,8 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a dou
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The first lens galaxy's total mass distribution is an `Isothermal`.
- - The second lens galaxy / first source galaxy's light is a linear parametric `ExponentialSph` and its mass a `IsothermalSph`.
- - The second source galaxy's light is a linear parametric `ExponentialSph`.
+ - The second lens galaxy / first source galaxy's light is a linear `ExponentialSph` and its mass a `IsothermalSph`.
+ - The second source galaxy's light is a linear `ExponentialSph`.
 
 __Start Here Notebook__
 
@@ -104,7 +104,7 @@ We compose a lens model where:
 
  - The second lens / first source galaxy's light are MGE models [8 parameters].
 
- - The second source galaxy's light is a linear parametric `ExponentialSph` [3 parameters].
+ - The second source galaxy's light is a linear `ExponentialSph` [3 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=16.
 
@@ -208,7 +208,7 @@ The model is fitted to the data using the nested sampling algorithm Nautilus (se
 full description).
 """
 search = af.Nautilus(
-    path_prefix=Path("imaging") / "modeling",
+    path_prefix=Path("imaging") / "features",
     name="double_einstein_ring",
     unique_tag=dataset_name,
     n_live=150,
@@ -270,7 +270,7 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 
 These examples show how the results API can be extended to investigate double Einstein ring results.
 

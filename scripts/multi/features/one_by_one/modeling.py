@@ -293,5 +293,5 @@ search = af.Nautilus(
 result = search.fit(model=model, analysis=analysis_list[0])
 
 """
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 """

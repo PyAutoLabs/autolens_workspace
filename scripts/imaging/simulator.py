@@ -20,7 +20,7 @@ __Plotters__
 To output images of the simulated data, `Plotter` objects are used, which are high-level wrappers of matplotlib
 code which produce high quality visualization of strong lenses.
 
-The `PLotter` API is described in the `autolens_workspace/*/plot/start_here.py` script.
+The `PLotter` API is described in the `autolens_workspace/*/guides/plot` script.
 """
 
 # %matplotlib inline

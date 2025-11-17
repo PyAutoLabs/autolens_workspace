@@ -113,7 +113,7 @@ mask.output_to_fits(
 
 """
 The workspace also includes a GUI for image and noise-map scaling, which can be found at 
-`autolens_workspace/*/data_preparation/imaging/gui/mask_extra_galaxies.py`. 
+`autolens_workspace/*/imaging/data_preparation/gui/mask_extra_galaxies.py`. 
 
 This tools allows you `spray paint` on the image where an you want to scale, allow irregular patterns (i.e. not 
 rectangles) to be scaled.

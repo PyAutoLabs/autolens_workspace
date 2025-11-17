@@ -156,7 +156,7 @@ for analysis in analysis_list:
 
     analysis_factor_list.append(analysis_factor)
 
-factor_graph = af.FactorGraphModel(*analysis_factor_list)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 """
 The `info` of the model shows us there are two models each with linear light profiles.
@@ -211,5 +211,5 @@ plotter = aplt.NestPlotter(samples=result_list.samples)
 plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 """

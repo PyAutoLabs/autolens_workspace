@@ -309,7 +309,7 @@ An even more advanced approach which uses search chaining are the SLaM pipelines
 processing into a series of fits that first perfect the source model, then the lens light model and finally the lens
 mass model. 
 
-The SLaM pipelines begin with a linear parametric Source pipeline, which then switches to an inversion Source pipeline, 
+The SLaM pipelines begin with a linear Source pipeline, which then switches to an inversion Source pipeline, 
 exploiting the chaining technique demonstrated in this example.
 
 Pipeline: Double Einstein Ring

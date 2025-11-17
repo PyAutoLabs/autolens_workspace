@@ -56,9 +56,9 @@ __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's light is a parametric linear `Sersic` bulge.
+ - The lens galaxy's light is a linear `Sersic` bulge.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's light is a parametric linear `Sersic`.
+ - The source galaxy's light is a linear `Sersic`.
 
 __Start Here Notebook__
 
@@ -240,7 +240,7 @@ galaxy_plotter.figures_2d(image=True)
 """
 __Wrap Up__
 
-Checkout `autolens_workspace/*/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
 
 In particular, checkout the results example `linear.py` which details how to extract all information about linear
 light profiles from a fit.
