@@ -1,0 +1,211 @@
+ArrayOverlay:
+  figure:
+    alpha: 0.5
+  subplot:
+    alpha: 0.5
+BorderScatter:
+  figure:
+    c: r
+    marker: .
+    s: 30
+  subplot:
+    c: r
+    marker: .
+    s: 10
+GridErrorbar:
+  figure:
+    alpha: 0.5
+    c: k
+    fmt: o
+    linewidth: 5
+    marker: o
+    markersize: 8
+  subplot:
+    alpha: 0.5
+    c: k
+    fmt: o
+    linewidth: 5
+    marker: o
+    markersize: 8
+GridPlot:
+  figure:
+    c: k
+  subplot:
+    c: k
+GridScatter:
+  figure:
+    c: k
+    marker: .
+    s: 1
+  subplot:
+    c: k
+    marker: .
+    s: 1
+IndexScatter:
+  figure:
+    c: r,g,b,m,y,k
+    marker: .
+    s: 20
+  subplot:
+    c: r,g,b,m,y,k
+    marker: .
+    s: 20
+MaskScatter:
+  figure:
+    c: k
+    marker: x
+    s: 10
+  subplot:
+    c: k
+    marker: x
+    s: 10
+MeshGridScatter:
+  figure:
+    c: r
+    marker: .
+    s: 2
+  subplot:
+    c: r
+    marker: .
+    s: 2
+OriginScatter:
+  figure:
+    c: k
+    marker: x
+    s: 80
+  subplot:
+    c: k
+    marker: x
+    s: 80
+PatchOverlay:
+  figure:
+    edgecolor: c
+    facecolor: null
+  subplot:
+    edgecolor: c
+    facecolor: null
+PositionsScatter:
+  figure:
+    c: k,m,y,b,r,g
+    marker: .
+    s: 16
+  subplot:
+    c: k,m,y,b,r,g
+    marker: .
+    s: 16
+VectorYXQuiver:
+  figure:
+    alpha: 1.0
+    angles: xy
+    headlength: 0
+    headwidth: 1
+    linewidth: 5
+    pivot: middle
+    units: xy
+  subplot:
+    alpha: 1.0
+    angles: xy
+    headlength: 0
+    headwidth: 1
+    linewidth: 5
+    pivot: middle
+    units: xy
+VoronoiDrawer:
+  figure:
+    alpha: 0.7
+    edgecolor: k
+    linewidth: 0.3
+  subplot:
+    alpha: 0.7
+    edgecolor: k
+    linewidth: 0.3
+ParallelOverscanPlot:
+  figure:
+    c: k
+    linestyle: '-'
+    linewidth: 1
+  subplot:
+    c: k
+    linestyle: '-'
+    linewidth: 1
+SerialOverscanPlot:
+  figure:
+    c: k
+    linestyle: '-'
+    linewidth: 1
+  subplot:
+    c: k
+    linestyle: '-'
+    linewidth: 1
+SerialPrescanPlot:
+  figure:
+    c: k
+    linestyle: '-'
+    linewidth: 1
+  subplot:
+    c: k
+    linestyle: '-'
+    linewidth: 1
+TangentialCriticalCurvesPlot:
+  figure:
+    c: w
+    linestyle: '-'
+    linewidth: 2
+  subplot:
+    c: w
+    linestyle: '-'
+    linewidth: 2
+TangentialCausticsPlot:
+  figure:
+    c: w
+    linestyle: '-'
+    linewidth: 2
+  subplot:
+    c: w
+    linestyle: '-'
+    linewidth: 2
+RadialCriticalCurvesPlot:
+  figure:
+    c: y
+    linestyle: '-'
+    linewidth: 2
+  subplot:
+    c: y
+    linestyle: '-'
+    linewidth: 2
+RadialCausticsPlot:
+  figure:
+    c: y
+    linestyle: '-'
+    linewidth: 2
+  subplot:
+    c: y
+    linestyle: '-'
+    linewidth: 2    
+LightProfileCentresScatter:
+  figure:
+    c: k,r,g,b,m,y
+    marker: +
+    s: 20
+  subplot:
+    c: r,g,b,m,y,k
+    marker: +
+    s: 26
+MassProfileCentresScatter:
+  figure:
+    c: k,r,g,b,m,y
+    marker: x
+    s: 20
+  subplot:
+    c: r,g,b,m,y,k
+    marker: x
+    s: 26
+MultipleImagesScatter:
+  figure:
+    c: k,r,g,b,m,y
+    marker: o
+    s: 16
+  subplot:
+    c: r,g,b,m,y,k
+    marker: o
+    s: 16

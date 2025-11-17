@@ -1,0 +1,57 @@
+updates:
+  iterations_per_quick_update: 1e99 # Non-linear search iterations between every quick update, which just displays the maximum likelihood model fit.
+  iterations_per_full_update: 1e99  # Non-linear search iterations between every full update, which outputs all visuals and result fits (e.g. model.result, search.summary), this exits the search and can be slow.
+  preload_attempts: 250
+fits:
+  flip_for_ds9: true
+psf:
+  use_fft_default: true              # If True, PSFs are convolved using FFTs by default, which is faster and uses less memory in all cases except for very small PSFs, False uses direct convolution.
+grid:
+  remove_projected_centre: false
+  max_evaluation_grid_size: 1000   # An evaluation grid whose shape is adaptive chosen is used to compute quantities like critical curves, this integer is the max size of the grid ensuring faster run times.
+inversion:
+  check_reconstruction: true        # If True, the inversion's reconstruction is checked to ensure the solution of a meshs's mapper is not an invalid solution where the values are all the same.
+  use_positive_only_solver: true      # If True, inversion's use a positive-only linear algebra solver by default, which is slower but prevents unphysical negative values in the reconstructed solutuion.
+  no_regularization_add_to_curvature_diag_value : 1.0e-3 # The default value added to the curvature matrix's diagonal when regularization is not applied to a linear object, which prevents inversion's failing due to the matrix being singular.
+  positive_only_uses_p_initial: true  # If True, the positive-only solver of an inversion's uses an initial guess of the reconstructed data's values as which values should be positive, speeding up the solver.
+  use_border_relocator: true          # If True, by default a pixelization's border is used to relocate all pixels outside its border to the border.
+  reconstruction_vmax_factor: 0.5   # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.
+hpc:
+  hpc_mode: false                   # If True, use HPC mode, which disables GUI visualization, logging to screen and other settings which are not suited to running on a super computer.
+  iterations_per_quick_update: 250000 #  Non-linear search iterations between every quick update, which just displays the maximum likelihood model fit.
+  iterations_per_full_update: 1e99  # Non-linear search iterations between every full update, which outputs all visuals and result fits (e.g. model.result, search.summary), this exits the search and can be slow.
+adapt:
+  adapt_minimum_percent: 0.01
+  adapt_noise_limit: 100000000.0
+numba:
+  use_numba: true
+  cache: true
+  nopython: true
+  parallel: false
+output:
+  force_pickle_overwrite: false     #   force_pickle_overwrite: false     # If True, pickle files output by a search (e.g. samples.pickle) are recreated when a new model-fit is performed.
+  force_visualize_overwrite: false  # If True, visualization images output by a search (e.g. subplots of the fit) are recreated when a new model-fit is performed.
+  info_whitespace_length: 80        # Length of whitespace between the parameter names and values in the model.info / result.info
+  log_level: INFO                   # The level of information output by logging.
+  log_to_file: false                # If True, outputs the non-linear search log to a file (and not printed to screen).
+  log_file: output.log              # The name of the file the logged output is written to (in the non-linear search output folder)
+  model_results_decimal_places: 3   # Number of decimal places estimated parameter values / errors are output in model.results.
+  remove_files: false               # If True, all output files of a non-linear search (e.g. samples, visualization, etc.) are deleted once the model-fit has completed, such that only the .zip file remains.
+  samples_to_csv: true              # If True, non-linear search samples are written to a .csv file.
+  unconverged_sample_size : 100     # If outputting results of an unconverged search, the number of samples used to estimate the median PDF values and errors.
+parallel:
+  warn_environment_variables: true  # If True, a warning is displayed when the search's number of CPU > 1 and enviromment variables related to threading are also > 1.
+pixelization:
+  voronoi_nn_max_interpolation_neighbors: 300
+profiling:
+  parallel_profile: false           # If True, the parallelization of the fit is profiled outputting a cPython graph.
+  should_profile: false             # If True, the ``profile_log_likelihood_function()`` function of an analysis class is called throughout a model-fit, profiling run times.
+  repeats: 1                        # The number of repeat function calls used to measure run-times when profiling.
+structures:
+  native_binned_only: false           # If True, data structures are only stored in their native and binned format. This is used to reduce memory usage in autocti.
+test:
+  check_likelihood_function: true   # if True, when a search is resumed the likelihood of a previous sample is recalculated to ensure it is consistent with the previous run.
+  check_preloads: True
+  lh_timeout_seconds:               # If a float is input, the log_likelihood_function call is timed out after this many seconds, to diagnose infinite loops. Default is None, meaning no timeout.
+  preloads_check_threshold: 1.0     # If the figure of merit of a fit with and without preloads is greater than this threshold, the check preload test fails and an exception raised for a model-fit. 
+  disable_positions_lh_inversion_check: true

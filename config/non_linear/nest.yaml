@@ -1,0 +1,140 @@
+# Configuration files that customize the default behaviour of non-linear searches.
+
+# - Nautilus https://https://github.com/johannesulf/nautilus / https://nautilus-sampler.readthedocs.io/en/stable/index.html
+# - Dynesty: https://github.com/joshspeagle/dynesty / https://dynesty.readthedocs.io/en/latest/index.html
+# - UltraNest: https://github.com/JohannesBuchner/UltraNest / https://johannesbuchner.github.io/UltraNest/readme.html
+# Settings in the [search] and [run] entries are specific to each nested algorithm and should be determined by
+# consulting that MCMC method's own readthedocs.
+Nautilus:
+  search:
+    n_live: 200                     # Number of so-called live points. New bounds are constructed so that they encompass the live points.
+    n_update:                       # The maximum number of additions to the live set before a new bound is created
+    enlarge_per_dim: 1.1            # Along each dimension, outer ellipsoidal bounds are enlarged by this factor.
+    n_points_min:                   # The minimum number of points each ellipsoid should have. Effectively, ellipsoids with less than twice that number will not be split further.
+    split_threshold: 100            # Threshold used for splitting the multi-ellipsoidal bound used for sampling.
+    n_networks: 4                   # Number of networks used in the estimator.
+    n_batch: 50                     # Number of likelihood evaluations that are performed at each step. If likelihood evaluations are parallelized, should be multiple of the number of parallel processes.
+    n_like_new_bound:               # The maximum number of likelihood calls before a new bounds is created. If None, use 10 times n_live.
+    vectorized: false               # If True, the likelihood function can receive multiple input sets at once.
+    seed:                           # Seed for random number generation used for reproducible results accross different runs.
+  run:
+    f_live: 0.01                    # Maximum fraction of the evidence contained in the live set before building the initial shells terminates.
+    n_shell: 1                      # Minimum number of points in each shell. The algorithm will sample from the shells until this is reached. Default is 1.
+    n_eff: 500                      # Minimum effective sample size. The algorithm will sample from the shells until this is reached. Default is 10000.
+    n_like_max: .inf                # Maximum number of likelihood evaluations. Regardless of progress, the sampler will stop if this value is reached. Default is infinity.
+    discard_exploration: false      # Whether to discard points drawn in the exploration phase. This is required for a fully unbiased posterior and evidence estimate.
+    verbose: true                   # Whether to print information about the run.
+  initialize:                       # The method used to generate where walkers are initialized in parameter space {prior}.
+    method: prior                   # priors: samples are initialized by randomly drawing from each parameter's prior.
+  parallel:
+    number_of_cores: 1              # The number of cores the search is parallelized over by default, using Python multiprocessing.
+    force_x1_cpu: false             # Force Dynesty to not use Python multiprocessing Pool, which can fix issues on certain operating systems.
+  printing:
+    silence: false                  # If True, the default print output of the non-linear search is silenced and not printed by the Python interpreter.
+DynestyStatic:
+  search:
+    nlive: 50
+    sample: rwalk
+    walks: 5
+    bootstrap: null
+    bound: multi
+    enlarge: null
+    facc: 0.2
+    first_update: null
+    fmove: 0.9
+    max_move: 100
+    slices: 5
+    update_interval: null
+  run:
+    dlogz: null
+    logl_max: .inf
+    maxcall: null
+    maxiter: null
+    n_effective: null
+  initialize:                       # The method used to generate where walkers are initialized in parameter space {prior}.
+    method: prior                   # priors: samples are initialized by randomly drawing from each parameter's prior.
+  parallel:
+    number_of_cores: 1              # The number of cores the search is parallelized over by default, using Python multiprocessing.
+    force_x1_cpu: false             # Force Dynesty to not use Python multiprocessing Pool, which can fix issues on certain operating systems.
+  printing:
+    silence: false                  # If True, the default print output of the non-linear search is silenced and not printed by the Python interpreter.
+
+DynestyDynamic:
+  search:
+    sample: rwalk
+    walks: 5
+    bootstrap: null
+    bound: multi
+    enlarge: null
+    facc: 0.2
+    first_update: null
+    fmove: 0.9
+    max_move: 100
+    slices: 5
+    update_interval: null
+  run:
+    dlogz_init: 0.01
+    logl_max_init: .inf
+    maxcall: null
+    maxcall_init: null
+    maxiter: null
+    maxiter_init: null
+    n_effective: .inf
+    n_effective_init: .inf
+    nlive_init: 500
+  initialize:                       # The method used to generate where walkers are initialized in parameter space {prior}.
+    method: prior                   # priors: samples are initialized by randomly drawing from each parameter's prior.
+  parallel:
+    number_of_cores: 1              # The number of cores the search is parallelized over by default, using Python multiprocessing.
+    force_x1_cpu: false             # Force Dynesty to not use Python multiprocessing Pool, which can fix issues on certain operating systems.
+  printing:
+    silence: false                  # If True, the default print output of the non-linear search is silenced and not printed by the Python interpreter.
+
+UltraNest:
+  search:
+    draw_multiple: true
+    ndraw_max: 65536
+    ndraw_min: 128
+    num_bootstraps: 30
+    num_test_samples: 2
+    resume: true
+    run_num: null
+    storage_backend: hdf5
+    vectorized: false
+    warmstart_max_tau: -1.0
+  run:
+    cluster_num_live_points: 40
+    dkl: 0.5
+    dlogz: 0.5
+    frac_remain: 0.01
+    insertion_test_window: 10
+    insertion_test_zscore_threshold: 2
+    lepsilon: 0.001
+    log_interval: null
+    max_iters: null
+    max_ncalls: null
+    max_num_improvement_loops: -1.0
+    min_ess: 400
+    min_num_live_points: 400
+    show_status: true
+    update_interval_ncall: null
+    update_interval_volume_fraction: 0.8
+    viz_callback: auto
+  stepsampler:
+    adaptive_nsteps: false
+    log: false
+    max_nsteps: 1000
+    nsteps: 25
+    region_filter: false
+    scale: 1.0
+    stepsampler_cls: null
+  initialize:                       # The method used to generate where walkers are initialized in parameter space {prior}.
+    method: prior                   # priors: samples are initialized by randomly drawing from each parameter's prior.
+  parallel:
+    number_of_cores: 1              # The number of cores the search is parallelized over by default, using Python multiprocessing.
+  printing:
+    silence: false                  # If True, the default print output of the non-linear search is silenced and not printed by the Python interpreter.
+
+    iterations_per_full_update: 1000      # Non-linear search iterations between every full update, which outputs all visuals and result fits (e.g. model.result, search.summary), this exits the search and can be slow.
+    iterations_per_quick_update: 500 #  Non-linear search iterations between every quick update, which just displays the maximum likelihood model fit.
+    remove_state_files_at_end: true # Whether to remove the savestate of the seach (e.g. the Emcee hdf5 file) at the end to save hard-disk space (results are still stored as PyAutoFit pickles and loadable).

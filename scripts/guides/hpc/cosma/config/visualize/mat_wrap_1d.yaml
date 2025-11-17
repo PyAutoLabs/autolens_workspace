@@ -1,0 +1,41 @@
+AXVLine:
+  figure:
+    c: k
+  subplot:
+    c: k
+FillBetween:
+  figure:
+    alpha: 0.7
+    color: k
+  subplot:
+    alpha: 0.7
+    color: k
+YXPlot:
+  figure:
+    c: k
+  subplot:
+    c: k
+YXScatter:
+  figure:
+    c: k
+  subplot:
+    c: k
+EinsteinRadiusAXVLine:
+  figure:
+    c: b
+    linestyle: --
+  subplot:
+    c: b
+    linestyle: --
+HalfLightRadiusAXVLine:
+  figure:
+    c: g
+    linestyle: -.
+  subplot:
+    c: kg
+    linestyle: -.
+ModelFluxesYXScatter:
+  figure:
+    c: c
+  subplot:
+    c: c

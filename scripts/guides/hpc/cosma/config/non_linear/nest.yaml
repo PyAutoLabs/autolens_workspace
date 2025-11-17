@@ -1,0 +1,101 @@
+DynestyStatic:
+  search:
+    nlive: 50
+    sample: rwalk
+    walks: 5
+    bootstrap: null
+    bound: multi
+    enlarge: null
+    facc: 0.2
+    first_update: null
+    fmove: 0.9
+    max_move: 100
+    slices: 5
+    update_interval: null
+  run:
+    dlogz: null
+    logl_max: .inf
+    maxcall: null
+    maxiter: null
+    n_effective: null
+  initialize:
+    method: prior
+  parallel:
+    number_of_cores: 1
+    force_x1_cpu: false
+  printing:
+    silence: false
+DynestyDynamic:
+  search:
+    sample: rwalk
+    walks: 5
+    bootstrap: null
+    bound: multi
+    enlarge: null
+    facc: 0.2
+    first_update: null
+    fmove: 0.9
+    max_move: 100
+    slices: 5
+    update_interval: null
+  run:
+    dlogz_init: 0.01
+    logl_max_init: .inf
+    maxcall: null
+    maxcall_init: null
+    maxiter: null
+    maxiter_init: null
+    n_effective: .inf
+    n_effective_init: .inf
+    nlive_init: 500
+  initialize:
+    method: prior
+  parallel:
+    number_of_cores: 1
+    force_x1_cpu: false
+  printing:
+    silence: false
+UltraNest:
+  search:
+    draw_multiple: true
+    ndraw_max: 65536
+    ndraw_min: 128
+    num_bootstraps: 30
+    num_test_samples: 2
+    resume: true
+    run_num: null
+    storage_backend: hdf5
+    vectorized: false
+    warmstart_max_tau: -1.0
+  run:
+    cluster_num_live_points: 40
+    dkl: 0.5
+    dlogz: 0.5
+    frac_remain: 0.01
+    insertion_test_window: 10
+    insertion_test_zscore_threshold: 2
+    lepsilon: 0.001
+    log_interval: null
+    max_iters: null
+    max_ncalls: null
+    max_num_improvement_loops: -1.0
+    min_ess: 400
+    min_num_live_points: 400
+    show_status: true
+    update_interval_ncall: null
+    update_interval_volume_fraction: 0.8
+    viz_callback: auto
+  stepsampler:
+    adaptive_nsteps: false
+    log: false
+    max_nsteps: 1000
+    nsteps: 25
+    region_filter: false
+    scale: 1.0
+    stepsampler_cls: null
+  initialize:
+    method: prior
+  parallel:
+    number_of_cores: 1
+  printing:
+    silence: false

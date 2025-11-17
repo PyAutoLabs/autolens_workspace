@@ -1,0 +1,89 @@
+dataset:
+  subplot_dataset: true
+  data: false
+  noise_map: false
+  signal_to_noise_map: false
+imaging:
+  psf: false
+interferometer:
+  amplitudes_vs_uv_distances: false
+  dirty_image: false
+  dirty_noise_map: false
+  dirty_signal_to_noise_map: false
+  phases_vs_uv_distances: false
+  uv_wavelengths: false
+positions:
+  image_with_positions: true
+fit:
+  subplot_fit: true
+  subplot_of_planes: false
+  subplot_galaxies_images: false
+  subtracted_images_of_planes: false
+  chi_squared_map: false
+  data: false
+  model_data: false
+  model_images_of_planes: false
+  noise_map: false
+  normalized_residual_map: false
+  residual_map: false
+  signal_to_noise_map: false
+  all_at_end_fits: false
+  all_at_end_png: false
+fit: {}
+fit_interferometer:
+  amplitudes_vs_uv_distances: false
+  dirty_chi_squared_map: false
+  dirty_image: false
+  dirty_noise_map: false
+  dirty_normalized_residual_map: false
+  dirty_residual_map: false
+  dirty_signal_to_noise_map: false
+  phases_vs_uv_distances: false
+  uv_wavelengths: false
+tracer:
+  all_at_end_fits: false
+  all_at_end_png: false
+  convergence: false
+  deflections: false
+  image: false
+  magnification: false
+  potential: false
+  source_plane_image: false
+  subplot_galaxies_images: false
+  subplot_tracer: true
+inversion:
+  subplot_inversion: true
+  errors: false                            # Plot image of the noise-map of every mesh-pixel reconstructed value?
+  sub_pixels_per_image_pixels: false      # Plot the number of sub pixels per masked data pixels?
+  mesh_pixels_per_image_pixels: false     # Plot the number of image-plane mesh pixels per masked data pixels?
+  reconstructed_image: false               # Plot image of the reconstructed data (e.g. in the image-plane)?
+  reconstruction: false                    # Plot the reconstructed inversion (e.g. the pixelization's mesh in the source-plane)?
+  regularization_weights: false            # Plot the effective regularization weight of every inversion mesh pixel?
+galaxies:
+  convergence: false
+  image: false
+  potential: false
+fit_quantity:
+  subplot_fit: true
+  chi_squared_map: false
+  image: true
+  model_image: false
+  noise_map: false
+  residual_map: false
+  normalized_residual_map: false
+adapt:
+  images_of_planes: true
+  model_image: true
+other:
+  stochastic_histogram: false
+plane:
+  subplot_galaxies: true
+  subplot_galaxy_images: false
+  convergence: false
+  deflections: false
+  image: false
+  magnification: false
+  potential: false
+  source_plane_image: false
+  all_at_end_fits: false
+  all_at_end_png: false

@@ -1,0 +1,24 @@
+dynesty:
+  cornerplot: true
+  cornerpoints: false
+  runplot: true
+  traceplot: true
+emcee:
+  corner: true
+  likelihood_series: true
+  time_series: true
+  trajectories: true
+pyswarms:
+  contour: true
+  cost_history: true
+  time_series: true
+  trajectories: true
+ultranest:
+  cornerplot: true
+  runplot: true
+  traceplot: true
+zeus:
+  corner: true
+  likelihood_series: true
+  time_series: true
+  trajectories: true

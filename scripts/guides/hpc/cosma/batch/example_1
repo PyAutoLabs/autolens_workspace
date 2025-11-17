@@ -1,0 +1,25 @@
+#!/bin/bash -l
+
+#SBATCH -N 1
+#SBATCH --ntasks=16
+#SBATCH --cpus-per-task=1
+#SBATCH -J example_1
+#SBATCH -o output/output.%A.out
+#SBATCH -e error/error.%A.err
+#SBATCH -p cosma7
+#SBATCH -A dp004
+#SBATCH -t 48:00:00   # longest job
+#SBATCH --mail-type=END                      # notifications for job done & fail
+#SBATCH --mail-user=fill@me.co.uk
+
+source /cosma/home/dp004/cosma_username/autolens_workspace/activate.sh
+
+export CPUS_PER_TASK=1
+
+export OPENBLAS_NUM_THREADS=$CPUS_PER_TASK
+export MKL_NUM_THREADS=$CPUS_PER_TASK
+export OMP_NUM_THREADS=$CPUS_PER_TASK
+export VECLIB_MAXIMUM_THREADS=$CPUS_PER_TASK
+export NUMEXPR_NUM_THREADS=$CPUS_PER_TASK
+
+python3 /cosma/home/dp004/cosma_username/autolens_workspace/cosma/runners/example.py 1

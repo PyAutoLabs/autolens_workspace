@@ -1,0 +1,31 @@
+general:
+  backend: default                  # The matploblib backend used for visualization. `default` uses the system default, can specifiy specific backend (e.g. TKAgg, Qt5Agg, WXAgg).
+  imshow_origin: upper                  # The `origin` input of `imshow`, determining if pixel values are ascending or descending on the y-axis.
+  log10_min_value: 1.0e-4               # If negative values are being plotted on a log10 scale, values below this value are rounded up to it (e.g. to remove negative values).
+  log10_max_value: 1.0e99               # If positive values are being plotted on a log10 scale, values above this value are rounded down to it (e.g. to prevent white blobs).
+  zoom_around_mask: true                # If True, plots of data structures with a mask automatically zoom in the masked region.
+inversion:
+  reconstruction_vmax_factor: 0.5   # Plots of an Inversion's reconstruction use the reconstructed data's bright value multiplied by this factor.
+zoom:
+  plane_percent: 0.01               # When the plane-image of a parametric source is plotted, the percentage of its maximum flux that is used to zoom in the plot on its brightest galaxy regions.
+  inversion_percent: 0.05           # When the plane-image of an inversion is plotted, the percentage of its maximum flux that is used to zoom in the plot on its brightest galaxy regions.
+subplot_shape:                      # The shape of a subplots for figures with an input number of subplots (e.g. for a figure with 4 subplots, the shape is (2, 2)).
+  1: (1, 1)                         # The shape of subplots for a figure with 1 subplot.
+  2: (1, 2)                         # The shape of subplots for a figure with 2 subplots.
+  4: (2, 2)                         # The shape of subplots for a figure with 4 (or less than the above value) of subplots.
+  6: (2, 3)                         # The shape of subplots for a figure with 6 (or less than the above value) of subplots.
+  9: (3, 3)                         # The shape of subplots for a figure with 9 (or less than the above value) of subplots.
+  12: (3, 4)                        # The shape of subplots for a figure with 12 (or less than the above value) of subplots.
+  16: (4, 4)                        # The shape of subplots for a figure with 16 (or less than the above value) of subplots.
+  20: (4, 5)                        # The shape of subplots for a figure with 20 (or less than the above value) of subplots.
+  36: (6, 6)                        # The shape of subplots for a figure with 36 (or less than the above value) of subplots.
+  49: (7, 7)                        # The shape of subplots for a figure with 49 (or less than the above value) of subplots.
+  64: (8, 8)                        # The shape of subplots for a figure with 64 (or less than the above value) of subplots.
+  81: (9, 9)                        # The shape of subplots for a figure with 81 (or less than the above value) of subplots.
+  100: (10, 10)                     # The shape of subplots for a figure with 100 (or less than the above value) of subplots.
+subplot_shape_to_figsize_factor: (6, 6) # The factors by which the subplot_shape is multiplied to determine the figsize of a subplot (e.g. if the subplot_shape is (2,2), the figsize will be (2*6, 2*6).
+units:
+  use_scaled: true                  # Whether to plot spatial coordinates in scaled units computed via the pixel_scale (e.g. arc-seconds) or pixel units by default.
+  cb_unit: $\,\,\mathrm{e^{-}}\,\mathrm{s^{-1}}$ # The string or latex unit label used for the colorbar of the image, for example electrons per second.
+  scaled_symbol: '"'                    # The symbol used when plotting spatial coordinates computed via the pixel_scale (e.g. for Astronomy data this is arc-seconds).
+  unscaled_symbol: pix                  # The symbol used when plotting spatial coordinates in unscaled pixel units.

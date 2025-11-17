@@ -1,0 +1,79 @@
+Axis:
+  figure: {}
+  subplot: {}
+Cmap:
+  figure:
+    cmap: default
+    linscale: 0.01
+    linthresh: 0.05
+    norm: linear
+    vmax: null
+    vmin: null
+  subplot:
+    cmap: default
+    linscale: 0.01
+    linthresh: 0.05
+    norm: linear
+    vmax: null
+    vmin: null
+Colorbar:
+  figure:
+    fraction: 0.047
+    pad: 0.01
+  subplot:
+    fraction: 0.047
+    pad: 0.01
+ColorbarTickParams:
+  figure:
+    labelsize: 10
+  subplot:
+    labelsize: 10
+Figure:
+  figure:
+    aspect: square
+    figsize: (7,7)
+  subplot:
+    aspect: square
+    figsize: auto
+Legend:
+  figure:
+    fontsize: 12
+    include: true
+  subplot:
+    fontsize: 12
+    include: true
+Text:
+  figure:
+    fontsize: 16
+  subplot:
+    fontsize: 10
+TickParams:
+  figure:
+    labelsize: 16
+  subplot:
+    labelsize: 10
+Title:
+  figure:
+    fontsize: 16
+  subplot:
+    fontsize: 10
+XLabel:
+  figure:
+    fontsize: 16
+  subplot:
+    fontsize: 10
+XTicks:
+  figure:
+    fontsize: 16
+  subplot:
+    fontsize: 10
+YLabel:
+  figure:
+    fontsize: 16
+  subplot:
+    fontsize: 10
+YTicks:
+  figure:
+    fontsize: 16
+  subplot:
+    fontsize: 10
