@@ -495,7 +495,7 @@ First, lets load `source_plane_reconstruction_0.csv` as a dictionary, using basi
 import csv
 
 with open(
-        search.paths.image_path / "source_plane_reconstruction_0.csv", mode="r"
+    search.paths.image_path / "source_plane_reconstruction_0.csv", mode="r"
 ) as file:
     reader = csv.reader(file)
     header_list = next(reader)  # ['y', 'x', 'reconstruction', 'noise_map']

@@ -116,7 +116,7 @@ source_bulge = al.model_util.mge_model_from(
     centre_prior_is_uniform=False,
 )
 
-source_lp_result = slam.pipelinesource_lp.run(
+source_lp_result = slam_pipeline.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=None,
@@ -146,7 +146,7 @@ using the lens mass model and source model of the SOURCE PIPELINE to initialize 
 """
 analysis = al.AnalysisInterferometer(dataset=dataset)
 
-mass_result = slam.pipelinemass_total.run(
+mass_result = slam_pipeline.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_lp_result,

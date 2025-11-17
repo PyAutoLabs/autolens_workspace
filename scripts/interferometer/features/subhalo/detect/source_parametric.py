@@ -101,9 +101,9 @@
 #
 #  - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS TOTAL PIPELINE).
 # """
-# analysis = al.AnalysisInterferometer(dataset=dataset)
+# analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
 #
-# source_lp_result = slam.pipelinesource_lp.run(
+# source_lp_result = slam_pipeline.source_lp.run(
 #     settings_search=settings_search,
 #     analysis=analysis,
 #     lens_bulge=None,
@@ -126,9 +126,9 @@
 #  - Uses the an MGE model representing a bulge for the source's light.
 #  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL PIPELINE.
 # """
-# analysis = al.AnalysisInterferometer(dataset=dataset)
+# analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
 #
-# mass_results = slam.pipelinemass_total.run(
+# mass_results = slam_pipeline.mass_total.run(
 #     settings_search=settings_search,
 #     analysis=analysis,
 #     source_results=source_lp_result,
@@ -154,7 +154,7 @@
 # """
 # analysis = al.AnalysisInterferometer(dataset=dataset)
 #
-# subhalo_results = slam.pipelinesubhalo.detection.run(
+# subhalo_results = slam_pipeline.subhalo.detection.run(
 #     settings_search=settings_search,
 #     analysis=analysis,
 #     mass_result=mass_result,

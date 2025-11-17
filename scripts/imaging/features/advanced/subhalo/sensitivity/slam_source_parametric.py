@@ -111,7 +111,7 @@ __SOURCE LP PIPELINE__
 
 This is the standard SOURCE LP PIPELINE described in the `slam/start_here.ipynb` example.
 """
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
@@ -127,7 +127,7 @@ source_bulge = al.model_util.mge_model_from(
     centre_prior_is_uniform=False,
 )
 
-source_lp_result = slam.pipelinesource_lp.run(
+source_lp_result = slam_pipeline.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=bulge,
@@ -145,9 +145,7 @@ __LIGHT LP PIPELINE__
 
 This is the standard LIGHT LP PIPELINE described in the `slam/start_here.ipynb` example.
 """
-analysis = al.AnalysisImaging(
-    dataset=dataset,
-)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
@@ -156,7 +154,7 @@ bulge = al.model_util.mge_model_from(
     centre_prior_is_uniform=True,
 )
 
-light_results = slam.pipelinelight_lp.run(
+light_results = slam_pipeline.light_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_lp_result,
@@ -170,9 +168,9 @@ __MASS TOTAL PIPELINE__
 
 This is the standard MASS TOTAL PIPELINE described in the `slam/start_here.ipynb` example.
 """
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
-mass_result = slam.pipelinemass_total.run(
+mass_result = slam_pipeline.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_lp_result,
@@ -188,7 +186,7 @@ The SUBHALO PIPELINE (sensitivity mapping) performs sensitivity mapping of the d
 fitted above, so as to determine where subhalos of what mass could be detected in the data. A full description of
 Sensitivity mapping if given in the SLaM pipeline script `slam/subhalo/sensitivity_imaging.py`.
 """
-subhalo_results = slam.pipelinesubhalo.sensitivity_imaging_lp.run(
+subhalo_results = slam_pipeline.subhalo.sensitivity_imaging_lp.run(
     settings_search=settings_search,
     mask=mask,
     psf=dataset.psf,

@@ -143,7 +143,7 @@ search = af.Nautilus(
 """
 All code from here is repeated from `example_0.py`.
 """
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 result = search.fit(model=model, analysis=analysis)
 

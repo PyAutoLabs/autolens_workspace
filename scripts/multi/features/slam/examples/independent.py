@@ -150,7 +150,7 @@ __SOURCE LP PIPELINE__
 
 The SOURCE LP PIPELINE is identical to the `start_here.ipynb` example.
 """
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 # Lens Light
 
@@ -212,7 +212,7 @@ source_bulge = af.Model(
     profile_list=bulge_gaussian_list,
 )
 
-source_lp_result = slam.pipelinesource_lp.run(
+source_lp_result = slam_pipeline.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=lens_bulge,
@@ -236,9 +236,10 @@ analysis = al.AnalysisImaging(
     positions_likelihood_list=[
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
+    use_jax=True,
 )
 
-source_pix_result_1 = slam.pipelinesource_pix.run_1(
+source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
@@ -259,9 +260,10 @@ analysis = al.AnalysisImaging(
         image_mesh_adapt_background_percent_threshold=0.1,
         image_mesh_adapt_background_percent_check=0.8,
     ),
+    use_jax=True,
 )
 
-source_pix_result_2 = slam.pipelinesource_pix.run_2(
+source_pix_result_2 = slam_pipeline.source_pix.run_2(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
@@ -277,7 +279,9 @@ __LIGHT LP PIPELINE__
 As above, this pipeline also has the same API as the `start_here.ipynb` example.
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1)
+    dataset=dataset,
+    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+    use_jax=True,
 )
 
 centre_0 = af.UniformPrior(lower_limit=-0.2, upper_limit=0.2)
@@ -308,7 +312,7 @@ lens_bulge = af.Model(
     profile_list=bulge_gaussian_list,
 )
 
-light_result = slam.pipelinelight_lp.run(
+light_result = slam_pipeline.light_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_pix_result_1,
@@ -330,7 +334,7 @@ analysis = al.AnalysisImaging(
     ],
 )
 
-mass_result = slam.pipelinemass_total.run(
+mass_result = slam_pipeline.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_pix_result_1,
@@ -480,7 +484,7 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
         profile_list=bulge_gaussian_list,
     )
 
-    source_lp_result = slam.pipelinesource_lp.run(
+    source_lp_result = slam_pipeline.source_lp.run(
         settings_search=settings_search,
         analysis=analysis,
         lens_bulge=light_result.instance.galaxies.lens.bulge,
@@ -519,7 +523,7 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
         source_lp_result.instance.dataset_model.grid_offset[1]
     )
 
-    source_pix_result_1 = slam.pipelinesource_pix.run_1(
+    source_pix_result_1 = slam_pipeline.source_pix.run_1(
         settings_search=settings_search,
         analysis=analysis,
         source_lp_result=source_lp_result,
@@ -550,7 +554,7 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
         source_lp_result.instance.dataset_model.grid_offset[1]
     )
 
-    multi_result = slam.pipelinesource_pix.run_2(
+    multi_result = slam_pipeline.source_pix.run_2(
         settings_search=settings_search,
         analysis=analysis,
         source_lp_result=source_lp_result,

@@ -2,15 +2,15 @@
 Chaining: Pixelization Adaptive
 ===============================
 
-Non-linear search chaining is an advanced model-fitting approach which breaks the model-fitting procedure down into 
-multiple non-linear searches, using the results of the initial searches to initialization parameter sampling in 
+Non-linear search chaining is an advanced model-fitting approach which breaks the model-fitting procedure down into
+multiple non-linear searches, using the results of the initial searches to initialization parameter sampling in
 subsequent searches. This contrasts the `modeling` example which fits a single lens model-fit using one non-linear search.
 
 An overview of search chaining is provided in the `autolens_workspace/*/guides/modeling/chaining` script, make
 sure to read that before reading this script!
 
-This script introduces adaptive pixdelizations features, which use the results of previous model-fits performed by 
-earlier searches to searches performed later in the chain, in order to adapt the pixelizaiton's mesh and regularization 
+This script introduces adaptive pixdelizations features, which use the results of previous model-fits performed by
+earlier searches to searches performed later in the chain, in order to adapt the pixelizaiton's mesh and regularization
 to the source's unlensed properties.
 
 This script illustrates using the `RectangularSource` mesh and `AdaptiveBrightness` regularization

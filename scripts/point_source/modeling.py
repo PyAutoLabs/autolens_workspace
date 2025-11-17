@@ -277,11 +277,20 @@ __Analysis__
 
 The `AnalysisPoint` object defines the `log_likelihood_function` used by the non-linear search to fit the model 
 to the `PointDataset`.
+
+__JAX__
+
+PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
+support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
+JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+
+If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 """
 analysis = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
     fit_positions_cls=al.FitPositionsImagePairRepeat,  # Image-plane chi-squared with repeat image pairs.
+    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 
 """

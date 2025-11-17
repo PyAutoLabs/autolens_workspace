@@ -19,9 +19,13 @@ The lens has only 2 extra galaxies, so the model is not too complex, meaning thi
 good GPU. More complex groups with more extra galaxies will take longer to fit, but the workflow is identical and
 PyAutoLens can efficient scale to these more complex systems.
 
+__JAX__
+
 PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
-support, your fits will run much faster (a few minutes instead of an hour). If you don’t have
-a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
+support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
+JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+
+If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 
 Finally, we also show how to simulate strong lens groups. This is useful for practice, for
 building training datasets, or for investigating lensing effects in a controlled way.
@@ -259,6 +263,14 @@ We now fit the data with the lens model using the non-linear fitting method and 
 
 This requires an `AnalysisImaging` object, which defines the `log_likelihood_function` used by Nautilus to fit
 the model to the imaigng data.
+
+__JAX__
+
+PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
+support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
+JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+
+If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 """
 search = af.Nautilus(
     path_prefix=Path("group"),  # The path where results and output are stored.
@@ -269,7 +281,10 @@ search = af.Nautilus(
     iterations_per_full_update=100000,  # Every N iterations the results are written to hard-disk for inspection.
 )
 
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(
+    dataset=dataset,
+    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
+)
 
 result = search.fit(model=model, analysis=analysis)
 

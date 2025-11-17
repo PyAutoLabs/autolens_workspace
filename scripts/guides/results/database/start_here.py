@@ -162,7 +162,7 @@ for dataset_name in dataset_names:
         n_live=100,
     )
 
-    analysis = al.AnalysisImaging(dataset=dataset)
+    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
     search.fit(analysis=analysis, model=model, info=info)
 

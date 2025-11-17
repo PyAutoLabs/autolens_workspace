@@ -315,7 +315,7 @@ for extra_galaxy_centre in extra_galaxies_centres:
 
 extra_galaxies = af.Collection(extra_galaxies_list)
 
-source_lp_result_1 = slam.pipelinesource_lp.run_1(
+source_lp_result_1 = slam_pipeline.source_lp.run_1(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=lens_bulge,
@@ -376,7 +376,7 @@ analysis = al.AnalysisImaging(
     dataset=dataset_larger, positions_likelihood_list=[positions_likelihood]
 )
 
-source_lp_result_2 = slam.pipelinesource_lp.run_2(
+source_lp_result_2 = slam_pipeline.source_lp.run_2(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result_1,
@@ -435,7 +435,7 @@ for i in range(len(extra_galaxies_centres)):
 
 extra_galaxies_fixed_centres = af.Collection(extra_galaxies_fixed_list)
 
-source_pix_result_1 = slam.pipelinesource_pix.run_1(
+source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result_1,
@@ -467,7 +467,7 @@ analysis = al.AnalysisImaging(
 
 # extra_galaxies = source_pix_result_1.instance.extra_galaxies
 
-source_pix_result_2 = slam.pipelinesource_pix.run_2(
+source_pix_result_2 = slam_pipeline.source_pix.run_2(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result_1,
@@ -587,7 +587,7 @@ for i, extra_galaxy_centre in enumerate(outer_extra_galaxies_centres):
 
 extra_galaxies = af.Collection(extra_galaxies_list)
 
-light_result_1 = slam.pipelinelight_lp.run_1(
+light_result_1 = slam_pipeline.light_lp.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_pix_result_1,
@@ -660,7 +660,7 @@ for i, extra_galaxy_centre in enumerate(extra_galaxies_centres):
 
 extra_galaxies = af.Collection(extra_galaxies_list)
 
-mass_result = slam.pipelinemass_total.run(
+mass_result = slam_pipeline.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_pix_result_1,

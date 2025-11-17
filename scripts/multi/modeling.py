@@ -158,8 +158,22 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 __Analysis List__
 
 Set up two instances of the `Analysis` class object, one for each dataset.
+
+__JAX__
+
+PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
+support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
+JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+
+If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 """
-analysis_list = [al.AnalysisImaging(dataset=dataset) for dataset in dataset_list]
+analysis_list = [
+    al.AnalysisImaging(
+        dataset=dataset,
+        use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
+    )
+    for dataset in dataset_list
+]
 
 """
 __Analysis Factor__

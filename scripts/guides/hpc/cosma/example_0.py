@@ -263,7 +263,7 @@ __Analysis__
 
 Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
 """
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 """
 __Model-Fit__

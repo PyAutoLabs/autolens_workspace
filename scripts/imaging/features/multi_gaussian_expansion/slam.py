@@ -116,7 +116,7 @@ this example:
 
  - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS TOTAL PIPELINE).
 """
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 lens_bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
@@ -131,7 +131,7 @@ source_bulge = al.model_util.mge_model_from(
     centre_prior_is_uniform=False,
 )
 
-source_lp_result = slam.pipelinesource_lp.run(
+source_lp_result = slam_pipeline.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=lens_bulge,
@@ -161,9 +161,7 @@ In this example it:
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS 
  PIPELINE [fixed values].
 """
-analysis = al.AnalysisImaging(
-    dataset=dataset,
-)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
@@ -172,7 +170,7 @@ bulge = al.model_util.mge_model_from(
     centre_prior_is_uniform=True,
 )
 
-light_results = slam.pipelinelight_lp.run(
+light_results = slam_pipeline.light_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_lp_result,
@@ -200,9 +198,9 @@ In this example it:
 
  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL PIPELINE.
 """
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
-mass_results = slam.pipelinemass_total.run(
+mass_results = slam_pipeline.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_lp_result,

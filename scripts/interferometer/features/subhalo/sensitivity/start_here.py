@@ -88,7 +88,7 @@
 #     n_live=100,
 # )
 #
-# analysis = al.AnalysisInterferometer(dataset=dataset)
+# analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
 #
 # result = search_base.fit(model=base_model, analysis=analysis)
 #

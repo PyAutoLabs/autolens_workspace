@@ -158,7 +158,7 @@ this example:
 
  - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS TOTAL PIPELINE).
 """
-analysis = al.AnalysisInterferometer(dataset=dataset)
+analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
 
 source_bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
@@ -167,7 +167,7 @@ source_bulge = al.model_util.mge_model_from(
     centre_prior_is_uniform=False,
 )
 
-source_lp_result = slam.pipelinesource_lp.run(
+source_lp_result = slam_pipeline.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=None,
@@ -210,9 +210,10 @@ analysis = al.AnalysisInterferometer(
     ],
     adapt_image_maker=al.AdaptImageMaker(result=source_lp_result),
     settings_inversion=settings_inversion,
+    use_jax=True,
 )
 
-source_pix_result_1 = slam.pipelinesource_pix.run_1(
+source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
@@ -228,9 +229,10 @@ analysis = al.AnalysisInterferometer(
         image_mesh_adapt_background_percent_threshold=0.1,
         image_mesh_adapt_background_percent_check=0.8,
     ),
+    use_jax=True,
 )
 
-source_pix_result_2 = slam.pipelinesource_pix.run_2(
+source_pix_result_2 = slam_pipeline.source_pix.run_2(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
@@ -267,7 +269,7 @@ analysis = al.AnalysisInterferometer(
     settings_inversion=settings_inversion,
 )
 
-mass_result = slam.pipelinemass_total.run(
+mass_result = slam_pipeline.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_pix_result_1,
@@ -303,13 +305,13 @@ analysis = al.AnalysisInterferometer(
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
 )
 
-result_no_subhalo = slam.pipelinesubhalo.detection.run_1_no_subhalo(
+result_no_subhalo = slam_pipeline.subhalo.detection.run_1_no_subhalo(
     settings_search=settings_search,
     analysis=analysis,
     mass_result=mass_result,
 )
 
-result_subhalo_grid_search = slam.pipelinesubhalo.detection.run_2_grid_search(
+result_subhalo_grid_search = slam_pipeline.subhalo.detection.run_2_grid_search(
     settings_search=settings_search,
     analysis=analysis,
     mass_result=mass_result,
@@ -319,7 +321,7 @@ result_subhalo_grid_search = slam.pipelinesubhalo.detection.run_2_grid_search(
     number_of_steps=2,
 )
 
-result_with_subhalo = slam.pipelinesubhalo.detection.run_3_subhalo(
+result_with_subhalo = slam_pipeline.subhalo.detection.run_3_subhalo(
     settings_search=settings_search,
     analysis=analysis,
     subhalo_result_1=result_no_subhalo,

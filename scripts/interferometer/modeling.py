@@ -180,9 +180,19 @@ __Analysis__
 
 The `AnalysisInterferometer` object defines the `log_likelihood_function` used by the non-linear search to fit the 
 model to the `Interferometer`dataset.
+
+__JAX__
+
+PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
+support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
+JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+
+If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 """
 analysis = al.AnalysisInterferometer(
-    dataset=dataset, settings_inversion=al.SettingsInversion(use_w_tilde=False)
+    dataset=dataset,
+    settings_inversion=al.SettingsInversion(use_w_tilde=False),
+    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 
 """

@@ -423,7 +423,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 total_xy = 5
 
 shapelets_bulge_list = af.Collection(
-    af.Model(al.lp_linear.ShapeletCartesian) for _ in range(total_xy ** 2)
+    af.Model(al.lp_linear.ShapeletCartesian) for _ in range(total_xy**2)
 )
 
 for x in range(total_xy):

@@ -163,7 +163,7 @@ __SOURCE LP PIPELINE__
 
 This is the standard SOURCE LP PIPELINE described in the `slam/start_here.ipynb` example.
 """
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 lens_bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
@@ -179,7 +179,7 @@ source_bulge = al.model_util.mge_model_from(
     centre_prior_is_uniform=False,
 )
 
-source_lp_result = slam.pipelinesource_lp.run(
+source_lp_result = slam_pipeline.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=lens_bulge,
@@ -209,9 +209,10 @@ analysis = al.AnalysisImaging(
         image_mesh_adapt_background_percent_threshold=0.1,
         image_mesh_adapt_background_percent_check=0.8,
     ),
+    use_jax=True,
 )
 
-source_pix_result_1 = slam.pipelinesource_pix.run_1(
+source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
@@ -241,9 +242,10 @@ analysis = al.AnalysisImaging(
         image_mesh_adapt_background_percent_threshold=0.1,
         image_mesh_adapt_background_percent_check=0.8,
     ),
+    use_jax=True,
 )
 
-source_pix_result_2 = slam.pipelinesource_pix.run_2(
+source_pix_result_2 = slam_pipeline.source_pix.run_2(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
@@ -259,7 +261,9 @@ __LIGHT LP PIPELINE__
 This is the standard LIGHT LP PIPELINE described in the `slam/start_here.ipynb` example.
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1)
+    dataset=dataset,
+    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+    use_jax=True,
 )
 
 bulge = al.model_util.mge_model_from(
@@ -270,7 +274,7 @@ bulge = al.model_util.mge_model_from(
 )
 
 
-light_result = slam.pipelinelight_lp.run(
+light_result = slam_pipeline.light_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_pix_result_1,
@@ -290,9 +294,10 @@ analysis = al.AnalysisImaging(
     positions_likelihood_list=[
         source_pix_result_2.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
+    use_jax=True,
 )
 
-mass_result = slam.pipelinemass_total.run(
+mass_result = slam_pipeline.mass_total.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_pix_result_1,
@@ -331,13 +336,13 @@ analysis = al.AnalysisImaging(
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
 )
 
-result_no_subhalo = slam.pipelinesubhalo.detection.run_1_no_subhalo(
+result_no_subhalo = slam_pipeline.subhalo.detection.run_1_no_subhalo(
     settings_search=settings_search,
     analysis=analysis,
     mass_result=mass_result,
 )
 
-result_subhalo_grid_search = slam.pipelinesubhalo.detection.run_2_grid_search(
+result_subhalo_grid_search = slam_pipeline.subhalo.detection.run_2_grid_search(
     settings_search=settings_search,
     analysis=analysis,
     mass_result=mass_result,
@@ -347,7 +352,7 @@ result_subhalo_grid_search = slam.pipelinesubhalo.detection.run_2_grid_search(
     number_of_steps=2,
 )
 
-result_with_subhalo = slam.pipelinesubhalo.detection.run_3_subhalo(
+result_with_subhalo = slam_pipeline.subhalo.detection.run_3_subhalo(
     settings_search=settings_search,
     analysis=analysis,
     subhalo_result_1=result_no_subhalo,

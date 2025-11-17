@@ -12,9 +12,13 @@ fit your first lens.
 We focus on a *galaxy-scale* lens (a single lens galaxy). If you have multiple lens galaxies,
 see the `start_here_group.ipynb` and `start_here_cluster.ipynb` examples.
 
+__JAX__
+
 PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
-support, your fits will run much faster (a few minutes instead of an hour). If you don’t have
-a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
+support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
+JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+
+If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 
 We also show how to simulate interferometer datasets. This is useful for building machine
 learning training datasets, or for investigating lensing effects in a controlled way.
@@ -173,8 +177,13 @@ We now fit the data with the lens model using the non-linear fitting method and 
 We fit the visibilities with `AnalysisInterferometer`, hich defines the `log_likelihood_function` used by 
 Nautilus to fit the model to the interferometer data.
 
-JAX jit and vmap compilation occurs automatically under the hood when `search.fit` is called, ensuring
-the model-fit runs as fast as possible.
+__JAX__
+
+PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
+support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
+JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+
+If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 """
 search = af.Nautilus(
     path_prefix=Path("interferometer"),
@@ -185,7 +194,10 @@ search = af.Nautilus(
     iterations_per_quick_update=2500,  # Every N iterations the max likelihood model is visualized and written to output folder.
 )
 
-analysis = al.AnalysisInterferometer(dataset=dataset)
+analysis = al.AnalysisInterferometer(
+    dataset=dataset,
+    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
+)
 result = search.fit(model=model, analysis=analysis)
 
 """

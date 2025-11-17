@@ -175,7 +175,7 @@ luminosity_star = 1e9
 extra_galaxies_list = []
 
 for extra_galaxy_centre, extra_galaxy_luminosity in zip(
-        extra_galaxies_centre_list, extra_galaxies_luminosity_list
+    extra_galaxies_centre_list, extra_galaxies_luminosity_list
 ):
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = extra_galaxy_centre
@@ -224,7 +224,7 @@ However, to ensure results are easier to interpret we keep them separate.
 """
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source)
-             + af.Collection(extra_galaxies_list),
+    + af.Collection(extra_galaxies_list),
 )
 
 """

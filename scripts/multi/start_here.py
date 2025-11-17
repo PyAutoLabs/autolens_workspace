@@ -19,9 +19,13 @@ should make it quick and easy to at least have a go doing multi-wavelength model
 We focus on a *galaxy-scale* lens (a single lens galaxy). If you have multiple lens galaxies,
 see the `start_here_group.ipynb` and `start_here_cluster.ipynb` examples.
 
+__JAX__
+
 PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
-support, your fits will run much faster (a few minutes instead of an hour). If you don’t have
-a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
+support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
+JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+
+If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 
 We also show how to simulate strong lens imaging. This is useful for building machine learning training datasets,
 or for investigating lensing effects in a controlled way.
@@ -287,8 +291,22 @@ __Analysis__
 In other examples, a single `Analysis` object is passed the dataset and used to perform lens modeling.
 
 When there are multiple datasets, a list of analysis objects is created, once for each dataset.
+
+__JAX__
+
+PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
+support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
+JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+
+If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 """
-analysis_list = [al.AnalysisImaging(dataset=dataset) for dataset in dataset_masked_list]
+analysis_list = [
+    al.AnalysisImaging(
+        dataset=dataset,
+        use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
+    )
+    for dataset in dataset_masked_list
+]
 
 """
 Each analysis object is wrapped in an `AnalysisFactor`, which pairs it with the model and prepares it for use in a 

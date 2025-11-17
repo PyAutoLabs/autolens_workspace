@@ -21,9 +21,13 @@ of the strong lens which aid its interpretation.
 This script therefore also shows how to plot the CCD imaging of a point source lens, but does not use the
 imaging data to constrain the lens model itself.
 
+__JAX__
+
 PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
-support, your fits will run much faster (a few minutes instead of an hour). If you don’t have
-a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
+support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
+JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+
+If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 
 We also show how to simulate strong lens point sources. This is useful for building machine learning
 training datasets, or for investigating lensing effects in a controlled way.
@@ -216,6 +220,14 @@ We now fit the data with the lens model using the non-linear fitting method and 
 
 This requires an `AnalysisPoint` object, which defines the `log_likelihood_function` used by Nautilus to fit
 the model to the point source data.
+
+__JAX__
+
+PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
+support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
+JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+
+If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 """
 search = af.Nautilus(
     path_prefix=Path("point_source"),  # The path where results and output are stored.
@@ -226,7 +238,11 @@ search = af.Nautilus(
     iterations_per_quick_update=250000,  # Every N iterations the max likelihood model is visualized and written to output folder.
 )
 
-analysis = al.AnalysisPoint(dataset=dataset, solver=solver, use_jax=True)
+analysis = al.AnalysisPoint(
+    dataset=dataset,
+    solver=solver,
+    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
+)
 
 result = search.fit(model=model, analysis=analysis)
 
@@ -352,7 +368,11 @@ search = af.Nautilus(
     n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
     iterations_per_full_update=20000,  # Every N iterations the results are written to hard-disk for inspection.
 )
-analysis = al.AnalysisPoint(dataset=dataset, solver=solver)
+analysis = al.AnalysisPoint(
+    dataset=dataset,
+    solver=solver,
+    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
+)
 
 result = search.fit(model=model, analysis=analysis)
 

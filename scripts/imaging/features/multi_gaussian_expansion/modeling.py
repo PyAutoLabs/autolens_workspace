@@ -221,7 +221,7 @@ for j in range(gaussian_per_basis):
             0
         ].ell_comps  # All Gaussians have same elliptical components.
         gaussian.sigma = (
-                10 ** log10_sigma_list[i]
+            10 ** log10_sigma_list[i]
         )  # All Gaussian sigmas are fixed to values above.
 
     bulge_gaussian_list += gaussian_list
@@ -377,7 +377,7 @@ for j in range(gaussian_per_basis):
             0
         ].ell_comps  # All Gaussians have same elliptical components.
         gaussian.sigma = (
-                10 ** log10_sigma_list[i]
+            10 ** log10_sigma_list[i]
         )  # All Gaussian sigmas are fixed to values above.
 
     bulge_gaussian_list += gaussian_list

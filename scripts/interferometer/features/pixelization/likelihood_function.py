@@ -495,7 +495,9 @@ For example:
 The indexing of the `mapping_matrix` is reversed compared to the notation of WD03 (e.g. visibilities
 are the first entry of `mapping_matrix` whereas for $f$ they are the second index).
 """
-print(f"Mapping between visibility 0 and RectangularMagnification pixel 2 = {mapping_matrix[0, 2]}")
+print(
+    f"Mapping between visibility 0 and RectangularMagnification pixel 2 = {mapping_matrix[0, 2]}"
+)
 
 """
 __Data Vector (D)__

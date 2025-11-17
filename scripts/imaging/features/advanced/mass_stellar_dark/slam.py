@@ -121,7 +121,7 @@ this example:
  - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS LIGHT DARK 
  PIPELINE).
 """
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 bulge = af.Model(al.lp_linear.Sersic)
 
@@ -132,7 +132,7 @@ source_bulge = al.model_util.mge_model_from(
     centre_prior_is_uniform=False,
 )
 
-source_lp_result = slam.pipelinesource_lp.run(
+source_lp_result = slam_pipeline.source_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     lens_bulge=bulge,
@@ -178,9 +178,10 @@ analysis = al.AnalysisImaging(
     positions_likelihood_list=[
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
+    use_jax=True,
 )
 
-source_pix_result_1 = slam.pipelinesource_pix.run_1(
+source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
@@ -230,9 +231,10 @@ analysis = al.AnalysisImaging(
         image_mesh_adapt_background_percent_threshold=0.1,
         image_mesh_adapt_background_percent_check=0.8,
     ),
+    use_jax=True,
 )
 
-source_pix_result_2 = slam.pipelinesource_pix.run_2(
+source_pix_result_2 = slam_pipeline.source_pix.run_2(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
@@ -267,7 +269,7 @@ analysis = al.AnalysisImaging(
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
 )
 
-light_result = slam.pipelinelight_lp.run(
+light_result = slam_pipeline.light_lp.run(
     settings_search=settings_search,
     analysis=analysis,
     source_result_for_lens=source_pix_result_1,
@@ -321,7 +323,7 @@ dark = af.Model(al.mp.NFWMCRLudlow)
 
 dark.centre = lens_bulge.centre
 
-mass_result = slam.pipelinemass_light_dark.run(
+mass_result = slam_pipeline.mass_light_dark.run(
     settings_search=settings_search,
     analysis=analysis,
     lp_chain_tracer=lp_chain_tracer,

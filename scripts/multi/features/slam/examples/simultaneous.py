@@ -203,9 +203,11 @@ source_bulge = af.Model(
     profile_list=bulge_gaussian_list,
 )
 
-analysis_list = [al.AnalysisImaging(dataset=dataset) for dataset in dataset_list]
+analysis_list = [
+    al.AnalysisImaging(dataset=dataset, use_jax=True) for dataset in dataset_list
+]
 
-source_lp_result = slam.pipelinesource_lp.run(
+source_lp_result = slam_pipeline.source_lp.run(
     settings_search=settings_search,
     analysis_list=analysis_list,
     lens_bulge=lens_bulge,
@@ -255,11 +257,12 @@ analysis_list = [
         dataset=result.max_log_likelihood_fit.dataset,
         adapt_image_maker=al.AdaptImageMaker(result=result),
         positions_likelihood_list=[positions_likelihood],
+        use_jax=True,
     )
     for result in source_lp_result
 ]
 
-source_pix_result_1 = slam.pipelinesource_pix.run_1(
+source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis_list=analysis_list,
     source_lp_result=source_lp_result,
@@ -297,11 +300,12 @@ analysis_list = [
             image_mesh_adapt_background_percent_threshold=0.1,
             image_mesh_adapt_background_percent_check=0.8,
         ),
+        use_jax=True,
     )
     for result in source_pix_result_1
 ]
 
-source_pix_result_2 = slam.pipelinesource_pix.run_2(
+source_pix_result_2 = slam_pipeline.source_pix.run_2(
     settings_search=settings_search,
     analysis_list=analysis_list,
     source_lp_result=source_lp_result,
@@ -364,7 +368,7 @@ lens_bulge = af.Model(
     profile_list=bulge_gaussian_list,
 )
 
-light_result = slam.pipelinelight_lp.run(
+light_result = slam_pipeline.light_lp.run(
     settings_search=settings_search,
     analysis_list=analysis_list,
     source_result_for_lens=source_pix_result_1,
@@ -413,7 +417,7 @@ analysis_list = [
     for result in source_pix_result_1
 ]
 
-mass_result = slam.pipelinemass_total.run(
+mass_result = slam_pipeline.mass_total.run(
     settings_search=settings_search,
     analysis_list=analysis_list,
     source_result_for_lens=source_pix_result_1,
@@ -448,13 +452,13 @@ analysis_list = [
     for result in source_pix_result_1
 ]
 
-subhalo_result_1 = slam.pipelinesubhalo.detection.run_1_no_subhalo(
+subhalo_result_1 = slam_pipeline.subhalo.detection.run_1_no_subhalo(
     settings_search=settings_search,
     analysis_list=analysis_list,
     mass_result=mass_result,
 )
 
-subhalo_grid_search_result_2 = slam.pipelinesubhalo.detection.run_2_grid_search(
+subhalo_grid_search_result_2 = slam_pipeline.subhalo.detection.run_2_grid_search(
     settings_search=settings_search,
     analysis_list=analysis_list,
     mass_result=mass_result,
@@ -464,7 +468,7 @@ subhalo_grid_search_result_2 = slam.pipelinesubhalo.detection.run_2_grid_search(
     number_of_steps=2,
 )
 
-subhalo_result_3 = slam.pipelinesubhalo.detection.run_3_subhalo(
+subhalo_result_3 = slam_pipeline.subhalo.detection.run_3_subhalo(
     settings_search=settings_search,
     analysis_list=analysis_list,
     subhalo_result_1=subhalo_result_1,

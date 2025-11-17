@@ -446,9 +446,22 @@ set of multiple images one-by-one and then sum their likelihoods.
 It is not vital that you as a user understand the details of how the `log_likelihood_function` fits a lens model to 
 data, but interested readers can find a step-by-step guide of the likelihood 
 function at ``autolens_workspace/*/point/log_likelihood_function`
+
+__JAX__
+
+PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
+support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
+JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+
+If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 """
 analysis_list = [
-    al.AnalysisPoint(dataset=dataset, solver=solver) for dataset in dataset_list
+    al.AnalysisPoint(
+        dataset=dataset,
+        solver=solver,
+        use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
+    )
+    for dataset in dataset_list
 ]
 
 """

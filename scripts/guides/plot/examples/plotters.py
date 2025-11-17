@@ -400,8 +400,7 @@ When we plot 1D quantities, we do not use built-in plotting functions as in 2D, 
 matplotlib functionality.
 """
 grid_2d_projected = grid.grid_2d_radial_projected_from(
-    centre=galaxy.bulge.centre,
-    angle=bulge.angle()
+    centre=galaxy.bulge.centre, angle=bulge.angle()
 )
 
 image_1d = galaxy.bulge.image_2d_from(grid=grid_2d_projected)
@@ -439,14 +438,12 @@ We'll plot this using our masked grid above, which converts the 2D grid to a 1D 
 profile individually.
 """
 grid_2d_projected = grid.grid_2d_radial_projected_from(
-    centre=bulge.centre,
-    angle=bulge.angle()
+    centre=bulge.centre, angle=bulge.angle()
 )
 bulge_image_1d = bulge.image_2d_from(grid=grid_2d_projected)
 
 grid_2d_projected = grid.grid_2d_radial_projected_from(
-    centre=source_galaxy.bulge.centre,
-    angle=source_galaxy.bulge.angle()
+    centre=source_galaxy.bulge.centre, angle=source_galaxy.bulge.angle()
 )
 source_image_1d = source_galaxy.bulge.image_2d_from(grid=grid_2d_projected)
 
@@ -777,8 +774,7 @@ image_1d_list = []
 
 for light_profile in light_profile_pdf_list:
     grid_projected = grid.grid_2d_radial_projected_from(
-        centre=light_profile.centre,
-        angle=light_profile.angle()
+        centre=light_profile.centre, angle=light_profile.angle()
     )
 
     image_1d_list.append(light_profile.image_2d_from(grid=grid_projected))
@@ -793,7 +789,9 @@ image_1d_list = [image_1d[0:min_index] for image_1d in image_1d_list]
     profile_1d_list=image_1d_list, low_limit=low_limit
 )
 
-plt.plot(grid_2d_projected[:min_index, 1], median_image_1d, label="Median Light Profile")
+plt.plot(
+    grid_2d_projected[:min_index, 1], median_image_1d, label="Median Light Profile"
+)
 plt.fill_between(
     x=grid_2d_projected[:min_index, 1],
     y1=errors_image_1d[0],
