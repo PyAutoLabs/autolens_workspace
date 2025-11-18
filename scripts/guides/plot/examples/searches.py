@@ -23,6 +23,7 @@ __Setup__
 To illustrate plotting, we require standard objects like a dataset and model which we will perform quick model-fits to
 for illustration.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

@@ -12,6 +12,7 @@ using this script.
 This script uses a GUI to mark the (y,x) arcsecond locations of these extra galaxies, in contrast to the example
 above which requires you to input these values manually.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

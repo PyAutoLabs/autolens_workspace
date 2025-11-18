@@ -26,6 +26,7 @@ therefore you must read the following notebooks before this script:
 
 - `light_profile/likelihood_function.ipynb`.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

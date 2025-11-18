@@ -50,7 +50,9 @@
 # for your interferometer dataset. It does this for all possible combinations of settings and therefore can tell you
 # which settings give the fastest run times for your dataset.
 # """
-# # %matplotlib inline
+# from autoconf import jax_wrapper # Ensures JAX environment variables are set before other imports
+
+# %matplotlib inline
 # # from pyprojroot import here
 # # workspace_path = str(here())
 # # %cd $workspace_path

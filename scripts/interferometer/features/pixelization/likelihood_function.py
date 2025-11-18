@@ -30,6 +30,7 @@ concepts used in this script:
 This script repeats all text and code examples in the above likelihood function examples. It therefore can be used to
 learn about the linear light profile likelihood function without reading other likelihood scripts.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -957,6 +958,7 @@ You must read through the following likelihood functions first:
  - `pixelization/log_likelihood_function.py` the likelihood function for a pixelization.
  - `pixelization/w_tilde.py` the w-tilde formalism used to compute the likelihood function without an NUFFT.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -1128,6 +1130,7 @@ You must read through the following likelihood functions first:
 
  - `pixelization/log_likelihood_function.py` the likelihood function for a pixelization.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

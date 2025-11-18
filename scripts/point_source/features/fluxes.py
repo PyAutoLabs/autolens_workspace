@@ -29,6 +29,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -147,7 +148,7 @@ In the `start_here.py` example 100 live points (`n_live=100`) were used to sampl
 to 150, to account for the additional free parameters in the model that is the source flux.
 """
 search = af.Nautilus(
-    path_prefix=Path("point_source") / "modeling",
+    path_prefix=Path("point_source") / "features",
     name="fluxes",
     unique_tag=dataset_name,
     n_live=150,

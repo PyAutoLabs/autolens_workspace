@@ -126,6 +126,7 @@ def run_1(
         name="source_pix[1]",
         **settings_search.search_dict,
         n_live=150,
+        n_batch=20,
     )
 
     result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
@@ -226,28 +227,11 @@ def run_2(
                 image_mesh_pixels_fixed
             )
 
-    """
-    __Search (Search 2)__
-
-    This search uses the nested sampling algorithm Dynesty, in contrast to nearly every other search throughout the
-    autolens workspace which use `Nautilus`.
-
-    The reason is quite technical, but in a nutshell it is because the likelihood function sampled in `source_pix[2]`
-    is often not smooth. This leads to behaviour where the `Nautilus` search gets stuck sampling small regions of
-    parameter space indefinitely, and does not converge and terminate.
-
-    Dynesty has proven more robust to these issues, because it uses a random walk nested sampling algorithm which
-    is less susceptible to a noisy likelihood function.
-
-    The reason this likelihood function is noisy is because it has parameters which change the distribution of source
-    pixels. For example, the parameters may mean more or less source pixels cluster over the brightest regions of the
-    image. In all other searches, the source pixelization parameters are fixed, ensuring that the likelihood function
-    is smooth.
-    """
-    search = af.DynestyStatic(
+    search = af.Nautilus(
         name="source_pix[2]",
         **settings_search.search_dict,
-        nlive=100,
+        n_live=75,
+        n_batch=20,
     )
 
     result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)

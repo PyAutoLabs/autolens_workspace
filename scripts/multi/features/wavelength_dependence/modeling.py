@@ -27,6 +27,7 @@ to the model for 5+ datasets.
 
 
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

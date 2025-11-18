@@ -63,6 +63,7 @@ The `Imaging` dataset fitted in this example confirms to a number of standard th
 If you are intending to fit your own strong lens data, you will need to ensure it conforms to these standards, which are
 described in the script `autolens_workspace/*/imaging/data_preparation/start_here.ipynb`.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

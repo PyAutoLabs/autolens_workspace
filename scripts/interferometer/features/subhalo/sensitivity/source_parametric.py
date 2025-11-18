@@ -27,7 +27,9 @@
 #
 # Check them out for a detailed description of the analysis!
 # """
-# # %matplotlib inline
+# from autoconf import jax_wrapper # Ensures JAX environment variables are set before other imports
+
+# %matplotlib inline
 # # from pyprojroot import here
 # # workspace_path = str(here())
 # # %cd $workspace_path

@@ -110,10 +110,10 @@ __Chaining__
 Due to the complexity of fitting with a pixelization, it is often best to use **PyAutoLens**'s non-linear chaining
 feature to compose a pipeline which begins by fitting a simpler model using a parametric source.
 
-More information on chaining is provided in the `autolens_workspace/notebooks/imaging/advanced/chaining` folder,
+More information on chaining is provided in the `autolens_workspace/notebooks/guides/modeling/chaining` folder,
 chapter 3 of the **HowToLens** lectures.
 
-The script `autolens_workspace/scripts/imaging/advanced/chaining/parametric_to_pixelization.py` explitly uses chaining
+The script `autolens_workspace/scripts/guides/modeling/chaining/parametric_to_pixelization.py` explitly uses chaining
 to link a lens model using a light profile source to one which then uses a pixelization.
 
 __Model__
@@ -129,6 +129,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -243,10 +244,7 @@ example fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
 
- - The source-galaxy's light uses a `Voronoi` mesh [0 parameters].
-
- - The mesh centres of the `Voronoi` mesh are computed using a `Overlay` image-mesh, with a fixed resolution of 
-   30 x 30 pixels [0 parameters].
+ - The source-galaxy's light uses a 20 x 20 `RectangularMagnification` mesh [0 parameters].
 
  - This pixelization is regularized using a `Constant` scheme which smooths every source pixel equally [1 parameter]. 
 
@@ -257,12 +255,6 @@ fitting the source using `LightProfile`'s (7+ parameters).
 
 The lens model therefore includes a mesh and regularization scheme, which are used together to create the 
 pixelization. 
-
-__Model Cookbook__
-
-A full description of model composition is provided by the model cookbook: 
-
-https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 """
 # Lens:
 
@@ -570,7 +562,7 @@ If your pixelization fit does not go well, or you want for faster computational 
 search chaining which breaks the model-fit into multiple Nautilus runs. This is described for the specific case of 
 linking a (computationally fast) light profile fit to a pixelization in the script:
 
-`autolens_workspace/scripts/imaging/advanced/chaining/parametric_to_pixelization.py`
+`autolens_workspace/scripts/guides/modeling/chaining/parametric_to_pixelization.py`
 
 __HowToLens__
 

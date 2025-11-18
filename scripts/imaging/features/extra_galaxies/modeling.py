@@ -38,6 +38,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -235,7 +236,7 @@ dataset_plotter.subplot_dataset()
 We do not perform a model-fit using this dataset, as using a mask like this requires that we use a pixelization
 to fit the lensed source, which you may not be familiar with yet.
 
-In the `features/pixelization.ipynb` example we perform a fit using this noise scaling scheme and a pixelization,
+In the `features/pixelization` example we perform a fit using this noise scaling scheme and a pixelization,
 so check this out if you are interested in how to do this.
 
 __Extra Galaxies Dataset__

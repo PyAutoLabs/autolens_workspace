@@ -61,12 +61,14 @@ This modeling script uses the SLaM pipelines:
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.
+If any code in this script is unclear, refer to the `guides/modeling/slam_start_here.ipynb` notebook.
 """
 
 """
 Everything below is identical to `start_here.py` and thus not commented, as it is the same code.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

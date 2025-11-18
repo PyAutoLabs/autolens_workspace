@@ -29,6 +29,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -147,7 +148,7 @@ The model is fitted to the data using the nested sampling algorithm Nautilus (se
 full description).
 """
 search = af.Nautilus(
-    path_prefix=Path("point_source") / "modeling",
+    path_prefix=Path("point_source") / "features",
     name="time_delays",
     unique_tag=dataset_name,
     n_live=100,
@@ -233,7 +234,7 @@ The model is fitted to the data using the nested sampling algorithm Nautilus (se
 full description).
 """
 search = af.Nautilus(
-    path_prefix=Path("point_source") / "modeling",
+    path_prefix=Path("point_source") / "features",
     name="time_delays_hubble_constant2",
     unique_tag=dataset_name,
     n_live=150,

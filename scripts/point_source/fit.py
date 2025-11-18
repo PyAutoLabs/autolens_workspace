@@ -20,6 +20,7 @@ examples.
 
 If you are new to analyzing strong lenses with point sources, this guide is the ideal place to start!
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

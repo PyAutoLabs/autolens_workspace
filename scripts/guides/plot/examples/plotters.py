@@ -31,6 +31,7 @@ __Setup__
 
 To illustrate plotting, we require standard objects like a grid, tracer and dataset.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -414,14 +415,11 @@ plt.close()
 """
 Using a `Grid1D` which does not start from 0.0" plots the 1D quantity with both negative and positive radial 
 coordinates.
-
-This plot isn't particularly useful, but it shows how 1D plots work.
 """
 grid_1d = al.Grid1D.uniform_from_zero(shape_native=(10000,), pixel_scales=0.01)
-grid_1d = grid_1d.grid_2d_radial_projected_from(angle=bulge.angle())
 image_1d = bulge.image_2d_from(grid=grid_1d)
 
-plt.plot(grid_2d_projected[:, 1], image_1d)
+plt.plot(grid_1d, image_1d)
 plt.xlabel("Radius (arcseconds)")
 plt.ylabel("Luminosity")
 plt.show()

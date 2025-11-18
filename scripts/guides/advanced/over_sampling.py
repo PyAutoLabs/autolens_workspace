@@ -39,6 +39,7 @@ The visualization API is straightforward but is explained in the `autolens_works
 This includes detailed guides on how to customize every aspect of the figures, which can easily be combined with the
 code outlined in this tutorial.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -447,7 +448,7 @@ There is a way to set up an adaptive over sampling grid for a lensed source, how
 understanding the advanced lens modeling feature search chaining.
 
 An example of how to use search chaining to over sample sources efficient is provided in 
-the `autolens_workspace/*/imaging/advanced/chaining/over_sampling.ipynb` example.
+the `autolens_workspace/*/guides/modeling/chaining/over_sampling.ipynb` example.
 
 __Dataset & Modeling__
 

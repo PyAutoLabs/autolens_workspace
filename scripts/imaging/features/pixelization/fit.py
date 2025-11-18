@@ -96,6 +96,7 @@ possible, where a bespoke fast non-negative linear solver was developed to achie
 Other methods in the literature often do not use a positive only solver, and therefore suffer from these
 unphysical solutions, which can degrade the results of lens model in general.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

@@ -24,6 +24,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `data_preparation/start_here.ipynb` notebook.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -32,6 +33,8 @@ If any code in this script is unclear, refer to the `data_preparation/start_here
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 from pathlib import Path
+
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 

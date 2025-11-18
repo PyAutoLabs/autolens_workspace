@@ -67,6 +67,8 @@ Lets first import autolens, its plotting module and the other libraries we'll ne
 
 You'll see these imports in the majority of workspace examples.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -166,7 +168,6 @@ solver = al.PointSolver.for_grid(
     grid=grid,
     pixel_scale_precision=0.001,
     magnification_threshold=0.1,
-    xp=jnp,
 )
 
 """
@@ -241,9 +242,18 @@ search = af.Nautilus(
     iterations_per_quick_update=250000,  # Every N iterations the max likelihood model is visualized and written to output folder.
 )
 
+# Hacky way to use JAX PointSolver, fix soon
+
+solver_jax = al.PointSolver.for_grid(
+    grid=grid,
+    pixel_scale_precision=0.001,
+    magnification_threshold=0.1,
+    xp=jnp,
+)
+
 analysis = al.AnalysisPoint(
     dataset=dataset,
-    solver=solver,
+    solver=solver_jax,
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 
@@ -488,7 +498,8 @@ We now compute:
  - The RMS noise of the time delays, which is assumed to be 0.25 * their values but in real data uses the time delay estimate process.
 """
 positions = solver.solve(
-    tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
+    tracer=tracer,
+    source_plane_coordinate=source_galaxy.point_0.centre
 )
 
 magnifications = tracer.magnification_2d_via_hessian_from(grid=positions)

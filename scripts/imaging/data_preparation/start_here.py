@@ -21,6 +21,7 @@ The pixel scale of some common telescopes is as follows:
 
 It is absolutely vital you use the correct pixel scale, so double check this value!
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

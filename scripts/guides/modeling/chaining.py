@@ -1,9 +1,9 @@
 """
-Chaining: API
-=============
+Modeling: Chaining
+==================
 
-Non-linear search chaining is an advanced model-fitting approach in **PyAutoLens** which breaks the model-fitting
-procedure down into multiple non-linear searches, using the results of the initial searches to initialization parameter
+Non-linear search chaining is an advanced model-fitting approach which breaks the model-fitting procedure down into
+multiple non-linear searches, using the results of the initial searches to initialization parameter
 sampling in subsequent searches. This contrasts the `modeling` examples which each compose and fit a single lens
 model-fit using one non-linear search.
 
@@ -21,27 +21,18 @@ The benefits of non-linear search chaining are:
 
 __Concise Model Composition API__
 
-All scripts in the `chaining` folder use the concise `Model` API to compose lens models, which is nearly identical to
+Chaining uses the concise `Model` API to compose lens models, which is nearly identical to
 the standard API but avoids the need to use `Model` objects to compose the lens model when a light or mass
 profile is passed to a `Collection` object.
-
-__Preloading__
-
-When certain components of a model are fixed its associated quantities do not change during a model-fit. For
-pixelized sources, this can offer huge speed up, as large matrices which perform expensive computations do not change
-and can therefore be preloaded in memory.
-
-Preloading is performed explictly in the scripts and you will therefore see it show up in examples which use pixelized
-sources.
 
 __This Example__
 
 This script gives an overview of the API for search chaining, a description of how the priors on parameters are used
 to pass information between searches as well as tools for customizing prior passing.
 
-The examples in the `chaining/examples` show specific examples where for lens modeling search chaining can improve the
-model-fit.
+There are examples throughout the workspace where search chaining improves and helps automate lens modeling.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -105,6 +96,7 @@ We compose our lens model using `Model` objects, which represent the galaxies we
 search our lens model is:
 
  - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
+ 
  - an MGE with 1 x 20 Gaussians for the source galaxy's light [4 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
@@ -176,12 +168,12 @@ print(model_2.info)
 The priors on the model components are the same as their original priors in `model_1`, that is the priors loaded
 from the default configuration files. 
 
-This makes model and search chaining pointless, as the second fit will basically have the same initialization to
-sample parameter space as the first.
+This makes model and search chaining pointless, as the second fit has the same initialization to sample parameter 
+space as the first.
 
-We instead want the model to be passed in a way where the priors refelect the inferred high likelihood regions
-of the first in the first model. To do this we use the `model_centred` attribute of the result, which passes the
-model components with priors that are centered on the maximum likelihood parameter values of the first search.
+We instead want the model to be passed in a way where the priors are updated to reflect the inferred high likelihood 
+regions of the first in the first model. To do this we use the `model_centred` attribute of the result, which passes 
+the model components with priors that are centered on the maximum likelihood parameter values of the first search.
 
 __Model Centred Chaining__
 
@@ -232,17 +224,52 @@ print(result_2.info)
 
 """
 We will expand on this API in the following tutorials. The main thing to note is that we can pass entire profiles or
-galaxies using prior passing, if their model does not change (which for the bulge, mass and source_bulge above, was not
-true). The API to pass a whole profile or galaxy is as follows:
+galaxies using prior passing, if their model does not change. 
+
+The API to pass a whole profile or galaxy is as follows:
  
  bulge = result_1.model_centred.galaxies.lens.bulge
  lens = result_1.model_centred.galaxies.lens
  source = result_1.model_centred.galaxies.source
  
 We can also pass priors using an `instance` instead of a `model_centred`. When an `instance` is used, the maximum likelihood
-parameter values are passed as fixed values that are therefore not fitted for nby the non-linear search (reducing its
-dimensionality). We will use this in the other examples  to fit the lens light, fix it to the best-fit model in a second
-search, and then go on to fit it as a model in the final search.
+parameter values are passed as fixed values that are therefore not fitted for by the non-linear search (reducing its
+dimensionality). 
+
+We will use this in other examples to "split up" the components of the model we fit, for example fit the lens light, 
+and then fix it to the best-fit model in a second search which fits the mass and source.
+ 
+__How is Search Chaining Used?__
+ 
+For a lot of the history of **PyAutoLens***, the passing of priors illustrated in this tutorial has been a key
+aspect of how search chaining is used to model strong lenses.
+
+However, since ~2024, the direct passing of priors between searches has become less important. This is because
+the non-linear search (Nautilus) is a lot more robust and run times are a lot faster since the inclusion of JAX. Thus,
+the need to change priors via `model_centred` has become less important, but can still offer more reliable results
+and efficient lens modeling.
+
+In fact, most example chaining examples and the Source, Light and Mass pipeline which are built are this feature
+**no longer use prior passing**, always using the `model` attribute to pass models between searches which resets
+the prior on parameters to their default priors.
+
+However, search chaining is still integral to automated lens modeling and the SLaM pipelines, but it is now used
+to:
+
+- Split up the components of the lens model to be fitted in different searches (e.g. fit lens light and the 
+  mass + source in different searches using `instance`).
+
+- Fit simpler models (e.g. MGE source) in earlier searches to get a fast estimate of the lens light and mass models,
+  which are then used as fixed components in later searches.
+  
+- To pass `adapt_images` through the pipelines, which use the results of earlier searches to adapt aspects of the
+  lens model to the data in later searches. This is especially important for pixelized sources and described in the 
+  `features/pixelization/adaptive` example.
+
+The most robust automated lens modeling is therefore still built using search chaining, but the direct passing of priors
+between searches is no longer the main tool by which this is achieved.
+ 
+__Detailed Explanation Of Prior Passing__
  
 Lets now think about how priors are passed. Checkout the `model.info` file of the second search of this tutorial. The 
 parameters do not use the default priors we saw in search 1 (which are typically broad UniformPriors). Instead, 
@@ -254,8 +281,6 @@ they use TruncatedGaussianPrior`s where:
 
 Like the manual `TruncatedGaussianPrior`'s that were used in tutorial 1, the prior passing API sets up the prior on each 
 parameter with a `TruncatedGaussianPrior` centred on the high likelihood regions of parameter space!
-
-__Detailed Explanation Of Prior Passing__
 
 To end, I provide a detailed overview of how prior passing works and illustrate tools that can be used to customize
 its behaviour. It is up to you whether you want read this, or go ahead to the next tutorial!

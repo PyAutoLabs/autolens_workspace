@@ -9,13 +9,13 @@ __Preqrequisites__
 
 Before reading this script, you should have familiarity with the following key concepts:
 
-- **Non-linear Search Chaining:** This approach, demonstrated in `imaging/advanced/chaining`, shows the power of
+- **Non-linear Search Chaining:** This approach, demonstrated in `guides/modeling/chaining`, shows the power of
   linking models together in a sequence, such as transitioning from a light profile source to a pixelized source.
 
-- **Pixelizations:** These structures, explained in `features/pixelization.ipynb`, allow for the reconstruction of the
+- **Pixelizations:** These structures, explained in `features/pixelization`, allow for the reconstruction of the
   source galaxy on a pixel grid.
 
-- **Adaptive Pixelizations:** Described in `imaging/advanced/chaining/pix_adapt/start_here.ipynb`, these pixelizations
+- **Adaptive Pixelizations:** Described in `features/pixelization/adaptive`, these pixelizations
   adapt to the unlensed morphology of the source.
 
 - **Multi Gaussian Expansions (MGE):** Introduced in `features/multi_gaussian_expansion.ipynb`, MGEs are employed to
@@ -25,14 +25,13 @@ If any of these concepts are unfamiliar, you may still proceed with the script, 
 later can deepen your understanding of how and why SLaM pipelines are structured as they are.
 
 Additionally, this script allows for flexibility with model components, such as swapping out MGE models for other
-light profiles (e.g., an MGE). For an example, see `examples/source_light_profile.ipynb`.
+light profiles (e.g., an MGE).
 
 __Overview__
 
-The Source, (Lens) Light, and Mass (SLaM) pipelines strategically chain together up to five sequential searches,
+The Source, (Lens) Light, and Mass (SLaM) pipelines strategically chain together 4+ sequential searches,
 carefully designed to maximize the advantages of search chaining. This setup provides a fully automated framework for
-fitting large samples of strong lenses with complex models, making SLaM the default choice for many **PyAutoLens**
-research publications.
+fitting large samples of strong lenses with complex models.
 
 __Pipeline Structure__
 
@@ -107,6 +106,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -294,7 +294,7 @@ and `AdaptiveBrightnessSplit` regularization.
 __Adapt Images / Image Mesh Settings__
 
 If you are unclear what the `adapt_images` and `SettingsInversion` inputs are doing below, refer to the 
-`autolens_workspace/*/imaging/advanced/chaining/pix_adapt/start_here.py` example script.
+`autolens_workspace/*/guides/modeling/chaining/pix_adapt/start_here.py` example script.
 
 __Settings__:
 

@@ -58,6 +58,8 @@ Lets first import autolens, its plotting module and the other libraries we'll ne
 
 You'll see these imports in the majority of workspace examples.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())
@@ -248,7 +250,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
-    iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
+    iterations_per_quick_update=1000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
 )
 
 analysis = al.AnalysisImaging(

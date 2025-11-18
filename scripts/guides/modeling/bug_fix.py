@@ -36,6 +36,10 @@ channel (by emailing me https://github.com/Jammy2211), where we will be able to 
 
 
 def fit():
+    from autoconf import (
+        jax_wrapper,
+    )  # Ensures JAX environment variables are set before other imports
+
     # %matplotlib inline
     # from pyprojroot import here
     # workspace_path = str(here())

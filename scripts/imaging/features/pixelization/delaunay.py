@@ -2,7 +2,7 @@
 Chaining: Pixelization Adapt
 ============================
 
-Non-linear search chaining is an advanced model-fitting approach in **PyAutoLens** which breaks the model-fitting
+Non-linear search chaining is an advanced model-fitting approach which breaks the model-fitting
 procedure down into multiple non-linear searches, using the results of the initial searches to initialization parameter
 sampling in subsequent searches. This contrasts the `modeling` examples which each compose and fit a single lens
 model-fit using one non-linear search.
@@ -26,6 +26,35 @@ __Start Here Notebook__
 If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.
 """
 
+try:
+    import numba
+except ModuleNotFoundError:
+    input(
+        "##################\n"
+        "##### NUMBA ######\n"
+        "##################\n\n"
+        """
+        Numba is not currently installed.
+
+        Numba is a library which makes PyAutoLens run a lot faster. Certain functionality is disabled without numba
+        and will raise an exception if it is used.
+
+        If you have not tried installing numba, I recommend you try and do so now by running the following 
+        commands in your command line / bash terminal now:
+
+        pip install --upgrade pip
+        pip install numba
+
+        If your numba installation raises an error and fails, you should go ahead and use PyAutoLens without numba to 
+        decide if it is the right software for you. If it is, you should then commit time to bug-fixing the numba
+        installation. Feel free to raise an issue on GitHub for support with installing numba.
+
+        A warning will crop up throughout your *PyAutoLens** use until you install numba, to remind you to do so.
+
+        [Press Enter to continue]
+        """
+    )
+
 # No JAX support for Delaunay
 
 from autoconf import conf
@@ -41,6 +70,8 @@ if use_jax:
         by changing the setting in the general.yaml file to use_jax = false.
         """
     )
+
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

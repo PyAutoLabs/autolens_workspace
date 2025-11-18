@@ -19,7 +19,7 @@ The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pi
 of complex lens models. The SLaM pipelines are used for all DM subhalo detection analyses in **PyAutoLens**. Therefore
 you should be familiar with the SLaM pipelines before performing DM subhalo detection yourself. If you are unfamiliar
 with the SLaM pipelines, checkout the
-example `autolens_workspace/notebooks/imaging/advanced/chaining/slam/start_here.ipynb`.
+example `autolens_workspace/notebooks/guides/modeling/chaining/slam/start_here.ipynb`.
 
 Dark matter subhalo detection runs the standard SLaM pipelines, and then extends them with a SUBHALO PIPELINE which
 performs the following three chained non-linear searches:
@@ -83,6 +83,7 @@ This uses the SLaM pipelines:
 
 Check them out for a full description of the analysis!
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

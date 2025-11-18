@@ -30,6 +30,7 @@ The `ExternalShear` is also not included in the mass model, where it is for the 
 For a quadruply imaged point source (8 data points) there is insufficient information to fully constain a model with
 an `Isothermal` and `ExternalShear` (9 parameters).
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -130,7 +131,6 @@ solver = al.PointSolver.for_grid(
     grid=grid,
     pixel_scale_precision=0.001,
     magnification_threshold=0.1,
-    xp=jnp,  # Requried input for JAX acceleration to be enabled.
 )
 
 """
@@ -297,9 +297,18 @@ JAX will still provide a speed up via multithreading, with fits taking around 20
 
 If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 """
+# Hacky way to use JAX PointSolver, fix soon
+
+solver_jax = al.PointSolver.for_grid(
+    grid=grid,
+    pixel_scale_precision=0.001,
+    magnification_threshold=0.1,
+    xp=jnp,
+)
+
 analysis = al.AnalysisPoint(
     dataset=dataset,
-    solver=solver,
+    solver=solver_jax,
     fit_positions_cls=al.FitPositionsImagePairRepeat,  # Image-plane chi-squared with repeat image pairs.
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )

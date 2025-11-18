@@ -32,6 +32,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `subhalo/detect/start_here.ipynb` notebook.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

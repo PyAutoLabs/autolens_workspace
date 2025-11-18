@@ -16,10 +16,11 @@ This script simulates `PointDataset` data of a strong lens where:
 
 __Pre-requisites__
 
-It is strongly recommended you read the `autolens_workspace/scripts/guides/point_sources.ipyn` notebook before
+It is strongly recommended you read the `autolens_workspace/scripts/point_source/start_here` notebook before
 running this script, as it gives a full overview of the point source modeling API and how lensing calculations
 are performed.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

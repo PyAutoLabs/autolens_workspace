@@ -22,6 +22,7 @@ the **PyAutoLens** source code.
 
 We still recommend you take a look to see how things are structured!
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -97,7 +98,7 @@ class Isothermal(MassProfile):
 
     @aa.grid_dec.to_vector_yx
     @aa.grid_dec.transform
-    def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike):
+    def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike, xp=np):
         """
         Calculate the deflection angles on a grid of (y,x) arc-second coordinates.
 
@@ -322,7 +323,7 @@ class ExampleMass(EllProfile):
         super().__init__(centre=centre, ell_comps=ell_comps)
 
     @aa.grid_dec.transform
-    def deflections_yx_2d_from(self, grid: aa.Grid2D, **kwargs):
+    def deflections_yx_2d_from(self, grid: aa.Grid2D, xp=np, **kwargs):
         print(
             f"\n Grid In Deflections After Transform "
             f"Which is Same As Transformed Grid Above: {grid}"
@@ -443,7 +444,7 @@ class TemplateMass(EllProfile):
 
     @aa.grid_dec.to_vector_yx
     @aa.grid_dec.transform
-    def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike):
+    def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike, xp=np):
         """
         REQUIRED: The function is key for all lensing calculations and must be implemented.
         """
@@ -451,7 +452,7 @@ class TemplateMass(EllProfile):
 
     @aa.grid_dec.to_array
     @aa.grid_dec.transform
-    def convergence_2d_from(self, grid: aa.type.Grid2DLike):
+    def convergence_2d_from(self, grid: aa.type.Grid2DLike, xp=np):
         """
         RECOMMENDED: The convergence is used for visualization and inspecting properties of the mass profile.
         """
@@ -459,7 +460,7 @@ class TemplateMass(EllProfile):
 
     @aa.grid_dec.to_array
     @aa.grid_dec.transform
-    def potential_2d_from(self, grid: aa.type.Grid2DLike):
+    def potential_2d_from(self, grid: aa.type.Grid2DLike, xp=np):
         """
         RECOMMENDED: The gravitational potential is used for visualization and inspecting properties of the mass
         profile.

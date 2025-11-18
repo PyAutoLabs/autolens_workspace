@@ -45,6 +45,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -224,7 +225,7 @@ This model therefore assumes that the mass does not change over wavelength, but 
 is what we expect for a strong lens system.
 
 The code below uses the search chaining API to link the priors between model parameters, if you are not
-familiar with this feature, checkout the `imaging/advanced/chaining` package.
+familiar with this feature, checkout the `guides/modeling/chaining` package.
 """
 # model = af.Collection(
 #     galaxies=af.Collection(

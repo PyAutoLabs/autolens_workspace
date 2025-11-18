@@ -31,6 +31,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `slam/start_here.ipynb` notebook.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -165,7 +166,7 @@ and `AdaptiveBrightnessSplit` regularization.
 __Adapt Images / Image Mesh Settings__
 
 If you are unclear what the `adapt_images` and `SettingsInversion` inputs are doing below, refer to the 
-`autolens_workspace/*/imaging/advanced/chaining/pix_adapt/start_here.py` example script.
+`autolens_workspace/*/guides/modeling/chaining/pix_adapt/start_here.py` example script.
 
 __Settings__:
 

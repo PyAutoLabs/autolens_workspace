@@ -153,6 +153,7 @@ def run(
         name="mass_total[1]",
         **settings_search.search_dict,
         n_live=150,
+        n_batch=20,
     )
 
     result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)

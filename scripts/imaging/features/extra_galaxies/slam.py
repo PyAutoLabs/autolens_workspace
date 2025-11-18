@@ -2,11 +2,20 @@
 SLaM (Source, Light and Mass): Extra Galaxies
 =============================================
 
-This example shows how to use the SLaM pipelines to fit a lens where there are extra galaxies surrounding the main lens
-galaxy, whose light and mass are both included in the lens model.
+This example shows how to use the Source, Light and Mass (SLaM) automated lens modeling pipelines to fit a galaxy-scale
+lens where there are extra galaxies surrounding the main lens galaxy, whose light and mass are both included in the
+lens model.
 
-These systems likely constitute "group scale" lenses and therefore this script is the point where the galaxy-scale
-SLaM pipelines can be adapted to group-scale lenses.
+If there are multiple extra galaxies, the lens systems you are modeling may be approaching "group scale" lenses,
+which have their own dedicated SLaM pipelines (see `group/slam.py`).
+
+However, the group-scale SLaM pipeline is distinct from this example as it includes a number of dedicated non-linear
+search stages and uses features this example does not, with these being used to handle the greater complexity of
+group-scale lens modeling.
+
+You should therefore read this example and apply it to your lens system, but if you find the lens system is complex
+to the point that fitting a lens model accurately and efficiently is difficult, you should read  the group
+SLaM example to determine if it is more appropriate for your lens system.
 
 __Extra Galaxies Centres__
 
@@ -57,8 +66,9 @@ This modeling script uses the SLaM pipelines:
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.
+If any code in this script is unclear, refer to the `guides/modeling/slam_start_here.ipynb` notebook.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -153,32 +163,11 @@ analysis = al.AnalysisImaging(dataset=dataset)
 
 # Lens Light
 
-centre_0 = af.GaussianPrior(mean=0.0, sigma=0.1)
-centre_1 = af.GaussianPrior(mean=0.0, sigma=0.1)
-
-total_gaussians = 30
-gaussian_per_basis = 2
-
-log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
-
-bulge_gaussian_list = []
-
-for j in range(gaussian_per_basis):
-    gaussian_list = af.Collection(
-        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
-    )
-
-    for i, gaussian in enumerate(gaussian_list):
-        gaussian.centre.centre_0 = centre_0
-        gaussian.centre.centre_1 = centre_1
-        gaussian.ell_comps = gaussian_list[0].ell_comps
-        gaussian.sigma = 10 ** log10_sigma_list[i]
-
-    bulge_gaussian_list += gaussian_list
-
-lens_bulge = af.Model(
-    al.lp_basis.Basis,
-    profile_list=bulge_gaussian_list,
+lens_bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=30,
+    gaussian_per_basis=2,
+    centre_prior_is_uniform=True,
 )
 
 # Source Light

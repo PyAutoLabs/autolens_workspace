@@ -16,6 +16,7 @@ results API.
 If you are not familiar with the lens modeling API and process, checkout the `autolens_workspace/examples/modeling`
 folder for examples.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

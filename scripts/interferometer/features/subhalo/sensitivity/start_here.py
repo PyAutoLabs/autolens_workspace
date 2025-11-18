@@ -28,7 +28,9 @@
 # once with a lens model which does not include a subhalo and once with a lens model that does. If the Bayesian evidence
 # of the model which includes a subhalo is higher than that which does not, then it means a subhalo was detectable!
 # """
-# # %matplotlib inline
+# from autoconf import jax_wrapper # Ensures JAX environment variables are set before other imports
+
+# %matplotlib inline
 # # from pyprojroot import here
 # # workspace_path = str(here())
 # # %cd $workspace_path

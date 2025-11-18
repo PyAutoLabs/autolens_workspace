@@ -23,6 +23,7 @@ You should be familiar with dark matter subhalo detection, by reading the exampl
 
 You should also be familiar with the database, by reading the example `imaging/advanced/database/start_here.ipynb`.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

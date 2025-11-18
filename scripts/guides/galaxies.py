@@ -45,6 +45,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `results/start_here.ipynb` notebook.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -423,14 +424,11 @@ plt.close()
 """
 If we want a specific 1D grid of a certain length over a certain range of coordinates, we can manually input a `Grid1D`
 object.
-
-We can alternatively create project `Grid1D` where we define the (x,) coordinates we wish to evaluate the function on.
 """
 grid_1d = al.Grid1D.uniform_from_zero(shape_native=(10000,), pixel_scales=0.01)
-grid_1d = grid_1d.grid_2d_radial_projected_from(angle=bulge.angle())
 image_1d = lens.image_2d_from(grid=grid_1d)
 
-plt.plot(grid_2d_projected[:, 1], image_1d)
+plt.plot(grid_1d, image_1d)
 plt.xlabel("Radius (arcseconds)")
 plt.ylabel("Luminosity")
 plt.show()

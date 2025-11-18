@@ -27,6 +27,7 @@ This modeling script uses the SLaM pipelines:
 
 Check them out for a detailed description of the analysis!
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

@@ -270,10 +270,10 @@ def run_2(
     image. In all other searches, the source pixelization parameters are fixed, ensuring that the likelihood function
     is smooth.
     """
-    search = af.DynestyStatic(
+    search = af.Nautilus(
         name="source_pix[2]",
         **settings_search.search_dict,
-        nlive=100,
+        n_live=75,
     )
 
     result = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)

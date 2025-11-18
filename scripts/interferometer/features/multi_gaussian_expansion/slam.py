@@ -25,9 +25,10 @@ Check them out for a full description of the analysis!
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `autolens_workspace/imaging/advanced/chaining/slam/start_here.ipynb`
+If any code in this script is unclear, refer to the `autolens_workspace/guides/modeling/chaining/slam/start_here.ipynb`
 notebook.
 """
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
 # from pyprojroot import here

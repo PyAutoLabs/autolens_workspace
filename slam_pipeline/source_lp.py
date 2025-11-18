@@ -202,6 +202,7 @@ def run_2_group(
         name="source_lp[2]",
         **settings_search.search_dict,
         n_live=150,
+        n_batch=50,
     )
 
     result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
