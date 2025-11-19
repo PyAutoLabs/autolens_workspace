@@ -1,8 +1,6 @@
 import autofit as af
 import autolens as al
 
-from . import slam_util
-
 from typing import Optional, Tuple, Union
 
 
@@ -71,7 +69,7 @@ def run_1(
 
     - The lens galaxy light is modeled using light profiles [parameters fixed to result of SOURCE LP PIPELINE].
 
-     - The lens galaxy mass is modeled using a total mass distribution [parameters initialized from the results of the 
+     - The lens galaxy mass is modeled using a total mass distribution [model initialized from the results of the 
      SOURCE LP PIPELINE].
 
      - The source galaxy's light is the input initialization image mesh, mesh and regularization scheme [parameters of 
@@ -122,7 +120,7 @@ def run_1(
                     redshift=source_lp_result[i].instance.galaxies.source.redshift,
                     pixelization=af.Model(
                         al.Pixelization,
-                        image_mesh=None_init,
+                        image_mesh=image_mesh_init,
                         mesh=mesh_init,
                         regularization=regularization_init,
                     ),

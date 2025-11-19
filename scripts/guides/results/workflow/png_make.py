@@ -55,6 +55,7 @@ because it is optimized for fast querying of results.
 See the package `results/database` for a full description of how to set up the database and the benefits it provides,
 especially if loading results from hard-disk is slow.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

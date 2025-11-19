@@ -9,6 +9,7 @@ the results we are interested in.
 The database also supports advanced querying, so that specific model-fits (e.g., which fit a certain model or dataset)
 can be loaded.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

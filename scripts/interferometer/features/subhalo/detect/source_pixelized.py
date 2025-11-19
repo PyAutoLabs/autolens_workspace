@@ -49,6 +49,7 @@ The script `autolens_workspace/*/interferometer/run_times.py` allows you to comp
 for your interferometer dataset. It does this for all possible combinations of settings and therefore can tell you
 which settings give the fastest run times for your dataset.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
@@ -182,6 +183,29 @@ source_lp_result = slam_pipeline.source_lp.run(
 )
 
 """
+__JAX & Preloads__
+
+The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
+advance so it knows the shape of arrays it must compile functions for.
+"""
+image_mesh = None
+mesh_shape = (20, 20)
+total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
+
+total_linear_light_profiles = 0
+
+preloads = al.Preloads(
+    mapper_indices=al.mapper_indices_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        total_mapper_pixels=total_mapper_pixels,
+    ),
+    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        shape_native=mesh_shape,
+    ),
+)
+
+"""
 __SOURCE PIX PIPELINE__
 
 The SOURCE PIX PIPELINE uses two searches to initialize a robust model for the `Pixelization` that
@@ -218,18 +242,14 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
-    mesh_init=al.mesh.RectangularMagnification,
+    image_mesh_init=None,
+    mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
+    regularization_init=al.reg.AdaptiveBrightness,
 )
 
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
-    settings_inversion=al.SettingsInversion(
-        image_mesh_min_mesh_pixels_per_pixel=3,
-        image_mesh_min_mesh_number=5,
-        image_mesh_adapt_background_percent_threshold=0.1,
-        image_mesh_adapt_background_percent_check=0.8,
-    ),
     use_jax=True,
 )
 
@@ -238,9 +258,9 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis=analysis,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    image_mesh=al.image_mesh.Hilbert,
-    mesh=al.mesh.RectangularMagnification,
-    regularization=al.reg.AdaptiveBrightnessSplit,
+    image_mesh=None,
+    mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
+    regularization=al.reg.AdaptiveBrightness,
 )
 
 """

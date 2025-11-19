@@ -12,4 +12,4 @@ Files
 - ``mass_total``: The mass pipeline which fits a total mass model (e.g. a single mass profile for the stellar and dark matter) following the source or LIGHT PIPELINE.
 - ``mass_light_dark``: The mass pipeline which fits a light plus dark mass model (e.g. separate mass profile for the stellar and dark matter) following the LIGHT PIPELINE.
 
-- ``slam_util``: Utility functions for the SLaM pipelines, for example outputting visualizations of the results.- ``subhalo``: Extensions to the SLaM pipelines which perform dark matter substructure detection and sensitivity mapping following the MASS PIPELINE.
+- ``subhalo``: Extensions to the SLaM pipelines which perform dark matter substructure detection and sensitivity mapping following the MASS PIPELINE.

@@ -23,6 +23,7 @@ The search fits each lens with:
  - An `Isothermal` `MassProfile` for the lens galaxy's mass.
  - An `Sersic` `LightProfile` for the source galaxy's light.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

@@ -1,50 +1,46 @@
 """
-SLaM (Source, Light and Mass): Extra Galaxies
-=============================================
+Extra Galaxies: SLaM
+=====================
 
-This example shows how to use the Source, Light and Mass (SLaM) automated lens modeling pipelines to fit a galaxy-scale
-lens where there are extra galaxies surrounding the main lens galaxy, whose light and mass are both included in the
-lens model.
+This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for fitting a
+lens model where extra galaxies surrounding the lens are included in the lens model.
 
-If there are multiple extra galaxies, the lens systems you are modeling may be approaching "group scale" lenses,
-which have their own dedicated SLaM pipelines (see `group/slam.py`).
+A full overview of SLaM is provided in `guides/modeling/slam_start_here`. You should read that
+guide before working through this example.
 
-However, the group-scale SLaM pipeline is distinct from this example as it includes a number of dedicated non-linear
-search stages and uses features this example does not, with these being used to handle the greater complexity of
-group-scale lens modeling.
+This example only provides documentation specific to the extra galaxies, describing how the pipeline
+differs from the standard SLaM pipelines described in the SLaM start here guide.
 
-You should therefore read this example and apply it to your lens system, but if you find the lens system is complex
-to the point that fitting a lens model accurately and efficiently is difficult, you should read  the group
-SLaM example to determine if it is more appropriate for your lens system.
+__Prerequisites__
 
-__Extra Galaxies Centres__
+Before using this SLaM pipeline, you should be familiar with:
 
-To set up a lens model including each extra galaxy with light and / or mass profile, we input manually the centres of
-the extra galaxies.
+- **SLaM Start Here** (`guides/modeling/slam_start_here`)
+  An introduction to the goals, structure, and design philosophy behind SLaM pipelines
+  and how they integrate into strong-lens modeling.
 
-In principle, a lens model including the extra galaxies could be composed without these centres. For example, if
-there were two extra galaxies in the data, we could simply add two additional light and mass profiles into the model.
-The modeling API does support this, but we will not use it in this example.
+- **Extra Galaxies** (`features/extra_galaxies.ipynb`):
+    How we include extra galaxies in the lens model, by using the centres of the galaxies
+    which have been determined beforehand.
 
-This is because models where the extra galaxies have free centres are often too complex to fit. It is likely the fit
-will infer an inaccurate lens model and local maxima, because the parameter space is too complex.
+You can still run the script without fully understanding the guide, but reviewing it later will
+make the structure and choices of the SLaM workflow clearer.
 
-For example, a common problem is that one of the extra galaxy light profiles intended to model a nearby galaxy instead
-fit  one of the lensed source's multiple images. Alternatively, an extra galaxy's mass profile may recenter itself and
-act as part of the main lens galaxy's mass distribution.
+__Group SLaM__
 
-Therefore, when modeling extra galaxies we input the centre of each, in order to fix their light and mass profile
-centres or set up priors centre around these values.
+This SLaM pipeline is designed for the regime where one is modeling galaxy scale lenses with nearby surrounding
+extra galaxies.
 
-The `data_preparation` tutorial `autolens_workspace/*/imaging/data_preparation/examples/optional/extra_galaxies_centres.py`
-describes how to create these centres. Using this script they have been output to the `.json` file we load below.
+However, these systems can often become close to the group scale lensing regime, for which PyAutoLens has a dedicated
+package for modeling (`autolens_workspace/*/group`) and its own dedicated SLaM pipelines.
 
-__Preqrequisites__
+The main difference between this SLaM pipeline and the group SLaM pipelines is that in the latter, the masses of
+the extra galaxies are modeled using scaling relations tied to their light profiles. The group SLaM pipeline has
+additional searches in the SOURCE LP PIPELINE to measure the luminosities of the extra galaxies for this purpose.
 
-Before reading this script, you should have familiarity with the following key concepts:
-
-- **Extra Galaxies**: How we include extra galaxies in the lens model, demonstrated in `features/extra_galaxies.ipynb`,
-  as the exact same API is used here.
+Which SLaM pipeline you should use depends on your particular strong lens, but as a rule of thumb if you are
+including a lot of extra galaxies (e.g. more than 5) and your model complexity is increasing significantly, you should
+consider using the group SLaM pipelines.
 
 __This Script__
 
@@ -68,6 +64,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `guides/modeling/slam_start_here.ipynb` notebook.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
@@ -117,6 +114,9 @@ dataset_plotter.subplot_dataset()
 
 """
 __Extra Galaxies Centres__
+
+This is the same API as described in the `features/extra_galaxies.ipynb` example, where the centres of the extra 
+galaxies are loaded from a `.json` file.
 """
 extra_galaxies_centres = al.Grid2DIrregular(
     al.from_json(file_path=Path(dataset_path, "extra_galaxies_centres.json"))
@@ -156,8 +156,8 @@ redshift_source = 1.0
 """
 __SOURCE LP PIPELINE__
 
-The SOURCE LP PIPELINE is identical to the `start_here.ipynb` example, except the `extra_galaxies` are included in the
-model.
+The SOURCE LP PIPELINE is identical to the `slam_start_here.ipynb` example, except the `extra_galaxies` are included in the
+model and passed to the pipeline.
 """
 analysis = al.AnalysisImaging(dataset=dataset)
 
@@ -172,32 +172,8 @@ lens_bulge = al.model_util.mge_model_from(
 
 # Source Light
 
-centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
-centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
-
-total_gaussians = 30
-gaussian_per_basis = 1
-
-log10_sigma_list = np.linspace(-3, np.log10(1.0), total_gaussians)
-
-bulge_gaussian_list = []
-
-for j in range(gaussian_per_basis):
-    gaussian_list = af.Collection(
-        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
-    )
-
-    for i, gaussian in enumerate(gaussian_list):
-        gaussian.centre.centre_0 = centre_0
-        gaussian.centre.centre_1 = centre_1
-        gaussian.ell_comps = gaussian_list[0].ell_comps
-        gaussian.sigma = 10 ** log10_sigma_list[i]
-
-    bulge_gaussian_list += gaussian_list
-
-source_bulge = af.Model(
-    al.lp_basis.Basis,
-    profile_list=bulge_gaussian_list,
+source_bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
 )
 
 # Extra Galaxies:
@@ -264,9 +240,33 @@ source_lp_result = slam_pipeline.source_lp.run(
 )
 
 """
+__JAX & Preloads__
+
+The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
+advance so it knows the shape of arrays it must compile functions for.
+"""
+image_mesh = None
+mesh_shape = (20, 20)
+total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
+
+total_linear_light_profiles = 60 + (10 * len(extra_galaxies_list))
+
+preloads = al.Preloads(
+    mapper_indices=al.mapper_indices_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        total_mapper_pixels=total_mapper_pixels,
+    ),
+    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        shape_native=mesh_shape,
+    ),
+)
+
+
+"""
 __SOURCE PIX PIPELINE__
 
-The SOURCE PIX PIPELINE (and every pipeline that follows) are identical to the `start_here.ipynb` example,
+The SOURCE PIX PIPELINE (and every pipeline that follows) are identical to the `slam_start_here.ipynb` example,
 except the additional galaxies are passed to the pipeline.
 
 The model components for the extra galaxies are set up using a trick with the model composition whereby all
@@ -295,14 +295,16 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
-    mesh_init=al.mesh.RectangularMagnification,
+    image_mesh_init=None,
+    mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
+    regularization_init=al.reg.AdaptiveBrightness,
     extra_galaxies=extra_galaxies,
 )
 
 """
 __SOURCE PIX PIPELINE 2 (with lens light)__
 
-As above, this pipeline also has the same API as the `start_here.ipynb` example.
+As above, this pipeline also has the same API as the `slam_start_here.ipynb` example.
 
 The extra galaxies are passed from the SOURCE PIX PIPELINE, via the `source_pix_result_1` object, therefore there is 
 no need to manually pass them below.
@@ -310,12 +312,6 @@ no need to manually pass them below.
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
-    settings_inversion=al.SettingsInversion(
-        image_mesh_min_mesh_pixels_per_pixel=3,
-        image_mesh_min_mesh_number=5,
-        image_mesh_adapt_background_percent_threshold=0.1,
-        image_mesh_adapt_background_percent_check=0.8,
-    ),
 )
 
 source_pix_result_2 = slam_pipeline.source_pix.run_2(
@@ -323,15 +319,15 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis=analysis,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    image_mesh=al.image_mesh.Hilbert,
-    mesh=al.mesh.RectangularMagnification,
-    regularization=al.reg.AdaptiveBrightnessSplit,
+    image_mesh=None,
+    mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
+    regularization=al.reg.AdaptiveBrightness,
 )
 
 """
 __LIGHT LP PIPELINE__
 
-As above, this pipeline also has the same API as the `start_here.ipynb` example, except for the extra galaxies.
+As above, this pipeline also has the same API as the `slam_start_here.ipynb` example, except for the extra galaxies.
 
 The extra galaxies use the same for loop trick used before the SOURCE PIX PIPELINE, however this now makes
 the light profiles free parameters in the model and fixes their mass profiles to the results of the SOURCE PIX PIPELINE.
@@ -340,32 +336,11 @@ analysis = al.AnalysisImaging(
     dataset=dataset, adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1)
 )
 
-centre_0 = af.UniformPrior(lower_limit=-0.2, upper_limit=0.2)
-centre_1 = af.UniformPrior(lower_limit=-0.2, upper_limit=0.2)
-
-total_gaussians = 30
-gaussian_per_basis = 2
-
-log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
-
-bulge_gaussian_list = []
-
-for j in range(gaussian_per_basis):
-    gaussian_list = af.Collection(
-        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
-    )
-
-    for i, gaussian in enumerate(gaussian_list):
-        gaussian.centre.centre_0 = centre_0
-        gaussian.centre.centre_1 = centre_1
-        gaussian.ell_comps = gaussian_list[0].ell_comps
-        gaussian.sigma = 10 ** log10_sigma_list[i]
-
-    bulge_gaussian_list += gaussian_list
-
-lens_bulge = af.Model(
-    al.lp_basis.Basis,
-    profile_list=bulge_gaussian_list,
+lens_bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=2,
+    centre_prior_is_uniform=True,
 )
 
 # EXTRA GALAXIES
@@ -390,7 +365,7 @@ light_result = slam_pipeline.light_lp.run(
 """
 __MASS TOTAL PIPELINE__
 
-As above, this pipeline also has the same API as the `start_here.ipynb` example except for the extra galaxies.
+As above, this pipeline also has the same API as the `slam_start_here.ipynb` example except for the extra galaxies.
 
 The extra galaxies are set up using the same trick as the SOURCE PIX PIPELINE, .
 

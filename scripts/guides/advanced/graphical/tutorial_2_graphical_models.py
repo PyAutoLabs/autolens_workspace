@@ -44,6 +44,7 @@ assumed in tutorials 1, 2 and 3. We make this assumption here to simplify the pr
 illustrate graphical models. Later tutorials fit more realistic graphical models where each lens has its own value of
 slope!
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

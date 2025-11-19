@@ -20,6 +20,7 @@ infrared I-band (wavelength=806nm) observations.
 This is an advanced script and assumes previous knowledge of the core **PyAutoLens** API for simulating images. Thus,
 certain parts of code are not documented to ensure the script is concise.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

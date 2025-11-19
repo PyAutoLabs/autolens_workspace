@@ -1,8 +1,6 @@
 import autofit as af
 import autolens as al
 
-from . import slam_util
-
 from typing import Optional, Union
 
 

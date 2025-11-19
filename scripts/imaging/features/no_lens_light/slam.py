@@ -1,9 +1,26 @@
 """
-SLaM (Source, Light and Mass): No Lens Light
-============================================
+No Lens Light: SLaM
+====================
 
-This example shows how to use the SLaM pipelines to fit a lens where the lens light is not present in the data.
-This means that the LIGHT PIPELINE is omitted from the pipeline completely.
+This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for fitting a
+lens model where there is no lens light observed in the imaging data.
+
+A full overview of SLaM is provided in `guides/modeling/slam_start_here`. You should read that
+guide before working through this example.
+
+This example only provides documentation specific to the use of SLaM for data without lens light, describing
+how the pipeline differs from the standard SLaM pipelines described in the SLaM start here guide.
+
+__Prerequisites__
+
+Before using this SLaM pipeline, you should be familiar with:
+
+- **SLaM Start Here** (`guides/modeling/slam_start_here`)
+  An introduction to the goals, structure, and design philosophy behind SLaM pipelines
+  and how they integrate into strong-lens modeling.
+
+You can still run the script without fully understanding the guide, but reviewing it later will
+make the structure and choices of the SLaM workflow clearer.
 
 __Model__
 
@@ -25,8 +42,9 @@ Check them out for a detailed description of the analysis!
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `slam/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `slam_start_here` notebook.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
@@ -98,39 +116,15 @@ redshift_source = 1.0
 """
 __SOURCE LP PIPELINE__
 
-The SOURCE LP PIPELINE is identical to the `start_here.ipynb` example, except the `lens_bulge` component is set
+The SOURCE LP PIPELINE is identical to the `slam_start_here.ipynb` example, except the `lens_bulge` component is set
 to `None` therefore omitting the lens light from the model.
 """
 analysis = al.AnalysisImaging(dataset=dataset)
 
 # Source Light
 
-centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
-centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
-
-total_gaussians = 30
-gaussian_per_basis = 1
-
-log10_sigma_list = np.linspace(-3, np.log10(1.0), total_gaussians)
-
-bulge_gaussian_list = []
-
-for j in range(gaussian_per_basis):
-    gaussian_list = af.Collection(
-        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
-    )
-
-    for i, gaussian in enumerate(gaussian_list):
-        gaussian.centre.centre_0 = centre_0
-        gaussian.centre.centre_1 = centre_1
-        gaussian.ell_comps = gaussian_list[0].ell_comps
-        gaussian.sigma = 10 ** log10_sigma_list[i]
-
-    bulge_gaussian_list += gaussian_list
-
-source_bulge = af.Model(
-    al.lp_basis.Basis,
-    profile_list=bulge_gaussian_list,
+source_bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
 )
 
 source_lp_result = slam_pipeline.source_lp.run(
@@ -146,11 +140,34 @@ source_lp_result = slam_pipeline.source_lp.run(
     redshift_source=1.0,
 )
 
+"""
+__JAX & Preloads__
+
+The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
+advance so it knows the shape of arrays it must compile functions for.
+"""
+image_mesh = None
+mesh_shape = (20, 20)
+total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
+
+total_linear_light_profiles = 0
+
+preloads = al.Preloads(
+    mapper_indices=al.mapper_indices_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        total_mapper_pixels=total_mapper_pixels,
+    ),
+    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        shape_native=mesh_shape,
+    ),
+)
+
 
 """
 __SOURCE PIX PIPELINE__
 
-The SOURCE PIX PIPELINE (and every pipeline that follows) are identical to the `start_here.ipynb` example.
+The SOURCE PIX PIPELINE (and every pipeline that follows) are identical to the `slam_start_here.ipynb` example.
 
 The model components for the lens light (e.g. `lens_bulge` and `lens_disk`) were set to None in the SOURCE LP PIPELINE,
 and therefore are also None in the SOURCE PIX PIPELINE meaning the lens light is omitted from the model.
@@ -167,26 +184,22 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
-    mesh_init=al.mesh.RectangularMagnification,
+    image_mesh_init=None,
+    mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
+    regularization_init=al.reg.AdaptiveBrightness,
 )
 
 """
 __SOURCE PIX PIPELINE 2 (with lens light)__
 
-As above, this pipeline also has the same API as the `start_here.ipynb` example.
+As above, this pipeline also has the same API as the `slam_start_here.ipynb` example.
 
-Note that the LENS LIGHT PIPELINE follows the SOURCE PIX PIPELINE in the `start_here.ipynb` example is not included
+Note that the LIGHT PIPELINE follows the SOURCE PIX PIPELINE in the `slam_start_here.ipynb` example is not included
 in this script, given the lens light is not present in the data.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
-    settings_inversion=al.SettingsInversion(
-        image_mesh_min_mesh_pixels_per_pixel=3,
-        image_mesh_min_mesh_number=5,
-        image_mesh_adapt_background_percent_threshold=0.1,
-        image_mesh_adapt_background_percent_check=0.8,
-    ),
 )
 
 source_pix_result_2 = slam_pipeline.source_pix.run_2(
@@ -194,15 +207,15 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis=analysis,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    image_mesh=al.image_mesh.Hilbert,
-    mesh=al.mesh.RectangularMagnification,
-    regularization=al.reg.AdaptiveBrightnessSplit,
+    image_mesh=None,
+    mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
+    regularization=al.reg.AdaptiveBrightness,
 )
 
 """
 __MASS TOTAL PIPELINE__
 
-The MASS TOTAL PIPELINE is again identical to the `start_here.ipynb` example, noting that the `light_result` is
+The MASS TOTAL PIPELINE is again identical to the `slam_start_here.ipynb` example, noting that the `light_result` is
 now passed in as None to omit the lens light from the model.
 """
 analysis = al.AnalysisImaging(
@@ -220,8 +233,5 @@ mass_result = slam_pipeline.mass_total.run(
 )
 
 """
-__Output__
-
-The `start_hre.ipynb` example describes how results can be output to hard-disk after the SLaM pipelines have been run.
-Checkout that script for a complete description of the output of this script.
+Finish.
 """

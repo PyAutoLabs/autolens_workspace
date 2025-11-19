@@ -34,6 +34,7 @@ the raw measurements of light received by a telescope into meaningful values of 
 The conversions below all require a zero point, which is typically provided in the documentation of the telescope or
 instrument that was used to observe the data.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

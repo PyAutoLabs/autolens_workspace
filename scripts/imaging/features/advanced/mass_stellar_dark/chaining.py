@@ -46,6 +46,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

@@ -53,6 +53,7 @@ One can easily imagine datasets where the shared parameter is the same across th
 where cosmological parameters (e.g. the Hubble constant, H0) are included in the graphical mode. The tools introduced
 in tutorials 1 and 2 could therefore be used for many science cases!
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

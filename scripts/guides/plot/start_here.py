@@ -16,6 +16,7 @@ __Contents__
 - **Searches**: Visualize the results of a search using a `Plotter` object.
 - **Adding Plotter Objects Together**: Add `MatPlot` and `Visuals` objects together to customize the appearance of figures.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

@@ -35,6 +35,7 @@ This script simulates `PointDataset` and `Imaging` data of a strong lens where:
  - There are 50 lens galaxies whose mass is a `dPIEMass` profile with parameters set via a scaling relation.
  - There are 3 source galaxies each described as a point source.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

@@ -31,6 +31,7 @@ The dataset fitted in this example script is simulated imaging data of a sample 
 This data is not automatically provided with the autogalaxy workspace, and must be first simulated by running the
 script `autolens_workspace/scripts/advanced/graphical/simulator/samples/simple__no_lens_light.py`.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

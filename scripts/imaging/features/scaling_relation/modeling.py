@@ -82,6 +82,7 @@ The galaxies (and their parameters) included via a scaling relation are therefor
 distinguish them from the lens galaxy and source galaxy, and in the model they are separate from the `galaxies` and
 use their own `extra_galaxies` collection.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

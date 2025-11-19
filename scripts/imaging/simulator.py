@@ -22,6 +22,7 @@ code which produce high quality visualization of strong lenses.
 
 The `PLotter` API is described in the `autolens_workspace/*/guides/plot` script.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

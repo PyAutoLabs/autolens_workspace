@@ -1,7 +1,6 @@
 import autofit as af
 import autolens as al
 
-from slam import slam_util
 from . import subhalo_util
 
 from typing import Optional, Union, Tuple

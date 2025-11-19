@@ -13,6 +13,7 @@ This script fits `Interferometer` dataset of a 'galaxy-scale' strong lens with a
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is a Multi Gaussian Expansion.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

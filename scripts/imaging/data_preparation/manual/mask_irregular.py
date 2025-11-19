@@ -2,6 +2,7 @@
 Manual Preprocessing: Mask Irregular
 ====================================
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

@@ -12,6 +12,7 @@ This script simulates `Imaging` of a 'group-scale' strong lens where:
  total mass distributions are `IsothermalSph` profiles.
  - A single source galaxy is observed whose `LightProfile` is an `Sersic`.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

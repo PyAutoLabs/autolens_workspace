@@ -22,6 +22,7 @@ the **PyAutoLens** source code.
 
 We still recommend you take a look to see how things are structured!
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

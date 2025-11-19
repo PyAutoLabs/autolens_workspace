@@ -2,12 +2,37 @@
 SLaM (Source, Light and Mass): Mass Total + Source Parametric
 =============================================================
 
-SLaM pipelines break the analysis of 'galaxy-scale' strong lenses down into multiple pipelines which focus on modeling
-a specific aspect of the strong lens, first the Source, then the (lens) Light and finally the Mass. Each of these
-pipelines has it own inputs which customize the model and analysis in that pipeline.
+This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for fitting a
+lens model where the source is a modeled using a Multi Gaussian Expansion (MGE).
 
-The models fitted in earlier pipelines determine the model used in later pipelines. For example, if the SOURCE PIPELINE
-uses an MGE for the bulge, this will be used in the subsequent MASS TOTAL PIPELINE.
+A full overview of SLaM is provided in `guides/modeling/slam_start_here`. You should read that
+guide before working through this example.
+
+This example only provides documentation specific to the use of an MGE source, describing how the pipeline
+differs from the standard SLaM pipelines described in the SLaM start here guide.
+
+__Prerequisites__
+
+Before using this SLaM pipeline, you should be familiar with:
+
+- **SLaM Start Here** (`guides/modeling/slam_start_here`)
+  An introduction to the goals, structure, and design philosophy behind SLaM pipelines
+  and how they integrate into strong-lens modeling.
+
+You can still run the script without fully understanding the guide, but reviewing it later will
+make the structure and choices of the SLaM workflow clearer.
+
+__Interferometer SLaM Description__
+
+The `slam_start_here` notebook provides a detailed description of the SLaM pipelines, but it does this using CCD
+imaging data.
+
+There is no dedicated example which provides full descriptions of the SLaM pipelines using interferometer data, however,
+the concepts and API described in the `slam_start_here` are identical to what is required for interferometer data.
+Therefore, by reading the `slam_start_here` example you will fully understand everything required to use this
+interferometer SLaM script.
+
+__Model__
 
 Using a SOURCE LP PIPELINE and a MASS TOTAL PIPELINE this SLaM script fits `Interferometer` of a strong lens system, where
 in the final model:
@@ -22,12 +47,8 @@ This uses the SLaM pipelines:
  `mass_total`
 
 Check them out for a full description of the analysis!
-
-__Start Here Notebook__
-
-If any code in this script is unclear, refer to the `autolens_workspace/guides/modeling/chaining/slam/start_here.ipynb`
-notebook.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
@@ -88,8 +109,7 @@ settings_search = af.SettingsSearch(
 """
 __Redshifts__
 
-The redshifts of the lens and source galaxies, which are used to perform unit converions of the model and data (e.g. 
-from arc-seconds to kiloparsecs, masses to solar masses, etc.).
+The redshifts of the lens and source galaxies.
 """
 redshift_lens = 0.5
 redshift_source = 1.0
@@ -98,15 +118,7 @@ redshift_source = 1.0
 """
 __SOURCE LP PIPELINE__
 
-The SOURCE LP PIPELINE uses one search to initialize a robust model for the source galaxy's light, which in
-this example:
- 
- - Uses a MGE bulge with 1 x 20 Gaussians for the source's light (omitting a disk / envelope).
- - Uses an `Isothermal` model for the lens's total mass distribution with an `ExternalShear`.
-
- __Settings__:
- 
- - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS TOTAL PIPELINE).
+The SOURCE LP PIPELINE is identical to the `slam_start_here.ipynb` example.
 """
 analysis = al.AnalysisInterferometer(dataset=dataset)
 
@@ -132,18 +144,13 @@ source_lp_result = slam_pipeline.source_lp.run(
 
 
 """
+Compared to the `slam_start_here` example, this SLaM pipeline skips the SOURCE PIX PIPELINE because the MGE
+is a parametric profile and skips the LIGHT LP PIPELINE because there is no lens light to model.
+
 __MASS TOTAL PIPELINE__
 
-The MASS TOTAL PIPELINE uses one search to fits a complex lens mass model to a high level of accuracy, 
-using the lens mass model and source model of the SOURCE PIPELINE to initialize the model priors. In this example it:
-
- - Uses an `PowerLaw` model for the lens's total mass distribution [priors initialized from SOURCE 
- LIGHT PROFILE PIPELINE + The centre if unfixed from (0.0, 0.0)].
- 
- - Uses the an MGE model representing a bulge for the source's light [priors initialized from SOURCE 
- LIGHT PROFILE PIPELINE].
- 
- - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL PIPELINE.
+The MASS TOTAL PIPELINE is again identical to the `slam_start_here.ipynb` example, however because 
+`source_result_for_source` uses an MGE model, the source light model is now an MGE instead of a pixelization.
 """
 analysis = al.AnalysisInterferometer(dataset=dataset)
 

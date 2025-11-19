@@ -5,6 +5,7 @@ GUI Preprocessing: Lens Light Centre
 This tool allows one to input the lens light centre(s) of a strong lens(es) via a GUI, which can be used as a fixed
 value in pipelines.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

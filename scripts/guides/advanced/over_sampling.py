@@ -39,6 +39,7 @@ The visualization API is straightforward but is explained in the `autolens_works
 This includes detailed guides on how to customize every aspect of the figures, which can easily be combined with the
 code outlined in this tutorial.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

@@ -15,6 +15,7 @@ The dataset fitted in this example script is simulated imaging data of a sample 
 This data is not automatically provided with the autogalaxy workspace, and must be first simulated by running the
 script `autolens_workspace/scripts/advanced/graphical/simulator/samples/advanced/hubble_constant_time_delays.py`.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

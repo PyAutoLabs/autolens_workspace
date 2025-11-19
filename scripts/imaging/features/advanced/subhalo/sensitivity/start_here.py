@@ -63,7 +63,7 @@ anticipated that any user performing sensitivity mapping on real data will use t
 
 Therefore you should be familiar with the SLaM pipelines before performing DM subhalo sensitivity mapping on real
 data. If you are unfamiliar with the SLaM pipelines, checkout the
-example `autolens_workspace/notebooks/guides/modeling/chaining/slam/start_here.ipynb`.
+example `autolens_workspace/notebooks/guides/modeling/slam_start_here`.
 
 __Pixelized Source__
 
@@ -84,6 +84,7 @@ light profile source parameters are used to simulate each sensitivity mapping da
 used, the source reconstruction on the mesh is used, such that the simulations capture the irregular morphologies
 of real source galaxies.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

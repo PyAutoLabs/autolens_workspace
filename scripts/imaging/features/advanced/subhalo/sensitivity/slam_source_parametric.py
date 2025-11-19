@@ -32,6 +32,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `subhalo/detect/start_here.ipynb` notebook.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
@@ -110,7 +111,7 @@ redshift_source = 1.0
 """
 __SOURCE LP PIPELINE__
 
-This is the standard SOURCE LP PIPELINE described in the `slam/start_here.ipynb` example.
+This is the standard SOURCE LP PIPELINE described in the `slam_start_here` example.
 """
 analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
@@ -144,7 +145,7 @@ source_lp_result = slam_pipeline.source_lp.run(
 """
 __LIGHT LP PIPELINE__
 
-This is the standard LIGHT LP PIPELINE described in the `slam/start_here.ipynb` example.
+This is the standard LIGHT LP PIPELINE described in the `slam_start_here` example.
 """
 analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
@@ -167,7 +168,7 @@ light_results = slam_pipeline.light_lp.run(
 """
 __MASS TOTAL PIPELINE__
 
-This is the standard MASS TOTAL PIPELINE described in the `slam/start_here.ipynb` example.
+This is the standard MASS TOTAL PIPELINE described in the `slam_start_here` example.
 """
 analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 

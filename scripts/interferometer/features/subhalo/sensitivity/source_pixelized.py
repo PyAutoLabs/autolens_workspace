@@ -208,9 +208,9 @@
 #     settings_search=settings_search,
 #     analysis=analysis,
 #     source_lp_result=source_lp_result,
-#     image_mesh=al.image_mesh.Hilbert,
+#     image_mesh=None,,
 #     mesh=al.mesh.RectangularMagnification,
-#     regularization=al.reg.AdaptiveBrightnessSplit,
+#     regularization=al.reg.AdaptiveBrightness,
 # )
 #
 # """

@@ -9,6 +9,7 @@ We then show how the aggregator also allows us to load many `Tracer`'s correspon
 search. This allows us to compute the errors on quantities that the `Tracer` contains, but were not sampled directly
 by the non-linear search.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

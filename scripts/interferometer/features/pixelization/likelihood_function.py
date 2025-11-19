@@ -30,6 +30,7 @@ concepts used in this script:
 This script repeats all text and code examples in the above likelihood function examples. It therefore can be used to
 learn about the linear light profile likelihood function without reading other likelihood scripts.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

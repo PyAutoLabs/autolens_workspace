@@ -17,8 +17,8 @@ signal-to-noise. These datasets are fitted with the following approach:
   to capture changes in the lens light over wavelength, but it does not update the Gaussian parameters (e.g. `centre`,
  `elliptical_comps`, `sigma`) themselves due to the lower resolution of the data.
 
-- The source reconstruction (RectangularMagnification adaptive mesh) is updated using linear algebra to reconstruct the source, but again fixes
-  the source pixelization parameters themselves.
+- The source reconstruction (RectangularMagnification adaptive mesh) is updated using linear algebra to reconstruct
+  the source, but again fixes  the source pixelization parameters themselves.
 
 - Sub-pixel offsets between the datasets are fully modeled as free parameters, because the precision of a lens model
 can often be less than the requirements on astrometry.
@@ -27,15 +27,16 @@ The restrictive nature of the lens mass, light and source models mean that much 
 can be fitted provided the first dataset is of high quality. This is key for upcoming surveys such as Euclid, where
 the VIS instrument will be high resolution but many other wavebands will be lower resolution.
 
-The first fit,is identical to the `start_here.py` script, you should therefore familiarize yourself with that script
-before reading this one.
-
 The subsequent fits to the lower resolution data use a reduced and simplified SLaM pipeline with the mass model
 fixed to the result of the VIS fit.
 
 __Preqrequisites__
 
-Before reading this script, you should have familiarity with the following key concepts:
+Before using this SLaM pipeline, you should be familiar with:
+
+- **SLaM Start Here** (`guides/modeling/slam_start_here`)
+  An introduction to the goals, structure, and design philosophy behind SLaM pipelines
+  and how they integrate into strong-lens modeling.
 
 - **Multi**: The `autolens_workspace/*/advanced/multi` package describes many different ways that multiple datasets
   can be modeled in a single analysis, including the example script `one_by_one.ipynb` which fits a primary dataset
@@ -150,68 +151,23 @@ redshift_source = 1.0
 """
 __SOURCE LP PIPELINE__
 
-The SOURCE LP PIPELINE is identical to the `start_here.ipynb` example.
+The SOURCE LP PIPELINE is identical to the `slam_start_here` example.
 """
 analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 # Lens Light
 
-centre_0 = af.GaussianPrior(mean=0.0, sigma=0.1)
-centre_1 = af.GaussianPrior(mean=0.0, sigma=0.1)
-
-total_gaussians = 30
-gaussian_per_basis = 2
-
-log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
-
-bulge_gaussian_list = []
-
-for j in range(gaussian_per_basis):
-    gaussian_list = af.Collection(
-        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
-    )
-
-    for i, gaussian in enumerate(gaussian_list):
-        gaussian.centre.centre_0 = centre_0
-        gaussian.centre.centre_1 = centre_1
-        gaussian.ell_comps = gaussian_list[0].ell_comps
-        gaussian.sigma = 10 ** log10_sigma_list[i]
-
-    bulge_gaussian_list += gaussian_list
-
-lens_bulge = af.Model(
-    al.lp_basis.Basis,
-    profile_list=bulge_gaussian_list,
+lens_bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=2,
+    centre_prior_is_uniform=True,
 )
 
 # Source Light
 
-centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
-centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
-
-total_gaussians = 30
-gaussian_per_basis = 1
-
-log10_sigma_list = np.linspace(-3, np.log10(1.0), total_gaussians)
-
-bulge_gaussian_list = []
-
-for j in range(gaussian_per_basis):
-    gaussian_list = af.Collection(
-        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
-    )
-
-    for i, gaussian in enumerate(gaussian_list):
-        gaussian.centre.centre_0 = centre_0
-        gaussian.centre.centre_1 = centre_1
-        gaussian.ell_comps = gaussian_list[0].ell_comps
-        gaussian.sigma = 10 ** log10_sigma_list[i]
-
-    bulge_gaussian_list += gaussian_list
-
-source_bulge = af.Model(
-    al.lp_basis.Basis,
-    profile_list=bulge_gaussian_list,
+source_bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
 )
 
 source_lp_result = slam_pipeline.source_lp.run(
@@ -228,9 +184,33 @@ source_lp_result = slam_pipeline.source_lp.run(
 )
 
 """
+__JAX & Preloads__
+
+The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
+advance so it knows the shape of arrays it must compile functions for.
+"""
+image_mesh = None
+mesh_shape = (20, 20)
+total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
+
+total_linear_light_profiles = 40
+
+preloads = al.Preloads(
+    mapper_indices=al.mapper_indices_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        total_mapper_pixels=total_mapper_pixels,
+    ),
+    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        shape_native=mesh_shape,
+    ),
+)
+
+
+"""
 __SOURCE PIX PIPELINE__
 
-The SOURCE PIX PIPELINE (and every pipeline that follows) are identical to the `start_here.ipynb` example.
+The SOURCE PIX PIPELINE (and every pipeline that follows) are identical to the `slam_start_here` example.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
@@ -245,23 +225,19 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
-    mesh_init=al.mesh.RectangularMagnification,
+    image_mesh_init=None,
+    mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
+    regularization_init=al.reg.AdaptiveBrightness,
 )
 
 """
 __SOURCE PIX PIPELINE 2 (with lens light)__
 
-As above, this pipeline also has the same API as the `start_here.ipynb` example.
+As above, this pipeline also has the same API as the `slam_start_here` example.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
-    settings_inversion=al.SettingsInversion(
-        image_mesh_min_mesh_pixels_per_pixel=3,
-        image_mesh_min_mesh_number=5,
-        image_mesh_adapt_background_percent_threshold=0.1,
-        image_mesh_adapt_background_percent_check=0.8,
-    ),
     use_jax=True,
 )
 
@@ -270,15 +246,15 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis=analysis,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    image_mesh=al.image_mesh.Hilbert,
-    mesh=al.mesh.RectangularMagnification,
-    regularization=al.reg.AdaptiveBrightnessSplit,
+    image_mesh=None,
+    mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
+    regularization=al.reg.AdaptiveBrightness,
 )
 
 """
 __LIGHT LP PIPELINE__ 
 
-As above, this pipeline also has the same API as the `start_here.ipynb` example.
+As above, this pipeline also has the same API as the `slam_start_here` example.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
@@ -286,32 +262,11 @@ analysis = al.AnalysisImaging(
     use_jax=True,
 )
 
-centre_0 = af.UniformPrior(lower_limit=-0.2, upper_limit=0.2)
-centre_1 = af.UniformPrior(lower_limit=-0.2, upper_limit=0.2)
-
-total_gaussians = 30
-gaussian_per_basis = 2
-
-log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
-
-bulge_gaussian_list = []
-
-for j in range(gaussian_per_basis):
-    gaussian_list = af.Collection(
-        af.Model(al.lp_linear.Gaussian) for _ in range(total_gaussians)
-    )
-
-    for i, gaussian in enumerate(gaussian_list):
-        gaussian.centre.centre_0 = centre_0
-        gaussian.centre.centre_1 = centre_1
-        gaussian.ell_comps = gaussian_list[0].ell_comps
-        gaussian.sigma = 10 ** log10_sigma_list[i]
-
-    bulge_gaussian_list += gaussian_list
-
-lens_bulge = af.Model(
-    al.lp_basis.Basis,
-    profile_list=bulge_gaussian_list,
+lens_bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=2,
+    centre_prior_is_uniform=True,
 )
 
 light_result = slam_pipeline.light_lp.run(
@@ -326,7 +281,7 @@ light_result = slam_pipeline.light_lp.run(
 """
 __MASS TOTAL PIPELINE__
 
-As above, this pipeline also has the same API as the `start_here.ipynb` example.
+As above, this pipeline also has the same API as the `slam_start_here` example.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
@@ -529,7 +484,9 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
         settings_search=settings_search,
         analysis=analysis,
         source_lp_result=source_lp_result,
-        mesh_init=al.mesh.RectangularMagnification,
+        image_mesh_init=None,
+        mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
+        regularization_init=al.reg.AdaptiveBrightness,
         dataset_model=dataset_model,
         fixed_mass_model=True,
     )
@@ -541,12 +498,6 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
-        settings_inversion=al.SettingsInversion(
-            image_mesh_min_mesh_pixels_per_pixel=3,
-            image_mesh_min_mesh_number=5,
-            image_mesh_adapt_background_percent_threshold=0.1,
-            image_mesh_adapt_background_percent_check=0.8,
-        ),
     )
 
     dataset_model.grid_offset.grid_offset_0 = (
@@ -561,9 +512,9 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
         analysis=analysis,
         source_lp_result=source_lp_result,
         source_pix_result_1=source_pix_result_1,
-        image_mesh=al.image_mesh.Hilbert,
-        mesh=al.mesh.RectangularMagnification,
-        regularization=al.reg.AdaptiveBrightnessSplit,
+        image_mesh=None,
+        mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
+        regularization=al.reg.AdaptiveBrightness,
         dataset_model=dataset_model,
     )
 

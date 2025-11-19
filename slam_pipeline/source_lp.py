@@ -1,8 +1,6 @@
 import autofit as af
 import autolens as al
 
-from . import slam_util
-
 from typing import Union, Optional, Tuple
 
 
@@ -105,19 +103,12 @@ def run(
         dataset_model=dataset_model,
     )
 
-    search = af.DynestyStatic(
+    search = af.Nautilus(
         name="source_lp[1]",
         **settings_search.search_dict,
-        nlive=200,
-        iterations_per_full_update=20000,
+        n_live=200,
+        n_batch=50,
     )
-
-    # search = af.Nautilus(
-    #     name="source_lp[1]",
-    #     **settings_search.search_dict,
-    #     n_live=200,
-    #     iterations_per_full_update=200
-    # )
 
     result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
 

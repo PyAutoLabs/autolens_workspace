@@ -1,6 +1,6 @@
 """
-Chaining: Pixelization Adapt
-============================
+Pixelization: Delaunay
+======================
 
 Non-linear search chaining is an advanced model-fitting approach which breaks the model-fitting
 procedure down into multiple non-linear searches, using the results of the initial searches to initialization parameter
@@ -135,21 +135,8 @@ path_prefix = Path("imaging") / "chaining" / "pix_adapt_delaunay"
 """
 __JAX & Preloads__
 
-In JAX, calculations must use static shaped arrays with known and fixed indexes. For certain calculations in the
-pixelization, this information has to be passed in before the pixelization is performed. Below, we do this for 3
-inputs:
-
-- `total_linear_light_profiles`: The number of linear light profiles in the model. This is 0 because we are not
-  fitting any linear light profiles to the data, primarily because the lens light is omitted.
-
-- `total_mapper_pixels`: The number of source pixels in the rectangular pixelization mesh. This is required to set up 
-  the arrays that perform the linear algebra of the pixelization.
-
-- `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
-  are forced to values of zero, a technique tests have shown are required to give accruate lens models.
-
-The `image_mesh` can be ignored, it is legacy API from previous versions which may or may not be reintegrated in future
-versions.
+The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
+advance so it knows the shape of arrays it must compile functions for.
 """
 image_mesh = None
 mesh_shape = (20, 20)
@@ -308,28 +295,11 @@ __Image Mesh Settings__
 The `Hilbert` image-mesh may not fully adapt to the data in a satisfactory way. Often, it does not place enough
 pixels in the source's brightest regions and it may place too few pixels further out where the source is not observed.
 To address this, we use the `settings_inversion` input of the `Analysis` class to specify that we require the following:
-
-- `image_mesh_min_mesh_pixels_per_pixel=3` and `image_mesh_min_mesh_number=5`: the five brightest source image-pixels
-   must each have at least 3 source-pixels after the adaptive image mesh has been computed. If this is not the case,
-   the model is rejected and the non-linear search samples a new lens model.
- 
-- `image_mesh_adapt_background_percent_threshold=0.1` and `image_mesh_adapt_background_percent_check=0.8`: the faintest
-   80% of image-pixels must have at least 10% of the total source pixels, to ensure the regions of the image with no
-   source-flux are reconstructed using sufficient pixels. If this is not the case, the model is rejected and the
-   non-linear search samples a new lens model.
-
-These inputs are a bit contrived, but have been tested to ensure they lead to good lens models.
 """
 analysis_2 = al.AnalysisImaging(
     dataset=dataset,
     adapt_image_maker=al.AdaptImageMaker(result=result_1),
     preloads=preloads,
-    settings_inversion=al.SettingsInversion(
-        image_mesh_min_mesh_pixels_per_pixel=3,
-        image_mesh_min_mesh_number=5,
-        image_mesh_adapt_background_percent_threshold=0.1,
-        image_mesh_adapt_background_percent_check=0.8,
-    ),
 )
 
 """

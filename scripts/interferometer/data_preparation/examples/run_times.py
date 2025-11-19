@@ -33,6 +33,7 @@ this is representative of the run time of a lens model analysis).
 You therefore should not cancel the script if it appears to be running slowly, as it could be this preloading time
 that is the cause.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

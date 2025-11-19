@@ -1,6 +1,6 @@
 """
-Chaining: Parametric To Pixelization
-====================================
+PIXELIZATION: Chaining
+======================
 
 This script chains two searches to fit `Imaging` data of a 'galaxy-scale' strong lens with a model where:
 
@@ -46,6 +46,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
@@ -163,21 +164,8 @@ print(result_1.info)
 """
 __JAX & Preloads__
 
-In JAX, calculations must use static shaped arrays with known and fixed indexes. For certain calculations in the
-pixelization, this information has to be passed in before the pixelization is performed. Below, we do this for 3
-inputs:
-
-- `total_linear_light_profiles`: The number of linear light profiles in the model. This is 0 because we are not
-  fitting any linear light profiles to the data, primarily because the lens light is omitted.
-
-- `total_mapper_pixels`: The number of source pixels in the rectangular pixelization mesh. This is required to set up 
-  the arrays that perform the linear algebra of the pixelization.
-
-- `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
-  are forced to values of zero, a technique tests have shown are required to give accruate lens models.
-
-The `image_mesh` can be ignored, it is legacy API from previous versions which may or may not be reintegrated in future
-versions.
+The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
+advance so it knows the shape of arrays it must compile functions for.
 """
 image_mesh = None
 mesh_shape = (20, 20)

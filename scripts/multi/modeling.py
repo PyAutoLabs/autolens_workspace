@@ -13,6 +13,7 @@ Two images are fitted, corresponding to a greener ('g' band) redder image (`r` b
 This is an advanced script and assumes previous knowledge of the core **PyAutoLens** API for lens modeling. Thus,
 certain parts of code are not documented to ensure the script is concise.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

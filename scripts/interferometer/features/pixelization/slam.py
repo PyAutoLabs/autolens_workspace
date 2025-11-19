@@ -1,56 +1,42 @@
 """
-SLaM (Source, Light and Mass): Mass Total + Source Inversion
-============================================================
+Pixelization: SLaM
+==================
 
-SLaM pipelines break the analysis of 'galaxy-scale' strong lenses down into multiple pipelines which focus on modeling
-a specific aspect of the strong lens, first the Source, then the (lens) Light and finally the Mass. Each of these
-pipelines has it own inputs which customize the model and analysis in that pipeline.
+This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for pixelized source modeling.
 
-The models fitted in earlier pipelines determine the model used in later pipelines. For example, if the SOURCE PIPELINE
-uses an MGE for the bulge, this will be used in the subsequent MASS TOTAL PIPELINE.
+A full overview of SLaM is provided in `guides/modeling/slam_start_here`. You should read that
+guide before working through this example.
 
-Using a SOURCE LP PIPELINE, SOURCE PIX PIPELINE and a MASS TOTAL PIPELINE this SLaM script fits `Interferometer`
-of a strong lens system, where in the final model:
+Because the SLaM pipelines are designed around pixelized source modeling, the example `slam_start_here` fully
+describes all design choices and modeling decisions made in this script. This script therefore does not repeat
+that documentation, therefore `slam_start_here` should be read first.
 
- - The lens galaxy's light is omitted from the data and model.
- - The lens galaxy's total mass distribution is an `PowerLaw`.
- - The source galaxy is an `Inversion`.
+The interferometer SLaM pipeline is identical to the imaging SLaM pipeline, except that it uses
+`AnalysisInterferometer` objects to fit interferometer datasets. However, the design and interface
+themselves are the same.
 
-This uses the SLaM pipelines:
+__Prerequisites__
 
- `source_lp`
- `source_pix`
- `mass_total`
+Before using this SLaM pipeline, you should be familiar with:
 
-Check them out for a detailed description of the analysis!
+- **SLaM Start Here** (`guides/modeling/slam_start_here`)
+  An introduction to the goals, structure, and design philosophy behind SLaM pipelines
+  and how they integrate into strong-lens modeling.
 
-__Run Times and Settings__
+You can still run the script without fully understanding the guide, but reviewing it later will
+make the structure and choices of the SLaM workflow clearer.
 
-The run times of an interferometer `Inversion` depend significantly on the following settings:
+__Interferometer SLaM Description__
 
- - `transformer_class`: whether a discrete Fourier transform (`TransformerDFT`) or non-uniform fast Fourier Transform
- (`TransformerNUFFT) is used to map the inversion's image from real-space to Fourier space.
+The `slam_start_here` notebook provides a detailed description of the SLaM pipelines, but it does this using CCD
+imaging data.
 
- - `use_linear_operators`: whether the linear operator formalism or matrix formalism is used for the linear algebra.
-
-The optimal settings depend on the number of visibilities in the dataset:
-
- - For N_visibilities < 1000: `transformer_class=TransformerDFT` and `use_linear_operators=False` gives the fastest
- run-times.
- - For  N_visibilities > ~10000: use `transformer_class=TransformerNUFFT`  and `use_linear_operators=True`.
-
-The dataset modeled by default in this script has just 200 visibilties, therefore `transformer_class=TransformerDFT`
-and `use_linear_operators=False`.
-
-The script `autolens_workspace/*/interferometer/run_times.py` allows you to compute the run-time of an inversion
-for your interferometer dataset. It does this for all possible combinations of settings and therefore can tell you
-which settings give the fastest run times for your dataset.
-
-__Start Here Notebook__
-
-If any code in this script is unclear, refer to the `autolens_workspace/guides/modeling/chaining/slam/start_here.ipynb`
-notebook.
+There is no dedicated example which provides full descriptions of the SLaM pipelines using interferometer data, however,
+the concepts and API described in the `slam_start_here` are identical to what is required for interferometer data.
+Therefore, by reading the `slam_start_here` example you will fully understand everything required to use this
+interferometer SLaM script.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
@@ -94,38 +80,16 @@ dataset = al.Interferometer.from_fits(
 """
 __Inversion Settings (Run Times)__
 
-The run times of an interferometer `Inversion` depend significantly on the following settings:
+The `SettingsInversion` used to fit the interferometer data with a pixelized source should be chosen carefully, 
+to ensure you get the fastest run times possible for your number of visibilities.
 
- - `transformer_class`: whether a discrete Fourier transform (`TransformerDFT`) or non-uniform fast Fourier Transform
- (`TransformerNUFFT) is used to map the inversion's image from real-space to Fourier space.
-
- - `use_linear_operators`: whether the linear operator formalism or matrix formalism is used for the linear algebra.
-
-The optimal settings depend on the number of visibilities in the dataset:
-
- - For N_visibilities < 1000: `transformer_class=TransformerDFT` and `use_linear_operators=False` gives the fastest
- run-times.
- - For  N_visibilities > ~10000: use `transformer_class=TransformerNUFFT`  and `use_linear_operators=True`.
-
-The dataset modeled by default in this script has just 200 visibilties, therefore `transformer_class=TransformerDFT`
-and `use_linear_operators=False`. If you are using this script to model your own dataset with a different number of
-visibilities, you should update the options below accordingly.
-
-The script `autolens_workspace/*/interferometer/run_times.py` allows you to compute the run-time of an inversion
-for your interferometer dataset. It does this for all possible combinations of settings and therefore can tell you
-which settings give the fastest run times for your dataset.
+The example `autolens_workspace/*/interferometer/features/pixelization/run_times.py` provides a guide
+on how to choose these settings based on your dataset.
 """
 settings_inversion = al.SettingsInversion(
     use_linear_operators=False,
-    image_mesh_min_mesh_pixels_per_pixel=3,
-    image_mesh_min_mesh_number=5,
-    image_mesh_adapt_background_percent_threshold=0.1,
-    image_mesh_adapt_background_percent_check=0.8,
 )
 
-"""
-We now plot the `Interferometer` object which is used to fit the lens model.
-"""
 dataset_plotter = aplt.InterferometerPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 dataset_plotter.subplot_dirty_images()
@@ -145,8 +109,7 @@ settings_search = af.SettingsSearch(
 """
 __Redshifts__
 
-The redshifts of the lens and source galaxies, which are used to perform unit converions of the model and data (e.g. 
-from arc-seconds to kiloparsecs, masses to solar masses, etc.).
+The redshifts of the lens and source galaxies.
 """
 redshift_lens = 0.5
 redshift_source = 1.0
@@ -155,16 +118,7 @@ redshift_source = 1.0
 """
 __SOURCE LP PIPELINE__
 
-The SOURCE LP PIPELINE uses one search to initialize a robust model for the source galaxy's light, which in
-this example:
-
- - Uses a MGE bulge with 1 x 20 Gaussians for the source's light (omitting a disk / envelope).
- - Uses an `Isothermal` model for the lens's total mass distribution with an `ExternalShear`.
- 
-__Settings__:
- 
- - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the SOURCE INVERSION 
- PIPELINE).
+The SOURCE LP PIPELINE is identical to the `slam_start_here.ipynb` example.
 """
 analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
 
@@ -188,23 +142,48 @@ source_lp_result = slam_pipeline.source_lp.run(
     redshift_source=1.0,
 )
 
+
+"""
+__JAX & Preloads__
+
+In JAX, calculations must use static shaped arrays with known and fixed indexes. For certain calculations in the
+pixelization, this information has to be passed in before the pixelization is performed. Below, we do this for 3
+inputs:
+
+- `total_linear_light_profiles`: The number of linear light profiles in the model. This is 0 because we are not
+  fitting any linear light profiles to the data, primarily because the lens light is omitted.
+
+- `total_mapper_pixels`: The number of source pixels in the rectangular pixelization mesh. This is required to set up 
+  the arrays that perform the linear algebra of the pixelization.
+
+- `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
+  are forced to values of zero, a technique tests have shown are required to give accruate lens models.
+
+The `image_mesh` can be ignored, it is legacy API from previous versions which may or may not be reintegrated in future
+versions.
+"""
+image_mesh = None
+mesh_shape = (20, 20)
+total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
+
+total_linear_light_profiles = 0
+
+preloads = al.Preloads(
+    mapper_indices=al.mapper_indices_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        total_mapper_pixels=total_mapper_pixels,
+    ),
+    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        shape_native=mesh_shape,
+    ),
+)
+
+
 """
 __SOURCE PIX PIPELINE__
 
-The SOURCE PIX PIPELINE uses two searches to initialize a robust model for the `Pixelization` that
-reconstructs the source galaxy's light. It begins by fitting an `Overlay` image-mesh, `RectangularMagnification` mesh and `Constant` 
-regularization, to set up the model and hyper images, and then:
-
-- Uses a `Hilbert` image-mesh. 
-- Uses a `RectangularMagnification` mesh.
- - Uses an `AdaptiveBrightness` regularization.
- - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE LP PIPELINE through to the
- SOURCE PIX PIPELINE.
-
-__Settings__:
-
- - Positions: We update the positions and positions threshold using the previous model-fitting result (as described 
- in `chaining/examples/parametric_to_pixelization.py`) to remove unphysical solutions from the `Inversion` model-fitting.
+The SOURCE PIX PIPELINE is identical to the `slam_start_here.ipynb` example.
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
@@ -219,18 +198,22 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
-    mesh_init=al.mesh.RectangularMagnification,
+    image_mesh_init=None,
+    mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
+    regularization=al.reg.AdaptiveBrightness,
 )
 
+"""
+__SOURCE PIX PIPELINE 2__
+
+The SOURCE PIX PIPELINE 2 is identical to the `slam_start_here.ipynb` example.
+
+Note that the LIGHT PIPELINE follows the SOURCE PIX PIPELINE in the `slam_start_here.ipynb` example is not included
+in this script, given the lens light is not present in the data.
+"""
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
-    settings_inversion=al.SettingsInversion(
-        image_mesh_min_mesh_pixels_per_pixel=3,
-        image_mesh_min_mesh_number=5,
-        image_mesh_adapt_background_percent_threshold=0.1,
-        image_mesh_adapt_background_percent_check=0.8,
-    ),
 )
 
 source_pix_result_2 = slam_pipeline.source_pix.run_2(
@@ -238,30 +221,16 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis=analysis,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    image_mesh=al.image_mesh.Hilbert,
-    mesh=al.mesh.RectangularMagnification,
-    regularization=al.reg.AdaptiveBrightnessSplit,
+    image_mesh=None,
+    mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
+    regularization=al.reg.AdaptiveBrightness,
 )
 
 """
 __MASS TOTAL PIPELINE__
 
-The MASS TOTAL PIPELINE uses one search to fits a complex lens mass model to a high level of accuracy, 
-using the lens mass model and source model of the SOURCE PIX PIPELINE to initialize the model priors. In this 
-example it:
-
- - Uses an `PowerLaw` model for the lens's total mass distribution [The centre if unfixed from (0.0, 0.0)].
- - Uses a `Pixelization` for the source's light [fixed from SOURCE PIX PIPELINE].
- - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINES through to the MASS 
- PIPELINE.
- 
-__Settings__:
-
- - adapt: We may be using adapt features and therefore pass the result of the SOURCE PIX PIPELINE to use as the
- hyper dataset if required.
-
- - Positions: We update the positions and positions threshold using the previous model-fitting result (as described 
- in `chaining/examples/parametric_to_pixelization.py`) to remove unphysical solutions from the `Inversion` model-fitting.
+The MASS TOTAL PIPELINE is again identical to the `slam_start_here.ipynb` example, noting that the `light_result` is
+now passed in as None to omit the lens light from the model.
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,

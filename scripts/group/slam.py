@@ -9,34 +9,36 @@ lens model.
 These systems likely constitute "group scale" lenses and therefore this script is the point where the galaxy-scale
 SLaM pipelines can be adapted to group-scale lenses.
 
-__Extra Galaxies Centres__
+__Prerequisites__
 
-To set up a lens model including each extra galaxy with light and / or mass profile, we input manually the centres of
-the extra galaxies.
+Before using this SLaM pipeline, you should be familiar with:
 
-In principle, a lens model including the extra galaxies could be composed without these centres. For example, if
-there were two extra galaxies in the data, we could simply add two additional light and mass profiles into the model.
-The modeling API does support this, but we will not use it in this example.
+- **SLaM Start Here** (`guides/modeling/slam_start_here`)
+  An introduction to the goals, structure, and design philosophy behind SLaM pipelines
+  and how they integrate into strong-lens modeling.
 
-This is because models where the extra galaxies have free centres are often too complex to fit. It is likely the fit
-will infer an inaccurate lens model and local maxima, because the parameter space is too complex.
+- **Group** (`group/modeling`):
+    How we model group-scale strong lenses in PyAutoLens, including how we include extra galaxies in
+    the lens model.
 
-For example, a common problem is that one of the extra galaxy light profiles intended to model a nearby galaxy instead
-fit  one of the lensed source's multiple images. Alternatively, an extra galaxy's mass profile may recenter itself and
-act as part of the main lens galaxy's mass distribution.
+You can still run the script without fully understanding the guide, but reviewing it later will
+make the structure and choices of the SLaM workflow clearer.
 
-Therefore, when modeling extra galaxies we input the centre of each, in order to fix their light and mass profile
-centres or set up priors centre around these values.
+__Extra Galaxies SLaM__
 
-The `data_preparation` tutorial `autolens_workspace/*/imaging/data_preparation/examples/optional/extra_galaxies_centres.py`
-describes how to create these centres. Using this script they have been output to the `.json` file we load below.
+This SLaM pipeline is designed for the regime where one is modeling group scale strong lenses that
+have many extra galaxies whose light and mass are included in the lens model.
 
-__Preqrequisites__
+However, smaller groups can become close to the galaxy scale lensing regime, for which PyAutoLens has a dedicated
+package for modeling (`autolens_workspace/*/imaging`) and its own dedicated SLaM pipelines
+(`autolens_workspace/*/features/extra_galaxies/slam`).
 
-Before reading this script, you should have familiarity with the following key concepts:
+The main difference between this SLaM pipeline and the galaxy scale SLaM pipelines is that in the latter, the light and
+masses of the extra galaxies are modeled individually and not using scaling relations tied to their light profiles.
+This SLaM pipeline therefore has fewer searches in the SOURCE LP PIPELINE than this group scale SLaM pipeline.
 
-- **Extra Galaxies**: How we include extra galaxies in the lens model, demonstrated in `features/extra_galaxies.ipynb`,
-  as the exact same API is used here.
+Which SLaM pipeline you should use depends on your particular strong lens, but as a rule of thumb if you are modeling
+groups and do not have many extra galaxies (e.g. 2-3) then the galaxy scale SLaM pipelines may be more appropriate.
 
 __This Script__
 
@@ -396,6 +398,7 @@ If any code in this script is unclear, refer to the `guides/modeling/slam_start_
 #     analysis=analysis,
 #     source_lp_result=source_lp_result_1,
 #     extra_galaxies=extra_galaxies_fixed_centres,
+#     image_mesh_init = None,
 #     mesh_init=al.mesh.Voronoi,
 # )
 #
@@ -413,12 +416,6 @@ If any code in this script is unclear, refer to the `guides/modeling/slam_start_
 #     # positions_likelihood_list=[source_pix_result_1.positions_likelihood_from(
 #     #    factor=3.0, minimum_threshold=0.2),
 #     positions_likelihood_list=[positions_likelihood],
-#     settings_inversion=al.SettingsInversion(
-#         image_mesh_min_mesh_pixels_per_pixel=3,
-#         image_mesh_min_mesh_number=5,
-#         image_mesh_adapt_background_percent_threshold=0.1,
-#         image_mesh_adapt_background_percent_check=0.8,
-#     ),
 # )
 #
 # # extra_galaxies = source_pix_result_1.instance.extra_galaxies
@@ -429,7 +426,7 @@ If any code in this script is unclear, refer to the `guides/modeling/slam_start_
 #     source_lp_result=source_lp_result_1,
 #     source_pix_result_1=source_pix_result_1,
 #     extra_galaxies=source_pix_result_1.instance.extra_galaxies,
-#     image_mesh=al.image_mesh.Hilbert,
+#     image_mesh=None,,
 #     mesh=al.mesh.Voronoi,
 #     regularization=al.reg.AdaptiveBrightnessSplit,
 # )

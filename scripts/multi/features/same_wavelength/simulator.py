@@ -18,6 +18,7 @@ to remove correlated noise in the data.
 
 TODO: NEED TO INCLUDE DIFFERENT POINTING / CENTERINGS.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

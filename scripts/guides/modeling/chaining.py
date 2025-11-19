@@ -32,6 +32,7 @@ to pass information between searches as well as tools for customizing prior pass
 
 There are examples throughout the workspace where search chaining improves and helps automate lens modeling.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

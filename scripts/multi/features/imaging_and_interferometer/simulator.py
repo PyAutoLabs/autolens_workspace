@@ -12,6 +12,7 @@ provides interferometer observations of the same strong lens.
 
 It is used to demonstrate the combination of imaging and interferometer datasets.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

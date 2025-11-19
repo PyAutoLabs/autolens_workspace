@@ -498,8 +498,7 @@ We now compute:
  - The RMS noise of the time delays, which is assumed to be 0.25 * their values but in real data uses the time delay estimate process.
 """
 positions = solver.solve(
-    tracer=tracer,
-    source_plane_coordinate=source_galaxy.point_0.centre
+    tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
 )
 
 magnifications = tracer.magnification_2d_via_hessian_from(grid=positions)

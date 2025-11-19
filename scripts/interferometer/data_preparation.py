@@ -29,6 +29,7 @@ The pixel scale of some common interferometers is as follows:
 It is absolutely vital you use a sufficently small pixel scale that all structure in the data is resolved after the
 Fourier transform. If the pixel scale is too large, the Fourier transform will smear out the data and the lens model.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

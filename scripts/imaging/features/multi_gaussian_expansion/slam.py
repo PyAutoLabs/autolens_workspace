@@ -1,18 +1,30 @@
 """
-SLaM (Source, Light and Mass): Source Light Profile
-===================================================
+Multi Gaussian Expansion: SLaM
+==============================
 
-This example shows how to use the SLaM pipelines to fit a lens model where the source is modeled using light profiles.
+This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for fitting a
+lens model where the source is a modeled using a Multi Gaussian Expansion (MGE).
 
-This means that the SOURCE PIXELIZED PIPELINE is omitted entirely.
+A full overview of SLaM is provided in `guides/modeling/slam_start_here`. You should read that
+guide before working through this example.
 
-When usinglight profile sources, the source light profiles parameters are fitted for as free parameters in the
-MASS PIPELINE. This is in contrast to SLaM pipelines using pixelized sources, where the mesh and regularization
-parameters are fixed in the MASS PIPELINE.
+This example only provides documentation specific to the use of an MGE source, describing how the pipeline
+differs from the standard SLaM pipelines described in the SLaM start here guide.
+
+__Prerequisites__
+
+Before using this SLaM pipeline, you should be familiar with:
+
+- **SLaM Start Here** (`guides/modeling/slam_start_here`)
+  An introduction to the goals, structure, and design philosophy behind SLaM pipelines
+  and how they integrate into strong-lens modeling.
+
+You can still run the script without fully understanding the guide, but reviewing it later will
+make the structure and choices of the SLaM workflow clearer.
 
 __Model__
 
-Using a SOURCE LP PIPELINE, LIGHT PIPELINE and a MASS TOTAL PIPELINE this SLaM script  fits `Imaging` dataset of a strong
+Using a SOURCE LP PIPELINE, LIGHT PIPELINE and a MASS TOTAL PIPELINE this SLaM script fits a strong
 lens system, where in the final model:
 
  - The lens galaxy's light is a bulge with an MGE.
@@ -27,6 +39,7 @@ This modeling script uses the SLaM pipelines:
 
 Check them out for a detailed description of the analysis!
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
@@ -106,16 +119,7 @@ redshift_source = 1.0
 """
 __SOURCE LP PIPELINE__
 
-The SOURCE LP PIPELINE uses one search to initialize a robust model for the source galaxy's light, which in 
-this example:
-
- - Uses a MGE bulge with 2 x 30 Gaussians for the lens galaxy's light.
-
- - Uses an `Isothermal` model for the lens's total mass distribution with an `ExternalShear`.
-
- __Settings__:
-
- - Mass Centre: Fix the mass profile centre to (0.0, 0.0) (this assumption will be relaxed in the MASS TOTAL PIPELINE).
+The SOURCE LP PIPELINE is identical to the `slam_start_here.ipynb` example.
 """
 analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
@@ -125,6 +129,7 @@ lens_bulge = al.model_util.mge_model_from(
     gaussian_per_basis=1,
     centre_prior_is_uniform=True,
 )
+
 source_bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
     total_gaussians=20,
@@ -146,21 +151,13 @@ source_lp_result = slam_pipeline.source_lp.run(
 )
 
 """
+Compared to the `slam_start_here` example, this SLaM pipeline skips the SOURCE PIX PIPELINE because the MGE
+is a parametric profile.
+
 __LIGHT LP PIPELINE__
 
-The LIGHT LP PIPELINE uses one search to fit a complex lens light model to a high level of accuracy, using the
-lens mass model and source light model fixed to the maximum log likelihood result of the SOURCE LP PIPELINE.
-In this example it:
-
- - Uses a MGE bulge with 2 x 30 Gaussians for the lens galaxy's light [Do not use the results of 
-   the SOURCE LP PIPELINE to initialize priors].
-
- - Uses an `Isothermal` model for the lens's total mass distribution [fixed from SOURCE LP PIPELINE].
-
- - Uses the an MGE model representing a bulge for the source's light [fixed from SOURCE LP PIPELINE].
-
- - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS 
- PIPELINE [fixed values].
+The LIGHT LP PIPELINE is setup identically to the `slam_start_here.ipynb` example, however because 
+`source_result_for_source` uses an MGE model, the source light model is now an MGE instead of a pixelization.
 """
 analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
@@ -183,21 +180,8 @@ light_results = slam_pipeline.light_lp.run(
 """
 __MASS TOTAL PIPELINE__
 
-The MASS TOTAL PIPELINE uses one search to fits a complex lens mass model to a high level of accuracy, 
-using the lens mass model and source model of the SOURCE LP PIPELINE to initialize the model priors and the 
-lens light model of the LIGHT LP PIPELINE. 
-
-In this example it:
-
- - Uses a MGE bulge with 2 x 30 Gaussians [fixed from LIGHT LP PIPELINE].
-
- - Uses an `PowerLaw` model for the lens's total mass distribution [priors initialized from SOURCE 
- LIGHT PROFILE PIPELINE + centre unfixed from (0.0, 0.0)].
-
- - Uses the an MGE model representing a bulge for the source's light [priors initialized from SOURCE 
- LIGHT PROFILE PIPELINE].
-
- - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE PIPELINE through to the MASS TOTAL PIPELINE.
+The MASS TOTAL PIPELINE is again identical to the `slam_start_here.ipynb` example, noting again that the
+`source_result_for_source` uses an MGE model.
 """
 analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 

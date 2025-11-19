@@ -14,6 +14,7 @@ Accompanying this script is the `contributor_guide.py` which provides URL's to e
 is illustrated in this guide. This gives contributors a sequential run through of what source-code functions, modules and
 packages are called when the likelihood is evaluated.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline

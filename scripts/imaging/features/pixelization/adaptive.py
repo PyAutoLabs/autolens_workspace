@@ -1,6 +1,6 @@
 """
-Chaining: Pixelization Adaptive
-===============================
+Pixelization: Adaptive
+======================
 
 Non-linear search chaining is an advanced model-fitting approach which breaks the model-fitting procedure down into
 multiple non-linear searches, using the results of the initial searches to initialization parameter sampling in
@@ -24,6 +24,7 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
@@ -88,21 +89,8 @@ path_prefix = Path("imaging") / "chaining" / "pix_adapt"
 """
 __JAX & Preloads__
 
-In JAX, calculations must use static shaped arrays with known and fixed indexes. For certain calculations in the
-pixelization, this information has to be passed in before the pixelization is performed. Below, we do this for 3
-inputs:
-
-- `total_linear_light_profiles`: The number of linear light profiles in the model. This is 0 because we are not
-  fitting any linear light profiles to the data, primarily because the lens light is omitted.
-
-- `total_mapper_pixels`: The number of source pixels in the rectangular pixelization mesh. This is required to set up 
-  the arrays that perform the linear algebra of the pixelization.
-
-- `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
-  are forced to values of zero, a technique tests have shown are required to give accruate lens models.
-
-The `image_mesh` can be ignored, it is legacy API from previous versions which may or may not be reintegrated in future
-versions.
+The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
+advance so it knows the shape of arrays it must compile functions for.
 """
 image_mesh = None
 mesh_shape = (20, 20)
@@ -330,5 +318,6 @@ using adaptive pixelizations.
 In fact, the SLaM pipelines are built around the use of adaptive features, with the Source pipeline first so that
 these features are set up robustly before more complex lens light and mass models are fitted.
 
-The example `pixelization/slam` provides a full run through of how to use the SLaM pipelines with adaptive pixelizations.
+The example `guides/modeling/slam_start_here` provides a full run through of how to use the SLaM pipelines with 
+adaptive pixelizations.
 """

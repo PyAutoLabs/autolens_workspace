@@ -1,8 +1,6 @@
 import autofit as af
 import autolens as al
 
-from . import slam_util
-
 from typing import Optional, Tuple, Union
 
 
@@ -71,7 +69,7 @@ def run_1(
 
     - The lens galaxy light is modeled using light profiles [parameters fixed to result of SOURCE LP PIPELINE].
 
-     - The lens galaxy mass is modeled using a total mass distribution [parameters initialized from the results of the 
+     - The lens galaxy mass is modeled using a total mass distribution [model initialized from the results of the 
      SOURCE LP PIPELINE].
 
      - The source galaxy's light is the input initialization image mesh, mesh and regularization scheme [parameters of 
@@ -190,7 +188,7 @@ def run_2(
     Search 2 of the SOURCE PIX PIPELINE fits a lens model where:
 
     - The lens galaxy light is modeled using a light profiles [parameters fixed to result of SOURCE LP PIPELINE].
-    - The lens galaxy mass is modeled using a total mass distribution [parameters fixed to result of search 2].
+    - The lens galaxy mass is modeled using a total mass distribution [parameters fixed to result of search 1].
     - The source galaxy's light is the input final mesh and regularization.
 
     This search initializes the pixelization's mesh and regularization.

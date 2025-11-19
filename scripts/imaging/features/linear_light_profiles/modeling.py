@@ -74,6 +74,7 @@ __Notes__
 This script is identical to `modeling/start_here.py` except that the light profiles are switched to linear light
 profiles.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
