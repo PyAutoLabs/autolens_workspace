@@ -157,6 +157,7 @@ class AnalysisImaging(af.Analysis):
         self,
         dataset: al.Imaging,
         cosmology: al.cosmo.LensingCosmology = al.cosmo.Planck15(),
+        use_jax: bool = True,
     ):
         """
         Fits a lens model to an imaging dataset via a non-linear search.
@@ -175,6 +176,8 @@ class AnalysisImaging(af.Analysis):
         cosmology
             The Cosmology assumed for this analysis.
         """
+        super().__init__(use_jax=use_jax)
+
         self.dataset = dataset
         self.cosmology = cosmology
 

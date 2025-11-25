@@ -1,55 +1,25 @@
 """
-Pixelization: Delaunay
-======================
+Pixelization: CPU Fast Modeling
+===============================
 
-The majority of pixelized source reconstructions in this workspace have used a rectangular mesh to reconstruct
-the source's surface brightness.
+Pixelization examples have used JAX to speed up computations via GPU acceleration.
 
-This example illustrates an alternative pixelization that uses a Delaunay triangulation mesh to reconstruct the
-source.
+However, for pixelizations there are a number of situations where JAX and GPU acceleration will not provide fast
+run times:
 
-The approach is distinct from the rectangular mesh and has a number of traits which are unique to it:
+- `VRAM`: JAX acceleration only provides significant speed up when the GPU VRAM is large, with examples using a
+  rectangular   mesh of shape 20 x 20 to keep VRAM requirements low. If you do not have access to a modern GPU with >16GB
+  VRAM, JAX GPU calculations will often be slow.
 
-- `Adaptive Mesh`: In the source plane, the Delaunay mesh uses irregularly shaped triangles to reconstruct the
-  source, as opposed to uniform rectangular pixels. This allows the mesh to better adapt to irregular and
-  asymmetric source morphologies and change the distribution of source pixels to better match the source's
-  surface brightness.
+- `Sparsity`: Pixelization calculations use large, but very sparse matrices. JAX does not currently support sparse
+  matrix operations, meaning that many calculations are performed on large dense matrices which are slow. In a nutshell,
+  this means for high resolution data (e.g. `pixel_scales=0.03` or smaller), JAX often becomes slower than CPU
+  computations, even when large VRAM GPUs are used.
 
-- `Image Mesh`: The vertexes of the Delaunay triangles are computed by overlaying a coarse uniform grid in the
-  image-plane and ray-tracing these coordinates to the source-plane. This is unlike the rectangular mesh, which
-  simply overlays a uniform grid in the source-plane. This again helps the Delaunay mesh to better adapt to the
-  source's surface brightness.
-
-- `Interpolation`: The Delaunay mesh uses a different interpolation scheme to the rectangular mesh, which is
-  barycentric interpolation within each triangle. This is different to the rectangular mesh, which uses bilinear
-  interpolation within each rectangular pixel.
-
-- `Regularization`: The Delaunay mesh provides different approaches to regularization, with the default being
-  one which uses the barycentric coordinates of the triangles to compute how source pixels are regularized with
-  their neighbors.
-
-Currently it is not expected that the Delaunay is better or worse than the rectangular mesh, it is simply a different
-approach to pixelization that may work better for certain datasets.
-
-__JAX + GPU__
-
-Generating a Delaunay mesh currently does not support JAX and GPU acceleration. This script therefore runs exclusively
-using CPU, and follows the CPU efficiency practices described in
-the `example `imaging/features/pixelization/cpu_fast_modeling.py` script.
-
-You should read this script before using the Delaunay mesh for your own modeling, but the key point are:
-
-- The library `numba` must be installed for fast likelihood evaluations.
-
-- Python multiprocessing is used to parallelize model-fits over many CPU cores.
-
-- CPU pixelization calculations fully exploit sparsity and therefore for high resolution datasets (around
-a `pixel_scale` of 0.03" or below) begin to run as fast or faster than GPU computations using JAX. They also use
-significantly less memory and are therefore able to model datasets that are infeasible using JAX.
-
-__Start Here Notebook__
-
-If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.
+This example illustrates how to perform fast pixelization modeling on a CPU without JAX. Instead it combines
+`the library `numba` with Python `multiprocessing` to perform fast pixelization modeling on a CPU. If you have access
+to a HPC with many CPU cores (e.g. > 10), this method can often outperform JAX GPU acceleration for high resolution
+imaging data where exploiting matrix sparsity is important.
 """
 
 try:
@@ -138,13 +108,37 @@ positions = al.Grid2DIrregular(
 )
 
 """
+__W_Tilde__
+
+The linear algebra calculations performed to fit a pixelized source to imaging data can use an alternative 
+mathetical formalism called the `w_tilde` formalism.
+
+The details of how this work are not important, but the key point is that it significantly speeds up calculations
+when using a pixelized source by exploiting the sparsity of matrices involved in the calculations. The way
+this is achieved does not currently support JAX and therefore does not support GPU acceleration.
+
+To activate the `w_tilde` formalism, we use the `apply_w_tilde()` method of the `Imaging` dataset, which calculates
+and stores a matrix called the `w_tilde` matrix in the dataset, which is used when a pixelized source is fitted to the 
+data. 
+
+Computing this matrix takes between a few seconds to a few minutes depending on the size of the dataset, but once 
+computed it reused for every model-fit, meaning that for modeling using a pixelized source it provides a significant 
+speed up.
+"""
+dataset = dataset.apply_w_tilde()
+
+"""
 __JAX & Preloads__
 
 The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
 advance so it knows the shape of arrays it must compile functions for.
+
+The code below is the same as in that example, but note how the `mesh_shape` is now (30 x 30) because the exploitation
+of matrix sparsity by CPU calculations combined with more abundent CPU RAM means we can now use higher resolution meshes
+than when using JAX GPU acceleration.
 """
 image_mesh = None
-mesh_shape = (20, 20)
+mesh_shape = (30, 30)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
 total_linear_light_profiles = 0
@@ -154,10 +148,10 @@ preloads = al.Preloads(
         total_linear_light_profiles=total_linear_light_profiles,
         total_mapper_pixels=total_mapper_pixels,
     ),
-    # source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
-    #     total_linear_light_profiles=total_linear_light_profiles,
-    #     shape_native=mesh_shape,
-    # ),
+    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        shape_native=mesh_shape,
+    ),
 )
 
 """
@@ -166,19 +160,36 @@ __Fit__
 In the example `imaging/features/pixelization/fit.py`, we illustrate how to use a pixelized source
 with a rectangular mesh to fit imaging data.
 
-Below, we use a Delaunay mesh to perform a fit using the Delaunay source reconstruction.
-
-The API is nearly identical to the rectangular mesh example, with the only difference being the use of an
-`image_mesh` to determine the source pixel centres in the image-plane and inputting a `Delaunay` mesh. 
+Below, we illustrate a fit using the same pixelization, but now using fast CPU calculations with numba.
 """
-
-image_mesh = al.image_mesh.Overlay(shape=mesh_shape)
 mesh = al.mesh.RectangularMagnification(shape=mesh_shape)
 regularization = al.reg.Constant(coefficient=1.0)
 
-pixelization = al.Pixelization(
-    image_mesh=image_mesh, mesh=mesh, regularization=regularization
+pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
+
+lens = al.Galaxy(
+    redshift=0.5,
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.6,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+    ),
+    shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
+
+source = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+tracer = al.Tracer(galaxies=[lens, source])
+
+fit = al.FitImaging(
+    dataset=dataset,
+    tracer=tracer,
+    preloads=preloads,
+)
+
+fit_plotter = aplt.FitImagingPlotter(fit=fit)
+fit_plotter.subplot_fit()
+ffff
 
 """
 __Model__
@@ -227,9 +238,9 @@ We therefore compose our lens model using `Model` objects, which represent the g
 search our lens model is:
 
  - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
- 
+
  - The source galaxy's light uses an `Overlay` image-mesh with fixed resolution 30 x 30 pixels [0 parameters].
- 
+
  - The source-galaxy's light uses a `Delaunay` mesh [0 parameters].
 
  - This pixelization is regularized using a `Constant` scheme [1 parameter]. 
@@ -285,7 +296,7 @@ Search 2 is going to use two adaptive pixelization features that have not been u
  - The `AdaptiveBrightness` regularization scheme, which adapts the regularization coefficient to the source's
  unlensed morphology. This means that the source's brightest regions are regularized less than its faintest regions, 
  ensuring that the bright central regions of the source are not over-smoothed.
- 
+
 Both of these features produce a significantly better lens analysis and reconstruction of the source galaxy than
 other image-meshs and regularization schemes used throughout the workspace. Now you are familiar with them, you should
 never use anything else!
@@ -307,9 +318,9 @@ the second search our lens model is:
 
  - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` with fixed parameters from 
    search 1 [0 parameters].
- 
+
  - The source galaxy's light uses a `Hilbert` image-mesh with fixed resolution 1000 pixels [2 parameters].
- 
+
  - The source-galaxy's light uses a `Delaunay` mesh [0 parameters].
 
  - This pixelization is regularized using a `AdaptiveBrightnessSplit` scheme [2 parameter]. 
@@ -541,7 +552,6 @@ convolved_image_2d = masked_dataset.psf.convolved_image_from(
 array_2d_plotter = aplt.Array2DPlotter(array=convolved_image_2d)
 array_2d_plotter.figure_2d()
 
-
 lens_subtracted_image_2d = masked_dataset.data - convolved_image_2d
 
 array_2d_plotter = aplt.Array2DPlotter(array=lens_subtracted_image_2d)
@@ -663,7 +673,6 @@ mapper = al.Mapper(
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
 mapper_plotter.figure_2d(interpolate_to_uniform=False)
-
 
 visuals = aplt.Visuals2D(
     grid=mapper_grids.source_plane_data_grid,
@@ -889,7 +898,6 @@ print(fit_log_evidence)
 fit_plotter = aplt.FitImagingPlotter(fit=fit)
 fit_plotter.subplot_fit()
 
-
 """
 __Lens Modeling__
 
@@ -951,13 +959,13 @@ are described in additional notebooks found in this package. In brief, these des
 
  - **Sub-gridding**: Oversampling the image grid into a finer grid of sub-pixels, which are all individually 
  ray-traced to the source-plane and paired fractionally with each source pixel.
- 
+
  - **Source-plane Interpolation**: Using a Delaunay triangulation or Delaunay mesh with natural neighbor interpolation
  to pair each image (sub-)pixel to multiple source-plane pixels with interpolation weights.
- 
+
  - **Source Morphology Pixelization Adaption**: Adapting the pixelization such that is congregates source pixels around
  the source's brightest regions, as opposed to the magnification-based pixelization used here.
- 
+
  - **Luminosity Weighted Regularization**: Using an adaptive regularization coefficient which adapts the level of 
  regularization applied to the source based on its luminosity.
 """

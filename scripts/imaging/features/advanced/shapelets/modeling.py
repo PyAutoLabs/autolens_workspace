@@ -263,9 +263,7 @@ Create the `AnalysisImaging` object defining how the via Nautilus the model is f
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    settings_inversion=al.SettingsInversion(
-        use_w_tilde=False, use_positive_only_solver=False
-    ),
+    settings_inversion=al.SettingsInversion(use_positive_only_solver=False),
 )
 
 """

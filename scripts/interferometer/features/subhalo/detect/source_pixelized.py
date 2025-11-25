@@ -113,10 +113,7 @@ visibilities, you should update the options below accordingly.
 The script `autolens_workspace/*/interferometer/run_times.py` allows you to compute the run-time of an inversion
 for your interferometer dataset. It does this for all possible combinations of settings and therefore can tell you
 which settings give the fastest run times for your dataset.
-"""
-settings_inversion = al.SettingsInversion(use_linear_operators=False, use_w_tilde=False)
 
-"""
 We now plot the `Interferometer` object which is used to fit the lens model.
 """
 dataset_plotter = aplt.InterferometerPlotter(dataset=dataset)
@@ -234,7 +231,6 @@ analysis = al.AnalysisInterferometer(
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
     adapt_image_maker=al.AdaptImageMaker(result=source_lp_result),
-    settings_inversion=settings_inversion,
     use_jax=True,
 )
 
@@ -287,7 +283,6 @@ analysis = al.AnalysisInterferometer(
     positions_likelihood_list=[
         source_pix_result_1.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
-    settings_inversion=settings_inversion,
 )
 
 mass_result = slam_pipeline.mass_total.run(

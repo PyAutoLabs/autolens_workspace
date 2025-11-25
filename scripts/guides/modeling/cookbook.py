@@ -227,10 +227,10 @@ bulge.sersic_index = af.TruncatedGaussianPrior(
 )
 
 mass = af.Model(al.mp.Isothermal)
-mass.centre.centre_0 = af.GaussianPrior(
+mass.centre.centre_0 = af.TruncatedGaussianPrior(
     mean=0.0, sigma=0.1, lower_limit=-0.5, upper_limit=0.5
 )
-mass.centre.centre_1 = af.GaussianPrior(
+mass.centre.centre_1 = af.TruncatedGaussianPrior(
     mean=0.0, sigma=0.1, lower_limit=-0.5, upper_limit=0.5
 )
 mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=8.0)
@@ -247,7 +247,7 @@ lens = af.Model(
 bulge = af.Model(al.lp_linear.SersicCore)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
-source.effective_radius = af.GaussianPrior(
+source.effective_radius = af.TruncatedGaussianPrior(
     mean=0.1, sigma=0.05, lower_limit=0.0, upper_limit=1.0
 )
 

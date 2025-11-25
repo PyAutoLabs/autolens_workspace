@@ -278,7 +278,6 @@ If you don’t have a GPU locally, consider Google Colab which provides free GPU
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    settings_inversion=al.SettingsInversion(use_w_tilde=False),
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 

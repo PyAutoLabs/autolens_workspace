@@ -376,7 +376,7 @@ print(
     """
 )
 
-result = search.fit(model=model, analysis=analysis)
+result_list = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
 
 print("The search has finished run - you may now continue the notebook.")
 

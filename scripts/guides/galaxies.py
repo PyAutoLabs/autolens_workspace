@@ -463,44 +463,5 @@ plt.show()
 plt.close()
 
 """
-__One Dimensional Quantities__
-
-We have made two dimensional plots of galaxy images, grids and convergences.
-
-We can also compute all these quantities in 1D, for inspection and visualization.
-
-For example, from a light profile or galaxy we can compute its `image_1d`, which provides us with its image values
-(e.g. luminosity) as a function of radius.
-"""
-lens = tracer.planes[0][0]
-image_1d = lens.image_1d_from(grid=grid)
-print(image_1d)
-
-source_bulge = tracer.planes[1][0].bulge
-image_1d = source_bulge.image_1d_from(grid=grid)
-print(image_1d)
-
-"""
-How are these 1D quantities from an input 2D grid? 
-
-From the 2D grid a 1D grid is compute where:
-
- - The 1D grid of (x,) coordinates are centred on the galaxy or light profile and aligned with the major-axis. 
- - The 1D grid extends from this centre to the edge of the 2D grid.
- - The pixel-scale of the 2D grid defines the radial steps between each coordinate.
-
-If we input a larger 2D grid, with a smaller pixel scale, the 1D plot adjusts accordingly.
-"""
-grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.04)
-image_1d = lens.image_1d_from(grid=grid)
-print(image_1d.shape)
-print(image_1d)
-
-grid = al.Grid2D.uniform(shape_native=(200, 200), pixel_scales=0.02)
-image_1d = lens.image_1d_from(grid=grid)
-print(image_1d.shape)
-print(image_1d)
-
-"""
 Fin.
 """

@@ -8,10 +8,11 @@ The following example scripts illustrating lens modeling where:
 - ``modeling``: Lens modeling using a pixelized source reconstruction.
 - ``fit``: Fit a pixelized source and compute quantities like the residuals, chi squared and likelihood.
 - ``likelihood_function``: A step-by-step guide of the pixelized source likelihood function.
+- ``cpu_fast_modeling``: How to speed up pixelized source modeling using CPUs ,if you do not have access to modern GPUs.
 - ``chaining``: Using non-linear search chaining to fit a parametric source followed by a pixelized source, making modeling more efficient and robust.
 - ``adaptive``: Advanced pixelization features which adapt the mesh and regularization to the source being reconstructed.
-- ``delaunay``: Using a Delaunay mesh (instead of a rectangular mesh) for the source reconstruction.
 - ``slam``: Using the Source, Light and Mass (SLAM) pipeline to perform lens modeling using pixelized source reconstruction.
+- ``delaunay``: Using a Delaunay mesh (instead of a rectangular mesh) for the source reconstruction.
 
 Results
 -------

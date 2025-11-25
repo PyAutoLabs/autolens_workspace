@@ -113,13 +113,13 @@ the solver so that it finds the multiple images properly accounting for the mult
 positions_0 = solver.solve(
     tracer=tracer,
     source_plane_coordinate=source_galaxy_0.point_0.centre,
-    source_plane_redshift=source_galaxy_0.redshift,
+    plane_redshift=source_galaxy_0.redshift,
 )
 
 positions_1 = solver.solve(
     tracer=tracer,
     source_plane_coordinate=source_galaxy_1.point_1.centre,
-    source_plane_redshift=source_galaxy_1.redshift,
+    plane_redshift=source_galaxy_1.redshift,
 )
 
 """

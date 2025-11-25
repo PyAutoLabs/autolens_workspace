@@ -41,6 +41,29 @@ import autolens as al
 import autolens.plot as aplt
 
 """
+__JAX & Preloads__
+
+The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
+advance so it knows the shape of arrays it must compile functions for.
+"""
+image_mesh = None
+mesh_shape = (20, 20)
+total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
+
+total_linear_light_profiles = 0
+
+preloads = al.Preloads(
+    mapper_indices=al.mapper_indices_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        total_mapper_pixels=total_mapper_pixels,
+    ),
+    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        shape_native=mesh_shape,
+    ),
+)
+
+"""
 __Dataset__
 
 In order to perform a likelihood evaluation, we first load a dataset.
@@ -202,31 +225,6 @@ array_2d_plotter = aplt.Array2DPlotter(array=lens_subtracted_image_2d)
 array_2d_plotter.figure_2d()
 
 """
-__Source Pixel Centre Calculation__
-
-In order to reconstruct the source galaxy using a RectangularMagnification mesh, we need to determine the centres of the RectangularMagnification 
-source pixels.
-
-The image-mesh `Overlay` object computes the source-pixel centres in the image-plane (which are ray-traced to the 
-source-plane below). The source pixelization therefore adapts to the lens model magnification, because more
-source pixels will congregate in higher magnification regions.
-
-This calculation is performed by overlaying a uniform regular grid with an `pixelization_shape_2d` over the image
-mask and retaining all pixels that fall within the mask. This uses a `Grid2DSparse` object.
-
-"""
-image_plane_mesh_grid = pixelization.image_mesh.image_plane_mesh_grid_from(
-    mask=masked_dataset.mask,
-)
-
-"""
-Plotting this grid shows a sparse grid of (y,x) coordinates within the mask, which will form our source pixel centres.
-"""
-visuals = aplt.Visuals2D(grid=image_plane_mesh_grid)
-dataset_plotter = aplt.ImagingPlotter(dataset=masked_dataset, visuals_2d=visuals)
-dataset_plotter.figures_2d(data=True)
-
-"""
 __Ray Tracing__
 
 To perform lensing calculations we ray-trace every 2d (y,x) coordinate $\theta$ from the image-plane to its (y,x) 
@@ -234,12 +232,10 @@ source-plane coordinate $\beta$ using the summed deflection angles $\alpha$ of t
 
  $\beta = \theta - \alpha(\theta)$
 
-The likelihood function of a pixelized source reconstruction ray-traces two grids from the image-plane to the source-plane:
+The likelihood function of a pixelized source reconstruction ray-traces one grid from the image-plane to the source-plane:
 
  1) A 2D grid of (y,x) coordinates aligned with the imaging data's image-pixels.
  
- 2) The sparse 2D grid of (y,x) coordinates above which form the centres of the RectangularMagnification pixels.
-
 The function below computes the 2D deflection angles of the tracer's lens galaxies and subtracts them from the 
 image-plane 2D (y,x) coordinates $\theta$ of each grid, thus ray-tracing their coordinates to the source plane to 
 compute their $\beta$ values.
@@ -251,7 +247,7 @@ The source code gets quite complex when handling grids for a pixelization, but i
 the `TracerToInversion` objects.
 
 The plots at the bottom of this cell show the traced grids used by the source pixelization, showing
-how the RectangularMagnification mesh and traced image pixels are constructed.
+how the traced image pixels are constructed.
 """
 tracer_to_inversion = al.TracerToInversion(tracer=tracer, dataset=masked_dataset)
 
@@ -260,15 +256,9 @@ traced_grid_pixelization = tracer.traced_grid_2d_list_from(
     grid=masked_dataset.grids.pixelization
 )[-1]
 
-# This functions a bit weird - it returns a list of lists of ndarrays. Best not to worry about it for now!
-traced_mesh_grid = tracer_to_inversion.traced_mesh_grid_pg_list[-1][-1]
-
 mat_plot = aplt.MatPlot2D(axis=aplt.Axis(extent=[-1.5, 1.5, -1.5, 1.5]))
 
 grid_plotter = aplt.Grid2DPlotter(grid=traced_grid_pixelization, mat_plot_2d=mat_plot)
-grid_plotter.figure_2d()
-
-grid_plotter = aplt.Grid2DPlotter(grid=traced_mesh_grid, mat_plot_2d=mat_plot)
 grid_plotter.figure_2d()
 
 """
@@ -282,30 +272,30 @@ image-plane mask). This is detailed in **HowToLens chapter 4 tutorial 5** and fi
 """
 from autoarray.inversion.pixelization.border_relocator import BorderRelocator
 
-border_relocator = BorderRelocator(mask=dataset.mask, sub_size=1)
+border_relocator = BorderRelocator(mask=masked_dataset.mask, sub_size=1)
 
 relocated_grid = border_relocator.relocated_grid_from(grid=traced_grid_pixelization)
-
-relocated_mesh_grid = border_relocator.relocated_mesh_grid_from(
-    grid=traced_mesh_grid, mesh_grid=traced_mesh_grid
-)
 
 mat_plot = aplt.MatPlot2D(axis=aplt.Axis(extent=[-1.5, 1.5, -1.5, 1.5]))
 
 grid_plotter = aplt.Grid2DPlotter(grid=relocated_grid, mat_plot_2d=mat_plot)
 grid_plotter.figure_2d()
 
-grid_plotter = aplt.Grid2DPlotter(grid=relocated_mesh_grid, mat_plot_2d=mat_plot)
-grid_plotter.figure_2d()
-
 """
-__Rectangular Mesh__
+__Source Pixel Centre Calculation__
 
-The relocated pixelization grid is used to create the `Pixelization`'s RectangularMagnification mesh using the `scipy.spatial` library.
+In order to reconstruct the source galaxy using a RectangularMagnification mesh, we need to determine the centres of 
+the rectangular mesh's source pixels.
+
+We do this by overlying a rectangular grid on the relocated traced image-plane grid computed above.
+
+This distributes the rectangular mesh so it fully overlaps the region of the source-plane containing the traced 
+image-pixels without having edge pixels that extend beyond this region.
 """
-grid_Rectangular = al.Mesh2DRectangular(
-    values=relocated_mesh_grid,
+mesh_grid = al.Mesh2DRectangular.overlay_grid(
+    shape_native=mesh_shape, grid=al.Grid2DIrregular(relocated_grid)
 )
+
 
 """
 Plotting the RectangularMagnification mesh shows that the source-plane and been discretized into a grid of irregular RectangularMagnification pixels.
@@ -318,8 +308,7 @@ to show how each set of image-pixels fall within a RectangularMagnification pixe
 mapper_grids = al.MapperGrids(
     mask=mask,
     source_plane_data_grid=relocated_grid,
-    source_plane_mesh_grid=grid_Rectangular,
-    image_plane_mesh_grid=image_plane_mesh_grid,
+    source_plane_mesh_grid=mesh_grid,
 )
 
 mapper = al.Mapper(
@@ -329,7 +318,6 @@ mapper = al.Mapper(
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
 mapper_plotter.figure_2d(interpolate_to_uniform=False)
-
 
 visuals = aplt.Visuals2D(
     grid=mapper_grids.source_plane_data_grid,
@@ -419,7 +407,6 @@ It has dimensions `(total_image_pixels, total_source_pixels)`.
 (A number of inputs are not used for the `RectangularMagnification` pixelization and are expanded upon in the `features.ipynb`
 log likelihood guide notebook).
 """
-
 mapping_matrix = al.util.mapper.mapping_matrix_from(
     pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
     pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,  # unused for RectangularMagnification
@@ -469,7 +456,7 @@ dimensions `(total_image_pixels, total_source_pixels)`. It turns the values of z
 non-integer values which have been blurred by the PSF.
 """
 blurred_mapping_matrix = masked_dataset.psf.convolved_mapping_matrix_from(
-    mapping_matrix=mapping_matrix
+    mapping_matrix=mapping_matrix, mask=masked_dataset.mask
 )
 
 """
@@ -887,9 +874,7 @@ This process to perform a likelihood function evaluation is what is performed in
 fit = al.FitImaging(
     dataset=masked_dataset,
     tracer=tracer,
-    settings_inversion=al.SettingsInversion(
-        use_w_tilde=False, use_border_relocator=True
-    ),
+    settings_inversion=al.SettingsInversion(use_border_relocator=True),
 )
 fit_log_evidence = fit.log_evidence
 print(fit_log_evidence)
