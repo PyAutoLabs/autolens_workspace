@@ -101,6 +101,30 @@ positions = al.Grid2DIrregular(
     al.from_json(file_path=Path(dataset_path, "positions.json"))
 )
 
+
+"""
+__JAX & Preloads__
+
+The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
+advance so it knows the shape of arrays it must compile functions for.
+"""
+image_mesh = None
+mesh_shape = (20, 20)
+total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
+
+total_linear_light_profiles = 20
+
+preloads = al.Preloads(
+    mapper_indices=al.mapper_indices_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        total_mapper_pixels=total_mapper_pixels,
+    ),
+    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+        total_linear_light_profiles=total_linear_light_profiles,
+        shape_native=mesh_shape,
+    ),
+)
+
 """
 __Analysis__
 
@@ -127,7 +151,7 @@ lens = af.Model(
 pixelization = af.Model(
     al.Pixelization,
     image_mesh=None,
-    mesh=al.mesh.RectangularMagnification,
+    mesh=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
     regularization=al.reg.Constant,
 )
 
@@ -145,7 +169,7 @@ analysis_factor_list = []
 
 for analysis in analysis_list:
     model_analysis = model.copy()
-    model_analysis.galaxies.galaxy.pixelization.regularization.coefficient = (
+    model_analysis.galaxies.source.pixelization.regularization.coefficient = (
         af.LogUniformPrior(lower_limit=1e-4, upper_limit=1e4)
     )
 

@@ -275,7 +275,7 @@ of the image-plane chi-squared. However, the source-plane chi-squared is less ro
 and can lead to biased lens model results. If you are using the source-plane chi-squared, you should be aware of this
 and interpret the results with caution.
 
-Checkout the guide `autolens_workspace/*/guides/point_source.py` for more details and a full illustration of the
+Checkout the guide `autolens_workspace/*/point_source/fit` for more details and a full illustration of the
 different ways the chi-squared can be computed.
 
 __Analysis__

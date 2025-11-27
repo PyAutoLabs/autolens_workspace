@@ -239,7 +239,6 @@ class AnalysisImaging(af.Analysis):
         `log_likelihood_function` below will still work. You should ensure your `Analysis` class is written generically
         like this.        
         """
-
         tracer = al.Tracer(
             galaxies=instance.galaxies,
             cosmology=self.cosmology,
@@ -250,10 +249,7 @@ class AnalysisImaging(af.Analysis):
         tracer's model image to the data, using a chi-squared map to compute the residuals and likelihood.
         """
 
-        fit = al.FitImaging(
-            dataset=self.dataset,
-            tracer=tracer,
-        )
+        fit = al.FitImaging(dataset=self.dataset, tracer=tracer, xp=self._xp)
 
         """
         To get your custom analysis class, running quickly, you may not want to define your own `Fit` class but
@@ -403,6 +399,7 @@ class AnalysisShearCatalogue(af.Analysis):
         noise_map,
         grid,
         cosmology: al.cosmo.LensingCosmology = al.cosmo.Planck15(),
+        use_jax: bool = True,
     ):
         """
         Fits a lens model to a shear catalogue dataset via a non-linear search.
@@ -428,6 +425,8 @@ class AnalysisShearCatalogue(af.Analysis):
         cosmology
             The Cosmology assumed for this analysis.
         """
+        super().__init__(use_jax=use_jax)
+
         self.data = data
         self.noise_map = noise_map
         self.grid = grid

@@ -234,17 +234,19 @@ standard practice in point-source modeling.
 
 It also contains the name `point_0`, which is an important label, as explained in more detail below.
 """
+positions_data = al.Grid2DIrregular(
+    [
+        [-1.03884121e00, -1.03906250e00],
+        [4.41972024e-01, 1.60859375e00],
+        [1.17899573e00, 1.17890625e00],
+        [1.60930210e00, 4.41406250e-01],
+    ]
+)
+
+positions_noise_map = al.ArrayIrregular([0.05, 0.05, 0.05, 0.05])
+
 dataset = al.PointDataset(
-    name="point_0",
-    positions=al.Grid2DIrregular(
-        [
-            [-1.03884121e00, -1.03906250e00],
-            [4.41972024e-01, 1.60859375e00],
-            [1.17899573e00, 1.17890625e00],
-            [1.60930210e00, 4.41406250e-01],
-        ],
-    ),
-    positions_noise_map=al.ArrayIrregular([0.05, 0.05, 0.05, 0.05]),
+    name="point_0", positions=positions_data, positions_noise_map=positions_noise_map
 )
 
 """
@@ -420,6 +422,7 @@ The noise values of the fluxes are set to the square root of the flux, which is 
 is expected to dominate the noise of the fluxes.
 """
 fluxes_noise_map = al.ArrayIrregular(values=[np.sqrt(flux) for _ in range(len(fluxes))])
+
 """
 __Flux Point Dataset__
 
@@ -431,8 +434,8 @@ of a single point-source.
 """
 dataset = al.PointDataset(
     name="point_0",
-    positions=positions,
-    positions_noise_map=grid.pixel_scale,
+    positions=positions_data,
+    positions_noise_map=positions_noise_map,
     fluxes=fluxes,
     fluxes_noise_map=fluxes_noise_map,
 )
@@ -514,8 +517,8 @@ of a single point-source.
 """
 dataset = al.PointDataset(
     name="point_0",
-    positions=positions,
-    positions_noise_map=grid.pixel_scale,
+    positions=positions_data,
+    positions_noise_map=positions_noise_map,
     time_delays=time_delays,
     time_delays_noise_map=time_delays_noise_map,
 )
@@ -557,9 +560,6 @@ print(fit.time_delays.chi_squared_map)
 print(fit.time_delays.log_likelihood)
 
 """
-Checkout the guide `autolens_workspace/*/guides/point_source.py` for more details and a full illustration of the
-different ways the chi-squared can be computed.
-
 __New User Wrap Up__
 
 The `point_source` package of the `autolens_workspace` contains numerous example scripts for performing point source
