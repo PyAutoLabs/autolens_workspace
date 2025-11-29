@@ -18,23 +18,40 @@ to an individual data.
 
 Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
 
-__JAX GPU Run Times__
+__Run Time Overview__
 
-Pixelizations run time depends on how modern GPU hardware is. GPU acceleration only provides fast run times on
-modern GPUs with large amounts of VRAM, or when the number of pixels in the mesh are low (e.g. < 500 pixels).
+Pixelized inversions can be computed using either GPU acceleration via JAX or CPU acceleration via `numba`.
+The faster option depends on two crucial factors:
 
-This script's default setup uses an adaptive 20 x 20 rectangular mesh (400 pixels), which is relatively low resolution
-and may not provide the most accurate lens modeling results. On most GPU hardware it will run in ~ 10 minutes,
-however if your laptop has a large VRAM (GPU > 20 GB) or you can access a GPU cluster with better hardware you should use these
-to perform modeling with increased mesh resolution.
+#### **1. GPU VRAM Limitations**
+JAX only provides significant acceleration on GPUs with **large VRAM (≥16 GB)**.
+To avoid excessive VRAM usage, examples often restrict pixelization meshes (e.g. 20 × 20).
+On consumer GPUs with limited memory, **JAX may be slower than CPU execution**.
 
-__CPU Run Times__
+#### **2. Sparse Matrix Performance**
 
-JAX is not natively designed to provide significant CPU speed up, therefore users using CPUs to perform pixelization
-analysis will not see fast run times using JAX (unlike GPUs).
+Pixelized inversions require operations on **very large, highly sparse matrices**.
 
-The example `pixelization/cpu` shows how to set up a pixelization to use efficient CPU calculations via the library
-`numba`.
+- JAX currently lacks sparse-matrix support and must compute using **dense matrices**, which scale poorly.
+- PyAutoLens’s CPU implementation (via `numba`) fully exploits sparsity, providing large speed gains
+  at **high image resolution** (e.g. `pixel_scales <= 0.03`).
+
+As a result, CPU execution can outperform JAX even on powerful GPUs for high-resolution datasets.
+
+The example `pixelization/cpu_fast_modeling` shows how to set up a pixelization to use efficient CPU calculations
+via the library `numba`.
+
+__Rule of Thumb__
+
+For **low-resolution imaging** (for example, datasets with `pixel_scales > 0.05`), modeling is generally faster using
+**JAX with a GPU**, because the computations involve fewer sparse operations and do not require large amounts of VRAM.
+
+For **high-resolution imaging** (for example, `pixel_scales <= 0.03`), modeling can be faster using a **CPU with numba**
+and multiple cores. At high resolution, the linear algebra is dominated by sparse matrix operations, and the CPU
+implementation exploits sparsity more effectively, especially on systems with many CPU cores (e.g. HPC clusters).
+
+**Recommendation:** The best choice depends on your hardware and dataset, so it is always worth benchmarking both
+approaches (GPU+JAX vs CPU+numba) to determine which performs fastest for your case.
 
 __Contents__
 
@@ -216,11 +233,7 @@ inputs:
 
 - `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
   are forced to values of zero, a technique tests have shown are required to give accruate lens models.
-
-The `image_mesh` can be ignored, it is legacy API from previous versions which may or may not be reintegrated in future
-versions.
 """
-image_mesh = None
 mesh_shape = (20, 20)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
@@ -268,9 +281,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 mesh = af.Model(al.mesh.RectangularMagnification, shape=mesh_shape)
 regularization = af.Model(al.reg.Constant)
 
-pixelization = af.Model(
-    al.Pixelization, image_mesh=image_mesh, mesh=mesh, regularization=regularization
-)
+pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)
 
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
 

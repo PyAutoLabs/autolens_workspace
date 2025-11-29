@@ -208,7 +208,6 @@
 #     settings_search=settings_search,
 #     analysis=analysis,
 #     source_lp_result=source_lp_result,
-#     image_mesh=None,,
 #     mesh=al.mesh.RectangularMagnification,
 #     regularization=al.reg.AdaptiveBrightness,
 # )
@@ -225,7 +224,7 @@
 # """
 # analysis = al.AnalysisInterferometer(
 #     dataset=dataset,
-#     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+#     adapt_image_maker=al.AdaptImages(result=source_pix_result_1),
 #     positions_likelihood_list=[source_pix_results.last.positions_likelihood_from(
 #         factor=3.0, minimum_threshold=0.2,
 #     )],

@@ -92,7 +92,6 @@ __JAX & Preloads__
 The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
 advance so it knows the shape of arrays it must compile functions for.
 """
-image_mesh = None
 mesh_shape = (20, 20)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
@@ -138,7 +137,6 @@ lens = af.Model(
 
 pixelization = af.Model(
     al.Pixelization,
-    image_mesh=None,
     mesh=al.mesh.RectangularMagnification(shape=mesh_shape),
     regularization=al.reg.Constant,
 )
@@ -213,7 +211,6 @@ lens = result_1.instance.galaxies.lens
 
 pixelization = af.Model(
     al.Pixelization,
-    image_mesh=None,
     mesh=al.mesh.RectangularSource(shape=mesh_shape),
     regularization=al.reg.AdaptiveBrightness,
 )
@@ -233,17 +230,21 @@ We now create the analysis for the second search.
 
 __Adapt Images__
 
-When we create the analysis, we pass it an `adapt_image_maker`, which contains the lens subtracted image of the 
-source galaxy from the result of search 1. 
+When we create the analysis, we pass it an `adapt_images`, which contains a dictionary mapping each galaxy name 
+(e.g. galaxies.source) to the corresponding lens subtracted image of the source galaxy from the result of search 1. 
 
 This is telling the `Analysis` class to use the lens subtracted images of this fit to guide the `AdaptiveBrightness` 
 regularization for the source galaxy. Specifically, it uses the lens subtracted image of the lensed source in order 
 to adapt the location of the source-pixels to the source's brightest regions and lower the regularization coefficient in 
 these regions.
 """
+galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(result=result_1)
+
+adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
 analysis_2 = al.AnalysisImaging(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=result_1),
+    adapt_images=adapt_images,
     preloads=preloads,
 )
 
@@ -255,8 +256,6 @@ We now create the non-linear search and perform the model-fit using this model.
 search_2 = af.Nautilus(
     path_prefix=path_prefix, name="search[2]__adapt", unique_tag=dataset_name, n_live=75
 )
-
-analysis_2._adapt_images = analysis_2.adapt_images
 
 result_2 = search_2.fit(model=model_2, analysis=analysis_2)
 
@@ -300,7 +299,7 @@ search_3 = af.Nautilus(
 
 analysis_3 = al.AnalysisImaging(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=result_1),
+    adapt_images=adapt_images,
     preloads=preloads,
 )
 

@@ -242,11 +242,7 @@ inputs:
 
 - `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
   are forced to values of zero, a technique tests have shown are required to give accruate lens models.
-
-The `image_mesh` can be ignored, it is legacy API from previous versions which may or may not be reintegrated in future
-versions.
 """
-image_mesh = None
 mesh_shape = (20, 20)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
@@ -308,9 +304,16 @@ These examples required the user to manually input these positions.
 In SLaM, we automate this by computing the positions from the results of the SOURCE LP PIPELINE, which we can see
 below come from the `source_lp_result` object.
 """
+galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
+    result=source_lp_result
+)
+
+adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_lp_result),
+    adapt_images=adapt_images,
+    preloads=preloads,
     positions_likelihood_list=[
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
@@ -320,7 +323,6 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
-    image_mesh_init=None,
     mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
     regularization_init=al.reg.AdaptiveBrightness,
 )
@@ -342,9 +344,16 @@ Search 2 of the SOURCE PIX PIPELINE fits a lens model where:
 The `RectangularSource` mesh and `AdaptiveBrightness` regularization adapt the source pixels and regularization weights
 to the source's morphology. We therefore set up the adapt image using the result from SOURCE PIX PIPELINE search 1.
 """
+galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
+    result=source_pix_result_1
+)
+
+adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+    adapt_images=adapt_images,
+    preloads=preloads,
     use_jax=True,
 )
 
@@ -353,7 +362,6 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis=analysis,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    image_mesh=None,
     mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
     regularization=al.reg.AdaptiveBrightness,
 )
@@ -374,7 +382,9 @@ In this example it:
  - Carries the lens redshift and source redshift of the SOURCE PIPELINE through to the MASS PIPELINE [fixed values].   
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1)
+    dataset=dataset,
+    adapt_images=adapt_images,
+    preloads=preloads,
 )
 
 lens_bulge = al.model_util.mge_model_from(
@@ -411,9 +421,16 @@ In this example it:
 
  - Carries the lens redshift and source redshift of the SOURCE PIPELINE through to the MASS TOTAL PIPELINE.
 """
+galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
+    result=source_pix_result_1
+)
+
+adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+    adapt_images=adapt_images,
+    preloads=preloads,
     positions_likelihood_list=[
         source_pix_result_2.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],

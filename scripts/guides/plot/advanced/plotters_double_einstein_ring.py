@@ -146,7 +146,6 @@ We can also plot a `FitImaging` which uses a `Pixelization`.
 source_galaxy_0 = al.Galaxy(
     redshift=1.0,
     pixelization=al.Pixelization(
-        image_mesh=None,
         mesh=al.mesh.RectangularMagnification(),
         regularization=al.reg.Constant(coefficient=1.0),
     ),
@@ -155,7 +154,6 @@ source_galaxy_0 = al.Galaxy(
 source_galaxy_1 = al.Galaxy(
     redshift=2.0,
     pixelization=al.Pixelization(
-        image_mesh=None,
         mesh=al.mesh.RectangularMagnification(),
         regularization=al.reg.Constant(coefficient=1.0),
     ),

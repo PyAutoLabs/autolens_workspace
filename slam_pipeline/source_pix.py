@@ -8,9 +8,7 @@ def run_1(
     settings_search: af.SettingsSearch,
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
     source_lp_result: af.Result,
-    image_mesh_init: af.Model(al.AbstractImageMesh) = af.Model(al.image_mesh.Overlay),
     mesh_init: af.Model(al.AbstractMesh) = af.Model(al.mesh.Delaunay),
-    image_mesh_init_shape: Tuple[int, int] = (34, 34),
     regularization_init: af.Model(al.AbstractRegularization) = af.Model(
         al.reg.AdaptiveBrightnessSplit
     ),
@@ -39,12 +37,6 @@ def run_1(
         The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
     source_lp_result
         The results of the SLaM SOURCE LP PIPELINE which ran before this pipeline.
-    image_mesh_init
-        The image mesh, which defines how the mesh centres are computed in the image-plane, used by the pixelization
-        in the first search which initializes the source.
-    image_mesh_init_shape
-        The shape (e.g. resolution) of the image-mesh used in the initialization search (`search[1]`). This is only
-        used if the image-mesh has a `shape` parameter (e.g. `Overlay`).
     mesh_init
         The mesh, which defines how the source is reconstruction in the source-plane, used by the pixelization
         in the first search which initializes the source.
@@ -91,9 +83,6 @@ def run_1(
         mass = source_lp_result.instance.galaxies.lens.mass
         shear = source_lp_result.instance.galaxies.lens.shear
 
-    if image_mesh_init is not None:
-        image_mesh_init.shape = image_mesh_init_shape
-
     model = af.Collection(
         galaxies=af.Collection(
             lens=af.Model(
@@ -110,7 +99,6 @@ def run_1(
                 redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    image_mesh=image_mesh_init,
                     mesh=mesh_init,
                     regularization=regularization_init,
                 ),
@@ -137,12 +125,10 @@ def run_2(
     analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
     source_lp_result: af.Result,
     source_pix_result_1: af.Result,
-    image_mesh: af.Model(al.AbstractImageMesh) = af.Model(al.image_mesh.Hilbert),
     mesh: af.Model(al.AbstractMesh) = af.Model(al.mesh.Delaunay),
     regularization: af.Model(al.AbstractRegularization) = af.Model(
         al.reg.AdaptiveBrightnessSplit
     ),
-    image_mesh_pixels_fixed: Optional[int] = 1000,
     dataset_model: Optional[af.Model] = None,
 ) -> af.Result:
     """
@@ -172,9 +158,6 @@ def run_2(
     regularization
         The regularization, which places a smoothness prior on the source reconstruction, used by the pixelization
         in the final search which improves the source adaption.
-    image_mesh_pixels_fixed
-        The fixed number of pixels in the image-mesh, if an image-mesh with an input number of pixels is used
-        (e.g. `Hilbert`).
     extra_galaxies
         Additional extra galaxies containing light and mass profiles, which model nearby line of sight galaxies.
     dataset_model
@@ -209,7 +192,6 @@ def run_2(
                 redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    image_mesh=image_mesh,
                     mesh=mesh,
                     regularization=regularization,
                 ),
@@ -218,12 +200,6 @@ def run_2(
         extra_galaxies=source_pix_result_1.instance.extra_galaxies,
         dataset_model=dataset_model,
     )
-
-    if image_mesh_pixels_fixed is not None:
-        if hasattr(model.galaxies.source.pixelization.image_mesh, "pixels"):
-            model.galaxies.source.pixelization.image_mesh.pixels = (
-                image_mesh_pixels_fixed
-            )
 
     search = af.Nautilus(
         name="source_pix[2]",

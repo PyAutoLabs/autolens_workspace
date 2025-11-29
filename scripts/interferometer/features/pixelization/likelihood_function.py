@@ -52,7 +52,6 @@ __JAX & Preloads__
 The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
 advance so it knows the shape of arrays it must compile functions for.
 """
-image_mesh = None
 mesh_shape = (20, 20)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
@@ -175,7 +174,6 @@ The galaxy includes the RectangularMagnification mesh and constant regularizatio
 to reconstruct its star forming clumps.
 """
 pixelization = al.Pixelization(
-    image_mesh=None,
     mesh=al.mesh.RectangularMagnification(),
     regularization=al.reg.Constant(coefficient=1.0),
 )

@@ -352,7 +352,7 @@ If any code in this script is unclear, refer to the `guides/modeling/slam_start_
 # """
 # analysis = al.AnalysisImaging(
 #     dataset=dataset,
-#     adapt_image_maker=al.AdaptImageMaker(result=source_lp_result_1),
+#     adapt_image_maker=al.AdaptImages(result=source_lp_result_1),
 #     # positions_likelihood_list=[source_lp_result_2.positions_likelihood_from(
 #     #   factor=3.0, minimum_threshold=0.2
 #     # )],
@@ -398,7 +398,6 @@ If any code in this script is unclear, refer to the `guides/modeling/slam_start_
 #     analysis=analysis,
 #     source_lp_result=source_lp_result_1,
 #     extra_galaxies=extra_galaxies_fixed_centres,
-#     image_mesh_init = None,
 #     mesh_init=al.mesh.Voronoi,
 # )
 #
@@ -412,7 +411,7 @@ If any code in this script is unclear, refer to the `guides/modeling/slam_start_
 # """
 # analysis = al.AnalysisImaging(
 #     dataset=dataset,
-#     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+#     adapt_image_maker=al.AdaptImages(result=source_pix_result_1),
 #     # positions_likelihood_list=[source_pix_result_1.positions_likelihood_from(
 #     #    factor=3.0, minimum_threshold=0.2),
 #     positions_likelihood_list=[positions_likelihood],
@@ -426,7 +425,6 @@ If any code in this script is unclear, refer to the `guides/modeling/slam_start_
 #     source_lp_result=source_lp_result_1,
 #     source_pix_result_1=source_pix_result_1,
 #     extra_galaxies=source_pix_result_1.instance.extra_galaxies,
-#     image_mesh=None,,
 #     mesh=al.mesh.Voronoi,
 #     regularization=al.reg.AdaptiveBrightnessSplit,
 # )
@@ -441,7 +439,7 @@ If any code in this script is unclear, refer to the `guides/modeling/slam_start_
 # """
 #
 # analysis = al.AnalysisImaging(
-#     dataset=dataset, adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1)
+#     dataset=datasetadapt_images=adapt_images
 # )
 #
 # lens_bulge = al.model_util.mge_model_from(
@@ -533,7 +531,7 @@ If any code in this script is unclear, refer to the `guides/modeling/slam_start_
 # """
 # analysis = al.AnalysisImaging(
 #     dataset=dataset,
-#     adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+#     adapt_image_maker=al.AdaptImages(result=source_pix_result_1),
 #     # positions_likelihood_list=[source_pix_result_2.positions_likelihood_from(
 #     #    factor=3.0, minimum_threshold=0.2
 #     # )],

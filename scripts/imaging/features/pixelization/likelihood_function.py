@@ -46,7 +46,6 @@ __JAX & Preloads__
 The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
 advance so it knows the shape of arrays it must compile functions for.
 """
-image_mesh = None
 mesh_shape = (20, 20)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
@@ -170,7 +169,6 @@ irregularities and asymmetries in the source's surface brightness.
 A constant regularization scheme is applied which applies a smoothness prior on the reconstruction. 
 """
 pixelization = al.Pixelization(
-    image_mesh=None,
     mesh=al.mesh.RectangularMagnification(),
     regularization=al.reg.Constant(coefficient=1.0),
 )

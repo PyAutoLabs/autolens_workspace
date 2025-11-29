@@ -399,9 +399,10 @@ search = af.Nautilus(
     n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
     iterations_per_full_update=20000,  # Every N iterations the results are written to hard-disk for inspection.
 )
+
 analysis = al.AnalysisPoint(
     dataset=dataset,
-    solver=solver,
+    solver=solver_jax,
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 

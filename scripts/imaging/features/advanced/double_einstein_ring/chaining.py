@@ -661,11 +661,7 @@ inputs:
 
 - `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
   are forced to values of zero, a technique tests have shown are required to give accruate lens models.
-
-The `image_mesh` can be ignored, it is legacy API from previous versions which may or may not be reintegrated in future
-versions.
 """
-image_mesh = None
 mesh_shape = (20, 20)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
@@ -704,7 +700,6 @@ source_0 = af.Model(
     mass=result_4.instance.galaxies.source_0.mass,
     pixelization=af.Model(
         al.Pixelization,
-        image_mesh=None,
         mesh=al.mesh.RectangularMagnification(shape=mesh_shape),
         regularization=al.reg.Constant,
     ),
@@ -714,7 +709,6 @@ source_1 = af.Model(
     redshift=2.0,
     pixelization=af.Model(
         al.Pixelization,
-        image_mesh=None,
         mesh=al.mesh.RectangularMagnification(shape=mesh_shape),
         regularization=al.reg.Constant,
     ),

@@ -165,7 +165,6 @@ Set up the `Tracer` used to profile each method, which:
 lens_galaxy = al.Galaxy(redshift=0.5)
 
 pixelization = al.Pixelization(
-    image_mesh=None,
     mesh=al.mesh.RectangularMagnification(),
     regularization=al.reg.Constant(coefficient=1.0),
 )

@@ -183,11 +183,7 @@ inputs:
 
 - `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
   are forced to values of zero, a technique tests have shown are required to give accruate lens models.
-
-The `image_mesh` can be ignored, it is legacy API from previous versions which may or may not be reintegrated in future
-versions.
 """
-image_mesh = None
 mesh_shape = (20, 20)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
@@ -210,14 +206,9 @@ __Pixelization__
 We create a `Pixelization` object to perform the pixelized source reconstruction, which is made up of three
 components:
 
-- `image_mesh:`The coordinates of the mesh used for the pixelization need to be defined. The way this is performed
-depends on pixelization used. In this example, we define the source pixel centers by overlaying a uniform regular grid
-in the image-plane and ray-tracing these coordinates to the source-plane. Where they land then make up the coordinates
-used by the mesh.
-
 - `mesh:` Different types of mesh can be used to perform the source reconstruction, where the mesh changes the
-details of how the source is reconstructed (e.g. interpolation weights). In this exmaple, we use a `Voronoi` mesh,
-where the centres computed via the `image_mesh` are the vertexes of every `Voronoi` triangle.
+details of how the source is reconstructed (e.g. interpolation weights). In this exmaple, we use a `Rectangular` mesh,
+where the centres computed by overlayiong a rectangular mesh over the source plane.
 
 - `regularization:` A pixelization uses many pixels to reconstructed the source, which will often lead to over fitting
 of the noise in the data and an unrealistically complex and strucutred source. Regularization smooths the source
@@ -227,9 +218,7 @@ large flux differences.
 mesh = al.mesh.RectangularMagnification(shape=mesh_shape)
 regularization = al.reg.Constant(coefficient=1.0)
 
-pixelization = al.Pixelization(
-    image_mesh=image_mesh, mesh=mesh, regularization=regularization
-)
+pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
 
 """
 __Fit__

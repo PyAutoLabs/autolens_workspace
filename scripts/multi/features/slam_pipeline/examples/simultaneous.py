@@ -184,7 +184,6 @@ __JAX & Preloads__
 The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
 advance so it knows the shape of arrays it must compile functions for.
 """
-image_mesh = None
 mesh_shape = (20, 20)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
@@ -215,21 +214,30 @@ positions_likelihood = source_lp_result.positions_likelihood_from(
     factor=3.0, minimum_threshold=0.2
 )
 
+adapt_images_list = []
+
+for result in source_lp_result:
+
+    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(result=result)
+    adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
+    adapt_images_list.append(adapt_images)
+
 analysis_list = [
     al.AnalysisImaging(
         dataset=result.max_log_likelihood_fit.dataset,
-        adapt_image_maker=al.AdaptImageMaker(result=result),
+        adapt_images=adapt_images,
         positions_likelihood_list=[positions_likelihood],
+        preloads=preloads,
         use_jax=True,
     )
-    for result in source_lp_result
+    for result, adapt_images in zip(source_lp_result, adapt_images_list)
 ]
 
 source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis_list=analysis_list,
     source_lp_result=source_lp_result,
-    image_mesh_init=None,
     mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
     regularization_init=al.reg.AdaptiveBrightness,
     dataset_model=af.Model(al.DatasetModel),
@@ -241,13 +249,23 @@ __SOURCE PIX PIPELINE 2 (with lens light)__
 The SOURCE PIX PIPELINE is identical to the `slam_start_here.ipynb` example, except with the same changes
 as the SOURCE PIX PIPELINE 1.
 """
+adapt_images_list = []
+
+for result in source_pix_result_1:
+
+    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(result=result)
+    adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
+    adapt_images_list.append(adapt_images)
+
 analysis_list = [
     al.AnalysisImaging(
         dataset=result.max_log_likelihood_fit.dataset,
-        adapt_image_maker=al.AdaptImageMaker(result=result),
+        adapt_images=adapt_images,
+        preloads=preloads,
         use_jax=True,
     )
-    for result in source_pix_result_1
+    for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
 ]
 
 source_pix_result_2 = slam_pipeline.source_pix.run_2(
@@ -255,7 +273,6 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis_list=analysis_list,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    image_mesh=None,
     mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
     regularization=al.reg.AdaptiveBrightness,
     dataset_model=af.Model(al.DatasetModel),
@@ -269,10 +286,11 @@ The LIGHT LP PIPELINE is setup identically to the `slam_start_here.ipynb` exampl
 analysis_list = [
     al.AnalysisImaging(
         dataset=result.max_log_likelihood_fit.dataset,
-        adapt_image_maker=al.AdaptImageMaker(result=result),
+        adapt_images=adapt_images,
+        preloads=preloads,
         raise_inversion_positions_likelihood_exception=False,
     )
-    for result in source_pix_result_1
+    for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
 ]
 
 lens_bulge = al.model_util.mge_model_from(
@@ -304,10 +322,11 @@ positions_likelihood = source_pix_result_1[0].positions_likelihood_from(
 analysis_list = [
     al.AnalysisImaging(
         dataset=result.max_log_likelihood_fit.dataset,
-        adapt_image_maker=al.AdaptImageMaker(result=result),
+        adapt_images=adapt_images,
+        preloads=preloads,
         positions_likelihood_list=[positions_likelihood],
     )
-    for result in source_pix_result_1
+    for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
 ]
 
 mass_result = slam_pipeline.mass_total.run(
@@ -328,10 +347,11 @@ The SUBHALO pipeline is described in `imaging/features/advanced/subhalo`.
 analysis_list = [
     al.AnalysisImaging(
         dataset=result.max_log_likelihood_fit.dataset,
-        adapt_image_maker=al.AdaptImageMaker(result=result),
+        adapt_images=adapt_images,
+        preloads=preloads,
         positions_likelihood_list=[positions_likelihood],
     )
-    for result in source_pix_result_1
+    for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
 ]
 
 subhalo_result_1 = slam_pipeline.subhalo.detection.run_1_no_subhalo(

@@ -141,7 +141,6 @@ __JAX & Preloads__
 The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
 advance so it knows the shape of arrays it must compile functions for.
 """
-image_mesh = None
 mesh_shape = (20, 20)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
@@ -163,9 +162,15 @@ __SOURCE PIX PIPELINE__
 
 The SOURCE PIX PIPELINE is identical to the `slam_start_here.ipynb` example.
 """
+galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
+    result=source_lp_result
+)
+
+adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_lp_result),
+    adapt_images=adapt_images,
     positions_likelihood_list=[
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
@@ -175,7 +180,6 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
-    image_mesh_init=None,
     mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
     regularization=al.reg.AdaptiveBrightness,
 )
@@ -185,9 +189,15 @@ __SOURCE PIX PIPELINE 2__
 
 The SOURCE PIX PIPELINE 2 is identical to the `slam_start_here.ipynb` example.
 """
+galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
+    result=source_pix_result_1
+)
+
+adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+    adapt_images=adapt_images,
     use_jax=True,
 )
 
@@ -196,7 +206,6 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis=analysis,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    image_mesh=None,
     mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
     regularization=al.reg.AdaptiveBrightness,
 )
@@ -207,7 +216,9 @@ __LIGHT LP PIPELINE__
 The LIGHT LP PIPELINE is setup identically to the `slam_start_here.ipynb` example.
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1)
+    dataset=dataset,
+    adapt_images=adapt_images,
+    use_jax=True,
 )
 
 lens_bulge = al.model_util.mge_model_from(
@@ -233,10 +244,11 @@ The MASS TOTAL PIPELINE is identical to the `slam_start_here.ipynb` example.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+    adapt_images=adapt_images,
     positions_likelihood_list=[
         source_pix_result_2.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
+    use_jax=True,
 )
 
 mass_result = slam_pipeline.mass_total.run(

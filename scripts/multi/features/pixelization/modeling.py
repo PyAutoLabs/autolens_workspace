@@ -108,11 +108,10 @@ __JAX & Preloads__
 The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
 advance so it knows the shape of arrays it must compile functions for.
 """
-image_mesh = None
 mesh_shape = (20, 20)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
-total_linear_light_profiles = 20
+total_linear_light_profiles = 0
 
 preloads = al.Preloads(
     mapper_indices=al.mapper_indices_from(
@@ -130,7 +129,9 @@ __Analysis__
 
 We create an `Analysis` object for every dataset.
 """
-analysis_list = [al.AnalysisImaging(dataset=dataset) for dataset in dataset_list]
+analysis_list = [
+    al.AnalysisImaging(dataset=dataset, preloads=preloads) for dataset in dataset_list
+]
 
 """
 __Model__
@@ -150,7 +151,6 @@ lens = af.Model(
 
 pixelization = af.Model(
     al.Pixelization,
-    image_mesh=None,
     mesh=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
     regularization=al.reg.Constant,
 )
@@ -191,7 +191,7 @@ The model is fitted to the data using the nested sampling algorithm Nautilus (se
 full description).
 """
 search = af.Nautilus(
-    path_prefix=Path("multi", "modeling"),
+    path_prefix=Path("multi") / "features",
     name="pixelized",
     unique_tag=dataset_name,
     n_live=100,

@@ -561,7 +561,7 @@ def run(
     psf: al.Kernel2D,
     mass_result: af.Result,
     subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
-    adapt_images: Optional[al.AdaptImageMaker] = None,
+    adapt_images: Optional[al.AdaptImages] = None,
     grid_dimension_arcsec: float = 3.0,
     number_of_steps: Union[Tuple[int], int] = 5,
     batch_range: Tuple[int, int] = None,

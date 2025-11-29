@@ -158,11 +158,7 @@ inputs:
 
 - `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
   are forced to values of zero, a technique tests have shown are required to give accruate lens models.
-
-The `image_mesh` can be ignored, it is legacy API from previous versions which may or may not be reintegrated in future
-versions.
 """
-image_mesh = None
 mesh_shape = (20, 20)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
@@ -185,12 +181,19 @@ __SOURCE PIX PIPELINE__
 
 The SOURCE PIX PIPELINE is identical to the `slam_start_here.ipynb` example.
 """
+galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
+    result=source_lp_result
+)
+
+adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
+    adapt_images=adapt_images,
     positions_likelihood_list=[
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
-    adapt_image_maker=al.AdaptImageMaker(result=source_lp_result),
+    preloads=preloads,
     settings_inversion=settings_inversion,
 )
 
@@ -198,7 +201,6 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
-    image_mesh_init=None,
     mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
     regularization=al.reg.AdaptiveBrightness,
 )
@@ -211,9 +213,16 @@ The SOURCE PIX PIPELINE 2 is identical to the `slam_start_here.ipynb` example.
 Note that the LIGHT PIPELINE follows the SOURCE PIX PIPELINE in the `slam_start_here.ipynb` example is not included
 in this script, given the lens light is not present in the data.
 """
+galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
+    result=source_pix_result_1
+)
+
+adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+    adapt_images=adapt_images,
+    preloads=preloads,
 )
 
 source_pix_result_2 = slam_pipeline.source_pix.run_2(
@@ -221,7 +230,6 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis=analysis,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    image_mesh=None,
     mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
     regularization=al.reg.AdaptiveBrightness,
 )
@@ -234,7 +242,8 @@ now passed in as None to omit the lens light from the model.
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    adapt_image_maker=al.AdaptImageMaker(result=source_pix_result_1),
+    adapt_images=adapt_images,
+    preloads=preloads,
     positions_likelihood_list=[
         source_pix_result_1.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],

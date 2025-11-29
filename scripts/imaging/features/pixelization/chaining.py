@@ -167,7 +167,6 @@ __JAX & Preloads__
 The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
 advance so it knows the shape of arrays it must compile functions for.
 """
-image_mesh = None
 mesh_shape = (20, 20)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
@@ -204,11 +203,8 @@ does not use any priors from the result of search 1.
 """
 lens = result_1.model.galaxies.lens
 
-image_mesh = None
-
 pixelization = af.Model(
     al.Pixelization,
-    image_mesh=image_mesh,
     mesh=al.mesh.RectangularMagnification,
     regularization=al.reg.Constant,
 )
