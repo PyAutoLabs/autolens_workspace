@@ -17,7 +17,7 @@ which is not currently optimized in JAX.
 
 __Run Time Overview__
 
-Pixelized inversions can be computed using either GPU acceleration via JAX or CPU acceleration via `numba`.
+Pixelized source reconstructions can be computed using either GPU acceleration via JAX or CPU acceleration via `numba`.
 The faster option depends on two crucial factors:
 
 #### **1. GPU VRAM Limitations**
@@ -27,7 +27,7 @@ On consumer GPUs with limited memory, **JAX may be slower than CPU execution**.
 
 #### **2. Sparse Matrix Performance**
 
-Pixelized inversions require operations on **very large, highly sparse matrices**.
+Pixelized source reconstructions require operations on **very large, highly sparse matrices**.
 
 - JAX currently lacks sparse-matrix support and must compute using **dense matrices**, which scale poorly.
 - PyAutoLens’s CPU implementation (via `numba`) fully exploits sparsity, providing large speed gains
