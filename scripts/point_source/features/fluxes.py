@@ -153,7 +153,6 @@ search = af.Nautilus(
     name="fluxes",
     unique_tag=dataset_name,
     n_live=150,
-    number_of_cores=4,
 )
 
 """
@@ -175,19 +174,7 @@ For the positions-only fit, the run time of the log likelihood function was ~0.0
 Evaluating the time delays does not increase this much, with a value of around ~0.01 seconds still expected.
 
 Overall modeling run times should therefore be around 20 minutes on CPU, under 5 minutes on GPU.
-"""
-run_time_dict, info_dict = analysis.profile_log_likelihood_function(
-    instance=model.random_instance()
-)
 
-print(f"Log Likelihood Evaluation Time (second) = {run_time_dict['fit_time']}")
-print(
-    "Estimated Run Time Upper Limit (seconds) = ",
-    (run_time_dict["fit_time"] * model.total_free_parameters * 10000)
-    / search.number_of_cores,
-)
-
-"""
 __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder

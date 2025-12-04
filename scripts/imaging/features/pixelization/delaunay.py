@@ -253,7 +253,7 @@ using adaptive triangular pixels.
 """
 fit_plotter = aplt.FitImagingPlotter(fit=fit)
 fit_plotter.subplot_fit()
-
+f
 """
 __Model__
 
@@ -634,7 +634,7 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     analysis=analysis,
     source_lp_result=source_lp_result,
     mesh_init=al.mesh.Delaunay(),
-    regularization=al.reg.AdaptiveBrightness,
+    regularization=al.reg.AdaptiveBrightnessSplit,
 )
 
 """
@@ -700,7 +700,7 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
     mesh=al.mesh.Delaunay(),
-    regularization=al.reg.AdaptiveBrightness,
+    regularization=al.reg.AdaptiveBrightnessSplit,
 )
 
 """

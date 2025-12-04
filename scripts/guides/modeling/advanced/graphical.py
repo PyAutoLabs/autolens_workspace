@@ -198,7 +198,7 @@ consists of:
 
 Together, the nodes and links define the full, coupled model that is fit across all datasets simultaneously.
 """
-factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=False)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 """
 The fit will use the factor graph's `global_prior_model`, which uses the models contained in every analysis factor 

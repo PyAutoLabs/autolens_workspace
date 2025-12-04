@@ -268,7 +268,6 @@ search = af.Nautilus(
     name="deblending",
     unique_tag=dataset_name,
     n_live=400,
-    number_of_cores=4,
 )
 
 """

@@ -74,7 +74,7 @@ __Mask__
 
 Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
 """
-masked_imaging_list = []
+masked_dataset_list = []
 
 for dataset in dataset_list:
     mask = al.Mask2D.circular(
@@ -92,7 +92,9 @@ for dataset in dataset_list:
 
     dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
 
-    masked_imaging_list.append(dataset)
+    masked_dataset_list.append(dataset)
+
+dataset_list = masked_dataset_list
 
 """
 __Analysis__
@@ -101,8 +103,8 @@ For each dataset we now create a corresponding `AnalysisImaging` class, as we ar
 """
 analysis_list = []
 
-for masked_dataset in masked_imaging_list:
-    analysis = al.AnalysisImaging(dataset=masked_dataset)
+for dataset in dataset_list:
+    analysis = al.AnalysisImaging(dataset=dataset)
 
     analysis_list.append(analysis)
 
@@ -162,6 +164,7 @@ hierarchical_factor = af.HierarchicalFactor(
     sigma=af.TruncatedGaussianPrior(
         mean=0.5, sigma=0.5, lower_limit=0.0, upper_limit=100.0
     ),
+    use_jax=True
 )
 
 """
@@ -185,7 +188,9 @@ We now create the factor graph for this model, using the list of `AnalysisFactor
 Again, this code is described in detail in the `guides/modeling/advanced/graphical` example.
 """
 factor_graph = af.FactorGraphModel(
-    *analysis_factor_list, hierarchical_factor, use_jax=True
+    *analysis_factor_list,
+    hierarchical_factor,
+    use_jax=True
 )
 
 """

@@ -153,7 +153,6 @@ search = af.Nautilus(
     name="time_delays",
     unique_tag=dataset_name,
     n_live=100,
-    number_of_cores=4,
 )
 
 """
@@ -239,7 +238,6 @@ search = af.Nautilus(
     name="time_delays_hubble_constant2",
     unique_tag=dataset_name,
     n_live=150,
-    number_of_cores=4,
 )
 
 """
