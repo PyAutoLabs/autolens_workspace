@@ -33,18 +33,17 @@ approach to pixelization that may work better for certain datasets.
 
 __JAX + GPU__
 
-Generating a Delaunay mesh currently does not support JAX and GPU acceleration. This script therefore runs exclusively
-using CPU, and follows the fast CPU method described in example `imaging/features/pixelization/cpu_fast_modeling`.
+Generating a Delaunay mesh currently supports JAX and GPU acceleration, however certain operations (e.g.
+generating the Delaunay triangulation itself) do not run on the GPU because they cannot be easily
+converted to JAX.
 
-You should read this script before using the Delaunay mesh for your own modeling, but the key point are:
+Instead, JAX sends them to a CPU, runs them there, and then sends the results back to the GPU. This process is
+very efficient, because these operations run very fast on a CPU and the data being sent back and forth is small.
+Current benchmarking suggests the Delaunay runs less than twice as long as the same fit using a rectangular mesh,
+but scientfically offers better results in many cases.
 
-- The library `numba` must be installed for fast likelihood evaluations.
-
-- Python multiprocessing is used to parallelize model-fits over many CPU cores.
-
-- CPU pixelization calculations fully exploit sparsity and therefore for high resolution datasets (around
-a `pixel_scale` of 0.03" or below) begin to run as fast or faster than GPU computations using JAX. They also use
-significantly less memory and are therefore able to model datasets that are infeasible using JAX.
+If you do want to run only on CPU, you can use fast CPU method described in
+example `imaging/features/pixelization/cpu_fast_modeling` with the Delaunay mesh.
 """
 
 try:
@@ -133,14 +132,6 @@ positions = al.Grid2DIrregular(
 )
 
 """
-__W_Tilde__
-
-Use the `w_tilde` function to pre-compute matrices which enable fast linear algebra for pixelized source by
-exploiting sparsity, as described in the `imaging/features/pixelization/cpu_fast_modeling.py` example.
-"""
-dataset = dataset.apply_w_tilde()
-
-"""
 __JAX & Preloads__
 
 The example in `autolens_workspace/*/imaging/features/pixelization/modeling` explains why JAX requires certain
@@ -183,7 +174,7 @@ image_plane_mesh_grid_edge_pixels = 30
 image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
     image_plane_mesh_grid=image_plane_mesh_grid,
     centre=mask.mask_centre,
-    radius=3.0 + mask.pixel_scale / 2.0,
+    radius=mask_radius + mask.pixel_scale / 2.0,
     n_points=image_plane_mesh_grid_edge_pixels,
 )
 
@@ -218,7 +209,7 @@ preloads with an `image_plane_mesh_grid` and the `Delaunay` mesh changes the
 calculation internally.
 """
 mesh = al.mesh.Delaunay()
-regularization = al.reg.Constant(coefficient=1.0)
+regularization = al.reg.ConstantSplit(coefficient=1.0)
 
 pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
 
@@ -253,7 +244,7 @@ using adaptive triangular pixels.
 """
 fit_plotter = aplt.FitImagingPlotter(fit=fit)
 fit_plotter.subplot_fit()
-f
+
 """
 __Model__
 
@@ -279,8 +270,6 @@ adapt_images = al.AdaptImages(
 )
 
 """
-, the `number_of_cores` is specified in the non-linear search.
-
 We therefore compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In the first
 search our lens model is:
 
@@ -301,7 +290,7 @@ lens = af.Model(
 pixelization = af.Model(
     al.Pixelization,
     mesh=al.mesh.Delaunay(),
-    regularization=al.reg.Constant,
+    regularization=al.reg.ConstantSplit,
 )
 
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
@@ -313,7 +302,6 @@ search_1 = af.Nautilus(
     name="delaunay",
     unique_tag=dataset_name,
     n_live=100,
-    number_of_cores=2,
 )
 
 analysis_1 = al.AnalysisImaging(
@@ -321,7 +309,6 @@ analysis_1 = al.AnalysisImaging(
     adapt_images=adapt_images,
     positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
     preloads=preloads,
-    use_jax=False,
 )
 
 result_1 = search_1.fit(model=model_1, analysis=analysis_1)
@@ -361,10 +348,22 @@ image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
 
 image_plane_mesh_grid_edge_pixels = 30
 
+"""
+__Image Plane Mesh Grid Edge Points__
+
+What the code does:
+When we developed the MGE lens light model, we learned that the edge pixels of the source reconstruction may reconstruct a faint amount of light that is from the edge of the lens galaxy emission rather than genuinely part of the source.
+To stop this, we force all source pixels at the edge of the mask to be reconstructed with flux values of 0, which in turn means that the lens light model then correct goes to a slightly brighter solution which correctly fits its outskirts.
+Pre-JAX, we could determine edge pixels inside the likelihood function and zero them, but JAX's static array shapes criteria means you have to assign these pixels before modeling. For the rectangular mesh, there is a line of code which passes Preloads the edge pixels of all rectangular pixels.
+For image-mesh's and delaunay, what the code abovre does is add a circle of source-pixels to the image mesh which are the pixels to be zeroed. So, you code probably added image_plane_mesh_grid_edge_pixels=30 extra source pixels in the image plane for this purpose.
+The bug is that it was adding them at an image-plane radius=3.0 + 0.05, instead of radius = mask_radius + 0.05.
+10:31
+This perfectly explains one of the very strange results we saw where there was caustics being formed at the outskirts of the source plane, basically the sources pixels a bit further "inside" the source plane were being zero'd, doing all sorts of horrible things to the results source reconstruction (but surprisingly not enough to be really-obviously-broken-by-eye
+"""
 image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
     image_plane_mesh_grid=image_plane_mesh_grid,
     centre=mask.mask_centre,
-    radius=3.0 + mask.pixel_scale / 2.0,
+    radius=mask_radius + mask.pixel_scale / 2.0,
     n_points=image_plane_mesh_grid_edge_pixels,
 )
 
@@ -430,7 +429,9 @@ __Analysis (Search 2)__
 We now create the analysis for the second search.
 """
 analysis_2 = al.AnalysisImaging(
-    dataset=dataset, adapt_images=adapt_images, preloads=preloads, use_jax=False
+    dataset=dataset,
+    adapt_images=adapt_images,
+    preloads=preloads,
 )
 
 """
@@ -443,7 +444,6 @@ search_2 = af.Nautilus(
     name="delaunay_adapt",
     unique_tag=dataset_name,
     n_live=75,
-    number_of_cores=2,  # CPU specific code
 )
 
 result_2 = search_2.fit(model=model_2, analysis=analysis_2)
@@ -502,8 +502,6 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
 
 dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
 
-dataset = dataset.apply_w_tilde()
-
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
@@ -517,7 +515,6 @@ settings_search = af.SettingsSearch(
     unique_tag=dataset_name,
     info=None,
     session=None,
-    number_of_cores=2,  # CPU specific code
 )
 
 """
@@ -534,7 +531,7 @@ __SOURCE LP PIPELINE__
 
 The SOURCE LP PIPELINE is identical to the `slam_start_here.ipynb` example.
 """
-analysis = al.AnalysisImaging(dataset=dataset, use_jax=False)
+analysis = al.AnalysisImaging(dataset=dataset)
 
 # Lens Light
 
@@ -581,7 +578,7 @@ image_plane_mesh_grid_edge_pixels = 30
 image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
     image_plane_mesh_grid=image_plane_mesh_grid,
     centre=mask.mask_centre,
-    radius=3.0 + mask.pixel_scale / 2.0,
+    radius=mask_radius + mask.pixel_scale / 2.0,
     n_points=image_plane_mesh_grid_edge_pixels,
 )
 
@@ -626,7 +623,6 @@ analysis = al.AnalysisImaging(
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
     preloads=preloads,
-    use_jax=False,
 )
 
 source_pix_result_1 = slam_pipeline.source_pix.run_1(
@@ -660,7 +656,7 @@ image_plane_mesh_grid_edge_pixels = 30
 image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
     image_plane_mesh_grid=image_plane_mesh_grid,
     centre=mask.mask_centre,
-    radius=3.0 + mask.pixel_scale / 2.0,
+    radius=mask_radius + mask.pixel_scale / 2.0,
     n_points=image_plane_mesh_grid_edge_pixels,
 )
 
@@ -691,7 +687,6 @@ analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
     preloads=preloads,
-    use_jax=False,
 )
 
 source_pix_result_2 = slam_pipeline.source_pix.run_2(
@@ -712,7 +707,6 @@ analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
     preloads=preloads,
-    use_jax=False,
 )
 
 lens_bulge = al.model_util.mge_model_from(
@@ -743,7 +737,6 @@ analysis = al.AnalysisImaging(
         source_pix_result_2.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
     preloads=preloads,
-    use_jax=False,
 )
 
 mass_result = slam_pipeline.mass_total.run(
@@ -838,7 +831,7 @@ These are then ray-traced to the source-plane and are used as the vertexes of th
 pixelization = al.Pixelization(
     image_mesh=al.image_mesh.Overlay(shape=(30, 30)),  # Specific to Delaunay
     mesh=al.mesh.Delaunay(),
-    regularization=al.reg.Constant(coefficient=1.0),
+    regularization=al.reg.ConstantSplit(coefficient=1.0),
 )
 
 source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
@@ -963,6 +956,7 @@ The relocated mesh grid is used to create the `Pixelization`'s Delaunay mesh usi
 """
 grid_delaunay = al.Mesh2DDelaunay(
     values=relocated_mesh_grid,
+    source_plane_data_grid_over_sampled=relocated_grid.over_sampled,
 )
 
 """

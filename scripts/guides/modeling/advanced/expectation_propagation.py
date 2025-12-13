@@ -3,11 +3,11 @@ Modeling: Expectation Propagation
 =================================
 
 In the `hierarchical` example, we fitted graphical models to a dataset comprising 3 images of strong lenses, which had a
-hierarchical parameter, the power-law `slope`. This provides the basis of composing and fitting complex graphical 
+hierarchical parameter, the power-law `slope`. This provides the basis of composing and fitting complex graphical
 models to large datasets.
 
-The challenge is that we will soon hit a ceiling scaling these graphical models up to extremely large datasets. 
-One would soon find that the parameter space is too complex to sample, and computational limits would ultimately 
+The challenge is that we will soon hit a ceiling scaling these graphical models up to extremely large datasets.
+One would soon find that the parameter space is too complex to sample, and computational limits would ultimately
 cap how many datasets one could feasible fit.
 
 This example introduces expectation propagation (EP), the solution to this problem, which inspects a factor graph
@@ -73,8 +73,12 @@ __Mask__
 masked_dataset_list = []
 
 for dataset in dataset_list:
+    mask_radius = 3.0
+
     mask = al.Mask2D.circular(
-        shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+        shape_native=dataset.shape_native,
+        pixel_scales=dataset.pixel_scales,
+        radius=mask_radius,
     )
 
     dataset = dataset.apply_mask(mask=mask)
@@ -141,7 +145,7 @@ hierarchical_factor = af.HierarchicalFactor(
     sigma=af.TruncatedGaussianPrior(
         mean=0.5, sigma=0.5, lower_limit=0.0, upper_limit=100.0
     ),
-    use_jax=True
+    use_jax=True,
 )
 
 for model in model_list:
@@ -193,9 +197,7 @@ __Factor Graph__
 We combine our `AnalysisFactors` into one, to compose the factor graph.
 """
 factor_graph = af.FactorGraphModel(
-    *analysis_factor_list,
-    hierarchical_factor,
-    use_jax=True
+    *analysis_factor_list, hierarchical_factor, use_jax=True
 )
 
 """
@@ -341,4 +343,3 @@ The mean field object also contains a dictionary of the s.d./variance**0.5.
 """
 print(f"Centre SD/sqrt(variance) = {mean_field.scale[prior]}")
 print()
-

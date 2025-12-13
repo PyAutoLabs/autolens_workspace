@@ -395,7 +395,7 @@ analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
     preloads=preloads,
-    use_jax=False,
+    use_jax=False,  # CPU specific code
 )
 
 source_pix_result_2 = slam_pipeline.source_pix.run_2(

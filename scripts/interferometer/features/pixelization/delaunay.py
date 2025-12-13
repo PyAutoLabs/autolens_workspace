@@ -208,6 +208,7 @@ The relocated mesh grid is used to create the `Pixelization`'s Delaunay mesh usi
 """
 grid_rectangular = al.Mesh2DDelaunay(
     values=relocated_mesh_grid,
+    source_plane_data_grid_over_sampled=relocated_grid.over_sampled,
 )
 
 """

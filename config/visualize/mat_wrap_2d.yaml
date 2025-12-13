@@ -156,15 +156,6 @@ DelaunayDrawer:       # wrapper for `plt.fill()`: customize the appearance of De
     alpha: 0.7
     edgecolor: k
     linewidth: 0.0
-VoronoiDrawer:       # wrapper for `plt.fill()`: customize the appearance of Voronoi mesh's.
-  figure:
-    alpha: 0.7
-    edgecolor: k
-    linewidth: 0.3
-  subplot:
-    alpha: 0.7
-    edgecolor: k
-    linewidth: 0.3
 ParallelOverscanPlot:
   figure:
     c: k

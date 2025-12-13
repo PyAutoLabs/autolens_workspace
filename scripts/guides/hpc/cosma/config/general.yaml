@@ -32,8 +32,6 @@ output:
   samples_to_csv: true
 parallel:
   warn_environment_variables: true
-pixelization:
-  voronoi_nn_max_interpolation_neighbors: 300
 run_times:
   parallel_profile: false
   should_profile: false

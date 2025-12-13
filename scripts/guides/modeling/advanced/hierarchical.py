@@ -77,8 +77,12 @@ Define a 3.0" circular mask, which includes the emission of the lens and source 
 masked_dataset_list = []
 
 for dataset in dataset_list:
+    mask_radius = 3.0
+
     mask = al.Mask2D.circular(
-        shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=3.0
+        shape_native=dataset.shape_native,
+        pixel_scales=dataset.pixel_scales,
+        radius=mask_radius,
     )
 
     dataset = dataset.apply_mask(mask=mask)
@@ -164,7 +168,7 @@ hierarchical_factor = af.HierarchicalFactor(
     sigma=af.TruncatedGaussianPrior(
         mean=0.5, sigma=0.5, lower_limit=0.0, upper_limit=100.0
     ),
-    use_jax=True
+    use_jax=True,
 )
 
 """
@@ -188,9 +192,7 @@ We now create the factor graph for this model, using the list of `AnalysisFactor
 Again, this code is described in detail in the `guides/modeling/advanced/graphical` example.
 """
 factor_graph = af.FactorGraphModel(
-    *analysis_factor_list,
-    hierarchical_factor,
-    use_jax=True
+    *analysis_factor_list, hierarchical_factor, use_jax=True
 )
 
 """
