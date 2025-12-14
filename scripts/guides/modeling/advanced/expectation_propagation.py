@@ -305,41 +305,41 @@ above.
 Each parameter estimate is given by the mean of its value in the `MeanField`. Below, we use the `centred_shared_prior` 
 as a key to the `MeanField.mean` dictionary to print the estimated value of the shared centre.
 """
-prior = hierarchical_factor.drawn_variables[0]
-
-print(f"Centre Mean Parameter Estimate = {mean_field.mean[prior]}")
-print()
-
-"""
-If we want the parameter estimate of another parameter in the model, we can use the `model_list` that we composed 
-above to pass a parameter prior to the mean field dictionary.
-"""
-print(
-    f"Einstein Radius Dataset 0 Mean = {mean_field.mean[model_list[0].galaxies.lens.mass.einstein_radius]}"
-)
-
-"""
-The mean-field mean dictionary contains the estimate value of every parameter.
-"""
-print(f"All Parameter Estimates = {mean_field.mean}")
-print()
-
-"""
-The mean-field also contains a `variance` dictionary, which has the same keys as the `mean` dictionary above. 
-
-This is the easier way to estimate the error on every parameter, for example that of the shared centre.
-"""
-print(f"Centre Variance = {mean_field.variance[prior]}")
-print()
-
-"""
-The standard deviation (or error at one sigma confidence interval) is given by the square root of the variance.
-"""
-print(f"Centre 1 Sigma = {np.sqrt(mean_field.variance[prior])}")
-print()
-
-"""
-The mean field object also contains a dictionary of the s.d./variance**0.5.
-"""
-print(f"Centre SD/sqrt(variance) = {mean_field.scale[prior]}")
-print()
+# prior = hierarchical_factor.drawn_variables[0]
+#
+# print(f"Centre Mean Parameter Estimate = {mean_field.mean[prior]}")
+# print()
+#
+# """
+# If we want the parameter estimate of another parameter in the model, we can use the `model_list` that we composed
+# above to pass a parameter prior to the mean field dictionary.
+# """
+# print(
+#     f"Einstein Radius Dataset 0 Mean = {mean_field.mean[model_list[0].galaxies.lens.mass.einstein_radius]}"
+# )
+#
+# """
+# The mean-field mean dictionary contains the estimate value of every parameter.
+# """
+# print(f"All Parameter Estimates = {mean_field.mean}")
+# print()
+#
+# """
+# The mean-field also contains a `variance` dictionary, which has the same keys as the `mean` dictionary above.
+#
+# This is the easier way to estimate the error on every parameter, for example that of the shared centre.
+# """
+# print(f"Centre Variance = {mean_field.variance[prior]}")
+# print()
+#
+# """
+# The standard deviation (or error at one sigma confidence interval) is given by the square root of the variance.
+# """
+# print(f"Centre 1 Sigma = {np.sqrt(mean_field.variance[prior])}")
+# print()
+#
+# """
+# The mean field object also contains a dictionary of the s.d./variance**0.5.
+# """
+# print(f"Centre SD/sqrt(variance) = {mean_field.scale[prior]}")
+# print()

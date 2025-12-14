@@ -70,7 +70,7 @@ import autolens as al
 import autolens.plot as aplt
 
 sys.path.insert(0, os.getcwd())
-from scripts.multi.features import slam_pipeline
+import slam_pipeline
 
 """
 __Dataset__ 
@@ -164,7 +164,7 @@ analysis_list = [
     al.AnalysisImaging(dataset=dataset, use_jax=True) for dataset in dataset_list
 ]
 
-source_lp_result = slam_pipeline.source_lp.run(
+source_lp_result = slam_pipeline.source_lp.run__multi(
     settings_search=settings_search,
     analysis_list=analysis_list,
     lens_bulge=lens_bulge,
@@ -234,7 +234,7 @@ analysis_list = [
     for result, adapt_images in zip(source_lp_result, adapt_images_list)
 ]
 
-source_pix_result_1 = slam_pipeline.source_pix.run_1(
+source_pix_result_1 = slam_pipeline.source_pix.run_1__multi(
     settings_search=settings_search,
     analysis_list=analysis_list,
     source_lp_result=source_lp_result,
@@ -268,7 +268,7 @@ analysis_list = [
     for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
 ]
 
-source_pix_result_2 = slam_pipeline.source_pix.run_2(
+source_pix_result_2 = slam_pipeline.source_pix.run_2__multi(
     settings_search=settings_search,
     analysis_list=analysis_list,
     source_lp_result=source_lp_result,
@@ -300,7 +300,7 @@ lens_bulge = al.model_util.mge_model_from(
     centre_prior_is_uniform=True,
 )
 
-light_result = slam_pipeline.light_lp.run(
+light_result = slam_pipeline.light_lp.run__multi(
     settings_search=settings_search,
     analysis_list=analysis_list,
     source_result_for_lens=source_pix_result_1,
@@ -329,7 +329,7 @@ analysis_list = [
     for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
 ]
 
-mass_result = slam_pipeline.mass_total.run(
+mass_result = slam_pipeline.mass_total.run__multi(
     settings_search=settings_search,
     analysis_list=analysis_list,
     source_result_for_lens=source_pix_result_1,
@@ -354,13 +354,13 @@ analysis_list = [
     for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
 ]
 
-subhalo_result_1 = slam_pipeline.subhalo.detection.run_1_no_subhalo(
+subhalo_result_1 = slam_pipeline.subhalo.detection.run_1_no_subhalo__multi(
     settings_search=settings_search,
     analysis_list=analysis_list,
     mass_result=mass_result,
 )
 
-subhalo_grid_search_result_2 = slam_pipeline.subhalo.detection.run_2_grid_search(
+subhalo_grid_search_result_2 = slam_pipeline.subhalo.detection.run_2_grid_search__multi(
     settings_search=settings_search,
     analysis_list=analysis_list,
     mass_result=mass_result,
@@ -370,7 +370,7 @@ subhalo_grid_search_result_2 = slam_pipeline.subhalo.detection.run_2_grid_search
     number_of_steps=2,
 )
 
-subhalo_result_3 = slam_pipeline.subhalo.detection.run_3_subhalo(
+subhalo_result_3 = slam_pipeline.subhalo.detection.run_3_subhalo__multi(
     settings_search=settings_search,
     analysis_list=analysis_list,
     subhalo_result_1=subhalo_result_1,

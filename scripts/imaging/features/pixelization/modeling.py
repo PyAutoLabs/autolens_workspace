@@ -66,9 +66,6 @@ __Contents__
 **Run Time:** Profiling of pixelization run times and discussion of how they compare to standard light profiles.
 **Model-Fit:** Performs the model fit using standard API.
 **Result:** Pixelization results and visualizaiton.
-**Interpolated Source:** Interpolate the source reconstruction from an irregular Voronoi mesh to a uniform square grid and output to a .fits file.
-**Reconstruction CSV:** Output the source reconstruction to a .csv file, which can be used to perform calculations on the source reconstruction.
-**Voronoi:** Using a Voronoi mesh pixelizaiton (instead of Voronoi), which allows one to manipulate the source reconstruction without autolens installed.
 **Result (Advanced):** API for various pixelization outputs (magnifications, mappings) which requires some polishing.
 **Simulate (Advanced):** Simulating a strong lens dataset with the inferred pixelized source.
 
@@ -478,81 +475,9 @@ There are many things you can do with the result of a pixelixaiton, including an
 magnification calculations of the source and much more.
 
 These are documented in the `fit.py` example.
-
-This example centres on the `inversion` object which is easily accessed from the result of a model-fit.
 """
 inversion = result.max_log_likelihood_fit.inversion
 
-
-"""
-__Reconstruction CSV__
-
-In the results `image` folder there is a .csv file called `source_plane_reconstruction_0.csv` which contains the
-y and x coordinates of the pixelization mesh, the reconstruct values and the noise map of these values.
-
-This file is provides all information on the source reconstruciton in a format that does not depend autolens
-and therefore be easily loaded to create images of the source or shared collaobrations who do not have PyAutoLens
-installed.
-
-First, lets load `source_plane_reconstruction_0.csv` as a dictionary, using basic `csv` functionality in Python.
-"""
-import csv
-
-with open(
-    search.paths.image_path / "source_plane_reconstruction_0.csv", mode="r"
-) as file:
-    reader = csv.reader(file)
-    header_list = next(reader)  # ['y', 'x', 'reconstruction', 'noise_map']
-
-    reconstruction_dict = {header: [] for header in header_list}
-
-    for row in reader:
-        for key, value in zip(header_list, row):
-            reconstruction_dict[key].append(float(value))
-
-    # Convert lists to NumPy arrays
-    for key in reconstruction_dict:
-        reconstruction_dict[key] = np.array(reconstruction_dict[key])
-
-print(reconstruction_dict["y"])
-print(reconstruction_dict["x"])
-print(reconstruction_dict["reconstruction"])
-print(reconstruction_dict["noise_map"])
-
-"""
-You can now use standard libraries to performed calculations with the reconstruction on the mesh, again avoiding
-the need to use autolens.
-
-For example, we can create a RectangularMagnification mesh using the scipy.spatial library, which is a triangulation
-of the y and x coordinates of the pixelization mesh. This is useful for visualizing the pixelization
-and performing calculations on the mesh.
-"""
-import scipy
-
-points = np.stack(arrays=(reconstruction_dict["x"], reconstruction_dict["y"]), axis=-1)
-
-mesh = scipy.spatial.RectangularMagnification(points)
-
-"""
-Interpolating the result to a uniform grid is also possible using the scipy.interpolate library, which means the result
-can be turned into a uniform 2D image which can be useful to analyse the source with tools which require an uniform grid.
-
-Below, we interpolate the result onto a 201 x 201 grid of pixels with the extent spanning -1.0" to 1.0", which
-capture the majority of the source reconstruction without being too high resolution.
-
-It should be noted this inteprolation may not be as optimal as the interpolation perforemd above using `MapperValued`, 
-which uses specifc interpolation methods for a RectangularMagnification mesh which are more accurate, but it should be sufficent for
-most use-cases.
-"""
-from scipy.interpolate import griddata
-
-values = reconstruction_dict["reconstruction"]
-
-interpolation_grid = al.Grid2D.from_extent(
-    extent=(-1.0, 1.0, -1.0, 1.0), shape_native=(201, 201)
-)
-
-interpolated_array = griddata(points=points, values=values, xi=interpolation_grid)
 
 """
 __Wrap Up__

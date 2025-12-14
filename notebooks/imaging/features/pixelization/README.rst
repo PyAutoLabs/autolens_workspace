@@ -13,6 +13,7 @@ The following example scripts illustrating lens modeling where:
 - ``adaptive``: Advanced pixelization features which adapt the mesh and regularization to the source being reconstructed.
 - ``slam``: Using the Source, Light and Mass (SLAM) pipeline to perform lens modeling using pixelized source reconstruction.
 - ``delaunay``: Using a Delaunay mesh (instead of a rectangular mesh) for the source reconstruction.
+- ``source_reconstruction``: How to output a source reconstruction from a pixelized source model fit. to a .csv which can be loaded to analyse the source without autolens.
 
 Results
 -------
