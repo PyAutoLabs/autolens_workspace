@@ -282,7 +282,7 @@ search = af.Nautilus(
     name="start_here",  # The name of the fit and folder results are output to.
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=150,  # The number of Nautilus "live" points, increase for more complex models.
-    n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see modeling examples for details.
     iterations_per_full_update=100000,  # Every N iterations the results are written to hard-disk for inspection.
 )
 
@@ -503,7 +503,7 @@ search = af.Nautilus(
     name="start_here_scaling_relation",  # The name of the fit and folder results are output to.
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
-    n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_full_update=100000,  # Every N iterations the results are written to hard-disk for inspection.
 )
 

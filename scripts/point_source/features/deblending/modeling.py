@@ -268,6 +268,7 @@ search = af.Nautilus(
     name="deblending",
     unique_tag=dataset_name,
     n_live=400,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
 )
 
 """

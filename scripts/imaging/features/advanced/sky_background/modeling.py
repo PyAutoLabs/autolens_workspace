@@ -181,6 +181,7 @@ search = af.Nautilus(
     name="sky_background",
     unique_tag=dataset_name,
     n_live=125,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
 )
 
 """
@@ -193,6 +194,13 @@ analysis = al.AnalysisImaging(
 )
 
 """
+__VRAM__
+
+The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
+required by a model.
+
+The sky background model has a negligible impact on the VRAM required for the model-fit.
+
 __Run Time__
 
 For standard light profiles, the log likelihood evaluation time is of order ~0.01 seconds for this dataset.

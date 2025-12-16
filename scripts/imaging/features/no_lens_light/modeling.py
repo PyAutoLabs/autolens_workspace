@@ -203,7 +203,7 @@ search = af.Nautilus(
     name="no_lens_light",
     unique_tag=dataset_name,
     n_live=100,
-    #        iterations_per_quick_update=1000
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
 )
 
 """
@@ -214,6 +214,13 @@ Create the `AnalysisImaging` object defining how the via Nautilus the model is f
 analysis = al.AnalysisImaging(dataset=dataset)
 
 """
+__VRAM__
+
+The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
+required by a model.
+
+Removing lens light from the model reduces VRAM use modestly, but likely wont have a noticeable impact on overall use.
+
 __Run Time__
 
 The likelihood evaluation time for fits to data without lens light are only small bit faster than fits to data with

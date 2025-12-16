@@ -195,7 +195,7 @@ search = af.Nautilus(
     name="start_here",  # The name of the fit and folder results are output to.
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=75,  # The number of Nautilus "live" points, increase for more complex models.
-    n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see modeling examples for details.
     iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
 )
 

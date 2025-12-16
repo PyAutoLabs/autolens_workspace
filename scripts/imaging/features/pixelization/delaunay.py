@@ -46,35 +46,6 @@ If you do want to run only on CPU, you can use fast CPU method described in
 example `imaging/features/pixelization/cpu_fast_modeling` with the Delaunay mesh.
 """
 
-try:
-    import numba
-except ModuleNotFoundError:
-    input(
-        "##################\n"
-        "##### NUMBA ######\n"
-        "##################\n\n"
-        """
-        Numba is not currently installed.
-
-        Numba is a library which makes PyAutoLens run a lot faster. Certain functionality is disabled without numba
-        and will raise an exception if it is used.
-
-        If you have not tried installing numba, I recommend you try and do so now by running the following 
-        commands in your command line / bash terminal now:
-
-        pip install --upgrade pip
-        pip install numba
-
-        If your numba installation raises an error and fails, you should go ahead and use PyAutoLens without numba to 
-        decide if it is the right software for you. If it is, you should then commit time to bug-fixing the numba
-        installation. Feel free to raise an issue on GitHub for support with installing numba.
-
-        A warning will crop up throughout your *PyAutoLens** use until you install numba, to remind you to do so.
-
-        [Press Enter to continue]
-        """
-    )
-
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # %matplotlib inline
@@ -311,6 +282,21 @@ analysis_1 = al.AnalysisImaging(
     preloads=preloads,
 )
 
+"""
+__VRAM__
+
+The `pixelization/modeling` example explains how VRAM use is an important consideration for pixelization models
+and how it depends on image resolution, number of source pixels and batch size.
+
+This is true for the Delaunay mesh, therefore we print out the estimated VRAM required for this model-fit.
+"""
+analysis_1.print_vram_use(model=model, batch_size=search_1.batch_size)
+
+"""
+__Model-Fit (Search 1)__
+
+Perform the model-fit using this model.
+"""
 result_1 = search_1.fit(model=model_1, analysis=analysis_1)
 
 """

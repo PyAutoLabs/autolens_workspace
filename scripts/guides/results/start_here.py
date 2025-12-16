@@ -76,6 +76,7 @@ search = af.Nautilus(
     name="results",
     unique_tag=dataset_name,
     n_live=100,
+    n_batch=50,  # GPU batching and VRAM use explained in `modeling` examples.
 )
 
 analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)

@@ -248,6 +248,25 @@ number of free parameters.
 print(model.info)
 
 """
+__VRAM__
+
+The `modeling` example explains how VRAM is used during GPU-based fitting and how to
+print the estimated VRAM required by a model.
+
+For extra light and mass profiles in the model, even when on scaling relations, extra VRAM is used. For 3-10 linear 
+Sersic light profiles this is a tiny  amount of VRAM (e.g. < 10MB  per batched likelihood). Even for large batch 
+sizes (e.g. over 100) you probably will not use enough VRAM to require monitoring when using scaling relations.
+
+__Run Time__
+
+Light and mass calculations of galaxies on scaling relations run the same speed as normal light and mass profiles, 
+so using scaling relations does not slow down the likelihood evaluation time compared to modeling each galaxy
+individually.
+
+For models with many extra galaxies, the scaling relation can lead to fewer free parameters, because for each mass
+profile we do not fits its mass individually but rather via the scaling relation parameters. This can speed up the 
+overall run time of the model-fit, because sampling will converge in fewer iterations due to the simpler parameter space.
+
 __Model Fit__
 
 We now perform the usual steps to perform a model-fit, to see our scaling relation based fit in action!
@@ -265,6 +284,7 @@ search = af.Nautilus(
     name="scaling_relation",
     unique_tag=dataset_name,
     n_live=150,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=10000,
 )
 

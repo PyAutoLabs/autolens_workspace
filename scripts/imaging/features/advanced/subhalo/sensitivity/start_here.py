@@ -620,6 +620,7 @@ class BaseFit:
         search = af.Nautilus(
             paths=paths,
             n_live=50,
+            n_batch=50,
         )
 
         analysis = al.AnalysisImaging(dataset=dataset)
@@ -697,6 +698,7 @@ class PerturbFit:
         search = af.Nautilus(
             paths=paths,
             n_live=50,
+            n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
         )
 
         analysis = al.AnalysisImaging(dataset=dataset)

@@ -218,6 +218,7 @@ search = af.Nautilus(
     path_prefix=Path("modeling"),
     name="graphical",
     n_live=150,
+    n_batch=10,  # GPU batching and VRAM use explained in `modeling` examples.
 )
 
 result = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)

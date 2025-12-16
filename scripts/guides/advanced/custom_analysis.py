@@ -342,6 +342,7 @@ search = af.Nautilus(
     name="strong_lensing_example",
     unique_tag=dataset_name,
     n_live=150,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=10000,
 )
 
@@ -503,6 +504,7 @@ search = af.Nautilus(
     name="weak_lensing_example",
     unique_tag=dataset_name,
     n_live=150,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=10000,
 )
 

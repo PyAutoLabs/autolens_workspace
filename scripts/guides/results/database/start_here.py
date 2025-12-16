@@ -162,6 +162,7 @@ for dataset_name in dataset_names:
         unique_tag=dataset_name,  # This makes the unique identifier use the dataset name
         session=session,  # This can instruct the search to write to the .sqlite database.
         n_live=100,
+        n_batch=50,  # GPU batching and VRAM use explained in `modeling` examples.
     )
 
     analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
@@ -213,6 +214,7 @@ to large samples by writing directly to the database.
 #     unique_tag=dataset_name,  # This makes the unique identifier use the dataset name
 #     session=session,  # This can instruct the search to write to the .sqlite database.
 #     n_live=100,
+#     n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
 # )
 
 

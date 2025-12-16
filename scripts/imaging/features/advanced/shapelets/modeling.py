@@ -254,6 +254,7 @@ search = af.Nautilus(
     name="shapelets",
     unique_tag=dataset_name,
     n_live=150,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
 )
 
 """
@@ -267,6 +268,15 @@ analysis = al.AnalysisImaging(
 )
 
 """
+__VRAM__
+
+The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
+required by a model.
+
+For each shapelet, extra VRAM is used. For around 60 shapelets this typically requires  a modest amount of 
+VRAM (e.g. 10–50 MB per batched likelihood). Models that use hundreds of shapelets, especially in  combination with a 
+large batch size, may therefore exceed GBs of VRAM and require you to adjust the batch size to fit within your GPU's VRAM.
+
 __Run Time__
 
 The likelihood evaluation time for a shapelets is significantly slower than standard light profiles.
@@ -520,6 +530,7 @@ search = af.Nautilus(
     name="shapelets_regularized",
     unique_tag=dataset_name,
     n_live=150,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
 )
 
 """

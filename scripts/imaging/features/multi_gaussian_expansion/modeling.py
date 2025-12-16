@@ -269,7 +269,7 @@ search = af.Nautilus(
     name="mge",
     unique_tag=dataset_name,
     n_live=75,
-    n_batch=50,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=2000000,
 )
 
@@ -281,6 +281,16 @@ Create the `AnalysisImaging` object defining how the via Nautilus the model is f
 analysis = al.AnalysisImaging(dataset=dataset)
 
 """
+__VRAM__
+
+The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
+required by a model.
+
+For each linear Gaussian light profile, extra VRAM is used. For around 60 linear Gaussians this  typically requires 
+a modest amount of VRAM (e.g. 10–50 MB per batched likelihood). Models that use hundreds of Gaussians, especially in 
+combination with a large batch size, may therefore exceed GBs of VRAM and require you to adjust the batch size to fit 
+within your GPU's VRAM.
+
 __Run Time__
 
 The likelihood evaluation time for a multi-Gaussian expansion is significantly slower than standard / linear 
@@ -444,6 +454,7 @@ search = af.Nautilus(
     name="mge_including_source",
     unique_tag=dataset_name,
     n_live=75,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
 )
 
 """

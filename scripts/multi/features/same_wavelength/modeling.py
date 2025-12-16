@@ -176,6 +176,7 @@ search = af.Nautilus(
     name="same_wavelength",
     unique_tag=dataset_name,
     n_live=100,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
 )
 
 """

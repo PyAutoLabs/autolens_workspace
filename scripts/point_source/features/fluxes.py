@@ -153,6 +153,7 @@ search = af.Nautilus(
     name="fluxes",
     unique_tag=dataset_name,
     n_live=150,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see modeling examples.
 )
 
 """

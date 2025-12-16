@@ -21,6 +21,7 @@ Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
 __Run Time Overview__
 
 Pixelized inversions can be computed using either GPU acceleration via JAX or CPU acceleration via `numba`.
+
 The faster option depends on two crucial factors:
 
 #### **1. GPU VRAM Limitations**
@@ -50,8 +51,9 @@ For **high-resolution imaging** (for example, `pixel_scales <= 0.03`), modeling 
 and multiple cores. At high resolution, the linear algebra is dominated by sparse matrix operations, and the CPU
 implementation exploits sparsity more effectively, especially on systems with many CPU cores (e.g. HPC clusters).
 
-**Recommendation:** The best choice depends on your hardware and dataset, so it is always worth benchmarking both
-approaches (GPU+JAX vs CPU+numba) to determine which performs fastest for your case.
+**Recommendation:** The best choice depends on your hardware and dataset. If your data has resolution of 0.1" per pixel
+ (e.g. Euclid imaging) or lower, JAX will be the most efficient. For higher resolution imaging (e.g. HST, JWST) it is
+ worth benchmarking both approaches (GPU+JAX vs CPU+numba) to determine which performs fastest for your case.
 
 __Contents__
 
@@ -305,7 +307,7 @@ search = af.Nautilus(
     name="pixelization",
     unique_tag=dataset_name,
     n_live=100,
-    n_batch=20,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=50000,
 )
 
@@ -364,6 +366,24 @@ Create the `AnalysisImaging` object defining how the via Nautilus the model is f
 analysis = al.AnalysisImaging(
     dataset=dataset, positions_likelihood_list=[positions_likelihood], preloads=preloads
 )
+
+"""
+__VRAM__
+
+The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
+required by a model.
+
+Pixelizations use a lot more VRAM than light profile-only models, with the amount required depending on the size of
+dataset and the number of source pixels in the pixelization's mesh. For 400 source pixels, around 0.05 GB per batched
+likelihood of VRAM is used. 
+
+This is why the `batch_size` above is 20, lower than other examples, because reducing the batch size ensures a more 
+modest amount of VRAM is used. If you have a GPU with more VRAM, increasing the batch size will lead to faster run times.
+
+Given VRAM use is an important consideration, we print out the estimated VRAM required for this 
+model-fit and advise you do this for your own pixelization model-fits.
+"""
+analysis.print_vram_use(model=model, batch_size=search.batch_size)
 
 """
 __Run Time__

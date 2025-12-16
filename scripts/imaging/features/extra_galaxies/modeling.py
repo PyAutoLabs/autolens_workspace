@@ -351,7 +351,7 @@ Therefore, in this example fits a lens model where:
 
  - The source galaxy's light is a Multi Gaussian Expansion [4 parameters].
 
- - Each extra galaxy's light is a linear `SersicSph` profile with fixed centre [2 extra galaxies x 2 parameters = 5 parameters].
+ - Each extra galaxy's light is a Multi Gaussian expansion with fixed centre [2 extra galaxies x 2 parameters = 4 parameters].
 
  - Each extra galaxy's total mass distribution is a `IsothermalSph` profile with fixed 
  centre [2 extra galaxies x 1 parameters = 2 parameters].
@@ -366,19 +366,23 @@ Extra galaxy mass profiles often to go unphysically high `einstein_radius` value
 extra_galaxies_list = []
 
 for extra_galaxy_centre in extra_galaxies_centres:
+
+    # Extra Galaxy Light
+
     bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius, total_gaussians=10, centre_prior_is_uniform=True
+        mask_radius=mask_radius, total_gaussians=10, centre_fixed=extra_galaxy_centre
     )
 
-    extra_galaxy = af.Model(
-        al.Galaxy, redshift=0.5, bulge=al.lp_linear.SersicSph, mass=al.mp.IsothermalSph
-    )
+    # Extra Galaxy Mass
 
-    extra_galaxy.bulge.centre = extra_galaxy_centre
-    extra_galaxy.mass.centre = extra_galaxy_centre
-    extra_galaxy.mass.einstein_radius = af.UniformPrior(
-        lower_limit=0.0, upper_limit=0.1
-    )
+    mass = af.Model(al.mp.IsothermalSph)
+
+    mass.centre = extra_galaxy_centre
+    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+
+    # Extra Galaxy
+
+    extra_galaxy = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
     extra_galaxies_list.append(extra_galaxy)
 
@@ -407,22 +411,37 @@ search = af.Nautilus(
     name="extra_galaxies_model",
     unique_tag=dataset_name,
     n_live=150,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=20000,
 )
 
 analysis = al.AnalysisImaging(dataset=dataset)
 
 """
+__VRAM__
+
+The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
+required by a model.
+
+Adding extra galaxies increases VRAM usage because each additional component adds calculations that JAX stores 
+in GPU memory. If you see VRAM warnings or errors, or if model fitting is slower than expected, you should 
+print the estimated VRAM usage and compare 
+
 __Run Time__
 
 Adding extra galaxies to the model increases the likelihood evaluation times, because their light profiles need 
-their images  evaluated and their mass profiles need their deflection angles computed.
+their images evaluated and their mass profiles need their deflection angles computed. These calculations are pretty 
+fast, so only a small increase in time is expected.
 
-However, these calculations are pretty fast for profiles like `SersicSph` and `IsothermalSph`, so only a small
-increase in time is expected.
+The bigger hit on run time is due to the extra free parameters, 2 free parameters for the `ell_comps` of each 
+multi Gaussian expansion of each extra galaxy and 1 `einstein_radius` for its mass. This increases the dimensionality 
+of non-linear parameter space.  This means Nautilus takes longer to converge on the highest likelihood regions of 
+parameter space.
 
-The bigger hit on run time is due to the extra free parameters, which increases the dimensionality of non-linear
-parameter space. This means Nautilus takes longer to converge on the highest likelihood regions of parameter space.
+The Source, Light and Mass (SLaM) pipelines support extra galaxies but in a way that reduces the number of free
+parameters they add to the model. This is described in the `slam` examples. The `group` package, which models systems
+with 10+ extra galaxies, introduces even more clever parameterizations which add 0 free parameters per extra galaxy,
+so if your model has many extra galaxies you should check out the `group` package.
 
 __Model-Fit__
 
@@ -462,19 +481,6 @@ Extending the modeling API should be straight forward given the above examples, 
 checkout the model cookbook: 
 
 https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
-
-__Multi Gaussian Expansion__
-
-The most powerful way to model the light of extra galaxies is to use a mutli Gaussian expansion (MGE), which is 
-documented in the `autolens_workspace/*/features/multi_gaussian_expansion.py` example script.
-
-The reasons for this will be expanded upon here in the future, but in brief the MGE can capture light profiles
-more complex than Sersic profiles using fewer parameters. It can therefore fit many extra galaxies in a model
-without increasing the dimensionality of parameter space significantly.
-
-In fact, if a spherical MGE is used to model the light of the extra galaxies each MGE introduced 0 new free parameters
-to the model, assuming the centre is fixed to the input centre and the `intensity` values are solved for via the MGE
-linear algebra calculation. Complex lenses with many extra galaxies therefore become feasible to model.
 
 __Scaling Relations__
 

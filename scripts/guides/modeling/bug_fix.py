@@ -47,6 +47,7 @@ def fit():
     # print(f"Working Directory has been set to `{workspace_path}`")
 
     from os import path
+    from pathlib import Path
     import autofit as af
     import autolens as al
     import autolens.plot as aplt
@@ -133,7 +134,7 @@ def fit():
         name="modeling",
         unique_tag=dataset_name,
         n_live=100,
-        n_batch=50,
+        n_batch=50,  # GPU batching and VRAM use explained in `modeling` examples.
         iterations_per_quick_update=100000,
     )
 

@@ -153,6 +153,7 @@ search = af.Nautilus(
     name="time_delays",
     unique_tag=dataset_name,
     n_live=100,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see modeling examples
 )
 
 """
@@ -233,6 +234,8 @@ __Search__
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
 full description).
 """
+batch_size = 50  # Explained in `modeling` examples.
+
 search = af.Nautilus(
     path_prefix=Path("point_source") / "features",
     name="time_delays_hubble_constant2",

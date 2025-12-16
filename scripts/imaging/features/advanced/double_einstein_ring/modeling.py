@@ -214,6 +214,7 @@ search = af.Nautilus(
     name="double_einstein_ring",
     unique_tag=dataset_name,
     n_live=150,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=2000,
 )
 
@@ -223,6 +224,21 @@ __Analysis__
 Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
 """
 analysis = al.AnalysisImaging(dataset=dataset)
+
+"""
+__VRAM__
+
+The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
+required by a model.
+
+Double source plane lenses can use a lot of VRAM, because the multi-plane ray-tracing and creation of multiple
+images for different source planes can require all the additional data to be stored in VRAM. This will
+at least double the VRAM requirements compared to a single lens plane model, but often more than this.
+
+Given VRAM use is an important consideration, we print out the estimated VRAM required for this 
+model-fit and advise you do this for your own double source plane lens model-fits.
+"""
+analysis.print_vram_use(model=model, batch_size=search.batch_size)
 
 """
 __Run Time__

@@ -116,10 +116,10 @@ The number of free parameters and therefore the dimensionality of non-linear par
 
 __Model Extension__
 
-Galaxies change appearance across wavelength, for example their size.
+Galaxies change appearance across wavelength, for example their ellipticities.
 
 Models applied to combined analyses can be extended to include free parameters specific to each dataset. In this example,
-we want the galaxy's effective radii to vary across the g and r-band datasets, which will be illustrated below.
+we will make the galaxy's ellipticity vary across the g and r-band datasets, which will be illustrated below.
 
 __Linear Light Profiles__
 
@@ -129,9 +129,11 @@ if not.
 For multi wavelength dataset modeling, the `lp_linear` API is extremely powerful as the `ell_comps` varies across
 the datasets, meaning that making it linear reduces the dimensionality of parameter space significantly.
 """
+total_gaussians = 20
+
 bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
-    total_gaussians=20,
+    total_gaussians=total_gaussians,
     gaussian_per_basis=1,
     centre_prior_is_uniform=True,
 )
@@ -186,9 +188,9 @@ factor graph. This step allows us to flexibly define how each dataset relates to
 The term "Factor" comes from factor graphs, a type of probabilistic graphical model. In this context, each factor 
 represents the connection between one dataset and the shared model.
 
-The API for extending the model across datasets is shown below, by overwriting the `effective_radius`
+The API for extending the model across datasets is shown below, by overwriting the `ell_comps`
 variables of the model passed to each `AnalysisFactor` object with new priors, making each dataset have its own
-`effective_radius` free parameter.
+`ell_comps` free parameter.
 
 NOTE: Other aspects of galaxies may vary across wavelength, none of which are included in this example. The API below 
 can easily be extended to include these additional parameters, and the `features` package explains other tools for 
@@ -199,12 +201,18 @@ analysis_factor_list = []
 for analysis in analysis_list:
 
     model_analysis = model.copy()
-    model_analysis.galaxies.lens.bulge.effective_radius = af.UniformPrior(
-        lower_limit=0.0, upper_limit=10.0
-    )
-    model_analysis.galaxies.source.bulge.effective_radius = af.UniformPrior(
-        lower_limit=0.0, upper_limit=10.0
-    )
+
+    ell_comps_0_prior = af.GaussianPrior(mean=0.0, sigma=0.3)
+    ell_comps_1_prior = af.GaussianPrior(mean=0.0, sigma=0.3)
+
+    for i in range(total_gaussians):
+
+        model_analysis.galaxies.lens.bulge.profile_list[i].ell_comps.ell_comps_0 = (
+            ell_comps_0_prior
+        )
+        model_analysis.galaxies.lens.bulge.profile_list[i].ell_comps.ell_comps_1 = (
+            ell_comps_1_prior
+        )
 
     analysis_factor = af.AnalysisFactor(prior_model=model_analysis, analysis=analysis)
 
@@ -245,8 +253,24 @@ search = af.Nautilus(
     name="modeling",  # The name of the fit and folder results are output to.
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=150,  # The number of Nautilus "live" points, increase for more complex models.
-    n_batch=50,  # For fast GPU fitting lens model fits are batched and run simultaneously.
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
+)
+
+"""
+__VRAM Use__
+
+The `modeling` examples of individual dataset types explain how VRAM is used during GPU-based fitting and how to 
+print the estimated VRAM required by a model.
+
+When multiple datasets are fitted simultaneously, as in this example, VRAM usage increases with each
+dataset, as their data structures must all be stored in VRAM.
+
+Given VRAM use is an important consideration, we print out the estimated VRAM required for this 
+model-fit and advise you do this for your own pixelization model-fits.
+"""
+factor_graph.print_vram_use(
+    model=factor_graph.global_prior_model, batch_size=search.batch_size
 )
 
 """

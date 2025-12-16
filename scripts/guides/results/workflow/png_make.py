@@ -131,6 +131,7 @@ for i in range(2):
         name="results",
         unique_tag=f"simple__no_lens_light_{i}",
         n_live=100,
+        n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
         iterations_per_quick_update=10000,
     )
 
