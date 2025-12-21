@@ -12,6 +12,7 @@ The following example scripts illustrating lens modeling where:
 - ``slam``: Using the Source, Light and Mass (SLAM) pipeline to perform lens modeling using pixelized source reconstruction.
 - ``delaunay``: Using a Delaunay mesh (instead of a rectangular mesh) for the source reconstruction.
 - ``source_reconstruction``: How to output a source reconstruction from a pixelized source model fit. to a .csv which can be loaded to analyse the source without autolens.
+- ``many_visibilities_preparation``: How to prepare the linear algbera for datasets with many visibilities for efficient memory usage and run times.
 
 Results
 -------
