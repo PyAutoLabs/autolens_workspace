@@ -234,5 +234,5 @@ for result in result_list:
     plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
 """

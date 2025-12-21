@@ -23,7 +23,7 @@ code outlined in this tutorial.
 
 __Units__
 
-In this example, all quantities are **PyAutoLens**'s internal unit coordinates, with spatial coordinates in
+In this example, all quantities use the source code's internal unit coordinates, with spatial coordinates in
 arc seconds, luminosities in electrons per second and mass quantities (e.g. convergence) are dimensionless.
 
 The guide `guides/units_and_cosmology.ipynb` illustrates how to convert these quantities to physical units like
@@ -31,7 +31,7 @@ kiloparsecs, magnitudes and solar masses.
 
 __Data Structures__
 
-Quantities inspected in this example script use **PyAutoLens** bespoke data structures for storing arrays, grids,
+Arrays inspected in this example use bespoke data structures for storing arrays, grids,
 vectors and other 1D and 2D quantities. These use the `slim` and `native` API to toggle between representing the
 data in 1D numpy arrays or high dimension numpy arrays.
 

@@ -10,7 +10,7 @@ This script illustrates how to use the result to inspect the non-linear search s
 
 __Units__
 
-In this example, all quantities are **PyAutoLens**'s internal unit coordinates, with spatial coordinates in
+In this example, all quantities use the source code's internal unit coordinates, with spatial coordinates in
 arc seconds, luminosities in electrons per second and mass quantities (e.g. convergence) are dimensionless.
 
 The guide `guides/units_and_cosmology.ipynb` illustrates how to convert these quantities to physical units like

@@ -159,7 +159,7 @@ import scipy
 
 points = np.stack(arrays=(reconstruction_dict["x"], reconstruction_dict["y"]), axis=-1)
 
-mesh = scipy.spatial.RectangularMagnification(points)
+mesh = scipy.spatial.Delaunay(points)
 
 """
 Interpolating the result to a uniform grid is also possible using the scipy.interpolate library, which means the result

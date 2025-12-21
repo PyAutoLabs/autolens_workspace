@@ -31,17 +31,6 @@ The only problem is that the light of the second source is included in the data 
 could bias or impact its model fit. To circumvent this, the first search uses a smaller mask which removes the light
 of the second source from the model-fit. A larger mask included both sources is then used in the second search.
 
-__Preloading__
-
-When certain components of a model are fixed its associated quantities do not change during a model-fit. For
-example, for a lens model where all light profiles are fixed, the PSF blurred model-image of those light profiles
-is also fixed.
-
-**PyAutoLens** uses _implicit preloading_ to inspect the model and determine what quantities are fixed. It then stores
-these in memory before the non-linear search begins such that they are not recomputed for every likelihood evaluation.
-
-In this example no preloading occurs.
-
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.

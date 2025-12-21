@@ -8,16 +8,16 @@ the solution to have a degree of smoothness.
 This script fits a source galaxy model which uses a pixelization to reconstruct the source's light.
 
 A rectangular mesh which adapts to the lens mass model magnification and constant regularization scheme are used, which
-are the simplest forms of mesh and regularization with provide computationally fast and accurate solutions in **PyAutoLens**.
+are the simplest forms of mesh and regularization with provide computationally fast and accurate solutions.
 
 For simplicity, the lens galaxy's light is omitted from the model and is not present in the simulated data. It is
 straightforward to include the lens galaxy's light in the model.
 
-Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
+pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
 
 __JAX GPU Run Times__
 
-Pixelizations run time depends on how modern GPU hardware is. GPU acceleration only provides fast run times on
+pixelizations run time depends on how modern GPU hardware is. GPU acceleration only provides fast run times on
 modern GPUs with large amounts of VRAM, or when the number of pixels in the mesh are low (e.g. < 500 pixels).
 
 This script's default setup uses an adaptive 20 x 20 rectangular mesh (400 pixels), which is relatively low resolution
@@ -42,7 +42,6 @@ __Contents__
 **Pixelization:** How to create a pixelization, including a description of its inputs.
 **Fit:** Perform a fit to a dataset using a pixelization, and visualize its results.
 **Interpolated Source:** Interpolate the source reconstruction from an irregular Voronoi mesh to a uniform square grid and output to a .fits file.
-**Reconstruction CSV:** Output the source reconstruction to a .csv file, which can be used to perform calculations on the source reconstruction.
 **Result (Advanced):** API for various pixelization outputs (magnifications, mappings) which requires some polishing.
 **Simulate (Advanced):** Simulating a strong lens dataset with the inferred pixelized source.
 
@@ -64,7 +63,7 @@ enables this.
 
 __Disadvantages__
 
-Pixelizations are computationally slow and run times are typically longer than a parametric source model. It is not
+pixelizations are computationally slow and run times are typically longer than a parametric source model. It is not
 uncommon for lens models using a pixelization to take hours or even days to fit high resolution imaging
 data (e.g. Hubble Space Telescope imaging).
 
@@ -207,12 +206,12 @@ We create a `Pixelization` object to perform the pixelized source reconstruction
 components:
 
 - `mesh:` Different types of mesh can be used to perform the source reconstruction, where the mesh changes the
-details of how the source is reconstructed (e.g. interpolation weights). In this exmaple, we use a `Rectangular` mesh,
+details of how the source is reconstructed (e.g. interpolation weights). In this example, we use a rectangular mesh,
 where the centres computed by overlayiong a rectangular mesh over the source plane.
 
 - `regularization:` A pixelization uses many pixels to reconstructed the source, which will often lead to over fitting
-of the noise in the data and an unrealistically complex and strucutred source. Regularization smooths the source
-reconstruction solution by penalizing solutions where neighboring pixels (Voronoi triangles in this example) have
+of the noise in the data and an unrealistically complex and structured source. Regularization smooths the source
+reconstruction solution by penalizing solutions where neighboring pixels have
 large flux differences.
 """
 mesh = al.mesh.RectangularMagnification(shape=mesh_shape)
@@ -256,7 +255,7 @@ fit_plotter = aplt.FitImagingPlotter(fit=fit)
 fit_plotter.subplot_fit()
 
 """
-Pixelizations have bespoke visualizations which show more details about the source-reconstruction, image-mesh
+pixelizations have bespoke visualizations which show more details about the source-reconstruction, image-mesh
 and other quantities.
 
 These plots use an `InversionPlotter`, which gets its name from the internals of how pixelizations are performed in
@@ -478,7 +477,7 @@ print(mapper_valued.magnification_via_interpolation_from(shape_native=(401, 401)
 """
 __Wrap Up__
 
-Pixelizations are the most complex but also most powerful way to model a source galaxy.
+pixelizations are the most complex but also most powerful way to model a source galaxy.
 
 Whether you need to use them or not depends on the science you are doing. If you are only interested in measuring a
 simple quantity like the Einstein radius of a lens, you can get away with using light profiles like a Sersic, MGE or 
@@ -514,7 +513,7 @@ we with to use.
 Thus, knowing what linear objects are contained in the `linear_obj_list` and what indexes they correspond to
 is important.
 """
-print(f"Voronoi Mapper = {inversion.linear_obj_list[0]}")
+print(f"Mapper = {inversion.linear_obj_list[0]}")
 
 """
 __Grids__

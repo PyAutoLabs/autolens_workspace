@@ -83,7 +83,7 @@
 # dataset = al.Interferometer.from_fits(
 #     data_path=dataset_path / "data.fits",
 #     noise_map_path=dataset_path / "noise_map.fits",
-#     uv_wavelengths_path=Path(dataset_path, "uv_wavelengths.fits"),
+#     uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
 #     real_space_mask=real_space_mask,
 # )
 # dataset = dataset.apply_settings(

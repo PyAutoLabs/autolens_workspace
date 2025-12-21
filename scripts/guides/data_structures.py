@@ -24,7 +24,7 @@ code outlined in this tutorial.
 
 __Units__
 
-In this example, all quantities are **PyAutoLens**'s internal unit coordinates, with spatial coordinates in
+In this example, all quantities use the source code's internal unit coordinates, with spatial coordinates in
 arc seconds, luminosities in electrons per second and mass quantities (e.g. convergence) are dimensionless.
 
 The guide `units_and_cosmology.ipynb` illustrates how to convert these quantities to physical units like
@@ -108,7 +108,7 @@ __Grids__
 We now illustrate data structures using a `Grid2D` object, which is a set of two-dimensional $(y,x)$ coordinates
 (in arc-seconds) that are deflected and traced by a strong lensing system.
 
-These are fundamental to all lensing calculations and drive why data structures are used in **PyAutoLens**.
+These are fundamental to all lensing calculations and drive why data structures are used.
 
 First, lets make a uniform 100 x 100 grid of (y,x) coordinates and plot it.
 """

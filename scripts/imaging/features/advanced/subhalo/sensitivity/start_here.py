@@ -55,7 +55,7 @@ necessary to make statements about the nature of dark matter: cold, warm, fuzzy,
 __SLaM Pipelines__
 
 The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pipelines which automate the fitting
-of complex lens models. The SLaM pipelines are used for all DM subhalo detection analyses in **PyAutoLens**.
+of complex lens models. The SLaM pipelines are used for all DM subhalo detection analyses.
 
 This example script does not use a SLaM pipeline, to keep the sensitivity mapping self contained. However, it is
 anticipated that any user performing sensitivity mapping on real data will use the SLaM pipelines, which in the

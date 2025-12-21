@@ -1,20 +1,19 @@
-The ``data_preparation/imaging`` package provides tools for preparing an imaging
+The ``data_preparation/interferometer`` package provides tools for preparing an interferometer
 dataset (e.g. Hubble Space Telescope) before **PyAutoLens** analysis:
 
 Files
 -----
 
 - ``casa_to_autogalaxy``: Convert a dataset to **PyAutoLens** formats via CASA.
-- ``run_times``: An overview of interferometer run-times and how to make your analysis run as fast as possible.
 
 Files (Beginner / In Imaging)
 -----------------------------
 
 The following scripts are used to prepare components of an interferometer dataset, however they are used in an
-identical fashion for dataset datasets.
+identical fashion for interferometer datasets.
 
-Therefore, they are not located in the `interferometer/data_preparation` package, but instead in the
-`data_preparation/imaging` package, so refer there for a description of their usage.
+Therefore, they are not located in the ``interferometer/data_preparation`` package, but instead in the
+``data_preparation/imaging`` package, so refer there for a description of their usage.
 
 Note that in order to perform some tasks (e.g. mark on the image where the source is), you will need to use an image
 of the interferometer data even though visibilities are used for the analysis.

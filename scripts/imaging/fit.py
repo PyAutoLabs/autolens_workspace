@@ -4,52 +4,14 @@ Fits
 
 This guide shows how to fit data using the `FitImaging` object, including visualizing and interpreting its results.
 
-This tutorial shows how to use galaxies, including visualizing and interpreting their properties.
+References
+----------
 
-The first half of this tutorial repeats the over example `overview/overview_2_fit.py` and contains the
-following:
+This example uses functionality described fully in other examples in the `guides` package:
 
-The guide then extends the overview with more advanced uses of galaxies, including:
-
-__Plot Module__
-
-This example uses the plot module to plot the results, including `Plotter` objects that make
-the figures and `MatPlot` objects that wrap matplotlib to customize the figures.
-
-The visualization API is straightforward but is explained in the `autolens_workspace/*/plot` package in full.
-This includes detailed guides on how to customize every aspect of the figures, which can easily be combined with the
-code outlined in this tutorial.
-
-__Units__
-
-In this example, all quantities are **PyAutoLens**'s internal unit coordinates, with spatial coordinates in
-arc seconds, luminosities in electrons per second and mass quantities (e.g. convergence) are dimensionless.
-
-The guide `guides/units_and_cosmology.ipynb` illustrates how to convert these quantities to physical units like
-kiloparsecs, magnitudes and solar masses.
-
-__Data Structures__
-
-Quantities inspected in this example script use **PyAutoLens** bespoke data structures for storing arrays, grids,
-vectors and other 1D and 2D quantities. These use the `slim` and `native` API to toggle between representing the
-data in 1D numpy arrays or high dimension numpy arrays.
-
-This tutorial will only use the `slim` properties which show results in 1D numpy arrays of
-shape [total_unmasked_pixels]. This is a slimmed-down representation of the data in 1D that contains only the
-unmasked data points
-
-These are documented fully in the `autolens_workspace/*/guides/data_structures.ipynb` guide.
-
-__Other Models__
-
-This tutorial does not use a pixelized source reconstruction or linear light profiles, which have their own dediciated
-functionality that interfacts with the `FitImaging` object.
-
-These are described in the dedicated example scripts `results/examples/linear.py` and `results/examples/pixelizaiton.py`.
-
-__Start Here Notebook__
-
-If any code in this script is unclear, refer to the `results/start_here.ipynb` notebook.
+- `guides/plot`: Using Plotter objects to plot and customize figures.
+- `guides/units`: The source code unit conventions (e.g. arc seconds for distances and how to convert to physical units).
+- `guides/data_structures`: The bespoke data structures used to store 1D and 2d arrays.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
@@ -71,8 +33,8 @@ __Loading Data__
 We we begin by loading the strong lens dataset `simple__no_lens_light` from .fits files, which is the dataset 
 we will use to demonstrate fitting.
 
-The `autolens_workspace` comes distributed with simulated images of strong lenses (an example of how these simulations
-are made can be found in the `simulate.py` example, with all simulator scripts located in `autolens_workspac/simulators`.
+This dataset was simulated using the `imaging/simulator` example, read through that to have a better
+understanding of how the data this exam fits was generated.
 """
 dataset_name = "simple__no_lens_light"
 dataset_path = Path("dataset") / "imaging" / dataset_name
@@ -85,13 +47,9 @@ dataset = al.Imaging.from_fits(
 )
 
 """
-We can use the `ImagingPlotter` to plot the image, noise-map and psf of the dataset.
-"""
-dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
-dataset_plotter.figures_2d(data=True, noise_map=True, psf=True)
+The `ImagingPlotter` contains a subplot which plots all the key properties of the dataset simultaneously.
 
-"""
-The `ImagingPlotter` also contains a subplot which plots all these properties simultaneously.
+This includes the observed image data, RMS noise map, Point Spread Function and other information.
 """
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
@@ -138,10 +96,10 @@ grid_plotter.figure_2d()
 """
 __Fitting__
 
-Following the previous overview example, we can make a tracer from a collection of `LightProfile`, `MassProfile` 
-and `Galaxy` objects.
+Following the previous overview example, we can make a tracer from a collection of light profiles, mass profiles
+and galaxies.
 
-The combination of `LightProfile`'s and `MassProfile`'s below is the same as those used to generate the simulated 
+The combination of light and mass profiels below is the same as those used to generate the simulated 
 dataset we loaded above.
 
 It therefore produces a tracer whose image looks exactly like the dataset.
@@ -213,15 +171,11 @@ fit_plotter.figures_2d(
 A subplot can be plotted which contains all of the above quantities, as well as other information contained in the
 tracer such as the source-plane image, a zoom in of the source-plane and a normalized residual map where the colorbar
 goes from 1.0 sigma to -1.0 sigma, to highlight regions where the fit is poor.
-
-This subplot is probably the most important visualization output by **PyAutoLens**, and is something you should
-anticipate seeing a lot of!
 """
 fit_plotter.subplot_fit()
 
 """
-Most importantly, the ``FitImaging`` object also provides us with a ``log_likelihood``, a single value quantifying 
-how good the tracer fitted the dataset.
+The fit also provides us with a ``log_likelihood``, a single value quantifying how good the tracer fitted the dataset.
 
 Lens modeling, describe in the next overview example, effectively tries to maximize this log likelihood value.
 """
@@ -394,8 +348,8 @@ You may wish to output certain results to .fits files for later inspection.
 For example, one could output the lens light subtracted image of the lensed source galaxy to a .fits file such that
 we could fit this source-only image again with an independent pipeline.
 """
-lens_subtracted_image_2d = fit.subtracted_images_of_planes_list[1]
-lens_subtracted_image_2d.output_to_fits(
+lens_subtracted_image = fit.subtracted_images_of_planes_list[1]
+lens_subtracted_image.output_to_fits(
     file_path=dataset_path / "lens_subtracted_data.fits", overwrite=True
 )
 

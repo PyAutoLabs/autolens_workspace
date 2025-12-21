@@ -175,7 +175,7 @@ al.output_to_json(
 """
 __Simulate (Imaging)__
 
-Simulate the image using a `Grid2D` with the adaptive over sampling scheme.
+Simulate the image using a (y,x) grid with the adaptive over sampling scheme.
 """
 grid = al.Grid2D.uniform(
     shape_native=(100, 100),

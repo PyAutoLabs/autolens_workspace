@@ -23,11 +23,24 @@ If you don’t have a GPU locally, consider Google Colab which provides free GPU
 We also show how to simulate interferometer datasets. This is useful for building machine
 learning training datasets, or for investigating lensing effects in a controlled way.
 
-The current JAX implementation can only fit datasets with a sufficiently small enough
-number of visibilities. The current limit ? visibilities is ~1-2 million, depending on your GPU.
-A new version due December 2025 will lift this limit and enable fitting arbitrarily large
-datasets. The older non-JAX version of PyAutoLens can fit large datasets (` 2025.5.10.1`) on CPU
-relatively fast.
+__Number of Visibilities__
+
+This example fits a **low-resolution interferometric dataset** with a small number of visibilities (273). The
+dataset is intentionally minimal so that the example runs quickly and allows you to become familiar with the API
+and modeling workflow. The code demonstrated in this example can feasible fit datasets with up to around 10000
+visibilities, above which computational time and VRAM use become significant for this modeling approach.
+
+High-resolution datasets with many visibilities (e.g. high-quality ALMA observations
+with **millions hundreds of millions of visibilities**) can be modeled efficiently. However, this requires
+using the more advanced **pixelized source reconstructions** modeling approach. These large datasets fully
+exploit **JAX acceleration**, enable lens modeling to run in **hours on a modern GPU**.
+
+If your dataset contains many visibilities, you should start by working through this example and the other examples
+in the `interferometer` folder. Once you are comfortable with the API, the `feature/pixelization` package provides a
+guided path toward efficiently modeling large interferometric datasets.
+
+The threshold between a dataset having many visibilities and therefore requiring pixelized source reconstructions, or
+being small enough to be modeled with light profiles, is around **10,000 visibilities**.
 
 __Google Colab Setup__
 
@@ -88,8 +101,8 @@ to the uv-plane to compare with visibilities.
 We therefore define a circular real-space mask, which sets the pixel grid size and pixel-to-arcsecond 
 pixel scale in real space.
 """
-
 mask_radius = 3.5
+
 real_space_mask = al.Mask2D.circular(
     shape_native=(256, 256),
     pixel_scales=0.1,
@@ -108,11 +121,11 @@ We begin by loading an `Interferometer` dataset from FITS, three ingredients are
 We must also choose a transformer:
 
 - `TransformerDFT`: exact Discrete FT (robust, slower for large n_vis).
-
-Transformers other than the Discrete are disabled for the JAX version of PyAutoLens currently.
+- `TransformerNUFFT`: approximate Non-Uniform FFT (fast, accurate for large n_vis) using the pynufft library.
 
 We load a low resolution Square Mile Array (SMA) dataset for this example, which has just
-273 visibilities.
+273 visibilities. This has so few visibilities that we can use the exact DFT transformer without
+the computation being too slow (for larger datasets with many visibilities the NUFFT transformer is recommended).
 """
 dataset_name = "simple"
 dataset_path = Path("dataset") / "interferometer" / dataset_name
@@ -149,7 +162,6 @@ models for the source below via a utility function `mge_model_from` which
 hides the API to make the code in this introduction example ready to read. We then 
 use the PyAutoLens Model API to compose the over lens model.
 """
-
 # Lens galaxy
 
 mass = af.Model(al.mp.Isothermal)
@@ -176,7 +188,7 @@ __Model Fit__
 
 We now fit the data with the lens model using the non-linear fitting method and nested sampling algorithm Nautilus.
 
-We fit the visibilities with `AnalysisInterferometer`, hich defines the `log_likelihood_function` used by 
+We fit the visibilities with `AnalysisInterferometer`, which defines the `log_likelihood_function` used by 
 Nautilus to fit the model to the interferometer data.
 
 __JAX__
@@ -254,8 +266,9 @@ packages of the workspace contains all the information you need to analyze your 
 
 __Model Your Own Lens__
 
-If you have your own strong lens interferometer data, you are now ready to model it yourself by adapting 
-the code above and simply inputting the path to your own .fits files into the `Interferometer.from_fits()` function.
+If you have your own strong lens interferometer data, and it has less than ~10000 visibilities, you are now ready to 
+model it yourself by adapting the code above and simply inputting the path to your own .fits files into 
+the `Interferometer.from_fits()` function.
 
 A few things to note, with full details on data preparation provided in the main workspace documentation:
 
@@ -371,7 +384,7 @@ dataset_path = Path("dataset") / "interferometer" / "simulated_lens"
 dataset.output_to_fits(
     data_path=dataset_path / "data.fits",
     noise_map_path=dataset_path / "noise_map.fits",
-    uv_wavelengths_path=Path(dataset_path, "uv_wavelengths.fits"),
+    uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
     overwrite=True,
 )
 

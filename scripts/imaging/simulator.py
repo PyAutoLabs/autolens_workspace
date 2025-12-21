@@ -253,5 +253,36 @@ al.output_to_json(
 )
 
 """
+__Multiple Images__
+
+Lens modeling can use a "positions likelihood penalty", whereby mass models which traces the (y,x) 
+coordinates of multiple images of a source galaxy to positions which are far apart from one another 
+in the source plane are penalized in the lens model's overall likelihood.
+
+This speeds up lens modeling, helps the non-linear search avoid local maxima and is vital for inferred 
+accurate solutions when using pixelized source reconstructions.
+
+For real data, the multiple image positions are determined by eye from the data, for example
+using a Graphical User Interface (GUI) to mark them with mouse clicks. For simulated data, we can save
+ourselves time by using the `PointSolver` to determine the multiple image positions automatically and
+output to a .json file.
+
+If you have not looked in the `point_source` package, the point solver is the core tool used to find
+multiple image positions for point source lens modeling (e.g. lensed quasars).
+"""
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+)
+
+positions = solver.solve(
+    tracer=tracer, source_plane_coordinate=source_galaxy.bulge.centre
+)
+
+al.output_to_json(
+    file_path=dataset_path / "positions.json",
+    obj=positions,
+)
+
+"""
 The dataset can be viewed in the folder `autolens_workspace/imaging/simple`.
 """

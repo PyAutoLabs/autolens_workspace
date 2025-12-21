@@ -18,12 +18,9 @@ The second approach is more complex and computationally expensive, but if the em
 significantly with the lensed source emission, or if their mass is anticipated to contributed signficiantly, it is the
 best approach to take.
 
-The script concludes with some advanced approaches to modeling extra galaxies, for example where their light is modeled
-using a Multi Gaussian Expansion or their masses are included via a scaling relation.
-
 __Data Preparation__
 
-To perform modeling which accounts for extra galaxies, a mask of their emission of list of the centre of each extra
+To perform modeling which accounts for extra galaxies, a mask of their emission or list of the centre of each extra
 galaxy are used to set up the model-fit. For the example dataset used here, these tasks have already been performed and
 the metadata (`mask_extra_galaxies.fits` and `extra_galaxies_centres.json` are already included in results folder.
 
@@ -96,34 +93,6 @@ dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
 """
-THE MASKING ARPPOACH BELOW IS NOT SUPPORTED CURRENTLY AND LIKELY TO BE DELETED IN THE NEAR FUTURE, SO USE THE
-NOISE SCASLING FURTHER DOWN INSTEAD.
-
-__Extra Galaxies Mask__
-
-Our first approach to modeling the extra galaxies is to mask their emission in the data and not include them in the
-lens model itself. 
-
-This is the simplest approach, and is the best approach when the extra galaxies are far enough away from the lens
-and source that their emission does not blend significantly with the lensed source emission and we can assume their
-mass is negligible (albeit this can be difficult to know for certain).
-
-We load the `mask_extra_galaxies.fits` from the dataset folder, combine it with the 6.0" circular mask and apply it to
-the dataset.
-"""
-mask_extra_galaxies = al.Mask2D.from_fits(
-    file_path=Path(dataset_path, "mask_extra_galaxies.fits"),
-    pixel_scales=dataset.pixel_scales,
-)
-
-mask = mask_main + mask_extra_galaxies
-
-# dataset = dataset.apply_mask(mask=mask)
-#
-# dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
-# dataset_plotter.subplot_dataset()
-
-"""
 __Extra Galaxies Over Sampling__
 
 Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
@@ -136,71 +105,35 @@ Crucially, this over sampling is applied at the centre of both extra galaxies, e
 sampled correctly.
 
 Once you are more experienced, you should read up on over-sampling in more detail via 
-the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
+the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
 """
-# over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
-#     grid=dataset.grid,
-#     sub_size_list=[4, 2, 1],
-#     radial_list=[0.3, 0.6],
-#     centre_list=[(0.0, 0.0), (1.0, 3.5), (-2.0, -3.5)],
-# )
-#
-# dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
-#
-# dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
-# dataset_plotter.subplot_dataset()
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=dataset.grid,
+    sub_size_list=[4, 2, 1],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0), (1.0, 3.5), (-2.0, -3.5)],
+)
 
-"""
-We now perform a model-fit using the standard API, where the extra galaxies are not included in the model.
+dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
 
-The mask we have applied ensures the extra galaxies do not impact the fit, and the model-fit returns a good fit to the
-lensed source.
-"""
-# Lens:
-
-# bulge = al.model_util.mge_model_from(mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True)
-#
-# mass = af.Model(al.mp.Isothermal)
-#
-# lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
-#
-# # Source:
-#
-# source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
-#
-# # Overall Lens Model:
-#
-# model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
-#
-# search = af.Nautilus(
-#     path_prefix=Path("imaging") / "features",
-#     name="extra_galaxies_simple_mask",
-#     unique_tag=dataset_name,
-#     n_live=150,
-#     iterations_per_quick_update=20000,
-# )
-#
-# analysis = al.AnalysisImaging(dataset=dataset)
-#
-# result = search.fit(model=model, analysis=analysis)
+dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
+dataset_plotter.subplot_dataset()
 
 """
-The fit is satisfactory, whereby the emission of the extra galaxies is masked and omitted from the model-fit.
-
-This is the simplest approach to modeling extra galaxies, and the best starting point for a new user, especially if
-the extra galaxies are far from the lens and source galaxies and no clear blending between their emission and the lensed
-source is present.
-
 __Extra Galaxies Noise Scaling__
 
-The extra galaxies mask above removed all image pixels which had `True` values. This removed the pixels from
-the fit entirely, meaning that their coordinates were not used when performing ray-tracing. This is analogous to
-what the circular masks used throughout the examples does. For a light profile fit, the model is not sensitive to the 
-exact coordinates of the lensed source's light, so this was a good approach.
+To prevent extra galaxies from impacting the model-fit, we do not mask them entirely from the fit, which
+would be analogous to making the circular mask smaller or using a more refined mask. When pixels are masked and
+removed entirely from the fit, their coordinates are not used when performing ray-tracing and the light of the
+lens and source galaxies in these pixels not evaluated.
 
-For more complex models fits, like those using a pixelization, masking regions of the image in a way that removes 
-their image pixels entirely from the fit can produce discontinuities in the pixelixation. This can lead to 
-unexpected systematics and unsatisfactory results
+Instead, the pixels are kept in the fit, but their data values are scaled to zero and their noise-map values
+are increased to very large values. This means that during the model-fit, these pixels contribute negligibly to
+the likelihood of the fit, and therefore do not impact the lens model.
+
+This approach is used because for certain types of modeling approaches, like a pixelized source reconstruction, 
+masking regions of the image in a way that removes  their image pixels entirely from the fit can produce 
+discontinuities in the pixelixation. This can lead to unexpected systematics and unsatisfactory results
 
 In this case, applying the mask in a way where the image pixels are not removed from the fit, but their data and 
 noise-map values are scaled such that they contribute negligibly to the fit, is a better approach. 
@@ -233,10 +166,49 @@ dataset = dataset.apply_mask(mask=mask)
 dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
-"""
-We do not perform a model-fit using this dataset, as using a mask like this requires that we use a pixelization
-to fit the lensed source, which you may not be familiar with yet.
 
+"""
+We now perform a model-fit using the standard API, where the extra galaxies are not included in the model.
+
+The mask we have applied ensures the extra galaxies do not impact the fit, and the model-fit returns a good fit to the
+lensed source.
+"""
+# Lens:
+
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
+)
+
+mass = af.Model(al.mp.Isothermal)
+
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+
+# Source:
+
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+
+# Overall Lens Model:
+
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+search = af.Nautilus(
+    path_prefix=Path("imaging") / "features",
+    name="extra_galaxies_noise_scaling",
+    unique_tag=dataset_name,
+    n_live=150,
+    iterations_per_quick_update=20000,
+)
+
+analysis = al.AnalysisImaging(dataset=dataset)
+
+result = search.fit(model=model, analysis=analysis)
+
+
+"""
 In the `features/pixelization` example we perform a fit using this noise scaling scheme and a pixelization,
 so check this out if you are interested in how to do this.
 
@@ -410,7 +382,7 @@ search = af.Nautilus(
     path_prefix=Path("imaging") / "features",
     name="extra_galaxies_model",
     unique_tag=dataset_name,
-    n_live=150,
+    n_live=200,
     n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=20000,
 )
@@ -459,7 +431,7 @@ fit_plotter = aplt.FitImagingPlotter(fit=result.max_log_likelihood_fit)
 fit_plotter.subplot_fit()
 
 """
-Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
 
 These examples show how the results API can be extended to investigate extra galaxies in the results.
 
@@ -467,7 +439,7 @@ __Approaches to Extra Galaxies__
 
 We illustrated two extremes of how to prevent the emission of extra galaxies impacting the model-fit:
 
-- **Masking**: We masked the emission of the extra galaxies entirely, such that their light did not impact the fit,
+- **Noise Scaling**: We scaled the emission of the extra galaxies, such that their light did not impact the fit,
   and ignored their mass entirely.
 
 - **Modeling**: We included the extra galaxies in the model, such that their light and mass profiles were fitted.
@@ -488,8 +460,7 @@ The modeling API has full support for composing the extra galaxies such that the
 relations. For example, you could assume that the mass of the extra galaxies is related to their luminosity via a
 constant mass-to-light ratio.
 
-This is currently documented in `autolens_workspace/*/guides/advanced/scaling_relation.ipynb`, but will be
-moved here in the near future.
+This is documented in the `autolens_workspace/*/imaging/features/scaling_relation` example.
 
 __Wrap Up__
 

@@ -206,9 +206,7 @@ lens_galaxy_plotter.subplot_of_light_profiles(image=True)
 """
 __Tracer__
 
-The `Tracer` object is the most important object in **PyAutoLens**. 
-
-It is a collection of galaxies at different redshifts (often referred to as planes). 
+The `Tracer` object is a collection of galaxies at different redshifts (often referred to as planes). 
 
 It uses these galaxies to perform ray-tracing, using the mass profiles of the galaxies to bend the light of the source
 galaxy(s) into the multiple images we observe in a strong lens system. 
@@ -465,7 +463,7 @@ but a quick look through these will give you a sense of the breadth of **PyAutoL
 Brief one sentence descriptions of each feature are given, with more detailed descriptions below including 
 links to the relevant workspace examples.
 
-**Pixelizations**: Reconstructing the source galaxy on a mesh of pixels, to capture extremely irregular structures like spiral arms.
+**pixelizations**: Reconstructing the source galaxy on a mesh of pixels, to capture extremely irregular structures like spiral arms.
 **Point Sources**: Modeling point sources (e.g. quasars) observed in the strong lens imaging data.
 **Interferometry**: Modeling of interferometer data (e.g. ALMA, LOFAR) directly in the uv-plane.
 **Multi Gaussian Expansion (MGE)**: Decomposing the lens galaxy into hundreds of Gaussians, for a clean lens subtraction.
@@ -478,7 +476,7 @@ links to the relevant workspace examples.
 
 __Pixelizations__
 
-Pixelizations reconstruct the source galaxy's light on a pixel-grid. Unlike `LightProfile`'s, they are able to
+pixelizations reconstruct the source galaxy's light on a pixel-grid. Unlike `LightProfile`'s, they are able to
 reconstruct the light of non-symmetric, irregular and clumpy sources.
 
 The image below shows a pixelized source reconstruction of the strong lens SLACS1430+4105, where the source is

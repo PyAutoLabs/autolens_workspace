@@ -65,7 +65,7 @@ dataset_path = Path("dataset") / dataset_type / dataset_label / dataset_name
 """
 __Simulate__
 
-Simulate the image using a `Grid2D` with the adaptive over sampling scheme.
+Simulate the image using a (y,x) grid with the adaptive over sampling scheme.
 """
 grid = al.Grid2D.uniform(
     shape_native=(100, 100),

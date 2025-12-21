@@ -8,19 +8,19 @@ the solution to have a degree of smoothness.
 This script fits a source galaxy model which uses a pixelization to reconstruct the source's light.
 
 A Voronoi mesh and constant regularization scheme are used, which are the simplest forms of mesh and regularization
-with provide computationally fast and accurate solutions in **PyAutoLens**.
+with provide computationally fast and accurate solutions.
 
-For simplicity, the lens galaxy's light is omitted from the model and is not present in the simulated data. It is
-straightforward to include the lens galaxy's light in the model.
+For simplicity, the lens galaxy’s light is omitted from both the simulated data and the model. Including the lens
+galaxy’s light is straightforward and can be done in exactly the same framework.
 
-You may wish to first read the `pixelization/fit.py` example in order to see how a pixelization is fitted
-to an individual data.
+You may wish to first read the pixelization/fit.py example, which demonstrates how a pixelized source reconstruction
+is applied to a single dataset.
 
-Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
+pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
 
 __Run Time Overview__
 
-Pixelized inversions can be computed using either GPU acceleration via JAX or CPU acceleration via `numba`.
+Pixelized source reconstructions are computed using either GPU acceleration via JAX or CPU acceleration via `numba`.
 
 The faster option depends on two crucial factors:
 
@@ -57,9 +57,8 @@ implementation exploits sparsity more effectively, especially on systems with ma
 
 __Contents__
 
-**Advantages & Disadvantages:** Benefits and drawbacks of using an MGE.
-**Positive Only Solver:** How a positive solution to the light profile intensities is ensured.
-**Chaining:** How the advanced modeling feature, non-linear search chaining, can significantly improve lens modeling with pixelizaitons.
+**Advantages & Disadvantages:** Benefits and drawbacks of using a pixelization to model a source galaxy.
+**Positive Only Solver:** How a positive solution to the reconstructed source pixel fluxes is ensured.
 **Dataset & Mask:** Standard set up of imaging dataset that is fitted.
 **Pixelization:** How to create a pixelization, including a description of its inputs.
 **Model:** Composing a model using a pixelization and how it changes the number of free parameters.
@@ -68,37 +67,39 @@ __Contents__
 **Run Time:** Profiling of pixelization run times and discussion of how they compare to standard light profiles.
 **Model-Fit:** Performs the model fit using standard API.
 **Result:** Pixelization results and visualizaiton.
+**Chaining:** How the advanced modeling feature, non-linear search chaining, can significantly improve lens modeling with pixelizaitons.
 **Result (Advanced):** API for various pixelization outputs (magnifications, mappings) which requires some polishing.
 **Simulate (Advanced):** Simulating a strong lens dataset with the inferred pixelized source.
 
 __Advantages__
 
-Many strongly lensed source galaxies are complex, and have asymmetric and irregular morphologies. These morphologies
-cannot be well approximated by a light profiles like a Sersic, or many Sersics, and thus a pixelization
-is required to reconstruct the source's irregular light.
+Many strongly lensed source galaxies exhibit complex, asymmetric, and irregular morphologies. Such structures
+cannot be well approximated by analytic light profiles such as a Sérsic profile, or even combinations of multiple
+Sérsic components. pixelizations are therefore required to accurately reconstruct this irregular source-plane light.
 
-Even basis functions like shapelets or a multi-Gaussian expansion cannot reconstruct a source-plane accurately
-if there are multiple source galaxies, or if the source galaxy has a very complex morphology.
+Even alternative basis-function approaches, such as shapelets or multi-Gaussian expansions, struggle to accurately
+reconstruct sources with highly complex morphologies or multiple distinct source galaxies.
 
-To infer detailed components of a lens mass model (e.g. its density slope, whether there's a dark matter subhalo, etc.)
-then pixelized source models are required, to ensure the mass model is fitting all of the lensed source light.
+Pixelized source models are also essential for robustly constraining detailed components of the lens mass
+distribution (e.g. the mass density slope or the presence of dark matter substructure). By fitting all of the lensed
+source light, they reduce degeneracies between the source and lens mass model.
 
-There are also many science cases where one wants to study the highly magnified light of the source galaxy in detail,
-to learnt about distant and faint galaxies. A pixelization reconstructs the source's unlensed emission and thus
-enables this.
+Finally, many science applications aim to study the highly magnified source galaxy itself, in order to learn about
+distant and intrinsically faint galaxies. pixelizations reconstruct the unlensed source emission, enabling detailed
+studies of the source-plane structure.
 
 __Disadvantages__
 
-Pixelizations are computationally slow and run times are typically longer than a source model. It is not
-uncommon for lens models using a pixelization to take hours or even days to fit high resolution imaging
-data (e.g. Hubble Space Telescope imaging).
+Pixelized source reconstructions are computationally more expensive than analytic source models. For high-resolution
+imaging data (e.g. Hubble Space Telescope observations), it is common for lens models using pixelizations to require
+hours or even days to fit.
 
-Lens modeling with pixelizations is also more complex than source models, with there being more things
-that can go wrong. For example, there are solutions where a demagnified version of the lensed source galaxy is
-reconstructed, using a mass model which effectively has no mass or too much mass. These are described in detail below.
+Lens modeling with pixelizations is also conceptually more complex. There are additional failure modes, such as
+solutions where the source is reconstructed in a highly demagnified configuration due to an unphysical lens mass
+model (e.g. too little or too much mass). These issues are discussed in detail later in the workspace.
 
-It will take you longer to learn how to successfully fit lens models with a pixelization than other methods illustrated
-in the workspace!
+As a result, learning to successfully fit lens models with pixelizations typically requires more time and experience
+than the simpler modeling approaches introduced elsewhere in the workspace.
 
 __Positive Only Solver__
 
@@ -121,24 +122,13 @@ possible, where a bespoke fast non-negative linear solver was developed to achie
 Other methods in the literature often do not use a positive only solver, and therefore suffer from these
 unphysical solutions, which can degrade the results of lens model in general.
 
-__Chaining__
-
-Due to the complexity of fitting with a pixelization, it is often best to use **PyAutoLens**'s non-linear chaining
-feature to compose a pipeline which begins by fitting a simpler model using a parametric source.
-
-More information on chaining is provided in the `autolens_workspace/notebooks/guides/modeling/chaining` folder,
-chapter 3 of the **HowToLens** lectures.
-
-The script `autolens_workspace/scripts/guides/modeling/chaining/parametric_to_pixelization.py` explitly uses chaining
-to link a lens model using a light profile source to one which then uses a pixelization.
-
 __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's surface-brightness is reconstructed using a `Voronoi` mesh, `Overlay` image-mesh
+ - The source galaxy's surface-brightness is reconstructed using a `RectangularMagnification` mesh
    and `Constant` regularization scheme.
 
 __Start Here Notebook__
@@ -263,8 +253,8 @@ example fits a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=6. 
 
-It is worth noting the `Pixelization`  use significantly fewer parameters (1 parameter) than 
-fitting the source using `LightProfile`'s (7+ parameters). 
+It is worth noting the pixelization fits the source using significantly fewer parameters (1 parameter for 
+regularization) than fitting the source using light profiles or an MGE (4+ parameters). 
 
 The lens model therefore includes a mesh and regularization scheme, which are used together to create the 
 pixelization. 
@@ -303,7 +293,7 @@ The model is fitted to the data using the nested sampling algorithm Nautilus (se
 full description).
 """
 search = af.Nautilus(
-    path_prefix=Path("features"),
+    path_prefix=Path("imaging"),
     name="pixelization",
     unique_tag=dataset_name,
     n_live=100,
@@ -362,6 +352,12 @@ positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 __Analysis__
 
 Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data. 
+
+The `positions_likelihood_list` is passed to the analysis, which applies the likelihood penalty described above
+for everyone lens mass model.
+
+The `preloads` are passed to the analysis, which contain the static array information JAX needs to perform
+the pixelization calculations.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset, positions_likelihood_list=[positions_likelihood], preloads=preloads
@@ -373,7 +369,7 @@ __VRAM__
 The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
 required by a model.
 
-Pixelizations use a lot more VRAM than light profile-only models, with the amount required depending on the size of
+pixelizations use a lot more VRAM than light profile-only models, with the amount required depending on the size of
 dataset and the number of source pixels in the pixelization's mesh. For 400 source pixels, around 0.05 GB per batched
 likelihood of VRAM is used. 
 
@@ -502,7 +498,7 @@ inversion = result.max_log_likelihood_fit.inversion
 """
 __Wrap Up__
 
-Pixelizations are the most complex but also most powerful way to model a source galaxy.
+pixelizations are the most complex but also most powerful way to model a source galaxy.
 
 Whether you need to use them or not depends on the science you are doing. If you are only interested in measuring a
 simple quantity like the Einstein radius of a lens, you can get away with using light profiles like a Sersic, MGE or 
@@ -515,11 +511,11 @@ source itself, you won't find a better way to do this than using a pixelization.
 
 __Chaining__
 
-If your pixelization fit does not go well, or you want for faster computational run-times, you may wish to use
-search chaining which breaks the model-fit into multiple Nautilus runs. This is described for the specific case of 
-linking a (computationally fast) light profile fit to a pixelization in the script:
+Modeling using a pixelization can be more efficient, robust and automated using the non-linear chaining feature to 
+compose a pipeline which begins by fitting a simpler model using a parametric source.
 
-`autolens_workspace/scripts/guides/modeling/chaining/parametric_to_pixelization.py`
+More information on chaining is provided in the `autolens_workspace/notebooks/guides/modeling/chaining` folder,
+chapter 3 of the **HowToLens** lectures.
 
 __HowToLens__
 

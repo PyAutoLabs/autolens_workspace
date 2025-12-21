@@ -194,5 +194,5 @@ This confirms that `flux` parameters of the source is inferred by the fit.
 print(result.info)
 
 """
-Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
 """

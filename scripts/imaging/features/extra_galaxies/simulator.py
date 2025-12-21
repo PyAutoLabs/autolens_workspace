@@ -12,7 +12,7 @@ fit and subtract the emission. We may also include these galaxies as mass profil
 their lensing effects via ray-tracing.
 
 This uses the modeling API, which is illustrated in
-the script `autolens_workspace/*/modeling/features/extra_galaxies.py`.
+the script `autolens_workspace/*/features/extra_galaxies/modeling`.
 
 This script simulates an imaging dataset which includes extra galaxies near the lens and source
 galaxies. This is used to illustrate the extra galaxies API in the script above.
@@ -68,7 +68,7 @@ dataset_path = Path("dataset", dataset_type, dataset_name)
 """
 __Simulate__
 
-Simulate the image using a `Grid2D` with the adaptive over sampling scheme.
+Simulate the image using a (y,x) grid with the adaptive over sampling scheme.
 
 This simulated galaxy has additional galaxies and light profiles which are offset from the main galaxy centre 
 of (0.0", 0.0"). The adaptive over sampling grid has all centres input to account for this.
@@ -232,6 +232,24 @@ This can be loaded via the method `tracer = al.from_json()`.
 al.output_to_json(
     obj=tracer,
     file_path=Path(dataset_path, "tracer.json"),
+)
+
+"""
+__Multiple Images__
+
+Output the multiple image positions of the source galaxy which can help with lens modeling.
+"""
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+)
+
+positions = solver.solve(
+    tracer=tracer, source_plane_coordinate=source_galaxy.bulge.centre
+)
+
+al.output_to_json(
+    file_path=dataset_path / "positions.json",
+    obj=positions,
 )
 
 """

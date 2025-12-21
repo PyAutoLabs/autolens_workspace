@@ -288,7 +288,7 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
 
 These examples show how the results API can be extended to investigate double Einstein ring results.
 
@@ -309,6 +309,6 @@ to model a real double Einstein ring:
  - Search chaining (e.g. `guides/modeling/chaining` and HowToLens chapter 3): by breaking the model-fit into a series
    of Nautilus searches models of gradually increasing complexity can be fitted.
 
- - Pixelizations (e.g. `pixelization.ipynb` and HowToLens chapter 4): to infer the cosmological parameters reliably
+ - pixelizations (e.g. `pixelization.ipynb` and HowToLens chapter 4): to infer the cosmological parameters reliably
    the source must be reconstructed on an adaptive mesh to capture a irregular morphological features.
 """

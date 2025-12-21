@@ -151,7 +151,7 @@ matrix, which is then reused in all subsequent pixelized source fits.
 - Computing `w_tilde` takes anywhere from a few seconds to a few minutes, depending on the dataset size.
 - After it is computed once, every model-fit using pixelization becomes substantially faster.
 """
-dataset_w_tilde = dataset.apply_w_tilde()
+dataset = dataset.apply_w_tilde()
 
 """
 __JAX & Preloads__
@@ -256,7 +256,7 @@ search = af.Nautilus(
 )
 
 analysis = al.AnalysisImaging(
-    dataset=dataset_w_tilde, preloads=preloads, use_jax=False  # CPU specific code
+    dataset=dataset, preloads=preloads, use_jax=False  # CPU specific code
 )
 
 result = search.fit(model=model, analysis=analysis)

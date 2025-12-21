@@ -2,8 +2,27 @@
 Modeling: Start Here
 ====================
 
-This script is the starting point for lens modeling of interferometer datasets (e.g. ALMA, VLBI) with
-**PyAutoLens** and it provides an overview of the lens modeling API.
+This script is the starting point for lens modeling of interferometer datasets with less than 1000
+visibilities (e.g. SMA, ALMA) and it provides an overview of the lens modeling API.
+
+__Number of Visibilities__
+
+This example fits a **low-resolution interferometric dataset** with a small number of visibilities (273). The
+dataset is intentionally minimal so that the example runs quickly and allows you to become familiar with the API
+and modeling workflow. The code demonstrated in this example can feasible fit datasets with up to around 10000
+visibilities, above which computational time and VRAM use become significant for this modeling approach.
+
+High-resolution datasets with many visibilities (e.g. high-quality ALMA observations
+with **millions hundreds of millions of visibilities**) can be modeled efficiently. However, this requires
+using the more advanced **pixelized source reconstructions** modeling approach. These large datasets fully
+exploit **JAX acceleration**, enable lens modeling to run in **hours on a modern GPU**.
+
+If your dataset contains many visibilities, you should start by working through this example and the other examples
+in the `interferometer` folder. Once you are comfortable with the API, the `feature/pixelization` package provides a
+guided path toward efficiently modeling large interferometric datasets.
+
+The threshold between a dataset having many visibilities and therefore requiring pixelized source reconstructions, or
+being small enough to be modeled with light profiles, is around **10,000 visibilities**.
 
 __Model__
 
@@ -33,10 +52,12 @@ __Mask__
 
 We define the ‘real_space_mask’ which defines the grid the image the strong lens is evaluated using.
 """
-mask_radius = 4.0
+mask_radius = 3.5
 
 real_space_mask = al.Mask2D.circular(
-    shape_native=(800, 800), pixel_scales=0.05, radius=mask_radius
+    shape_native=(256, 256),
+    pixel_scales=0.1,
+    radius=mask_radius,
 )
 
 """
@@ -55,7 +76,7 @@ dataset_path = Path("dataset") / "interferometer" / dataset_name
 dataset = al.Interferometer.from_fits(
     data_path=dataset_path / "data.fits",
     noise_map_path=dataset_path / "noise_map.fits",
-    uv_wavelengths_path=Path(dataset_path, "uv_wavelengths.fits"),
+    uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
     real_space_mask=real_space_mask,
     transformer_class=al.TransformerDFT,
 )
@@ -137,8 +158,12 @@ galaxies (e.g. isophotal twists, radially varying ellipticity).
 This example therefore uses a lens model that combines two features, described in detail elsewhere (but a brief 
 overview is provided below):
 
-- **Linear light profiles**  (see ``autolens_workspace/*/interferometer/features/linear_light_profiles``)
-- **Multi-Gaussian Expansion (MGE) light profiles**  (see ``autolens_workspace/*/interferometer/features/multi_gaussian_expansion``)
+- **Linear light profiles**  (see ``autolens_workspace/*/imaging/features/linear_light_profiles``)
+- **Multi-Gaussian Expansion (MGE) light profiles**  (see ``autolens_workspace/*/imaging/features/multi_gaussian_expansion``)
+
+NOTE: These descriptions are in the `imaging` package as most interferometer users will quickly move on to
+pixelized source reconstructions, which do not use these features. Their use here is therefore mostly to
+given an introduction to lens modeling with interferometer data.
 
 These features avoid wasted effort trying to fit Sérsic profiles to complex data, which is likely to fail unless the 
 lens is extremely simple. This does mean the model composition is more complex and as a user its a steeper learning
@@ -220,8 +245,8 @@ less reliable lens modeling (e.g. the fit may infer a local maxima), but is fast
 
 The suitable value depends on the model complexity whereby models with more parameters require more live points. 
 The default value of 200 is sufficient for the vast majority of common lens models. Lower values often given reliable
-results though, and speed up the run-times. In this example, given the model is quite simple (N=21 parameters), we 
-reduce the number of live points to 100 to speed up the run-time.
+results though, and speed up the run-times. In this example, given the model is quite simple (N=11 parameters), we 
+reduce the number of live points to 75 to speed up the run-time.
 
 __Unique Identifier__
 
@@ -303,8 +328,18 @@ chosen batch size is comfortably below their GPU’s total VRAM.
 The method below prints the VRAM usage estimate for the analysis and model with the specified batch size,
 it takes about 20-30 seconds to run so you may want to comment it out once you are familiar with your GPU's VRAM limits.
 
-For a MGE model with the low visibility dataset fitted in this example VRAM use is relatively low (~0.3GB) For other 
-models (e.g. pixelized sources) and datasets with more visibilities it can be much higher (> 1GB going beyond 10GB).
+Interferometer lens modeling using a `TransformerDFT` can be VRAM intensive, with it quickly exceed GBs for many
+visibilities (e.g. > 10000) and real space masks with pixel scales below 0.1". VRAM also does not scale
+with the batch size, so if the analysis fits within VRAM for batch size 1, you should be able to increase it to
+50 to make run times fastest. 
+
+For a MGE model with the low visibility dataset fitted in this example VRAM use is relatively low (~0.3GB). Modeling
+data with more than 273 visibilities, or a highest resolution real space mask, will quickly increase VRAM use
+into the GBs.
+
+The large VRAM use is an important reason why pixelized source reconstructions, which exploit sparsity to minimize 
+VRAM use, are required for high resolution datasets with millions of visibilities. These keep VRAM use low 
+(e.g. 4 GB) even when there are many visibilities and a high resolution real space mask.
 """
 analysis.print_vram_use(model=model, batch_size=search.batch_size)
 
@@ -393,7 +428,7 @@ print(result.info)
 """
 We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
 
-Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
 """
 print(result.max_log_likelihood_instance)
 
@@ -433,15 +468,10 @@ __Features__
 The examples in the `autolens_workspace/*/interferometer/features` package illustrate other lens modeling 
 features. 
 
-We recommend you checkout the following two features, because they make lens modeling of interferometer datasets 
-in general more reliable and  efficient (you will therefore benefit from using these features irrespective of the 
-quality of your data and scientific topic of study).
+We recommend you checkout just one feature next, because it makes lens modeling of interferometer datasets 
+in more reliable and efficient and will then allow you to model high resolution datasets with many visibilities:
 
-We recommend you now checkout the following two features for interferometer modeling:
-
-- ``linear_light_profiles``: The model light profiles use linear algebra to solve for their intensity, reducing model complexity.
-- ``multi_gaussian_expansion``: The lens (or source) light is modeled as ~25-100 Gaussian basis functions.
-- ``pixelization``: The source is reconstructed using an adaptive RectangularMagnification or Voronoi mesh.
+- ``pixelization``: The source is reconstructed using an adaptive Rectangular mesh or Delaunay mesh.
 
 The files `autolens_workspace/*/guides/modeling/searches` and `autolens_workspace/*/guides/modeling/customize`
 provide guides on how to customize many other aspects of the model-fit. Check them out to see if anything

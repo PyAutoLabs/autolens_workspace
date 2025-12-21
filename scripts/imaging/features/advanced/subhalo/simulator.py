@@ -44,7 +44,7 @@ dataset_path = Path("dataset", dataset_type, dataset_name)
 """
 __Simulate__
 
-Simulate the image using a `Grid2D` with the adaptive over sampling scheme.
+Simulate the image using a (y,x) grid with the adaptive over sampling scheme.
 
 We also over high levels of adaptive over sampling around the centre of the dark matter subhalo.
 """

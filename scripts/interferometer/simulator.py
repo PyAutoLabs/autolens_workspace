@@ -58,7 +58,7 @@ calculation is accurate.
 Interferometer does not observe galaxies in a way where over sampling is necessary, therefore all interferometer
 calculations are performed without over sampling.
 """
-grid = al.Grid2D.uniform(shape_native=(800, 800), pixel_scales=0.05)
+grid = al.Grid2D.uniform(shape_native=(256, 256), pixel_scales=0.1)
 
 """
 To perform the Fourier transform we need the wavelengths of the baselines, which we'll load from the fits file below.
@@ -154,7 +154,7 @@ Output the simulated dataset to the dataset path as .fits files.
 dataset.output_to_fits(
     data_path=dataset_path / "data.fits",
     noise_map_path=dataset_path / "noise_map.fits",
-    uv_wavelengths_path=Path(dataset_path, "uv_wavelengths.fits"),
+    uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
     overwrite=True,
 )
 
@@ -188,5 +188,140 @@ al.output_to_json(
 )
 
 """
+__Multiple Images__
+
+Lens modeling can use a "positions likelihood penalty", whereby mass models which traces the (y,x) 
+coordinates of multiple images of a source galaxy to positions which are far apart from one another 
+in the source plane are penalized in the lens model's overall likelihood.
+
+This speeds up lens modeling, helps the non-linear search avoid local maxima and is vital for inferred 
+accurate solutions when using pixelized source reconstructions.
+
+For real data, the multiple image positions are determined by eye from the data, for example
+using a Graphical User Interface (GUI) to mark them with mouse clicks. For simulated data, we can save
+ourselves time by using the `PointSolver` to determine the multiple image positions automatically and
+output to a .json file.
+
+If you have not looked in the `point_source` package, the point solver is the core tool used to find
+multiple image positions for point source lens modeling (e.g. lensed quasars).
+"""
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+)
+
+positions = solver.solve(
+    tracer=tracer, source_plane_coordinate=source_galaxy.bulge.centre
+)
+
+al.output_to_json(
+    file_path=dataset_path / "positions.json",
+    obj=positions,
+)
+
+"""
 The dataset can be viewed in the folder `autolens_workspace/imaging/simple`.
+
+__Many Visibilities__
+
+Simulating interferometer datasets with many visibilities can be computationally expensive
+if a direct Fourier transform is used. 
+
+Therefore, for simulating high-resolution datasets with many visibilities (e.g. > 10000), we recommend using the
+`TransformerNUFFT` transformer, which uses a non-uniform fast Fourier transform via the library pynufft to 
+perform the Fourier transform efficiently.
+
+Higher resolution datasets also require a higher resolution real space grid, which also increases the computational
+costs of simulating the dataset.
+
+The code below loads a `uv_wavelengths` file with many over 1 million visibilities and simulates the dataset using 
+the `TransformerNUFFT`.
+
+__High Resolution Dataset__
+
+A high-resolution `uv_wavelengths` file for ALMA is available in a separate repository that hosts large files which
+are too big to include in the main `autolens_workspace` repository:
+
+https://github.com/Jammy2211/autolens_workspace_large_files
+
+After downloading the file, place it in the directory:
+
+`autolens_workspace/dataset/interferometer/alma`
+
+You can then simulate and fit this high-resolution ALMA dataset by uncommenting the 
+line `dataset_name = "alma"` below.
+
+This dataset is particularly useful for testing performance, memory usage, and accuracy when modeling realistic
+ALMA uv-coverage with a very large number of visibilities.
+"""
+dataset_type = "interferometer"
+# dataset_name = "alma"
+
+dataset_path = Path("dataset", dataset_type, dataset_name)
+
+grid = al.Grid2D.uniform(shape_native=(800, 800), pixel_scales=0.01)
+
+uv_wavelengths_path = Path("dataset", dataset_type, dataset_name)
+uv_wavelengths = al.ndarray_via_fits_from(
+    file_path=Path(uv_wavelengths_path, "uv_wavelengths.fits"), hdu=0
+)
+
+simulator = al.SimulatorInterferometer(
+    uv_wavelengths=uv_wavelengths,
+    exposure_time=300.0,
+    noise_sigma=1000.0,
+    transformer_class=al.TransformerNUFFT,
+)
+
+"""
+The code below is identical to above, outputting images, data, tracer and multiple image 
+positions to the dataset folder.
+"""
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+tracer_plotter.figures_2d(image=True)
+
+dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
+
+dataset_plotter = aplt.InterferometerPlotter(dataset=dataset)
+dataset_plotter.figures_2d(dirty_image=True)
+dataset_plotter.subplot_dataset()
+dataset_plotter.subplot_dirty_images()
+
+dataset.output_to_fits(
+    data_path=dataset_path / "data.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
+    overwrite=True,
+)
+
+mat_plot = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
+
+dataset_plotter = aplt.InterferometerPlotter(dataset=dataset, mat_plot_2d=mat_plot)
+dataset_plotter.subplot_dataset()
+dataset_plotter.subplot_dirty_images()
+dataset_plotter.figures_2d(data=True)
+
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot)
+tracer_plotter.subplot_tracer()
+tracer_plotter.subplot_galaxies_images()
+
+al.output_to_json(
+    obj=tracer,
+    file_path=Path(dataset_path, "tracer.json"),
+)
+
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+)
+
+positions = solver.solve(
+    tracer=tracer, source_plane_coordinate=source_galaxy.bulge.centre
+)
+
+al.output_to_json(
+    file_path=dataset_path / "positions.json",
+    obj=positions,
+)
+
+"""
+Finish.
 """

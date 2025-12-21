@@ -1,0 +1,232 @@
+"""
+Simulator: Extra Galaxies
+=========================
+
+There may be extra galaxies nearby the lens and source galaxies, whose mass may contribute to the ray-tracing and
+lens model.
+
+They may also emit  luminous emission, but for interferometer datasets they are rarely detected at the long wavelengths
+probed. The extra galaxies examples for interferometer throughout the workspace therefore do not include their light
+(unlike the CCD image examples).
+
+The emission of these galaxies may overlap the lensed source emission, and their mass may contribute to the lensing
+of the source.
+
+We therefore will include these galaxies as mass profiles in the lens model, accounting for their lensing effects
+via ray-tracing.
+
+This uses the modeling API, which is illustrated in the script `autolens_workspace/*/features/extra_galaxies/modeling`.
+
+This script simulates an interferometer dataset which includes extra galaxies near the lens and source
+galaxies. This is used to illustrate the extra galaxies API in the script above.
+
+__Model__
+
+This script simulates `Interferometer` of a 'galaxy-scale' strong lens where:
+
+ - The lens galaxy's total mass distribution is an `Isothermal`.
+ - The source galaxy's light is an `Sersic`.
+ - There are two extra galaxies whose mass perturbs the lensed source's emission.
+
+__Other Scripts__
+
+To illustrate how compose and fit a lens model which includes the extra galaxies as light and mass profiles.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
+"""
+
+# from pyprojroot import here
+# workspace_path = str(here())
+# %cd $workspace_path
+# print(f"Working Directory has been set to `{workspace_path}`")
+
+from pathlib import Path
+import autolens as al
+import autolens.plot as aplt
+
+"""
+__Dataset Paths__
+
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
+"""
+dataset_type = "interferometer"
+dataset_name = "extra_galaxies"
+dataset_path = Path("dataset", dataset_type, dataset_name)
+
+"""
+__Simulate__
+
+Simulate the image using a (y,x) grid.
+
+This simulated galaxy has additional galaxies and light profiles which are offset from the main galaxy centre 
+of (0.0", 0.0"). The adaptive over sampling grid has all centres input to account for this.
+"""
+grid = al.Grid2D.uniform(shape_native=(256, 256), pixel_scales=0.1)
+
+"""
+To perform the Fourier transform we need the wavelengths of the baselines.
+"""
+uv_wavelengths_path = Path("dataset", dataset_type, "uv_wavelengths")
+uv_wavelengths = al.ndarray_via_fits_from(
+    file_path=Path(uv_wavelengths_path, "sma.fits"), hdu=0
+)
+
+"""
+Create the simulator for the interferometer data, which defines the exposure time, noise levels and transformer.
+"""
+simulator = al.SimulatorInterferometer(
+    uv_wavelengths=uv_wavelengths,
+    exposure_time=300.0,
+    noise_sigma=1000.0,
+    transformer_class=al.TransformerDFT,
+)
+
+"""
+__Galaxies__
+
+Setup the lens galaxy's light, mass and source galaxy light for this simulated lens.
+"""
+lens_galaxy = al.Galaxy(
+    redshift=0.5,
+    bulge=al.lp.Sersic(
+        centre=(0.0, 0.0),
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+        intensity=1.0,
+        effective_radius=0.8,
+        sersic_index=4.0,
+    ),
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.6,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=45.0),
+    ),
+)
+
+source_galaxy = al.Galaxy(
+    redshift=1.0,
+    bulge=al.lp.SersicCore(
+        centre=(0.1, 0.1),
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
+        intensity=0.3,
+        effective_radius=1.0,
+        sersic_index=2.5,
+    ),
+)
+
+
+"""
+__Extra Galaxies__
+
+Includes two extra galaxies, which must be modeled to ensure the lens model is accurate.
+
+Note that their redshift is the same as the main galaxy, which is not necessarily the case in real observations. 
+
+If they are at a different redshift, the tools for masking or modeling the luminous emission of the extra galaxies 
+are equipped to handle this.
+
+For mass modeling, their redshifts being different to the main galaxy will lead to multi-plane ray-tracing being
+performed.
+"""
+extra_galaxy_0_centre = (1.0, 3.5)
+
+extra_galaxy_0 = al.Galaxy(
+    redshift=0.5,
+    mass=al.mp.IsothermalSph(centre=extra_galaxy_0_centre, einstein_radius=0.1),
+)
+
+extra_galaxy_1_centre = (-2.0, -3.5)
+
+extra_galaxy_1 = al.Galaxy(
+    redshift=0.5,
+    mass=al.mp.IsothermalSph(centre=extra_galaxy_1_centre, einstein_radius=0.2),
+)
+
+"""
+Use these galaxies to setup a tracer, which will generate the image for the simulated `Interferometer` dataset.
+"""
+tracer = al.Tracer(
+    galaxies=[lens_galaxy, extra_galaxy_0, extra_galaxy_1, source_galaxy]
+)
+
+"""
+Lets look at the tracer`s image, this is the image we'll be simulating.
+"""
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
+tracer_plotter.figures_2d(image=True)
+
+"""
+Pass the simulator a tracer, which creates the image which is simulated as an interferometer dataset.
+"""
+dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
+
+"""
+Plot the simulated `Interferometer` dataset before outputting it to fits.
+"""
+dataset_plotter = aplt.InterferometerPlotter(dataset=dataset)
+dataset_plotter.subplot_dataset()
+dataset_plotter.subplot_dirty_images()
+
+"""
+__Output__
+
+Output the simulated dataset to the dataset path as .fits files.
+"""
+dataset.output_to_fits(
+    data_path=dataset_path / "data.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
+    overwrite=True,
+)
+
+"""
+__Visualize__
+
+Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset path as .png files.
+"""
+mat_plot = aplt.MatPlot2D(output=aplt.Output(path=dataset_path, format="png"))
+
+dataset_plotter = aplt.InterferometerPlotter(dataset=dataset, mat_plot_2d=mat_plot)
+dataset_plotter.subplot_dataset()
+dataset_plotter.subplot_dirty_images()
+dataset_plotter.figures_2d(data=True)
+
+tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot)
+tracer_plotter.subplot_tracer()
+tracer_plotter.subplot_galaxies_images()
+
+"""
+__Tracer json__
+
+Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass profiles and galaxies
+are safely stored and available to check how the dataset was simulated in the future. 
+
+This can be loaded via the method `tracer = al.from_json()`.
+"""
+al.output_to_json(
+    obj=tracer,
+    file_path=Path(dataset_path, "tracer.json"),
+)
+
+"""
+__Multiple Images__
+
+Output the multiple image positions of the source galaxy which can help with lens modeling.
+"""
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+)
+
+positions = solver.solve(
+    tracer=tracer, source_plane_coordinate=source_galaxy.bulge.centre
+)
+
+al.output_to_json(
+    file_path=dataset_path / "positions.json",
+    obj=positions,
+)
+
+"""
+The dataset can be viewed in the folder `autolens_workspace/interferometer/extra_galaxies`.
+"""

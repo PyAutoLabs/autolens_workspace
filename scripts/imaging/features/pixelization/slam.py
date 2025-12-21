@@ -138,8 +138,8 @@ source_lp_result = slam_pipeline.source_lp.run(
 """
 __JAX & Preloads__
 
-The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
-advance so it knows the shape of arrays it must compile functions for.
+The `features/pixelization/modeling` example describes how JAX required preloads in advance so it knows the 
+shape of arrays it must compile functions for.
 """
 mesh_shape = (20, 20)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
@@ -181,7 +181,7 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     analysis=analysis,
     source_lp_result=source_lp_result,
     mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
-    regularization=al.reg.AdaptiveBrightness,
+    regularization_init=al.reg.AdaptiveBrightness,
 )
 
 """
@@ -207,7 +207,7 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
     mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
-    regularization=al.reg.AdaptiveBrightness,
+    regularization=al.reg.AdaptiveBrightnessSplit,
 )
 
 """

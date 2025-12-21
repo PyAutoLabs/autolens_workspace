@@ -580,7 +580,7 @@ The `Result` object also contains:
  - The model corresponding to the maximum log likelihood solution in parameter space.
  - The corresponding maximum log likelihood `Tracer` and `FitImaging` objects.
 
-Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
 """
 print(result_list[0].max_log_likelihood_instance)
 

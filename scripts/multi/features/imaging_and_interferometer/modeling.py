@@ -38,8 +38,10 @@ __Interferometer Masking__
 
 We define the ‘real_space_mask’ which defines the grid the image the strong lens is evaluated using.
 """
+mask_radius = 4.0
+
 real_space_mask = al.Mask2D.circular(
-    shape_native=(800, 800), pixel_scales=0.05, radius=4.0
+    shape_native=(800, 800), pixel_scales=0.05, radius=mask_radius
 )
 
 """
@@ -56,7 +58,7 @@ dataset_path = Path("dataset") / dataset_type / dataset_label / dataset_name
 interferometer = al.Interferometer.from_fits(
     data_path=dataset_path / "data.fits",
     noise_map_path=dataset_path / "noise_map.fits",
-    uv_wavelengths_path=Path(dataset_path, "uv_wavelengths.fits"),
+    uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
     real_space_mask=real_space_mask,
     transformer_class=al.TransformerDFT,
 )
@@ -239,5 +241,5 @@ plotter = aplt.NestPlotter(samples=result_list.samples)
 plotter.corner_anesthetic()
 
 """
-Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
 """

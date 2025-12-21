@@ -14,7 +14,7 @@ The following example scripts illustrating lens modeling where:
 - ``extra_galaxies``: Modeling which account for the light and mass of extra nearby galaxies.
 - ``linear_light_profiles``: The model includes light profiles which use linear algebra to solve for their intensity, reducing model complexity.
 - ``multi_gaussian_expansion``: The lens (or source) light is modeled as ~25-100 Gaussian basis functions
-- ``pixelization``: The source is reconstructed using an adaptive RectangularMagnification or Voronoi mesh.
+- ``pixelization``: The source is reconstructed using an adaptive rectangular or Delaunay mesh
 - ``scaling_relation``: Use scaling relations, for example relating light and mass, to compose lens models with few parameters for many galaxies.
 - ``advanced``: Advanced features for expert users, for example modeling with multiple datasets simultaneously.
 
@@ -28,4 +28,4 @@ Notes
 
 These scripts only give a brief overview of how to analyse and interpret the results a lens model fit.
 
-A full guide to result analysis is given at ``autolens_workspace/*/results``.
+A full guide to result analysis is given at ``autolens_workspace/*/guides/results``.

@@ -33,9 +33,8 @@ approach to pixelization that may work better for certain datasets.
 
 __JAX + GPU__
 
-Generating a Delaunay mesh currently supports JAX and GPU acceleration, however certain operations (e.g.
-generating the Delaunay triangulation itself) do not run on the GPU because they cannot be easily
-converted to JAX.
+Generating a Delaunay mesh supports JAX and GPU acceleration, however certain operations (e.g. generating the Delaunay
+triangulation itself) do not run on the GPU because they cannot be easily converted to JAX.
 
 Instead, JAX sends them to a CPU, runs them there, and then sends the results back to the GPU. This process is
 very efficient, because these operations run very fast on a CPU and the data being sent back and forth is small.
@@ -290,7 +289,7 @@ and how it depends on image resolution, number of source pixels and batch size.
 
 This is true for the Delaunay mesh, therefore we print out the estimated VRAM required for this model-fit.
 """
-analysis_1.print_vram_use(model=model, batch_size=search_1.batch_size)
+analysis_1.print_vram_use(model=model_1, batch_size=search_1.batch_size)
 
 """
 __Model-Fit (Search 1)__
@@ -332,20 +331,28 @@ image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
     mask=dataset.mask, adapt_data=galaxy_image_name_dict["('galaxies', 'source')"]
 )
 
-image_plane_mesh_grid_edge_pixels = 30
-
 """
 __Image Plane Mesh Grid Edge Points__
 
-What the code does:
-When we developed the MGE lens light model, we learned that the edge pixels of the source reconstruction may reconstruct a faint amount of light that is from the edge of the lens galaxy emission rather than genuinely part of the source.
-To stop this, we force all source pixels at the edge of the mask to be reconstructed with flux values of 0, which in turn means that the lens light model then correct goes to a slightly brighter solution which correctly fits its outskirts.
-Pre-JAX, we could determine edge pixels inside the likelihood function and zero them, but JAX's static array shapes criteria means you have to assign these pixels before modeling. For the rectangular mesh, there is a line of code which passes Preloads the edge pixels of all rectangular pixels.
-For image-mesh's and delaunay, what the code abovre does is add a circle of source-pixels to the image mesh which are the pixels to be zeroed. So, you code probably added image_plane_mesh_grid_edge_pixels=30 extra source pixels in the image plane for this purpose.
-The bug is that it was adding them at an image-plane radius=3.0 + 0.05, instead of radius = mask_radius + 0.05.
-10:31
-This perfectly explains one of the very strange results we saw where there was caustics being formed at the outskirts of the source plane, basically the sources pixels a bit further "inside" the source plane were being zero'd, doing all sorts of horrible things to the results source reconstruction (but surprisingly not enough to be really-obviously-broken-by-eye
+When we developed the MGE lens light model, we found that **edge pixels in the source reconstruction can pick up 
+faint flux from the outskirts of the lens galaxy**, rather than representing genuine source emission.
+
+To prevent this contamination, we **force all source pixels at the edge of the mask to have zero flux**. This, 
+in turn, allows the lens light model to converge to a **slightly brighter and more accurate solution**, correctly 
+fitting the outer regions of the lens galaxy.
+
+Before the JAX implementation, we could identify and zero these edge pixels **inside the likelihood function**. 
+However, JAX’s requirement for **static array shapes** means that these pixels must now be 
+defined **before modeling begins**.
+
+For rectangular meshes, this is handled via a preload that explicitly marks all rectangular edge pixels.
+
+For image-mesh and Delaunay reconstructions, the approach is different: the code adds a **ring of source pixels 
+around the image mesh** that are explicitly set to zero. This means that your configuration likely 
+added `image_plane_mesh_grid_edge_pixels = 30` extra source pixels in the image plane for this purpose.
 """
+image_plane_mesh_grid_edge_pixels = 30
+
 image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
     image_plane_mesh_grid=image_plane_mesh_grid,
     centre=mask.mask_centre,
@@ -616,7 +623,7 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     analysis=analysis,
     source_lp_result=source_lp_result,
     mesh_init=al.mesh.Delaunay(),
-    regularization=al.reg.AdaptiveBrightnessSplit,
+    regularization_init=al.reg.AdaptiveBrightnessSplit,
 )
 
 """
@@ -815,7 +822,6 @@ For a Delaunay mesh, the uniform grid is instead laid over the image-plane to cr
 These are then ray-traced to the source-plane and are used as the vertexes of the Delaunay triangles.
 """
 pixelization = al.Pixelization(
-    image_mesh=al.image_mesh.Overlay(shape=(30, 30)),  # Specific to Delaunay
     mesh=al.mesh.Delaunay(),
     regularization=al.reg.ConstantSplit(coefficient=1.0),
 )
@@ -845,9 +851,9 @@ array_2d_plotter = aplt.Array2DPlotter(array=convolved_image_2d)
 array_2d_plotter.figure_2d()
 
 
-lens_subtracted_image_2d = masked_dataset.data - convolved_image_2d
+lens_subtracted_image = masked_dataset.data - convolved_image_2d
 
-array_2d_plotter = aplt.Array2DPlotter(array=lens_subtracted_image_2d)
+array_2d_plotter = aplt.Array2DPlotter(array=lens_subtracted_image)
 array_2d_plotter.figure_2d()
 
 """
@@ -863,7 +869,9 @@ source pixels will congregate in higher magnification regions.
 This calculation is performed by overlaying a uniform regular grid with an `pixelization_shape_2d` over the image
 mask and retaining all pixels that fall within the mask. This uses a `Grid2DSparse` object.
 """
-image_plane_mesh_grid = pixelization.image_mesh.image_plane_mesh_grid_from(
+image_mesh = al.image_mesh.Overlay(shape=(30, 30))  # Specific to Delaunay
+
+image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
     mask=masked_dataset.mask,
 )
 
@@ -886,7 +894,9 @@ the `TracerToInversion` objects.
 The plots at the bottom of this cell show the traced grids used by the source pixelization, showing
 how the Delaunay mesh and traced image pixels are constructed.
 """
-tracer_to_inversion = al.TracerToInversion(tracer=tracer, dataset=masked_dataset)
+tracer_to_inversion = al.TracerToInversion(
+    tracer=tracer, dataset=masked_dataset, preloads=preloads
+)
 
 # A list of every grid (e.g. image-plane, source-plane) however we only need the source plane grid with index -1.
 traced_grid_pixelization = tracer.traced_grid_2d_list_from(
@@ -994,7 +1004,7 @@ mapper_plotter = aplt.MapperPlotter(
     visuals_2d=visuals,
 )
 mapper_plotter.subplot_image_and_mapper(
-    image=lens_subtracted_image_2d, interpolate_to_uniform=False
+    image=lens_subtracted_image, interpolate_to_uniform=False
 )
 
 pix_indexes = [[200]]
@@ -1009,7 +1019,7 @@ mapper_plotter = aplt.MapperPlotter(
 )
 
 mapper_plotter.subplot_image_and_mapper(
-    image=lens_subtracted_image_2d, interpolate_to_uniform=False
+    image=lens_subtracted_image, interpolate_to_uniform=False
 )
 
 mapping_matrix = al.util.mapper.mapping_matrix_from(
@@ -1060,7 +1070,7 @@ print(f"Mapping between image pixel 0 and source pixel 2 = {mapping_matrix[0, 2]
 
 data_vector = al.util.inversion_imaging.data_vector_via_blurred_mapping_matrix_from(
     blurred_mapping_matrix=blurred_mapping_matrix,
-    image=np.array(lens_subtracted_image_2d),
+    image=np.array(lens_subtracted_image),
     noise_map=np.array(masked_dataset.noise_map),
 )
 

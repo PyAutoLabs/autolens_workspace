@@ -31,17 +31,6 @@ provides the following benefits:
  - The lens galaxy's light traces its mass, so we can use the lens light model inferred in search 1 to initialize
  sampling of the stellar mass model in search 2.
 
- __Preloading__
-
-When certain components of a model are fixed its associated quantities do not change during a model-fit. For
-example, for a lens model where all light profiles are fixed, the PSF blurred model-image of those light profiles
-is also fixed.
-
-**PyAutoLens** uses _implicit preloading_ to inspect the model and determine what quantities are fixed. It then stores
-these in memory before the non-linear search begins such that they are not recomputed for every likelihood evaluation.
-
-In this example no preloading occurs.
-
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.
@@ -231,17 +220,6 @@ __Wrap Up__
 
 In this example, we passed a bulge lens light model to a decomposed stellar + dark matter mass model. Thus, we
 use an initial fit of the lens galaxy's light to better constrained our lens mass model! 
-
-__Pipelines__
-
-Advanced search chaining uses `pipelines` that chain together multiple searches to perform complex lens modeling 
-in a robust and efficient way. 
-
-The following example pipelines exploit our ability to model separately the lens's light and its stellar mass to
-perform model-fits in non-linear parameter spaces of reduced complexity, as shown in this example:
-
- `autolens_workspace/imaging/chaining/pipelines/light_parametric__mass_light_dark__source_lp_linear.py`
- `autolens_workspace/imaging/chaining/pipelines/light_parametric__mass_light_dark__source_pixelization.py`
 
 __SLaM (Source, Light and Mass)__
 

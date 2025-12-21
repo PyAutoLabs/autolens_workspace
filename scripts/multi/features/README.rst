@@ -11,7 +11,7 @@ descriptions of modeling and features. For example, if you are combining imaging
 refer to the ``imaging`` and ``interferometer`` packages first before reading their corresponding `multi` examples.
 
 These scripts show how to perform lens modeling but only give a brief overview of how to analyse
-and interpret the results a lens model fit. A full guide to result analysis is given at ``autolens_workspace/*/results``.The following example illustrate multi-dataset lens modeling with features that are specific to having multiple datasets:
+and interpret the results a lens model fit. A full guide to result analysis is given at ``autolens_workspace/*/guides/results``.The following example illustrate multi-dataset lens modeling with features that are specific to having multiple datasets:
 
 - ``dataset_offsets``: Datasets may have small offsets due to pointing errors, which can be accounted for in the model.
 - ``imaging_and_interferometer``: Imaging and interferometer datasets are fitted simultaneously.

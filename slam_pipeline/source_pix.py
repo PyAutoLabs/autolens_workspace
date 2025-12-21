@@ -215,6 +215,117 @@ def run_2(
     return result
 
 
+def run_1__bypass_lp(
+    settings_search: af.SettingsSearch,
+    analysis: Union[al.AnalysisImaging, al.AnalysisInterferometer],
+    lens_bulge: Optional[af.Model] = af.Model(al.lp.Sersic),
+    lens_disk: Optional[af.Model] = af.Model(al.lp.Exponential),
+    lens_point: Optional[af.Model] = None,
+    mass: af.Model = af.Model(al.mp.Isothermal),
+    shear: af.Model(al.mp.ExternalShear) = af.Model(al.mp.ExternalShear),
+    mesh_init: af.Model(al.AbstractMesh) = af.Model(al.mesh.Delaunay),
+    regularization_init: af.Model(al.AbstractRegularization) = af.Model(
+        al.reg.AdaptiveBrightnessSplit
+    ),
+    redshift_lens: float = 0.5,
+    redshift_source: float = 1.0,
+    extra_galaxies: Optional[af.Collection] = None,
+    dataset_model: Optional[af.Model] = None,
+    n_batch: int = 20,
+) -> af.Result:
+    """
+    The first SLaM SOURCE PIX PIPELINE, which initializes a lens model which uses a pixelized source for the source
+    analysis.
+
+    This variant bypasses the source lp pipeline and is typically used for the interferometer SLaM pipeline, albeit
+    it can also be used for imaging analysis.
+
+    The first SOURCE PIX PIPELINE may require an adapt-image, for example to adapt the regularization scheme to the
+    source's unlensed morphology. The adapt image provided by the SOURCE LP PIPELINE may not cover the entire source
+    galaxy (e.g. because the MGE only captures part of the source) and produce a suboptimal fit.
+
+    The result of this pipeline is used in the second SOURCE PIX PIPELINE to adapt the source pixelization to the
+    source's unlensed morphology via an adapt image, where the adapt image produced in this pipeline will give a robust
+    source image because it uses a pixelized source.
+
+    Parameters
+    ----------
+    settings_search
+        The settings used to set up the non-linear search which are general to all SLaM pipelines, for example
+        the `path_prefix`.
+    analysis
+        The analysis class which includes the `log_likelihood_function` and can be customized for the SLaM model-fit.
+    mesh_init
+        The mesh, which defines how the source is reconstruction in the source-plane, used by the pixelization
+        in the first search which initializes the source.
+    regularization_init
+        The regularization, which places a smoothness prior on the source reconstruction, used by the pixelization
+        which fits the source light in the initialization search (`search[1]`).
+    extra_galaxies
+        Additional extra galaxies containing light and mass profiles, which model nearby line of sight galaxies.
+    dataset_model
+        Add aspects of the dataset to the model, for example the arc-second (y,x) offset between two datasets for
+        multi-band fitting or the background sky level.
+    fixed_mass_model
+        Whether the mass model is fixed from the SOURCE LP PIPELINE, which is generally used for multi-band fitting
+        where the mass model is fixed to the first band, albeit it may work for standard fitting if the SOURCE LP
+        PIPELINE provides a good mass model.
+    """
+
+    """
+    __Model + Search + Analysis + Model-Fit (Search 1)__
+
+    Search 1 of the SOURCE PIX PIPELINE fits a lens model where:
+
+    - The lens galaxy light is modeled using light profiles [parameters fixed to result of SOURCE LP PIPELINE].
+
+     - The lens galaxy mass is modeled using a total mass distribution [model initialized from the results of the 
+     SOURCE LP PIPELINE].
+
+     - The source galaxy's light is the input initialization image mesh, mesh and regularization scheme [parameters of 
+     regularization free to vary].
+
+    This search improves the lens mass model by modeling the source using a pixelization and computes the adapt
+    images that are used in search 2.
+    """
+
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
+                redshift=redshift_lens,
+                bulge=lens_bulge,
+                disk=lens_disk,
+                point=lens_point,
+                mass=mass,
+                shear=shear,
+            ),
+            source=af.Model(
+                al.Galaxy,
+                redshift=redshift_source,
+                pixelization=af.Model(
+                    al.Pixelization,
+                    mesh=mesh_init,
+                    regularization=regularization_init,
+                ),
+            ),
+        ),
+        extra_galaxies=extra_galaxies,
+        dataset_model=dataset_model,
+    )
+
+    search = af.Nautilus(
+        name="source_pix[1]",
+        **settings_search.search_dict,
+        n_live=150,
+        n_batch=n_batch,
+    )
+
+    result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
+
+    return result
+
+
 def run_1__multi(
     settings_search: af.SettingsSearch,
     analysis_list: Union[al.AnalysisImaging, al.AnalysisInterferometer],

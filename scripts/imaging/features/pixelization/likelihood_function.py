@@ -215,11 +215,11 @@ array_2d_plotter = aplt.Array2DPlotter(array=convolved_image_2d)
 array_2d_plotter.figure_2d()
 
 """
-We can now subtract this image from the observed image to produce a `lens_subtracted_image_2d`:
+We can now subtract this image from the observed image to produce a `lens_subtracted_image`:
 """
-lens_subtracted_image_2d = masked_dataset.data - convolved_image_2d
+lens_subtracted_image = masked_dataset.data - convolved_image_2d
 
-array_2d_plotter = aplt.Array2DPlotter(array=lens_subtracted_image_2d)
+array_2d_plotter = aplt.Array2DPlotter(array=lens_subtracted_image)
 array_2d_plotter.figure_2d()
 
 """
@@ -371,7 +371,7 @@ mapper_plotter = aplt.MapperPlotter(
     visuals_2d=visuals,
 )
 mapper_plotter.subplot_image_and_mapper(
-    image=lens_subtracted_image_2d, interpolate_to_uniform=False
+    image=lens_subtracted_image, interpolate_to_uniform=False
 )
 
 """
@@ -392,7 +392,7 @@ mapper_plotter = aplt.MapperPlotter(
 )
 
 mapper_plotter.subplot_image_and_mapper(
-    image=lens_subtracted_image_2d, interpolate_to_uniform=False
+    image=lens_subtracted_image, interpolate_to_uniform=False
 )
 
 """
@@ -524,7 +524,7 @@ NOTE: WD03 assume the data is already lens subtracted thus $b_{j}$ is omitted (e
 """
 data_vector = al.util.inversion_imaging.data_vector_via_blurred_mapping_matrix_from(
     blurred_mapping_matrix=blurred_mapping_matrix,
-    image=np.array(lens_subtracted_image_2d),
+    image=np.array(lens_subtracted_image),
     noise_map=np.array(masked_dataset.noise_map),
 )
 

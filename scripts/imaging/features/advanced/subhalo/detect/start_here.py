@@ -16,7 +16,7 @@ The example illustrates DM subhalo detection with **PyAutoLens**.
 __SLaM Pipelines__
 
 The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pipelines which automate the fitting
-of complex lens models. The SLaM pipelines are used for all DM subhalo detection analyses in **PyAutoLens**. Therefore
+of complex lens models. The SLaM pipelines are used for all DM subhalo detection analyses. Therefore
 you should be familiar with the SLaM pipelines before performing DM subhalo detection yourself. If you are unfamiliar
 with the SLaM pipelines, checkout the
 example `autolens_workspace/notebooks/guides/modeling/slam_start_here`.

@@ -625,7 +625,7 @@ The `Result` object also contains:
  - The model corresponding to the maximum log likelihood solution in parameter space.
  - The corresponding maximum log likelihood `Tracer` and `FitImaging` objects.
 
-Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **PyAutoLens**.
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
 """
 print(result.max_log_likelihood_instance)
 
@@ -672,7 +672,7 @@ We recommend you now checkout the following features:
 - ``scaling_relation``: This feature allows you to model the light and mass of the extra galaxies using a scaling relation.
 - ``linear_light_profiles``: The model light profiles use linear algebra to solve for their intensity, reducing model complexity.
 - ``multi_gaussian_expansion``: The lens (or source) light is modeled as ~25-100 Gaussian basis functions 
-- ``pixelization``: The source is reconstructed using an adaptive RectangularMagnification or Voronoi mesh.
+- ``pixelization``: The source is reconstructed using an adaptive rectangular or Delaunay mesh
 - ``no_lens_light``: The foreground lens's light is not present in the data and thus omitted from the model.
 
 For group scale modeling, the multi Gaussian expansion is particularly important, as this can dramatically reduce the

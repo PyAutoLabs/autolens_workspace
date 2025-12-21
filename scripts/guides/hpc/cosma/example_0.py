@@ -20,7 +20,7 @@ __COSMA PATHS SETUP__
 
 Setup the path to the cosma output directory.
 
-This exmaple assumes you are using cosma7 and outputting results to the cosma7 output directory:
+This example assumes you are using cosma7 and outputting results to the cosma7 output directory:
 
  `/cosma7/data/dp004/cosma_username`.
 """

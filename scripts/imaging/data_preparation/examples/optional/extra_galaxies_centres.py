@@ -30,7 +30,7 @@ __Links / Resources__
 The script `data_preparation/gui/extra_galaxies_centres.ipynb` shows how to use a Graphical User Interface (GUI) to mark
 the extra galaxy centres in this way.
 
-The script `modeling/features/extra_galaxies.py` shows how to use extra galaxies in a model-fit, including loading the
+The script `features/extra_galaxies/modeling` shows how to use extra galaxies in a model-fit, including loading the
 extra galaxy centres created by this script.
 
 __Start Here Notebook__

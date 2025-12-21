@@ -9,15 +9,15 @@ __Preqrequisites__
 
 Before using SLaM, you should understand:
 
-- **Pixelizations** (`*/features/pixelization`)
+- **pixelizations** (`*/features/pixelization`)
   Methods that reconstruct the source galaxy using a pixel grid.
 
 - **Search Chaining** (`guides/modeling/chaining`)
   Fitting lens models in stages of increasing complexity, e.g. first a light-profile source,
   then a pixelized source.
 
-- **Adaptive Pixelizations** (`features/pixelization/adaptive`)
-  Pixelizations that adapt their mesh and regularization to the unlensed source morphology.
+- **Adaptive pixelizations** (`features/pixelization/adaptive`)
+  pixelizations that adapt their mesh and regularization to the unlensed source morphology.
 
 - **Multi-Gaussian Expansions (MGEs)** (`features/multi_gaussian_expansion`)
   Galaxy light modeled as a sum of Gaussians, enabling accurate lens-light subtraction.

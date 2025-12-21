@@ -113,7 +113,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, point=point)
 """
 __Simulate__
 
-Simulate the image data using a `Grid2D` with the adaptive over sampling scheme.
+Simulate the image data using a (y,x) grid with the adaptive over sampling scheme.
 """
 grid = al.Grid2D.uniform(
     shape_native=(150, 150),
