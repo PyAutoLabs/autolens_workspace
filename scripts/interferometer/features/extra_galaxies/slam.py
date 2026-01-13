@@ -140,7 +140,7 @@ the `many_visibilities_preparartion` example it is made here.
 """
 try:
     curvature_preload = np.load(
-        file=dataset_path / "curvature_preload.npz",
+        file=dataset_path / "curvature_preload.npy",
     )
 except FileNotFoundError:
     curvature_preload = None
