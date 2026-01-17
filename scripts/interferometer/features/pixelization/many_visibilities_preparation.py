@@ -137,7 +137,7 @@ so you can monitor the computation.
 
 We comment out the w_tilde calculation below as we are going to illustrate how you can compute it on CPU.
 """
-# dataset = dataset.apply_w_tilde(show_progress=True)
+# dataset = dataset.apply_w_tilde(use_jax=True, show_progress=True)
 
 """
 __CPU__

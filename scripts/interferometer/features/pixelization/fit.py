@@ -187,7 +187,7 @@ a progress bar to the terminal so you can monitor the computation, which is usef
 When computing it is slow, it is recommend you compute it once, save it to hard-disk, and load it
 before modeling. The example `pixelization/many_visibilities_preparation.py` illustrates how to do this.
 """
-dataset = dataset.apply_w_tilde(show_progress=True)
+dataset = dataset.apply_w_tilde(use_jax=True, show_progress=True)
 
 """
 __Settings__

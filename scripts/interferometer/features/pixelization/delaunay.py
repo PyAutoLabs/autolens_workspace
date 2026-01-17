@@ -80,7 +80,7 @@ dataset = al.Interferometer.from_fits(
     transformer_class=al.TransformerDFT,
 )
 
-dataset = dataset.apply_w_tilde(show_progress=True)
+dataset = dataset.apply_w_tilde(use_jax=True, show_progress=True)
 
 positions = al.Grid2DIrregular(
     al.from_json(file_path=Path(dataset_path, "positions.json"))
@@ -493,7 +493,7 @@ dataset = al.Interferometer.from_fits(
     transformer_class=al.TransformerDFT,
 )
 
-dataset = dataset.apply_w_tilde(show_progress=True)
+dataset = dataset.apply_w_tilde(use_jax=True, show_progress=True)
 
 positions = al.Grid2DIrregular(
     al.from_json(file_path=Path(dataset_path, "positions.json"))
