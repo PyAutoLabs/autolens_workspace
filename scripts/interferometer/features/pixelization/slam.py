@@ -128,7 +128,9 @@ try:
 except FileNotFoundError:
     curvature_preload = None
 
-dataset = dataset.apply_w_tilde(curvature_preload=curvature_preload, use_jax=True, show_progress=True)
+dataset = dataset.apply_w_tilde(
+    curvature_preload=curvature_preload, use_jax=True, show_progress=True
+)
 
 """
 __Poisition Likelihood__

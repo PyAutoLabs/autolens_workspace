@@ -211,15 +211,12 @@ of high resolution datasets with over 1 million visibilities showing that comput
 
 On CPU, for datasets with over 100000 visibilities and many pixels in their real-space mask, this computation
 can take 10 minutes or hours (for the small dataset loaded above its miliseconds). The `show_progress` input outputs 
-a progress bar to the terminal so you can monitor the computation, which is useful when it is slow
+a progress bar to the terminal so you can monitor the computation, which is useful when it is slow.
 
 When computing it is slow, it is recommend you compute it once, save it to hard-disk, and load it
 before modeling. The example `pixelization/many_visibilities_preparation.py` illustrates how to do this.
 """
-dataset = dataset.apply_w_tilde(
-    use_jax=True,
-    show_progress=True
-)
+dataset = dataset.apply_w_tilde(use_jax=True, show_progress=True)
 
 """
 __Settings__
