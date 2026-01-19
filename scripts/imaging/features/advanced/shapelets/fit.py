@@ -407,7 +407,8 @@ basis_plotter = aplt.BasisPlotter(basis=bulge, grid=grid)
 basis_plotter.subplot_image()
 
 """
-__Cartesian Shapelets__
+For fitting, we again use the linear light profile version of the Cartesian shapelets, which solves for the
+optimal intensity of each shapelet via linear algebra.
 """
 total_xy = 5
 
@@ -458,9 +459,14 @@ basis_plotter = aplt.BasisPlotter(basis=tracer.galaxies[1].bulge, grid=grid)
 basis_plotter.subplot_image()
 
 """
-To learn more about Basis functions, regularization and when you should use them, checkout the 
-following **HowToGalaxy** tutorials:
+__Wrap Up__
 
- - `howtogalaxy/chapter_2_lens_modeling/tutorial_5_linear_profiles.ipynb`.
- - `howtogalaxy/chapter_4_pixelizations/tutorial_4_bayesian_regularization.ipynb.
+This script has illustrated how to use shapelets to model the light of galaxies.
+
+Shapelets are a powerful basis function for capturing complex morphological features of galaxies that standard
+light profiles struggle to represent. However, they do have drawbacks, such as the need to allow for negative
+intensities in the solution, which is unphysical. 
+
+As a rule of thumb, modeling is generally better if a pixelization is used to reconstruct the source galaxy's light,
+but shapelets can be a useful middle-ground between standard light profiles and a pixelization.
 """

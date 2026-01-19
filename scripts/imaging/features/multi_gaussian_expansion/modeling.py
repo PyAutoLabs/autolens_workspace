@@ -165,9 +165,6 @@ dataset_plotter.subplot_dataset()
 """
 __Model__
 
-The MGE above produced residuals, which we now rectify by fitting the MGE in a non-linear search, simultaneously
-fitting the lens's mass and source galaxies.
-
 We compose a lens model where:
 
  - The galaxy's bulge is 60 linear `Gaussian` profiles [6 parameters]. 

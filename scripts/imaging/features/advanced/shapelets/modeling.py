@@ -239,7 +239,7 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
 `start_here.ipynb` for a description of how to fix this).
 
-This confirms that the source galaxy is made of many `ShapeletCartesianSph` profiles.
+This confirms that the source galaxy is made of many `ShapeletPolar` profiles.
 """
 print(model.info)
 
@@ -258,12 +258,65 @@ search = af.Nautilus(
 )
 
 """
+__Position Likelihood__
+
+We add a penalty term ot the likelihood function, which penalizes models where the brightest multiple images of
+the lensed source galaxy do not trace close to one another in the source plane. This removes "demagnified source
+solutions" from the source model, which one is likely to infer without this penalty.
+
+A comprehensive description of why we do this is given at the following readthedocs page. I strongly recommend you 
+read this page in full if you are not familiar with the positions likelihood penalty and demagnified source 
+reconstructions:
+
+NOTE: The description at the URL is for pixelized source reconstructions (e.g using a retangular or Delaunay mesh 
+to reconstruct the source), as opposed to shapelets. However, the same issues with demagnified solutions exist for
+shapelets, whereby they go to large size (beta) values and reconstruct a demagnified image of the source for
+mass models which do not accurately trace the multiple images to one another in the source plane.
+
+ https://pyautolens.readthedocs.io/en/latest/general/demagnified_solutions.html
+
+__Brief Description__
+
+Unlike other example scripts, we also pass the `AnalysisImaging` object below a `PositionsLH` object, which
+includes the positions we loaded above, alongside a `threshold`.
+
+This is because `Inversion`'s suffer a bias whereby they fit unphysical lens models where the source galaxy is 
+reconstructed as a demagnified version of the lensed source. 
+
+To prevent these solutions biasing the model-fit we specify a `position_threshold` of 0.5", which requires that a 
+mass model traces the four (y,x) coordinates specified by our positions (that correspond to the brightest regions of the 
+lensed source) within 0.5" of one another in the source-plane. If this criteria is not met, a large penalty term is
+added to likelihood that massively reduces the overall likelihood. This penalty is larger if the ``positions``
+trace further from one another.
+
+This ensures the unphysical solutions that bias a pixelization have a lower likelihood that the physical solutions
+we desire. Furthermore, the penalty term reduces as the image-plane multiple image positions trace closer in the 
+source-plane, ensuring Nautilus converges towards an accurate mass model. It does this very fast, as 
+ray-tracing just a few multiple image positions is computationally cheap. 
+
+The threshold of 0.3" is large. For an accurate lens model we would anticipate the positions trace within < 0.01" of
+one another. The high threshold ensures only the initial mass models at the start of the fit are penalized.
+
+Position thresholding is described in more detail in the 
+script `autolens_workspace/*/guides/modeling/customize`
+
+The arc-second positions of the multiply imaged lensed source galaxy were drawn onto the
+image via the GUI described in the file `autolens_workspace/*/imaging/data_preparation/gui/positions.py`.
+"""
+positions = al.Grid2DIrregular(
+    al.from_json(file_path=Path(dataset_path, "positions.json"))
+)
+
+positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
+
+"""
 __Analysis__
 
 Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
+    positions_likelihood_list=[positions_likelihood],
     settings_inversion=al.SettingsInversion(use_positive_only_solver=False),
 )
 
@@ -458,6 +511,16 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 print(model.info)
 
+search = af.Nautilus(
+    path_prefix=Path("imaging") / "features",
+    name="shapelets_cartesian",
+    unique_tag=dataset_name,
+    n_live=150,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
+)
+
+result = search.fit(model=model, analysis=analysis)
+
 """
 __Lens Shapelets__
 
@@ -547,9 +610,14 @@ for on-the-fly visualization and results).
 result = search.fit(model=model, analysis=analysis)
 
 """
-To learn more about Basis functions, regularization and when you should use them, checkout the 
-following **HowToGalaxy** tutorials:
+__Wrap Up__
 
- - `howtogalaxy/chapter_2_lens_modeling/tutorial_5_linear_profiles.ipynb`.
- - `howtogalaxy/chapter_4_pixelizations/tutorial_4_bayesian_regularization.ipynb.
+This script has illustrated how to use shapelets to model the light of galaxies.
+
+Shapelets are a powerful basis function for capturing complex morphological features of galaxies that standard
+light profiles struggle to represent. However, they do have drawbacks, such as the need to allow for negative
+intensities in the solution, which is unphysical. 
+
+As a rule of thumb, modeling is generally better if a pixelization is used to reconstruct the source galaxy's light,
+but shapelets can be a useful middle-ground between standard light profiles and a pixelization.
 """

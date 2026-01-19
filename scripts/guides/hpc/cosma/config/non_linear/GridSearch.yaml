@@ -1,3 +1,0 @@
-parallel:
-  number_of_cores: 3
-  step_size: 0.1

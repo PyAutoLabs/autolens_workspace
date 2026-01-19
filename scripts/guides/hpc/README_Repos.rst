@@ -1,61 +1,142 @@
-**Step by Step Guide (installation via pip)**
+Step-by-Step Guide (Installation via GitHub Repositories)
+---------------------------------------------------------
 
-To setup your cosma PyAutoLens workspace, the following commands should work from a terminal:
+To set up your PyAutoLens workspace on an HPC system, the following commands
+should work from a terminal. You may need to adapt hostnames, module names,
+and paths for your specific system.
 
-1) ssh -X cosma_username@login.cosma.dur.ac.uk
+1. SSH into the HPC
+^^^^^^^^^^^^^^^^^^
 
-   This command ssh's you into cosma. It'll log you into your home directory ('/cosma/home/durham/cosma_username').
+From your local machine:
 
-2) pwd
+::
 
-   This command is not necessary, but allows us to quickly check the path of our cosma home directory.
+   ssh -X YOUR_USERNAME@HPC_LOGIN_HOST
 
-2) python3 -m venv PyAuto
+This logs you into the HPC and places you in your home directory (e.g.
+``/home/YOUR_USERNAME``).
 
-   This makes a 'PyAuto' virtual environment and directory on your cosma home, where we will install PyAutoLens and
-   its associated dependencies. You MUST name your workspace PyAuto to use this setup file without changing any commands.
+2. (Optional) Check Your Home Directory
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-3) mkdir autolens_workspace
+::
+
+   pwd
+
+This step is optional, but useful for confirming the location of your home
+directory.
+
+3. Create the Python Virtual Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+   python3 -m venv PyAuto
+
+This creates a virtual environment called ``PyAuto`` in your home directory.
+This environment will contain PyAutoLens and all of its dependencies.
+
+.. note::
+
+   The virtual environment must be named ``PyAuto`` unless you update all
+   paths accordingly in later steps.
+
+4. Create the PyAutoLens Workspace
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+   mkdir autolens_workspace
    cd autolens_workspace
 
-   This creates and takes us into an autolens_workspace directory on COSMA.
+This creates and enters an ``autolens_workspace`` directory on the HPC, which
+will mirror your local PyAutoLens workspace (excluding large datasets and
+outputs).
 
-4) emacs -nw activate.sh
+5. Create the Activation Script
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   This opens an 'activate.sh' script, which we'll use every time we log into cosma to activate the virtual environment.
+Create an activation script that will be sourced every time you log into
+the HPC.
 
-5) Copy and paste the following commands into the activate.sh script, which should be open in emacs. Make sure to
-   change the "cosma_username" entries to your cosma username! This includes the path to PyAutoLens and all of its
-   parent projects, which will be cloning on Cosma in a moment.
+::
 
-   To paste into an emacs window, use the command "CTRL + SHIFT + V"
-   To exit and save, use the command "CTRL + SHIFT + X" -> "CTRL + SHIFT + C" and push 'y' for yes.
+   emacs -nw activate.sh
+
+(You may use ``nano`` or ``vi`` instead if preferred.)
+
+6. Edit ``activate.sh``
+^^^^^^^^^^^^^^^^^^^^^^
+
+Paste the following template into ``activate.sh`` and adapt it to your
+system. In particular, update module names and paths as required.
+
+::
 
    module purge
-   module load cosma/2018
-   module load python/3.6.5
-   source /cosma/home/dp004/dc-nigh1/PyAuto/bin/activate
-   export PYTHONPATH=/YOUR_COSMA_HOME_DIRECTORY/:\
-   /YOUR_COSMA_HOME_DIRECTORY/PyAuto/PyAutoConf:\
-   /YOUR_COSMA_HOME_DIRECTORY/PyAuto/PyAutoFit:\
-   /YOUR_COSMA_HOME_DIRECTORY/PyAuto/PyAutoArray:\
-   /YOUR_COSMA_HOME_DIRECTORY/PyAuto/PyAutoGalaxy:\
-   /YOUR_COSMA_HOME_DIRECTORY/PyAuto/PyAutoLens
 
-6) source activate.sh
+   # Load required modules (EDIT THESE FOR YOUR HPC)
+   module load python/3.X.Y
 
-   This activates your PyAuto virtual environment. '(PyAuto)' should appear at the bottom left of you command line,
-   next to where you type commands.
+   # Activate the virtual environment
+   source $HOME/PyAuto/bin/activate
 
-7) Go into the `PyAuto` direction on cosma and clone all GitHub reposities.
+   # Add PyAutoLens and all parent projects to PYTHONPATH
+   export PYTHONPATH=$HOME:\
+   $HOME/PyAuto/PyAutoConf:\
+   $HOME/PyAuto/PyAutoFit:\
+   $HOME/PyAuto/PyAutoArray:\
+   $HOME/PyAuto/PyAutoGalaxy:\
+   $HOME/PyAuto/PyAutoLens
+
+Save and exit the editor.
+
+.. note::
+
+   - If your HPC does not use environment modules, remove the ``module`` lines.
+   - If you use Conda instead of ``venv``, activate your Conda environment here.
+
+Make the script executable:
+
+::
+
+   chmod +x activate.sh
+
+7. Activate the Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+   source activate.sh
+
+If successful, ``(PyAuto)`` should appear at the start of your command prompt.
+
+8. Clone the PyAuto GitHub Repositories
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Navigate to the virtual environment directory:
+
+::
 
    cd $HOME/PyAuto
+
+Clone all required repositories:
+
+::
 
    git clone https://github.com/rhayes777/PyAutoConf
    git clone https://github.com/rhayes777/PyAutoFit
    git clone https://github.com/Jammy2211/PyAutoArray
    git clone https://github.com/Jammy2211/PyAutoGalaxy
    git clone https://github.com/Jammy2211/PyAutoLens
+
+9. Install Python Dependencies
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Install the dependencies for each package:
+
+::
 
    pip install -r PyAutoConf/requirements.txt
    pip install -r PyAutoFit/requirements.txt

@@ -320,7 +320,7 @@ inversion_plotter.subplot_of_mapper(mapper_index=0)
 __Pixelization / Mapper Calculations__
 
 The pixelized source reconstruction output by an `Inversion` is often on an irregular grid (e.g. a
-Voronoi triangulation or Voronoi mesh), making it difficult to manipulate and inspect after the lens modeling has
+Delaunay triangulation), making it difficult to manipulate and inspect after the lens modeling has
 completed.
 
 Internally, the inversion stores a `Mapper` object to perform these calculations, which effectively maps pixels
@@ -352,7 +352,7 @@ pixelization o a uniform 2D grid of pixels.
 (if you do not know what the `slim` and `native` properties below refer too, it
 is described in the `results/examples/data_structures.py` example.)
 
-We interpolate the Voronoi triangulation this source is reconstructed on to a 2D grid of 401 x 401 square pixels.
+We interpolate the Delaunay triangulation this source is reconstructed on to a 2D grid of 401 x 401 square pixels.
 """
 interpolated_reconstruction = mapper_valued.interpolated_array_from(
     shape_native=(401, 401)
@@ -508,7 +508,7 @@ __Grids__
 The role of a mapper is to map between the image-plane and source-plane. 
 
 This includes mapping grids corresponding to the data grid (e.g. the centers of each image-pixel in the image and
-source plane) and the pixelization grid (e.g. the centre of the Voronoi triangulation in the image-plane and 
+source plane) and the pixelization grid (e.g. the centre of the Delaunay triangulation in the image-plane and 
 source-plane).
 
 All grids are available in a mapper via its `mapper_grids` property.
@@ -638,12 +638,11 @@ print(inversion.log_det_curvature_reg_matrix_term)
 """
 __Simulated Interferometer__
 
-We load the source galaxy image from the pixelized inversion of a previous fit, which was performed on an irregular 
-RectangularMagnification or Voronoi mesh.  
+We load the source galaxy image from the pixelized inversion of a previous fit, which was performed on an irregular mesh.  
 
 Since irregular meshes cannot be directly used to simulate lensed images, we interpolate the source onto a uniform 
 grid with shape `interpolated_pixelized_shape`. This grid should have a high resolution (e.g., 1000 × 1000) to preserve 
-all resolved structure from the original RectangularMagnification or Voronoi mesh.  
+all resolved structure from the original mesh.  
 """
 mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
 

@@ -1,0 +1,25 @@
+#!/bin/bash -l
+
+#SBATCH -N 1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=16
+#SBATCH -J example_1
+#SBATCH -o output/output.%A.out
+#SBATCH -e error/error.%A.err
+#SBATCH -p hpc7
+#SBATCH -A dp004
+#SBATCH -t 48:00:00   # longest job
+#SBATCH --mail-type=END                      # notifications for job done & fail
+#SBATCH --mail-user=fill@me.co.uk
+
+source /hpc/home/hpc_username/activate.sh
+
+export CPUS_PER_TASK=1
+
+export OPENBLAS_NUM_THREADS=$CPUS_PER_TASK
+export MKL_NUM_THREADS=$CPUS_PER_TASK
+export OMP_NUM_THREADS=$CPUS_PER_TASK
+export VECLIB_MAXIMUM_THREADS=$CPUS_PER_TASK
+export NUMEXPR_NUM_THREADS=$CPUS_PER_TASK
+
+python3 /hpc/home/hpc_username/runners/example.py 1

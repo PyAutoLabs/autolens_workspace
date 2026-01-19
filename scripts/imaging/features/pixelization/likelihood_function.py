@@ -2,7 +2,7 @@
 __Log Likelihood Function: Pixelization__
 
 This script provides a step-by-step guide of the **PyAutoLens** `log_likelihood_function` which is used to fit
-`Imaging` data with a pixelization (`RectangularMagnification` mesh and `Constant` regularization scheme`).
+`Imaging` data with a pixelization (`RectangularUniform` mesh and `Constant` regularization scheme`).
 
 This script has the following aims:
 
@@ -10,11 +10,23 @@ This script has the following aims:
  likelihood function (including references to the previous literature from which it is defined) without having to
  write large quantities of text and equations.
 
- - To make inversions in **PyAutoLens** less of a "black-box" to users.
+ - To make pixelized reconstructions less of a "black-box" to users.
 
-Accompanying this script is the `contributor_guide.py` which provides URL's to every part of the source-code that
-is illustrated in this guide. This gives contributors a sequential run through of what source-code functions, modules and
-packages are called when the likelihood is evaluated.
+__Simplifications__
+
+This example uses two simplifications which if you are familiar with pixelizations you will notice are used
+in other examples, but not here:
+
+- A `RectangularUniform` mesh is used, whereas other examples use a `RectangularMagnification` mesh.
+  The `RectangularMagnification` mesh uses an interpolation mapping scheme whereby each image pixels is paired
+  with four source pixels, which complicates the explanation of the likelihood function. Interpolation is key
+  to accurate pixelizations, but is disabled in this example for simplicity.
+
+- The over sampling of the pixelization and light profiles is disabled (set to `sub_size=1`), meaning that each
+ image-pixel is mapped to each source pixel once with a weight of 1.0. In other examples, an over sampling of
+ 4 is typically used, meaning each image-pixel is mapped to each source pixel 16 times with different weights.
+
+The end of this example describes how the likelihood function changes when these two features are included.
 
 __Prerequisites__
 
@@ -130,8 +142,15 @@ __Masked Image Grid__
 
 To perform lensing calculations we first must define the 2D image-plane (y,x) coordinates used in the calculation.
 
-These are given by `masked_dataset.grid`, which we can plot and see is a uniform grid of (y,x) Cartesian coordinates
+For light profiles these are given by `masked_dataset.lp`, which is a uniform grid of (y,x) Cartesian coordinates
 which have had the 3.0" circular mask applied.
+
+A pixelization uses a separate grid of (y,x) coordinates, called `masked_dataset.grids.pixelization`, which is
+identical to the light profile grid but may of had a different over-sampling scale applied (but in this example
+does not).
+
+Each (y,x) coordinate coordinates to the centre of each image-pixel in the dataset, meaning that when this grid is
+used to construct a pixelization there is a straight forward mapping between the image data and pixelization pixels.
 """
 grid_plotter = aplt.Grid2DPlotter(grid=masked_dataset.grids.pixelization)
 grid_plotter.figure_2d()
@@ -163,13 +182,13 @@ lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass, shear=shear)
 """
 __Source Galaxy Pixelization and Regularization__
 
-The source galaxy is reconstructed using a pixel-grid, in this example a RectangularMagnification mesh, which accounts for 
+The source galaxy is reconstructed using a pixel-grid, in this example a RectangularUniform mesh, which accounts for 
 irregularities and asymmetries in the source's surface brightness. 
 
 A constant regularization scheme is applied which applies a smoothness prior on the reconstruction. 
 """
 pixelization = al.Pixelization(
-    mesh=al.mesh.RectangularMagnification(),
+    mesh=al.mesh.RectangularUniform(),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -282,7 +301,7 @@ grid_plotter.figure_2d()
 """
 __Source Pixel Centre Calculation__
 
-In order to reconstruct the source galaxy using a RectangularMagnification mesh, we need to determine the centres of 
+In order to reconstruct the source galaxy using a RectangularUniform mesh, we need to determine the centres of 
 the rectangular mesh's source pixels.
 
 We do this by overlying a rectangular grid on the relocated traced image-plane grid computed above.
@@ -296,12 +315,13 @@ mesh_grid = al.Mesh2DRectangular.overlay_grid(
 
 
 """
-Plotting the RectangularMagnification mesh shows that the source-plane and been discretized into a grid of irregular RectangularMagnification pixels.
+Plotting the RectangularUniform mesh shows that the source-plane and been discretized into a grid of rectangular pixels.
 
-(To plot the RectangularMagnification mesh, we have to convert it to a `Mapper` object, which is described in the next likelihood step).
+(To plot the RectangularUniform mesh, we have to convert it to a `Mapper` object, which is described in the next 
+likelihood step).
 
-Below, we plot the RectangularMagnification mesh without the traced image-grid pixels (for clarity) and with them as black dots in order
-to show how each set of image-pixels fall within a RectangularMagnification pixel.
+Below, we plot the RectangularUniform mesh without the traced image-grid pixels (for clarity) and with them as black 
+dots in order to show how each set of image-pixels fall within a RectangularUniform pixel.
 """
 mapper_grids = al.MapperGrids(
     mask=mask,
@@ -327,7 +347,7 @@ mapper_plotter.figure_2d(interpolate_to_uniform=False)
 __Image-Source Mapping__
 
 We now combine grids computed above to create a `Mapper`, which describes how every image-plane pixel maps to
-every source-plane RectangularMagnification pixel. 
+every source-plane RectangularUniform pixel. 
 
 There are two steps in this calculation, which we show individually below.
 """
@@ -340,10 +360,10 @@ mapper = al.Mapper(
 The `Mapper` contains:
 
  1) `source_plane_data_grid`: the traced grid of (y,x) image-pixel coordinate centres (`relocated_grid`).
- 2) `source_plane_mesh_grid`: The RectangularMagnification mesh of traced (y,x) source-pixel coordinates (`grid_Rectangular`).
+ 2) `source_plane_mesh_grid`: The RectangularUniform mesh of traced (y,x) source-pixel coordinates (`grid_Rectangular`).
 
-We have therefore discretized the source-plane into a RectangularMagnification mesh, and can pair every traced image-pixel coordinate
-with the corresponding RectangularMagnification source pixel it lands in.
+We have therefore discretized the source-plane into a RectangularUniform mesh, and can pair every traced image-pixel coordinate
+with the corresponding RectangularUniform source pixel it lands in.
 
 This pairing is contained in the ndarray `pix_indexes_for_sub_slim_index` which maps every image-pixel index to 
 every source-pixel index.
@@ -402,13 +422,13 @@ The `mapping_matrix` represents the image-pixel to source-pixel mappings above i
 
 It has dimensions `(total_image_pixels, total_source_pixels)`.
 
-(A number of inputs are not used for the `RectangularMagnification` pixelization and are expanded upon in the `features.ipynb`
+(A number of inputs are not used for the `RectangularUniform` pixelization and are expanded upon in the `features.ipynb`
 log likelihood guide notebook).
 """
 mapping_matrix = al.util.mapper.mapping_matrix_from(
     pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
-    pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,  # unused for RectangularMagnification
-    pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,  # unused for RectangularMagnification
+    pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,  # unused for RectangularUniform
+    pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,  # unused for RectangularUniform
     pixels=mapper.pixels,
     total_mask_pixels=mapper.source_plane_data_grid.mask.pixels_in_mask,
     slim_index_for_sub_slim_index=mapper.slim_index_for_sub_slim_index,
@@ -644,11 +664,11 @@ Different forms for $G_{\rm L}$ can be defined which regularize the source recon
 
  $G_{\rm L} = \sum_{\rm  i}^{I} \sum_{\rm  n=1}^{N}  [s_{i} - s_{i, v}]$
 
-This regularization scheme is easier to express in words -- the summation goes to each RectangularMagnification source pixel,
-determines all RectangularMagnification source pixels with which it shares a direct vertex (e.g. its neighbors) and penalizes solutions 
+This regularization scheme is easier to express in words -- the summation goes to each RectangularUniform source pixel,
+determines all RectangularUniform source pixels with which it shares a direct vertex (e.g. its neighbors) and penalizes solutions 
 where the difference in reconstructed flux of these two neighboring source pixels is large.
 
-The summation does this for all RectangularMagnification pixels, thus it favours solutions where neighboring RectangularMagnification source
+The summation does this for all RectangularUniform pixels, thus it favours solutions where neighboring RectangularUniform source
 pixels reconstruct similar values to one another (e.g. it favours a smooth source reconstruction).
 
 We now define the `regularization matrix`, $H$, which allows us to include this smoothing when we solve for $s$. $H$
@@ -670,12 +690,12 @@ regularization_matrix = al.util.regularization.constant_regularization_matrix_fr
 """
 We can plot the regularization matrix and note that:
 
- - non-zero entries indicate that two RectangularMagnification source-pixels are neighbors and therefore are regularized with one 
+ - non-zero entries indicate that two RectangularUniform source-pixels are neighbors and therefore are regularized with one 
  another.
  
- - Zeros indicate the two RectangularMagnification source pixels do not neighbor one another.
+ - Zeros indicate the two RectangularUniform source pixels do not neighbor one another.
  
-The majority of entries are zero, because the majority of RectangularMagnification source pixels are not neighbors with one another.
+The majority of entries are zero, because the majority of RectangularUniform source pixels are not neighbors with one another.
 """
 plt.imshow(regularization_matrix)
 plt.colorbar()
@@ -900,12 +920,11 @@ adaptively increases depending on a required fractional accuracy of the light pr
 
  https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/structures/grids/two_d/grid_iterate.py
 
-__Sourrce Plane Interpolation__
+__Source Plane Interpolation__
 
-For the `VoronoiNoInterp` pixelization used in this example, every image-sub pixel maps to a single source Voronoi
-pixel. Therefore, the plural use of `pix_indexes` is not required. However, for other pixelizations each sub-pixel
-can map to multiple source pixels with an interpolation weight (e.g. `RectangularMagnification` triangulation or a `Voronoi` mesh
-which uses natural neighbor interpolation).
+For the mesh used in this example, every image-sub pixel maps to a single source pixel. Therefore, the plural use 
+of `pix_indexes` is not required. However, for other pixelizations each sub-pixel can map to multiple source pixels 
+with an interpolation weight (e.g. `RectangularMagnification`).
 
 `MapperVoronoiNoInterp.pix_index_for_sub_slim_index`:
 https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/inversion/mappers/voronoi.py
@@ -923,11 +942,8 @@ every entry of this array will be equal to 1.
 
 """
 When each sub-pixel maps to multiple source pixels, the mappings are described via an interpolation weight. For 
-example, for a `RectangularMagnification` triangulation, every sub-pixel maps to 3 RectangularMagnification triangles based on which triangle
-it lands in.
-
-For the `VoronoiNoInterp` pixelization where every sub-pixel maps to a single source pixel without inteprolation,
-every entry of this weight array is 1.0.
+example, for a `RectangularMagnification` mesh, every sub-pixel maps to 4 pixels on which rectangle it lands in
+and its 3 nearest neighbors, with weights based on its distance from the centers of these pixels.
 """
 # pix_weights_for_sub_slim_index = mapper.pix_weights_for_sub_slim_index
 
@@ -943,7 +959,7 @@ are described in additional notebooks found in this package. In brief, these des
  - **Sub-gridding**: Oversampling the image grid into a finer grid of sub-pixels, which are all individually 
  ray-traced to the source-plane and paired fractionally with each source pixel.
  
- - **Source-plane Interpolation**: Using a RectangularMagnification triangulation or RectangularMagnification mesh with natural neighbor interpolation
+ - **Source-plane Interpolation**: Using a RectangularUniform mesh with bilinear interpolation
  to pair each image (sub-)pixel to multiple source-plane pixels with interpolation weights.
  
  - **Source Morphology Pixelization Adaption**: Adapting the pixelization such that is congregates source pixels around

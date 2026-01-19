@@ -121,8 +121,8 @@ __Reconstruction CSV__
 In the results `image` folder there is a .csv file called `source_plane_reconstruction_0.csv` which contains the
 y and x coordinates of the pixelization mesh, the reconstruct values and the noise map of these values.
 
-This file is provides all information on the source reconstruciton in a format that does not depend autolens
-and therefore be easily loaded to create images of the source or shared collaobrations who do not have PyAutoLens
+This file is provides all information on the source reconstruction in a format that does not depend autolens
+and therefore be easily loaded to create images of the source or shared collaborations who do not have PyAutoLens
 installed.
 
 First, lets load `source_plane_reconstruction_0.csv` as a dictionary, using basic `csv` functionality in Python.

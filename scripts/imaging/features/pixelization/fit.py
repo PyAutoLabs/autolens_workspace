@@ -1,23 +1,25 @@
 """
-Features: Pixelization
-======================
+Features: Pixelization Fit
+==========================
 
 A pixelization reconstructs the source's light using a pixel-grid, which is regularized using a prior that forces
 the solution to have a degree of smoothness.
 
-This script fits a source galaxy model which uses a pixelization to reconstruct the source's light.
+This is important for reconstructing complex and irregular source  morphologies that cannot be well represented by
+light profiles like a Sersic or shapelets. It is vital to ensuring the infferred lens mass model is accurate and unbiased.
 
-A rectangular mesh which adapts to the lens mass model magnification and constant regularization scheme are used, which
-are the simplest forms of mesh and regularization with provide computationally fast and accurate solutions.
+This script fits a source galaxy in a way which uses a pixelization to reconstruct the source's light. This uses a
+rectangular mesh and constant regularization scheme are, which are the simplest forms of each, both providing
+computationally fast and accurate solutions.
 
 For simplicity, the lens galaxy's light is omitted from the model and is not present in the simulated data. It is
 straightforward to include the lens galaxy's light in the model.
 
-pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
+Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
 
 __JAX GPU Run Times__
 
-pixelizations run time depends on how modern GPU hardware is. GPU acceleration only provides fast run times on
+Pixelizations run time depends on how modern GPU hardware is. GPU acceleration only provides fast run times on
 modern GPUs with large amounts of VRAM, or when the number of pixels in the mesh are low (e.g. < 500 pixels).
 
 This script's default setup uses an adaptive 20 x 20 rectangular mesh (400 pixels), which is relatively low resolution
@@ -30,8 +32,8 @@ __CPU Run Times__
 JAX is not natively designed to provide significant CPU speed up, therefore users using CPUs to perform pixelization
 analysis will not see fast run times using JAX (unlike GPUs).
 
-The example `pixelization/cpu` shows how to set up a pixelization to use efficient CPU calculations via the library
-`numba`.
+The example `pixelization/cpu_fast_modeling` shows how to set up a pixelization to use efficient CPU calculations
+via the library `numba`.
 
 __Contents__
 
@@ -63,9 +65,9 @@ enables this.
 
 __Disadvantages__
 
-pixelizations are computationally slow and run times are typically longer than a parametric source model. It is not
-uncommon for lens models using a pixelization to take hours or even days to fit high resolution imaging
-data (e.g. Hubble Space Telescope imaging).
+Pixelizations are computationally slow and run times are typically longer than a parametric source model. It is not
+uncommon for lens models using a pixelization to take hours to fit high resolution imaging data (e.g. Hubble Space
+Telescope imaging), albeit on modern GPUs run times are often closer to < 20 minutes.
 
 Lens modeling with pixelizations is also more complex than parametric source models, with there being more things
 that can go wrong. For example, there are solutions where a demagnified version of the lensed source galaxy is
@@ -88,12 +90,9 @@ to reconstruct positive flux values. This ensures that the source reconstruction
 reconstruct negative flux values that don't exist in the real source galaxy (a common systematic solution in lens
 analysis).
 
-It may be surprising to hear that this is a feature worth pointing out, but it turns out setting up the linear algebra
-to enforce positive reconstructions is difficult to make efficient. A lot of development time went into making this
-possible, where a bespoke fast non-negative linear solver was developed to achieve this.
-
-Other methods in the literature often do not use a positive only solver, and therefore suffer from these
-unphysical solutions, which can degrade the results of lens model in general.
+Enforcing positive reconstructions efficiently requires non-trivial linear algebra, so a bespoke JAX fast non-negative
+solver was developed; many methods in the literature omit this and therefore allow unphysical negative solutions that
+can degrade lens modeling results.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
@@ -113,7 +112,7 @@ import autolens.plot as aplt
 """
 __Dataset__
 
-Load and plot the strong lens dataset `simple__no_lens_light` via .fits files
+Load and plot the strong lens dataset `simple__no_lens_light` via .fits files.
 """
 dataset_name = "simple__no_lens_light"
 dataset_path = Path("dataset") / "imaging" / dataset_name
@@ -150,7 +149,7 @@ dataset_plotter.subplot_dataset()
 __Over Sampling__
 
 A pixelization uses a separate grid for ray tracing, with its own over sampling scheme, which below we set to a 
-uniform grid of values of 2. 
+uniform grid of values of 4. 
 
 The pixelization only reconstructs the source galaxy, therefore the adaptive over sampling used for the lens galaxy's 
 light in other examples is not applied to the pixelization. 
@@ -255,7 +254,7 @@ fit_plotter = aplt.FitImagingPlotter(fit=fit)
 fit_plotter.subplot_fit()
 
 """
-pixelizations have bespoke visualizations which show more details about the source-reconstruction, image-mesh
+Pixelizations have bespoke visualizations which show more details about the source-reconstruction, image-mesh
 and other quantities.
 
 These plots use an `InversionPlotter`, which gets its name from the internals of how pixelizations are performed in
@@ -333,7 +332,7 @@ apply the mask as above before fitting the data.
 __Pixelization / Mapper Calculations__
 
 The pixelized source reconstruction output by an `Inversion` is often on an irregular grid (e.g. a
-Voronoi triangulation or Voronoi mesh), making it difficult to manipulate and inspect after the lens modeling has
+Delaunay triangulation), making it difficult to manipulate and inspect after the lens modeling has
 completed.
 
 Internally, the inversion stores a `Mapper` object to perform these calculations, which effectively maps pixels
@@ -365,7 +364,7 @@ pixelization o a uniform 2D grid of pixels.
 (if you do not know what the `slim` and `native` properties below refer too, it
 is described in the `results/examples/data_structures.py` example.)
 
-We interpolate the Voronoi triangulation this source is reconstructed on to a 2D grid of 401 x 401 square pixels.
+We interpolate the Delaunay triangulation this source is reconstructed on to a 2D grid of 401 x 401 square pixels.
 """
 interpolated_reconstruction = mapper_valued.interpolated_array_from(
     shape_native=(401, 401)
@@ -477,7 +476,7 @@ print(mapper_valued.magnification_via_interpolation_from(shape_native=(401, 401)
 """
 __Wrap Up__
 
-pixelizations are the most complex but also most powerful way to model a source galaxy.
+Pixelizations are the most complex but also most powerful way to model a source galaxy.
 
 Whether you need to use them or not depends on the science you are doing. If you are only interested in measuring a
 simple quantity like the Einstein radius of a lens, you can get away with using light profiles like a Sersic, MGE or 
@@ -521,7 +520,7 @@ __Grids__
 The role of a mapper is to map between the image-plane and source-plane. 
 
 This includes mapping grids corresponding to the data grid (e.g. the centers of each image-pixel in the image and
-source plane) and the pixelization grid (e.g. the centre of the Voronoi triangulation in the image-plane and 
+source plane) and the pixelization grid (e.g. the centre of the Delaunay triangulation in the image-plane and 
 source-plane).
 
 All grids are available in a mapper via its `mapper_grids` property.
@@ -652,11 +651,11 @@ print(inversion.log_det_curvature_reg_matrix_term)
 __Simulated Imaging__
 
 We load the source galaxy image from the pixelized inversion of a previous fit, which was performed on an irregular 
-RectangularMagnification or Voronoi mesh.  
+RectangularMagnification.  
 
 Since irregular meshes cannot be directly used to simulate lensed images, we interpolate the source onto a uniform 
 grid with shape `interpolated_pixelized_shape`. This grid should have a high resolution (e.g., 1000 × 1000) to preserve 
-all resolved structure from the original RectangularMagnification or Voronoi mesh.  
+all resolved structure from the original mesh.  
 """
 mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
 

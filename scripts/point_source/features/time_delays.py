@@ -234,13 +234,12 @@ __Search__
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
 full description).
 """
-batch_size = 50  # Explained in `modeling` examples.
-
 search = af.Nautilus(
     path_prefix=Path("point_source") / "features",
     name="time_delays_hubble_constant2",
     unique_tag=dataset_name,
     n_live=150,
+    n_batch=50,
 )
 
 """
