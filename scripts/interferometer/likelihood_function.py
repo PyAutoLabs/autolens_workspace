@@ -465,7 +465,7 @@ To fit a lens model to data, the likelihood function illustrated in this tutoria
 non-linear search algorithm.
 
 The default sampler is the nested sampling algorithm `nautilus` (https://github.com/joshspeagle/nautilus)
-but **PyAutoGalaxy** supports multiple MCMC and optimization algorithms. 
+multiple MCMC and optimization algorithms are supported.
 
 __Wrap Up__
 

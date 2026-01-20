@@ -47,7 +47,7 @@ Each pipeline targets a specific part of the lens model:
 
 
 The SLaM workflow is flexible—you can swap MGE light profiles for other light models if desired. Models set up in
-earlier pipelines guide those used in later ones. For example, if the Source Pipeline uses a `RectangularMagnification`
+earlier pipelines guide those used in later ones. For example, if the Source Pipeline uses a `RectangularAdaptDensity`
 mesh, the same mesh type is carried into later pipelines for consistency.
 "
 __Design Choices__
@@ -281,7 +281,7 @@ This first search of the SOURCE PIX PIPELINE fits the following model:
 
 - The lens galaxy mass is modeled using a total mass distribution [model initialized from the results of the SOURCE LP PIPELINE].
 
-- The source galaxy's light is a pixelization using a `RectangularMagnification` mesh and `AdaptiveBrightnessSplit` regularization scheme 
+- The source galaxy's light is a pixelization using a `RectangularAdaptDensity` mesh and `AdaptiveBrightnessSplit` regularization scheme 
   [parameters of regularization free to vary].
 
 This search improves the lens mass model by modeling the source using a pixelization and computes the adapt
@@ -323,7 +323,7 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
-    mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
+    mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.AdaptiveBrightness,
 )
 
@@ -338,10 +338,10 @@ Search 2 of the SOURCE PIX PIPELINE fits a lens model where:
 
 - The source galaxy's light is the input final mesh and regularization.
 
-- The source galaxy's light is a pixelization using a `RectangularSource` mesh and `AdaptiveBrightnessSplit` regularization scheme 
+- The source galaxy's light is a pixelization using a `RectangularAdaptImage` mesh and `AdaptiveBrightnessSplit` regularization scheme 
   [parameters of regularization free to vary].
 
-The `RectangularSource` mesh and `AdaptiveBrightness` regularization adapt the source pixels and regularization weights
+The `RectangularAdaptImage` mesh and `AdaptiveBrightness` regularization adapt the source pixels and regularization weights
 to the source's morphology. We therefore set up the adapt image using the result from SOURCE PIX PIPELINE search 1.
 """
 galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
@@ -362,7 +362,7 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis=analysis,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
+    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
     regularization=al.reg.AdaptiveBrightness,
 )
 

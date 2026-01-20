@@ -14,7 +14,7 @@ Shapelets are described in full in the following paper:
  https://arxiv.org/abs/astro-ph/0105178
 
 This script performs a model-fit using shapelet, where it decomposes the galaxy light into ~20
-Shapelets. The `intensity` of every Shapelet is solved for via linear algebra (see the `light_parametric_linear.py`
+Shapelets. The `intensity` of every Shapelet is solved for via linear algebra (see the `linear_light_profiles.py`
 feature).
 
 __Contents__

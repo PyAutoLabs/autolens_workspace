@@ -987,7 +987,7 @@ mapping_matrix = al.util.mapper.mapping_matrix_from(
     pixels=mapper.pixels,
     total_mask_pixels=mapper.source_plane_data_grid.mask.pixels_in_mask,
     slim_index_for_sub_slim_index=mapper.slim_index_for_sub_slim_index,
-    sub_fraction=np.array(mapper.over_sampler.sub_fraction),
+    sub_fraction=mapper.over_sampler.sub_fraction,
 )
 
 plt.imshow(mapping_matrix, aspect=(mapping_matrix.shape[1] / mapping_matrix.shape[0]))
@@ -1037,8 +1037,8 @@ print(f"Mapping between visibility 0 and Delaunay pixel 2 = {mapping_matrix[0, 2
 data_vector = (
     al.util.inversion_interferometer.data_vector_via_transformed_mapping_matrix_from(
         transformed_mapping_matrix=transformed_mapping_matrix,
-        visibilities=np.array(dataset.data),
-        noise_map=np.array(dataset.noise_map),
+        visibilities=dataset.data,
+        noise_map=dataset.noise_map,
     )
 )
 
@@ -1213,7 +1213,7 @@ To fit a lens model to data, the likelihood function illustrated in this tutoria
 non-linear search algorithm.
 
 The default sampler is the nested sampling algorithm `nautilus` (https://github.com/joshspeagle/nautilus)
-but **PyAutoLens** supports multiple MCMC and optimization algorithms. 
+multiple MCMC and optimization algorithms are supported.
 
 __Log Likelihood Function: Source Code Speed Up__
 

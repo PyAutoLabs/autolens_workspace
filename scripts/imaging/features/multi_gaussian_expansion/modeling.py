@@ -3,7 +3,7 @@ Modeling Features: Multi Gaussian Expansion
 ===========================================
 
 A multi Gaussian expansion (MGE) decomposes the lens light into ~15-100 Gaussians, where the `intensity` of every
-Gaussian is solved for via a linear algebra using a process called an "inversion" (see the `light_parametric_linear.py`
+Gaussian is solved for via a linear algebra using a process called an "inversion" (see the `linear_light_profiles.py`
 feature for a full description of this).
 
 This script peforms lensing modeling using a lens light model which uses an MGE consisting of 60 Gaussians. It is

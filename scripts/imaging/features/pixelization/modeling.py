@@ -128,7 +128,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's surface-brightness is reconstructed using a `RectangularMagnification` mesh
+ - The source galaxy's surface-brightness is reconstructed using a `RectangularAdaptDensity` mesh
    and `Constant` regularization scheme.
 
 __Start Here Notebook__
@@ -247,7 +247,7 @@ example fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
 
- - The source-galaxy's light uses a 20 x 20 `RectangularMagnification` mesh [0 parameters].
+ - The source-galaxy's light uses a 20 x 20 `RectangularAdaptDensity` mesh [0 parameters].
 
  - This pixelization is regularized using a `Constant` scheme which smooths every source pixel equally [1 parameter]. 
 
@@ -267,7 +267,7 @@ shear = af.Model(al.mp.ExternalShear)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
-mesh = af.Model(al.mesh.RectangularMagnification, shape=mesh_shape)
+mesh = af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape)
 regularization = af.Model(al.reg.Constant)
 
 pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)

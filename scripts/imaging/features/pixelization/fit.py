@@ -213,7 +213,7 @@ of the noise in the data and an unrealistically complex and structured source. R
 reconstruction solution by penalizing solutions where neighboring pixels have
 large flux differences.
 """
-mesh = al.mesh.RectangularMagnification(shape=mesh_shape)
+mesh = al.mesh.RectangularAdaptDensity(shape=mesh_shape)
 regularization = al.reg.Constant(coefficient=1.0)
 
 pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
@@ -440,7 +440,7 @@ print(mapper_valued.magnification_via_interpolation_from(shape_native=(401, 401)
 The magnification calculated above used an interpolation of the source-plane reconstruction to a 2D grid of 401 x 401
 pixels.
 
-For a `RectangularMagnification` or `Voronoi` pixelization, the magnification can also be computed using the source-plane mesh
+The magnification can also be computed using the source-plane mesh
 directly, where the areas of the mesh pixels themselves are used to compute the magnification. In certain situations
 this is more accurate than interpolation, especially when the source-plane pixelization is irregular. However,
 it does not currently work for the `Delanuay` pixelization and is commented out below.
@@ -573,53 +573,6 @@ included in this image -- it only contains the source.
 print(inversion.mapped_reconstructed_image.native)
 
 """
-__Mapped To Source__
-
-Mapping can also go in the opposite direction, whereby we input an image-plane masked 2D array and we use 
-the `Inversion` to map these values to the source-plane.
-
-This creates an array which is analogous to the `reconstruction` in that the values are on the source-plane 
-pixelization grid, however it bypass the linear algebra and inversion altogether and simply computes the sum of values 
-mapped to each source pixel.
-
-[CURRENTLY DOES NOT WORK, BECAUSE THE MAPPING FUNCTION NEEDS TO INCORPORATE THE VARYING VORONOI PIXEL AREA].
-"""
-mapper_list = inversion.cls_list_from(cls=al.AbstractMapper)
-
-image_to_source = mapper_list[0].mapped_to_source_from(array=dataset.data)
-
-mapper_plotter = aplt.MapperPlotter(mapper=mapper_list[0])
-mapper_plotter.plot_source_from(pixel_values=image_to_source)
-
-"""
-We can interpolate these arrays to output them to fits.
-
-Although the model-fit used a Voronoi mesh, there is no reason we need to use this pixelization to map the image-plane
-data onto a source-plane array.
-
-We can instead map the image-data onto a rectangular pixelization, which has the nice property of giving us a
-regular 2D array of data which could be output to .fits format.
-
-[NOT CLEAR IF THIS WORKS YET, IT IS UNTESTED!].
-"""
-mesh = al.mesh.RectangularMagnification(shape=(50, 50))
-
-source_plane_grid = tracer.traced_grid_2d_list_from(grid=dataset.grids.pixelization)[1]
-
-mapper_grids = mesh.mapper_grids_from(
-    mask=mask, source_plane_data_grid=source_plane_grid
-)
-mapper = al.Mapper(
-    mapper_grids=mapper_grids,
-    regularization=al.reg.Constant(coefficient=1.0),
-)
-
-image_to_source = mapper.mapped_to_source_from(array=dataset.data)
-
-mapper_plotter = aplt.MapperPlotter(mapper=mapper)
-mapper_plotter.plot_source_from(pixel_values=image_to_source)
-
-"""
 __Linear Algebra Matrices (Advanced)__
 
 To perform an `Inversion` a number of matrices are constructed which use linear algebra to perform the reconstruction.
@@ -651,7 +604,7 @@ print(inversion.log_det_curvature_reg_matrix_term)
 __Simulated Imaging__
 
 We load the source galaxy image from the pixelized inversion of a previous fit, which was performed on an irregular 
-RectangularMagnification.  
+RectangularAdaptDensity.  
 
 Since irregular meshes cannot be directly used to simulate lensed images, we interpolate the source onto a uniform 
 grid with shape `interpolated_pixelized_shape`. This grid should have a high resolution (e.g., 1000 × 1000) to preserve 
@@ -726,19 +679,19 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
 
 grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
 
-dataset = simulator.via_source_image_from(
-    tracer=tracer, grid=grid, source_image=source_image
-)
-
-plotter = aplt.ImagingPlotter(dataset=dataset)
-plotter.subplot_dataset()
-
-output = aplt.Output(path=".", filename="source_image", format="png")
-
-plotter = aplt.ImagingPlotter(
-    dataset=dataset, mat_plot_2d=aplt.MatPlot2D(output=output)
-)
-plotter.subplot_dataset()
+# dataset = simulator.via_source_image_from(
+#     tracer=tracer, grid=grid, source_image=source_image
+# )
+#
+# plotter = aplt.ImagingPlotter(dataset=dataset)
+# plotter.subplot_dataset()
+#
+# output = aplt.Output(path=".", filename="source_image", format="png")
+#
+# plotter = aplt.ImagingPlotter(
+#     dataset=dataset, mat_plot_2d=aplt.MatPlot2D(output=output)
+# )
+# plotter.subplot_dataset()
 
 """
 __Future Ideas / Contributions__

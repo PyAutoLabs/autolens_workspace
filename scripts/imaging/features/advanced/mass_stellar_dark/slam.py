@@ -184,7 +184,7 @@ The SOURCE LP Pipeline result is not good enough quality to set up this adapt im
 may be more complex than a simple light profile). The first step of the SOURCE PIX PIPELINE therefore fits a new
 model using a pixelization to create this adapt image.
 
-The first search, which is an initialization search, fits an `Overlay` image-mesh, `RectangularMagnification` mesh 
+The first search, which is an initialization search, fits an `Overlay` image-mesh, `RectangularAdaptDensity` mesh 
 and `AdaptiveBrightnessSplit` regularization.
 
 __Adapt Images / Image Mesh Settings__
@@ -217,7 +217,7 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
-    mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
+    mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.AdaptiveBrightness,
 )
 
@@ -229,7 +229,7 @@ fits the following model:
 
 - Uses a `Hilbert` image-mesh. 
 
-- Uses a `RectangularMagnification` mesh.
+- Uses a `RectangularAdaptDensity` mesh.
 
  - Uses an `AdaptiveBrightnessSplit` regularization.
 
@@ -274,7 +274,7 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis=analysis,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
+    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
     regularization=al.reg.AdaptiveBrightness,
 )
 

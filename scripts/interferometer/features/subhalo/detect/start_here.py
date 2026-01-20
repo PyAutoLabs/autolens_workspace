@@ -254,7 +254,7 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1__bypass_lp(
     lens_disk=None,
     mass=af.Model(al.mp.Isothermal),
     shear=af.Model(al.mp.ExternalShear),
-    mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
+    mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.Constant,
 )
 
@@ -286,7 +286,7 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis=analysis,
     source_lp_result=source_pix_result_1,
     source_pix_result_1=source_pix_result_1,
-    mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
+    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
     regularization=al.reg.AdaptiveBrightness,
 )
 

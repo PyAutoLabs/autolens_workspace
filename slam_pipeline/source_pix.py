@@ -330,7 +330,7 @@ def run_1__multi(
     settings_search: af.SettingsSearch,
     analysis_list: Union[al.AnalysisImaging, al.AnalysisInterferometer],
     source_lp_result: af.Result,
-    mesh_init: af.Model(al.AbstractMesh) = af.Model(al.mesh.RectangularMagnification),
+    mesh_init: af.Model(al.AbstractMesh) = af.Model(al.mesh.RectangularAdaptDensity),
     regularization_init: af.Model(al.AbstractRegularization) = af.Model(
         al.reg.Constant
     ),
@@ -469,7 +469,7 @@ def run_2__multi(
     analysis_list: Union[al.AnalysisImaging, al.AnalysisInterferometer],
     source_lp_result: af.Result,
     source_pix_result_1: af.Result,
-    mesh: af.Model(al.AbstractMesh) = af.Model(al.mesh.RectangularMagnification),
+    mesh: af.Model(al.AbstractMesh) = af.Model(al.mesh.RectangularAdaptDensity),
     regularization: af.Model(al.AbstractRegularization) = af.Model(
         al.reg.AdaptiveBrightnessSplit
     ),

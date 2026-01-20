@@ -334,9 +334,6 @@ __Wrap Up__
 
 Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
 
-In particular, checkout the results example `linear.py` which details how to extract all information about linear
-light profiles from a fit.
-
 __Result (Advanced)__
 
 The code belows shows all additional results that can be computed from a `Result` object following a fit with a
@@ -353,7 +350,6 @@ inversion = result.max_log_likelihood_fit.inversion
 This `Inversion` can be used to plot the reconstructed image of specifically all linear light profiles.
 """
 inversion_plotter = aplt.InversionPlotter(inversion=inversion)
-# inversion_plotter.figures_2d(reconstructed_image=True)
 
 """
 __Linear Objects (Internal Source Code)__
@@ -367,7 +363,7 @@ This list may include the following objects:
  (e.g. `lp_linear.Sersic`) or many light profiles combined in a `Basis` (e.g. `lp_basis.Basis`).
 
 - `Mapper`: The linear objected used by a `Pixelization` to reconstruct data via an `Inversion`, where the `Mapper` 
-is specific to the `Pixelization`'s `Mesh` (e.g. a `RectnagularMapper` is used for a `RectangularMagnification` mesh).
+is specific to the `Pixelization`'s `Mesh` (e.g. a `RectnagularMapper` is used for a `RectangularAdaptDensity` mesh).
 
 In this example, two linear objects were used to fit the data:
 
@@ -398,7 +394,5 @@ print(
 )
 
 """
-__Future Ideas / Contributions__
-
-Not a lot tbh.
+Finish.
 """

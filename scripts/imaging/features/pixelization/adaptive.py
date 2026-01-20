@@ -15,7 +15,7 @@ mesh and regularization to the source's unlensed properties. It also uses the re
 calculate and pass the multiple image-plane positions of the lensed source to later searches, which resamples
 bad mass models removing demagnified source reconstructions.
 
-This script illustrates using the `RectangularSource` mesh and `AdaptiveBrightness` regularization
+This script illustrates using the `RectangularAdaptImage` mesh and `AdaptiveBrightness` regularization
 scheme to adapt the source reconstruction to the source galaxy's morphology (as opposed to the methods used in other
 examplesw hich adapt to the mass model magnification and apply a constant regularization scheme).
 
@@ -206,7 +206,7 @@ search our lens model is:
  
  - The source galaxy's light uses no image-mesh (only used for Delaunay meshes) [0 parameters].
  
- - The source-galaxy's light uses a 20 x 20 `RectangularMagnification` mesh [0 parameters].
+ - The source-galaxy's light uses a 20 x 20 `RectangularAdaptDensity` mesh [0 parameters].
 
  - This pixelization is regularized using a `Constant` scheme [1 parameter]. 
 
@@ -220,7 +220,7 @@ lens = result_1.model.galaxies.lens
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.RectangularMagnification(shape=mesh_shape),
+    mesh=al.mesh.RectangularAdaptDensity(shape=mesh_shape),
     regularization=al.reg.Constant,
 )
 
@@ -292,7 +292,7 @@ __Adaptive Pixelization__
 
 Search 3 uses two adaptive pixelization classes that have not been used elsewhere in the workspace:
 
- - `RectangularSource` mesh: adapts the rectangular source-pixel upsampling to the source's unlensed morphology. This 
+ - `RectangularAdaptImage` mesh: adapts the rectangular source-pixel upsampling to the source's unlensed morphology. This 
  means that more rectangular pixels will be used where the source is located, even if its far away from the caustic
  and therefore in lower magnification regions.
 
@@ -324,7 +324,7 @@ the second search our lens model is:
  
  - The source galaxy's light uses no image-mesh (only used for Delaunay meshes) [0 parameters].
  
- - The source-galaxy's light uses a 20 x 20 `RectangularSource` mesh [0 parameters].
+ - The source-galaxy's light uses a 20 x 20 `RectangularAdaptImage` mesh [0 parameters].
 
  - This pixelization is regularized using a `AdaptiveBrightness` scheme [2 parameter]. 
 
@@ -338,7 +338,7 @@ lens = result_2.instance.galaxies.lens
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.RectangularSource(shape=mesh_shape),
+    mesh=al.mesh.RectangularAdaptImage(shape=mesh_shape),
     regularization=al.reg.AdaptiveBrightness,
 )
 

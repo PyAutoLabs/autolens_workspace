@@ -675,9 +675,9 @@ We use the results of search 4 to create the lens model fitted in search 5, wher
  - The lens galaxy's light is an MGE bulge [Parameters fixed to results of search 4].
  - The lens galaxy's total mass distribution is again an `Isothermal` [Parameters fixed to results of search 4].
  - The first source galaxy's mass is a `IsothermalSph` [Parameters fixed to results of search 4].
- - The first source-galaxy's light uses an `Overlay` image-mesh, `RectangularMagnification` mesh and `Constant` regularization 
+ - The first source-galaxy's light uses an `Overlay` image-mesh, `RectangularAdaptDensity` mesh and `Constant` regularization 
  scheme [3 parameters].
- - The second source-galaxy's light uses an `Overlay` image-mesh, `RectangularMagnification` mesh and `Constant` regularization  
+ - The second source-galaxy's light uses an `Overlay` image-mesh, `RectangularAdaptDensity` mesh and `Constant` regularization  
  scheme [3 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=6.
@@ -689,7 +689,7 @@ source_0 = af.Model(
     mass=result_4.instance.galaxies.source_0.mass,
     pixelization=af.Model(
         al.Pixelization,
-        mesh=al.mesh.RectangularMagnification(shape=mesh_shape),
+        mesh=al.mesh.RectangularAdaptDensity(shape=mesh_shape),
         regularization=al.reg.Constant,
     ),
 )
@@ -698,7 +698,7 @@ source_1 = af.Model(
     redshift=2.0,
     pixelization=af.Model(
         al.Pixelization,
-        mesh=al.mesh.RectangularMagnification(shape=mesh_shape),
+        mesh=al.mesh.RectangularAdaptDensity(shape=mesh_shape),
         regularization=al.reg.Constant,
     ),
 )
