@@ -104,7 +104,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's surface-brightness is reconstructed using a `RectangularMagnification` mesh
+ - The source galaxy's surface-brightness is reconstructed using a `RectangularAdaptDensity` mesh
    and `Constant` regularization scheme.
 
 __Start Here Notebook__
@@ -169,16 +169,6 @@ the data from the repository described in the "High Resolution Dataset" section 
 dataset_name = "simple"
 dataset_path = Path("dataset") / "interferometer" / dataset_name
 
-# dataset_name = "alma"
-
-# if dataset_name == "alma":
-#
-#     real_space_mask = al.Mask2D.circular(
-#         shape_native=(800, 800),
-#         pixel_scales=0.01,
-#         radius=mask_radius,
-#     )
-
 dataset = al.Interferometer.from_fits(
     data_path=dataset_path / "data.fits",
     noise_map_path=dataset_path / "noise_map.fits",
@@ -205,14 +195,18 @@ You do not need to understand the full details of the method, but the key point 
 To enable this feature, we call `apply_w_tilde()` on the dataset. This computes and stores a `w_tilde_preload` matrix,
 which reused in all subsequent pixelized source fits.
 
-For datasets with over 100000 visibilities and many pixels in their real-space mask, this computation
+On GPU via JAX, this computation is fast even for large datasets with many visibilities, with profiling
+of high resolution datasets with over 1 million visibilities showing that computation takes under 20 seconds. For
+10s or 100s of millions of visibilities computation on a GPU may stretch to minutes, but this is still very fast.
+
+On CPU, for datasets with over 100000 visibilities and many pixels in their real-space mask, this computation
 can take 10 minutes or hours (for the small dataset loaded above its miliseconds). The `show_progress` input outputs 
-a progress bar to the terminal so you can monitor the computation, which is useful when it is slow
+a progress bar to the terminal so you can monitor the computation, which is useful when it is slow.
 
 When computing it is slow, it is recommend you compute it once, save it to hard-disk, and load it
 before modeling. The example `pixelization/many_visibilities_preparation.py` illustrates how to do this.
 """
-dataset = dataset.apply_w_tilde(show_progress=True)
+dataset = dataset.apply_w_tilde(use_jax=True, show_progress=True)
 
 """
 __Settings__
@@ -270,7 +264,7 @@ example fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
 
- - The source-galaxy's light uses a 20 x 20 `RectangularMagnification` mesh [0 parameters].
+ - The source-galaxy's light uses a 20 x 20 `RectangularAdaptDensity` mesh [0 parameters].
 
  - This pixelization is regularized using a `Constant` scheme which smooths every source pixel equally [1 parameter]. 
 
@@ -290,7 +284,7 @@ shear = af.Model(al.mp.ExternalShear)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
-mesh = af.Model(al.mesh.RectangularMagnification, shape=mesh_shape)
+mesh = af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape)
 regularization = af.Model(al.reg.Constant)
 
 pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)

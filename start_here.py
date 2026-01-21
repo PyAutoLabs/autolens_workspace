@@ -48,7 +48,6 @@ Lets first import autolens, its plotting module and the other libraries we'll ne
 
 You'll see these imports in the majority of workspace examples.
 """
-
 # %matplotlib inline
 
 from pathlib import Path
@@ -109,7 +108,7 @@ plt.imshow(image.native.array)  # Dont worry about the use of .native.array for 
 """
 __Plotting__
 
-The **PyAutoLens** in-built plot module provides methods for plotting objects and their properties, like the image of
+In-built plotting methods are provided for plotting objects and their properties, like the image of
 a light profile we just created.
 
 By using a `LightProfilePlotter` to plot the light profile's image, the figured is improved. 
@@ -229,7 +228,7 @@ The units used throughout the strong lensing literature vary, therefore lets qui
 The `Tracer` object and all mass profiles describe their quantities in terms of angles, which are defined in units
 of arc-seconds. To convert these to physical units (e.g. kiloparsecs), we use the redshift of the lens and source
 galaxies and an input cosmology. A run through of all normal unit conversions is given in guides in the workspace
-that are discussed later.
+outlined below.
 
 The use of angles in arc-seconds has an important property, it means that for a two-plane strong lens system 
 (e.g. a lens galaxy at one redshift and source galaxy at another redshift) lensing calculations are independent of
@@ -300,109 +299,48 @@ tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
 tracer_plotter.figures_2d(image=True)
 
 """
-__Simulator__
+__Lens Modeling__
 
-Let’s now switch gears and simulate our own strong lens imaging. This is a great way to:
+Lens modeling is the process of fitting a physical model to strong-lensing data in order to infer the properties of
+the lens and source galaxies.
 
-- Practice lens modeling before using real data.
-- Build large training sets (e.g. for machine learning).
-- Test lensing theory in a controlled environment.
+The primary goal of **PyAutoLens** is to make lens modeling **simple, scalable to large datasets, and fast**, with
+GPU acceleration provided via JAX.
 
-In this example. we simulate “perfect” images without telescope effects. This means no blurring
-from a PSF and no noise — just the raw light from galaxies and deflections from gravity.
-
-In fact, this exactly what the image above is: a perfect image of a double Einstein ring system. The only
-thing we need to do then, is output it to a .fits file so we can load it elsewhere.
-"""
-al.output_to_fits(
-    values=image.native,
-    file_path=Path("image.fits"),
-    overwrite=True,
-)
-
-"""
-__Sample__
-
-Often we want to simulate *many* strong lenses — for example, to train a neural network
-or to explore population-level statistics.
-
-This uses the model composition API to define the distribution of the light and mass profiles
-of the lens and source galaxies we draw from. The model composition is a little too complex for
-the first example, thus we use a helper function to create a simple lens and source model.
-
-We then generate 3 lenses for speed, and plot their images so you can see the variety of lenses
-we create.
-
-If you want to simulate lenses yourself (e.g. for training a neural network), checkout the
-`autolens_workspace/simulators` package for a full description of how to do this and customize
-the simulated lenses to your science.
-
-The images below are perfect lenses of strong lenses, the next examples will show us how to 
-instead output realistic observations of strong lenses (e.g. CCD imaging, interferometer data, etc).
-"""
-lens_model, source_model = al.model_util.simulator_start_here_model_from()
-
-print(lens_model.info)
-print(source_model.info)
-
-"""
-We now simulate a sample of strong lens, we just do 3 for efficiency here but you can increase this to any number.
-"""
-total_datasets = 3
-
-for sample_index in range(total_datasets):
-
-    lens_galaxy = lens_model.random_instance()
-    source_galaxy = source_model.random_instance()
-
-    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
-
-    tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
-    tracer_plotter.figures_2d(image=True)
-
-"""
-You’ve now completed the introductory API overview of PyAutoLens, which covered the basics of creating galaxies and 
-performing ray-tracing calculations.
-
-__Where To Next__
-
-The next workspace example will introduce the two main tasks one performs with **PyAutoLens**:
-
-**Lens Modeling**: Fit data of a strong lens with a model to infer the properties of the lens and source galaxies.
-
-**Simulators**: Generate simulated strong lens datasets, for testing model accuracy or exploring lensing behavior.
-
-The animation below shows the modeling process: many lens models are fitted iteratively, gradually improving the 
-fit until the model image closely matches the observed data.
-
-.. image:: https://github.com/Jammy2211/auto_files/blob/main/lensmodel.gif?raw=true
-  :width: 600
+The animation below illustrates the lens modeling workflow. Many models are fitted to the data iteratively,
+progressively improving the quality of the fit until the model closely reproduces the observed image.
 
 ![Lens Modeling Animation](https://github.com/Jammy2211/auto_files/blob/main/lensmodel.gif?raw=true "model")
 
 **Credit: Amy Etherington**
 
-The `autolens_workspace` has five `start_here.ipynb` notebooks for new users, and you need to determine which is most relevant
-to your scientific interests:
+The next documentation page guides you through lens modeling for a variety of lensing regimes (e.g. galaxy–galaxy lenses,
+cluster-scale lenses) and data types (e.g. CCD imaging, interferometer data).
 
- - `imaging/start_here.ipynb`: Galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, James Webb).
- - `interferometer/start_here.ipynb`: Galaxy scale strong lenses observed with interferometer data (e.g. ALMA).
- - `point_source/start_here.ipynb`: Galaxy scale strong lenses with a lensed point source (e.g. lensed quasars).
- - `group/start_here.ipynb`: Group scale strong lenses where there are 2-10 lens galaxies.
- - `cluster/start_here.ipynb`: Cluster scale strong lenses with 2+ lenses and 5+ source galaxies.
+__Simulations__
 
-You can access them via Google Colab using the following URLs:
+Simulating strong lenses is often essential, for example to:
 
-https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/modeling/imaging/start_here.ipynb
+- Practice lens modeling before working with real data.
+- Generate large training sets (e.g. for machine learning).
+- Test lensing theory in a fully controlled environment.
 
-- `imaging/start_here.ipynb`: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/start_here.ipynb
-- `interferometer/start_here.ipynb`: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/interferometer/start_here.ipynb
-- `point_source/start_here.ipynb`: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/point_source/start_here.ipynb
-- `group/start_here.ipynb`: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/group/start_here.ipynb
-- `cluster/start_here.ipynb`: https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/cluster/start_here.ipynb
+The next documentation page guides you through how to simulate lenses for different types of strong 
+lenses (e.g. galaxy–galaxy lenses, cluster-scale lenses) and different types of data (e.g. CCD imaging, interferometer data).
 
-If you are still unsure based on the brief descriptions above, answer the following two questions to work out
-where to start
+__Wrap Up__
+
+This completes the introduction to **PyAutoLens**, including a brief overview of the core API for lensing calculations,
+lens modeling, and data simulation.
+
+__Where To Next__
+
+**PyAutoLens** can analyse strong lens systems across a range of physical scales (e.g. galaxy, group, and cluster) and for 
+different types of data (e.g. imaging, interferometer, and point-source observations). Depending on the scientific 
+questions you are interested in, the analysis you perform may differ significantly.
+
+The autolens_workspace contains a suite of example Jupyter Notebooks, organised by lens scale and dataset type. 
+To help you find the most appropriate starting point, we begin by answering two simple questions.
 
 __What Scale Lens?__
 
@@ -429,6 +367,20 @@ interested in:
 - **Interferometer**: For radio / sub-mm interferometer from instruments like ALMA, go to `interferometer/start_here.ipynb`.
 
 - **Point Sources**: For strongly lensed point sources (e.g. lensed quasars, supernovae), go to `point_source/start_here.ipynb`.
+
+__Google Colab__
+
+You can also open and run each notebook directly in Google Colab, which provides a free cloud computing
+environment with all the required dependencies already installed. 
+
+This is a great way to get started quickly without needing to install **PyAutoLens** on your own machine,
+so you can check its the right software for you before going through the installation process:
+
+ - [imaging/start_here.ipynb](https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/imaging/start_here.ipynb): Galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, James Webb).
+ - [interferometer/start_here.ipynb](https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/interferometer/start_here.ipynb): Galaxy scale strong lenses observed with interferometer data (e.g. ALMA).
+ - [point_source/start_here.ipynb](https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/point_source/start_here.ipynb): Galaxy scale strong lenses with a lensed point source (e.g. lensed quasars).
+ - [group/start_here.ipynb](https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/group/start_here.ipynb): Group scale strong lenses where there are 2-10 lens galaxies.
+ - [cluster/start_here.ipynb](https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/notebooks/cluster/start_here.ipynb): Cluster scale strong lenses with 2+ lenses and 5+ source galaxies.
 
 __Still Unsure?__
 
@@ -463,7 +415,7 @@ but a quick look through these will give you a sense of the breadth of **PyAutoL
 Brief one sentence descriptions of each feature are given, with more detailed descriptions below including 
 links to the relevant workspace examples.
 
-**pixelizations**: Reconstructing the source galaxy on a mesh of pixels, to capture extremely irregular structures like spiral arms.
+**Pixelizations**: Reconstructing the source galaxy on a mesh of pixels, to capture irregular structures like spiral arms.
 **Point Sources**: Modeling point sources (e.g. quasars) observed in the strong lens imaging data.
 **Interferometry**: Modeling of interferometer data (e.g. ALMA, LOFAR) directly in the uv-plane.
 **Multi Gaussian Expansion (MGE)**: Decomposing the lens galaxy into hundreds of Gaussians, for a clean lens subtraction.
@@ -502,27 +454,22 @@ surface brightness distribution.
 Instead, we assume that our source is a point source with a centre (y,x), and ray-trace triangles at iteratively
 higher resolutions to determine the source's exact locations in the image-plane:
 
-![Point0](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_0.png)
-
-![Point1](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_1.png)
-
-![Point2](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_2.png)
-
-![Point3](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_3.png)
-
-![Point4](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_4.png)
+<img src="https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_0.png" width="200">
+<img src="https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_1.png" width="200">
+<img src="https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_2.png" width="200">
+<img src="https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_3.png" width="200">
+<img src="https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_4.png" width="200">
 
 Note that the image positions above include the fifth central image of the strong lens, which is often not seen in 
 strong lens imaging data. It is easy to disable this image in the point source modeling.
 
 Checkout the`autolens_workspace/*/point_source` package to get started.
 
-
 __Interferometry__
 
 Modeling of interferometer data from submillimeter (e.g. ALMA) and radio (e.g. LOFAR) observatories:
 
-![ALMA Image](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/paper/almacombined.png)
+![ALMA Image](https://raw.githubusercontent.com/Jammy2211/PyAutoGalaxy/main/paper/almacombined.png)
 
 Visibilities data is fitted directly in the uv-plane, circumventing issues that arise when fitting a dirty image
 such as correlated noise. This uses the non-uniform fast fourier transform algorithm

@@ -1,6 +1,6 @@
 """
-Modeling Features: Linear Light Profiles
-========================================
+Modeling Features: Linear Light Profiles Fit
+============================================
 
 A "linear light profile" is a variant of a standard light profile where the `intensity` parameter is solved for
 via linear algebra every time the model is fitted to the data. This uses a process called an "inversion" and it
@@ -140,7 +140,7 @@ dataset_plotter.subplot_dataset()
 """
 __Fit__
 
-We now illustrate how to perform a fit to the dataset using linear light profils, using known light profile parameters.
+We now illustrate how to perform a fit to the dataset using linear light profiles, using known light profile parameters.
 
 The API follows closely the standard use of a `FitImaging` object, but simply uses linear light profiles (via the
 `lp_linear` module) instead of standard light profiles. 
@@ -243,7 +243,4 @@ galaxy_plotter.figures_2d(image=True)
 __Wrap Up__
 
 Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
-
-In particular, checkout the results example `linear.py` which details how to extract all information about linear
-light profiles from a fit.
 """

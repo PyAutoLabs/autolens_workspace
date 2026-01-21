@@ -226,10 +226,15 @@ This confirms that a `background_sky_level` of approximately 5.0 electrons per s
 print(result.info)
 
 """
-To print the exact value, the `sky` attribute of the result contains the `intensity` of the sky.
+To print the exact value, the `background_sky_level` attribute of the result contains the `intensity` of the sky.
 """
 print(result.instance.dataset_model.background_sky_level)
 
 """
-Checkout `autogalaxy_workspace/*/guides/result` for a full description of the result object.
+__Wrap Up__
+
+This example shows how to include the sky background as part of a fit using a `DatasetModel` object.
+
+It is useful for ensuring uncertainties on lens galaxy light profile parameters fully account for uncertainties
+in the sky background subtraction, especially for low surface brightness features in the outskirts of the galaxy.
 """

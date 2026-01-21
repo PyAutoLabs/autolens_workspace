@@ -182,11 +182,11 @@
 # __SOURCE PIX PIPELINE__
 #
 # The SOURCE PIX PIPELINE uses two searches to initialize a robust model for the `Pixelization` that
-# reconstructs the source galaxy's light. It begins by fitting an `Overlay` image-mesh, `RectangularMagnification` mesh and `Constant`
+# reconstructs the source galaxy's light. It begins by fitting an `Overlay` image-mesh, `RectangularAdaptDensity` mesh and `Constant`
 # regularization, to set up the model and hyper images, and then:
 #
 # - Uses a `Hilbert` image-mesh.
-# - Uses a `RectangularMagnification` mesh.
+# - Uses a `RectangularAdaptDensity` mesh.
 #  - Uses an `AdaptiveBrightness` regularization.
 #  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE LP PIPELINE through to the
 #  SOURCE PIX PIPELINE.
@@ -208,7 +208,7 @@
 #     settings_search=settings_search,
 #     analysis=analysis,
 #     source_lp_result=source_lp_result,
-#     mesh=al.mesh.RectangularMagnification,
+#     mesh=al.mesh.RectangularAdaptDensity,
 #     regularization=al.reg.AdaptiveBrightness,
 # )
 #

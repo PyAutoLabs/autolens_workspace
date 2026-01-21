@@ -51,7 +51,7 @@ dataset = al.Interferometer.from_fits(
     transformer_class=al.TransformerDFT,
 )
 
-dataset = dataset.apply_w_tilde(show_progress=True)
+dataset = dataset.apply_w_tilde(use_jax=True, show_progress=True)
 
 settings_inversion = al.SettingsInversion(use_positive_only_solver=False)
 
@@ -79,7 +79,7 @@ shear = af.Model(al.mp.ExternalShear)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
-mesh = af.Model(al.mesh.RectangularMagnification, shape=mesh_shape)
+mesh = af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape)
 regularization = af.Model(al.reg.Constant)
 
 pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)
@@ -121,8 +121,8 @@ __Reconstruction CSV__
 In the results `image` folder there is a .csv file called `source_plane_reconstruction_0.csv` which contains the
 y and x coordinates of the pixelization mesh, the reconstruct values and the noise map of these values.
 
-This file is provides all information on the source reconstruciton in a format that does not depend autolens
-and therefore be easily loaded to create images of the source or shared collaobrations who do not have PyAutoLens
+This file is provides all information on the source reconstruction in a format that does not depend autolens
+and therefore be easily loaded to create images of the source or shared collaborations who do not have PyAutoLens
 installed.
 
 First, lets load `source_plane_reconstruction_0.csv` as a dictionary, using basic `csv` functionality in Python.
@@ -154,7 +154,7 @@ print(reconstruction_dict["noise_map"])
 You can now use standard libraries to performed calculations with the reconstruction on the mesh, again avoiding
 the need to use autolens.
 
-For example, we can create a RectangularMagnification mesh using the scipy.spatial library, which is a triangulation
+For example, we can create a RectangularAdaptDensity mesh using the scipy.spatial library, which is a triangulation
 of the y and x coordinates of the pixelization mesh. This is useful for visualizing the pixelization
 and performing calculations on the mesh.
 """
@@ -172,7 +172,7 @@ Below, we interpolate the result onto a 201 x 201 grid of pixels with the extent
 capture the majority of the source reconstruction without being too high resolution.
 
 It should be noted this inteprolation may not be as optimal as the interpolation perforemd above using `MapperValued`, 
-which uses specifc interpolation methods for a RectangularMagnification mesh which are more accurate, but it should be sufficent for
+which uses specifc interpolation methods for a RectangularAdaptDensity mesh which are more accurate, but it should be sufficent for
 most use-cases.
 """
 from scipy.interpolate import griddata

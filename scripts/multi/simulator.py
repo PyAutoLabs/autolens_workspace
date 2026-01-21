@@ -33,7 +33,7 @@ The colors of the multi-wavelength image, which in this case are green (g-band) 
 
 The strings are used for naming the datasets on output.
 """
-color_list = ["g", "r"]
+waveband_list = ["g", "r"]
 
 """
 __Dataset Paths__
@@ -190,11 +190,11 @@ __Output__
 
 Output each simulated dataset to the dataset path as .fits files, with a tag describing its color.
 """
-for color, dataset in zip(color_list, dataset_list):
+for waveband, dataset in zip(waveband_list, dataset_list):
     dataset.output_to_fits(
-        data_path=Path(dataset_path) / f"{color}_data.fits",
-        psf_path=Path(dataset_path) / f"{color}_psf.fits",
-        noise_map_path=Path(dataset_path) / f"{color}_noise_map.fits",
+        data_path=Path(dataset_path) / f"{waveband}_data.fits",
+        psf_path=Path(dataset_path) / f"{waveband}_psf.fits",
+        noise_map_path=Path(dataset_path) / f"{waveband}_noise_map.fits",
         overwrite=True,
     )
 
@@ -203,9 +203,9 @@ __Visualize__
 
 Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset path as .png files.
 """
-for color, dataset in zip(color_list, dataset_list):
+for waveband, dataset in zip(waveband_list, dataset_list):
     mat_plot = aplt.MatPlot2D(
-        output=aplt.Output(path=dataset_path, prefix=f"{color}_", format="png")
+        output=aplt.Output(path=dataset_path, prefix=f"{waveband}_", format="png")
     )
 
     dataset_plotter = aplt.ImagingPlotter(dataset=dataset, mat_plot_2d=mat_plot)
@@ -213,9 +213,9 @@ for color, dataset in zip(color_list, dataset_list):
     dataset_plotter.figures_2d(data=True)
 
 
-for color, grid, tracer in zip(color_list, grid_list, tracer_list):
+for waveband, grid, tracer in zip(waveband_list, grid_list, tracer_list):
     mat_plot = aplt.MatPlot2D(
-        output=aplt.Output(path=dataset_path, prefix=f"{color}_", format="png")
+        output=aplt.Output(path=dataset_path, prefix=f"{waveband}_", format="png")
     )
 
     tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid, mat_plot_2d=mat_plot)
@@ -223,9 +223,9 @@ for color, grid, tracer in zip(color_list, grid_list, tracer_list):
     tracer_plotter.subplot_galaxies_images()
 
     mat_plot = aplt.MatPlot2D(
-        title=aplt.Title(label=f"Lens and Source {color}-band Images"),
+        title=aplt.Title(label=f"Lens and Source {waveband}-band Images"),
         output=aplt.Output(
-            path=dataset_path, filename=f"{color}_tracer_image", format="png"
+            path=dataset_path, filename=f"{waveband}_tracer_image", format="png"
         ),
     )
 
@@ -240,8 +240,10 @@ are safely stored and available to check how the dataset was simulated in the fu
 This can be loaded via the method `tracer = al.from_json()`.
 """
 [
-    al.output_to_json(obj=tracer, file_path=Path(dataset_path, f"{color}_tracer.json"))
-    for color, tracer in zip(color_list, tracer_list)
+    al.output_to_json(
+        obj=tracer, file_path=Path(dataset_path, f"{waveband}_tracer.json")
+    )
+    for color, tracer in zip(waveband_list, tracer_list)
 ]
 
 """

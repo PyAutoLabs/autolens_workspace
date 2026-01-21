@@ -18,6 +18,9 @@ Operated light profiles offer an alternative approach, whereby the light profile
 convolved with the PSF. This operated light profile is then fitted directly to the point-source emission, which as
 discussed above shows the PSF features.
 
+Operated light profiles bypass the convolution step entirely, and therefore if you had a use-case which
+required fitting other components of a galaxy without convolution they could be used for this purpose too.
+
 __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
@@ -26,6 +29,15 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
  - The lens galaxy includes a linear `Gaussian` psf.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is a linear `SersicCore`.
+
+__Fit__
+
+For operated light profiles, there is no `fit.py` example found for standard light profiles, linear light profiles
+and other examples.
+
+This is done purely to keep the number of examples in the workspace manageable. to perform a fit with operated light
+profiles, simply follow one of the other `modeling/imaging/fit.py` examples and replace the light profiles
+with operated light profiles using the API described below.
 
 __Start Here Notebook__
 
@@ -140,7 +152,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
-There is also a linear variant of every operated light profile (see `light_parametric_linear.py`).
+There is also a linear variant of every operated light profile (see `linear_light_profiles.py`).
 
 We will use this, as it simplifies parameter space, which is particularly important for operated light profiles 
 which can prove quite difficult to sample robustly.

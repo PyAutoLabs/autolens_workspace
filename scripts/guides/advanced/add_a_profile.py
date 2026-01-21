@@ -320,7 +320,6 @@ def transform_grid_2d_to_reference_frame(
     ).T
 
 
-
 """
 A simple example of this function is shifting a grid to a mass profile's centre (which simply subtracts the centre
 coordinates from every coordinate on the grid):
@@ -342,6 +341,7 @@ The `angle` input is the rotation angle of the mass profile's ellipse counter-cl
 It is computed from the `ell_comps` of the mass profile, which are the elliptical components of the mass profile's
 ellipse.
 """
+
 
 def axis_ratio_and_angle_from(
     ell_comps: Tuple[float, float], xp=np
@@ -383,6 +383,7 @@ def axis_ratio_and_angle_from(
     fac = xp.sqrt(ell_comps[1] ** 2 + ell_comps[0] ** 2)
     if xp.__name__.startswith("jax"):
         import jax
+
         fac = jax.lax.min(fac, 0.999)
     else:  # NumPy
         fac = np.minimum(fac, 0.999)
@@ -492,7 +493,9 @@ lens_model_example.centre.centre_1 = af.UniformPrior(lower_limit=-1.0, upper_lim
 lens_model_example.ell_comps.ell_comps_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
 lens_model_example.ell_comps.ell_comps_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
 lens_model_example.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=3.0)
-lens_model_example.your_parameter_here = af.UniformPrior(lower_limit=0.0, upper_limit=5.0)
+lens_model_example.your_parameter_here = af.UniformPrior(
+    lower_limit=0.0, upper_limit=5.0
+)
 
 print(lens_model_example.info)
 

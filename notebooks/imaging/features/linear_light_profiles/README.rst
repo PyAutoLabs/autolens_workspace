@@ -5,8 +5,8 @@ Files
 
 The following example scripts illustrating lens modeling where:
 
-- ``modeling``: Lens modeling using linear light profiles.
 - ``fit``: Fit linear light profiles and compute quantities like the residuals, chi squared and likelihood.
+- ``modeling``: Lens modeling using linear light profiles.
 - ``likelihood_function``: A step-by-step guide of the linear light profile likelihood function.
 
 Results

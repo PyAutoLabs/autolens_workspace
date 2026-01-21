@@ -1,8 +1,11 @@
-The ``sdvanced/modeling`` folder contains example scripts for modeling different datasets (E.g. CCD Imaging, Interferometry).
+The ``modeling`` folder contains example scripts for modeling different datasets (E.g. CCD Imaging, Interferometry).
 
 Files
 -----
 
-``graphical``: Fitting multiple datasets simultanoeusly using Bayesian graphical models.
-``hierarchical``: Perform hierarchical modeling of strong lens datasets, where model parameters are drawn from a parent distribution, using graphical models.
-``expectation_propagation``: How to use expectation propagation to fit strong lens datasets using graphical and hierarchical models.
+``cookbook``: A cookbook illustrating how to compose models with different parameterizations and assumptions.
+``searches``: The non-linear searches available in autolens, and which ones you might find useful.
+``customize``: Different ways to customize the lens modeling fitting analysis.
+``bug_fix``: How to fix a common issue users encounter when performing modeling on certain operating systems and Python versions.
+``chaining``: How to use advanced non-linear search chaining to perform lens modeling.
+``slam_start_here``: The Source, Light and Mass (SLaM) pipelines for modeling strong lens datasets.

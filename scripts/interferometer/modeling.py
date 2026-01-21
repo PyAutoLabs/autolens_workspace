@@ -144,7 +144,6 @@ appear in a notebook).]
 """
 print(model.info)
 
-
 """
 __Improved Lens Model__
 

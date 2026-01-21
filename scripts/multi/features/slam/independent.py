@@ -17,7 +17,7 @@ signal-to-noise. These datasets are fitted with the following approach:
   to capture changes in the lens light over wavelength, but it does not update the Gaussian parameters (e.g. `centre`,
  `elliptical_comps`, `sigma`) themselves due to the lower resolution of the data.
 
-- The source reconstruction (RectangularMagnification adaptive mesh) is updated using linear algebra to reconstruct
+- The source reconstruction (RectangularAdaptDensity adaptive mesh) is updated using linear algebra to reconstruct
   the source, but again fixes  the source pixelization parameters themselves.
 
 - Sub-pixel offsets between the datasets are fully modeled as free parameters, because the precision of a lens model
@@ -231,7 +231,7 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
-    mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
+    mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.AdaptiveBrightness,
 )
 
@@ -258,7 +258,7 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis=analysis,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
+    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
     regularization=al.reg.AdaptiveBrightness,
 )
 
@@ -504,7 +504,7 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
         settings_search=settings_search,
         analysis=analysis,
         source_lp_result=source_lp_result,
-        mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
+        mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
         regularization_init=al.reg.AdaptiveBrightness,
         dataset_model=dataset_model,
         fixed_mass_model=True,
@@ -538,7 +538,7 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
         analysis=analysis,
         source_lp_result=source_lp_result,
         source_pix_result_1=source_pix_result_1,
-        mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
+        mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
         regularization=al.reg.AdaptiveBrightness,
         dataset_model=dataset_model,
     )

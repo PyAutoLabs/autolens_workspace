@@ -3,7 +3,7 @@ Modeling Features: Multi Gaussian Expansion
 ===========================================
 
 A multi Gaussian expansion (MGE) decomposes the lens light into ~15-100 Gaussians, where the `intensity` of every
-Gaussian is solved for via a linear algebra using a process called an "inversion" (see the `light_parametric_linear.py`
+Gaussian is solved for via a linear algebra using a process called an "inversion" (see the `linear_light_profiles.py`
 feature for a full description of this).
 
 This script fits a lens light model which uses an MGE consisting of 60 Gaussians. It is fitted to simulated data
@@ -264,7 +264,7 @@ bulge = al.lp_basis.Basis(profile_list=bulge_gaussian_list)
 """
 __Fit__
 
-This is to illustrate the API for performing an MGE using standard autolens objects like the `Galaxy`, `Tracer`
+We now illustrate the API for performing an MGE using standard objects like the `Galaxy`, `Tracer`
 and `FitImaging` 
 
 Once we have a `Basis`, we can treat it like any other light profile in order to create a `Galaxy` and `Tracer` and 

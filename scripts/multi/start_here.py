@@ -437,5 +437,5 @@ but maybe you want to try and model your own lens first!
 
 The following locations of the workspace are good places to checkout next:
 
-- `autolens_workspace/*/advanced/multiimaging`: A full description of the multi wavelength and multi image fitting.
+- `autolens_workspace/*/multi/features`: A full description of the multi wavelength and multi image fitting.
 """

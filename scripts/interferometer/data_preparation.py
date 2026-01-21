@@ -63,7 +63,7 @@ array_plotter.figure_2d()
 These visibilities conforms to **PyAutoLens** standards, because they come from a standard CASA data reduction
 procedure. 
 
-More details of this procedure are given in the `examples/case_to_autolens.ipynb` notebook.
+More details of this procedure are given in the `examples/casa_reduction.ipynb` notebook.
 
 __Noise-Map__
 
@@ -102,7 +102,7 @@ grid_plotter.figure_2d()
 These uv wavelengths conform to **PyAutoLens** standards, because they come from a standard CASA data reduction
 procedure. 
 
-More details of this procedure are given in the `examples/case_to_autolens.ipynb` notebook.
+More details of this procedure are given in the `examples/casa_reduction.ipynb` notebook.
 
 __Real Space Mask__
 
@@ -113,14 +113,6 @@ You must double check that the real-space mask you use:
  
  - Spatially covers the lensed source galaxy, such that the source is not truncated by the mask.
  - Is high enough resolution that the lensed source galaxy is not smeared via the Fourier transform.
- 
-__Run Times__
-
-If you are analysing an interfeometer dataset with many visibilities (e.g. 1 million and above) and a high 
-resolution real-space mask (e.g. 0.01" / pixel), the analysis can take a long time to run. 
-
-The `examples/run_times.ipynb` script shows how to profile and setup your analysis to ensure it have fast enough
-run times.
 
 __Data Processing Complete__
 
@@ -140,7 +132,6 @@ Therefore, they are not located in the `interferometer/data_preparation` package
 
 Note that in order to perform some tasks (e.g. mark on the image where the source is), you will need to use an image
 of the interferometer data even though visibilities are used for the analysis.
-
 
 __Positions (Optional)__
 

@@ -74,7 +74,7 @@ lens_galaxy = al.Galaxy(
 )
 
 pixelization = al.Pixelization(
-    mesh=al.mesh.RectangularMagnification(),
+    mesh=al.mesh.RectangularAdaptDensity(),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -115,7 +115,7 @@ fit_plotter.figures_2d_of_planes(
 )
 
 """
-An irregular mesh like the RectangularMagnification or Voronoi can be plotted in two ways, using the irregular grid of cells or
+An irregular mesh like the RectangularAdaptDensity or Voronoi can be plotted in two ways, using the irregular grid of cells or
 by interpolating the reconstructed source-plane image onto a uniform grid of pixels.
 
 By default, the irregular grid is plotted, but the interpolated image can be plotted by changing the
@@ -335,7 +335,7 @@ lens_galaxy = al.Galaxy(
 )
 
 pixelization = al.Pixelization(
-    mesh=al.mesh.RectangularMagnification(),
+    mesh=al.mesh.RectangularAdaptDensity(),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -346,7 +346,7 @@ tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 fit = al.FitInterferometer(dataset=dataset, tracer=tracer)
 
 """
-The visualization plottes the reconstructed source on the RectangularMagnification mesh, and you'll have seen it zoomed in to
+The visualization plottes the reconstructed source on the RectangularAdaptDensity mesh, and you'll have seen it zoomed in to
 its brightest pixels. 
 
 This is so the galaxy can be clearly seen and is the default behavior of the `InversionPlotter`, given the

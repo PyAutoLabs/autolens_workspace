@@ -631,13 +631,11 @@ def run_3_subhalo__multi(
         refine_tag = "multi_plane_refine"
 
     subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
-    subhalo.mass.centre = (
-        subhalo_grid_search_result_2[0]
-        .model_centred_absolute(a=1.0)
-        .galaxies.subhalo.mass.centre
-    )
+    subhalo.mass.centre = subhalo_grid_search_result_2.model_centred_absolute(
+        a=1.0
+    ).galaxies.subhalo.mass.centre
 
-    subhalo.redshift = subhalo_grid_search_result_2[0].model.galaxies.subhalo.redshift
+    subhalo.redshift = subhalo_grid_search_result_2.model.galaxies.subhalo.redshift
     subhalo.mass.redshift_object = subhalo.redshift
 
     analysis_factor_list = []
@@ -645,9 +643,9 @@ def run_3_subhalo__multi(
     for i, analysis in enumerate(analysis_list):
         model = af.Collection(
             galaxies=af.Collection(
-                lens=subhalo_grid_search_result_2[i].model.galaxies.lens,
+                lens=subhalo_grid_search_result_2.model.galaxies.lens,
                 subhalo=subhalo,
-                source=subhalo_grid_search_result_2[i].model.galaxies.source,
+                source=subhalo_grid_search_result_2.model.galaxies.source,
             ),
             extra_galaxies=extra_galaxies,
             dataset_model=dataset_model,

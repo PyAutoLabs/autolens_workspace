@@ -188,7 +188,7 @@ pixelized source with a rectangular mesh.
 Below, we perform a similar fit using the **same pixelization**, but this time accelerated on the **CPU**
 using `numba` and sparse operations.
 """
-mesh = al.mesh.RectangularMagnification(shape=mesh_shape)
+mesh = al.mesh.RectangularAdaptDensity(shape=mesh_shape)
 regularization = al.reg.Constant(coefficient=1.0)
 
 pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
@@ -239,7 +239,7 @@ lens = af.Model(
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.RectangularMagnification(shape=mesh_shape),
+    mesh=al.mesh.RectangularAdaptDensity(shape=mesh_shape),
     regularization=al.reg.Constant,
 )
 
@@ -376,7 +376,7 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     settings_search=settings_search,
     analysis=analysis,
     source_lp_result=source_lp_result,
-    mesh_init=af.Model(al.mesh.RectangularMagnification, shape=mesh_shape),
+    mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.AdaptiveBrightness,
 )
 
@@ -403,7 +403,7 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     analysis=analysis,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    mesh=af.Model(al.mesh.RectangularSource, shape=mesh_shape),
+    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
     regularization=al.reg.AdaptiveBrightness,
 )
 

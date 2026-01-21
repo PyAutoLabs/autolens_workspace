@@ -1029,7 +1029,7 @@ mapping_matrix = al.util.mapper.mapping_matrix_from(
     pixels=mapper.pixels,
     total_mask_pixels=mapper.source_plane_data_grid.mask.pixels_in_mask,
     slim_index_for_sub_slim_index=mapper.slim_index_for_sub_slim_index,
-    sub_fraction=np.array(mapper.over_sampler.sub_fraction),
+    sub_fraction=mapper.over_sampler.sub_fraction,
 )
 
 plt.imshow(mapping_matrix, aspect=(mapping_matrix.shape[1] / mapping_matrix.shape[0]))
@@ -1211,7 +1211,7 @@ To fit a lens model to data, the likelihood function illustrated in this tutoria
 non-linear search algorithm.
 
 The default sampler is the nested sampling algorithm `Nautilus` (https://github.com/joshspeagle/Nautilus)
-but **PyAutoLens** supports multiple MCMC and optimization algorithms. 
+multiple MCMC and optimization algorithms are supported.
 
 __Sub Gridding__
 

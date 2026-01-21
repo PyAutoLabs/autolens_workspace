@@ -1,188 +1,340 @@
-**INTRODUCTION**
+PyAutoLens on High-Performance Computing (HPC)
+==============================================
 
-These scripts describe how to set up PyAutoLens on a high performance computer (HPC). The scripts are written for
-the Durham University COSMA super computer, which uses the SLURM batch proceessing system. This guide may not be a 
-100% applicable to your HPC resources, however the majority of tasks required for setting up PyAutoLens on HPC are 
-general, so it should help out either way!
+Introduction
+------------
 
-**PyAutoLens Virtual Environment**
+This guide describes how to set up and run PyAutoLens on a High-Performance
+Computing (HPC) system. It assumes:
 
-Before running autolens scripts on a HPC, we need to setup a workspace in your Cosma home directory. Your home
-directory has a limited amount of hard-disk space, so it is key that files with large filesizes (e.g. the .fits datasets
-and model-fit output folders) are omitted from this workspace and stored elsewhere on Cosma.
+- You have access to an HPC cluster via SSH
+- The cluster uses the SLURM batch scheduling system
+- Python is available via system modules, Conda, or a custom installation
 
-**Installing PyAutoLens Options**
+Although every HPC system differs slightly (filesystem layout, module names,
+Python versions, storage quotas), the core steps are universal. Where
+system-specific details are required, these are clearly marked and easy
+to adapt.
 
-There are two options for how we install PyAutoLens on cosma):
+Overview of the HPC Workflow
+----------------------------
 
-  - Installing PyAutoLens into the virtual environment via pip (or conda).
-  - Cloning the PyAutoLens (and parent project) GitHub repositories.
+On most HPC systems:
 
- If you are unsure which to use, I would recommend you install via pip, which uses the instructions given in this
- document. If you wish to clone the PyAutoLens (and parent projecT) repositires follows the instructions given in the
- file `autolens_workspace/misc/hpc/doc_repos`
+- Home directories have limited storage and are best used for:
+  - source code
+  - virtual environments
+  - configuration files
 
-**Step by Step Guide (installation via pip)**
+- Scratch or data filesystems are designed for:
+  - large datasets (e.g. ``.fits`` files)
+  - PyAutoLens output directories
+  - intermediate results
 
-To setup your cosma PyAutoLens workspace, the following commands should work from a terminal:
+This guide follows best practice by separating:
 
-1) ssh -X cosma_username@login.cosma.dur.ac.uk
+- the PyAutoLens workspace
+- the data and output directories
 
-   This command ssh's you into cosma. It'll log you into your home directory ('/cosma/home/durham/cosma_username').
+PyAutoLens Virtual Environment
+------------------------------
 
-2) pwd
+Before running PyAutoLens on an HPC system, you should create a Python
+virtual environment in your home directory. This environment will contain
+PyAutoLens and all its dependencies.
 
-   This command is not necessary, but allows us to quickly check the path of our cosma home directory.
+.. note::
 
-3) python3 -m venv PyAuto
+   Throughout this guide, replace values written in ALL CAPS (e.g.
+   ``YOUR_USERNAME`` or ``HPC_LOGIN_HOST``) with the appropriate values for
+   your system.
 
-   This makes a 'PyAuto' virtual environment and directory on your cosma home, where we will install PyAutoLens and
-   its associated dependencies. You MUST name your workspace PyAuto to use this setup file without changing any commands.
+Installing PyAutoLens: Available Options
+----------------------------------------
 
-4) mkdir autolens_workspace
-   cd autolens_workspace
+There are two supported ways to install PyAutoLens on an HPC system.
 
-   This creates and takes us into an autolens_workspace directory on COSMA.
+Option 1 (Recommended): Install via ``pip`` or ``conda``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-5) emacs -nw activate.sh
+- Simple and robust
+- Ideal if you do not need to modify PyAutoLens source code
 
-   This opens an 'activate.sh' script, which we'll use every time we log into cosma to activate the virtual environment.
+Option 2: Clone the GitHub repositories
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-6) Copy and paste the following commands into the activate.sh script, which should be open in emacs. Make sure to
-   change the "cosma_username" entries to your cosma username!
+- Useful if you are developing PyAutoLens itself
+- Follow the instructions in ``README_Repos.rst`` instead of this guide
 
-   To paste into an emacs window, use the command "CTRL + SHIFT + V"
-   To exit and save, use the command "CTRL + SHIFT + X" -> "CTRL + SHIFT + C" and push 'y' for yes.
+This document assumes **Option 1**.
 
+Step-by-Step Guide (Installation via ``pip``)
+---------------------------------------------
+
+1. SSH into the HPC
+^^^^^^^^^^^^^^^^^^
+
+From your local machine:
+
+::
+
+   ssh -X YOUR_USERNAME@HPC_LOGIN_HOST
+
+You should now be logged into your home directory on the HPC system.
+
+2. (Optional) Confirm Your Location
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+   pwd
+
+This should point to something like:
+
+::
+
+   /home/YOUR_USERNAME
+
+3. Create a Python Virtual Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+   python3 -m venv PyAuto
+
+This creates a virtual environment called ``PyAuto`` in your home directory.
+
+.. note::
+
+   You may rename this directory if you wish, but you must update paths
+   consistently later in this guide.
+
+4. Create an Activation Script
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Create a helper script that loads required modules (if applicable),
+activates the virtual environment, and sets environment variables.
+
+::
+
+   nano activate.sh
+
+(Use ``emacs -nw activate.sh`` or ``vi activate.sh`` if you prefer.)
+
+5. Edit ``activate.sh``
+^^^^^^^^^^^^^^^^^^^^^^
+
+Paste the following template and adapt it to your system:
+
+::
+
+   #!/bin/bash
+
+   # Reset loaded modules (optional but recommended)
    module purge
-   module load cosma/2018
-   module load python/3.6.5
-   source /cosma/home/dp004/dc-nigh1/PyAuto/bin/activate
-   export PYTHONPATH=/YOUR_COSMA_HOME_DIRECTORY/:\
-   /YOUR_COSMA_HOME_DIRECTORY/PyAuto
 
-7) source activate.sh
+   # Load required modules (EDIT THESE FOR YOUR HPC)
+   module load python/3.X.Y
 
-   This activates your PyAuto virtual environment. '(PyAuto)' should appear at the bottom left of you command line,
-   next to where you type commands.
+   # Activate the virtual environment
+   source $HOME/PyAuto/bin/activate
 
-8) Install autolens, as per usual, using the command
+   # Ensure Python can see your workspace
+   export PYTHONPATH=$HOME:$HOME/PyAuto
+
+Make the script executable:
+
+::
+
+   chmod +x activate.sh
+
+.. note::
+
+   - Some HPC systems do not use environment modules. If so, remove the
+     ``module`` lines.
+   - If you use Conda instead of ``venv``, activate your Conda environment
+     here instead.
+
+6. Activate the Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+   source activate.sh
+
+You should now see ``(PyAuto)`` at the start of your command prompt.
+
+7. Install PyAutoLens
+^^^^^^^^^^^^^^^^^^^^
+
+::
 
    pip install autolens
 
-Whenever you log into Cosma, you will need to 'activate' your PyAuto environment by running command 6) above. If you
-want, you can make it so Cosma does this automatically whenever you log in. To make this your default setup (e.g. if
-you're only going to be using PyAuto on Cosma) you can add the activate line to your .bashrc file:
+This installs PyAutoLens and all required dependencies into the virtual
+environment.
 
-    emacs -nw $HOME/.bashrc
+8. (Optional) Auto-Activate on Login
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-then copy and paste (CTRL + SHIFT + V):
+If you primarily use PyAutoLens on this HPC, you can automatically activate
+the environment when logging in.
 
-    source $HOME/autolens_workspace/activate.sh
+Edit your shell configuration file:
 
-And save and exit ("CTRL + SHIFT + X" -> "CTRL + SHIFT + C" and push 'y' for yes).
+::
 
+   nano ~/.bashrc
 
+Add:
 
-**PyAutoLens WORKSPACE**
+::
 
-Now we've set up our PyAutoLens virtual environment, we want to setup our workspace on Cosma, which will behave similar
-to the workspace you're used to using on your laptop. First, make sure you are in the autolens_workspace directory.
+   source $HOME/activate.sh
 
-    cd $HOME/autolens_workspacee
+PyAutoLens Workspace
+--------------------
 
-We are going to need to send files from your laptop to Cosma, and visa versa. On Cosma, the data and output files of
-PyAutoLens are stored in a separate directory to the workspace (we'll cover that below). Therefore, all we need to do
-is transfer your config files, pipelines and runners to a workspace folder on Cosma.
+Your workspace mirrors the structure you use on your laptop, but excludes
+large datasets and output directories.
 
-Thus, we need to upload these folders from our laptop to this directory on Cosma and eventually download the results
-of a PyAutoLens analysis on Cosma to our workspace.
+On the HPC, this typically lives in:
 
-The command 'rsync' does this and we'll use 3 custom options of rsync:
+::
 
- 1) --update, which only sends data which has been updated on your laptop / Cosma since the data was previously
- uploaded or downloaded. This ensures we don't resend our entire dataset or set of results every time we perform a
- file transfer. Phew!
+   $HOME/autolens_workspace
 
- 2) -v, this stands for verbose, and gives text output of the file transfer's progress.
+Uploading Workspace Files from Your Laptop
+------------------------------------------
 
- 3) -r, we'll send folders full of data rather than individual files, and this r allows us to send entire folders.
+From your local machine, navigate to your workspace:
 
-Before running rsync, you should navigate your command line terminal to your laptop's `autolens_workspace`.
+::
 
-    cd /path/to/autolens_workspace
+   cd /path/to/autolens_workspace
 
-These tutorials will assume you are running the SLaM pipelines in PyAutoLens. However, example scripts and runners can
-easily be uploaded instead by simply changing the commands below.
+We will use ``rsync`` to transfer files efficiently.
 
-To upload the SLaM pipelines from your laptop to Cosma
+Recommended ``rsync`` options:
 
-    rsync --update -v -r slam cosma_username@login.cosma.dur.ac.uk:/cosma/home/durham/cosma_username/autolens_workspace
+- ``--update`` – only copy newer files
+- ``-v`` – verbose output
+- ``-r`` – recursive directory transfer
 
-Next, you should create a 'cosma' directory in your autolens_workspace on your laptop. To do this, you can start by
-copy and pasting the folder from 'autolens_workspace/misc/hpc/cosma to the main root of your workspace,
-'autolens_workspace'.
+Uploading Pipelines (Example: SLaM)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The cosma folder contains the following:
+::
 
- - 'config': which is the same as the config's you've seen in the autolens_workspace. However, we want HPC runs to
-   behave differently to our laptop runs, for example using a different matplotlib backend for visualization and
-   zipping up the results to reduce file-storage usage. To faciliate this, the 'general.yaml' config file has
-   a 'hpc_mode' option, which for this config files is now set to True.
+   rsync --update -v -r slam \
+     YOUR_USERNAME@HPC_LOGIN_HOST:$HOME/autolens_workspace
 
- - 'runners': these are the runners you'll run on COSMA. A script 'example.py' is here, which changes how a runner
-   is set up compared to runners on your laptop. We'll cover this in more detail script below.
+HPC-Specific Workspace Folder
+-----------------------------
 
- - 'batch': the scripts we use to send a 'job' to cosma, which we will again cover in detail below.
+Create an ``hpc`` folder inside your workspace (for example by copying
+``misc/hpc``).
 
-We'll now send the cosma folder to your autolens workspace on cosma (note how by doing this, we do not send the .fits
-data to cosma yet).
+This folder typically contains:
 
-    rsync --update -v -r cosma cosma_username@login.cosma.dur.ac.uk:/cosma/home/durham/cosma_username/autolens_workspace
+- ``config``:
+  - HPC-specific configuration files
+  - ``general.yaml`` with ``hpc_mode: true``
 
+- ``runners``:
+  - runner scripts adapted for batch execution
 
-**PyAutoLens DATA AND OUTPUT FOLDERS**
+- ``batch``:
+  - SLURM submission scripts
 
-Now, we need to setup the Cosma directories that store our data and PyAutoLens output. Our data and output are stored
-in a different location than our workspace on Cosma, because of the large amounts of data storage they require.
+Upload the folder:
 
-Logged into cosma (e.g. via ssh), type the following command to go to your data directory:
+::
 
-    COSMA5: cd /cosma5/data/cosma_username
-    COSMA6: cd /cosma6/data/dp004/cosma_username
-    COSMA7: cd /cosma7/data/dp004/cosma_username
+   rsync --update -v -r hpc \
+     YOUR_USERNAME@HPC_LOGIN_HOST:$HOME/autolens_workspace
 
-NOTE: It is common for cosma data directories to be different to this. You should check emails from the cosma support
-team to find your exact directory.
+Data and Output Directories
+---------------------------
 
-In the directory of you cosma_username, lets make the dataset and output folders we'll next transfer our data into.
+Large datasets and PyAutoLens output should be stored on a high-capacity
+filesystem, often named something like:
 
-    mkdir dataset
-    mkdir output
+- ``/scratch``
+- ``/work``
+- ``/data``
+- ``/gpfs``
+- ``/lustre``
 
-On your laptop you should still be in your workspace, as you were when sending the pipelines and cosma folders.
+Consult your HPC documentation to find the correct location.
 
-The following rsync command can be used to send your data to Cosma (the example below uses the 'cosma5/data
-cosma' directory which you should change if necessary):
+Example Directory Setup (On HPC)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    rsync --update -v -r dataset/* cosma_username@login.cosma.dur.ac.uk:/cosma5/data/autolens/cosma_username/dataset/
+::
 
-And this command can send your output, if you have any results from your laptop you wish to continue from on cosma (you
-can omit this if you want you cosma runs to begin from scratch) (the 'cosma5/data' directory may need changing again):
+   cd /PATH/TO/LARGE_STORAGE/YOUR_USERNAME
+   mkdir -p dataset
+   mkdir -p output
 
-    rsync --update -v -r output/* cosma_username@login.cosma.dur.ac.uk:/cosma5/data/autolens/cosma_username/output/
+Uploading Data from Your Laptop
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If we wanted to just send one dataset or output folder, (e.g., named 'example'), we would remove the * wildcards and write:
+From your local workspace:
 
-    rsync --update -v -r dataset/example cosma_username@login.cosma.dur.ac.uk:/cosma5/data/autolens/cosma_username/dataset/
-    rsync --update -v -r output/example cosma_username@login.cosma.dur.ac.uk:/cosma5/data/autolens/cosma_username/output/
+::
 
-The following rsync commands can be used to download your dataset and output from Cosma:
+   rsync --update -v -r dataset/* \
+     YOUR_USERNAME@HPC_LOGIN_HOST:/PATH/TO/LARGE_STORAGE/YOUR_USERNAME/dataset/
 
-    rsync --update -v -r cosma_username@login.cosma.dur.ac.uk:/cosma5/data/autolens/cosma_username/dataset/* ./dataset/
-    rsync --update -v -r cosma_username@login.cosma.dur.ac.uk:/cosma5/data/autolens/cosma_username/output/* ./output/
+Uploading Existing Output (Optional)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+::
 
+   rsync --update -v -r output/* \
+     YOUR_USERNAME@HPC_LOGIN_HOST:/PATH/TO/LARGE_STORAGE/YOUR_USERNAME/output/
 
-Now you're setup, we're ready to run our first PyAutoLens analysis on Cosma. go to the
-'autolens_workspace/misc/hpc/example_0.py' script to learn about how we submit PyAutoLens jobs to Cosma.
+Uploading a Single Dataset or Output Folder
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+   rsync --update -v -r dataset/example \
+     YOUR_USERNAME@HPC_LOGIN_HOST:/PATH/TO/LARGE_STORAGE/YOUR_USERNAME/dataset/
+
+::
+
+   rsync --update -v -r output/example \
+     YOUR_USERNAME@HPC_LOGIN_HOST:/PATH/TO_LARGE_STORAGE/YOUR_USERNAME/output/
+
+Downloading Results Back to Your Laptop
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+::
+
+   rsync --update -v -r \
+     YOUR_USERNAME@HPC_LOGIN_HOST:/PATH/TO_LARGE_STORAGE/YOUR_USERNAME/output/* \
+     ./output/
+
+Next Steps
+----------
+
+You are now fully set up to run PyAutoLens on an HPC system.
+
+To submit your first job:
+
+- Navigate to the example runner script:
+
+  ::
+
+     autolens_workspace/misc/hpc/example_cpu.py
+
+- Review the SLURM batch scripts in:
+
+  ::
+
+     autolens_workspace/hpc/batch
+
+These scripts demonstrate how to configure and submit PyAutoLens jobs using
+SLURM.

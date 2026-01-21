@@ -141,6 +141,9 @@ noise-map values are scaled such that they contribute negligibly to the fit, is 
 We illustrate the API for doing this below, and show the subplot imaging where the extra galaxies mask has scaled
 the data values to zeros, increasing the noise-map values to large values and in turn made the signal to noise
 of its pixels effectively zero.
+
+We reload the dataset to ensure that the trimming performed for the FFT, based on the previous mask,
+does not impact the noise-scaling.
 """
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",

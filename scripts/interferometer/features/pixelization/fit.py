@@ -144,16 +144,6 @@ the data from the repository described in the "High Resolution Dataset" section 
 dataset_name = "simple"
 dataset_path = Path("dataset") / "interferometer" / dataset_name
 
-# dataset_name = "alma"
-
-# if dataset_name == "alma":
-#
-#     real_space_mask = al.Mask2D.circular(
-#         shape_native=(800, 800),
-#         pixel_scales=0.01,
-#         radius=mask_radius,
-#     )
-
 dataset = al.Interferometer.from_fits(
     data_path=dataset_path / "data.fits",
     noise_map_path=dataset_path / "noise_map.fits",
@@ -187,7 +177,7 @@ a progress bar to the terminal so you can monitor the computation, which is usef
 When computing it is slow, it is recommend you compute it once, save it to hard-disk, and load it
 before modeling. The example `pixelization/many_visibilities_preparation.py` illustrates how to do this.
 """
-dataset = dataset.apply_w_tilde(show_progress=True)
+dataset = dataset.apply_w_tilde(use_jax=True, show_progress=True)
 
 """
 __Settings__
@@ -251,7 +241,7 @@ where the centres computed by overlayiong a rectangular mesh over the source pla
 of the noise in the data and an unrealistically complex and structured source. Regularization smooths the source
 reconstruction solution by penalizing solutions where neighboring pixels have large flux differences.
 """
-mesh = al.mesh.RectangularMagnification(shape=mesh_shape)
+mesh = al.mesh.RectangularAdaptDensity(shape=mesh_shape)
 regularization = al.reg.Constant(coefficient=1.0)
 
 pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
@@ -259,7 +249,7 @@ pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
 """
 __Fit__
 
-This is to illustrate the API for performing a fit via a pixelization using standard autolens objects like 
+This is to illustrate the API for performing a fit via a pixelization using standard objects like 
 the `Galaxy`, `Tracer` and `FitInterferometer` 
 
 We simply create a `Pixelization` and pass it to the source galaxy, which then gets input into the tracer.
@@ -293,7 +283,7 @@ fit_plotter.subplot_fit()
 fit_plotter.subplot_fit_dirty_images()
 
 """
-pixelizations have bespoke visualizations which show more details about the source-reconstruction, image-mesh
+Pixelizations have bespoke visualizations which show more details about the source-reconstruction, image-mesh
 and other quantities.
 
 These plots use an `InversionPlotter`, which gets its name from the internals of how pixelizations are performed in
@@ -320,7 +310,7 @@ inversion_plotter.subplot_of_mapper(mapper_index=0)
 __Pixelization / Mapper Calculations__
 
 The pixelized source reconstruction output by an `Inversion` is often on an irregular grid (e.g. a
-Voronoi triangulation or Voronoi mesh), making it difficult to manipulate and inspect after the lens modeling has
+Delaunay triangulation), making it difficult to manipulate and inspect after the lens modeling has
 completed.
 
 Internally, the inversion stores a `Mapper` object to perform these calculations, which effectively maps pixels
@@ -352,7 +342,7 @@ pixelization o a uniform 2D grid of pixels.
 (if you do not know what the `slim` and `native` properties below refer too, it
 is described in the `results/examples/data_structures.py` example.)
 
-We interpolate the Voronoi triangulation this source is reconstructed on to a 2D grid of 401 x 401 square pixels.
+We interpolate the Delaunay triangulation this source is reconstructed on to a 2D grid of 401 x 401 square pixels.
 """
 interpolated_reconstruction = mapper_valued.interpolated_array_from(
     shape_native=(401, 401)
@@ -428,13 +418,12 @@ print(mapper_valued.magnification_via_interpolation_from(shape_native=(401, 401)
 The magnification calculated above used an interpolation of the source-plane reconstruction to a 2D grid of 401 x 401
 pixels.
 
-For a `RectangularMagnification` or `Voronoi` pixelization, the magnification can also be computed using the source-plane mesh
-directly, where the areas of the mesh pixels themselves are used to compute the magnification. In certain situations
-this is more accurate than interpolation, especially when the source-plane pixelization is irregular. However,
-it does not currently work for the `Delanuay` pixelization and is commented out below.
+The magnification can also be computed using the source-plane mesh directly, where the areas of the mesh pixels
+themselves are used to compute the magnification. In certain situations this is more accurate than interpolation, 
+especially when the source-plane pixelization is irregular. 
 """
-# print("Magnification via Mesh:")
-# print(mapper_valued.magnification_via_mesh_from())
+print("Magnification via Mesh:")
+print(mapper_valued.magnification_via_mesh_from())
 
 """
 The magnification value computed can be impacted by faint source pixels at the edge of the source reconstruction.
@@ -508,7 +497,7 @@ __Grids__
 The role of a mapper is to map between the image-plane and source-plane. 
 
 This includes mapping grids corresponding to the data grid (e.g. the centers of each image-pixel in the image and
-source plane) and the pixelization grid (e.g. the centre of the Voronoi triangulation in the image-plane and 
+source plane) and the pixelization grid (e.g. the centre of the Delaunay triangulation in the image-plane and 
 source-plane).
 
 All grids are available in a mapper via its `mapper_grids` property.
@@ -561,53 +550,6 @@ included in this image -- it only contains the source.
 print(inversion.mapped_reconstructed_image.native)
 
 """
-__Mapped To Source__
-
-Mapping can also go in the opposite direction, whereby we input an image-plane masked 2D array and we use 
-the `Inversion` to map these values to the source-plane.
-
-This creates an array which is analogous to the `reconstruction` in that the values are on the source-plane 
-pixelization grid, however it bypass the linear algebra and inversion altogether and simply computes the sum of values 
-mapped to each source pixel.
-
-[CURRENTLY DOES NOT WORK, BECAUSE THE MAPPING FUNCTION NEEDS TO INCORPORATE THE VARYING VORONOI PIXEL AREA].
-"""
-mapper_list = inversion.cls_list_from(cls=al.AbstractMapper)
-
-image_to_source = mapper_list[0].mapped_to_source_from(array=dataset.dirty_image)
-
-mapper_plotter = aplt.MapperPlotter(mapper=mapper_list[0])
-mapper_plotter.plot_source_from(pixel_values=image_to_source)
-
-"""
-We can interpolate these arrays to output them to fits.
-
-Although the model-fit used a Voronoi mesh, there is no reason we need to use this pixelization to map the image-plane
-data onto a source-plane array.
-
-We can instead map the image-data onto a rectangular pixelization, which has the nice property of giving us a
-regular 2D array of data which could be output to .fits format.
-
-[NOT CLEAR IF THIS WORKS YET, IT IS UNTESTED!].
-"""
-mesh = al.mesh.RectangularMagnification(shape=(50, 50))
-
-source_plane_grid = tracer.traced_grid_2d_list_from(grid=dataset.grids.pixelization)[1]
-
-mapper_grids = mesh.mapper_grids_from(
-    mask=real_space_mask, source_plane_data_grid=source_plane_grid
-)
-mapper = al.Mapper(
-    mapper_grids=mapper_grids,
-    regularization=al.reg.Constant(coefficient=1.0),
-)
-
-image_to_source = mapper.mapped_to_source_from(array=dataset.dirty_image)
-
-mapper_plotter = aplt.MapperPlotter(mapper=mapper)
-mapper_plotter.plot_source_from(pixel_values=image_to_source)
-
-"""
 __Linear Algebra Matrices (Advanced)__
 
 To perform an `Inversion` a number of matrices are constructed which use linear algebra to perform the reconstruction.
@@ -638,12 +580,11 @@ print(inversion.log_det_curvature_reg_matrix_term)
 """
 __Simulated Interferometer__
 
-We load the source galaxy image from the pixelized inversion of a previous fit, which was performed on an irregular 
-RectangularMagnification or Voronoi mesh.  
+We load the source galaxy image from the pixelized inversion of a previous fit, which was performed on an irregular mesh.  
 
 Since irregular meshes cannot be directly used to simulate lensed images, we interpolate the source onto a uniform 
 grid with shape `interpolated_pixelized_shape`. This grid should have a high resolution (e.g., 1000 × 1000) to preserve 
-all resolved structure from the original RectangularMagnification or Voronoi mesh.  
+all resolved structure from the original mesh.  
 """
 mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
 

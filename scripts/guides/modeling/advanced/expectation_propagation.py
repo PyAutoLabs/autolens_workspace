@@ -145,7 +145,7 @@ hierarchical_factor = af.HierarchicalFactor(
     sigma=af.TruncatedGaussianPrior(
         mean=0.5, sigma=0.5, lower_limit=0.0, upper_limit=100.0
     ),
-    use_jax=True,
+    use_jax=False,
 )
 
 for model in model_list:
@@ -197,7 +197,7 @@ __Factor Graph__
 We combine our `AnalysisFactors` into one, to compose the factor graph.
 """
 factor_graph = af.FactorGraphModel(
-    *analysis_factor_list, hierarchical_factor, use_jax=True
+    *analysis_factor_list, hierarchical_factor, use_jax=False
 )
 
 """

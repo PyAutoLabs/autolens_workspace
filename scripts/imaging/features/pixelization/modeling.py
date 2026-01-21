@@ -1,13 +1,13 @@
 """
-Features: Pixelization
-======================
+Features: Pixelization Modeling
+===============================
 
 A pixelization reconstructs the source's light using a pixel-grid, which is regularized using a prior that forces
 the solution to have a degree of smoothness.
 
 This script fits a source galaxy model which uses a pixelization to reconstruct the source's light.
 
-A Voronoi mesh and constant regularization scheme are used, which are the simplest forms of mesh and regularization
+A Rectangular mesh and constant regularization scheme are used, which are the simplest forms of mesh and regularization
 with provide computationally fast and accurate solutions.
 
 For simplicity, the lens galaxy’s light is omitted from both the simulated data and the model. Including the lens
@@ -16,7 +16,7 @@ galaxy’s light is straightforward and can be done in exactly the same framewor
 You may wish to first read the pixelization/fit.py example, which demonstrates how a pixelized source reconstruction
 is applied to a single dataset.
 
-pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
+Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
 
 __Run Time Overview__
 
@@ -128,7 +128,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's surface-brightness is reconstructed using a `RectangularMagnification` mesh
+ - The source galaxy's surface-brightness is reconstructed using a `RectangularAdaptDensity` mesh
    and `Constant` regularization scheme.
 
 __Start Here Notebook__
@@ -247,7 +247,7 @@ example fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
 
- - The source-galaxy's light uses a 20 x 20 `RectangularMagnification` mesh [0 parameters].
+ - The source-galaxy's light uses a 20 x 20 `RectangularAdaptDensity` mesh [0 parameters].
 
  - This pixelization is regularized using a `Constant` scheme which smooths every source pixel equally [1 parameter]. 
 
@@ -267,7 +267,7 @@ shear = af.Model(al.mp.ExternalShear)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
-mesh = af.Model(al.mesh.RectangularMagnification, shape=mesh_shape)
+mesh = af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape)
 regularization = af.Model(al.reg.Constant)
 
 pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)
@@ -487,47 +487,46 @@ apply the mask as above before fitting the data.
 
 __Result Use__
 
-There are many things you can do with the result of a pixelixaiton, including analysing the reconstructing source, 
+There are many things you can do with the result of a pixelixaiton, including analysing the reconstructed source, 
 magnification calculations of the source and much more.
 
 These are documented in the `fit.py` example.
 """
 inversion = result.max_log_likelihood_fit.inversion
 
-
 """
 __Wrap Up__
 
-pixelizations are the most complex but also most powerful way to model a source galaxy.
+Pixelizations are the most complex but also the most powerful way to model a galaxy’s light.
 
-Whether you need to use them or not depends on the science you are doing. If you are only interested in measuring a
-simple quantity like the Einstein radius of a lens, you can get away with using light profiles like a Sersic, MGE or 
-shapelets to model the source. Low resolution data also means that using a pixelization is not necessary, as the
-complex structure of the source galaxy is not resolved anyway.
+Whether you need to use them depends on the science you are doing. If you are only interested in measuring simple
+global quantities (for example, total flux, size, or axis ratio), analytic light profiles such as a Sérsic, MGE, or
+shapelets are often sufficient. For low-resolution data, pixelizations are also unnecessary, as the complex
+structure of the galaxy is not resolved.
 
-However, fitting complex mass models (e.g. a power-law, stellar / dark model or dark matter substructure) requires 
-this level of complexity in the source model. Furthermore, if you are interested in studying the properties of the
-source itself, you won't find a better way to do this than using a pixelization.
+However, modeling galaxies with complex, irregular, or highly structured light distributions requires this level of
+flexibility. Furthermore, if you are interested in studying the detailed morphology of a galaxy itself, there is no
+better approach than using a pixelization.
 
 __Chaining__
 
-Modeling using a pixelization can be more efficient, robust and automated using the non-linear chaining feature to 
-compose a pipeline which begins by fitting a simpler model using a parametric source.
+Modeling with a pixelization can be made more efficient, robust, and automated using the non-linear chaining feature
+to compose a pipeline that begins by fitting a simpler model using parametric light profiles.
 
-More information on chaining is provided in the `autolens_workspace/notebooks/guides/modeling/chaining` folder,
-chapter 3 of the **HowToLens** lectures.
+More information on chaining is provided in the
+`autogalaxy_workspace/notebooks/guides/modeling/chaining` folder and in chapter 3 of the **HowToGalaxy** lectures.
 
-__HowToLens__
+__HowToGalaxy__
 
-A full description of how pixelizations work, which comes down to a lot of linear algebra, Bayesian statistics and
-2D geometry, is provided in chapter 4 of the **HowToLens** lectures.
+A full description of how pixelizations work—which relies heavily on linear algebra, Bayesian statistics, and
+2D geometry—is provided in chapter 4 of the **HowToGalaxy** lectures.
 
 __Future Ideas / Contributions__
 
 Here are a list of things I would like to add to this tutorial but haven't found the time. If you are interested
 in having a go at adding them contact me on SLACK! :)
 
-- More magnification calculations.
-- Source gradient calculations.
-- A calculation which shows differential lensing effects (e.g. magnification across the source plane).
+- More diagnostic quantities for reconstructed galaxy light.
+- Gradient calculations of the reconstructed light distribution.
+- Quantifying spatial variations in galaxy structure across the image.
 """

@@ -30,7 +30,7 @@ This script fits an `Imaging` dataset of a galaxy with a model where:
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `fit` examples.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
@@ -160,5 +160,10 @@ fit_plotter = aplt.FitImagingPlotter(fit=fit)
 fit_plotter.subplot_fit()
 
 """
-Finish.
+__Wrap Up__
+
+This example shows how to include the sky background as part of a fit using a `DatasetModel` object.
+
+It is useful for ensuring uncertainties on lens galaxy light profile parameters fully account for uncertainties
+in the sky background subtraction, especially for low surface brightness features in the outskirts of the galaxy.
 """

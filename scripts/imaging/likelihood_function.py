@@ -479,7 +479,7 @@ To fit a lens model to data, the likelihood function illustrated in this tutoria
 non-linear search algorithm.
 
 The default sampler is the nested sampling algorithm `Nautilus` (https://github.com/joshspeagle/Nautilus)
-but **PyAutoLens** supports multiple MCMC and optimization algorithms. 
+multiple MCMC and optimization algorithms are supported.
 
 __Wrap Up__
 
