@@ -536,7 +536,7 @@ class SimulateImaging:
 
         al.output_to_json(
             obj=tracer,
-            file_path=os.Path(simulate_path, "tracer.json"),
+            file_path=Path(simulate_path) / "tracer.json",
         )
 
 
@@ -743,14 +743,18 @@ paths = af.DirectoryPaths(
     name="sensitivity_mapping",
 )
 
+galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(result=result)
+
+adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
 sensitivity = af.Sensitivity(
     paths=paths,
     simulation_instance=simulation_instance,
     base_model=base_model,
     perturb_model=perturb_model,
     simulate_cls=SimulateImaging(mask=mask, psf=dataset.psf),
-    base_fit_cls=BaseFit(adapt_images=result.adapt_images_from()),
-    perturb_fit_cls=PerturbFit(adapt_images=result.adapt_images_from()),
+    base_fit_cls=BaseFit(adapt_images=adapt_images),
+    perturb_fit_cls=PerturbFit(adapt_images=adapt_images),
     perturb_model_prior_func=perturb_model_prior_func,
     number_of_steps=2,
     #    number_of_steps=(4, 2),

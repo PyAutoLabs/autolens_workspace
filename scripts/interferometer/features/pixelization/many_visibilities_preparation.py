@@ -175,7 +175,7 @@ dataset folder so it can be easily found. Note that metadata describing the data
 mask is also saved in the file, so that when we load it (shown below) the code can verify it matches the dataset
 being modeled.
 """
-dataset.save_curvature_preload(
+dataset.w_tilde.save_curvature_preload(
     file=dataset_path / f"curvature_preload_{mask_radius}", overwrite=True
 )
 

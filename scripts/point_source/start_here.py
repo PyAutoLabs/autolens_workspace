@@ -472,7 +472,7 @@ tracer_plotter = aplt.TracerPlotter(tracer=tracer, grid=grid)
 tracer_plotter.figures_2d(image=True)
 
 """
-The image cna be saved to .fits for later use.
+The image can be saved to .fits for later use.
 """
 image = tracer.image_2d_from(grid=grid)
 
