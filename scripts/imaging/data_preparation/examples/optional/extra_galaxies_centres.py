@@ -46,8 +46,6 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
-
 # %matplotlib inline
 from pathlib import Path
 import autolens as al

@@ -43,6 +43,18 @@ but scientfically offers better results in many cases.
 
 If you do want to run only on CPU, you can use fast CPU method described in
 example `imaging/features/pixelization/cpu_fast_modeling` with the Delaunay mesh.
+
+
+__Source Science (Magnification, Flux and More)__
+
+Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
+
+Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic
+size of the source.
+
+The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+including examples using a Delaunay source reconstruction. Once you have completed lens modeling using a Delaunay mesh,
+you can jump to that example to study the source galaxy.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
@@ -317,7 +329,7 @@ galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
     result=result_1, use_model_images=True
 )
 
-image_mesh = al.image_mesh.Hilbert(pixels=1000)
+image_mesh = al.image_mesh.Hilbert(pixels=1000, weight_power=1.0, weight_floor=0.0001)
 
 image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
     mask=dataset.mask, adapt_data=galaxy_image_name_dict["('galaxies', 'source')"]
@@ -635,7 +647,7 @@ galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
     result=source_pix_result_1, use_model_images=True
 )
 
-image_mesh = al.image_mesh.Hilbert(pixels=1000)
+image_mesh = al.image_mesh.Hilbert(pixels=1000, weight_power=1.0, weight_floor=0.0001)
 
 image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
     mask=dataset.mask, adapt_data=galaxy_image_name_dict["('galaxies', 'source')"]

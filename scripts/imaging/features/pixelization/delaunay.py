@@ -43,6 +43,17 @@ but scientfically offers better results in many cases.
 
 If you do want to run only on CPU, you can use fast CPU method described in
 example `imaging/features/pixelization/cpu_fast_modeling` with the Delaunay mesh.
+
+__Source Science (Magnification, Flux and More)__
+
+Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
+
+Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic
+size of the source.
+
+The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+including examples using a Delaunay source reconstruction. Once you have completed lens modeling using a Delaunay mesh,
+you can jump to that example to study the source galaxy.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
@@ -216,6 +227,74 @@ fit_plotter = aplt.FitImagingPlotter(fit=fit)
 fit_plotter.subplot_fit()
 
 """
+__Source Science__
+
+Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
+
+Using the reconstructed source pixelization, we can compute key quantities such as the magnification, total flux, and
+intrinsic size of the source.
+
+For rectangular meshes, the example `autolens_workspace/*/imaging/features/source_science` gives a complete overview of 
+how to this. 
+
+For the Delaunay, specific functionality which manipulates the Delaunay triangles is required to perform these 
+calculations. We show below how to interpolate the Delaunay source reconstruction to a regular grid.
+
+When an inversion is performed on a Delaunay mesh, the reconstructed values are defined only at the irregular
+mesh vertices (the Delaunay nodes). In order to visualise the source reconstruction as a regular 2D image
+(e.g. for plotting or saving to a FITS file), we must interpolate these values onto a uniform grid.
+
+This is done using SciPy's Delaunay-based linear interpolation:
+
+- A `scipy.spatial.Delaunay` triangulation is constructed from the mesh node coordinates.
+
+- Within each triangle, interpolation is performed using *barycentric coordinates*, meaning the value at any point
+  inside the triangle is computed as a weighted linear combination of the values at the triangle’s three vertices.
+
+- Points outside the convex hull of the triangulation are assigned a fallback value (here `fill_value=0.0`).
+
+__Important Coordinate Convention (Delaunay(__
+
+SciPy expects all Delaunay coordinates to be provided in **(x, y)** order.
+
+However, grids are stored internally in **(y, x)** order.
+
+Therefore:
+
+- The mesh coordinates must be converted to (x, y) before building the triangulation.
+- The interpolation grid must also be flipped to (x, y) before evaluating the interpolator.
+
+This coordinate flip is essential for correct interpolation.
+"""
+from scipy.spatial import Delaunay
+from scipy.interpolate import LinearNDInterpolator
+
+inversion = fit.inversion
+
+mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
+
+reconstruction = inversion.reconstruction
+
+source_plane_mesh_grid = mapper.mapper_grids.source_plane_mesh_grid
+
+interpolation_grid = al.Grid2D.uniform(shape_native=(200, 200), pixel_scales=0.05)
+
+mesh_grid_xy = np.stack([source_plane_mesh_grid[:, 0], source_plane_mesh_grid[:, 1]]).T
+
+# Uses find simplex so recomputes delaunay internally
+delaunay = Delaunay(mesh_grid_xy)
+
+interp = LinearNDInterpolator(delaunay, reconstruction, fill_value=0.0)
+
+interpolation_grid_xy = np.asarray(interpolation_grid)[:, ::-1]  # (y,x)->(x,y)
+interpolated_reconstruction = interp(interpolation_grid_xy)
+
+print(f"Brightest Interpolated Source Pixel: {np.max(interpolated_reconstruction)}")
+
+print(interpolated_reconstruction.shape)
+ffff
+
+"""
 __Model__
 
 We now perform lens modeling using the Delaunay pixelization with the Overlay image-mesh.
@@ -325,7 +404,7 @@ lecture series.
 """
 galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(result=result_1)
 
-image_mesh = al.image_mesh.Hilbert(pixels=1000)
+image_mesh = al.image_mesh.Hilbert(pixels=1000, weight_power=1.0, weight_floor=0.0001)
 
 image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
     mask=dataset.mask, adapt_data=galaxy_image_name_dict["('galaxies', 'source')"]
@@ -638,7 +717,7 @@ galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
     result=source_pix_result_1
 )
 
-image_mesh = al.image_mesh.Hilbert(pixels=1000)
+image_mesh = al.image_mesh.Hilbert(pixels=1000, weight_power=1.0, weight_floor=0.0001)
 
 image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
     mask=dataset.mask, adapt_data=galaxy_image_name_dict["('galaxies', 'source')"]

@@ -8,6 +8,7 @@ The following example scripts illustrating lens modeling where:
 - ``modeling``: Lens modeling using an MGE.
 - ``simulator``: Simulating strong lens data with complexity in its light which requires an MGE to capture accurately.
 - ``fit``: Fit an MGE and compute quantities like the residuals, chi squared and likelihood.
+- ``source_science``: Performing source science calculations like the unlensed source's total flux and magnification.
 - ``likelihood_function``: A step-by-step guide of the MGE likelihood function.
 - ``slam``: Using the Source, Light and Mass (SLAM) pipeline to perform lens modeling using a MGE.
 

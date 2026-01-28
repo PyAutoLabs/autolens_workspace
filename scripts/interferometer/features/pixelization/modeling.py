@@ -472,6 +472,18 @@ These are documented in the `fit.py` example.
 inversion = result.max_log_likelihood_fit.inversion
 
 """
+__Source Science (Magnification, Flux and More)__
+
+Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
+
+Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic 
+size of the source.
+
+The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+including examples using a pixelized source reconstruction. 
+
+If you want to study the source galaxy after modeling has reconstructed its unlensed, then check out this example.
+
 __Wrap Up__
 
 pixelizations are the most complex but also most powerful way to model a source galaxy.

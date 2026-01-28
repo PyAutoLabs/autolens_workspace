@@ -171,6 +171,7 @@ adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
+    preloads=preloads,
     positions_likelihood_list=[
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
@@ -198,6 +199,7 @@ adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
+    preloads=preloads,
     use_jax=True,
 )
 
@@ -218,6 +220,7 @@ The LIGHT LP PIPELINE is setup identically to the `slam_start_here.ipynb` exampl
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
+    preloads=preloads,
     use_jax=True,
 )
 
@@ -245,6 +248,7 @@ The MASS TOTAL PIPELINE is identical to the `slam_start_here.ipynb` example.
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
+    preloads=preloads,
     positions_likelihood_list=[
         source_pix_result_2.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],

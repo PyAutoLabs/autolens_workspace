@@ -226,7 +226,7 @@ result = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph
 """
 __Result__
 
-The result's `info` attribute shows that the result is expressed following the same struture of analysis factors
+The result's `info` attribute shows that the result is expressed following the same structure of analysis factors
 that the `global_prior_model.info` attribute revealed above.
 """
 print(result.info)

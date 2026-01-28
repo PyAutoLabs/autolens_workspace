@@ -278,6 +278,16 @@ inversion_plotter = aplt.InversionPlotter(inversion=inversion)
 inversion_plotter.subplot_of_mapper(mapper_index=0)
 
 """
+__Source Science (Magnification, Flux and More)__
+
+Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
+
+Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic 
+size of the source.
+
+The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+including examples using a pixelized source reconstruction. Now you know how to fit a pixelization, go check it out!
+
 __Mask Extra Galaxies__
 
 There may be extra galaxies nearby the lens and source galaxies, whose emission blends with the lens and source.
@@ -329,151 +339,6 @@ dataset_plotter.subplot_dataset()
 We do not explictly fit this data, for the sake of brevity, however if your data has these nearby galaxies you should
 apply the mask as above before fitting the data.
 
-__Pixelization / Mapper Calculations__
-
-The pixelized source reconstruction output by an `Inversion` is often on an irregular grid (e.g. a
-Delaunay triangulation), making it difficult to manipulate and inspect after the lens modeling has
-completed.
-
-Internally, the inversion stores a `Mapper` object to perform these calculations, which effectively maps pixels
-between the image-plane and source-plane.
-
-After an inversion is complete, it has computed values which can be paired with the `Mapper` to perform calculations,
-most notably the `reconstruction`, which is the reconstructed source pixel values.
-
-By inputting the inversions's mapper and a set of values (e.g. the `reconstruction`) into a `MapperValued` object, we
-are provided with all the functionality we need to perform calculations on the source reconstruction.
-
-We set up the `MapperValued` object below, and illustrate how we can use it to interpolate the source reconstruction
-to a uniform grid of values, perform magnification calculations and other tasks.
-"""
-mapper = inversion.cls_list_from(cls=al.AbstractMapper)[
-    0
-]  # Only one source-plane so only one mapper, would be a list if multiple source planes
-
-mapper_valued = al.MapperValued(
-    mapper=mapper, values=inversion.reconstruction_dict[mapper]
-)
-
-"""
-__Interpolated Source__
-
-A simple way to inspect the source reconstruction is to interpolate its values from the irregular
-pixelization o a uniform 2D grid of pixels.
-
-(if you do not know what the `slim` and `native` properties below refer too, it
-is described in the `results/examples/data_structures.py` example.)
-
-We interpolate the Delaunay triangulation this source is reconstructed on to a 2D grid of 401 x 401 square pixels.
-"""
-interpolated_reconstruction = mapper_valued.interpolated_array_from(
-    shape_native=(401, 401)
-)
-
-"""
-If you are unclear on what `slim` means, refer to the section `Data Structure` at the top of this example.
-"""
-print(interpolated_reconstruction.slim)
-
-plotter = aplt.Array2DPlotter(
-    array=interpolated_reconstruction,
-)
-plotter.figure_2d()
-
-"""
-By inputting the arc-second `extent` of the source reconstruction, the interpolated array will zoom in on only these
-regions of the source-plane. The extent is input via the notation (xmin, xmax, ymin, ymax), therefore  unlike the standard
-API it does not follow the (y,x) convention.
-
-Note that the output interpolated array will likely therefore be rectangular, with rectangular pixels, unless
-symmetric y and x arc-second extents are input.
-"""
-interpolated_reconstruction = mapper_valued.interpolated_array_from(
-    shape_native=(401, 401), extent=(-1.0, 1.0, -1.0, 1.0)
-)
-
-print(interpolated_reconstruction.slim)
-
-"""
-The interpolated errors on the source reconstruction can also be computed, in case you are planning to perform
-model-fitting of the source reconstruction.
-"""
-mapper_valued_errors = al.MapperValued(
-    mapper=mapper, values=inversion.reconstruction_noise_map_dict[mapper]
-)
-
-interpolated_errors = mapper_valued_errors.interpolated_array_from(
-    shape_native=(401, 401), extent=(-1.0, 1.0, -1.0, 1.0)
-)
-
-print(interpolated_errors.slim)
-
-"""
-__Magnification__
-
-The magnification of the lens model and source reconstruction can also be computed via the `MapperValued` object,
-provided we pass it the reconstruction as the `values`.
-
-This magnification is the ratio of the surface brightness of image in the image-plane over the surface brightness
-of the source in the source-plane.
-
-In the image-plane, this is computed by mapping the reconstruction to the image, summing all reconstructed
-values and multiplying by the area of each image pixel. This image-plane image is not convolved with the
-PSF, as the source plane reconstruction is a non-convolved image.
-
-In the source-plane, this is computed by interpolating the reconstruction to a regular grid of pixels, for
-example a 2D grid of 401 x 401 pixels, and summing the reconstruction values multiplied by the area of each
-pixel. This calculation uses interpolation to compute the source-plane image.
-
-The calculation is relatively stable, but depends on subtle details like the resolution of the source-plane
-pixelization and how exactly the interpolation is performed.
-"""
-mapper_valued = al.MapperValued(
-    mapper=mapper,
-    values=inversion.reconstruction_dict[mapper],
-)
-
-print("Magnification via Interpolation:")
-print(mapper_valued.magnification_via_interpolation_from(shape_native=(401, 401)))
-
-"""
-The magnification calculated above used an interpolation of the source-plane reconstruction to a 2D grid of 401 x 401
-pixels.
-
-The magnification can also be computed using the source-plane mesh
-directly, where the areas of the mesh pixels themselves are used to compute the magnification. In certain situations
-this is more accurate than interpolation, especially when the source-plane pixelization is irregular. However,
-it does not currently work for the `Delanuay` pixelization and is commented out below.
-"""
-# print("Magnification via Mesh:")
-# print(mapper_valued.magnification_via_mesh_from())
-
-"""
-The magnification value computed can be impacted by faint source pixels at the edge of the source reconstruction.
-
-The input `mesh_pixel_mask` can be used to remove these pixels from the calculation, such that the magnification
-is based only on the brightest regions of the source reconstruction.
-
-We create a source-plane signal-to-noise map and use this to create a mask that removes all pixels with
-a signal-to-noise < 5.0.
-"""
-reconstruction = inversion.reconstruction_dict[mapper]
-errors = inversion.reconstruction_noise_map_dict[mapper]
-
-signal_to_noise_map = reconstruction / errors
-
-mesh_pixel_mask = signal_to_noise_map < 5.0
-
-mapper_valued = al.MapperValued(
-    mapper=mapper,
-    values=inversion.reconstruction_dict[mapper],
-    mesh_pixel_mask=mesh_pixel_mask,
-)
-
-print("Magnification via Interpolation:")
-print(mapper_valued.magnification_via_interpolation_from(shape_native=(401, 401)))
-
-"""
 __Wrap Up__
 
 Pixelizations are the most complex but also most powerful way to model a source galaxy.
@@ -610,15 +475,25 @@ Since irregular meshes cannot be directly used to simulate lensed images, we int
 grid with shape `interpolated_pixelized_shape`. This grid should have a high resolution (e.g., 1000 × 1000) to preserve 
 all resolved structure from the original mesh.  
 """
-mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
+from scipy.interpolate import griddata
 
-mapper_valued = al.MapperValued(
-    mapper=mapper,
-    values=inversion.reconstruction_dict[mapper],
+interpolation_grid = al.Grid2D.uniform(shape_native=(200, 200), pixel_scales=0.05)
+
+reconstruction = inversion.reconstruction
+source_plane_mesh_grid = mapper.mapper_grids.source_plane_mesh_grid
+
+interpolated_reconstruction = griddata(
+    points=source_plane_mesh_grid, values=reconstruction, xi=interpolation_grid
 )
 
-source_image = mapper_valued.interpolated_array_from(
-    shape_native=(1000, 1000),
+# As a pure 2D numpy array in case its useful for calculations
+interpolated_reconstruction_ndarray = interpolated_reconstruction.reshape(
+    interpolation_grid.shape_native
+)
+
+interpolated_reconstruction = al.Array2D.no_mask(
+    values=interpolated_reconstruction_ndarray,
+    pixel_scales=interpolation_grid.pixel_scales,
 )
 
 """

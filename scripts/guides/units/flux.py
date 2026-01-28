@@ -54,7 +54,7 @@ import autolens.plot as aplt
 """
 __Total Flux__
 
-A key quantity for performing conversions from flux to magnitudes is the total flux of a light profile.
+A key quantity for computing the magnitudes of galaxies is the total flux of a light profile.
 
 The most simple way to compute the total flux of a light profile is to create a grid of (y,x) coordinates over which
 we compute the image of the light profile, and then sum the image. 
@@ -65,13 +65,16 @@ HST data is often electrons per second, so the intensity is in units of electron
 light = al.lp.Sersic(
     centre=(0.0, 0.0),
     ell_comps=(0.0, 0.0),
-    intensity=2.0,  # in units of e- pix^-1 s^-1, assuming it was fitted to HST data in units of electrons per second
+    intensity=2.0,  # in units of e- pix^-1 s^-1, representative of HST data in units of electrons per second
     effective_radius=0.1,
     sersic_index=3.0,
 )
 
 """
 The total flux, in units of electrons per second, is computed by summing the image of the light profile over all pixels.
+
+Note that we can use a `grid` of any shape and pixel scale here, the important thing is that it is so large
+and high enough resolution that it captures all the light from the light profile.
 """
 grid = al.Grid2D.uniform(shape_native=(500, 500), pixel_scales=0.02)
 

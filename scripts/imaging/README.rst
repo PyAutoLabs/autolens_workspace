@@ -14,6 +14,7 @@ Files
 - ``simulator``: Detailed example of how to simulate strong lens CCD imaging data.
 - ``simulator_sample``: How to simulate a sample of strong lenses observed with CCD imaging data.
 - ``fit``: How to fit CCD imaging data to compute quantities like the residuals, chi squared and likelihood.
+- ``source_science``: Performing source science calculations like the unlensed source's total flux and magnification.
 - ``likelihood_function``: A step-by-step guide of the CCD imaging data likelihood function.
 
 Folders

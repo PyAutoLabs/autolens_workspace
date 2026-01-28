@@ -434,6 +434,18 @@ plotter.corner_anesthetic()
 The example `pixelization/fit` provides a full description of the different calculations that can be performed
 with the result of a pixelization model-fit.
 
+__Source Science (Magnification, Flux and More)__
+
+Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
+
+Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic 
+size of the source.
+
+The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+including examples using a pixelized source reconstruction. 
+
+If you want to study the source galaxy after modeling has reconstructed its unlensed, then check out this example.
+
 __Mask Extra Galaxies__
 
 There may be extra galaxies nearby the lens and source galaxies, whose emission blends with the lens and source.
@@ -485,16 +497,6 @@ dataset_plotter.subplot_dataset()
 We do not explictly fit this data, for the sake of brevity, however if your data has these nearby galaxies you should
 apply the mask as above before fitting the data.
 
-__Result Use__
-
-There are many things you can do with the result of a pixelixaiton, including analysing the reconstructed source, 
-magnification calculations of the source and much more.
-
-These are documented in the `fit.py` example.
-"""
-inversion = result.max_log_likelihood_fit.inversion
-
-"""
 __Wrap Up__
 
 Pixelizations are the most complex but also the most powerful way to model a galaxy’s light.
