@@ -529,7 +529,7 @@ tracer = al.Tracer(
 
 """
 Using the tracer, we generate the lensed source galaxy image on the image-plane grid. This process incorporates 
-the `source_image`, preserving the irregular and asymmetric morphological features captured by the source reconstruction.  
+the `interpolated_reconstruction`, preserving the irregular and asymmetric morphological features captured by the source reconstruction.  
 
 Next, we configure the grid, PSF, and simulator settings to match the signal-to-noise ratio (S/N) and noise properties 
 of the observed data used for sensitivity mapping.  
@@ -554,14 +554,14 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
 
 grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
 
-# dataset = simulator.via_source_image_from(
-#     tracer=tracer, grid=grid, source_image=source_image
+# dataset = simulator.via_interpolated_reconstruction_from(
+#     tracer=tracer, grid=grid, interpolated_reconstruction=interpolated_reconstruction
 # )
 #
 # plotter = aplt.ImagingPlotter(dataset=dataset)
 # plotter.subplot_dataset()
 #
-# output = aplt.Output(path=".", filename="source_image", format="png")
+# output = aplt.Output(path=".", filename="interpolated_reconstruction", format="png")
 #
 # plotter = aplt.ImagingPlotter(
 #     dataset=dataset, mat_plot_2d=aplt.MatPlot2D(output=output)

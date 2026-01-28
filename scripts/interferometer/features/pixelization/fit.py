@@ -453,15 +453,25 @@ Since irregular meshes cannot be directly used to simulate lensed images, we int
 grid with shape `interpolated_pixelized_shape`. This grid should have a high resolution (e.g., 1000 × 1000) to preserve 
 all resolved structure from the original mesh.  
 """
-mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
+from scipy.interpolate import griddata
 
-mapper_valued = al.MapperValued(
-    mapper=mapper,
-    values=inversion.reconstruction_dict[mapper],
+interpolation_grid = al.Grid2D.uniform(shape_native=(200, 200), pixel_scales=0.05)
+
+reconstruction = inversion.reconstruction
+source_plane_mesh_grid = mapper.mapper_grids.source_plane_mesh_grid
+
+interpolated_reconstruction = griddata(
+    points=source_plane_mesh_grid, values=reconstruction, xi=interpolation_grid
 )
 
-source_image = mapper_valued.interpolated_array_from(
-    shape_native=(1000, 1000),
+# As a pure 2D numpy array in case its useful for calculations
+interpolated_reconstruction_ndarray = interpolated_reconstruction.reshape(
+    interpolation_grid.shape_native
+)
+
+interpolated_reconstruction = al.Array2D.no_mask(
+    values=interpolated_reconstruction_ndarray,
+    pixel_scales=interpolation_grid.pixel_scales,
 )
 
 """
@@ -496,7 +506,7 @@ tracer = al.Tracer(
 
 """
 Using the tracer, we generate the lensed source galaxy image on the image-plane grid. This process incorporates 
-the `source_image`, preserving the irregular and asymmetric morphological features captured by the source reconstruction.  
+the `interpolated_reconstruction`, preserving the irregular and asymmetric morphological features captured by the source reconstruction.  
 
 Next, we configure the grid, PSF, and simulator settings to match the signal-to-noise ratio (S/N) and noise properties 
 of the observed data used for sensitivity mapping.  
@@ -511,17 +521,17 @@ simulator = al.SimulatorInterferometer(
     transformer_class=al.TransformerDFT,
 )
 
-dataset = simulator.via_source_image_from(
-    tracer=tracer, grid=grid, source_image=source_image
-)
-
-plotter = aplt.InterferometerPlotter(dataset=dataset)
-
-output = aplt.Output(path=".", filename="source_image", format="png")
-
-plotter = aplt.InterferometerPlotter(
-    dataset=dataset, mat_plot_2d=aplt.MatPlot2D(output=output)
-)
+# dataset = simulator.via_interpolated_reconstruction_from(
+#     tracer=tracer, grid=grid, interpolated_reconstruction=interpolated_reconstruction
+# )
+#
+# plotter = aplt.InterferometerPlotter(dataset=dataset)
+#
+# output = aplt.Output(path=".", filename="interpolated_reconstruction", format="png")
+#
+# plotter = aplt.InterferometerPlotter(
+#     dataset=dataset, mat_plot_2d=aplt.MatPlot2D(output=output)
+# )
 
 """
 __Future Ideas / Contributions__
