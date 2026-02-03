@@ -55,7 +55,7 @@ dataset = al.Interferometer.from_fits(
     transformer_class=al.TransformerDFT,
 )
 
-dataset = dataset.apply_w_tilde(use_jax=True, show_progress=True)
+dataset = dataset.apply_sparse_operator(use_jax=True, show_progress=True)
 
 settings_inversion = al.SettingsInversion(use_positive_only_solver=False)
 

@@ -479,8 +479,7 @@ This operation changes the dimensions of the mapping matrix, meaning the `transf
 dimensions `(total_image_pixels, total_visibilities)`. 
 
 If the number of visibilities is large (e.g. 10^6) this matrix becomes extremely large and computationally expensive to 
-store memory, meaning the `w_tilde` likelihood function, described in 
-the `/log_likelihood_function/interferometer/`w_tilde.ipynb` notebook must be used instead.
+store memory, meaning the sparse operator likelihood function must be used instead.
 
 The `transformed_mapping_matrix` is also complex, storing all entries of the visibilities after the NUFFT as real
 and complex values.
@@ -986,8 +985,8 @@ If you are interested, you will need to dive into the source code itself.
 many NUFFT's to compute and requires large memroy store. The source code uses a trick which computes the chi-squared
 but bypasses the need to ever compute the `transformed_mapping_matrix`.
 
-**W-tilde Curvature Matrix:** The `curvature_matrix` above is also computed using the `transformed_mapping_matrix`, 
-which again means slow run times and large memory usage. The source code uses the `w_tilde_preload` matrix to 
+**Sparse Operator Curvature Matrix:** The `curvature_matrix` above is also computed using the `transformed_mapping_matrix`, 
+which again means slow run times and large memory usage. The source code can instead use sparse operators to 
 compute the curvature matrix in a way which again bypasses the need to compute the `transformed_mapping_matrix`.
 
 The two tricks in combination lead to a significant speed up in the likelihood function evaluation and mean that

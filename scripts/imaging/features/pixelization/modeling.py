@@ -369,7 +369,7 @@ __VRAM__
 The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
 required by a model.
 
-pixelizations use a lot more VRAM than light profile-only models, with the amount required depending on the size of
+Pixelizations use a lot more VRAM than light profile-only models, with the amount required depending on the size of
 dataset and the number of source pixels in the pixelization's mesh. For 400 source pixels, around 0.05 GB per batched
 likelihood of VRAM is used. 
 

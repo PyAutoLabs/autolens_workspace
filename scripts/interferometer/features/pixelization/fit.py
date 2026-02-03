@@ -23,7 +23,7 @@ this functionality, and therefore is suitable for datasets with a low number of 
 many visibilities (E.g. tens of millions).
 
 This example fits the dataset with 273 visibilities used throughout the workspace, so the fit runs in seconds, but
-provided the w tilde formalism is set up correctly, the same code can be used to fit datasets with millions of
+provided the sparse operator formalism is set up correctly, the same code can be used to fit datasets with millions of
 visibilities.
 
 If your dataset contains many visibilities (e.g. millions), setting up the matrices for pixelized source reconstruction
@@ -33,9 +33,9 @@ performed before lens modeling and saved to hard disk for fast loading before th
 
 This script's default setup uses an adaptive 20 x 20 rectangular mesh (400 pixels), which is relatively low resolution
 and may not provide the most accurate lens modeling results. The mesh resolution can be increased to improve
-the fit, and the w-tilde formalism means this should still run fine on my laptop GPUs, requiring less than 4 GB VRAm.
+the fit, and the sparse operator formalism means this should still run fine on my laptop GPUs, requiring less than 4 GB VRAm.
 
-CPU run times are also fast using the w-tilde formalism.
+CPU run times are also fast using the sparse operator formalism.
 
 __Contents__
 
@@ -157,27 +157,27 @@ dataset_plotter.subplot_dataset()
 dataset_plotter.subplot_dirty_images()
 
 """
-__W_Tilde__
+__Sparse Operators__
 
-Pixelized source modeling requires heavy linear algebra operations. These calculations are greatly accelerated
-using an alternative mathematical approach called the **w_tilde formalism**.
+Pixelized source modeling requires dense linear algebra operations. These calculations are greatly accelerated
+using an alternative mathematical approach called the **sparse linear algebra formalism**.
 
 You do not need to understand the full details of the method, but the key point is:
 
-- `w_tilde` exploits the **sparsity** of the matrices used in pixelized source reconstruction.
+- It exploits the **sparsity** of the matrices used in pixelized source reconstruction, reducing memory usage.
 - This leads to a **significant speed-up on GPU or CPU**, using JAX to perform the linear algebra calculations.
 
-To enable this feature, we call `apply_w_tilde()` on the dataset. This computes and stores a `w_tilde_preload` matrix,
-which reused in all subsequent pixelized source fits.
+To enable this feature, we call `apply_sparse_operator()` on the dataset. This computes and stores a NUFFT operator 
+matrix.
 
-For datasets with over 100000 visibilities and many pixels in their real-space mask, this computation
-can take 10 minutes or hours (for the small dataset loaded above its miliseconds). The `show_progress` input outputs 
-a progress bar to the terminal so you can monitor the computation, which is useful when it is slow
+For datasets with over 100000 visibilities and many pixels in their real-space mask, this computation takes seconds
+on GPU, but may take 10 minutes or hours (for the small dataset loaded above its miliseconds) on CPU. The `show_progress` 
+input  outputs a progress bar to the terminal so you can monitor the computation, which is useful when it is slow
 
 When computing it is slow, it is recommend you compute it once, save it to hard-disk, and load it
 before modeling. The example `pixelization/many_visibilities_preparation.py` illustrates how to do this.
 """
-dataset = dataset.apply_w_tilde(use_jax=True, show_progress=True)
+dataset = dataset.apply_sparse_operator(use_jax=True, show_progress=True)
 
 """
 __Settings__

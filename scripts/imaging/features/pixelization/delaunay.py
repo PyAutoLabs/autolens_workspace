@@ -291,9 +291,6 @@ interpolated_reconstruction = interp(interpolation_grid_xy)
 
 print(f"Brightest Interpolated Source Pixel: {np.max(interpolated_reconstruction)}")
 
-print(interpolated_reconstruction.shape)
-ffff
-
 """
 __Model__
 
@@ -331,6 +328,15 @@ search our lens model is:
  - This pixelization is regularized using a `Constant` scheme [1 parameter]. 
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=8.
+
+__JAX CPU__
+
+On CPU, the Delaunay mesh computation via JAX can lead to slow down or indefinite freezing. 
+
+You may find better performance if you set `use_jax_vmap=False` in the `Nautilus` search below, which
+disables JAX's vectorization of certain computations.
+
+This does not impact GPU performance, which should always use `use_jax_vmap=True`.
 """
 lens = af.Model(
     al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
@@ -351,6 +357,8 @@ search_1 = af.Nautilus(
     name="delaunay",
     unique_tag=dataset_name,
     n_live=100,
+    n_batch=10,
+    #   use_jax_vmap=False # Set to False if CPU performance is slow or hangs
 )
 
 analysis_1 = al.AnalysisImaging(
@@ -516,6 +524,7 @@ search_2 = af.Nautilus(
     name="delaunay_adapt",
     unique_tag=dataset_name,
     n_live=75,
+    #   use_jax_vmap=False # Set to False if CPU performance is slow or hangs
 )
 
 result_2 = search_2.fit(model=model_2, analysis=analysis_2)
@@ -587,6 +596,7 @@ settings_search = af.SettingsSearch(
     unique_tag=dataset_name,
     info=None,
     session=None,
+    #   use_jax_vmap=False # Set to False if CPU performance is slow or hangs
 )
 
 """

@@ -26,7 +26,6 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 from pathlib import Path
-from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt

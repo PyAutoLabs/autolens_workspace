@@ -134,30 +134,30 @@ positions = al.Grid2DIrregular(
 )
 
 """
-__W_Tilde__
+__Sparse Operators__
 
-Pixelized source modeling requires heavy linear algebra operations. These calculations can be greatly accelerated
-using an alternative mathematical approach called the **`w_tilde` formalism**.
+Pixelized source modeling requires dense linear algebra operations. These calculations can be greatly accelerated
+using an alternative mathematical approach called the **sparse operator formalism**.
 
 You do not need to understand the full details of the method, but the key point is:
 
-- `w_tilde` exploits the **sparsity** of the matrices used in pixelized source reconstruction.
+- It exploits the **sparsity** of the matrices used in pixelized source reconstruction, reducing memory usage.
 - This leads to a **significant speed-up on CPUs**.
 - The current implementation does **not support JAX**, and therefore does not benefit from GPU acceleration.
 
-To enable this feature, we call `apply_w_tilde()` on the `Imaging` dataset. This computes and stores a `w_tilde`
-matrix, which is then reused in all subsequent pixelized source fits.
+To enable this feature, we call `apply_sparse_operator()` on the `Imaging` dataset. This computes and stores operator
+matrices, which are then reused in all subsequent pixelized source fits.
 
-- Computing `w_tilde` takes anywhere from a few seconds to a few minutes, depending on the dataset size.
+- Computing the operator matrices takes anywhere from a few seconds to a few minutes, depending on the dataset size.
 - After it is computed once, every model-fit using pixelization becomes substantially faster.
 """
-dataset = dataset.apply_w_tilde()
+dataset = dataset.apply_sparse_operator_cpu()
 
 """
 __JAX & Preloads__
 
 In earlier examples (`imaging/features/pixelization/modeling`), we used JAX, which requires *preloading* array shapes
-before compilation. In contrast, CPU modeling with `w_tilde` does **not** require JAX, allowing us to use larger meshes.
+before compilation. In contrast, CPU modeling with sparse operators does **not** require JAX.
 
 Below, notice how the `mesh_shape` is increased to **30 × 30**. Because CPU computation exploits sparse matrices and
 benefits from larger system memory, we can now use higher-resolution pixelizations than were practical with JAX GPU
@@ -219,7 +219,7 @@ fit_plotter.subplot_fit()
 """
 __Model__
 
-We now perform a full model-fit using the `w_tilde` formalism on the CPU.
+We now perform a full model-fit using the sparse operator formalism on the CPU.
 
 There are two key differences from the earlier JAX-based pixelization examples:
 
@@ -268,8 +268,8 @@ __SLaM Pipeline__
 The example `guides/modeling//slam_start_here.ipynb` introduces the SLaM (Source, Light and Mass) pipelines for
 automated lens modeling of large samples of strong lenses.
 
-We finish this example by showing how to run the SLaM pipelines using CPU acceleration with `w_tilde`, similar to the
-model-fit above.
+We finish this example by showing how to run the SLaM pipelines using CPU acceleration with sparse operators, similar 
+to the model-fit above.
 
 Note that the first pipeline, SOURCE LP, uses JAX acceleration as in previous examples and therefore does not 
 pass `use_jax=False` or a `number_of_cores` parameter.

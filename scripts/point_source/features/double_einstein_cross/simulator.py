@@ -116,10 +116,26 @@ positions_0 = solver.solve(
     plane_redshift=source_galaxy_0.redshift,
 )
 
+positions_0_with_noise = positions_0 + np.random.normal(
+    loc=0.0, scale=grid.pixel_scale, size=positions_0.shape
+)
+
+positions_0_with_noise = al.Grid2DIrregular(
+    values=positions_0_with_noise,
+)
+
 positions_1 = solver.solve(
     tracer=tracer,
     source_plane_coordinate=source_galaxy_1.point_1.centre,
     plane_redshift=source_galaxy_1.redshift,
+)
+
+positions_1_with_noise = positions_1 + np.random.normal(
+    loc=0.0, scale=grid.pixel_scale, size=positions_0.shape
+)
+
+positions_1_with_noise = al.Grid2DIrregular(
+    values=positions_1_with_noise,
 )
 
 """
@@ -134,8 +150,21 @@ We can now compute the observed fluxes of the `Point`, give we know how much eac
 flux = 1.0
 fluxes_0 = [flux * np.abs(magnification) for magnification in magnifications_0]
 fluxes_0 = al.ArrayIrregular(values=fluxes_0)
+fluxes_0_with_noise = fluxes_0 + np.random.normal(
+    loc=0.0, scale=np.sqrt(fluxes_0), size=len(fluxes_0)
+)
+fluxes_0_noise_map = al.ArrayIrregular(
+    values=[np.sqrt(flux) for _ in range(len(fluxes_0_with_noise))]
+)
+
 fluxes_1 = [flux * np.abs(magnification) for magnification in magnifications_1]
 fluxes_1 = al.ArrayIrregular(values=fluxes_1)
+fluxes_1_with_noise = fluxes_1 + np.random.normal(
+    loc=0.0, scale=np.sqrt(fluxes_1), size=len(fluxes_1)
+)
+fluxes_1_noise_map = al.ArrayIrregular(
+    values=[np.sqrt(flux) for _ in range(len(fluxes_1_with_noise))]
+)
 
 """
 We now output the image of this strong lens to `.fits` which can be used for visualize when performing point-source 
@@ -167,17 +196,17 @@ analyse the dataset.
 """
 dataset_0 = al.PointDataset(
     name="point_0",
-    positions=positions_0,
-    positions_noise_map=al.ArrayIrregular(values=len(positions_0) * [grid.pixel_scale]),
-    fluxes=fluxes_0,
-    fluxes_noise_map=al.ArrayIrregular(values=[1.0, 1.0, 1.0, 1.0]),
+    positions=positions_0_with_noise,
+    positions_noise_map=grid.pixel_scale,
+    fluxes=fluxes_0_with_noise,
+    fluxes_noise_map=fluxes_0_noise_map,
 )
 dataset_1 = al.PointDataset(
     name="point_1",
     positions=positions_1,
-    positions_noise_map=al.ArrayIrregular(values=len(positions_1) * [grid.pixel_scale]),
-    fluxes=fluxes_1,
-    fluxes_noise_map=al.ArrayIrregular(values=[1.0, 1.0, 1.0, 1.0]),
+    positions_noise_map=grid.pixel_scale,
+    fluxes=fluxes_1_with_noise,
+    fluxes_noise_map=fluxes_1_noise_map,
 )
 
 

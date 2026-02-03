@@ -92,7 +92,7 @@ dataset = al.Interferometer.from_fits(
     transformer_class=al.TransformerDFT,
 )
 
-dataset = dataset.apply_w_tilde(use_jax=True, show_progress=True)
+dataset = dataset.apply_sparse_operator(use_jax=True, show_progress=True)
 
 positions = al.Grid2DIrregular(
     al.from_json(file_path=Path(dataset_path, "positions.json"))
@@ -505,7 +505,7 @@ dataset = al.Interferometer.from_fits(
     transformer_class=al.TransformerDFT,
 )
 
-dataset = dataset.apply_w_tilde(use_jax=True, show_progress=True)
+dataset = dataset.apply_sparse_operator(use_jax=True, show_progress=True)
 
 positions = al.Grid2DIrregular(
     al.from_json(file_path=Path(dataset_path, "positions.json"))
@@ -1240,8 +1240,8 @@ If you are interested, you will need to dive into the source code itself.
 many NUFFT's to compute and requires large memroy store. The source code uses a trick which computes the chi-squared
 but bypasses the need to ever compute the `transformed_mapping_matrix`.
 
-**W-tilde Curvature Matrix:** The `curvature_matrix` above is also computed using the `transformed_mapping_matrix`, 
-which again means slow run times and large memory usage. The source code uses the `w_tilde_preload` matrix to 
+**Sparse Operator Curvature Matrix:** The `curvature_matrix` above is also computed using the `transformed_mapping_matrix`, 
+which again means slow run times and large memory usage. The source code can instead use sparse operators to 
 compute the curvature matrix in a way which again bypasses the need to compute the `transformed_mapping_matrix`.
 
 The two tricks in combination lead to a significant speed up in the likelihood function evaluation and mean that

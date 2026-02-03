@@ -129,24 +129,24 @@ print(extra_galaxies_centres)
 
 
 """
-__W_Tilde__
+__Sparse Operators__
 
-The `pixelization/modeling` example describes how the w-tilde formalism speeds up interferometer
+The `pixelization/modeling` example describes how the sparse operator formalism speeds up interferometer
 pixelized source modeling, especially for many visibilities.
 
 We use a try / except to load the pre-computed curvature preload, which is necessary to use
-the w-tilde formalism. If this file does not exist (e.g. you have not made it manually via
+the sparse operator  formalism. If this file does not exist (e.g. you have not made it manually via
 the `many_visibilities_preparartion` example it is made here.
 """
 try:
-    curvature_preload = np.load(
-        file=dataset_path / "curvature_preload.npy",
+    nufft_precision_operator = np.load(
+        file=dataset_path / "nufft_precision_operator.npy",
     )
 except FileNotFoundError:
-    curvature_preload = None
+    nufft_precision_operator = None
 
-dataset = dataset.apply_w_tilde(
-    curvature_preload=curvature_preload, use_jax=True, show_progress=True
+dataset = dataset.apply_sparse_operator(
+    nufft_precision_operator=nufft_precision_operator, use_jax=True, show_progress=True
 )
 
 """
