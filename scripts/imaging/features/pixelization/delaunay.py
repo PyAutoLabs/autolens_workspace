@@ -1217,23 +1217,23 @@ mapper_plotter = aplt.MapperPlotter(mapper=mapper)
 
 mapper_plotter.figure_2d(solution_vector=reconstruction, interpolate_to_uniform=False)
 
-mapped_reconstructed_image_2d = (
+mapped_reconstructed_operated_data = (
     al.util.inversion.mapped_reconstructed_data_via_mapping_matrix_from(
         mapping_matrix=blurred_mapping_matrix, reconstruction=reconstruction
     )
 )
 
-mapped_reconstructed_image_2d = al.Array2D(
-    values=mapped_reconstructed_image_2d, mask=mask
+mapped_reconstructed_operated_data = al.Array2D(
+    values=mapped_reconstructed_operated_data, mask=mask
 )
 
-array_2d_plotter = aplt.Array2DPlotter(array=mapped_reconstructed_image_2d)
+array_2d_plotter = aplt.Array2DPlotter(array=mapped_reconstructed_operated_data)
 array_2d_plotter.figure_2d()
 
 """
 __Likelihood Function__
 """
-model_image = convolved_image_2d + mapped_reconstructed_image_2d
+model_image = convolved_image_2d + mapped_reconstructed_operated_data
 
 residual_map = masked_dataset.data - model_image
 normalized_residual_map = residual_map / masked_dataset.noise_map

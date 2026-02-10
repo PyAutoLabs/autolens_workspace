@@ -414,7 +414,7 @@ These mapped reconstructed images are also accessible via the `Inversion`.
 Note that any light profiles in the lens model (e.g. the `bulge` and `disk` of a lens galaxy) are not 
 included in this image -- it only contains the source.
 """
-print(inversion.mapped_reconstructed_image.native)
+print(inversion.mapped_reconstructed_operated_data.native)
 
 """
 __Linear Algebra Matrices (Advanced)__

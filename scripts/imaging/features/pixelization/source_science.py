@@ -152,12 +152,12 @@ source_plane_mesh_grid = mapper.mapper_grids.source_plane_mesh_grid
 print(f"Source Plane Mesh Grid Coordinates: {source_plane_mesh_grid}")
 
 """
-The image-plane reconstruction can also be computed from the inversion, which is called the `mapped_reconstructed_image` 
-and as seen above is needed to compute the magnification.
+The image-plane reconstruction can also be computed from the inversion, which is called 
+the `mapped_reconstructed_operated_data` and as seen above is needed to compute the magnification.
 """
-mapped_reconstructed_image = inversion.mapped_reconstructed_image
+mapped_reconstructed_operated_data = inversion.mapped_reconstructed_operated_data
 
-print(f"Mapped Reconstructed Image: {mapped_reconstructed_image}")
+print(f"Mapped Reconstructed Image: {mapped_reconstructed_operated_data}")
 
 """
 __Interpolated Source__
@@ -292,7 +292,7 @@ The `pixel_area` attribute of the `Array2D` object gives us the area of each pix
 can use to compute the magnification below.
 """
 magnification = np.sum(
-    mapped_reconstructed_image * mapped_reconstructed_image.pixel_area
+    mapped_reconstructed_operated_data * mapped_reconstructed_operated_data.pixel_area
 ) / np.sum(interpolated_reconstruction * interpolated_reconstruction.pixel_area)
 
 print(f"Magnification via Interpolated Source: {magnification}")
@@ -354,7 +354,7 @@ accessed from the source code via the `mesh_areas` attribute of the `Mapper` obj
 mesh_areas = mapper.areas_for_magnification
 
 magnification = np.sum(
-    mapped_reconstructed_image * mapped_reconstructed_image.pixel_area
+    mapped_reconstructed_operated_data * mapped_reconstructed_operated_data.pixel_area
 ) / np.sum(reconstruction * mesh_areas)
 
 """
@@ -411,6 +411,15 @@ analysis = al.AnalysisImaging(
 
 result = search.fit(model=model, analysis=analysis)
 
+"""
+__Reconstruction CSV__
+
+The file ``source_plane_reconstruction_0.csv` provides all information on the source reconstruction in a format that 
+does not depend autolens and therefore be easily loaded to create images of the source or shared collaborations who 
+do not have PyAutoLens installed.
+
+First, lets load `source_plane_reconstruction_0.csv` as a dictionary, using basic `csv` functionality in Python.
+"""
 import csv
 
 with open(

@@ -152,7 +152,7 @@ We can extract an `InversionPlotter` (described below) from the `FitImagingPlott
 methods, which will now include the critical curves, caustics and border.
 """
 inversion_plotter = fit_plotter.inversion_plotter_of_plane(plane_index=1)
-inversion_plotter.figures_2d(reconstructed_image=True)
+inversion_plotter.figures_2d(reconstructed_operated_data=True)
 inversion_plotter.figures_2d_of_pixelization(
     pixelization_index=0, reconstruction=True, regularization_weights=True
 )
@@ -169,7 +169,7 @@ and properties in a similar way to the `FitImagingPlotter`.
 inversion = fit.inversion
 
 inversion_plotter = aplt.InversionPlotter(inversion=inversion)
-inversion_plotter.figures_2d(reconstructed_image=True)
+inversion_plotter.figures_2d(reconstructed_operated_data=True)
 
 """
 An inversion can also be computed directly from a `Tracer` object, using the `TracerToInversion` class.
@@ -185,7 +185,7 @@ tracer_to_inversion = al.TracerToInversion(
 inversion = tracer_to_inversion.inversion
 
 inversion_plotter = aplt.InversionPlotter(inversion=inversion)
-inversion_plotter.figures_2d(reconstructed_image=True)
+inversion_plotter.figures_2d(reconstructed_operated_data=True)
 
 """
 An `Inversion` can have multiple mappers, which reconstruct multiple source galaxies at different redshifts and
@@ -195,7 +195,7 @@ To plot an individual source we must therefore specify the mapper index of the s
 """
 inversion_plotter.figures_2d_of_pixelization(
     pixelization_index=0,
-    reconstructed_image=True,
+    reconstructed_operated_data=True,
     reconstruction=True,
     reconstruction_noise_map=True,
     regularization_weights=True,
@@ -222,7 +222,7 @@ mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
 image_plane_mesh_grid = mapper.image_plane_mesh_grid
 visuals_2d = aplt.Visuals2D(mesh_grid=image_plane_mesh_grid)
 inversion_plotter = aplt.InversionPlotter(inversion=inversion, visuals_2d=visuals_2d)
-inversion_plotter.figures_2d(reconstructed_image=True)
+inversion_plotter.figures_2d(reconstructed_operated_data=True)
 
 source_plane_mesh_grid = tracer.traced_grid_2d_list_from(grid=image_plane_mesh_grid)[-1]
 visuals_2d = aplt.Visuals2D(mesh_grid=source_plane_mesh_grid)
@@ -398,7 +398,7 @@ We can even extract an `InversionPlotter` from the `FitInterferometerPlotter` an
 methods,which will now include the critical curves, caustics and border.
 """
 inversion_plotter = fit_plotter.inversion_plotter_of_plane(plane_index=1)
-inversion_plotter.figures_2d(reconstructed_image=True)
+inversion_plotter.figures_2d(reconstructed_operated_data=True)
 inversion_plotter.figures_2d_of_pixelization(
     pixelization_index=0, reconstruction=True, regularization_weights=True
 )

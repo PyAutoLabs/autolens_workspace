@@ -133,6 +133,8 @@ positions = al.Grid2DIrregular(
     al.from_json(file_path=Path(dataset_path, "positions.json"))
 )
 
+positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
+
 """
 __Sparse Operators__
 
@@ -256,7 +258,10 @@ search = af.Nautilus(
 )
 
 analysis = al.AnalysisImaging(
-    dataset=dataset, preloads=preloads, use_jax=False  # CPU specific code
+    dataset=dataset,
+    positions_likelihood_list=[positions_likelihood],
+    preloads=preloads,
+    use_jax=False,  # CPU specific code
 )
 
 result = search.fit(model=model, analysis=analysis)
