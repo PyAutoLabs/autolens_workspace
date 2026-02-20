@@ -176,7 +176,7 @@ __Settings__
 Disable the default position only linear algebra solver so the source reconstruction can have 
 negative pixel values.
 """
-settings_inversion = al.SettingsInversion(use_positive_only_solver=False)
+settings = al.Settings(use_positive_only_solver=False)
 
 """
 __Settings AutoFit__
@@ -228,7 +228,7 @@ preloads = al.Preloads(
         total_linear_light_profiles=total_linear_light_profiles,
         total_mapper_pixels=total_mapper_pixels,
     ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
         total_linear_light_profiles=total_linear_light_profiles,
         shape_native=mesh_shape,
     ),
@@ -244,7 +244,7 @@ analysis = al.AnalysisInterferometer(
     dataset=dataset,
     positions_likelihood_list=[positions_likelihood],
     preloads=preloads,
-    settings_inversion=settings_inversion,
+    settings=settings,
 )
 
 source_pix_result_1 = slam_pipeline.source_pix.run_1__bypass_lp(
@@ -278,7 +278,7 @@ analysis = al.AnalysisInterferometer(
     dataset=dataset,
     adapt_images=adapt_images,
     preloads=preloads,
-    settings_inversion=settings_inversion,
+    settings=settings,
 )
 
 source_pix_result_2 = slam_pipeline.source_pix.run_2(
@@ -287,7 +287,7 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     source_lp_result=source_pix_result_1,
     source_pix_result_1=source_pix_result_1,
     mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
-    regularization=al.reg.AdaptiveBrightness,
+    regularization=al.reg.Adapt,
 )
 
 """
@@ -303,7 +303,7 @@ analysis = al.AnalysisInterferometer(
     positions_likelihood_list=[
         source_pix_result_1.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
-    settings_inversion=settings_inversion,
+    settings=settings,
 )
 
 mass_result = slam_pipeline.mass_total.run(

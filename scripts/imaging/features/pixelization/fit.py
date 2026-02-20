@@ -192,7 +192,7 @@ preloads = al.Preloads(
         total_linear_light_profiles=total_linear_light_profiles,
         total_mapper_pixels=total_mapper_pixels,
     ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
         total_linear_light_profiles=total_linear_light_profiles,
         shape_native=mesh_shape,
     ),
@@ -388,22 +388,22 @@ This includes mapping grids corresponding to the data grid (e.g. the centers of 
 source plane) and the pixelization grid (e.g. the centre of the Delaunay triangulation in the image-plane and 
 source-plane).
 
-All grids are available in a mapper via its `mapper_grids` property.
+All grids are available in a mapper via its `mapper` property.
 """
 mapper = inversion.linear_obj_list[0]
 
 # Centre of each masked image pixel in the image-plane.
-print(mapper.mapper_grids.image_plane_data_grid)
+print(mapper.mapper.image_plane_data_grid)
 
 # Centre of each source pixel in the source-plane.
-print(mapper.mapper_grids.source_plane_data_grid)
+print(mapper.mapper.source_plane_data_grid)
 
 # Centre of each pixelization pixel in the image-plane (the `Overlay` image_mesh computes these in the image-plane
 # and maps to the source-plane).
-print(mapper.mapper_grids.image_plane_mesh_grid)
+print(mapper.mapper.image_plane_mesh_grid)
 
 # Centre of each pixelization pixel in the source-plane.
-print(mapper.mapper_grids.source_plane_mesh_grid)
+print(mapper.mapper.source_plane_mesh_grid)
 
 """
 __Reconstruction__
@@ -480,7 +480,7 @@ from scipy.interpolate import griddata
 interpolation_grid = al.Grid2D.uniform(shape_native=(200, 200), pixel_scales=0.05)
 
 reconstruction = inversion.reconstruction
-source_plane_mesh_grid = mapper.mapper_grids.source_plane_mesh_grid
+source_plane_mesh_grid = mapper.mapper.source_plane_mesh_grid
 
 interpolated_reconstruction = griddata(
     points=source_plane_mesh_grid, values=reconstruction, xi=interpolation_grid

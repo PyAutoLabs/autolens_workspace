@@ -616,7 +616,7 @@ This process to perform a likelihood function evaluation is what is performed in
 fit = al.FitImaging(
     dataset=masked_dataset,
     tracer=tracer,
-    settings_inversion=al.SettingsInversion(use_border_relocator=True),
+    settings=al.Settings(use_border_relocator=True),
 )
 fit_log_evidence = fit.log_evidence
 print(fit_log_evidence)

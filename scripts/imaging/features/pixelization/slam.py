@@ -151,7 +151,7 @@ preloads = al.Preloads(
         total_linear_light_profiles=total_linear_light_profiles,
         total_mapper_pixels=total_mapper_pixels,
     ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
         total_linear_light_profiles=total_linear_light_profiles,
         shape_native=mesh_shape,
     ),
@@ -182,7 +182,7 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     analysis=analysis,
     source_lp_result=source_lp_result,
     mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
-    regularization_init=al.reg.AdaptiveBrightness,
+    regularization_init=al.reg.Adapt,
 )
 
 """
@@ -209,7 +209,7 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
     mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
-    regularization=al.reg.AdaptiveBrightnessSplit,
+    regularization=al.reg.AdaptSplit,
 )
 
 """

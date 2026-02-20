@@ -115,7 +115,7 @@
 # which settings give the fastest run times for your dataset.
 # """
 # settings_dataset = al.SettingsInterferometer(transformer_class=al.TransformerDFT)
-# settings_inversion = al.SettingsInversion(use_linear_operators=False)
+# settings = al.Settings(use_linear_operators=False)
 #
 # """
 # We now create the `Interferometer` object which is used to fit the lens model.
@@ -187,7 +187,7 @@
 #
 # - Uses a `Hilbert` image-mesh.
 # - Uses a `RectangularAdaptDensity` mesh.
-#  - Uses an `AdaptiveBrightness` regularization.
+#  - Uses an `Adapt` regularization.
 #  - Carries the lens redshift, source redshift and `ExternalShear` of the SOURCE LP PIPELINE through to the
 #  SOURCE PIX PIPELINE.
 #
@@ -201,7 +201,7 @@
 #     positions_likelihood_list=[source_lp_result.positions_likelihood_from(
 #         factor=3.0, minimum_threshold=0.2
 #     )],
-#     settings_inversion=settings_inversion, use_jax=True
+#     settings=settings, use_jax=True
 # )
 #
 # source_pix_results = slam_pipeline.source_pix.run(
@@ -209,7 +209,7 @@
 #     analysis=analysis,
 #     source_lp_result=source_lp_result,
 #     mesh=al.mesh.RectangularAdaptDensity,
-#     regularization=al.reg.AdaptiveBrightness,
+#     regularization=al.reg.Adapt,
 # )
 #
 # """
@@ -228,7 +228,7 @@
 #     positions_likelihood_list=[source_pix_results.last.positions_likelihood_from(
 #         factor=3.0, minimum_threshold=0.2,
 #     )],
-#     settings_inversion=settings_inversion, use_jax=True
+#     settings=settings, use_jax=True
 # )
 #
 # mass_results = slam_pipeline.mass_total.run(
@@ -262,7 +262,7 @@
 #         self.adapt_model_image = mass_results.last.adapt_model_image
 #
 #         self.settings_lens = al.SettingsLens()
-#         self.settings_inversion = settings_inversion
+#         self.settings = settings
 #
 #
 # subhalo_results = slam_pipeline.subhalo.sensitivity_mapping_interferometer(

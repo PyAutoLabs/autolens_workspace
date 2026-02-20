@@ -223,7 +223,7 @@ inputs:
 - `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
   are forced to values of zero, a technique tests have shown are required to give accruate lens models.
 """
-mesh_shape = (20, 20)
+mesh_shape = (28, 28)
 total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
 
 total_linear_light_profiles = 0
@@ -233,7 +233,7 @@ preloads = al.Preloads(
         total_linear_light_profiles=total_linear_light_profiles,
         total_mapper_pixels=total_mapper_pixels,
     ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
         total_linear_light_profiles=total_linear_light_profiles,
         shape_native=mesh_shape,
     ),
@@ -297,7 +297,7 @@ search = af.Nautilus(
     name="pixelization",
     unique_tag=dataset_name,
     n_live=100,
-    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
+    n_batch=10,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=50000,
 )
 
@@ -360,7 +360,10 @@ The `preloads` are passed to the analysis, which contain the static array inform
 the pixelization calculations.
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, positions_likelihood_list=[positions_likelihood], preloads=preloads
+    dataset=dataset,
+    positions_likelihood_list=[positions_likelihood],
+    preloads=preloads,
+    settings=al.Settings(use_positive_only_solver=False, use_mixed_precision=True),
 )
 
 """

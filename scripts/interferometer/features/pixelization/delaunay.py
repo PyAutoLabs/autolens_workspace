@@ -101,7 +101,7 @@ positions = al.Grid2DIrregular(
 positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
 
-settings_inversion = al.SettingsInversion(use_positive_only_solver=False)
+settings = al.Settings(use_positive_only_solver=False)
 
 """
 __JAX & Preloads__
@@ -400,14 +400,14 @@ the second search our lens model is:
 
  - The source-galaxy's light uses a `Delaunay` mesh [0 parameters].
 
- - This pixelization is regularized using a `AdaptiveBrightnessSplit` scheme [2 parameter]. 
+ - This pixelization is regularized using a `AdaptSplit` scheme [2 parameter]. 
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=4.
 """
 pixelization = af.Model(
     al.Pixelization,
     mesh=al.mesh.Delaunay,
-    regularization=al.reg.AdaptiveBrightnessSplit,
+    regularization=al.reg.AdaptSplit,
 )
 
 source = af.Model(
@@ -513,7 +513,7 @@ positions = al.Grid2DIrregular(
 
 positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
-settings_inversion = al.SettingsInversion(use_positive_only_solver=False)
+settings = al.Settings(use_positive_only_solver=False)
 """
 __Settings AutoFit__
 
@@ -620,7 +620,7 @@ analysis = al.AnalysisInterferometer(
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
     preloads=preloads,
-    settings_inversion=settings_inversion,
+    settings=settings,
 )
 
 source_pix_result_1 = slam_pipeline.source_pix.run_1__bypass_lp(
@@ -689,7 +689,7 @@ analysis = al.AnalysisInterferometer(
     dataset=dataset,
     adapt_images=adapt_images,
     preloads=preloads,
-    settings_inversion=settings_inversion,
+    settings=settings,
 )
 
 source_pix_result_2 = slam_pipeline.source_pix.run_2(
@@ -698,7 +698,7 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     source_lp_result=source_pix_result_1,
     source_pix_result_1=source_pix_result_1,
     mesh=al.mesh.Delaunay(),
-    regularization=al.reg.AdaptiveBrightnessSplit,
+    regularization=al.reg.AdaptSplit,
 )
 
 
@@ -715,7 +715,7 @@ analysis = al.AnalysisInterferometer(
     positions_likelihood_list=[
         source_pix_result_1.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
-    settings_inversion=settings_inversion,
+    settings=settings,
 )
 
 mass_result = slam_pipeline.mass_total.run(
@@ -898,7 +898,7 @@ the source-plane.
 Border relocation is performed on both the traced image-pixel grid and traced mesh pixels, therefore ensuring that
 the vertexes of the Delaunay triangles are not at the extreme outskirts of the source-plane.
 """
-from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.mesh.border_relocator import BorderRelocator
 
 border_relocator = BorderRelocator(mask=dataset.mask, sub_size=1)
 
@@ -921,7 +921,7 @@ __Delaunay Mesh__
 
 The relocated mesh grid is used to create the `Pixelization`'s Delaunay mesh using the `scipy.spatial` library.
 """
-grid_rectangular = al.Mesh2DDelaunay(
+grid_rectangular = al.InterpolatorDelaunay(
     values=relocated_mesh_grid,
     source_plane_data_grid_over_sampled=relocated_grid.over_sampled,
 )
@@ -934,35 +934,25 @@ Plotting the Delaunay mesh shows that the source-plane and been discretized into
 Below, we plot the Delaunay mesh without the traced image-grid pixels (for clarity) and with them as black dots in order
 to show how each set of image-pixels fall within a Delaunay pixel.
 """
-mapper_grids = al.MapperGrids(
+mapper = pixelization.mesh.mapper_from(
     mask=real_space_mask,
     source_plane_data_grid=relocated_grid,
     source_plane_mesh_grid=grid_rectangular,
     image_plane_mesh_grid=image_plane_mesh_grid,
 )
 
-mapper = al.Mapper(
-    mapper_grids=mapper_grids,
-    regularization=None,
-)
-
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
-mapper_plotter.figure_2d(interpolate_to_uniform=False)
+mapper_plotter.figure_2d()
 
 visuals = aplt.Visuals2D(
-    grid=mapper_grids.source_plane_data_grid,
+    grid=mapper.source_plane_data_grid,
 )
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, visuals_2d=visuals)
-mapper_plotter.figure_2d(interpolate_to_uniform=False)
+mapper_plotter.figure_2d()
 
 """
-__Image-Source Mapping__
+__Interpolation__
 """
-mapper = al.Mapper(
-    mapper_grids=mapper_grids,
-    regularization=None,
-)
-
 pix_indexes_for_sub_slim_index = mapper.pix_indexes_for_sub_slim_index
 
 print(pix_indexes_for_sub_slim_index[0:9])
@@ -973,9 +963,7 @@ mapper_plotter = aplt.MapperPlotter(
     mapper=mapper,
     visuals_2d=visuals,
 )
-mapper_plotter.subplot_image_and_mapper(
-    image=dataset.dirty_image, interpolate_to_uniform=False
-)
+mapper_plotter.subplot_image_and_mapper(image=dataset.dirty_image)
 
 pix_indexes = [[200]]
 
@@ -988,9 +976,7 @@ mapper_plotter = aplt.MapperPlotter(
     visuals_2d=visuals,
 )
 
-mapper_plotter.subplot_image_and_mapper(
-    image=dataset.dirty_image, interpolate_to_uniform=False
-)
+mapper_plotter.subplot_image_and_mapper(image=dataset.dirty_image)
 
 mapping_matrix = al.util.mapper.mapping_matrix_from(
     pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
@@ -1103,8 +1089,8 @@ grid_plotter.figure_2d()
 
 regularization_matrix = al.util.regularization.constant_regularization_matrix_from(
     coefficient=source_galaxy.pixelization.regularization.coefficient,
-    neighbors=mapper.source_plane_mesh_grid.neighbors,
-    neighbors_sizes=mapper.source_plane_mesh_grid.neighbors.sizes,
+    neighbors=mapper.neighbors,
+    neighbors_sizes=mapper.neighbors.sizes,
 )
 
 plt.imshow(regularization_matrix)
@@ -1118,7 +1104,7 @@ reconstruction = np.linalg.solve(curvature_reg_matrix, data_vector)
 
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
 
-mapper_plotter.figure_2d(solution_vector=reconstruction, interpolate_to_uniform=False)
+mapper_plotter.figure_2d(solution_vector=reconstruction)
 
 mapped_reconstructed_visibilities = (
     al.util.inversion_interferometer.mapped_reconstructed_visibilities_from(
@@ -1210,7 +1196,7 @@ fit = al.FitInterferometer(
     dataset=dataset,
     tracer=tracer,
     preloads=preloads,
-    settings_inversion=al.SettingsInversion(use_border_relocator=True),
+    settings=al.Settings(use_border_relocator=True),
 )
 fit_log_evidence = fit.log_evidence
 print(fit_log_evidence)

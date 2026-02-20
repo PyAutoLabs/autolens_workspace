@@ -68,7 +68,7 @@ preloads = al.Preloads(
         total_linear_light_profiles=total_linear_light_profiles,
         total_mapper_pixels=total_mapper_pixels,
     ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
         total_linear_light_profiles=total_linear_light_profiles,
         shape_native=mesh_shape,
     ),
@@ -174,7 +174,7 @@ The galaxy includes the rectangular mesh and constant regularization scheme, whi
 to reconstruct its star forming clumps.
 """
 pixelization = al.Pixelization(
-    mesh=al.mesh.RectangularUniform(),
+    mesh=al.mesh.RectangularUniform(mesh_shape),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -231,7 +231,7 @@ the source-plane.
 We relocate these pixels (for both grids above) to the edge of the source-plane border (defined via the border of the 
 image-plane mask). This is detailed in **HowToLens chapter 4 tutorial 5** and figure 2 of https://arxiv.org/abs/1708.07377.
 """
-from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.mesh.border_relocator import BorderRelocator
 
 border_relocator = BorderRelocator(mask=dataset.mask, sub_size=1)
 
@@ -253,10 +253,42 @@ We do this by overlying a rectangular grid on the relocated traced image-plane g
 This distributes the rectangular mesh so it fully overlaps the region of the source-plane containing the traced 
 image-pixels without having edge pixels that extend beyond this region.
 """
-mesh_grid = al.Mesh2DRectangularUniform.overlay_grid(
+from autoarray.inversion.mesh.mesh.rectangular_adapt_density import overlay_grid_from
+
+mesh_grid = overlay_grid_from(
     shape_native=mesh_shape, grid=al.Grid2DIrregular(relocated_grid)
 )
 
+"""
+__Interpolation__
+
+We now combine grids computed above to create an `Interpolator`, which describes how image grid pixel maps to
+every rectangular mesh pixel. 
+"""
+interpolator = pixelization.mesh.interpolator_from(
+    source_plane_data_grid=relocated_grid,
+    source_plane_mesh_grid=mesh_grid,
+)
+
+"""
+__Mapper__
+
+We now use the interpolator to create a `Mapper`, which describes the mapping between every image pixel and every 
+rectangular pixel, based on the interpolation scheme above.
+"""
+mapper = al.Mapper(interpolator=interpolator, preloads=preloads)
+
+"""
+For the rectangular mesh, the interpolation scheme is called bilinear interpolation, which means that every image 
+pixel maps to the rectangular pixel it lands in and the three neighboring rectangular pixels. 
+
+The weight of each mapping is determined by the bilinear interpolation scheme, which is a function of how close the 
+image pixel is to the centre of the rectangular pixel it lands in and the three neighboring rectangular pixels.
+
+We can print the mappings and weights, for example of the first image pixel, to confirm this.
+"""
+print(interpolator.mappings[0])
+print(interpolator.weights[0])
 
 """
 Plotting the rectangular mesh shows that the source-plane and been discretized into a uniform grid of source pixels.
@@ -267,51 +299,14 @@ likelihood step).
 Below, we plot the rectangular mesh without the traced image-grid pixels (for clarity) and with them as 
 black dots in order to show how each set of image-pixels fall within a source pixel.
 """
-mapper_grids = al.MapperGrids(
-    mask=real_space_mask,
-    source_plane_data_grid=relocated_grid,
-    source_plane_mesh_grid=mesh_grid,
-)
-
-mapper = al.Mapper(
-    mapper_grids=mapper_grids,
-    regularization=None,
-)
-
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
-mapper_plotter.figure_2d(interpolate_to_uniform=False)
+mapper_plotter.figure_2d()
 
 visuals = aplt.Visuals2D(
-    grid=mapper_grids.source_plane_data_grid,
+    grid=mapper.source_plane_data_grid,
 )
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, visuals_2d=visuals)
-mapper_plotter.figure_2d(interpolate_to_uniform=False)
-
-"""
-__Image-Source Mapping__
-
-We now combine grids computed above to create a `Mapper`, which describes how every image-plane pixel maps to
-every source-plane rectangular pixel. 
-
-There are two steps in this calculation, which we show individually below.
-"""
-mapper = al.Mapper(
-    mapper_grids=mapper_grids,
-    regularization=None,
-)
-
-"""
-__Image-Source Mapping__
-
-We now combine grids computed above to create a `Mapper`, which describes how every image-plane pixel maps to
-every source-plane pixel. 
-
-There are two steps in this calculation, which we show individually below.
-"""
-mapper = al.Mapper(
-    mapper_grids=mapper_grids,
-    regularization=None,
-)
+mapper_plotter.figure_2d()
 
 """
 The `Mapper` contains:
@@ -347,9 +342,7 @@ mapper_plotter = aplt.MapperPlotter(
     mapper=mapper,
     visuals_2d=visuals,
 )
-mapper_plotter.subplot_image_and_mapper(
-    image=dataset.dirty_image, interpolate_to_uniform=False
-)
+mapper_plotter.subplot_image_and_mapper(image=dataset.dirty_image)
 
 """
 The reverse mappings of source-pixels to image-pixels can also be used.
@@ -368,9 +361,7 @@ mapper_plotter = aplt.MapperPlotter(
     visuals_2d=visuals,
 )
 
-mapper_plotter.subplot_image_and_mapper(
-    image=dataset.dirty_image, interpolate_to_uniform=False
-)
+mapper_plotter.subplot_image_and_mapper(image=dataset.dirty_image)
 
 """
 __Interpolation__
@@ -686,7 +677,7 @@ ill-posed. We need to apply some form of smoothing on the reconstruction to avoi
 """
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
 
-mapper_plotter.figure_2d(solution_vector=reconstruction, interpolate_to_uniform=False)
+mapper_plotter.figure_2d(solution_vector=reconstruction)
 
 """
 __Regularization Matrix (H)__
@@ -723,8 +714,8 @@ is accounted for.
 """
 regularization_matrix = al.util.regularization.constant_regularization_matrix_from(
     coefficient=source_galaxy.pixelization.regularization.coefficient,
-    neighbors=mapper.source_plane_mesh_grid.neighbors,
-    neighbors_sizes=mapper.source_plane_mesh_grid.neighbors.sizes,
+    neighbors=mapper.neighbors,
+    neighbors_sizes=mapper.neighbors.sizes,
 )
 
 """
@@ -767,7 +758,7 @@ This also implies we are not over-fitting the noise.
 """
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
 
-mapper_plotter.figure_2d(solution_vector=reconstruction, interpolate_to_uniform=False)
+mapper_plotter.figure_2d(solution_vector=reconstruction)
 
 """
 __Visibilities Reconstruction__
@@ -955,7 +946,7 @@ tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 fit = al.FitInterferometer(
     dataset=dataset,
     tracer=tracer,
-    settings_inversion=al.SettingsInversion(use_border_relocator=True),
+    settings=al.Settings(use_border_relocator=True),
 )
 fit_log_evidence = fit.log_evidence
 print(fit_log_evidence)

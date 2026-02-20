@@ -121,9 +121,7 @@ by interpolating the reconstructed source-plane image onto a uniform grid of pix
 By default, the irregular grid is plotted, but the interpolated image can be plotted by changing the
 `interpolate_to_uniform` input to `True`.
 """
-fit_plotter.figures_2d_of_planes(
-    plane_index=1, plane_image=True, interpolate_to_uniform=True
-)
+fit_plotter.figures_2d_of_planes(plane_index=1, plane_image=True)
 
 """
 The mappings subplot shows the mappings between the image and source plane, by drawing circles around the brightest
@@ -135,7 +133,7 @@ fit_plotter.subplot_mappings_of_plane(plane_index=1)
 The image and source plane mesh grids, showing the centre of every source pixel in the image-plane and source-plane, 
 can be computed and plotted.
 """
-mapper = fit.inversion.cls_list_from(cls=al.AbstractMapper)[0]
+mapper = fit.inversion.cls_list_from(cls=al.Mapper)[0]
 
 image_plane_mesh_grid = mapper.image_plane_mesh_grid
 visuals_2d = aplt.Visuals2D(mesh_grid=image_plane_mesh_grid)
@@ -217,7 +215,7 @@ inversion_plotter.subplot_mappings(pixelization_index=0)
 The image and source plane mesh grids, showing the centre of every source pixel in the image-plane and source-plane, 
 can be computed and plotted.
 """
-mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
+mapper = inversion.cls_list_from(cls=al.Mapper)[0]
 
 image_plane_mesh_grid = mapper.image_plane_mesh_grid
 visuals_2d = aplt.Visuals2D(mesh_grid=image_plane_mesh_grid)
@@ -380,7 +378,7 @@ fit_plotter.subplot_mappings_of_plane(plane_index=1)
 The image and source plane mesh grids, showing the centre of every source pixel in the image-plane and source-plane, 
 can be computed and plotted.
 """
-mapper = fit.inversion.cls_list_from(cls=al.AbstractMapper)[0]
+mapper = fit.inversion.cls_list_from(cls=al.Mapper)[0]
 
 image_plane_mesh_grid = mapper.image_plane_mesh_grid
 visuals_2d = aplt.Visuals2D(mesh_grid=image_plane_mesh_grid)

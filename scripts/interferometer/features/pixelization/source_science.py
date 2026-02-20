@@ -57,7 +57,7 @@ dataset = al.Interferometer.from_fits(
 
 dataset = dataset.apply_sparse_operator(use_jax=True, show_progress=True)
 
-settings_inversion = al.SettingsInversion(use_positive_only_solver=False)
+settings = al.Settings(use_positive_only_solver=False)
 
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -79,7 +79,7 @@ preloads = al.Preloads(
         total_linear_light_profiles=total_linear_light_profiles,
         total_mapper_pixels=total_mapper_pixels,
     ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
         total_linear_light_profiles=total_linear_light_profiles,
         shape_native=mesh_shape,
     ),
@@ -98,12 +98,12 @@ fit = al.FitInterferometer(
     dataset=dataset,
     tracer=tracer,
     preloads=preloads,
-    settings_inversion=settings_inversion,
+    settings=settings,
 )
 
 inversion = fit.inversion
 
-mapper = inversion.cls_list_from(cls=al.AbstractMapper)[
+mapper = inversion.cls_list_from(cls=al.Mapper)[
     0
 ]  # Extract the mapper from the inversion
 
@@ -143,11 +143,11 @@ source-plane.
 This information is available in the inversion, below we print the (y,x) centre of each source pixel corresponding to 
 the `reconstruction` values printed above.
 """
-mapper = inversion.cls_list_from(cls=al.AbstractMapper)[
+mapper = inversion.cls_list_from(cls=al.Mapper)[
     0
 ]  # Extract the mapper from the inversion
 
-source_plane_mesh_grid = mapper.mapper_grids.source_plane_mesh_grid
+source_plane_mesh_grid = mapper.mapper.source_plane_mesh_grid
 
 print(f"Source Plane Mesh Grid Coordinates: {source_plane_mesh_grid}")
 
@@ -414,7 +414,7 @@ analysis = al.AnalysisInterferometer(
     dataset=dataset,
     positions_likelihood_list=[positions_likelihood],
     preloads=preloads,
-    settings_inversion=settings_inversion,
+    settings=settings,
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 

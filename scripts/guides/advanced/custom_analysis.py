@@ -304,7 +304,7 @@ Lets quickly think about the design of an `Analysis` class and how this can help
 imagine:
 
  - The `__init__` method can be extended to include any data structures needed to perform the analysis. For example, 
-   the `AnalysisImaging` object in the autolens source code has a `settings_inversion` object that customize 
+   the `AnalysisImaging` object in the autolens source code has a `settings` object that customize 
    how fits using a `Pixelization` are performed.
    
  - The `log_likelihood_function` can be written in any way that is desired to fit the data. The example above uses

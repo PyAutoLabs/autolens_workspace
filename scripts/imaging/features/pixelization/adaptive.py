@@ -15,7 +15,7 @@ mesh and regularization to the source's unlensed properties. It also uses the re
 calculate and pass the multiple image-plane positions of the lensed source to later searches, which resamples
 bad mass models removing demagnified source reconstructions.
 
-This script illustrates using the `RectangularAdaptImage` mesh and `AdaptiveBrightness` regularization
+This script illustrates using the `RectangularAdaptImage` mesh and `Adapt` regularization
 scheme to adapt the source reconstruction to the source galaxy's morphology (as opposed to the methods used in other
 examplesw hich adapt to the mass model magnification and apply a constant regularization scheme).
 
@@ -183,7 +183,7 @@ preloads = al.Preloads(
         total_linear_light_profiles=total_linear_light_profiles,
         total_mapper_pixels=total_mapper_pixels,
     ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
         total_linear_light_profiles=total_linear_light_profiles,
         shape_native=mesh_shape,
     ),
@@ -296,7 +296,7 @@ Search 3 uses two adaptive pixelization classes that have not been used elsewher
  means that more rectangular pixels will be used where the source is located, even if its far away from the caustic
  and therefore in lower magnification regions.
 
- - `AdaptiveBrightness` regularization: adapts the regularization coefficient to the source's
+ - `Adapt` regularization: adapts the regularization coefficient to the source's
  unlensed morphology. This means that the source's brightest regions are regularized less than its faintest regions, 
  ensuring that the bright central regions of the source are not over-smoothed.
  
@@ -326,7 +326,7 @@ the second search our lens model is:
  
  - The source-galaxy's light uses a 20 x 20 `RectangularAdaptImage` mesh [0 parameters].
 
- - This pixelization is regularized using a `AdaptiveBrightness` scheme [2 parameter]. 
+ - This pixelization is regularized using a `Adapt` scheme [2 parameter]. 
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=4.
 
@@ -339,7 +339,7 @@ lens = result_2.instance.galaxies.lens
 pixelization = af.Model(
     al.Pixelization,
     mesh=al.mesh.RectangularAdaptImage(shape=mesh_shape),
-    regularization=al.reg.AdaptiveBrightness,
+    regularization=al.reg.Adapt,
 )
 
 source = af.Model(
@@ -360,7 +360,7 @@ __Adapt Images__
 When we create the analysis, we pass it an `adapt_images`, which contains a dictionary mapping each galaxy name 
 (e.g. galaxies.source) to the corresponding lens subtracted image of the source galaxy from the result of search 1. 
 
-This is telling the `Analysis` class to use the lens subtracted images of this fit to guide the `AdaptiveBrightness` 
+This is telling the `Analysis` class to use the lens subtracted images of this fit to guide the `Adapt` 
 regularization for the source galaxy. Specifically, it uses the lens subtracted signal to noise map of the lensed 
 source in order  to adapt the location of the source-pixels to the source's brightest regions and lower the 
 regularization coefficient in  these regions.
@@ -401,7 +401,7 @@ regions of the source. This indicates that a much better result has been achieve
 
 __Model + Search + Analysis + Model-Fit (Search 4)__
 
-We now perform a final search which uses the `AdaptiveBrightness` regularization with their parameter fixed to the 
+We now perform a final search which uses the `Adapt` regularization with their parameter fixed to the 
 results of search 2.
 
 The lens mass model is free to vary.

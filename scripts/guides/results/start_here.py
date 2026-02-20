@@ -111,7 +111,7 @@ as follows:
  - `info`: The info dictionary passed to the search (`info.json`).
  - `covariance`: The inferred covariance matrix (`covariance.csv`).
  - `cosmology`: The cosmology used by the fit (`cosmology.json`).
- - `settings_inversion`: The settings associated with a inversion if used (`settings_inversion.json`).
+ - `settings`: The settings associated with a inversion if used (`settings.json`).
  - `dataset/data`: The data that is fitted (`data.fits`).
  - `dataset/noise_map`: The noise-map (`noise_map.fits`).
  - `dataset/psf`: The Point Spread Function (`psf.fits`).

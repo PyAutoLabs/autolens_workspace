@@ -80,7 +80,7 @@ preloads = al.Preloads(
         total_linear_light_profiles=total_linear_light_profiles,
         total_mapper_pixels=total_mapper_pixels,
     ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
+    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
         total_linear_light_profiles=total_linear_light_profiles,
         shape_native=mesh_shape,
     ),
@@ -103,7 +103,7 @@ fit = al.FitImaging(
 
 inversion = fit.inversion
 
-mapper = inversion.cls_list_from(cls=al.AbstractMapper)[
+mapper = inversion.cls_list_from(cls=al.Mapper)[
     0
 ]  # Extract the mapper from the inversion
 
@@ -143,11 +143,11 @@ source-plane.
 This information is available in the inversion, below we print the (y,x) centre of each source pixel corresponding to 
 the `reconstruction` values printed above.
 """
-mapper = inversion.cls_list_from(cls=al.AbstractMapper)[
+mapper = inversion.cls_list_from(cls=al.Mapper)[
     0
 ]  # Extract the mapper from the inversion
 
-source_plane_mesh_grid = mapper.mapper_grids.source_plane_mesh_grid
+source_plane_mesh_grid = mapper.mapper.source_plane_mesh_grid
 
 print(f"Source Plane Mesh Grid Coordinates: {source_plane_mesh_grid}")
 
