@@ -77,7 +77,7 @@ for each image)
 sigma_list = [0.09, 0.11]
 
 psf_list = [
-    al.Kernel2D.from_gaussian(
+    al.Convolver.from_gaussian(
         shape_native=(11, 11), sigma=sigma, pixel_scales=grid.pixel_scales
     )
     for grid, sigma in zip(grid_list, sigma_list)

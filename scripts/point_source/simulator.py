@@ -242,7 +242,7 @@ as .fits and .png files.
 If you are not familiar with the imaging simulator API, checkout the `imaging/simulator.py` example 
 in the `autolens_workspace`.
 """
-psf = al.Kernel2D.from_gaussian(
+psf = al.Convolver.from_gaussian(
     shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
 )
 

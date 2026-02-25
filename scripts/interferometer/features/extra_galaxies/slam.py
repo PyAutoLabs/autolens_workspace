@@ -203,26 +203,12 @@ redshift_lens = 0.5
 redshift_source = 1.0
 
 """
-__JAX & Preloads__
+__Mesh Shape__
 
-The `features/pixelization/modeling` example describes how JAX required preloads in advance so it knows the 
-shape of arrays it must compile functions for.
+As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before modeling.
 """
-mesh_shape = (30, 30)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 0
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 
 """
@@ -261,7 +247,6 @@ extra_galaxies = af.Collection(extra_galaxies_list)
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     positions_likelihood_list=[positions_likelihood],
-    preloads=preloads,
     settings=settings,
 )
 
@@ -296,7 +281,6 @@ adapt_images = al.AdaptImages(
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
     settings=settings,
 )
 
@@ -319,7 +303,6 @@ The extra galaxies are set up using the same trick as the SOURCE PIX PIPELINE.
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
     positions_likelihood_list=[
         source_pix_result_1.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],

@@ -121,7 +121,7 @@ grid = al.Grid2D.uniform(
     pixel_scales=0.1,
 )
 
-psf = al.Kernel2D.from_gaussian(
+psf = al.Convolver.from_gaussian(
     shape_native=(11, 11), sigma=0.2, pixel_scales=grid.pixel_scales
 )
 

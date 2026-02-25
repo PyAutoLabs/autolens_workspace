@@ -15,22 +15,14 @@ datasets, the lens light is rarely present and this is the common scenario.
 You may wish to first read the pixelization/fit.py example, which demonstrates how a pixelized source reconstruction
 is applied to a single dataset.
 
-pixelizations are covered in detail in Chapter 4 of the HowToLens lecture series.
+Pixelizations are covered in detail in Chapter 4 of the HowToLens lecture series.
 
-__Run Time Overview__
+__CPU Users__
 
-Throughout the workspace, it has been emphasised that pixelized source reconstructions are computed using GPU or CPU
-via JAX, where the linear algebra fully exploits sparsity in a way which minimizes VRAM use. This example uses
-this functionality, and therefore is suitable for datasets with a low number of visibilities (e.g. < 10000) or
-many visibilities (E.g. tens of millions).
-
-This example fits the dataset with 273 visibilities used throughout the workspace, so the modeling runs in under 10
-minutes. Fitting a higher resolution dataset will only take an hour to a few hours.
-
-If your dataset contains many visibilities (e.g. millions), setting up the matrices for pixelized source reconstruction
-which speed up the linear algebra may take tens of minutes, or hours. Once you are comfortable with the API introduced
-in this example, the `feature/pixelization/many_visibilities_preparation` explains how this initial setup can be
-performed before lens modeling and saved to hard disk for fast loading before the model fit.
+Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra. On GPU, this takes
+seconds, or at most a minute for datasets with tens of millions, or more visibities. On CPU, this can be a lot slower,
+taking over hours. If you are on CPU,  the `feature/pixelization/many_visibilities_preparation` explains how this
+initial setup can be performed before lens modeling and saved to hard disk for fast loading before the model fit.
 
 __Contents__
 
@@ -225,36 +217,26 @@ which evaluates light profiles on a higher resolution grid than the image data t
 Interferometer does not observe galaxies in a way where over sampling is necessary, therefore all interferometer
 calculations are performed without over sampling.
 
-__JAX & Preloads__
+__Mesh Shape__
 
-In JAX, calculations must use static shaped arrays with known and fixed indexes. For certain calculations in the
-pixelization, this information has to be passed in before the pixelization is performed. Below, we do this for 3
-inputs:
+The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the source,
+set below to 28 x 28. 
 
-- `total_linear_light_profiles`: The number of linear light profiles in the model. This is 0 because we are not
-  fitting any linear light profiles to the data, primarily because the lens light is omitted.
+The `mesh_shape` must be fixed before modeling and cannot be a free parameter of the model, because JAX uses the
+mesh shape to define static shaped arrays which use the mesh to reconstruct the source. For a rectangular
+mesh, the same number of pixels must be used in the y and x directions.
 
-- `total_mapper_pixels`: The number of source pixels in the rectangular pixelization mesh. This is required to set up 
-  the arrays that perform the linear algebra of the pixelization.
+__Edge Zeroing__
 
-- `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
-  are forced to values of zero, a technique tests have shown are required to give accruate lens models.
+By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero brightness by 
+the linear algebra solver. This prevents unphysical solutions where pixels at the edge of the mesh reconstruct 
+bright surface brightnesses, often because they fit residuals from the lens light subtraction.
+
+For a rectangular mesh, the source code computes edge pixels internally using the known
+pixels at the edge of the mesh. 
 """
-mesh_shape = (20, 20)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 0
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 """
 __Model__
@@ -372,14 +354,10 @@ Create the `AnalysisInterferometer` object defining how the via Nautilus the mod
 
 The `positions_likelihood_list` is passed to the analysis, which applies the likelihood penalty described above
 for everyone lens mass model.
-
-The `preloads` are passed to the analysis, which contain the static array information JAX needs to perform
-the pixelization calculations.
 """
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     positions_likelihood_list=[positions_likelihood],
-    preloads=preloads,
     settings=settings,
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )

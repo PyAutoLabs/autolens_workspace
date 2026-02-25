@@ -161,6 +161,7 @@ search_1 = af.Nautilus(
     name="search[1]__parametric",
     unique_tag=dataset_name,
     n_live=100,
+    n_like_max=500,
 )
 
 analysis_1 = al.AnalysisImaging(dataset=dataset)
@@ -168,26 +169,12 @@ analysis_1 = al.AnalysisImaging(dataset=dataset)
 result_1 = search_1.fit(model=model_1, analysis=analysis_1)
 
 """
-__JAX & Preloads__
+__Mesh Shape__
 
-The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
-advance so it knows the shape of arrays it must compile functions for.
+As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before modeling.
 """
-mesh_shape = (20, 20)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 0
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 """
 __Model (Search 2)__
@@ -281,9 +268,10 @@ search_2 = af.Nautilus(
     name="search[2]__adaptive_pixelization_setup",
     unique_tag=dataset_name,
     n_live=100,
+    n_like_max=500,
 )
 
-analysis_2 = al.AnalysisImaging(dataset=dataset, preloads=preloads)
+analysis_2 = al.AnalysisImaging(dataset=dataset)
 
 result_2 = search_2.fit(model=model_2, analysis=analysis_2)
 
@@ -372,7 +360,6 @@ adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 analysis_3 = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
     positions_likelihood_list=[
         result_2.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
@@ -388,6 +375,7 @@ search_3 = af.Nautilus(
     name="search[3]__adaptive_pixelization",
     unique_tag=dataset_name,
     n_live=75,
+    n_like_max=500,
 )
 
 result_3 = search_3.fit(model=model_3, analysis=analysis_3)
@@ -433,7 +421,6 @@ search_4 = af.Nautilus(
 analysis_4 = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
 )
 
 result_4 = search_4.fit(model=model_4, analysis=analysis_4)

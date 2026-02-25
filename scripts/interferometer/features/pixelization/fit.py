@@ -13,36 +13,21 @@ are the simplest forms of mesh and regularization with provide computationally f
 For simplicity, the lens galaxy's light is omitted from the model and is not present in the simulated data. It is
 straightforward to include the lens galaxy's light in the model.
 
-pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
+Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
 
-__JAX GPU Run Times__
+__CPU Users__
 
-Throughout the workspace, it has been emphasised that pixelized source reconstructions are computed using GPU or CPU
-via JAX, where the linear algebra fully exploits sparsity in a way which minimizes VRAM use. This example uses
-this functionality, and therefore is suitable for datasets with a low number of visibilities (e.g. < 10000) or
-many visibilities (E.g. tens of millions).
-
-This example fits the dataset with 273 visibilities used throughout the workspace, so the fit runs in seconds, but
-provided the sparse operator formalism is set up correctly, the same code can be used to fit datasets with millions of
-visibilities.
-
-If your dataset contains many visibilities (e.g. millions), setting up the matrices for pixelized source reconstruction
-which speed up the linear algebra may take tens of minutes, or hours. Once you are comfortable with the API introduced
-in this example, the `feature/pixelization/many_visibilities_preparation` explains how this initial setup can be
-performed before lens modeling and saved to hard disk for fast loading before the model fit.
-
-This script's default setup uses an adaptive 20 x 20 rectangular mesh (400 pixels), which is relatively low resolution
-and may not provide the most accurate lens modeling results. The mesh resolution can be increased to improve
-the fit, and the sparse operator formalism means this should still run fine on my laptop GPUs, requiring less than 4 GB VRAm.
-
-CPU run times are also fast using the sparse operator formalism.
+Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra. On GPU, this takes
+seconds, or at most a minute for datasets with tens of millions, or more visibities. On CPU, this can be a lot slower,
+taking over hours. If you are on CPU,  the `feature/pixelization/many_visibilities_preparation` explains how this
+initial setup can be performed before lens modeling and saved to hard disk for fast loading before the model fit.
 
 __Contents__
 
 **Advantages & Disadvantages:** Benefits and drawbacks of using an MGE.
 **Positive Only Solver:** How a positive solution to the light profile intensities is ensured.
 **Dataset & Mask:** Standard set up of interferometer dataset that is fitted.
-**JAX & Preloads**: Preloading certain arrays for the pixelization's linear algebra, such that JAX knows their shapes in advance.
+**Mesh Shape**: Defining the shape of the mesh that reconstructs the source in advance, such that JAX knows static array shapes.
 **Pixelization:** How to create a pixelization, including a description of its inputs.
 **Fit:** Perform a fit to a dataset using a pixelization, and visualize its results.
 **Interpolated Source:** Interpolate the source reconstruction from an irregular Voronoi mesh to a uniform square grid and output to a .fits file.
@@ -196,36 +181,26 @@ which evaluates light profiles on a higher resolution grid than the image data t
 Interferometer does not observe galaxies in a way where over sampling is necessary, therefore all interferometer
 calculations are performed without over sampling.
 
-__JAX & Preloads__
+__Mesh Shape__
 
-In JAX, calculations must use static shaped arrays with known and fixed indexes. For certain calculations in the
-pixelization, this information has to be passed in before the pixelization is performed. Below, we do this for 3
-inputs:
+The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the source,
+set below to 28 x 28. 
 
-- `total_linear_light_profiles`: The number of linear light profiles in the model. This is 0 because we are not
-  fitting any linear light profiles to the data, primarily because the lens light is omitted.
+The `mesh_shape` must be fixed before modeling and cannot be a free parameter of the model, because JAX uses the
+mesh shape to define static shaped arrays which use the mesh to reconstruct the source. For a rectangular
+mesh, the same number of pixels must be used in the y and x directions.
 
-- `total_mapper_pixels`: The number of source pixels in the rectangular pixelization mesh. This is required to set up 
-  the arrays that perform the linear algebra of the pixelization.
+__Edge Zeroing__
 
-- `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
-  are forced to values of zero, a technique tests have shown are required to give accruate lens models.
+By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero brightness by 
+the linear algebra solver. This prevents unphysical solutions where pixels at the edge of the mesh reconstruct 
+bright surface brightnesses, often because they fit residuals from the lens light subtraction.
+
+For a rectangular mesh, the source code computes edge pixels internally using the known
+pixels at the edge of the mesh. 
 """
-mesh_shape = (20, 20)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 0
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 """
 __Pixelization__
@@ -271,7 +246,6 @@ tracer = al.Tracer(galaxies=[lens, source])
 fit = al.FitInterferometer(
     dataset=dataset,
     tracer=tracer,
-    preloads=preloads,
     settings=settings,
 )
 

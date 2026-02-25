@@ -14,38 +14,6 @@ which is not currently optimized in JAX.
 > Note: This performance advantage applies **only to pixelized sources**.
 > For parametric sources or multi-Gaussian models, JAX (especially with a GPU) is significantly faster, and even JAX
 > on a CPU outperforms the `numba` approach shown here.
-
-__Run Time Overview__
-
-Pixelized source reconstructions can be computed using either GPU acceleration via JAX or CPU acceleration via `numba`.
-The faster option depends on two crucial factors:
-
-#### **1. GPU VRAM Limitations**
-JAX only provides significant acceleration on GPUs with **large VRAM (≥16 GB)**.
-To avoid excessive VRAM usage, examples often restrict pixelization meshes (e.g. 20 × 20).
-On consumer GPUs with limited memory, **JAX may be slower than CPU execution**.
-
-#### **2. Sparse Matrix Performance**
-
-Pixelized source reconstructions require operations on **very large, highly sparse matrices**.
-
-- JAX currently lacks sparse-matrix support and must compute using **dense matrices**, which scale poorly.
-- PyAutoLens’s CPU implementation (via `numba`) fully exploits sparsity, providing large speed gains
-  at **high image resolution** (e.g. `pixel_scales <= 0.03`).
-
-As a result, CPU execution can outperform JAX even on powerful GPUs for high-resolution datasets.
-
-__Rule of Thumb__
-
-For **low-resolution imaging** (for example, datasets with `pixel_scales > 0.05`), modeling is generally faster using
-**JAX with a GPU**, because the computations involve fewer sparse operations and do not require large amounts of VRAM.
-
-For **high-resolution imaging** (for example, `pixel_scales <= 0.03`), modeling can be faster using a **CPU with numba**
-and multiple cores. At high resolution, the linear algebra is dominated by sparse matrix operations, and the CPU
-implementation exploits sparsity more effectively, especially on systems with many CPU cores (e.g. HPC clusters).
-
-**Recommendation:** The best choice depends on your hardware and dataset, so it is always worth benchmarking both
-approaches (GPU+JAX vs CPU+numba) to determine which performs fastest for your case.
 """
 
 try:
@@ -156,30 +124,12 @@ matrices, which are then reused in all subsequent pixelized source fits.
 dataset = dataset.apply_sparse_operator_cpu()
 
 """
-__JAX & Preloads__
+__Mesh Shape__
 
-In earlier examples (`imaging/features/pixelization/modeling`), we used JAX, which requires *preloading* array shapes
-before compilation. In contrast, CPU modeling with sparse operators does **not** require JAX.
-
-Below, notice how the `mesh_shape` is increased to **30 × 30**. Because CPU computation exploits sparse matrices and
-benefits from larger system memory, we can now use higher-resolution pixelizations than were practical with JAX GPU
-acceleration.
+As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before modeling.
 """
-mesh_shape = (30, 30)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 0
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 """
 __Fit__
@@ -212,7 +162,6 @@ tracer = al.Tracer(galaxies=[lens, source])
 fit = al.FitImaging(
     dataset=dataset,
     tracer=tracer,
-    preloads=preloads,
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit)
@@ -260,7 +209,6 @@ search = af.Nautilus(
 analysis = al.AnalysisImaging(
     dataset=dataset,
     positions_likelihood_list=[positions_likelihood],
-    preloads=preloads,
     use_jax=False,  # CPU specific code
 )
 
@@ -373,7 +321,6 @@ analysis = al.AnalysisImaging(
     positions_likelihood_list=[
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
-    preloads=preloads,
     use_jax=False,  # CPU specific code
 )
 
@@ -399,7 +346,6 @@ adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
     use_jax=False,  # CPU specific code
 )
 
@@ -420,7 +366,6 @@ The LIGHT LP PIPELINE is setup identically to the `slam_start_here.ipynb` exampl
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
     use_jax=False,  # CPU specific code
 )
 
@@ -451,7 +396,6 @@ analysis = al.AnalysisImaging(
     positions_likelihood_list=[
         source_pix_result_2.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
-    preloads=preloads,
     use_jax=False,  # CPU specific code
 )
 

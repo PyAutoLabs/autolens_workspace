@@ -458,7 +458,7 @@ simulations.
 The code below performs the simulation, plots the simulated imaging data and outputs it to .fits files with .png
 files included for easy visualization.
 """
-psf = al.Kernel2D.from_gaussian(
+psf = al.Convolver.from_gaussian(
     shape_native=(11, 11),  # The 2D shape of the PSF array.
     sigma=0.1,  # The size of the Gaussian PSF, where FWHM = 2.35 * sigma.
     pixel_scales=grid.pixel_scales,  # The pixel scale of the PSF, matches the image's pixel scale.

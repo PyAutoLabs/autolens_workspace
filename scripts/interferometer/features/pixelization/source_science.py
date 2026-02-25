@@ -69,21 +69,8 @@ lens_galaxy = al.Galaxy(
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
-mesh_shape = (20, 20)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 0
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 mesh = al.mesh.RectangularAdaptDensity(shape=mesh_shape)
 regularization = al.reg.Constant(coefficient=1.0)
@@ -97,7 +84,6 @@ tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 fit = al.FitInterferometer(
     dataset=dataset,
     tracer=tracer,
-    preloads=preloads,
     settings=settings,
 )
 
@@ -413,7 +399,6 @@ positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     positions_likelihood_list=[positions_likelihood],
-    preloads=preloads,
     settings=settings,
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )

@@ -111,7 +111,7 @@ this blurring of the image.
 In this example, use a simple 2D Gaussian PSF, which is convolved with the image of the lens and source galaxies 
 when simulating the dataset.
 """
-psf = al.Kernel2D.from_gaussian(
+psf = al.Convolver.from_gaussian(
     shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
 )
 

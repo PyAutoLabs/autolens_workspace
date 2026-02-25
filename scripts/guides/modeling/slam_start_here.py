@@ -228,36 +228,12 @@ source_lp_result = slam_pipeline.source_lp.run(
 )
 
 """
-__JAX & Preloads__
+__Mesh Shape__
 
-In JAX, calculations must use static shaped arrays with known and fixed indexes. For certain calculations in the
-pixelization, this information has to be passed in before the pixelization is performed. Below, we do this for 3
-inputs:
-
-- `total_linear_light_profiles`: The number of linear light profiles in the model. This is 0 because we are not
-  fitting any linear light profiles to the data, primarily because the lens light is omitted.
-
-- `total_mapper_pixels`: The number of source pixels in the rectangular pixelization mesh. This is required to set up 
-  the arrays that perform the linear algebra of the pixelization.
-
-- `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
-  are forced to values of zero, a technique tests have shown are required to give accruate lens models.
+As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before modeling.
 """
-mesh_shape = (20, 20)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 40
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 """
 __SOURCE PIX PIPELINE__
@@ -313,7 +289,6 @@ adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
     positions_likelihood_list=[
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
@@ -353,7 +328,6 @@ adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
     use_jax=True,
 )
 
@@ -384,7 +358,6 @@ In this example it:
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
 )
 
 lens_bulge = al.model_util.mge_model_from(
@@ -430,7 +403,6 @@ adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
     positions_likelihood_list=[
         source_pix_result_2.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],

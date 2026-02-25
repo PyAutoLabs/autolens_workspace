@@ -558,7 +558,7 @@ def base_model_narrow_priors_from(base_model, result, stretch: float = 1.0):
 def run(
     settings_search: af.SettingsSearch,
     mask: al.Mask2D,
-    psf: al.Kernel2D,
+    psf: al.Convolver,
     mass_result: af.Result,
     subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
     adapt_images: Optional[al.AdaptImages] = None,
