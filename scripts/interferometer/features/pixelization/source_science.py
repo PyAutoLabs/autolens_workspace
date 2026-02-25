@@ -133,7 +133,7 @@ mapper = inversion.cls_list_from(cls=al.Mapper)[
     0
 ]  # Extract the mapper from the inversion
 
-source_plane_mesh_grid = mapper.mapper.source_plane_mesh_grid
+source_plane_mesh_grid = mapper.source_plane_mesh_grid
 
 print(f"Source Plane Mesh Grid Coordinates: {source_plane_mesh_grid}")
 

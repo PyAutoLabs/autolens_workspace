@@ -42,8 +42,6 @@ import numpy as np
 import autolens as al
 import autolens.plot as aplt
 
-from autolens_workspace.scripts.point_source.simulator import fluxes_with_noise
-
 """
 __Dataset Paths__
 
