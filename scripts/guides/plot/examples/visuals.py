@@ -79,7 +79,7 @@ tracer_x2 = al.Tracer(
     galaxies=[lens_galaxy, lens_galaxy_1, source_galaxy, source_galaxy_1]
 )
 
-dataset_path = Path("dataset") / "slacs" / "slacs1430+4105"
+dataset_path = Path("dataset") / "imaging" / "slacs1430+4105"
 data_path = dataset_path / "data.fits"
 data = al.Array2D.from_fits(file_path=data_path, hdu=0, pixel_scales=0.03)
 

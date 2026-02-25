@@ -65,7 +65,7 @@ __Pixel Scales__
 
 Every multi-wavelength dataset can have its own unique pixel-scale.
 """
-pixel_scales_list = [0.08, 0.12, 0.012]
+pixel_scales_list = [0.08, 0.12, 0.12]
 
 """
 __Dataset__
