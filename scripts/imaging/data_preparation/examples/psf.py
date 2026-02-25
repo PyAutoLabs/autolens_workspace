@@ -111,7 +111,9 @@ We can resize a psf the same way that we resize an image.
 Below, we resize the PSF to 5 x 5 pixels, which is too small for a realistic analysis and just for demonstration 
 purposes.
 """
-trimmed_psf_kernel = al.preprocess.array_with_new_shape(array=psf.kernel, new_shape=(5, 5))
+trimmed_psf_kernel = al.preprocess.array_with_new_shape(
+    array=psf.kernel, new_shape=(5, 5)
+)
 
 array_plotter = aplt.Array2DPlotter(array=trimmed_psf_kernel)
 array_plotter.figure_2d()
