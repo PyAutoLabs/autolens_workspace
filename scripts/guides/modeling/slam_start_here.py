@@ -228,36 +228,12 @@ source_lp_result = slam_pipeline.source_lp.run(
 )
 
 """
-__JAX & Preloads__
+__Mesh Shape__
 
-In JAX, calculations must use static shaped arrays with known and fixed indexes. For certain calculations in the
-pixelization, this information has to be passed in before the pixelization is performed. Below, we do this for 3
-inputs:
-
-- `total_linear_light_profiles`: The number of linear light profiles in the model. This is 0 because we are not
-  fitting any linear light profiles to the data, primarily because the lens light is omitted.
-
-- `total_mapper_pixels`: The number of source pixels in the rectangular pixelization mesh. This is required to set up 
-  the arrays that perform the linear algebra of the pixelization.
-
-- `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
-  are forced to values of zero, a technique tests have shown are required to give accruate lens models.
+As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before modeling.
 """
-mesh_shape = (20, 20)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 40
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 """
 __SOURCE PIX PIPELINE__
@@ -281,13 +257,13 @@ This first search of the SOURCE PIX PIPELINE fits the following model:
 
 - The lens galaxy mass is modeled using a total mass distribution [model initialized from the results of the SOURCE LP PIPELINE].
 
-- The source galaxy's light is a pixelization using a `RectangularAdaptDensity` mesh and `AdaptiveBrightnessSplit` regularization scheme 
+- The source galaxy's light is a pixelization using a `RectangularAdaptDensity` mesh and `AdaptSplit` regularization scheme 
   [parameters of regularization free to vary].
 
 This search improves the lens mass model by modeling the source using a pixelization and computes the adapt
 images that are used in search 2.
 
-The `AdaptiveBrightnessSplit` regularization adapt the source regularization weights to the source's morphology. We 
+The `AdaptSplit` regularization adapt the source regularization weights to the source's morphology. We 
 therefore set up the adapt image using the result from SOURCE LP PIPELINE. This image is not always perfect, but it
 will be improved upon in search 2 and is good enough for computing the initial lens model in search 1.
 
@@ -313,7 +289,6 @@ adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
     positions_likelihood_list=[
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
@@ -324,7 +299,7 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1(
     analysis=analysis,
     source_lp_result=source_lp_result,
     mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
-    regularization_init=al.reg.AdaptiveBrightness,
+    regularization_init=al.reg.Adapt,
 )
 
 """
@@ -338,10 +313,10 @@ Search 2 of the SOURCE PIX PIPELINE fits a lens model where:
 
 - The source galaxy's light is the input final mesh and regularization.
 
-- The source galaxy's light is a pixelization using a `RectangularAdaptImage` mesh and `AdaptiveBrightnessSplit` regularization scheme 
+- The source galaxy's light is a pixelization using a `RectangularAdaptImage` mesh and `AdaptSplit` regularization scheme 
   [parameters of regularization free to vary].
 
-The `RectangularAdaptImage` mesh and `AdaptiveBrightness` regularization adapt the source pixels and regularization weights
+The `RectangularAdaptImage` mesh and `Adapt` regularization adapt the source pixels and regularization weights
 to the source's morphology. We therefore set up the adapt image using the result from SOURCE PIX PIPELINE search 1.
 """
 galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
@@ -353,7 +328,6 @@ adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
     use_jax=True,
 )
 
@@ -363,7 +337,7 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
     mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
-    regularization=al.reg.AdaptiveBrightness,
+    regularization=al.reg.Adapt,
 )
 
 """
@@ -384,7 +358,6 @@ In this example it:
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
 )
 
 lens_bulge = al.model_util.mge_model_from(
@@ -430,7 +403,6 @@ adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
     positions_likelihood_list=[
         source_pix_result_2.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],

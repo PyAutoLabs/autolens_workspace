@@ -122,11 +122,11 @@ for Hubble).
 
 Lets inspect a PSF which conforms to **PyAutoLens** standards:
 """
-psf = al.Kernel2D.from_fits(
+psf = al.Convolver.from_fits(
     file_path=dataset_path / "psf.fits", hdu=0, pixel_scales=0.1
 )
 
-array_plotter = aplt.Array2DPlotter(array=psf)
+array_plotter = aplt.Array2DPlotter(array=psf.kernel)
 array_plotter.figure_2d()
 
 """

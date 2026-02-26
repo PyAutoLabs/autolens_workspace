@@ -13,36 +13,21 @@ are the simplest forms of mesh and regularization with provide computationally f
 For simplicity, the lens galaxy's light is omitted from the model and is not present in the simulated data. It is
 straightforward to include the lens galaxy's light in the model.
 
-pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
+Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
 
-__JAX GPU Run Times__
+__CPU Users__
 
-Throughout the workspace, it has been emphasised that pixelized source reconstructions are computed using GPU or CPU
-via JAX, where the linear algebra fully exploits sparsity in a way which minimizes VRAM use. This example uses
-this functionality, and therefore is suitable for datasets with a low number of visibilities (e.g. < 10000) or
-many visibilities (E.g. tens of millions).
-
-This example fits the dataset with 273 visibilities used throughout the workspace, so the fit runs in seconds, but
-provided the w tilde formalism is set up correctly, the same code can be used to fit datasets with millions of
-visibilities.
-
-If your dataset contains many visibilities (e.g. millions), setting up the matrices for pixelized source reconstruction
-which speed up the linear algebra may take tens of minutes, or hours. Once you are comfortable with the API introduced
-in this example, the `feature/pixelization/many_visibilities_preparation` explains how this initial setup can be
-performed before lens modeling and saved to hard disk for fast loading before the model fit.
-
-This script's default setup uses an adaptive 20 x 20 rectangular mesh (400 pixels), which is relatively low resolution
-and may not provide the most accurate lens modeling results. The mesh resolution can be increased to improve
-the fit, and the w-tilde formalism means this should still run fine on my laptop GPUs, requiring less than 4 GB VRAm.
-
-CPU run times are also fast using the w-tilde formalism.
+Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra. On GPU, this takes
+seconds, or at most a minute for datasets with tens of millions, or more visibities. On CPU, this can be a lot slower,
+taking over hours. If you are on CPU,  the `feature/pixelization/many_visibilities_preparation` explains how this
+initial setup can be performed before lens modeling and saved to hard disk for fast loading before the model fit.
 
 __Contents__
 
 **Advantages & Disadvantages:** Benefits and drawbacks of using an MGE.
 **Positive Only Solver:** How a positive solution to the light profile intensities is ensured.
 **Dataset & Mask:** Standard set up of interferometer dataset that is fitted.
-**JAX & Preloads**: Preloading certain arrays for the pixelization's linear algebra, such that JAX knows their shapes in advance.
+**Mesh Shape**: Defining the shape of the mesh that reconstructs the source in advance, such that JAX knows static array shapes.
 **Pixelization:** How to create a pixelization, including a description of its inputs.
 **Fit:** Perform a fit to a dataset using a pixelization, and visualize its results.
 **Interpolated Source:** Interpolate the source reconstruction from an irregular Voronoi mesh to a uniform square grid and output to a .fits file.
@@ -157,27 +142,27 @@ dataset_plotter.subplot_dataset()
 dataset_plotter.subplot_dirty_images()
 
 """
-__W_Tilde__
+__Sparse Operators__
 
-Pixelized source modeling requires heavy linear algebra operations. These calculations are greatly accelerated
-using an alternative mathematical approach called the **w_tilde formalism**.
+Pixelized source modeling requires dense linear algebra operations. These calculations are greatly accelerated
+using an alternative mathematical approach called the **sparse linear algebra formalism**.
 
 You do not need to understand the full details of the method, but the key point is:
 
-- `w_tilde` exploits the **sparsity** of the matrices used in pixelized source reconstruction.
+- It exploits the **sparsity** of the matrices used in pixelized source reconstruction, reducing memory usage.
 - This leads to a **significant speed-up on GPU or CPU**, using JAX to perform the linear algebra calculations.
 
-To enable this feature, we call `apply_w_tilde()` on the dataset. This computes and stores a `w_tilde_preload` matrix,
-which reused in all subsequent pixelized source fits.
+To enable this feature, we call `apply_sparse_operator()` on the dataset. This computes and stores a NUFFT operator 
+matrix.
 
-For datasets with over 100000 visibilities and many pixels in their real-space mask, this computation
-can take 10 minutes or hours (for the small dataset loaded above its miliseconds). The `show_progress` input outputs 
-a progress bar to the terminal so you can monitor the computation, which is useful when it is slow
+For datasets with over 100000 visibilities and many pixels in their real-space mask, this computation takes seconds
+on GPU, but may take 10 minutes or hours (for the small dataset loaded above its miliseconds) on CPU. The `show_progress` 
+input  outputs a progress bar to the terminal so you can monitor the computation, which is useful when it is slow
 
 When computing it is slow, it is recommend you compute it once, save it to hard-disk, and load it
 before modeling. The example `pixelization/many_visibilities_preparation.py` illustrates how to do this.
 """
-dataset = dataset.apply_w_tilde(use_jax=True, show_progress=True)
+dataset = dataset.apply_sparse_operator(use_jax=True, show_progress=True)
 
 """
 __Settings__
@@ -185,7 +170,7 @@ __Settings__
 As discussed above, disable the default position only linear algebra solver so the source
 reconstruction can have negative pixel values.
 """
-settings_inversion = al.SettingsInversion(use_positive_only_solver=False)
+settings = al.Settings(use_positive_only_solver=False)
 
 """
 __Over Sampling__
@@ -196,36 +181,26 @@ which evaluates light profiles on a higher resolution grid than the image data t
 Interferometer does not observe galaxies in a way where over sampling is necessary, therefore all interferometer
 calculations are performed without over sampling.
 
-__JAX & Preloads__
+__Mesh Shape__
 
-In JAX, calculations must use static shaped arrays with known and fixed indexes. For certain calculations in the
-pixelization, this information has to be passed in before the pixelization is performed. Below, we do this for 3
-inputs:
+The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the source,
+set below to 28 x 28. 
 
-- `total_linear_light_profiles`: The number of linear light profiles in the model. This is 0 because we are not
-  fitting any linear light profiles to the data, primarily because the lens light is omitted.
+The `mesh_shape` must be fixed before modeling and cannot be a free parameter of the model, because JAX uses the
+mesh shape to define static shaped arrays which use the mesh to reconstruct the source. For a rectangular
+mesh, the same number of pixels must be used in the y and x directions.
 
-- `total_mapper_pixels`: The number of source pixels in the rectangular pixelization mesh. This is required to set up 
-  the arrays that perform the linear algebra of the pixelization.
+__Edge Zeroing__
 
-- `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
-  are forced to values of zero, a technique tests have shown are required to give accruate lens models.
+By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero brightness by 
+the linear algebra solver. This prevents unphysical solutions where pixels at the edge of the mesh reconstruct 
+bright surface brightnesses, often because they fit residuals from the lens light subtraction.
+
+For a rectangular mesh, the source code computes edge pixels internally using the known
+pixels at the edge of the mesh. 
 """
-mesh_shape = (20, 20)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 0
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 """
 __Pixelization__
@@ -271,7 +246,7 @@ tracer = al.Tracer(galaxies=[lens, source])
 fit = al.FitInterferometer(
     dataset=dataset,
     tracer=tracer,
-    preloads=preloads,
+    settings=settings,
 )
 
 """
@@ -307,150 +282,16 @@ inversion_plotter = aplt.InversionPlotter(inversion=inversion)
 inversion_plotter.subplot_of_mapper(mapper_index=0)
 
 """
-__Pixelization / Mapper Calculations__
+__Source Science (Magnification, Flux and More)__
 
-The pixelized source reconstruction output by an `Inversion` is often on an irregular grid (e.g. a
-Delaunay triangulation), making it difficult to manipulate and inspect after the lens modeling has
-completed.
+Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
 
-Internally, the inversion stores a `Mapper` object to perform these calculations, which effectively maps pixels
-between the image-plane and source-plane.
+Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic 
+size of the source.
 
-After an inversion is complete, it has computed values which can be paired with the `Mapper` to perform calculations,
-most notably the `reconstruction`, which is the reconstructed source pixel values.
+The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+including examples using a pixelized source reconstruction. Now you know how to fit a pixelization, go check it out!
 
-By inputting the inversions's mapper and a set of values (e.g. the `reconstruction`) into a `MapperValued` object, we
-are provided with all the functionality we need to perform calculations on the source reconstruction.
-
-We set up the `MapperValued` object below, and illustrate how we can use it to interpolate the source reconstruction
-to a uniform grid of values, perform magnification calculations and other tasks.
-"""
-mapper = inversion.cls_list_from(cls=al.AbstractMapper)[
-    0
-]  # Only one source-plane so only one mapper, would be a list if multiple source planes
-
-mapper_valued = al.MapperValued(
-    mapper=mapper, values=inversion.reconstruction_dict[mapper]
-)
-
-"""
-__Interpolated Source__
-
-A simple way to inspect the source reconstruction is to interpolate its values from the irregular
-pixelization o a uniform 2D grid of pixels.
-
-(if you do not know what the `slim` and `native` properties below refer too, it
-is described in the `results/examples/data_structures.py` example.)
-
-We interpolate the Delaunay triangulation this source is reconstructed on to a 2D grid of 401 x 401 square pixels.
-"""
-interpolated_reconstruction = mapper_valued.interpolated_array_from(
-    shape_native=(401, 401)
-)
-
-"""
-If you are unclear on what `slim` means, refer to the section `Data Structure` at the top of this example.
-"""
-print(interpolated_reconstruction.slim)
-
-plotter = aplt.Array2DPlotter(
-    array=interpolated_reconstruction,
-)
-plotter.figure_2d()
-
-"""
-By inputting the arc-second `extent` of the source reconstruction, the interpolated array will zoom in on only these
-regions of the source-plane. The extent is input via the notation (xmin, xmax, ymin, ymax), therefore  unlike the standard
-API it does not follow the (y,x) convention.
-
-Note that the output interpolated array will likely therefore be rectangular, with rectangular pixels, unless
-symmetric y and x arc-second extents are input.
-"""
-interpolated_reconstruction = mapper_valued.interpolated_array_from(
-    shape_native=(401, 401), extent=(-1.0, 1.0, -1.0, 1.0)
-)
-
-print(interpolated_reconstruction.slim)
-
-"""
-The interpolated errors on the source reconstruction can also be computed, in case you are planning to perform
-model-fitting of the source reconstruction.
-"""
-mapper_valued_errors = al.MapperValued(
-    mapper=mapper, values=inversion.reconstruction_noise_map_dict[mapper]
-)
-
-interpolated_errors = mapper_valued_errors.interpolated_array_from(
-    shape_native=(401, 401), extent=(-1.0, 1.0, -1.0, 1.0)
-)
-
-print(interpolated_errors.slim)
-
-"""
-__Magnification__
-
-The magnification of the lens model and source reconstruction can also be computed via the `MapperValued` object,
-provided we pass it the reconstruction as the `values`.
-
-This magnification is the ratio of the surface brightness of image in the image-plane over the surface brightness
-of the source in the source-plane.
-
-In the image-plane, this is computed by mapping the reconstruction to the image, summing all reconstructed
-values and multiplying by the area of each image pixel. This image-plane image is not convolved with the
-PSF, as the source plane reconstruction is a non-convolved image.
-
-In the source-plane, this is computed by interpolating the reconstruction to a regular grid of pixels, for
-example a 2D grid of 401 x 401 pixels, and summing the reconstruction values multiplied by the area of each
-pixel. This calculation uses interpolation to compute the source-plane image.
-
-The calculation is relatively stable, but depends on subtle details like the resolution of the source-plane
-pixelization and how exactly the interpolation is performed.
-"""
-mapper_valued = al.MapperValued(
-    mapper=mapper,
-    values=inversion.reconstruction_dict[mapper],
-)
-
-print("Magnification via Interpolation:")
-print(mapper_valued.magnification_via_interpolation_from(shape_native=(401, 401)))
-
-"""
-The magnification calculated above used an interpolation of the source-plane reconstruction to a 2D grid of 401 x 401
-pixels.
-
-The magnification can also be computed using the source-plane mesh directly, where the areas of the mesh pixels
-themselves are used to compute the magnification. In certain situations this is more accurate than interpolation, 
-especially when the source-plane pixelization is irregular. 
-"""
-print("Magnification via Mesh:")
-print(mapper_valued.magnification_via_mesh_from())
-
-"""
-The magnification value computed can be impacted by faint source pixels at the edge of the source reconstruction.
-
-The input `mesh_pixel_mask` can be used to remove these pixels from the calculation, such that the magnification
-is based only on the brightest regions of the source reconstruction.
-
-We create a source-plane signal-to-noise map and use this to create a mask that removes all pixels with
-a signal-to-noise < 5.0.
-"""
-reconstruction = inversion.reconstruction_dict[mapper]
-errors = inversion.reconstruction_noise_map_dict[mapper]
-
-signal_to_noise_map = reconstruction / errors
-
-mesh_pixel_mask = signal_to_noise_map < 5.0
-
-mapper_valued = al.MapperValued(
-    mapper=mapper,
-    values=inversion.reconstruction_dict[mapper],
-    mesh_pixel_mask=mesh_pixel_mask,
-)
-
-print("Magnification via Interpolation:")
-print(mapper_valued.magnification_via_interpolation_from(shape_native=(401, 401)))
-
-"""
 __Wrap Up__
 
 Pixelizations are the most complex but also most powerful way to model a source galaxy.
@@ -500,22 +341,22 @@ This includes mapping grids corresponding to the data grid (e.g. the centers of 
 source plane) and the pixelization grid (e.g. the centre of the Delaunay triangulation in the image-plane and 
 source-plane).
 
-All grids are available in a mapper via its `mapper_grids` property.
+All grids are available in a mapper via its `mapper` property.
 """
 mapper = inversion.linear_obj_list[0]
 
 # Centre of each masked image pixel in the image-plane.
-print(mapper.mapper_grids.image_plane_data_grid)
+print(mapper.image_plane_data_grid)
 
 # Centre of each source pixel in the source-plane.
-print(mapper.mapper_grids.source_plane_data_grid)
+print(mapper.source_plane_data_grid)
 
 # Centre of each pixelization pixel in the image-plane (the `Overlay` image_mesh computes these in the image-plane
 # and maps to the source-plane).
-print(mapper.mapper_grids.image_plane_mesh_grid)
+print(mapper.image_plane_mesh_grid)
 
 # Centre of each pixelization pixel in the source-plane.
-print(mapper.mapper_grids.source_plane_mesh_grid)
+print(mapper.source_plane_mesh_grid)
 
 """
 __Reconstruction__
@@ -547,7 +388,7 @@ These mapped reconstructed images are also accessible via the `Inversion`.
 Note that any light profiles in the lens model (e.g. the `bulge` and `disk` of a lens galaxy) are not 
 included in this image -- it only contains the source.
 """
-print(inversion.mapped_reconstructed_image.native)
+print(inversion.mapped_reconstructed_operated_data.native)
 
 """
 __Linear Algebra Matrices (Advanced)__
@@ -586,15 +427,25 @@ Since irregular meshes cannot be directly used to simulate lensed images, we int
 grid with shape `interpolated_pixelized_shape`. This grid should have a high resolution (e.g., 1000 × 1000) to preserve 
 all resolved structure from the original mesh.  
 """
-mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
+from scipy.interpolate import griddata
 
-mapper_valued = al.MapperValued(
-    mapper=mapper,
-    values=inversion.reconstruction_dict[mapper],
+interpolation_grid = al.Grid2D.uniform(shape_native=(200, 200), pixel_scales=0.05)
+
+reconstruction = inversion.reconstruction
+source_plane_mesh_grid = mapper.source_plane_mesh_grid
+
+interpolated_reconstruction = griddata(
+    points=source_plane_mesh_grid, values=reconstruction, xi=interpolation_grid
 )
 
-source_image = mapper_valued.interpolated_array_from(
-    shape_native=(1000, 1000),
+# As a pure 2D numpy array in case its useful for calculations
+interpolated_reconstruction_ndarray = interpolated_reconstruction.reshape(
+    interpolation_grid.shape_native
+)
+
+interpolated_reconstruction = al.Array2D.no_mask(
+    values=interpolated_reconstruction_ndarray,
+    pixel_scales=interpolation_grid.pixel_scales,
 )
 
 """
@@ -629,7 +480,7 @@ tracer = al.Tracer(
 
 """
 Using the tracer, we generate the lensed source galaxy image on the image-plane grid. This process incorporates 
-the `source_image`, preserving the irregular and asymmetric morphological features captured by the source reconstruction.  
+the `interpolated_reconstruction`, preserving the irregular and asymmetric morphological features captured by the source reconstruction.  
 
 Next, we configure the grid, PSF, and simulator settings to match the signal-to-noise ratio (S/N) and noise properties 
 of the observed data used for sensitivity mapping.  
@@ -644,17 +495,17 @@ simulator = al.SimulatorInterferometer(
     transformer_class=al.TransformerDFT,
 )
 
-dataset = simulator.via_source_image_from(
-    tracer=tracer, grid=grid, source_image=source_image
-)
-
-plotter = aplt.InterferometerPlotter(dataset=dataset)
-
-output = aplt.Output(path=".", filename="source_image", format="png")
-
-plotter = aplt.InterferometerPlotter(
-    dataset=dataset, mat_plot_2d=aplt.MatPlot2D(output=output)
-)
+# dataset = simulator.via_interpolated_reconstruction_from(
+#     tracer=tracer, grid=grid, interpolated_reconstruction=interpolated_reconstruction
+# )
+#
+# plotter = aplt.InterferometerPlotter(dataset=dataset)
+#
+# output = aplt.Output(path=".", filename="interpolated_reconstruction", format="png")
+#
+# plotter = aplt.InterferometerPlotter(
+#     dataset=dataset, mat_plot_2d=aplt.MatPlot2D(output=output)
+# )
 
 """
 __Future Ideas / Contributions__

@@ -85,7 +85,7 @@ grid = al.Grid2D.uniform(
 )
 
 solver = al.PointSolver.for_grid(
-    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1, xp=np
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1, xp=jnp
 )
 
 """
@@ -106,7 +106,7 @@ source in our sample. In this example, there are 3 lenses each with their own mo
 
 The overall dimensionality of parameter space is therefore N=16.
 """
-cosmology = af.Model(al.cosmo.FlatwCDMWrap)
+cosmology = af.Model(al.cosmo.FlatLambdaCDM)
 
 cosmology.H0 = af.UniformPrior(lower_limit=0.0, upper_limit=150.0)
 
@@ -198,7 +198,7 @@ consists of:
 
 Together, the nodes and links define the full, coupled model that is fit across all datasets simultaneously.
 """
-factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=False)
+factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 """
 The fit will use the factor graph's `global_prior_model`, which uses the models contained in every analysis factor 
@@ -226,7 +226,7 @@ result = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph
 """
 __Result__
 
-The result's `info` attribute shows that the result is expressed following the same struture of analysis factors
+The result's `info` attribute shows that the result is expressed following the same structure of analysis factors
 that the `global_prior_model.info` attribute revealed above.
 """
 print(result.info)

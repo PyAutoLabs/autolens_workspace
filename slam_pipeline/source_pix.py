@@ -10,7 +10,7 @@ def run_1(
     source_lp_result: af.Result,
     mesh_init: af.Model(al.AbstractMesh) = af.Model(al.mesh.Delaunay),
     regularization_init: af.Model(al.AbstractRegularization) = af.Model(
-        al.reg.AdaptiveBrightnessSplit
+        al.reg.AdaptSplit
     ),
     extra_galaxies: Optional[af.Collection] = None,
     dataset_model: Optional[af.Model] = None,
@@ -127,9 +127,7 @@ def run_2(
     source_lp_result: af.Result,
     source_pix_result_1: af.Result,
     mesh: af.Model(al.AbstractMesh) = af.Model(al.mesh.Delaunay),
-    regularization: af.Model(al.AbstractRegularization) = af.Model(
-        al.reg.AdaptiveBrightnessSplit
-    ),
+    regularization: af.Model(al.AbstractRegularization) = af.Model(al.reg.AdaptSplit),
     dataset_model: Optional[af.Model] = None,
     n_batch: int = 20,
 ) -> af.Result:
@@ -225,7 +223,7 @@ def run_1__bypass_lp(
     shear: af.Model(al.mp.ExternalShear) = af.Model(al.mp.ExternalShear),
     mesh_init: af.Model(al.AbstractMesh) = af.Model(al.mesh.Delaunay),
     regularization_init: af.Model(al.AbstractRegularization) = af.Model(
-        al.reg.AdaptiveBrightnessSplit
+        al.reg.AdaptSplit
     ),
     redshift_lens: float = 0.5,
     redshift_source: float = 1.0,
@@ -470,9 +468,7 @@ def run_2__multi(
     source_lp_result: af.Result,
     source_pix_result_1: af.Result,
     mesh: af.Model(al.AbstractMesh) = af.Model(al.mesh.RectangularAdaptDensity),
-    regularization: af.Model(al.AbstractRegularization) = af.Model(
-        al.reg.AdaptiveBrightnessSplit
-    ),
+    regularization: af.Model(al.AbstractRegularization) = af.Model(al.reg.AdaptSplit),
     dataset_model: Optional[af.Model] = None,
     n_batch: int = 20,
 ) -> af.Result:

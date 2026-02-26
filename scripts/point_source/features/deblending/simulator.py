@@ -98,6 +98,13 @@ positions = solver.solve(
     tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
 )
 
+positions_with_noise = positions + np.random.normal(
+    loc=0.0, scale=grid.pixel_scale, size=positions.shape
+)
+
+positions_with_noise = al.Grid2DIrregular(
+    values=positions_with_noise,
+)
 
 """
 __Fluxes__
@@ -113,6 +120,16 @@ flux = 1.0
 fluxes = [flux * np.abs(magnification) for magnification in magnifications]
 fluxes = al.ArrayIrregular(values=fluxes)
 
+fluxes_with_noise = fluxes + np.random.normal(
+    loc=0.0, scale=np.sqrt(fluxes), size=len(fluxes)
+)
+
+fluxes_with_noise = al.ArrayIrregular(values=fluxes_with_noise)
+
+fluxes_noise_map = al.ArrayIrregular(
+    values=[np.sqrt(flux) for _ in range(len(fluxes_with_noise))]
+)
+
 
 """
 __Point Datasets (Point Source)__
@@ -121,17 +138,15 @@ Create the `PointDataset`  and `PointDataset` objects using identical code to th
 """
 dataset = al.PointDataset(
     name="point_0",
-    positions=positions,
+    positions=positions_with_noise,
     positions_noise_map=grid.pixel_scale,
-    fluxes=fluxes,
-    fluxes_noise_map=al.ArrayIrregular(
-        values=[np.sqrt(flux) for _ in range(len(fluxes))]
-    ),
+    fluxes=fluxes_with_noise,
+    fluxes_noise_map=fluxes_noise_map,
 )
 
 al.output_to_json(
     obj=dataset,
-    file_path=Path(dataset_path, "point_dataset.json"),
+    file_path=Path(dataset_path, "point_dataset_positions_only.json"),
 )
 
 
@@ -196,7 +211,7 @@ Simulate a simple Gaussian PSF for the image.
 """
 psf_sigma = 0.1
 
-psf = al.Kernel2D.from_gaussian(
+psf = al.Convolver.from_gaussian(
     shape_native=(11, 11), sigma=psf_sigma, pixel_scales=grid.pixel_scales
 )
 

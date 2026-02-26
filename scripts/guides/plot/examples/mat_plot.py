@@ -32,7 +32,7 @@ from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
-dataset_path = Path("dataset") / "slacs" / "slacs1430+4105"
+dataset_path = Path("dataset") / "imaging" / "slacs1430+4105"
 data_path = dataset_path / "data.fits"
 data = al.Array2D.from_fits(file_path=data_path, hdu=0, pixel_scales=0.03)
 

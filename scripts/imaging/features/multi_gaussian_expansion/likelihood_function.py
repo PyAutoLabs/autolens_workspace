@@ -636,17 +636,17 @@ __Image Reconstruction__
 Using the reconstructed `intensity` values we can map the reconstruction back to the image plane (via 
 the `blurred mapping_matrix`) and produce a reconstruction of the image data.
 """
-mapped_reconstructed_image_2d = (
+mapped_reconstructed_operated_data = (
     al.util.inversion.mapped_reconstructed_data_via_mapping_matrix_from(
         mapping_matrix=blurred_mapping_matrix, reconstruction=reconstruction
     )
 )
 
-mapped_reconstructed_image_2d = al.Array2D(
-    values=mapped_reconstructed_image_2d, mask=mask
+mapped_reconstructed_operated_data = al.Array2D(
+    values=mapped_reconstructed_operated_data, mask=mask
 )
 
-array_2d_plotter = aplt.Array2DPlotter(array=mapped_reconstructed_image_2d)
+array_2d_plotter = aplt.Array2DPlotter(array=mapped_reconstructed_operated_data)
 array_2d_plotter.figure_2d()
 
 
@@ -678,7 +678,7 @@ The chi-squared therefore quantifies if our fit to the data is accurate or not.
 High values of chi-squared indicate that there are many image pixels our model did not produce a good fit to the image 
 for, corresponding to a fit with a lower likelihood.
 """
-model_image = mapped_reconstructed_image_2d
+model_image = mapped_reconstructed_operated_data
 
 residual_map = masked_dataset.data - model_image
 normalized_residual_map = residual_map / masked_dataset.noise_map
@@ -736,7 +736,7 @@ galaxies = al.Galaxies(galaxies=[galaxy])
 fit = al.FitImaging(
     dataset=masked_dataset,
     tracer=tracer,
-    settings_inversion=al.SettingsInversion(use_border_relocator=True),
+    settings=al.Settings(use_border_relocator=True),
 )
 fit_log_evidence = fit.log_evidence
 print(fit_log_evidence)
@@ -751,7 +751,7 @@ print(fit.inversion)
 print(fit.inversion.data_vector)
 print(fit.inversion.curvature_matrix)
 print(fit.inversion.reconstruction)
-print(fit.inversion.mapped_reconstructed_image)
+print(fit.inversion.mapped_reconstructed_operated_data)
 
 """
 The `Inversion` object can be computed from a tracer and a dataset, by passing them to the `TracerToInversion` object.

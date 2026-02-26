@@ -179,26 +179,12 @@ source_lp_result = slam_pipeline.source_lp.run__multi(
 )
 
 """
-__JAX & Preloads__
+__Mesh Shape__
 
-The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
-advance so it knows the shape of arrays it must compile functions for.
+As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before modeling.
 """
-mesh_shape = (20, 20)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 40
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 """
 __SOURCE PIX PIPELINE__
@@ -228,7 +214,6 @@ analysis_list = [
         dataset=result.max_log_likelihood_fit.dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[positions_likelihood],
-        preloads=preloads,
         use_jax=True,
     )
     for result, adapt_images in zip(source_lp_result, adapt_images_list)
@@ -239,7 +224,7 @@ source_pix_result_1 = slam_pipeline.source_pix.run_1__multi(
     analysis_list=analysis_list,
     source_lp_result=source_lp_result,
     mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
-    regularization_init=al.reg.AdaptiveBrightness,
+    regularization_init=al.reg.Adapt,
     dataset_model=af.Model(al.DatasetModel),
 )
 
@@ -262,7 +247,6 @@ analysis_list = [
     al.AnalysisImaging(
         dataset=result.max_log_likelihood_fit.dataset,
         adapt_images=adapt_images,
-        preloads=preloads,
         use_jax=True,
     )
     for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
@@ -274,7 +258,7 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2__multi(
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
     mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
-    regularization=al.reg.AdaptiveBrightness,
+    regularization=al.reg.Adapt,
     dataset_model=af.Model(al.DatasetModel),
 )
 
@@ -287,7 +271,6 @@ analysis_list = [
     al.AnalysisImaging(
         dataset=result.max_log_likelihood_fit.dataset,
         adapt_images=adapt_images,
-        preloads=preloads,
         raise_inversion_positions_likelihood_exception=False,
     )
     for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
@@ -323,7 +306,6 @@ analysis_list = [
     al.AnalysisImaging(
         dataset=result.max_log_likelihood_fit.dataset,
         adapt_images=adapt_images,
-        preloads=preloads,
         positions_likelihood_list=[positions_likelihood],
     )
     for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
@@ -348,7 +330,6 @@ analysis_list = [
     al.AnalysisImaging(
         dataset=result.max_log_likelihood_fit.dataset,
         adapt_images=adapt_images,
-        preloads=preloads,
         positions_likelihood_list=[positions_likelihood],
     )
     for result, adapt_images in zip(source_pix_result_1, adapt_images_list)

@@ -138,6 +138,21 @@ positions = solver.solve(
 )
 
 """
+We now add noise to the multiple image positions to simulate observational measurement errors.
+
+In real observations, the positions of point source multiple images are measured from CCD imaging data. The
+precision of these measurements is limited by factors such as the pixel scale of the CCD, which is the only
+source of noise we simulate here for simplicity.
+"""
+positions_with_noise = positions + np.random.normal(
+    loc=0.0, scale=grid.pixel_scale, size=positions.shape
+)
+
+positions_with_noise = al.Grid2DIrregular(
+    values=positions_with_noise,
+)
+
+"""
 __Point Datasets__
 
 All the quantities computed above are stored in a `PointDataset` object, which organizes information about the multiple 
@@ -157,7 +172,7 @@ and are included in a separate simulation below.
 """
 dataset = al.PointDataset(
     name="point_0",
-    positions=positions,
+    positions=positions_with_noise,
     positions_noise_map=grid.pixel_scale,
 )
 
@@ -227,7 +242,7 @@ as .fits and .png files.
 If you are not familiar with the imaging simulator API, checkout the `imaging/simulator.py` example 
 in the `autolens_workspace`.
 """
-psf = al.Kernel2D.from_gaussian(
+psf = al.Convolver.from_gaussian(
     shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
 )
 
@@ -290,10 +305,21 @@ fluxes = [flux * np.abs(magnification) for magnification in magnifications]
 fluxes = al.ArrayIrregular(values=fluxes)
 
 """
+We now add noise to the fluxes to simulate observational measurement errors.
+"""
+fluxes_with_noise = fluxes + np.random.normal(
+    loc=0.0, scale=np.sqrt(fluxes), size=len(fluxes)
+)
+
+fluxes_with_noise = al.ArrayIrregular(values=fluxes_with_noise)
+
+"""
 The noise values of the fluxes are set to the square root of the flux, which is a common given that Poisson noise
 is expected to dominate the noise of the fluxes.
 """
-fluxes_noise_map = al.ArrayIrregular(values=[np.sqrt(flux) for _ in range(len(fluxes))])
+fluxes_noise_map = al.ArrayIrregular(
+    values=[np.sqrt(flux) for _ in range(len(fluxes_with_noise))]
+)
 
 """
 __Point Dataset__
@@ -306,9 +332,9 @@ of a single point-source.
 """
 dataset = al.PointDataset(
     name="point_0",
-    positions=positions,
+    positions=positions_with_noise,
     positions_noise_map=grid.pixel_scale,
-    fluxes=fluxes,
+    fluxes=fluxes_with_noise,
     fluxes_noise_map=fluxes_noise_map,
 )
 
@@ -352,7 +378,16 @@ This processes estimates with it uncertainties, which are often represented as n
 For simplicity, in this simulation we assume the time delays have a noise value which is a quarter of their
 measurement value, however it is not typical that the noise value is directly proportional to the time delay.
 """
-time_delays_noise_map = al.ArrayIrregular(values=time_delays * 0.25)
+time_delays_noise_map = al.ArrayIrregular(values=np.abs(time_delays) * 0.25)
+
+"""
+We now add noise to the time delays to simulate observational measurement errors.
+"""
+time_delays_with_noise = time_delays + np.random.normal(
+    loc=0.0, scale=time_delays_noise_map, size=len(time_delays)
+)
+
+time_delays_with_noise = al.ArrayIrregular(values=time_delays_with_noise)
 
 """
 __Point Dataset__
@@ -365,9 +400,9 @@ of a single point-source.
 """
 dataset = al.PointDataset(
     name="point_0",
-    positions=positions,
+    positions=positions_with_noise,
     positions_noise_map=grid.pixel_scale,
-    time_delays=time_delays,
+    time_delays=time_delays_with_noise,
     time_delays_noise_map=time_delays_noise_map,
 )
 
@@ -389,11 +424,11 @@ to perform lens modeling of all measurements simultaneously.
 """
 dataset = al.PointDataset(
     name="point_0",
-    positions=positions,
+    positions=positions_with_noise,
     positions_noise_map=grid.pixel_scale,
-    fluxes=fluxes,
+    fluxes=fluxes_with_noise,
     fluxes_noise_map=fluxes_noise_map,
-    time_delays=time_delays,
+    time_delays=time_delays_with_noise,
     time_delays_noise_map=time_delays_noise_map,
 )
 

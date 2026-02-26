@@ -14,6 +14,7 @@ Files
 - ``simulator``: Detailed example of how to simulate strong lens interferometer data.
 - ``data_preparation``: How to prepare interferometer data for lens modeling, including the image, RMS noise map and uv wavelength baselines.
 - ``fit``: How to interferometer data to compute quantities like the residuals, chi squared and likelihood.
+- ``source_science``: Performing source science calculations like the unlensed source's total flux and magnification.
 - ``likelihood_function``: A step-by-step guide of the interferometer data likelihood function.
 - ``casa_reduction``: How to reduce real interferometer data for modeling.
 

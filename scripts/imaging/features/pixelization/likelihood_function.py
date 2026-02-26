@@ -47,28 +47,6 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-__JAX & Preloads__
-
-The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
-advance so it knows the shape of arrays it must compile functions for.
-"""
-mesh_shape = (20, 20)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 0
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
-
-"""
 __Dataset__
 
 In order to perform a likelihood evaluation, we first load a dataset.
@@ -152,6 +130,28 @@ grid_plotter = aplt.Grid2DPlotter(grid=masked_dataset.grids.pixelization)
 grid_plotter.figure_2d()
 
 """
+__Mesh Shape__
+
+The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the source,
+set below to 28 x 28. 
+
+The `mesh_shape` must be fixed before modeling and cannot be a free parameter of the model, because JAX uses the
+mesh shape to define static shaped arrays which use the mesh to reconstruct the source. For a rectangular
+mesh, the same number of pixels must be used in the y and x directions.
+
+__Edge Zeroing__
+
+By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero brightness by 
+the linear algebra solver. This prevents unphysical solutions where pixels at the edge of the mesh reconstruct 
+bright surface brightnesses, often because they fit residuals from the lens light subtraction.
+
+For a rectangular mesh, the source code computes edge pixels internally using the known
+pixels at the edge of the mesh. 
+"""
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
+
+"""
 __Lens Galaxy__
 
 We set up a lens galaxy with the lens light and mass, which we will use to demonstrate a pixelized source
@@ -220,7 +220,7 @@ galaxy_plotter.figures_2d(image=True)
 """
 __Lens Light Convolution + Subtraction__
 
-Convolve the 2D lens light images above with the PSF in real-space (as opposed to via an FFT) using a `Kernel2D`.
+Convolve the 2D lens light images above with the PSF using a `Convolver`.
 """
 convolved_image_2d = masked_dataset.psf.convolved_image_from(
     image=image, blurring_image=blurring_image_2d
@@ -283,7 +283,7 @@ the source-plane.
 We relocate these pixels (for both grids above) to the edge of the source-plane border (defined via the border of the 
 image-plane mask). This is detailed in **HowToLens chapter 4 tutorial 5** and figure 2 of https://arxiv.org/abs/1708.07377.
 """
-from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.mesh.border_relocator import BorderRelocator
 
 border_relocator = BorderRelocator(mask=masked_dataset.mask, sub_size=1)
 
@@ -305,52 +305,58 @@ We do this by overlying a rectangular grid on the relocated traced image-plane g
 This distributes the rectangular mesh so it fully overlaps the region of the source-plane containing the traced 
 image-pixels without having edge pixels that extend beyond this region.
 """
-mesh_grid = al.Mesh2DRectangularUniform.overlay_grid(
+from autoarray.inversion.mesh.mesh.rectangular_adapt_density import overlay_grid_from
+
+mesh_grid = overlay_grid_from(
     shape_native=mesh_shape, grid=al.Grid2DIrregular(relocated_grid)
 )
 
-
 """
-Plotting the RectangularUniform mesh shows that the source-plane and been discretized into a grid of rectangular pixels.
+__Interpolation__
 
-(To plot the RectangularUniform mesh, we have to convert it to a `Mapper` object, which is described in the next 
-likelihood step).
-
-Below, we plot the RectangularUniform mesh without the traced image-grid pixels (for clarity) and with them as black 
-dots in order to show how each set of image-pixels fall within a RectangularUniform pixel.
+We now combine grids computed above to create an `Interpolator`, which describes how image grid pixel maps to
+every rectangular mesh pixel. 
 """
-mapper_grids = al.MapperGrids(
-    mask=mask,
+interpolator = pixelization.mesh.interpolator_from(
     source_plane_data_grid=relocated_grid,
     source_plane_mesh_grid=mesh_grid,
 )
 
-mapper = al.Mapper(
-    mapper_grids=mapper_grids,
-    regularization=None,
-)
+"""
+For the rectangular mesh, the interpolation scheme is called bilinear interpolation, which means that every image 
+pixel maps to the rectangular pixel it lands in and the three neighboring rectangular pixels. 
 
+The weight of each mapping is determined by the bilinear interpolation scheme, which is a function of how close the 
+image pixel is to the centre of the rectangular pixel it lands in and the three neighboring rectangular pixels.
+
+We can print the mappings and weights, for example of the first image pixel, to confirm this.
+"""
+print(interpolator.mappings[0])
+print(interpolator.weights[0])
+
+"""
+__Mapper__
+
+We now use the interpolator to create a `Mapper`, which describes the mapping between every image pixel and every 
+rectangular pixel, based on the interpolation scheme above.
+"""
+mapper = al.Mapper(interpolator=interpolator)
+
+"""
+Plotting the RectangularUniform mesh shows that the source-plane and been discretized into a grid of rectangular pixels.
+
+Below, we plot the RectangularUniform mesh without the traced image-grid pixels (for clarity) and with them as black 
+dots in order to show how each set of image-pixels fall within a RectangularUniform pixel.
+"""
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
-mapper_plotter.figure_2d(interpolate_to_uniform=False)
+mapper_plotter.figure_2d()
 
 visuals = aplt.Visuals2D(
-    grid=mapper_grids.source_plane_data_grid,
+    grid=mapper.source_plane_data_grid,
 )
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, visuals_2d=visuals)
-mapper_plotter.figure_2d(interpolate_to_uniform=False)
+mapper_plotter.figure_2d()
 
-"""
-__Image-Source Mapping__
-
-We now combine grids computed above to create a `Mapper`, which describes how every image-plane pixel maps to
-every source-plane RectangularUniform pixel. 
-
-There are two steps in this calculation, which we show individually below.
-"""
-mapper = al.Mapper(
-    mapper_grids=mapper_grids,
-    regularization=None,
-)
 
 """
 The `Mapper` contains:
@@ -361,10 +367,11 @@ The `Mapper` contains:
 We have therefore discretized the source-plane into a rectangular mesh, and can pair every traced image-pixel 
 coordinate with the corresponding source pixel it lands in.
 
-This pairing is contained in the ndarray `pix_indexes_for_sub_slim_index` which maps every image-pixel index to 
-every source-pixel index.
+These quantities are both in the source-plane, and do not by themselves describe the mapping between the image and 
+source planes. The mapping is described by the `pix_indexes_for_sub_slim_index`, which maps every image-pixel index to 
+every pixelization pixel index.
 
-In the API, the `pix_indexes` refers to the source pixel indexes (e.g. source pixel 0, 1, 2 etc.) and `sub_slim_index` 
+`pix_indexes` refers to the pixelization pixel indexes (e.g. rectangular pixel 0, 1, 2 etc.) and `sub_slim_index`  
 refers to the index of an image pixel (e.g. image-pixel 0, 1, 2 etc.). 
 
 For example, printing the first ten entries of `pix_indexes_for_sub_slim_index` shows the first ten source-pixel
@@ -386,9 +393,7 @@ mapper_plotter = aplt.MapperPlotter(
     mapper=mapper,
     visuals_2d=visuals,
 )
-mapper_plotter.subplot_image_and_mapper(
-    image=lens_subtracted_image, interpolate_to_uniform=False
-)
+mapper_plotter.subplot_image_and_mapper(image=lens_subtracted_image)
 
 """
 The reverse mappings of source-pixels to image-pixels can also be used.
@@ -407,9 +412,7 @@ mapper_plotter = aplt.MapperPlotter(
     visuals_2d=visuals,
 )
 
-mapper_plotter.subplot_image_and_mapper(
-    image=lens_subtracted_image, interpolate_to_uniform=False
-)
+mapper_plotter.subplot_image_and_mapper(image=lens_subtracted_image)
 
 """
 __Interpolation__
@@ -690,7 +693,7 @@ ill-posed. We need to apply some form of smoothing on the source reconstruction 
 """
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
 
-mapper_plotter.figure_2d(solution_vector=reconstruction, interpolate_to_uniform=False)
+mapper_plotter.figure_2d(solution_vector=reconstruction)
 
 """
 __Regularization Matrix (H)__
@@ -727,8 +730,8 @@ is accounted for.
 """
 regularization_matrix = al.util.regularization.constant_regularization_matrix_from(
     coefficient=source_galaxy.pixelization.regularization.coefficient,
-    neighbors=mapper.source_plane_mesh_grid.neighbors,
-    neighbors_sizes=mapper.source_plane_mesh_grid.neighbors.sizes,
+    neighbors=mapper.neighbors,
+    neighbors_sizes=mapper.neighbors.sizes,
 )
 
 """
@@ -769,7 +772,7 @@ which actually looks like a galaxy! This also implies we are not over-fitting th
 """
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
 
-mapper_plotter.figure_2d(solution_vector=reconstruction, interpolate_to_uniform=False)
+mapper_plotter.figure_2d(solution_vector=reconstruction)
 
 """
 __Image Reconstruction__
@@ -777,17 +780,17 @@ __Image Reconstruction__
 Using the reconstructed source pixel fluxes we can map the source reconstruction back to the image plane (via
 the `blurred mapping_matrix`) and produce a reconstruction of the image data.
 """
-mapped_reconstructed_image_2d = (
+mapped_reconstructed_operated_data = (
     al.util.inversion.mapped_reconstructed_data_via_mapping_matrix_from(
         mapping_matrix=blurred_mapping_matrix, reconstruction=reconstruction
     )
 )
 
-mapped_reconstructed_image_2d = al.Array2D(
-    values=mapped_reconstructed_image_2d, mask=mask
+mapped_reconstructed_operated_data = al.Array2D(
+    values=mapped_reconstructed_operated_data, mask=mask
 )
 
-array_2d_plotter = aplt.Array2DPlotter(array=mapped_reconstructed_image_2d)
+array_2d_plotter = aplt.Array2DPlotter(array=mapped_reconstructed_operated_data)
 array_2d_plotter.figure_2d()
 
 """
@@ -810,7 +813,7 @@ __Chi Squared__
 
 The first term is a $\chi^2$ statistic, which is defined above in our merit function as and is computed as follows:
 
- - `model_data` = `mapped_reconstructed_image_2d` + `lens_light_convolved_image`
+ - `model_data` = `mapped_reconstructed_operated_data` + `lens_light_convolved_image`
  - `residual_map` = (`data` - `model_data`)
  - `normalized_residual_map` = (`data` - `model_data`) / `noise_map`
  - `chi_squared_map` = (`normalized_residuals`) ** 2.0 = ((`data` - `model_data`)**2.0)/(`variances`)
@@ -821,7 +824,7 @@ The chi-squared therefore quantifies if our fit to the data is accurate or not.
 High values of chi-squared indicate that there are many image pixels our model did not produce a good fit to the image 
 for, corresponding to a fit with a lower likelihood.
 """
-model_image = convolved_image_2d + mapped_reconstructed_image_2d
+model_image = convolved_image_2d + mapped_reconstructed_operated_data
 
 residual_map = masked_dataset.data - model_image
 normalized_residual_map = residual_map / masked_dataset.noise_map
@@ -935,7 +938,7 @@ This process to perform a likelihood function evaluation is what is performed in
 fit = al.FitImaging(
     dataset=masked_dataset,
     tracer=tracer,
-    settings_inversion=al.SettingsInversion(use_border_relocator=True),
+    settings=al.Settings(use_border_relocator=True),
 )
 fit_log_evidence = fit.log_evidence
 print(fit_log_evidence)

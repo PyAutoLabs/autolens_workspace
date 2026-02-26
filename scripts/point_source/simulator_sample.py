@@ -39,6 +39,7 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
+import numpy as np
 from pathlib import Path
 import autofit as af
 import autolens as al
@@ -108,7 +109,7 @@ bulge.intensity = 1.0
 bulge.effective_radius = 0.02
 bulge.signal_to_noise_ratio = 10.0
 
-source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, point=point)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, point_0=point)
 
 """
 __Simulate__
@@ -120,7 +121,7 @@ grid = al.Grid2D.uniform(
     pixel_scales=0.1,
 )
 
-psf = al.Kernel2D.from_gaussian(
+psf = al.Convolver.from_gaussian(
     shape_native=(11, 11), sigma=0.2, pixel_scales=grid.pixel_scales
 )
 
@@ -161,21 +162,36 @@ for sample_index in range(total_datasets):
     """
     __Positions__
 
-    We now pass the `Tracer` to the solver to find the multiple image positions.
-
+    We now pass the `Tracer` to the solver to find the multiple image positions and add noise to simulate observed
+    data.
     """
     positions = solver.solve(
-        tracer=tracer, source_plane_coordinate=source_galaxy.point.centre
+        tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
     )
     positions_noise_map = grid.pixel_scale
+
+    positions_with_noise = positions + np.random.normal(
+        loc=0.0, scale=grid.pixel_scale, size=positions.shape
+    )
+
+    positions_with_noise = al.Grid2DIrregular(
+        values=positions_with_noise,
+    )
 
     """
     __Time Delays__
 
-    We next compute the time delays of the multiple images, which are used to constrain the Hubble constant.
+    We next compute the time delays of the multiple images, with noise added to the data, which are used to 
+    constrain the Hubble constant.
     """
     time_delays = tracer.time_delays_from(grid=positions)
-    time_delays_noise_map = al.ArrayIrregular(values=time_delays * 0.25)
+    time_delays_noise_map = al.ArrayIrregular(values=np.abs(time_delays) * 0.25)
+
+    time_delays_with_noise = time_delays + np.random.normal(
+        loc=0.0, scale=time_delays_noise_map, size=len(time_delays)
+    )
+
+    time_delays_with_noise = al.ArrayIrregular(values=time_delays_with_noise)
 
     """
     __Point Dataset__
@@ -187,9 +203,9 @@ for sample_index in range(total_datasets):
     """
     dataset = al.PointDataset(
         name="point_0",
-        positions=positions,
+        positions=positions_with_noise,
         positions_noise_map=grid.pixel_scale,
-        time_delays=time_delays,
+        time_delays=time_delays_with_noise,
         time_delays_noise_map=time_delays_noise_map,
     )
 

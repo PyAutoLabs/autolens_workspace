@@ -85,6 +85,7 @@ following types of examples:
 - ``simulators``: Simulating examples of that strong lens dataset type.
 - ``fit``: How to fit the dataset to compute quantities like the residuals, chi squared and likelihood.
 - ``data_preparation``: Preparing real datasets of that type for **PyAutoLens** analysis.
+- ``source_science``: Performing source science calculations like computing the unlensed source's total flux and magnification.
 - ``features``: Features for detailed modeling and analysis of strong lenses (e.g. Multi Gaussian Expansion, Pixelizations).
 - ``likelihood_function``: A step-by-step guide of the likelihood function used to fit the dataset.
 
@@ -96,21 +97,20 @@ The ``guides`` package contains a number of important subpackages, which include
 
 The files ``README.rst`` distributed throughout the workspace describe what is in each folder.
 
+Community & Support
+-------------------
+
+Support for **PyAutoLens** is available via our Slack workspace, where the community shares updates, discusses
+gravitational lensing analysis, and helps troubleshoot problems.
+
+Slack is invitation-only. If you’d like to join, please send an email requesting an invite.
+
+For installation issues, bug reports, or feature requests, please raise an issue on the [GitHub issues page](https://github.com/Jammy2211/PyAutoLens/issues).
+
 Contribution
 ------------
 To make changes in the tutorial notebooks, please make changes in the corresponding python files(.py) present in the
 ``scripts`` folder of each chapter. Please note that  marker ``# %%`` alternates between code cells and markdown cells.
-
-Support
--------
-
-Support for installation issues, help with lens modeling and using **PyAutoLens** is available by
-`raising an issue on the autolens_workspace GitHub page <https://github.com/Jammy2211/autolens_workspace/issues>`_. or
-joining the **PyAutoLens** `Slack channel <https://pyautolens.slack.com/>`_, where we also provide the latest updates on
-**PyAutoLens**.
-
-Slack is invitation-only, so if you'd like to join send an `email <https://github.com/Jammy2211>`_ requesting an
-invite.
 
 Galaxy-Scale vs Group Scale Lenses
 ----------------------------------

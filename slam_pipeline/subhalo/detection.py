@@ -197,12 +197,15 @@ def run_2_grid_search(
         info=settings_search.info,
     )
 
-    subhalo_util.visualize_subhalo_detect(
-        result_no_subhalo=subhalo_result_1,
-        result=result,
-        analysis=analysis,
-        paths=subhalo_grid_search.paths,
-    )
+    try:
+        subhalo_util.visualize_subhalo_detect(
+            result_no_subhalo=subhalo_result_1,
+            result=result,
+            analysis=analysis,
+            paths=subhalo_grid_search.paths,
+        )
+    except AttributeError:
+        pass
 
     return result
 

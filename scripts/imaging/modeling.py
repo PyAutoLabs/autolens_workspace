@@ -512,12 +512,24 @@ plotter = aplt.NestPlotter(samples=result.samples)
 plotter.corner_anesthetic()
 
 """
+__Source Science (Magnification, Flux and More)__
+
+Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
+
+Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic 
+size of the source.
+
+The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+including examples using a pixelized source reconstruction. 
+
+If you want to study the source galaxy after modeling has reconstructed its unlensed, then check out this example.
+
+__Features__
+
 This script gives a concise overview of the basic modeling API, fitting one the simplest lens models possible.
 
 Lets now consider what features you should read about to improve your lens modeling, especially if you are aiming
 to fit more complex models to your data.
-
-__Features__
 
 The examples in the `autolens_workspace/*/imaging/features` package illustrate other lens modeling features. 
 

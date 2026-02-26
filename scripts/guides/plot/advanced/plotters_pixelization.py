@@ -74,7 +74,7 @@ lens_galaxy = al.Galaxy(
 )
 
 pixelization = al.Pixelization(
-    mesh=al.mesh.RectangularAdaptDensity(),
+    mesh=al.mesh.RectangularAdaptDensity(shape=(24, 24)),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -121,9 +121,7 @@ by interpolating the reconstructed source-plane image onto a uniform grid of pix
 By default, the irregular grid is plotted, but the interpolated image can be plotted by changing the
 `interpolate_to_uniform` input to `True`.
 """
-fit_plotter.figures_2d_of_planes(
-    plane_index=1, plane_image=True, interpolate_to_uniform=True
-)
+fit_plotter.figures_2d_of_planes(plane_index=1, plane_image=True)
 
 """
 The mappings subplot shows the mappings between the image and source plane, by drawing circles around the brightest
@@ -135,9 +133,10 @@ fit_plotter.subplot_mappings_of_plane(plane_index=1)
 The image and source plane mesh grids, showing the centre of every source pixel in the image-plane and source-plane, 
 can be computed and plotted.
 """
-mapper = fit.inversion.cls_list_from(cls=al.AbstractMapper)[0]
+mapper = fit.inversion.cls_list_from(cls=al.Mapper)[0]
 
-image_plane_mesh_grid = mapper.image_plane_mesh_grid
+image_plane_mesh_grid = mapper.mask.derive_grid.unmasked
+
 visuals_2d = aplt.Visuals2D(mesh_grid=image_plane_mesh_grid)
 fit_plotter = aplt.FitImagingPlotter(fit=fit, visuals_2d=visuals_2d)
 fit_plotter.figures_2d_of_planes(plane_index=0, plane_image=True)
@@ -152,7 +151,7 @@ We can extract an `InversionPlotter` (described below) from the `FitImagingPlott
 methods, which will now include the critical curves, caustics and border.
 """
 inversion_plotter = fit_plotter.inversion_plotter_of_plane(plane_index=1)
-inversion_plotter.figures_2d(reconstructed_image=True)
+inversion_plotter.figures_2d(reconstructed_operated_data=True)
 inversion_plotter.figures_2d_of_pixelization(
     pixelization_index=0, reconstruction=True, regularization_weights=True
 )
@@ -169,7 +168,7 @@ and properties in a similar way to the `FitImagingPlotter`.
 inversion = fit.inversion
 
 inversion_plotter = aplt.InversionPlotter(inversion=inversion)
-inversion_plotter.figures_2d(reconstructed_image=True)
+inversion_plotter.figures_2d(reconstructed_operated_data=True)
 
 """
 An inversion can also be computed directly from a `Tracer` object, using the `TracerToInversion` class.
@@ -185,7 +184,7 @@ tracer_to_inversion = al.TracerToInversion(
 inversion = tracer_to_inversion.inversion
 
 inversion_plotter = aplt.InversionPlotter(inversion=inversion)
-inversion_plotter.figures_2d(reconstructed_image=True)
+inversion_plotter.figures_2d(reconstructed_operated_data=True)
 
 """
 An `Inversion` can have multiple mappers, which reconstruct multiple source galaxies at different redshifts and
@@ -195,7 +194,7 @@ To plot an individual source we must therefore specify the mapper index of the s
 """
 inversion_plotter.figures_2d_of_pixelization(
     pixelization_index=0,
-    reconstructed_image=True,
+    reconstructed_operated_data=True,
     reconstruction=True,
     reconstruction_noise_map=True,
     regularization_weights=True,
@@ -217,12 +216,12 @@ inversion_plotter.subplot_mappings(pixelization_index=0)
 The image and source plane mesh grids, showing the centre of every source pixel in the image-plane and source-plane, 
 can be computed and plotted.
 """
-mapper = inversion.cls_list_from(cls=al.AbstractMapper)[0]
+mapper = inversion.cls_list_from(cls=al.Mapper)[0]
 
-image_plane_mesh_grid = mapper.image_plane_mesh_grid
+image_plane_mesh_grid = mapper.mask.derive_grid.unmasked
 visuals_2d = aplt.Visuals2D(mesh_grid=image_plane_mesh_grid)
 inversion_plotter = aplt.InversionPlotter(inversion=inversion, visuals_2d=visuals_2d)
-inversion_plotter.figures_2d(reconstructed_image=True)
+inversion_plotter.figures_2d(reconstructed_operated_data=True)
 
 source_plane_mesh_grid = tracer.traced_grid_2d_list_from(grid=image_plane_mesh_grid)[-1]
 visuals_2d = aplt.Visuals2D(mesh_grid=source_plane_mesh_grid)
@@ -292,7 +291,7 @@ mapper_plotter.subplot_image_and_mapper(image=dataset.data)
 The image and source plane mesh grids, showing the centre of every source pixel in the image-plane and source-plane, 
 can be computed and plotted.
 """
-image_plane_mesh_grid = mapper.image_plane_mesh_grid
+image_plane_mesh_grid = mapper.mask.derive_grid.unmasked
 source_plane_mesh_grid = tracer.traced_grid_2d_list_from(grid=image_plane_mesh_grid)[-1]
 
 visuals_2d = aplt.Visuals2D(
@@ -335,7 +334,7 @@ lens_galaxy = al.Galaxy(
 )
 
 pixelization = al.Pixelization(
-    mesh=al.mesh.RectangularAdaptDensity(),
+    mesh=al.mesh.RectangularAdaptDensity(shape=(24, 24)),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -380,9 +379,9 @@ fit_plotter.subplot_mappings_of_plane(plane_index=1)
 The image and source plane mesh grids, showing the centre of every source pixel in the image-plane and source-plane, 
 can be computed and plotted.
 """
-mapper = fit.inversion.cls_list_from(cls=al.AbstractMapper)[0]
+mapper = fit.inversion.cls_list_from(cls=al.Mapper)[0]
 
-image_plane_mesh_grid = mapper.image_plane_mesh_grid
+image_plane_mesh_grid = mapper.mask.derive_grid.unmasked
 visuals_2d = aplt.Visuals2D(mesh_grid=image_plane_mesh_grid)
 fit_plotter = aplt.FitInterferometerPlotter(fit=fit, visuals_2d=visuals_2d)
 fit_plotter.figures_2d_of_planes(plane_index=0, plane_image=True)
@@ -398,41 +397,10 @@ We can even extract an `InversionPlotter` from the `FitInterferometerPlotter` an
 methods,which will now include the critical curves, caustics and border.
 """
 inversion_plotter = fit_plotter.inversion_plotter_of_plane(plane_index=1)
-inversion_plotter.figures_2d(reconstructed_image=True)
+inversion_plotter.figures_2d(reconstructed_operated_data=True)
 inversion_plotter.figures_2d_of_pixelization(
     pixelization_index=0, reconstruction=True, regularization_weights=True
 )
-
-"""
-__RectangularDrawer / VoronoiDrawer__
-
-We can customize the filling of Voronoi cells using the `VoronoiDrawer` object which wraps the 
-method `matplotlib.fill()`:
-
-https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.fill.html
-"""
-Rectangular_drawer = aplt.RectangularDrawer(
-    edgecolor="b", linewidth=1.0, linestyle="--"
-)
-# voronoi_drawer = aplt.VoronoiDrawer(edgecolor="b", linewidth=1.0, linestyle="--")
-
-mat_plot = aplt.MatPlot2D(Rectangular_drawer=Rectangular_drawer)
-
-"""
-We now pass the inversion to a `InversionPlotter` which we will use to illustrate customization with 
-the `VoronoiDrawer` object.
-"""
-inversion_plotter = aplt.InversionPlotter(inversion=inversion, mat_plot_2d=mat_plot)
-
-try:
-    inversion_plotter.figures_2d_of_pixelization(
-        pixelization_index=0, reconstruction=True
-    )
-    inversion_plotter.subplot_of_mapper(mapper_index=0)
-except ImportError:
-    print(
-        "You have not installed the Voronoi natural neighbor interpolation package, see instructions at top of notebook."
-    )
 
 """
 Finish.

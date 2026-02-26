@@ -112,24 +112,24 @@ dataset = al.Interferometer.from_fits(
 )
 
 """
-__W_Tilde__
+__Sparse Operators__
 
-The `pixelization/modeling` example describes how the w-tilde formalism speeds up interferometer
+The `pixelization/modeling` example describes how the sparse operator formalism speeds up interferometer
 pixelized source modeling, especially for many visibilities.
 
 We use a try / except to load the pre-computed curvature preload, which is necessary to use
-the w-tilde formalism. If this file does not exist (e.g. you have not made it manually via
+the sparse operator formalism. If this file does not exist (e.g. you have not made it manually via
 the `many_visibilities_preparartion` example it is made here.
 """
 try:
-    curvature_preload = np.load(
-        file=dataset_path / "curvature_preload.npy",
+    nufft_precision_operator = np.load(
+        file=dataset_path / "nufft_precision_operator.npy",
     )
 except FileNotFoundError:
-    curvature_preload = None
+    nufft_precision_operator = None
 
-dataset = dataset.apply_w_tilde(
-    curvature_preload=curvature_preload, use_jax=True, show_progress=True
+dataset = dataset.apply_sparse_operator(
+    nufft_precision_operator=nufft_precision_operator, use_jax=True, show_progress=True
 )
 
 """
@@ -150,7 +150,7 @@ __Settings__
 Disable the default position only linear algebra solver so the source reconstruction can have 
 negative pixel values.
 """
-settings_inversion = al.SettingsInversion(use_positive_only_solver=False)
+settings = al.Settings(use_positive_only_solver=False)
 
 """
 __Settings AutoFit__
@@ -185,29 +185,13 @@ The redshifts of the lens and source galaxies.
 redshift_lens = 0.5
 redshift_source = 1.0
 
-
 """
-__JAX & Preloads__
+__Mesh Shape__
 
-The `features/pixelization/modeling` example describes how JAX required preloads in advance so it knows the 
-shape of arrays it must compile functions for.
+As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before modeling.
 """
-mesh_shape = (30, 30)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 0
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
-
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 """
 __SOURCE PIX PIPELINE__
@@ -217,8 +201,7 @@ The SOURCE PIX PIPELINE is identical to the `slam_start_here.ipynb` example.
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     positions_likelihood_list=[positions_likelihood],
-    preloads=preloads,
-    settings_inversion=settings_inversion,
+    settings=settings,
 )
 
 source_pix_result_1 = slam_pipeline.source_pix.run_1__bypass_lp(
@@ -251,8 +234,7 @@ adapt_images = al.AdaptImages(
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
-    settings_inversion=settings_inversion,
+    settings=settings,
 )
 
 source_pix_result_2 = slam_pipeline.source_pix.run_2(
@@ -261,7 +243,7 @@ source_pix_result_2 = slam_pipeline.source_pix.run_2(
     source_lp_result=source_pix_result_1,
     source_pix_result_1=source_pix_result_1,
     mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
-    regularization=al.reg.AdaptiveBrightness,
+    regularization=al.reg.Adapt,
 )
 
 """
@@ -273,11 +255,10 @@ now passed in as None to omit the lens light from the model.
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     adapt_images=adapt_images,
-    preloads=preloads,
     positions_likelihood_list=[
         source_pix_result_1.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
-    settings_inversion=settings_inversion,
+    settings=settings,
 )
 
 mass_result = slam_pipeline.mass_total.run(

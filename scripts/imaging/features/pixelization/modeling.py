@@ -18,42 +18,21 @@ is applied to a single dataset.
 
 Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
 
-__Run Time Overview__
+__GPU Run Times__
 
-Pixelized source reconstructions are computed using either GPU acceleration via JAX or CPU acceleration via `numba`.
+On consumer laptop GPUs, the run times of pixelization modeling can be a bit prohibitive, for example this example
+takes around 30 minutes to run on a laptop GPU. However, HPC GPUs or very modern laptop GPUs with more
+VRAM can run this example in under 10 minutes. Therefore don't be put off if this example feels slow as
+speed up is possible with better hardware.
 
-The faster option depends on two crucial factors:
+__CPU Users__
 
-#### **1. GPU VRAM Limitations**
-JAX only provides significant acceleration on GPUs with **large VRAM (≥16 GB)**.
-To avoid excessive VRAM usage, examples often restrict pixelization meshes (e.g. 20 × 20).
-On consumer GPUs with limited memory, **JAX may be slower than CPU execution**.
+On CPU, JAX pixelization calculations are not accelerated and are therefore relatively slow. CPU users
+should therefore read the `pixelization/cpu_fast_modeling` example after this one, and copy its set up,
+to get the fastest run times for pixelization modeling on CPU.
 
-#### **2. Sparse Matrix Performance**
-
-Pixelized inversions require operations on **very large, highly sparse matrices**.
-
-- JAX currently lacks sparse-matrix support and must compute using **dense matrices**, which scale poorly.
-- PyAutoLens’s CPU implementation (via `numba`) fully exploits sparsity, providing large speed gains
-  at **high image resolution** (e.g. `pixel_scales <= 0.03`).
-
-As a result, CPU execution can outperform JAX even on powerful GPUs for high-resolution datasets.
-
-The example `pixelization/cpu_fast_modeling` shows how to set up a pixelization to use efficient CPU calculations
-via the library `numba`.
-
-__Rule of Thumb__
-
-For **low-resolution imaging** (for example, datasets with `pixel_scales > 0.05`), modeling is generally faster using
-**JAX with a GPU**, because the computations involve fewer sparse operations and do not require large amounts of VRAM.
-
-For **high-resolution imaging** (for example, `pixel_scales <= 0.03`), modeling can be faster using a **CPU with numba**
-and multiple cores. At high resolution, the linear algebra is dominated by sparse matrix operations, and the CPU
-implementation exploits sparsity more effectively, especially on systems with many CPU cores (e.g. HPC clusters).
-
-**Recommendation:** The best choice depends on your hardware and dataset. If your data has resolution of 0.1" per pixel
- (e.g. Euclid imaging) or lower, JAX will be the most efficient. For higher resolution imaging (e.g. HST, JWST) it is
- worth benchmarking both approaches (GPU+JAX vs CPU+numba) to determine which performs fastest for your case.
+On GPU, JAX run times are fast and this example is all that is required, however we do set a few settings
+to make things run extra fast on GPU.
 
 __Contents__
 
@@ -208,36 +187,26 @@ dataset_plotter = aplt.ImagingPlotter(dataset=dataset)
 dataset_plotter.subplot_dataset()
 
 """
-__JAX & Preloads__
+__Mesh Shape__
 
-In JAX, calculations must use static shaped arrays with known and fixed indexes. For certain calculations in the
-pixelization, this information has to be passed in before the pixelization is performed. Below, we do this for 3
-inputs:
+The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the source,
+set below to 28 x 28. 
 
-- `total_linear_light_profiles`: The number of linear light profiles in the model. This is 0 because we are not
-  fitting any linear light profiles to the data, primarily because the lens light is omitted.
+The `mesh_shape` must be fixed before modeling and cannot be a free parameter of the model, because JAX uses the
+mesh shape to define static shaped arrays which use the mesh to reconstruct the source. For a rectangular
+mesh, the same number of pixels must be used in the y and x directions.
 
-- `total_mapper_pixels`: The number of source pixels in the rectangular pixelization mesh. This is required to set up 
-  the arrays that perform the linear algebra of the pixelization.
+__Edge Zeroing__
 
-- `source_pixel_zeroed_indices`: The indices of source pixels on its edge, which when the source is reconstructed 
-  are forced to values of zero, a technique tests have shown are required to give accruate lens models.
+By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero brightness by 
+the linear algebra solver. This prevents unphysical solutions where pixels at the edge of the mesh reconstruct 
+bright surface brightnesses, often because they fit residuals from the lens light subtraction.
+
+For a rectangular mesh, the source code computes edge pixels internally using the known
+pixels at the edge of the mesh. 
 """
-mesh_shape = (20, 20)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 0
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 """
 __Model__
@@ -297,7 +266,7 @@ search = af.Nautilus(
     name="pixelization",
     unique_tag=dataset_name,
     n_live=100,
-    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
+    n_batch=10,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=50000,
 )
 
@@ -356,11 +325,19 @@ Create the `AnalysisImaging` object defining how the via Nautilus the model is f
 The `positions_likelihood_list` is passed to the analysis, which applies the likelihood penalty described above
 for everyone lens mass model.
 
-The `preloads` are passed to the analysis, which contain the static array information JAX needs to perform
-the pixelization calculations.
+Pixelized source reconstructions have settings which determine their behavour and run time. Below, we input
+a setting which performs a subset of calculations using mixed precision, which can speed up run times on consumer
+laptop GPUs significantly. 
+
+If you are using a high end GPU which can handle the full precision calculations, you can set this to `False` 
+for more accurate results without slow down. For modeling which is close to science grade, I recommend setting 
+this to `False`, to ensure full accuracy, but for quick model-fits to test out the API and understand 
+how pixelizations work, setting this to `True` is a good option.
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, positions_likelihood_list=[positions_likelihood], preloads=preloads
+    dataset=dataset,
+    positions_likelihood_list=[positions_likelihood],
+    settings=al.Settings(use_mixed_precision=True),
 )
 
 """
@@ -369,8 +346,8 @@ __VRAM__
 The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
 required by a model.
 
-pixelizations use a lot more VRAM than light profile-only models, with the amount required depending on the size of
-dataset and the number of source pixels in the pixelization's mesh. For 400 source pixels, around 0.05 GB per batched
+Pixelizations use a lot more VRAM than light profile-only models, with the amount required depending on the size of
+dataset and the number of source pixels in the pixelization's mesh. For 784 source pixels, around 0.05 GB per batched
 likelihood of VRAM is used. 
 
 This is why the `batch_size` above is 20, lower than other examples, because reducing the batch size ensures a more 
@@ -434,6 +411,18 @@ plotter.corner_anesthetic()
 The example `pixelization/fit` provides a full description of the different calculations that can be performed
 with the result of a pixelization model-fit.
 
+__Source Science (Magnification, Flux and More)__
+
+Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
+
+Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic 
+size of the source.
+
+The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+including examples using a pixelized source reconstruction. 
+
+If you want to study the source galaxy after modeling has reconstructed its unlensed, then check out this example.
+
 __Mask Extra Galaxies__
 
 There may be extra galaxies nearby the lens and source galaxies, whose emission blends with the lens and source.
@@ -485,16 +474,6 @@ dataset_plotter.subplot_dataset()
 We do not explictly fit this data, for the sake of brevity, however if your data has these nearby galaxies you should
 apply the mask as above before fitting the data.
 
-__Result Use__
-
-There are many things you can do with the result of a pixelixaiton, including analysing the reconstructed source, 
-magnification calculations of the source and much more.
-
-These are documented in the `fit.py` example.
-"""
-inversion = result.max_log_likelihood_fit.inversion
-
-"""
 __Wrap Up__
 
 Pixelizations are the most complex but also the most powerful way to model a galaxy’s light.

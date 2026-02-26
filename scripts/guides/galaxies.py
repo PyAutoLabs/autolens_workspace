@@ -304,53 +304,15 @@ galaxy_plotter = aplt.GalaxyPlotter(galaxy=source_0, grid=source_plane_grid)
 galaxy_plotter.figures_2d(image=True)
 
 """
-___Source Magnification__
+__Source Magnification & Flux__
 
-The overall magnification of the source is estimated as the ratio of total surface brightness in the image-plane and 
-total surface brightness in the source-plane.
+Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
 
-To ensure the magnification is stable and that we resolve all source emission in both the image-plane and source-plane 
-we use a very high resolution grid (in contrast to calculations above which used the lower resolution masked imaging 
-grids).
+Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic 
+size of the source.
 
-(If an inversion is used to model the source a slightly different calculation is performed which is discussed in
-result tutorial 6.)
-"""
-grid = al.Grid2D.uniform(shape_native=(1000, 1000), pixel_scales=0.03)
+The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities.
 
-traced_grid_list = tracer.traced_grid_2d_list_from(grid=grid)
-
-image_plane_grid = traced_grid_list[0]
-source_plane_grid = traced_grid_list[1]
-
-"""
-We now compute the image of each plane using the above two grids, where the ray-traced `source_plane_grid`
-creates the image of the lensed source and `image_plane_grid` creates the source-plane image of the source.
-
-(By using `tracer.planes[1].image_2d_from`, as opposed to `tracer.image_2d_from`, we ensure that only source-plane
-emission is included and that lens light emission is not).
-"""
-lensed_source_image_2d = tracer.planes[1].image_2d_from(grid=source_plane_grid)
-source_plane_image_2d = tracer.planes[1].image_2d_from(grid=image_plane_grid)
-
-"""
-The `source_plane_grid` and `image_plane_grid` grids below were created above by ray-tracing the
-first one to create the other. 
-
-They therefore evaluate the lensed source and source-plane emission on grids with the same total area.
-
-When computing magnifications, care must always be taken to ensure the areas in the image-plane and source-plane
-are properly accounted for.
-"""
-print(lensed_source_image_2d.total_area)
-print(source_plane_image_2d.total_area)
-
-"""
-Because their areas are the same, we can estimate the magnification by simply taking the ratio of total flux.
-"""
-source_magnification_2d = np.sum(lensed_source_image_2d) / np.sum(source_plane_image_2d)
-
-"""
 __One Dimension Projection__
 
 We often want to calculative 1D quantities of a light profile, for example to plot how its light changes as

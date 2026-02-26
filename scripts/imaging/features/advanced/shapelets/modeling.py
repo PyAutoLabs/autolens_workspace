@@ -158,7 +158,7 @@ physically motivated light profiles, but instead a mathematical basis that can r
 This means shapelets may include negative flux in the reconstructed source galaxy, which is unphysical, and
 a disadvantage of using shapelets.
 
-The `SettingsInversion` object below uses a `use_positive_only_solver=False` to allow for negative intensities.
+The `Settings` object below uses a `use_positive_only_solver=False` to allow for negative intensities.
 
 __Model__
 
@@ -317,7 +317,7 @@ Create the `AnalysisImaging` object defining how the via Nautilus the model is f
 analysis = al.AnalysisImaging(
     dataset=dataset,
     positions_likelihood_list=[positions_likelihood],
-    settings_inversion=al.SettingsInversion(use_positive_only_solver=False),
+    settings=al.Settings(use_positive_only_solver=False),
 )
 
 """
@@ -457,7 +457,7 @@ tracer = al.Tracer(galaxies=[lens, source])
 fit = al.FitImaging(
     dataset=dataset,
     tracer=tracer,
-    settings_inversion=al.SettingsInversion(use_positive_only_solver=False),
+    settings=al.Settings(use_positive_only_solver=False),
 )
 
 fit_plotter = aplt.FitImagingPlotter(fit=fit)

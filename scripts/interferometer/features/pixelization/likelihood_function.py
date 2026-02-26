@@ -53,26 +53,26 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-__JAX & Preloads__
+__Mesh Shape__
 
-The `autolens_workspace/*/imaging/features/pixelization/modeling` example describes how JAX required preloads in
-advance so it knows the shape of arrays it must compile functions for.
+The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the source,
+set below to 28 x 28. 
+
+The `mesh_shape` must be fixed before modeling and cannot be a free parameter of the model, because JAX uses the
+mesh shape to define static shaped arrays which use the mesh to reconstruct the source. For a rectangular
+mesh, the same number of pixels must be used in the y and x directions.
+
+__Edge Zeroing__
+
+By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero brightness by 
+the linear algebra solver. This prevents unphysical solutions where pixels at the edge of the mesh reconstruct 
+bright surface brightnesses, often because they fit residuals from the lens light subtraction.
+
+For a rectangular mesh, the source code computes edge pixels internally using the known
+pixels at the edge of the mesh. 
 """
-mesh_shape = (20, 20)
-total_mapper_pixels = mesh_shape[0] * mesh_shape[1]
-
-total_linear_light_profiles = 0
-
-preloads = al.Preloads(
-    mapper_indices=al.mapper_indices_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        total_mapper_pixels=total_mapper_pixels,
-    ),
-    source_pixel_zeroed_indices=al.util.mesh.rectangular_edge_pixel_list_from(
-        total_linear_light_profiles=total_linear_light_profiles,
-        shape_native=mesh_shape,
-    ),
-)
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 """
 __Mask__
@@ -174,7 +174,7 @@ The galaxy includes the rectangular mesh and constant regularization scheme, whi
 to reconstruct its star forming clumps.
 """
 pixelization = al.Pixelization(
-    mesh=al.mesh.RectangularUniform(),
+    mesh=al.mesh.RectangularUniform(mesh_shape),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -231,7 +231,7 @@ the source-plane.
 We relocate these pixels (for both grids above) to the edge of the source-plane border (defined via the border of the 
 image-plane mask). This is detailed in **HowToLens chapter 4 tutorial 5** and figure 2 of https://arxiv.org/abs/1708.07377.
 """
-from autoarray.inversion.pixelization.border_relocator import BorderRelocator
+from autoarray.inversion.mesh.border_relocator import BorderRelocator
 
 border_relocator = BorderRelocator(mask=dataset.mask, sub_size=1)
 
@@ -253,10 +253,42 @@ We do this by overlying a rectangular grid on the relocated traced image-plane g
 This distributes the rectangular mesh so it fully overlaps the region of the source-plane containing the traced 
 image-pixels without having edge pixels that extend beyond this region.
 """
-mesh_grid = al.Mesh2DRectangularUniform.overlay_grid(
+from autoarray.inversion.mesh.mesh.rectangular_adapt_density import overlay_grid_from
+
+mesh_grid = overlay_grid_from(
     shape_native=mesh_shape, grid=al.Grid2DIrregular(relocated_grid)
 )
 
+"""
+__Interpolation__
+
+We now combine grids computed above to create an `Interpolator`, which describes how image grid pixel maps to
+every rectangular mesh pixel. 
+"""
+interpolator = pixelization.mesh.interpolator_from(
+    source_plane_data_grid=relocated_grid,
+    source_plane_mesh_grid=mesh_grid,
+)
+
+"""
+__Mapper__
+
+We now use the interpolator to create a `Mapper`, which describes the mapping between every image pixel and every 
+rectangular pixel, based on the interpolation scheme above.
+"""
+mapper = al.Mapper(interpolator=interpolator)
+
+"""
+For the rectangular mesh, the interpolation scheme is called bilinear interpolation, which means that every image 
+pixel maps to the rectangular pixel it lands in and the three neighboring rectangular pixels. 
+
+The weight of each mapping is determined by the bilinear interpolation scheme, which is a function of how close the 
+image pixel is to the centre of the rectangular pixel it lands in and the three neighboring rectangular pixels.
+
+We can print the mappings and weights, for example of the first image pixel, to confirm this.
+"""
+print(interpolator.mappings[0])
+print(interpolator.weights[0])
 
 """
 Plotting the rectangular mesh shows that the source-plane and been discretized into a uniform grid of source pixels.
@@ -267,51 +299,14 @@ likelihood step).
 Below, we plot the rectangular mesh without the traced image-grid pixels (for clarity) and with them as 
 black dots in order to show how each set of image-pixels fall within a source pixel.
 """
-mapper_grids = al.MapperGrids(
-    mask=real_space_mask,
-    source_plane_data_grid=relocated_grid,
-    source_plane_mesh_grid=mesh_grid,
-)
-
-mapper = al.Mapper(
-    mapper_grids=mapper_grids,
-    regularization=None,
-)
-
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
-mapper_plotter.figure_2d(interpolate_to_uniform=False)
+mapper_plotter.figure_2d()
 
 visuals = aplt.Visuals2D(
-    grid=mapper_grids.source_plane_data_grid,
+    grid=mapper.source_plane_data_grid,
 )
 mapper_plotter = aplt.MapperPlotter(mapper=mapper, visuals_2d=visuals)
-mapper_plotter.figure_2d(interpolate_to_uniform=False)
-
-"""
-__Image-Source Mapping__
-
-We now combine grids computed above to create a `Mapper`, which describes how every image-plane pixel maps to
-every source-plane rectangular pixel. 
-
-There are two steps in this calculation, which we show individually below.
-"""
-mapper = al.Mapper(
-    mapper_grids=mapper_grids,
-    regularization=None,
-)
-
-"""
-__Image-Source Mapping__
-
-We now combine grids computed above to create a `Mapper`, which describes how every image-plane pixel maps to
-every source-plane pixel. 
-
-There are two steps in this calculation, which we show individually below.
-"""
-mapper = al.Mapper(
-    mapper_grids=mapper_grids,
-    regularization=None,
-)
+mapper_plotter.figure_2d()
 
 """
 The `Mapper` contains:
@@ -347,9 +342,7 @@ mapper_plotter = aplt.MapperPlotter(
     mapper=mapper,
     visuals_2d=visuals,
 )
-mapper_plotter.subplot_image_and_mapper(
-    image=dataset.dirty_image, interpolate_to_uniform=False
-)
+mapper_plotter.subplot_image_and_mapper(image=dataset.dirty_image)
 
 """
 The reverse mappings of source-pixels to image-pixels can also be used.
@@ -368,9 +361,7 @@ mapper_plotter = aplt.MapperPlotter(
     visuals_2d=visuals,
 )
 
-mapper_plotter.subplot_image_and_mapper(
-    image=dataset.dirty_image, interpolate_to_uniform=False
-)
+mapper_plotter.subplot_image_and_mapper(image=dataset.dirty_image)
 
 """
 __Interpolation__
@@ -479,8 +470,7 @@ This operation changes the dimensions of the mapping matrix, meaning the `transf
 dimensions `(total_image_pixels, total_visibilities)`. 
 
 If the number of visibilities is large (e.g. 10^6) this matrix becomes extremely large and computationally expensive to 
-store memory, meaning the `w_tilde` likelihood function, described in 
-the `/log_likelihood_function/interferometer/`w_tilde.ipynb` notebook must be used instead.
+store memory, meaning the sparse operator likelihood function must be used instead.
 
 The `transformed_mapping_matrix` is also complex, storing all entries of the visibilities after the NUFFT as real
 and complex values.
@@ -687,7 +677,7 @@ ill-posed. We need to apply some form of smoothing on the reconstruction to avoi
 """
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
 
-mapper_plotter.figure_2d(solution_vector=reconstruction, interpolate_to_uniform=False)
+mapper_plotter.figure_2d(solution_vector=reconstruction)
 
 """
 __Regularization Matrix (H)__
@@ -724,8 +714,8 @@ is accounted for.
 """
 regularization_matrix = al.util.regularization.constant_regularization_matrix_from(
     coefficient=source_galaxy.pixelization.regularization.coefficient,
-    neighbors=mapper.source_plane_mesh_grid.neighbors,
-    neighbors_sizes=mapper.source_plane_mesh_grid.neighbors.sizes,
+    neighbors=mapper.neighbors,
+    neighbors_sizes=mapper.neighbors.sizes,
 )
 
 """
@@ -768,7 +758,7 @@ This also implies we are not over-fitting the noise.
 """
 mapper_plotter = aplt.MapperPlotter(mapper=mapper)
 
-mapper_plotter.figure_2d(solution_vector=reconstruction, interpolate_to_uniform=False)
+mapper_plotter.figure_2d(solution_vector=reconstruction)
 
 """
 __Visibilities Reconstruction__
@@ -956,7 +946,7 @@ tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 fit = al.FitInterferometer(
     dataset=dataset,
     tracer=tracer,
-    settings_inversion=al.SettingsInversion(use_border_relocator=True),
+    settings=al.Settings(use_border_relocator=True),
 )
 fit_log_evidence = fit.log_evidence
 print(fit_log_evidence)
@@ -986,8 +976,8 @@ If you are interested, you will need to dive into the source code itself.
 many NUFFT's to compute and requires large memroy store. The source code uses a trick which computes the chi-squared
 but bypasses the need to ever compute the `transformed_mapping_matrix`.
 
-**W-tilde Curvature Matrix:** The `curvature_matrix` above is also computed using the `transformed_mapping_matrix`, 
-which again means slow run times and large memory usage. The source code uses the `w_tilde_preload` matrix to 
+**Sparse Operator Curvature Matrix:** The `curvature_matrix` above is also computed using the `transformed_mapping_matrix`, 
+which again means slow run times and large memory usage. The source code can instead use sparse operators to 
 compute the curvature matrix in a way which again bypasses the need to compute the `transformed_mapping_matrix`.
 
 The two tricks in combination lead to a significant speed up in the likelihood function evaluation and mean that

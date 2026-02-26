@@ -2,7 +2,7 @@
 Pixelization: Many Visibilities Preparation
 ===========================================
 
-To perform many visibility modeling, a matrix called `curvature_preload` is created and used, which encodes information
+To perform many visibility modeling, a matrix called `nufft_precision_operator` is created and used, which encodes information
 and symmetries into the Fourier transform operation performed when modeling interferometer datasets, in a way that
 exploits the sparsity of the pixelized source reconstructions and means a very small amount of memory or VRAM is used.
 
@@ -26,8 +26,8 @@ in this script, saving it to hard-disk, and loading it for modeling is therefore
 On CPU, the `show_progress` input outputs  a progress bar to the terminal so you can monitor the computation,
 which is useful when it is slow.
 
-This example therefore creates the `curvature_preload` matrix using independent Python code and saves it to hard-disk
-for modeling. The `cpu_fast_modeling` example loads this w_tilde matrix from hard-disk if it is available,
+This example therefore creates the `nufft_precision_operator` matrix using independent Python code and saves it to hard-disk
+for modeling. The `cpu_fast_modeling` example loads this matrix from hard-disk if it is available,
 and computes it from scratch if not.
 
 __High Resolution Dataset__
@@ -41,7 +41,7 @@ After downloading the file, place it in the directory:
 
 `autolens_workspace/dataset/interferometer/alma`
 
-You can then compute the `curvature_preload` matrix for this dataset by uncommenting
+You can then compute the `nufft_precision_operator` matrix for this dataset by uncommenting
 the line `dataset_name = "alma"` below.
 """
 
@@ -86,13 +86,13 @@ dataset = al.Interferometer.from_fits(
 __Profiling Dataset__
 
 The code above loads a dataset with very few visibilities and a low resolution real space mask, so the 
-`curvature_preload` computation is fast.
+`nufft_precision_operator` computation is fast.
 
 Real datasets often have 100,000+ visibilities, and a high resolution real space mask, which makes the 
-`curvature_preload` computation much slower.
+`nufft_precision_operator` computation much slower.
 
 It may therefore be useful to profile the run times for different dataset sizes using the code below, which overwrites 
-the dataset above. This will allow you to plan ahead how long the `curvature_preload` computation will take for your 
+the dataset above. This will allow you to plan ahead how long the `nufft_precision_operator` computation will take for your 
 dataset, and whether doing it on a HPC is necessary.
 
 This code is commented out by default, so your dataset is used instead, but you can uncomment it to run the profiling.
@@ -127,23 +127,23 @@ This code is commented out by default, so your dataset is used instead, but you 
 # )
 
 """
-__W_Tilde__
+__Curvature Preload__
 
-Pixelized source modeling requires heavy linear algebra operations. These calculations are greatly accelerated
-using an alternative mathematical approach called the **w_tilde formalism**.
+Pixelized source modeling requires dense linear algebra operations. These calculations are greatly accelerated
+using an alternative mathematical approach called the **sparse linear algebra formalism**.
 
 You do not need to understand the full details of the method, but the key point is:
 
-- `w_tilde` exploits the **sparsity** of the matrices used in pixelized source reconstruction.
+- It exploits the **sparsity** of the matrices used in pixelized source reconstruction.
 - This leads to a **significant speed-up on GPU or CPU**, using JAX to perform the linear algebra calculations.
 
-To enable this feature, we call `apply_w_tilde()` on the dataset. This computes and stores a `w_tilde_preload` matrix,
-which reused in all subsequent pixelized source fits.
+To enable this feature, we call `apply_sparse_operator()` on the dataset. This computes and stores a
+preload matrix, which reused in all subsequent pixelized source fits.
 
 As discussed above, the computation of this matrix can take a long time for datasets with many visibilities
 and high resolution real-space masks, unless a modern GPU is used.
 
-We comment out the w_tilde calculation below as we are going to illustrate how you can compute it on CPU.
+We comment out the sparse linear algebra calculation below as we are going to illustrate how you can compute it on CPU.
 
 The code has the following inputs:
 
@@ -157,7 +157,7 @@ The code has the following inputs:
 - `show_memory`: Whether to output memory usage to the terminal, which is useful to ensure your system has enough
   memory to complete the computation.
 """
-dataset = dataset.apply_w_tilde(
+dataset = dataset.apply_sparse_operator(
     use_jax=True,
     chunk_k=2048,
     show_progress=True,
@@ -165,26 +165,32 @@ dataset = dataset.apply_w_tilde(
 )
 
 """
-__W Tilde Preload Output__
+__Curvature Preload Output__
 
-We now output the `curvature_preload` object to hard-disk, so it can be loaded quickly in the 
+We now output the `nufft_precision_operator` object to hard-disk, so it can be loaded quickly in the 
 `cpu_fast_modeling` example.
 
-We save it using a numpy `npz` file, which compresses the data to save hard-disk space, and put it in the 
-dataset folder so it can be easily found. Note that metadata describing the dataset and its real space
-mask is also saved in the file, so that when we load it (shown below) the code can verify it matches the dataset
-being modeled.
+We save it using a numpy `npy` file, which compresses the data to save hard-disk space, and put it in the 
+dataset folder so it can be easily found. 
 """
-dataset.w_tilde.save_curvature_preload(
-    file=dataset_path / f"curvature_preload_{mask_radius}", overwrite=True
+nufft_precision_operator = dataset.psf_precision_operator_from(
+    use_jax=True,
+    chunk_k=2048,
+    show_progress=True,
+    show_memory=True,
 )
 
+np.save(
+    file=dataset_path / f"nufft_precision_operator_{mask_radius}.npy",
+    arr=nufft_precision_operator,
+    allow_pickle=False,
+)
 """
-To load the `curvature_preload` matrix from hard-disk in your model-fit, you can use the code:
+To load the `nufft_precision_operator` matrix from hard-disk in your model-fit, you can use the code:
 """
-curvature_preload = al.load_curvature_preload_if_compatible(
-    file=dataset_path / f"curvature_preload_{mask_radius}",
-    real_space_mask=real_space_mask,
+nufft_precision_operator = np.load(
+    file=dataset_path / f"nufft_precision_operator_{mask_radius}.npy",
+    allow_pickle=False,
 )
 
 """

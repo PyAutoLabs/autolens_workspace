@@ -426,7 +426,7 @@ If any code in this script is unclear, refer to the `guides/modeling/slam_start_
 #     source_pix_result_1=source_pix_result_1,
 #     extra_galaxies=source_pix_result_1.instance.extra_galaxies,
 #     mesh=al.mesh.Voronoi,
-#     regularization=al.reg.AdaptiveBrightnessSplit,
+#     regularization=al.reg.AdaptSplit,
 # )
 #
 # """

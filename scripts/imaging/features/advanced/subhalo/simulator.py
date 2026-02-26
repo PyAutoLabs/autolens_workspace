@@ -65,7 +65,7 @@ grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
 """
 Simulate a simple Gaussian PSF for the image.
 """
-psf = al.Kernel2D.from_gaussian(
+psf = al.Convolver.from_gaussian(
     shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
 )
 

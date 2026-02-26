@@ -146,7 +146,7 @@ class SimulateImagingPixelized:
         Loads source galaxy redshift and sets up a `galaxy` class object at that redshift.
         """
 
-        mapper = self.inversion.cls_list_from(cls=al.AbstractMapper)[0]
+        mapper = self.inversion.cls_list_from(cls=al.Mapper)[0]
 
         mapper_valued = al.MapperValued(
             mapper=mapper,
@@ -558,7 +558,7 @@ def base_model_narrow_priors_from(base_model, result, stretch: float = 1.0):
 def run(
     settings_search: af.SettingsSearch,
     mask: al.Mask2D,
-    psf: al.Kernel2D,
+    psf: al.Convolver,
     mass_result: af.Result,
     subhalo_mass: af.Model = af.Model(al.mp.NFWMCRLudlowSph),
     adapt_images: Optional[al.AdaptImages] = None,
