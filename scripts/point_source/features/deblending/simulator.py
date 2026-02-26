@@ -146,7 +146,7 @@ dataset = al.PointDataset(
 
 al.output_to_json(
     obj=dataset,
-    file_path=Path(dataset_path, "point_dataset.json"),
+    file_path=Path(dataset_path, "point_dataset_positions_only.json"),
 )
 
 

@@ -689,7 +689,7 @@ dataset_name = "simple"
 dataset_path = Path("dataset") / "point_source" / dataset_name
 
 dataset = al.from_json(
-    file_path=Path(dataset_path, "point_dataset.json"),
+    file_path=Path(dataset_path, "point_dataset_positions_only.json"),
 )
 
 """
@@ -744,7 +744,7 @@ We now pass the FitPointDataset to a `FitPointDatasetPlotter` and call various `
 attributes.
 """
 fit_plotter = aplt.FitPointDatasetPlotter(fit=fit)
-fit_plotter.figures_2d(positions=True, fluxes=True)
+# fit_plotter.figures_2d(positions=True, fluxes=True)
 
 
 """
@@ -764,7 +764,7 @@ Below, we manually input two `Galaxy` objects with light profiles that clearly s
 """
 import math
 
-light_profile_pdf_list = [bulge, disk]
+light_profile_pdf_list = [bulge]
 
 sigma = 3.0
 low_limit = (1 - math.erf(sigma / math.sqrt(2))) / 2
@@ -784,7 +784,7 @@ image_1d_list = [image_1d[0:min_index] for image_1d in image_1d_list]
 (
     median_image_1d,
     errors_image_1d,
-) = ag.util.error_util.profile_1d_median_and_error_region_via_quantile(
+) = al.util.error.profile_1d_median_and_error_region_via_quantile(
     profile_1d_list=image_1d_list, low_limit=low_limit
 )
 

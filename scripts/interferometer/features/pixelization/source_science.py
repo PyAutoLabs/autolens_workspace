@@ -138,12 +138,12 @@ source_plane_mesh_grid = mapper.source_plane_mesh_grid
 print(f"Source Plane Mesh Grid Coordinates: {source_plane_mesh_grid}")
 
 """
-The image-plane reconstruction can also be computed from the inversion, which is called the `mapped_reconstructed_operated_data` 
+The image-plane reconstruction can also be computed from the inversion, which is called the `mapped_reconstructed_data` 
 and as seen above is needed to compute the magnification.
 """
-mapped_reconstructed_operated_data = inversion.mapped_reconstructed_operated_data
+mapped_reconstructed_data = inversion.mapped_reconstructed_data
 
-print(f"Mapped Reconstructed Image: {mapped_reconstructed_operated_data}")
+print(f"Mapped Reconstructed Image: {mapped_reconstructed_data}")
 
 """
 __Interpolated Source__
@@ -281,7 +281,7 @@ The `pixel_area` attribute of the `Array2D` object gives us the area of each pix
 can use to compute the magnification below.
 """
 magnification = np.sum(
-    mapped_reconstructed_operated_data * mapped_reconstructed_operated_data.pixel_area
+    mapped_reconstructed_data * mapped_reconstructed_data.pixel_area
 ) / np.sum(interpolated_reconstruction * interpolated_reconstruction.pixel_area)
 
 print(f"Magnification via Interpolated Source: {magnification}")
@@ -340,10 +340,10 @@ We have already computed the total source flux using the mesh above, but we can 
 Computed the areas of every pixel in the irregular rectangular mesh is a bit involved, therefore the values can be
 accessed from the source code via the `mesh_areas` attribute of the `Mapper` object.
 """
-mesh_areas = mapper.areas_for_magnification
+mesh_areas = mapper.mesh_geometry.areas_for_magnification
 
 magnification = np.sum(
-    mapped_reconstructed_operated_data * mapped_reconstructed_operated_data.pixel_area
+    mapped_reconstructed_data * mapped_reconstructed_data.pixel_area
 ) / np.sum(reconstruction * mesh_areas)
 
 """
@@ -360,8 +360,6 @@ We now perform a lens model fit, which will create this .csv file in the modelin
 
 First, lets load `source_plane_reconstruction_0.csv` as a dictionary, using basic `csv` functionality in Python.
 """
-import csv
-
 # Lens:
 
 mass = af.Model(al.mp.PowerLaw)
@@ -406,26 +404,53 @@ analysis = al.AnalysisInterferometer(
 result = search.fit(model=model, analysis=analysis)
 
 
-with open(
-    search.paths.image_path / "source_plane_reconstruction_0.csv", mode="r"
-) as file:
-    reader = csv.reader(file)
-    header_list = next(reader)  # ['y', 'x', 'reconstruction', 'noise_map']
+"""
+__Reconstruction CSV__
 
-    reconstruction_dict = {header: [] for header in header_list}
+The file ``source_plane_reconstruction_0.csv` provides all information on the source reconstruction in a format that 
+does not depend autolens and therefore be easily loaded to create images of the source or shared collaborations who 
+do not have PyAutoLens installed.
 
-    for row in reader:
-        for key, value in zip(header_list, row):
-            reconstruction_dict[key].append(float(value))
+First, lets load `source_plane_reconstruction_0.csv` as a dictionary, using basic `csv` functionality in Python.
 
-    # Convert lists to NumPy arrays
-    for key in reconstruction_dict:
-        reconstruction_dict[key] = np.array(reconstruction_dict[key])
+NOTE: If the .csv file does not exist, we create a dictionary with the same format but with dummy values so the rest of
+the script can be run.
+"""
+import csv
 
-print(reconstruction_dict["y"])
-print(reconstruction_dict["x"])
-print(reconstruction_dict["reconstruction"])
-print(reconstruction_dict["noise_map"])
+try:
+
+    with open(
+        search.paths.image_path / "source_plane_reconstruction_0.csv", mode="r"
+    ) as file:
+        reader = csv.reader(file)
+        header_list = next(reader)  # ['y', 'x', 'reconstruction', 'noise_map']
+
+        reconstruction_dict = {header: [] for header in header_list}
+
+        for row in reader:
+            for key, value in zip(header_list, row):
+                reconstruction_dict[key].append(float(value))
+
+        # Convert lists to NumPy arrays
+        for key in reconstruction_dict:
+            reconstruction_dict[key] = np.array(reconstruction_dict[key])
+
+except FileNotFoundError:
+
+    print("`source_plane_reconstruction_0.csv` not found. Using dummy data instead.")
+
+    x = np.array([-1.0, 0.0, 1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0])
+    y = np.array([1.0, 1.0, 1.0, 0.0, 0.0, 0.0, -1.0, -1.0, -1.0])
+    reconstruction = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0])
+    noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+    reconstruction_dict = {
+        "x": x,
+        "y": y,
+        "reconstruction": reconstruction,
+        "noise_map": noise_map,
+    }
 
 """
 You can now use standard libraries to performed calculations with the reconstruction on the mesh, again avoiding
