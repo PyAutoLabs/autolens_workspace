@@ -1,0 +1,162 @@
+# Automated API Update via Copilot Coding Agent
+#
+# Triggers:
+#   - repository_dispatch from PyAutoLens (on PR merge to main)
+#   - workflow_dispatch for manual runs (paste PR number + optional branch)
+#
+# Creates a GitHub issue describing the API changes, then assigns it to
+# copilot-swe-agent[bot].  Copilot picks up the issue, creates a branch,
+# updates workspace scripts, runs tests, and opens a PR.
+#
+# Required secret:
+#   COPILOT_PAT — Personal Access Token from a Copilot-enabled user with
+#                 repo scope on this repository.
+
+name: API Update (Copilot)
+
+on:
+  repository_dispatch:
+    types: [api-update]
+
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PyAutoLens PR number (e.g. 42)"
+        required: true
+        type: string
+      branch_name:
+        description: "Branch name for the workspace PR (default: auto-generated)"
+        required: false
+        type: string
+
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve PR metadata
+        id: meta
+        env:
+          GH_TOKEN: ${{ secrets.COPILOT_PAT }}
+        run: |
+          # Determine PR number from dispatch payload or manual input
+          if [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
+            PR_NUMBER="${{ github.event.client_payload.pr_number }}"
+            PR_TITLE="${{ github.event.client_payload.pr_title }}"
+            PR_BRANCH="${{ github.event.client_payload.pr_branch }}"
+            PR_URL="${{ github.event.client_payload.pr_url }}"
+          else
+            PR_NUMBER="${{ inputs.pr_number }}"
+            PR_BRANCH="${{ inputs.branch_name }}"
+          fi
+
+          # Fetch PR details from PyAutoLens if not already provided
+          if [[ -z "$PR_TITLE" ]]; then
+            PR_JSON=$(gh api repos/Jammy2211/PyAutoLens/pulls/"$PR_NUMBER")
+            PR_TITLE=$(echo "$PR_JSON" | jq -r '.title')
+            PR_URL=$(echo "$PR_JSON" | jq -r '.html_url')
+            PR_BRANCH=$(echo "$PR_JSON" | jq -r '.head.ref')
+          fi
+
+          # Default workspace branch name
+          if [[ -z "$PR_BRANCH" ]]; then
+            PR_BRANCH="api-update/pyautolens-pr-${PR_NUMBER}"
+          fi
+          WORKSPACE_BRANCH="feature/${PR_BRANCH}"
+
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "pr_title=$PR_TITLE" >> "$GITHUB_OUTPUT"
+          echo "pr_url=$PR_URL" >> "$GITHUB_OUTPUT"
+          echo "pr_branch=$PR_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "workspace_branch=$WORKSPACE_BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch PR diff (Python files only)
+        id: diff
+        env:
+          GH_TOKEN: ${{ secrets.COPILOT_PAT }}
+        run: |
+          # Get the diff, filter to .py files, truncate if huge
+          DIFF=$(gh api repos/Jammy2211/PyAutoLens/pulls/${{ steps.meta.outputs.pr_number }}/files \
+            --jq '[.[] | select(.filename | endswith(".py")) | "### \(.filename) (\(.status))\n```diff\n\(.patch // "binary")\n```"] | join("\n\n")' \
+          )
+
+          # Truncate to ~60000 chars to stay within issue body limits
+          if [[ ${#DIFF} -gt 60000 ]]; then
+            DIFF="${DIFF:0:60000}
+
+          ... (diff truncated — see full PR for remaining changes)"
+          fi
+
+          # Write to file to avoid shell escaping issues
+          echo "$DIFF" > /tmp/pr_diff.md
+
+      - name: Create issue and assign to Copilot
+        env:
+          GH_TOKEN: ${{ secrets.COPILOT_PAT }}
+        run: |
+          PR_NUMBER="${{ steps.meta.outputs.pr_number }}"
+          PR_TITLE="${{ steps.meta.outputs.pr_title }}"
+          PR_URL="${{ steps.meta.outputs.pr_url }}"
+          WORKSPACE_BRANCH="${{ steps.meta.outputs.workspace_branch }}"
+
+          # Build issue body
+          cat > /tmp/issue_body.md << 'HEADER'
+          ## API Update Required
+
+          HEADER
+
+          cat >> /tmp/issue_body.md << EOF
+          PyAutoLens PR [#${PR_NUMBER}](${PR_URL}) has been merged with API changes that may affect workspace scripts.
+
+          ### PR Title
+          ${PR_TITLE}
+
+          ### Changed Files (Python only)
+
+          <details>
+          <summary>Click to expand diff</summary>
+
+          EOF
+
+          cat /tmp/pr_diff.md >> /tmp/issue_body.md
+
+          cat >> /tmp/issue_body.md << EOF
+
+          </details>
+
+          ### Instructions
+
+          1. Read the diff above carefully. Identify every renamed, moved, removed, or changed public API (functions, classes, parameters, imports).
+          2. Search all files in \`scripts/\` for usages of the **old** API patterns.
+          3. Update each usage to the **new** API. Preserve the script's existing behaviour and docstrings.
+          4. Test your changes by running: \`bash run_all_scripts.sh\`
+          5. Fix any test failures and re-run until the test suite is clean.
+          6. If a script cannot be fixed automatically (e.g. a missing upstream dependency, an ambiguous API change), leave it unchanged and list it in your PR description under a "Could not update" section with the reason.
+          7. After all scripts pass, regenerate notebooks by running:
+             \`\`\`
+             pip install ipynb-py-convert
+             git clone https://github.com/Jammy2211/PyAutoBuild.git ../PyAutoBuild
+             PYTHONPATH=../PyAutoBuild/autobuild python3 ../PyAutoBuild/autobuild/generate.py autolens
+             \`\`\`
+          8. Commit the regenerated notebooks alongside the script changes.
+
+          ### Branch
+          Use branch name: \`${WORKSPACE_BRANCH}\`
+          EOF
+
+          # Create the issue
+          ISSUE_URL=$(gh issue create \
+            --repo "${{ github.repository }}" \
+            --title "[API Update] PyAutoLens PR #${PR_NUMBER}: ${PR_TITLE}" \
+            --body-file /tmp/issue_body.md \
+          )
+
+          ISSUE_NUMBER=$(echo "$ISSUE_URL" | grep -oP '\d+$')
+          echo "Created issue #${ISSUE_NUMBER}: ${ISSUE_URL}"
+
+          # Assign to Copilot coding agent
+          gh api --method POST \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/issues/${ISSUE_NUMBER}/assignees" \
+            -f "assignees[]=copilot-swe-agent[bot]"
+
+          echo "Assigned issue #${ISSUE_NUMBER} to copilot-swe-agent[bot]"
