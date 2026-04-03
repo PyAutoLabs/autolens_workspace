@@ -848,6 +848,20 @@ Load, plot and mask the `Imaging` data.
 dataset_name = "simple"
 dataset_path = Path("dataset") / "group" / dataset_name
 
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if not dataset_path.exists():
+    import subprocess
+    import sys
+    subprocess.run(
+        [sys.executable, "scripts/group/simulator.py"],
+        check=True,
+    )
+
 pixel_scale = 0.1
 mask_radius = 6.0
 mask_centre = (0.0, 0.0)

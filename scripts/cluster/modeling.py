@@ -79,6 +79,20 @@ is 0.1" / pixel.
 dataset_name = "simple"
 dataset_path = Path("dataset", "cluster", dataset_name)
 
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if not dataset_path.exists():
+    import subprocess
+    import sys
+    subprocess.run(
+        [sys.executable, "scripts/cluster/simulator.py"],
+        check=True,
+    )
+
 data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.1)
 
 """

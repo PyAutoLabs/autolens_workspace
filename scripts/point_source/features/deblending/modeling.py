@@ -91,6 +91,7 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 # print(f"Working Directory has been set to `{workspace_path}`")
 
 from os import path
+from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -102,6 +103,20 @@ Load and plot the strong lens dataset `deblending` via .fits files.
 """
 dataset_name = "deblending"
 dataset_path = path.join("dataset", "point_source", dataset_name)
+
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if not Path(dataset_path).exists():
+    import subprocess
+    import sys
+    subprocess.run(
+        [sys.executable, "scripts/point_source/features/deblending/simulator.py"],
+        check=True,
+    )
 
 dataset = al.Imaging.from_fits(
     data_path=path.join(dataset_path, "data.fits"),

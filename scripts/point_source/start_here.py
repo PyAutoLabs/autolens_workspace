@@ -116,6 +116,20 @@ load below is also available.
 dataset_name = "simple"
 dataset_path = Path("dataset") / "point_source" / dataset_name
 
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if not dataset_path.exists():
+    import subprocess
+    import sys
+    subprocess.run(
+        [sys.executable, "scripts/point_source/simulator.py"],
+        check=True,
+    )
+
 dataset = al.from_json(
     file_path=dataset_path / "point_dataset_positions_only.json",
 )
