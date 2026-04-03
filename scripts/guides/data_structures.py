@@ -224,6 +224,20 @@ We load an imaging dataset and illustrate its data structures below.
 dataset_name = "lens_sersic"
 dataset_path = Path("dataset") / "imaging" / dataset_name
 
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if not dataset_path.exists():
+    import subprocess
+    import sys
+    subprocess.run(
+        [sys.executable, "scripts/howtolens/simulator/lens_sersic.py"],
+        check=True,
+    )
+
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",
     psf_path=dataset_path / "psf.fits",

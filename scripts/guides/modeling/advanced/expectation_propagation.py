@@ -47,9 +47,23 @@ script `autolens_workspace/scripts/advanced/graphical/simulator/samples/simple__
 """
 dataset_label = "samples"
 dataset_type = "imaging"
-dataset_sample_name = "mass_power_law"
+dataset_sample_name = "simple"
 
 dataset_path = Path("dataset", dataset_type, dataset_label, dataset_sample_name)
+
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if not dataset_path.exists():
+    import subprocess
+    import sys
+    subprocess.run(
+        [sys.executable, "scripts/imaging/simulator_sample.py"],
+        check=True,
+    )
 
 total_datasets = 3
 

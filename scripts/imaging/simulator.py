@@ -228,7 +228,6 @@ Having .png files like this is useful, as they can be opened quickly and easily 
 
 For a faster run time, this visualization uses a regular grid which does not perferm the iterative ray-tracing.
 """
-
 aplt.subplot_imaging_dataset(dataset=dataset)
 aplt.plot_array(array=dataset.data, title="Data")
 

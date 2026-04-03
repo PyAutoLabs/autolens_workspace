@@ -57,6 +57,20 @@ Load and plot the strong lens dataset `extra_galaxies` via .fits files.
 dataset_name = "extra_galaxies"
 dataset_path = Path("dataset") / "imaging" / dataset_name
 
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if not dataset_path.exists():
+    import subprocess
+    import sys
+    subprocess.run(
+        [sys.executable, "scripts/imaging/features/extra_galaxies/simulator.py"],
+        check=True,
+    )
+
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",
     psf_path=dataset_path / "psf.fits",

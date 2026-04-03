@@ -55,6 +55,20 @@ dataset_label = "interferometer"
 dataset_name = "simple__no_lens_light"
 dataset_path = Path("dataset") / dataset_type / dataset_label / dataset_name
 
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if not dataset_path.exists():
+    import subprocess
+    import sys
+    subprocess.run(
+        [sys.executable, "scripts/multi/features/imaging_and_interferometer/simulator.py"],
+        check=True,
+    )
+
 interferometer = al.Interferometer.from_fits(
     data_path=dataset_path / "data.fits",
     noise_map_path=dataset_path / "noise_map.fits",
