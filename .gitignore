@@ -1,0 +1,8 @@
+root.log
+.idea/
+
+__pycache__/
+
+output/
+dataset/
+notebooks/plot/

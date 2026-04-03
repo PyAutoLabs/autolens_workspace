@@ -1,0 +1,268 @@
+"""
+Modeling Features: Operated Light Profiles
+==========================================
+
+It is common for galaxies to have point-source emission, for example bright emission right at their centre due to
+an active galactic nuclei or a compact knot of star formation.
+
+This point-source emission is subject to blurring during data acquiziton due to the telescope optics, and therefore
+is not seen as a single pixel of light but spread over multiple pixels as a convolution with the telescope
+Point Spread Function (PSF).
+
+It is difficult to model this compact point source emission using a point-source light profile (or an extremely
+compact Gaussian / Sersic profile). This is because when the model-image of a compact point source of light is
+convolved with the PSF, the solution to this convolution is extremely sensitive to which pixel (and sub-pixel) the
+compact model emission lands in.
+
+Operated light profiles offer an alternative approach, whereby the light profile is assumed to have already been
+convolved with the PSF. This operated light profile is then fitted directly to the point-source emission, which as
+discussed above shows the PSF features.
+
+Operated light profiles bypass the convolution step entirely, and therefore if you had a use-case which
+required fitting other components of a galaxy without convolution they could be used for this purpose too.
+
+__Model__
+
+This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
+
+ - The lens galaxy's light is a linear `Sersic` bulge.
+ - The lens galaxy includes a linear `Gaussian` psf.
+ - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The source galaxy's light is a linear `SersicCore`.
+
+__Fit__
+
+For operated light profiles, there is no `fit.py` example found for standard light profiles, linear light profiles
+and other examples.
+
+This is done purely to keep the number of examples in the workspace manageable. to perform a fit with operated light
+profiles, simply follow one of the other `modeling/imaging/fit.py` examples and replace the light profiles
+with operated light profiles using the API described below.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
+"""
+
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
+
+# %matplotlib inline
+# from pyprojroot import here
+# workspace_path = str(here())
+# %cd $workspace_path
+# print(f"Working Directory has been set to `{workspace_path}`")
+
+from pathlib import Path
+import autofit as af
+import autolens as al
+import autolens.plot as aplt
+
+"""
+__Dataset__
+
+Load and plot the strong lens dataset `simple` via .fits files.
+"""
+dataset_name = "light_operated"
+dataset_path = Path("dataset") / "imaging" / dataset_name
+
+dataset = al.Imaging.from_fits(
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    pixel_scales=0.1,
+)
+
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+"""
+__Mask__
+
+Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
+"""
+mask_radius = 3.0
+
+mask = al.Mask2D.circular(
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
+)
+
+dataset = dataset.apply_mask(mask=mask)
+
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+"""
+__Over Sampling__
+
+Apply adaptive over sampling to ensure the lens galaxy light calculation is accurate, you can read up on over-sampling 
+in more detail via the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
+"""
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=dataset.grid,
+    sub_size_list=[4, 2, 1],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0)],
+)
+
+dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
+
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+"""
+__Model__
+
+We compose a lens model where:
+
+ - The lens galaxy's light is a linear `Sersic` bulge [6 parameters].
+
+ - The lens galaxy's point source emission is a linear operated `Gaussian` centred on the bulge [3 parameters].
+
+ - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+
+ - The source galaxy's light is a linear `SersicCore` [6 parameters].
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=25.
+
+This lens galaxy includes a `Gaussian` operated light profile (`lp_operated`) PSF, which accounts for the PSF
+convolution of the point source emission.
+
+__Model Cookbook__
+
+A full description of model composition is provided by the model cookbook: 
+
+https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
+"""
+bulge = af.Model(al.lp_linear.Sersic)
+psf = af.Model(al.lp_operated.Gaussian)
+bulge.centre = psf.centre
+
+lens = af.Model(
+    al.Galaxy,
+    redshift=0.5,
+    bulge=bulge,
+    psf=psf,
+    mass=al.mp.Isothermal,
+    shear=al.mp.ExternalShear,
+)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
+
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+"""
+There is also a linear variant of every operated light profile (see `linear_light_profiles.py`).
+
+We will use this, as it simplifies parameter space, which is particularly important for operated light profiles 
+which can prove quite difficult to sample robustly.
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space for this model is N=22.
+"""
+# Lens:
+
+bulge = af.Model(al.lp_linear.Sersic)
+psf = af.Model(al.lp_linear_operated.Gaussian)
+bulge.centre = psf.centre
+
+mass = af.Model(al.mp.Isothermal)
+
+shear = af.Model(al.mp.ExternalShear)
+
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, psf=psf, mass=mass, shear=shear)
+
+# Source:
+
+bulge = af.Model(al.lp_linear.SersicCore)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+
+# Overall Lens Model:
+
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+"""
+The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
+`start_here.ipynb` for a description of how to fix this).
+
+This confirms that the lens galaxy's light has a `Gaussian` PSF component.
+"""
+print(model.info)
+
+"""
+__Search__
+
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
+full description).
+"""
+search = af.Nautilus(
+    path_prefix=Path("imaging") / "features",
+    name="operated_light_profiles",
+    unique_tag=dataset_name,
+    n_live=150,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
+)
+
+"""
+__Analysis__
+
+Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
+"""
+analysis = al.AnalysisImaging(dataset=dataset)
+
+"""
+__VRAM__
+
+The `modeling` example explains how VRAM is used during GPU-based fitting and how to
+print the estimated VRAM required by a model.
+
+For each operated light profile in the model extra is used VRAM. For 3-10 linear Sersic light profiles this is a tiny 
+amount of VRAM (e.g. < 10MB  per batched likelihood). Even for large batch sizes (e.g. over 100) you probably 
+will not use enough VRAM to require monitoring.
+
+__Run Time__
+
+The likelihood evaluation time for operated light profiles are faster than all other light profiles. This is because
+the computationally expensive PSF convolution step is omitted.
+
+The overall run-time may be a little slower than other models though, because the `psf` component adds a few
+extra parameters.
+
+__Model-Fit__
+
+We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder
+for on-the-fly visualization and results).
+"""
+result = search.fit(model=model, analysis=analysis)
+
+"""
+__Result__
+
+The search returns a result object, which whose `info` attribute shows the result in a readable format (if this does 
+not display clearly on your screen refer to `start_here.ipynb` for a description of how to fix this).
+
+This confirms that the lens galaxy's light has a `Gaussian` PSF component.
+"""
+print(result.info)
+
+"""
+We plot the maximum likelihood fit, tracer images and posteriors inferred via Nautilus.
+
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
+"""
+print(result.max_log_likelihood_instance)
+
+aplt.subplot_tracer(tracer=result.max_log_likelihood_tracer, grid=result.grids.lp)
+
+aplt.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
+
+aplt.corner_anesthetic(samples=result.samples)
+
+"""
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
+
+__Wrap Up__
+
+This script shows how fit a lens model where bright point source emission is modeled using a `Gaussian` PSF.
+
+It is uncommon for this feature to be necessary, as there are very few lens galaxies which have such bright point
+source emission in their centre. Nevertheless, it has been observed in a select few systems, and is therefore 
+something you may need to model.
+"""

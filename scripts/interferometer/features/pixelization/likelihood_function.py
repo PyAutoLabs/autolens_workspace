@@ -1,0 +1,975 @@
+"""
+__Log Likelihood Function: Pixelization__
+
+This script provides a step-by-step guide of the **PyAutoLens** `log_likelihood_function` which is used to fit
+`Interferometer` data with an inversion (specifically a `RectangularUniform` mesh and `Constant` regularization scheme`).
+
+This script has the following aims:
+
+ - To provide a resource that authors can include in papers using **PyAutoLens**, so that readers can understand the
+ likelihood function (including references to the previous literature from which it is defined) without having to
+ write large quantities of text and equations.
+
+ - To make inversions in **PyAutoLens** less of a "black-box" to users.
+
+__Simplifications__
+
+This example uses a `RectangularUniform` mesh, where all rectangular source pixels have the same size. Most
+pixelization examples use a `RectangularAdaptDensity` mesh, which adapts the size of source pixels to the
+density of points in the source-plane (e.g. the caustic).
+
+The `RectangularUniform` mesh is used here because it is simpler to explain the likelihood function
+and illustrate the key steps in the calculation. The same principles apply to other mesh types, which this
+example will explain where relevant.
+
+__Prerequisites__
+
+The likelihood function of pixelizations is the most complicated likelihood function.
+
+It is advised you read through the following two simpler likelihood functions first, which break down a number of the
+concepts used in this script:
+
+ - `interferometer/light_profile/log_likelihood_function.py` the likelihood function for a light profile.
+ - `imaging/linear_light_profile/log_likelihood_function.py` the likelihood function for a linear light profile, which
+ introduces the linear algebra used for a pixelization but with a simpler use case.
+
+This script repeats all text and code examples in the above likelihood function examples. It therefore can be used to
+learn about the linear light profile likelihood function without reading other likelihood scripts.
+"""
+
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
+
+# %matplotlib inline
+# from pyprojroot import here
+# workspace_path = str(here())
+# %cd $workspace_path
+# print(f"Working Directory has been set to `{workspace_path}`")
+
+import matplotlib.pyplot as plt
+import numpy as np
+from pathlib import Path
+
+import autolens as al
+import autolens.plot as aplt
+
+"""
+__Mesh Shape__
+
+The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the source,
+set below to 28 x 28. 
+
+The `mesh_shape` must be fixed before modeling and cannot be a free parameter of the model, because JAX uses the
+mesh shape to define static shaped arrays which use the mesh to reconstruct the source. For a rectangular
+mesh, the same number of pixels must be used in the y and x directions.
+
+__Edge Zeroing__
+
+By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero brightness by 
+the linear algebra solver. This prevents unphysical solutions where pixels at the edge of the mesh reconstruct 
+bright surface brightnesses, often because they fit residuals from the lens light subtraction.
+
+For a rectangular mesh, the source code computes edge pixels internally using the known
+pixels at the edge of the mesh. 
+"""
+mesh_pixels_yx = 28
+mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
+
+"""
+__Mask__
+
+We define the ‘real_space_mask’ which defines the grid the image the galaxy is evaluated using.
+"""
+real_space_mask = al.Mask2D.circular(
+    shape_native=(80, 80), pixel_scales=0.05, radius=4.0
+)
+
+"""
+__Dataset__
+
+Load and plot the galaxy `Interferometer` dataset `simple` from .fits files, which we will fit 
+with the model.
+
+This includes the method used to Fourier transform the real-space image of the galaxy to the uv-plane and compare 
+directly to the visibilities. We use a non-uniform fast Fourier transform, which is the most efficient method for 
+interferometer datasets containing ~1-10 million visibilities. We will discuss how the calculation of the likelihood
+function changes for different methods of Fourier transforming in this guide.
+"""
+dataset_name = "simple"
+dataset_path = Path("dataset") / "interferometer" / dataset_name
+
+dataset = al.Interferometer.from_fits(
+    data_path=dataset_path / "data.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
+    real_space_mask=real_space_mask,
+    transformer_class=al.TransformerDFT,
+)
+
+"""
+This guide uses in-built visualization tools for plotting. 
+
+For example, using the `aplt.subplot_interferometer_dirty_images` the dataset we perform a likelihood evaluation on is plotted.
+
+The `subplot_dataset` displays the visibilities in the uv-plane, which are the raw data of the interferometer
+dataset. These are what will ultimately be directly fitted in the Fourier space.
+
+The `subplot_dirty_images` displays the dirty images of the dataset, which are the reconstructed images of visibilities
+using an inverse Fourier transform to convert these to real-space. These dirty images are not the images we fit, but
+visualization of the dirty images are often used in radio interferometry to show the data in a way that is more
+interpretable to the human eye.
+"""
+aplt.subplot_interferometer_dirty_images(dataset=dataset)
+
+"""
+__Over Sampling__
+
+Over sampling evaluates a light profile using multiple samples of its intensity per image-pixel.
+
+For interferometer datasets, over sampling is not used in the pixelization (or for light profiles)
+therefore it is implicitly set to 1 and can be ignored hereafter.
+
+For CCD imaging datasets, over sampling is normally used and slightly changes the likelihood function.
+
+__Masked Image Grid__
+
+To perform galaxy calculations we define a 2D image-plane grid of (y,x) coordinates.
+
+For light profiles these are given by `dataset.lp`, which is a uniform grid of (y,x) Cartesian coordinates
+which have had the 3.0" circular mask applied.
+
+A pixelization uses a separate grid of (y,x) coordinates, called `dataset.grids.pixelization`, which is
+identical to the light profile grid but may of had a different over-sampling scale applied (but in this example
+does not).
+
+Each (y,x) coordinate coordinates to the centre of each image-pixel in the dataset, meaning that when this grid is
+used to construct a pixelization there is a straight forward mapping between the image data and pixelization pixels.
+"""
+aplt.plot_grid(grid=dataset.grids.pixelization, title="")
+
+"""
+__Lens Galaxy__
+
+We set up a lens galaxy with the lens light and mass, which we will use to demonstrate a pixelized source
+reconstruction.
+"""
+mass = al.mp.Isothermal(
+    centre=(0.0, 0.0),
+    einstein_radius=1.6,
+    ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+)
+
+shear = al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
+
+lens_galaxy = al.Galaxy(redshift=0.5, mass=mass, shear=shear)
+
+"""
+__Source Galaxy Pixelization and Regularization__
+
+We combine the pixelization into a single `Galaxy` object.
+
+The galaxy includes the rectangular mesh and constant regularization scheme, which will ultimately be used
+to reconstruct its star forming clumps.
+"""
+pixelization = al.Pixelization(
+    mesh=al.mesh.RectangularUniform(mesh_shape),
+    regularization=al.reg.Constant(coefficient=1.0),
+)
+
+source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+"""
+__Ray Tracing__
+
+To perform lensing calculations we ray-trace every 2d (y,x) coordinate $\theta$ from the image-plane to its (y,x) 
+source-plane coordinate $\beta$ using the summed deflection angles $\alpha$ of the mass profiles:
+
+ $\beta = \theta - \alpha(\theta)$
+
+The likelihood function of a pixelized source reconstruction ray-traces two grids from the image-plane to the source-plane:
+
+ 1) A 2D grid of (y,x) coordinates aligned with the imaging data's image-pixels.
+
+ 2) The sparse 2D grid of (y,x) coordinates above which form the centres of the rectangular source pixels.
+
+The function below computes the 2D deflection angles of the tracer's lens galaxies and subtracts them from the 
+image-plane 2D (y,x) coordinates $\theta$ of each grid, thus ray-tracing their coordinates to the source plane to 
+compute their $\beta$ values.
+"""
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+
+"""
+The source code gets quite complex when handling grids for a pixelization, but it is all handled in
+the `TracerToInversion` objects.
+
+The plots at the bottom of this cell show the traced grids used by the source pixelization, showing
+how the rectangular mesh and traced image pixels are constructed.
+"""
+tracer_to_inversion = al.TracerToInversion(tracer=tracer, dataset=dataset)
+
+# A list of every grid (e.g. image-plane, source-plane) however we only need the source plane grid with index -1.
+traced_grid_pixelization = tracer.traced_grid_2d_list_from(
+    grid=dataset.grids.pixelization
+)[-1]
+
+
+aplt.plot_grid(grid=traced_grid_pixelization, title="")
+
+# grid_plotter.figure_2d()
+
+"""
+__Border Relocation__
+
+Coordinates that are ray-traced near the mass profile centres are heavily demagnified and may trace to far outskirts of
+the source-plane. 
+
+We relocate these pixels (for both grids above) to the edge of the source-plane border (defined via the border of the 
+image-plane mask). This is detailed in **HowToLens chapter 4 tutorial 5** and figure 2 of https://arxiv.org/abs/1708.07377.
+"""
+from autoarray.inversion.mesh.border_relocator import BorderRelocator
+
+border_relocator = BorderRelocator(mask=dataset.mask, sub_size=1)
+
+relocated_grid = border_relocator.relocated_grid_from(grid=traced_grid_pixelization)
+
+
+aplt.plot_grid(grid=relocated_grid, title="")
+
+"""
+__Source Pixel Centre Calculation__
+
+In order to reconstruct the source galaxy using a mesh, we need to determine the centres of  the rectangular mesh's 
+source pixels.
+
+We do this by overlying a rectangular grid on the relocated traced image-plane grid computed above.
+
+This distributes the rectangular mesh so it fully overlaps the region of the source-plane containing the traced 
+image-pixels without having edge pixels that extend beyond this region.
+"""
+from autoarray.inversion.mesh.mesh.rectangular_adapt_density import overlay_grid_from
+
+mesh_grid = overlay_grid_from(
+    shape_native=mesh_shape, grid=al.Grid2DIrregular(relocated_grid)
+)
+
+"""
+__Interpolation__
+
+We now combine grids computed above to create an `Interpolator`, which describes how image grid pixel maps to
+every rectangular mesh pixel. 
+"""
+interpolator = pixelization.mesh.interpolator_from(
+    source_plane_data_grid=relocated_grid,
+    source_plane_mesh_grid=mesh_grid,
+)
+
+"""
+__Mapper__
+
+We now use the interpolator to create a `Mapper`, which describes the mapping between every image pixel and every 
+rectangular pixel, based on the interpolation scheme above.
+"""
+mapper = al.Mapper(interpolator=interpolator)
+
+"""
+For the rectangular mesh, the interpolation scheme is called bilinear interpolation, which means that every image 
+pixel maps to the rectangular pixel it lands in and the three neighboring rectangular pixels. 
+
+The weight of each mapping is determined by the bilinear interpolation scheme, which is a function of how close the 
+image pixel is to the centre of the rectangular pixel it lands in and the three neighboring rectangular pixels.
+
+We can print the mappings and weights, for example of the first image pixel, to confirm this.
+"""
+print(interpolator.mappings[0])
+print(interpolator.weights[0])
+
+"""
+Plotting the rectangular mesh shows that the source-plane and been discretized into a uniform grid of source pixels.
+
+(To plot the RectangularUniform mesh, we have to convert it to a `Mapper` object, which is described in the next 
+likelihood step).
+
+Below, we plot the rectangular mesh without the traced image-grid pixels (for clarity) and with them as 
+black dots in order to show how each set of image-pixels fall within a source pixel.
+"""
+aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
+
+aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
+
+"""
+The `Mapper` contains:
+
+ 1) `source_plane_data_grid`: the traced grid of (y,x) image-pixel coordinate centres (`relocated_grid`).
+ 2) `source_plane_mesh_grid`: The rectangular mesh of traced (y,x) source-pixel coordinates (`grid_Rectangular`).
+
+We have therefore discretized the source-plane into a rectangular mesh, and can pair every traced image-pixel coordinate
+with the corresponding source pixel it lands in.
+
+This pairing is contained in the ndarray `pix_indexes_for_sub_slim_index` which maps every image-pixel index to 
+every source-pixel index.
+
+In the API, the `pix_indexes` refers to the source pixel indexes (e.g. source pixel 0, 1, 2 etc.) and `sub_slim_index` 
+refers to the index of an image pixel (e.g. image-pixel 0, 1, 2 etc.). 
+
+For example, printing the first ten entries of `pix_indexes_for_sub_slim_index` shows the first ten source-pixel
+indexes these image sub-pixels map too.
+"""
+pix_indexes_for_sub_slim_index = mapper.pix_indexes_for_sub_slim_index
+
+print(pix_indexes_for_sub_slim_index[0:9])
+
+"""
+This array can be used to visualize how an input list of image-pixel indexes map to the source-plane.
+
+It also shows that image-pixel indexing begins from the top-left and goes rightwards and downwards, accounting for 
+all image-pixels which are not masked.
+"""
+
+aplt.plot_array(array=dataset.dirty_image, title="Image", positions=mapper.image_plane_data_grid)
+aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
+
+"""
+The reverse mappings of source-pixels to image-pixels can also be used.
+
+If we choose the right source-pixel index, we can see that multiple imaging occur whereby image-pixels in different
+regions of the image-plane are grouped into the same source-pixel.
+"""
+pix_indexes = [[200]]
+
+indexes = mapper.slim_indexes_for_pix_indexes(pix_indexes=pix_indexes)
+
+
+
+aplt.plot_array(array=dataset.dirty_image, title="Image", positions=mapper.image_plane_data_grid)
+aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
+
+"""
+__Interpolation__
+
+The right hand plot shows more laying over source pixel 200 than its retangular black lines. Pixels further 
+out than the pixel appear to be mapped to this source pixel. 
+
+This is because the mesh uses an interpolation mapping scheme whereby each image pixels is paired with four source 
+pixels. For a rectangular mesh, this scheme is called bilinear interpolation, and it means that every pixel maps
+not only to the rectangular source pixel it lands in, but also the three neighbouring source pixels. Interpolation is 
+key to ensuring that the pixelization can reconstruct smooth source morphologies.
+
+We can confirm that every image pixel maps to four source pixels by printing 
+the `pix_sizes_for_sub_slim_index`, which gives the number of mapped source pixels for every image pixel.
+
+We can also confirm that the interpolation introduces weights to each mapping by printing the 
+`pix_weights_for_sub_slim_index`, which gives the weight of each mapping for every image pixel.
+"""
+print(mapper.pix_sizes_for_sub_slim_index[0:9])
+print(mapper.pix_weights_for_sub_slim_index[0:9])
+
+"""
+__Over Sampling__
+
+Lets quickly think about what happens when we use over sampling in the pixelization (e.g. `sub_size>1`). For
+the `sub_size=1` case above, each image pixel maps to 4 source pixels (due to bilinear interpolation)
+with a weight determined from the bilinear interpolation scheme.
+
+However, the default over sampling for a pixelization is `sub_size=4`, meaning each image pixel is divided
+into a 4x4 grid of sub-pixels (16 sub-pixels in total). Each of these sub-pixels maps to 4 source pixels
+(due to bilinear interpolation), where the weight of each mapping is determined by the bilinear interpolation
+scheme divided by 16 (because there are 16 sub-pixels).
+
+This example therefore used a `sub_size=1` to keep the explanation of the likelihood, visualization of the
+arrays above and understanding of the mapping scheme as simple as possible. You can manually increase the
+`sub_size` above and re-run the notebook to see how this changes the mapping scheme.
+
+__Alternative Meshes__
+
+We can briefly consider how this step differs for other mesh types. Above, we simply overlaid a uniform rectangular
+grid to define the source pixel centres and then mapped image pixels to these source pixels.
+
+The `RectangularAdaptDensity` mesh pretty much works exactly the same, its just that a calculation (which we don't
+describe here) works out how to make a grid of rectangular pixels that adapt to the source-plane density and thus
+vary in size. 
+
+There is also a `RectangularAdaptImage` mesh which uses the image of the lensed source to adapt
+the rectangular pixel sizes. This often puts even smaller pixels in the brightest regions of the source,
+even if it lies offset or away from the caustic.
+
+There is also a `Delaunay` mesh which uses a Delaunay triangulation to define an irregular grid of source pixels.
+This is described fully in the `delaunay` example including a likelihood function guide.
+
+__Mapping Matrix__
+
+The `mapping_matrix` represents the image-pixel to source-pixel mappings above in a 2D matrix. 
+
+It has dimensions `(total_image_pixels, total_source_pixels)`.
+"""
+mapping_matrix = al.util.mapper.mapping_matrix_from(
+    pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
+    pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,
+    pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,
+    pixels=mapper.pixels,
+    total_mask_pixels=mapper.source_plane_data_grid.mask.pixels_in_mask,
+    slim_index_for_sub_slim_index=mapper.slim_index_for_sub_slim_index,
+    sub_fraction=mapper.over_sampler.sub_fraction,
+)
+
+"""
+A 2D plot of the `mapping_matrix` shows of all image-source pixel mappings.
+
+No row of pixels has more than one non-zero entry. It is not possible for two image pixels to map to the same source 
+pixel (meaning that there are no correlated pixels in the mapping matrix).
+"""
+plt.imshow(mapping_matrix, aspect=(mapping_matrix.shape[1] / mapping_matrix.shape[0]))
+plt.show()
+plt.close()
+
+"""
+Each column of the `mapping_matrix` can therefore be used to show all image-pixels it maps too. 
+
+For example, above, we plotted all image-pixels of source-pixel 200 (as well as 202 and 204). We can extract all
+image-pixel indexes of source pixels 200 using the `mapping_matrix` and use them to plot the image of this
+source-pixel (which corresponds to only values of zeros or ones).
+"""
+indexes_source_pix_200 = np.nonzero(mapping_matrix[:, 200])
+
+print(indexes_source_pix_200[0])
+
+array_2d = al.Array2D(values=mapping_matrix[:, 200], mask=dataset.mask)
+
+aplt.plot_array(array=array_2d, title="")
+
+"""
+__Transformed Mapping Matrix ($f$)__
+
+Each pixelization pixel can therefore be thought of as an image (where all entries of this image are zeros and ones). 
+
+However, for interferometer datasets we want to fit the visibilities in the uv-plane, not the image-plane. Therefore,
+each image in the `mapping_matrix` must be transformed to the uv-plane via a Fourier transform, such that each
+column in the `transformed_mapping_matrix` represents the visibilities in the uv-plane of each pixelization pixel.
+
+This operation changes the dimensions of the mapping matrix, meaning the `transformed_mapping_matrix` has
+dimensions `(total_image_pixels, total_visibilities)`. 
+
+If the number of visibilities is large (e.g. 10^6) this matrix becomes extremely large and computationally expensive to 
+store memory, meaning the sparse operator likelihood function must be used instead.
+
+The `transformed_mapping_matrix` is also complex, storing all entries of the visibilities after the NUFFT as real
+and complex values.
+"""
+transformed_mapping_matrix = dataset.transformer.transform_mapping_matrix(
+    mapping_matrix=mapping_matrix
+)
+
+"""
+A 2D plot of the `transformed_mapping_matrix` shows all visibility-source pixel mappings.
+
+Note how, unlike for the `mapping_matrix`, every row of image-pixels fully consists of non-zero entries. This
+means the matrix is fully dense, making it even more difficult to store in memory for large datasets.
+
+Below, we plot the real and imaginary components of the `transformed_mapping_matrix` separately.
+"""
+plt.imshow(
+    transformed_mapping_matrix.real,
+    aspect=(transformed_mapping_matrix.shape[1] / transformed_mapping_matrix.shape[0]),
+)
+plt.colorbar()
+plt.show()
+plt.close()
+
+plt.imshow(
+    transformed_mapping_matrix.imag,
+    aspect=(transformed_mapping_matrix.shape[1] / transformed_mapping_matrix.shape[0]),
+)
+plt.colorbar()
+plt.show()
+plt.close()
+
+"""
+Each column of the `transformed_mapping_matrix` shows all visibilities it maps to after the NUFFT.
+"""
+indexes_pix_200 = np.nonzero(transformed_mapping_matrix[:, 200])
+
+print(indexes_pix_200[0])
+
+visibilities = al.Visibilities(visibilities=transformed_mapping_matrix[:, 200])
+
+aplt.plot_grid(grid=visibilities.in_grid, title="")
+
+"""
+In Warren & Dye 2003 (https://arxiv.org/abs/astro-ph/0302587) the `transformed_mapping_matrix` is denoted $f_{ij}$
+where $i$ maps over all $I$ source pixels and $j$ maps over all $J$ visibilities. 
+
+For example: 
+
+ - $f_{0, 2} = 0.3$ indicates that visibility number $2$ maps to pixelization pixel $0$ with a weight of $0.3$ after the NUFFT.
+
+The indexing of the `mapping_matrix` is reversed compared to the notation of WD03 (e.g. visibilities
+are the first entry of `mapping_matrix` whereas for $f$ they are the second index).
+"""
+print(
+    f"Mapping between visibility 0 and RectangularUniform pixel 2 = {mapping_matrix[0, 2]}"
+)
+
+"""
+__Data Vector (D)__
+
+To solve for the source pixel fluxes we now pose the problem as a linear inversion.
+
+This requires us to convert the `transformed_mapping_matrix` and our `data` and `noise map` into matrices of certain dimensions. 
+
+The `data_vector`, $D$, is the first matrix and it has dimensions `(total_Rectangular_pixels,)`.
+
+In WD03 (https://arxiv.org/abs/astro-ph/0302587) and N15 (https://arxiv.org/abs/1412.7436) the data vector 
+is give by: 
+
+ $\vec{D}_{i} = \sum_{\rm  j=1}^{J}f_{ij}(d_{j})/\sigma_{j}^2 \, \, .$
+
+Where:
+
+ - $d_{\rm j}$ are the image-pixel data flux values.
+ - $\sigma{\rm _j}^2$ are the statistical uncertainties of each image-pixel value.
+
+$i$ maps over all $I$ source pixels and $j$ maps over all $J$ image pixels. 
+"""
+data_vector = (
+    al.util.inversion_interferometer.data_vector_via_transformed_mapping_matrix_from(
+        transformed_mapping_matrix=transformed_mapping_matrix,
+        visibilities=dataset.data,
+        noise_map=dataset.noise_map,
+    )
+)
+
+"""
+$D$ describes which source pixels trace to which visibilities, with associated weights, after the NUFFT. This 
+ensures the reconstruction fully accounts for the NUFFT when fitting the data.
+
+We can plot $D$ as a column vector:
+"""
+plt.imshow(
+    data_vector.reshape(data_vector.shape[0], 1), aspect=10.0 / data_vector.shape[0]
+)
+plt.colorbar()
+plt.show()
+plt.close()
+
+"""
+The dimensions of $D$ are the number of source pixels.
+"""
+print("Data Vector:")
+print(data_vector)
+print(data_vector.shape)
+
+"""
+__Curvature Matrix (F)__
+
+The `curvature_matrix` $F$ is the second matrix and it has 
+dimensions `(total_Rectangular_pixels, total_Rectangular_pixels)`.
+
+In WD03 / N15 (https://arxiv.org/abs/astro-ph/0302587) the curvature matrix is a 2D matrix given by:
+
+ ${F}_{ik} = \sum_{\rm  j=1}^{J}f_{ij}f_{kj}/\sigma_{j}^2 \, \, .$
+
+NOTE: this notation implicitly assumes a summation over $K$, where $k$ runs over all pixelization pixel indexes $K$.
+
+Note how summation over $J$ runs over $f$ twice, such that every entry of $F$ is the sum of the multiplication
+between all values in every two columns of $f$.
+
+For example, $F_{0,1}$ is the sum of all visibility values in $f$ of source pixel 0 multiplied by
+all visibility values of source pixel 1.
+
+Visibilities are both real and complex values, and the `curvature_matrix` is computed separately for the real and
+imaginary components of the visibilities and then summed together.
+"""
+real_curvature_matrix = al.util.inversion.curvature_matrix_via_mapping_matrix_from(
+    mapping_matrix=transformed_mapping_matrix.real,
+    noise_map=dataset.noise_map.real,
+)
+
+imag_curvature_matrix = al.util.inversion.curvature_matrix_via_mapping_matrix_from(
+    mapping_matrix=transformed_mapping_matrix.imag,
+    noise_map=dataset.noise_map.imag,
+)
+
+curvature_matrix = np.add(real_curvature_matrix, imag_curvature_matrix)
+
+plt.imshow(curvature_matrix)
+plt.colorbar()
+plt.show()
+plt.close()
+
+"""
+For $F_{ik}$ to be non-zero, this requires that the images of source pixels $i$ and $k$ share at least one
+image-pixel, which for visibilities after the NUFFT is always true for all $i$ and $k$.
+
+For example, we can see a non-zero entry for $F_{100,101}$ and plotting their images
+show overlap.
+"""
+source_pixel_0 = 0
+source_pixel_1 = 1
+
+print(curvature_matrix[source_pixel_0, source_pixel_1])
+
+visibilities = al.Visibilities(
+    visibilities=transformed_mapping_matrix[:, source_pixel_0],
+)
+
+aplt.plot_grid(grid=visibilities.in_grid, title="")
+
+visibilities = al.Visibilities(
+    visibilities=transformed_mapping_matrix[:, source_pixel_1],
+)
+
+aplt.plot_grid(grid=visibilities.in_grid, title="")
+
+"""
+The following chi-squared is minimized when we perform the inversion and reconstruct the source_galaxy:
+
+$\chi^2 = \sum_{\rm  j=1}^{J} \bigg[ \frac{(\sum_{\rm  i=1}^{I} s_{i} f_{ij}) - d_{j}}{\sigma_{j}} \bigg]$
+
+Where $s$ is the reconstructed pixel fluxes in all $I$ source pixels.
+
+The solution for $s$ is therefore given by (equation 5 WD03):
+
+ $s = F^{-1} D$
+
+We can compute this using NumPy linear algebra:
+"""
+
+# Because we are no using regularizartion (see below) it is common for the curvature matrix to be singular and lead
+# to a LinAlgException. The loop below mitigates this -- you can ignore it as it is not important for understanding
+# the PyAutoLens likelihood function.
+
+for i in range(curvature_matrix.shape[0]):
+    curvature_matrix[i, i] += 1e-8
+
+reconstruction = np.linalg.solve(curvature_matrix, data_vector)
+
+"""
+We can plot this reconstruction -- it looks like a mess.
+
+The pixelization pixels have noisy and unsmooth values, and it is hard to make out if a source galaxy is even being 
+reconstructed. 
+
+In fact, the linear inversion is (over-)fitting noise in the image data, meaning this system of equations is 
+ill-posed. We need to apply some form of smoothing on the reconstruction to avoid over fitting noise.
+"""
+
+aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
+
+"""
+__Regularization Matrix (H)__
+
+Regularization adds a linear regularization term $G_{\rm L}$ to the $\chi^2$ we solve for giving us a new merit 
+function $G$ (equation 11 WD03):
+
+ $G = \chi^2 + \lambda \, G_{\rm L}$
+
+where $\lambda$ is the `regularization_coefficient` which describes the magnitude of smoothness that is applied. A 
+higher $\lambda$ will regularize the source more, leading to a smoother source galaxy reconstruction.
+
+Different forms for $G_{\rm L}$ can be defined which regularize the reconstruction in different ways. The 
+`Constant` regularization scheme used in this example applies gradient regularization (equation 14 WD03):
+
+ $G_{\rm L} = \sum_{\rm  i}^{I} \sum_{\rm  n=1}^{N}  [s_{i} - s_{i, v}]$
+
+This regularization scheme is easier to express in words -- the summation goes to each rectangular pixelization pixel,
+determines all rectangular pixels with which it shares a direct vertex (e.g. its neighbors) and penalizes solutions 
+where the difference in reconstructed flux of these two neighboring pixels is large.
+
+The summation does this for all source pixels, thus it favours solutions where neighboring source
+pixels reconstruct similar values to one another (e.g. it favours a smooth source galaxy reconstruction).
+
+We now define the `regularization matrix`, $H$, which allows us to include this smoothing when we solve for $s$. $H$
+has dimensions `(total_Rectangular_pixels, total_Rectangular_pixels)`.
+
+This relates to $G_{\rm L}$ as (equation 13 WD03):
+
+ $H_{ik} = \frac{1}{2} \frac{\partial G_{\rm L}}{\partial s_{i} \partial s_{k}}$
+
+$H$ has the `regularization_coefficient` $\lambda$ folded into it such $\lambda$'s control on the degree of smoothing
+is accounted for.
+"""
+regularization_matrix = al.util.regularization.constant_regularization_matrix_from(
+    coefficient=source_galaxy.pixelization.regularization.coefficient,
+    neighbors=mapper.neighbors,
+    neighbors_sizes=mapper.neighbors.sizes,
+)
+
+"""
+We can plot the regularization matrix and note that:
+
+ - non-zero entries indicate that two source pixels are neighbors and therefore are regularized with one another.
+
+ - Zeros indicate the two source pixels do not neighbor one another.
+
+The majority of entries are zero, because the majority of source pixels are not neighbors with one another.
+"""
+plt.imshow(regularization_matrix)
+plt.colorbar()
+plt.show()
+plt.close()
+
+"""
+__F + Lamdba H__
+
+$H$ enters the linear algebra system we solve for as follows (WD03 equation (12)):
+
+ $s = [F + H]^{-1} D$
+"""
+curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
+
+"""
+__Galaxy Reconstruction (s)__
+
+We can now solve the linear system above using NumPy linear algebra. 
+
+Note that the for loop used above to prevent a LinAlgException is no longer required.
+"""
+reconstruction = np.linalg.solve(curvature_reg_matrix, data_vector)
+
+"""
+By plotting this source galaxy reconstruction we can see that regularization has lead us to reconstruct a smoother 
+source galaxy, which actually looks like the star forming clumps in the imaging data! 
+
+This also implies we are not over-fitting the noise.
+"""
+
+aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
+
+"""
+__Visibilities Reconstruction__
+
+Using the reconstructed pixel fluxes we can map the reconstruction back to the image plane (via 
+the `blurred mapping_matrix`) and produce a reconstruction of the image data.
+"""
+mapped_reconstructed_visibilities = (
+    al.util.inversion_interferometer.mapped_reconstructed_visibilities_from(
+        transformed_mapping_matrix=transformed_mapping_matrix,
+        reconstruction=reconstruction,
+    )
+)
+
+mapped_reconstructed_visibilities = al.Visibilities(
+    visibilities=mapped_reconstructed_visibilities
+)
+
+aplt.plot_grid(grid=mapped_reconstructed_visibilities.in_grid, title="")
+
+
+"""
+__Likelihood Function__
+
+We now quantify the goodness-of-fit of our pixelization source galaxy reconstruction. 
+
+We compute the `log_likelihood` of the fit, which is the value returned by the `log_likelihood_function`.
+
+The likelihood function for source galaxy modeling consists of five terms:
+
+ $-2 \mathrm{ln} \, \epsilon = \chi^2 + s^{T} H s + \mathrm{ln} \, \left[ \mathrm{det} (F + H) \right] - { \mathrm{ln}} \, \left[ \mathrm{det} (H) \right] + \sum_{\rm  j=1}^{J} { \mathrm{ln}} \left [2 \pi (\sigma_j)^2 \right]  \, .$
+
+This expression was first derived by Suyu 2006 (https://arxiv.org/abs/astro-ph/0601493) and is given by equation (19).
+It was derived into **PyAutoLens** notation in Dye 2008 (https://arxiv.org/abs/0804.4002) equation (5).
+
+We now explain what each of these terms mean.
+
+__Chi Squared__
+
+The first term is a $\chi^2$ statistic, which is defined above in our merit function as and is computed as follows:
+
+ - `model_data` = `mapped_reconstructed_visibilities`
+ - `residual_map` = (`data` - `model_data`)
+ - `normalized_residual_map` = (`data` - `model_data`) / `noise_map`
+ - `chi_squared_map` = (`normalized_residuals`) ** 2.0 = ((`data` - `model_data`)**2.0)/(`variances`)
+ - `chi_squared` = sum(`chi_squared_map`)
+
+The chi-squared therefore quantifies if our fit to the data is accurate or not. 
+
+High values of chi-squared indicate that there are many image pixels our model did not produce a good fit to the image 
+for, corresponding to a fit with a lower likelihood.
+"""
+model_visibilities = mapped_reconstructed_visibilities
+
+residual_map = dataset.data - model_visibilities
+
+
+normalized_residual_map_real = (residual_map.real / dataset.noise_map.real).astype(
+    "complex128"
+)
+normalized_residual_map_imag = (residual_map.imag / dataset.noise_map.imag).astype(
+    "complex128"
+)
+normalized_residual_map = (
+    normalized_residual_map_real + 1j * normalized_residual_map_imag
+)
+
+
+chi_squared_map_real = (residual_map.real / dataset.noise_map.real) ** 2
+chi_squared_map_imag = (residual_map.imag / dataset.noise_map.imag) ** 2
+chi_squared_map = chi_squared_map_real + 1j * chi_squared_map_imag
+
+
+chi_squared_real = np.sum(chi_squared_map.real)
+chi_squared_imag = np.sum(chi_squared_map.imag)
+chi_squared = chi_squared_real + chi_squared_imag
+
+print(chi_squared)
+
+"""
+The `chi_squared_map` indicates which regions of the image we did and did not fit accurately.
+"""
+chi_squared_map = al.Visibilities(visibilities=chi_squared_map)
+
+aplt.plot_grid(grid=chi_squared_map.in_grid, title="")
+
+"""
+__Regularization Term__
+
+The second term, $s^{T} H s$, corresponds to the $\lambda $G_{\rm L}$ regularization term we added to our merit 
+function above.
+
+This is the term which sums up the difference in flux of all reconstructed source pixels, and reduces the 
+likelihood of solutions where there are large differences in flux (e.g. the source galaxy is less smooth and more 
+likely to be overfitting noise).
+
+We compute it below via matrix multiplication, noting that the `regularization_coefficient`, $\lambda$, is built into 
+the `regularization_matrix` already.
+"""
+regularization_term = np.matmul(
+    reconstruction.T, np.matmul(regularization_matrix, reconstruction)
+)
+
+print(regularization_term)
+
+"""
+__Complexity Terms__
+
+Up to this point, it is unclear why we chose a value of `regularization_coefficient=1.0`. 
+
+We cannot rely on the `chi_squared` and `regularization_term` above to optimally choose its value, because increasing 
+the `regularization_coefficient` smooths the solution more and therefore:
+
+ - Decreases `chi_squared` by fitting the data worse, producing a lower `log_likelihood`.
+
+ - Increases the `regularization_term` by penalizing the differences between source pixel fluxes more, again reducing
+ the inferred `log_likelihood`.
+
+If we set the regularization coefficient based purely on these two terms, we would set a value of 0.0 and be back where
+we started over-fitting noise!
+
+The terms $\left[ \mathrm{det} (F + H) \right]$ and $ - { \mathrm{ln}} \, \left[ \mathrm{det} (H) \right]$ address 
+this problem. 
+
+They quantify how complex the reconstruction is, and penalize solutions where *it is more complex*. Reducing 
+the `regularization_coefficient` makes the source galaxy reconstruction more complex (because a galaxy that is 
+smoothed less uses more flexibility to fit the data better).
+
+These two terms therefore counteract the `chi_squared` and `regularization_term`, so as to attribute a higher
+`log_likelihood` to solutions which fit the data with a more smoothed and less complex source (e.g. one with a higher 
+`regularization_coefficient`).
+
+In **HowToGalaxy** -> `chapter 4` -> `tutorial_4_bayesian_regularization` we expand on this further and give a more
+detailed description of how these different terms impact the `log_likelihood_function`. 
+"""
+log_curvature_reg_matrix_term = np.linalg.slogdet(curvature_reg_matrix)[1]
+log_regularization_matrix_term = np.linalg.slogdet(regularization_matrix)[1]
+
+print(log_curvature_reg_matrix_term)
+print(log_regularization_matrix_term)
+
+"""
+__Noise Normalization Term__
+
+Our likelihood function assumes the imaging data consists of independent Gaussian noise in every image pixel.
+
+The final term ins the likelihood function is therefore a `noise_normalization` term, which consists of the sum
+of the log of every noise-map value squared. 
+
+Given the `noise_map` is fixed, this term does not change during the lens modeling process and has no impact on the 
+model we infer.
+"""
+noise_normalization_real = np.sum(np.log(2 * np.pi * dataset.noise_map.real**2.0))
+noise_normalization_imag = np.sum(np.log(2 * np.pi * dataset.noise_map.imag**2.0))
+noise_normalization = noise_normalization_real + noise_normalization_imag
+
+"""
+__Calculate The Log Likelihood__
+
+We can now, finally, compute the `log_likelihood` of the model, by combining the five terms computed above using
+the likelihood function defined above.
+"""
+log_evidence = float(
+    -0.5
+    * (
+        chi_squared
+        + regularization_term
+        + log_curvature_reg_matrix_term
+        - log_regularization_matrix_term
+        + noise_normalization
+    )
+)
+
+print(log_evidence)
+
+"""
+__Fit__
+
+This process to perform a likelihood function evaluation performed via the `FitInterferometer` object.
+"""
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+
+fit = al.FitInterferometer(
+    dataset=dataset,
+    tracer=tracer,
+    settings=al.Settings(use_border_relocator=True),
+)
+fit_log_evidence = fit.log_evidence
+print(fit_log_evidence)
+
+aplt.subplot_fit_interferometer(fit=fit)
+
+"""
+__Lens Modeling__
+
+To fit a lens model to data, the likelihood function illustrated in this tutorial is sampled using a
+non-linear search algorithm.
+
+The default sampler is the nested sampling algorithm `nautilus` (https://github.com/joshspeagle/nautilus)
+multiple MCMC and optimization algorithms are supported.
+
+__Log Likelihood Function: Source Code Speed Up__
+
+The interferometer pixelization likelihood function described in this notebook performs certain calculations using
+functions which are easier to understand, but are computationally slower than the actual source code implementation
+(but the two produce identical results).
+
+We end by pointing out some of these, but we do not provide an step-by-step description of how they work.
+If you are interested, you will need to dive into the source code itself.
+
+**Fast Chi Squared:**  The `chi_squared` above is computed using the `transformed_mapping_matrix`, which requires
+many NUFFT's to compute and requires large memroy store. The source code uses a trick which computes the chi-squared
+but bypasses the need to ever compute the `transformed_mapping_matrix`.
+
+**Sparse Operator Curvature Matrix:** The `curvature_matrix` above is also computed using the `transformed_mapping_matrix`, 
+which again means slow run times and large memory usage. The source code can instead use sparse operators to 
+compute the curvature matrix in a way which again bypasses the need to compute the `transformed_mapping_matrix`.
+
+The two tricks in combination lead to a significant speed up in the likelihood function evaluation and mean that
+the large matrix of size [source pixels, visibilities] never needs to be stored in memory. This is at the heart
+of why lens modeling interferometer data with pixelized source reconstructions is so fast!
+
+__Wrap Up__
+
+We have presented a visual step-by-step guide to the pixelization likelihood function.
+
+There are a number of other inputs features which slightly change the behaviour of this likelihood function, which
+are described in additional notebooks found in this package. In brief, these describe:
+
+ - **Over Sampling**: Oversampling the image grid into a finer grid of sub-pixels, which are all individually 
+ paired fractionally with each `RectangularAdaptDensity` pixel.
+
+ - **Source-plane Interpolation**: Using bilinear interpolation on the `RectangularAdaptDensity` pixelization to pair 
+ each image (sub-)pixel to multiple `RectangularAdaptDensity` pixels with interpolation weights.
+
+ - **Source Morphology Pixelization Adaption**: Adapting the pixelization such that is congregates source pixels around
+ the source's brightest regions, as opposed to the magnification-based pixelization used here.
+
+ - **Luminosity Weighted Regularization**: Using an adaptive regularization coefficient which adapts the level of 
+ regularization applied to the source galaxy based on its luminosity.
+"""

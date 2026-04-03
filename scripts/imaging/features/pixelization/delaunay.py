@@ -1,0 +1,1442 @@
+"""
+Pixelization: Delaunay
+======================
+
+The majority of pixelized source reconstructions in the workspace use a rectangular mesh to reconstruct
+the source's surface brightness.
+
+This example illustrates an alternative pixelization that uses a Delaunay triangulation mesh to reconstruct the
+source.
+
+The approach is distinct from the rectangular mesh and has a number of traits which are unique to it:
+
+- `Adaptive Mesh`: In the source plane, the Delaunay mesh uses irregularly shaped triangles to reconstruct the
+  source, as opposed to uniform rectangular pixels. This allows the mesh to better adapt to irregular and
+  asymmetric source morphologies and change the distribution of source pixels to better match the source's
+  surface brightness.
+
+- `Image Mesh`: The vertexes of the Delaunay triangles are computed by overlaying a coarse uniform grid in the
+  image-plane and ray-tracing these coordinates to the source-plane. This is unlike the rectangular mesh, which
+  simply overlays a uniform grid in the source-plane. This again helps the Delaunay mesh to better adapt to the
+  source's surface brightness.
+
+- `Interpolation`: The Delaunay mesh uses a different interpolation scheme to the rectangular mesh, which is
+  barycentric interpolation within each triangle. This is different to the rectangular mesh, which uses bilinear
+  interpolation within each rectangular pixel.
+
+- `Regularization`: The Delaunay mesh provides different approaches to regularization, with the default being
+  one which uses the barycentric coordinates of the triangles to compute how source pixels are regularized with
+  their neighbors.
+
+Currently it is not expected that the Delaunay is better or worse than the rectangular mesh, it is simply a different
+approach to pixelization that may work better for certain datasets.
+
+__JAX + GPU__
+
+Generating a Delaunay mesh supports JAX and GPU acceleration, however certain operations (e.g. generating the Delaunay
+triangulation itself) do not run on the GPU because they cannot be easily converted to JAX.
+
+Instead, JAX sends them to a CPU, runs them there, and then sends the results back to the GPU. This process is
+very efficient, because these operations run very fast on a CPU and the data being sent back and forth is small.
+Current benchmarking suggests the Delaunay runs less than twice as long as the same fit using a rectangular mesh,
+but scientfically offers better results in many cases.
+
+If you do want to run only on CPU, you can use fast CPU method described in
+example `imaging/features/pixelization/cpu_fast_modeling` with the Delaunay mesh.
+
+__Source Science (Magnification, Flux and More)__
+
+Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
+
+Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic
+size of the source.
+
+The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+including examples using a Delaunay source reconstruction. Once you have completed lens modeling using a Delaunay mesh,
+you can jump to that example to study the source galaxy.
+"""
+
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
+
+# %matplotlib inline
+# from pyprojroot import here
+# workspace_path = str(here())
+# %cd $workspace_path
+# print(f"Working Directory has been set to `{workspace_path}`")
+
+import numpy as np
+import matplotlib.pyplot as plt
+from pathlib import Path
+import autofit as af
+import autolens as al
+import autolens.plot as aplt
+
+"""
+__Dataset + Masking + Positions__ 
+
+Load, plot and mask the `Imaging` data.
+"""
+dataset_name = "simple__no_lens_light"
+dataset_path = Path("dataset") / "imaging" / dataset_name
+
+dataset = al.Imaging.from_fits(
+    data_path=dataset_path / "data.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    psf_path=dataset_path / "psf.fits",
+    pixel_scales=0.1,
+)
+
+mask_radius = 3.0
+
+mask = al.Mask2D.circular(
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
+)
+
+dataset = dataset.apply_mask(mask=mask)
+
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=dataset.grid,
+    sub_size_list=[4, 2, 1],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0)],
+)
+
+dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
+
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+positions = al.Grid2DIrregular(
+    al.from_json(file_path=Path(dataset_path, "positions.json"))
+)
+
+"""
+__Image Mesh__
+
+For a Delaunay mesh, the vertices of the triangles are defined by (y, x) coordinates in the image-plane. These
+coordinates are then ray-traced into the source-plane for each mass model sampled during the non-linear search.
+This `image_plane_mesh_grid` must be computed before lens modeling.
+
+We compute this `image_plane_mesh_grid` using an `Overlay` image-mesh, which places a regular grid of
+(y, x) points across the image-plane. This has a mild adaptive effect: regions of high lens magnification receive
+more source pixels once they are ray-traced. Later in this example, we switch to a `Hilbert` image-mesh, which adapts
+the pixel distribution more strongly to the source’s surface brightness.
+
+The `Delaunay` mesh has an input number of `pixels`, which is the number of source pixels used to reconstruct the 
+source. The number of `pixels` must be equal to the number of coordinates in the `image_plane_mesh_grid`. 
+
+Like for the `mesh_shape` rectangular mesh, `pixels` must be fixed for lens modeling because JAX uses the 
+number of `pixels` to determine static array shapes. 
+
+To pass the `image_plane_mesh_grid` to the modeling, we use the `AdaptImages` object below, which pairs
+the `image_plane_mesh_grid` to the source galaxy. For double source plane lenses, this means we can
+attach an `image_plane_mesh_grid` to each source galaxy and use adaptive meshes for each source plane.
+"""
+image_mesh = al.image_mesh.Overlay(shape=(26, 26))
+
+image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
+    mask=dataset.mask,
+)
+
+"""
+__Edge Zeroing__
+
+By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero brightness by 
+the linear algebra solver. This prevents unphysical solutions where pixels at the edge of the mesh reconstruct 
+bright surface brightnesses, often because they fit residuals from the lens light subtraction.
+
+For a rectangular mesh, the source code computes edge pixels internally using the known pixels at the edge of the mesh,
+requiring no input from the user. 
+
+For the `Delaunay` mesh, we use the `append_with_circle_edge_points` function to manually setup the Delaunay image 
+mesh to include a ring of edge pixels and then input the total number into the mesh to perform zeroing. 
+
+These points are added to the edge of the image-plane mesh, ray-traced to the source-plane during lens modeling, 
+included in the Delaunay triangulation but zeroed during the inversion.
+"""
+edge_pixels_total = 30
+
+image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
+    image_plane_mesh_grid=image_plane_mesh_grid,
+    centre=mask.mask_centre,
+    radius=mask_radius + mask.pixel_scale / 2.0,
+    n_points=edge_pixels_total,
+)
+
+"""
+__Fit__
+
+In the example `imaging/features/pixelization/fit.py`, we illustrate how to use a pixelized source
+with a rectangular mesh to fit imaging data.
+
+Below, we use a Delaunay mesh to perform a fit using the Delaunay source reconstruction.
+
+The API is nearly identical to the rectangular mesh example, noting that the inputs to the `Delaunay` 
+mesh are different to the rectangular mesh and use image mesh quantities computed above.
+"""
+mesh = al.mesh.Delaunay(
+    pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+)
+
+regularization = al.reg.ConstantSplit(coefficient=1.0)
+
+pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
+
+lens = al.Galaxy(
+    redshift=0.5,
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.6,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+    ),
+    shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
+)
+
+source = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+tracer = al.Tracer(galaxies=[lens, source])
+
+adapt_images = al.AdaptImages(
+    galaxy_image_plane_mesh_grid_dict={source: image_plane_mesh_grid}
+)
+
+fit = al.FitImaging(
+    dataset=dataset,
+    tracer=tracer,
+    adapt_images=adapt_images,
+)
+
+"""
+By plotting the fit, we see that the Delaunay source does a good job at capturing the appearance of the source galaxy
+using adaptive triangular pixels.
+"""
+aplt.subplot_fit_imaging(fit=fit)
+
+"""
+__Source Science__
+
+Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
+
+Using the reconstructed source pixelization, we can compute key quantities such as the magnification, total flux, and
+intrinsic size of the source.
+
+For rectangular meshes, the example `autolens_workspace/*/imaging/features/source_science` gives a complete overview of 
+how to this. 
+
+For the Delaunay, specific functionality which manipulates the Delaunay triangles is required to perform these 
+calculations. We show below how to interpolate the Delaunay source reconstruction to a regular grid.
+
+When an inversion is performed on a Delaunay mesh, the reconstructed values are defined only at the irregular
+mesh vertices (the Delaunay nodes). In order to visualise the source reconstruction as a regular 2D image
+(e.g. for plotting or saving to a FITS file), we must interpolate these values onto a uniform grid.
+
+This is done using SciPy's Delaunay-based linear interpolation:
+
+- A `scipy.spatial.Delaunay` triangulation is constructed from the mesh node coordinates.
+
+- Within each triangle, interpolation is performed using *barycentric coordinates*, meaning the value at any point
+  inside the triangle is computed as a weighted linear combination of the values at the triangle’s three vertices.
+
+- Points outside the convex hull of the triangulation are assigned a fallback value (here `fill_value=0.0`).
+
+__Important Coordinate Convention (Delaunay(__
+
+SciPy expects all Delaunay coordinates to be provided in **(x, y)** order.
+
+However, grids are stored internally in **(y, x)** order.
+
+Therefore:
+
+- The mesh coordinates must be converted to (x, y) before building the triangulation.
+- The interpolation grid must also be flipped to (x, y) before evaluating the interpolator.
+
+This coordinate flip is essential for correct interpolation.
+"""
+from scipy.spatial import Delaunay
+from scipy.interpolate import LinearNDInterpolator
+
+inversion = fit.inversion
+
+mapper = inversion.cls_list_from(cls=al.Mapper)[0]
+
+reconstruction = inversion.reconstruction
+
+source_plane_mesh_grid = mapper.source_plane_mesh_grid
+
+interpolation_grid = al.Grid2D.uniform(shape_native=(200, 200), pixel_scales=0.05)
+
+mesh_grid_xy = np.stack([source_plane_mesh_grid[:, 0], source_plane_mesh_grid[:, 1]]).T
+
+# Uses find simplex so recomputes delaunay internally
+delaunay = Delaunay(mesh_grid_xy)
+
+interp = LinearNDInterpolator(delaunay, reconstruction, fill_value=0.0)
+
+interpolation_grid_xy = np.asarray(interpolation_grid)[:, ::-1]  # (y,x)->(x,y)
+interpolated_reconstruction = interp(interpolation_grid_xy)
+
+print(f"Brightest Interpolated Source Pixel: {np.max(interpolated_reconstruction)}")
+
+"""
+__Model__
+
+We now perform lens modeling using the Delaunay pixelization with the Overlay image-mesh.
+
+The code below is a simple adaptive modeling example using the Delaunay mesh, which mirrors the
+API used in other pixelization modeling examples.
+
+The example `imaging/features/pixelization/adaptive.py` illustrates how to use adaptive features to
+adapt the rectangular mesh and its regularization to the source's surface brightness. In particular, an image
+of the lensed source is passed to the modeling via the `AdaptImages` object, in order to adapt
+the mesh and regularization during the model-fit.
+
+You have already seen this used once above, but we set up the adapt images again to remind you
+of the API.
+"""
+adapt_images = al.AdaptImages(
+    galaxy_name_image_plane_mesh_grid_dict={
+        "('galaxies', 'source')": image_plane_mesh_grid
+    },
+)
+
+"""
+We therefore compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In the first
+search our lens model is:
+
+ - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
+ 
+ - The source galaxy's light uses an `Overlay` image-mesh with fixed resolution 30 x 30 pixels [0 parameters].
+ 
+ - The source-galaxy's light uses a `Delaunay` mesh [0 parameters].
+
+ - This pixelization is regularized using a `Constant` scheme [1 parameter]. 
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=8.
+
+__JAX CPU__
+
+On CPU, the Delaunay mesh computation via JAX can lead to slow down or indefinite freezing. 
+
+You may find better performance if you set `use_jax_vmap=False` in the `Nautilus` search below, which
+disables JAX's vectorization of certain computations.
+
+This does not impact GPU performance, which should always use `use_jax_vmap=True`.
+"""
+lens = af.Model(
+    al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
+)
+
+pixelization = af.Model(
+    al.Pixelization,
+    mesh=al.mesh.Delaunay(
+        pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+    ),
+    regularization=al.reg.ConstantSplit,
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
+
+model_1 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+search_1 = af.Nautilus(
+    path_prefix=Path("features"),
+    name="delaunay",
+    unique_tag=dataset_name,
+    n_live=100,
+    n_batch=10,
+    #   use_jax_vmap=False # Set to False if CPU performance is slow or hangs
+)
+
+analysis_1 = al.AnalysisImaging(
+    dataset=dataset,
+    adapt_images=adapt_images,
+    positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
+)
+
+"""
+__VRAM__
+
+The `pixelization/modeling` example explains how VRAM use is an important consideration for pixelization models
+and how it depends on image resolution, number of source pixels and batch size.
+
+This is true for the Delaunay mesh, therefore we print out the estimated VRAM required for this model-fit.
+"""
+analysis_1.print_vram_use(model=model_1, batch_size=search_1.batch_size)
+
+"""
+__Model-Fit (Search 1)__
+
+Perform the model-fit using this model.
+"""
+result_1 = search_1.fit(model=model_1, analysis=analysis_1)
+
+"""
+__Adaptive Delaunay__
+
+The example `imaging/features/pixelization/adaptive.py` illustrates how to use adaptive features to
+adapt the rectangular mesh and its regularization to the source's surface brightness.
+
+The image-mesh has a special adaptive variant called the `Hilbert` image-mesh, which adapts the distribution 
+of source-pixels to the source's unlensed morphology. This means that the source's brightest regions are 
+reconstructed using significantly more source pixels than seen for the `Overlay` image mesh. 
+Conversely, the source's faintest regions are reconstructed using significantly fewer source pixels.
+
+Unlike the adaptive rectangular mesh, the Hilbert image-plane mesh is computed before modeling, passed
+to the `AdaptImages` object, and remains fixed during the model-fit.
+
+It is recommend that the parameters governing these features are always fitted from using a fixed lens light and
+mass model. This ensures the adaptation is performed quickly, and removes degeneracies in the lens model that
+are difficult to sample. Given the Hilbert mesh is fixed, this modeling only fits for the regularization coefficients
+of the adaptive regularization scheme.
+
+For this reason, search 2 fixes the lens galaxy's light and mass model to the best-fit model of search 1. A third
+search will then fit for the lens galaxy's light and mass model using these adaptive features.
+
+The details of how the above features work is not provided here, but is given at the end of chapter 4 of the HowToLens
+lecture series.
+"""
+galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(result=result_1)
+
+image_mesh = al.image_mesh.Hilbert(pixels=1000, weight_power=3.5, weight_floor=0.01)
+
+image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
+    mask=dataset.mask, adapt_data=galaxy_image_name_dict["('galaxies', 'source')"]
+)
+
+# Repeat edge zeroing set up describe above.
+
+edge_pixels_total = 30
+
+image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
+    image_plane_mesh_grid=image_plane_mesh_grid,
+    centre=mask.mask_centre,
+    radius=mask_radius + mask.pixel_scale / 2.0,
+    n_points=edge_pixels_total,
+)
+
+adapt_images = al.AdaptImages(
+    galaxy_name_image_dict=galaxy_image_name_dict,
+    galaxy_name_image_plane_mesh_grid_dict={
+        "('galaxies', 'source')": image_plane_mesh_grid
+    },
+)
+
+"""
+__Model (Search 2)__
+
+We therefore compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In 
+the second search our lens model is:
+
+ - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` with fixed parameters from 
+   search 1 [0 parameters].
+ 
+ - The source galaxy's light uses a `Hilbert` image-mesh with fixed resolution 1000 pixels [2 parameters].
+ 
+ - The source-galaxy's light uses a `Delaunay` mesh [0 parameters].
+
+ - This pixelization is regularized using a `AdaptSplit` scheme [2 parameter]. 
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=4.
+"""
+pixelization = af.Model(
+    al.Pixelization,
+    mesh=al.mesh.Delaunay(
+        pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+    ),
+    regularization=al.reg.AdaptSplit,
+)
+
+source = af.Model(
+    al.Galaxy,
+    redshift=1.0,
+    pixelization=pixelization,
+)
+
+model_2 = af.Collection(
+    galaxies=af.Collection(lens=result_1.instance.galaxies.lens, source=source)
+)
+
+"""
+__Analysis (Search 2)__
+
+We now create the analysis for the second search.
+"""
+analysis_2 = al.AnalysisImaging(
+    dataset=dataset,
+    adapt_images=adapt_images,
+)
+
+"""
+__Search + Model-Fit (Search 2)__
+
+We now create the non-linear search and perform the model-fit using this model.
+"""
+search_2 = af.Nautilus(
+    path_prefix=Path("features"),
+    name="delaunay_adapt",
+    unique_tag=dataset_name,
+    n_live=75,
+    #   use_jax_vmap=False # Set to False if CPU performance is slow or hangs
+)
+
+result_2 = search_2.fit(model=model_2, analysis=analysis_2)
+
+"""
+We could perform a third fit where we free all lens model parameters and fit them using the adaptive 
+image mesh and regularization.
+
+However, it is better to use all of these features with the Delaunay via the
+SLaM pipelines, which we jump to immediately below.
+
+__SLaM Pipelines__
+
+The API above allows you to use adaptive features yourself, and you should go ahead an explore them on datasets you
+are familiar with.
+
+However, you may also wish to use the Source, Light and Mass (SLaM) pipelines, which are pipelines that
+have been carefully crafted to automate lens modeling of large samples whilst ensuring models of the highest
+complexity can be reliably fitted.
+
+These pipelines are built around the use of adaptive features -- for example the Source pipeline comes first so that
+these features are set up robustly before more complex lens light and mass models are fitted.
+"""
+
+"""
+__SOURCE LP PIPELINE__
+
+Identical to `slam_start_here.py`.
+"""
+def source_lp(
+    settings_search: af.SettingsSearch,
+    dataset,
+    mask_radius: float,
+    redshift_lens: float,
+    redshift_source: float,
+    n_batch: int = 50,
+) -> af.Result:
+    analysis = al.AnalysisImaging(dataset=dataset)
+
+    lens_bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius,
+        total_gaussians=20,
+        gaussian_per_basis=2,
+        centre_prior_is_uniform=True,
+    )
+
+    source_bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
+    )
+
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
+                redshift=redshift_lens,
+                bulge=lens_bulge,
+                disk=None,
+                mass=af.Model(al.mp.Isothermal),
+                shear=af.Model(al.mp.ExternalShear),
+            ),
+            source=af.Model(
+                al.Galaxy,
+                redshift=redshift_source,
+                bulge=source_bulge,
+            ),
+        ),
+    )
+
+    search = af.Nautilus(
+        name="source_lp[1]",
+        **settings_search.search_dict,
+        n_live=200,
+        n_batch=n_batch,
+    )
+
+    return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
+
+
+"""
+__SOURCE PIX PIPELINE 1__
+
+Identical to `slam_start_here.py`, except the source pixelization uses a Delaunay mesh.
+
+The `source_pix_1` search uses an `Overlay` image-mesh to place the initial Delaunay mesh pixels, with
+additional edge points added around the mask boundary to ensure full coverage.
+"""
+def source_pix_1(
+    settings_search: af.SettingsSearch,
+    dataset,
+    mask_radius: float,
+    source_lp_result: af.Result,
+    n_batch: int = 20,
+) -> af.Result:
+    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
+        result=source_lp_result
+    )
+
+    image_mesh = al.image_mesh.Overlay(shape=(26, 26))
+
+    image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
+        mask=dataset.mask,
+    )
+
+    edge_pixels_total = 30
+
+    image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
+        image_plane_mesh_grid=image_plane_mesh_grid,
+        centre=dataset.mask.mask_centre,
+        radius=mask_radius + dataset.mask.pixel_scale / 2.0,
+        n_points=edge_pixels_total,
+    )
+
+    adapt_images = al.AdaptImages(
+        galaxy_name_image_dict=galaxy_image_name_dict,
+        galaxy_name_image_plane_mesh_grid_dict={
+            "('galaxies', 'source')": image_plane_mesh_grid
+        },
+    )
+
+    analysis = al.AnalysisImaging(
+        dataset=dataset,
+        adapt_images=adapt_images,
+        positions_likelihood_list=[
+            source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
+        ],
+    )
+
+    mass = al.util.chaining.mass_from(
+        mass=source_lp_result.model.galaxies.lens.mass,
+        mass_result=source_lp_result.model.galaxies.lens.mass,
+        unfix_mass_centre=True,
+    )
+    shear = source_lp_result.model.galaxies.lens.shear
+
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
+                redshift=source_lp_result.instance.galaxies.lens.redshift,
+                bulge=source_lp_result.instance.galaxies.lens.bulge,
+                disk=source_lp_result.instance.galaxies.lens.disk,
+                mass=mass,
+                shear=shear,
+            ),
+            source=af.Model(
+                al.Galaxy,
+                redshift=source_lp_result.instance.galaxies.source.redshift,
+                pixelization=af.Model(
+                    al.Pixelization,
+                    mesh=al.mesh.Delaunay(
+                        pixels=image_plane_mesh_grid.shape[0],
+                        zeroed_pixels=edge_pixels_total,
+                    ),
+                    regularization=al.reg.AdaptSplit,
+                ),
+            ),
+        ),
+    )
+
+    search = af.Nautilus(
+        name="source_pix[1]",
+        **settings_search.search_dict,
+        n_live=150,
+        n_batch=n_batch,
+    )
+
+    return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
+
+
+"""
+__SOURCE PIX PIPELINE 2__
+
+Identical to `slam_start_here.py`, except the source pixelization uses a Delaunay mesh.
+
+The `source_pix_2` search uses a `Hilbert` image-mesh to place the final Delaunay mesh pixels, which adapts
+the mesh to the source morphology using the high-quality adapt images from search 1.
+"""
+def source_pix_2(
+    settings_search: af.SettingsSearch,
+    dataset,
+    mask_radius: float,
+    source_lp_result: af.Result,
+    source_pix_result_1: af.Result,
+    n_batch: int = 20,
+) -> af.Result:
+    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
+        result=source_pix_result_1
+    )
+
+    image_mesh = al.image_mesh.Hilbert(pixels=1000, weight_power=3.5, weight_floor=0.01)
+
+    image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
+        mask=dataset.mask, adapt_data=galaxy_image_name_dict["('galaxies', 'source')"]
+    )
+
+    edge_pixels_total = 30
+
+    image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
+        image_plane_mesh_grid=image_plane_mesh_grid,
+        centre=dataset.mask.mask_centre,
+        radius=mask_radius + dataset.mask.pixel_scale / 2.0,
+        n_points=edge_pixels_total,
+    )
+
+    adapt_images = al.AdaptImages(
+        galaxy_name_image_dict=galaxy_image_name_dict,
+        galaxy_name_image_plane_mesh_grid_dict={
+            "('galaxies', 'source')": image_plane_mesh_grid
+        },
+    )
+
+    analysis = al.AnalysisImaging(
+        dataset=dataset,
+        adapt_images=adapt_images,
+    )
+
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
+                redshift=source_lp_result.instance.galaxies.lens.redshift,
+                bulge=source_lp_result.instance.galaxies.lens.bulge,
+                disk=source_lp_result.instance.galaxies.lens.disk,
+                mass=source_pix_result_1.instance.galaxies.lens.mass,
+                shear=source_pix_result_1.instance.galaxies.lens.shear,
+            ),
+            source=af.Model(
+                al.Galaxy,
+                redshift=source_lp_result.instance.galaxies.source.redshift,
+                pixelization=af.Model(
+                    al.Pixelization,
+                    mesh=al.mesh.Delaunay(
+                        pixels=image_plane_mesh_grid.shape[0],
+                        zeroed_pixels=edge_pixels_total,
+                    ),
+                    regularization=al.reg.AdaptSplit,
+                ),
+            ),
+        ),
+    )
+
+    search = af.Nautilus(
+        name="source_pix[2]",
+        **settings_search.search_dict,
+        n_live=75,
+        n_batch=n_batch,
+    )
+
+    return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
+
+
+"""
+__LIGHT LP PIPELINE__
+
+Identical to `slam_start_here.py`.
+"""
+def light_lp(
+    settings_search: af.SettingsSearch,
+    dataset,
+    mask_radius: float,
+    source_result_for_lens: af.Result,
+    source_result_for_source: af.Result,
+    n_batch: int = 20,
+) -> af.Result:
+    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
+        result=source_result_for_lens
+    )
+
+    adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
+    analysis = al.AnalysisImaging(
+        dataset=dataset,
+        adapt_images=adapt_images,
+    )
+
+    lens_bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius,
+        total_gaussians=20,
+        gaussian_per_basis=2,
+        centre_prior_is_uniform=True,
+    )
+
+    source = al.util.chaining.source_custom_model_from(
+        result=source_result_for_source, source_is_model=False
+    )
+
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
+                redshift=source_result_for_lens.instance.galaxies.lens.redshift,
+                bulge=lens_bulge,
+                disk=None,
+                mass=source_result_for_lens.instance.galaxies.lens.mass,
+                shear=source_result_for_lens.instance.galaxies.lens.shear,
+            ),
+            source=source,
+        ),
+    )
+
+    search = af.Nautilus(
+        name="light[1]",
+        **settings_search.search_dict,
+        n_live=150,
+        n_batch=n_batch,
+    )
+
+    return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
+
+
+"""
+__MASS TOTAL PIPELINE__
+
+Identical to `slam_start_here.py`.
+"""
+def mass_total(
+    settings_search: af.SettingsSearch,
+    dataset,
+    source_result_for_lens: af.Result,
+    source_result_for_source: af.Result,
+    light_result: af.Result,
+    n_batch: int = 20,
+) -> af.Result:
+    # Total mass model for the lens galaxy.
+    mass = af.Model(al.mp.PowerLaw)
+
+    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
+        result=source_result_for_lens
+    )
+
+    adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
+    analysis = al.AnalysisImaging(
+        dataset=dataset,
+        adapt_images=adapt_images,
+        positions_likelihood_list=[
+            source_result_for_source.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2
+            )
+        ],
+    )
+
+    mass = al.util.chaining.mass_from(
+        mass=mass,
+        mass_result=source_result_for_lens.model.galaxies.lens.mass,
+        unfix_mass_centre=True,
+    )
+
+    bulge = light_result.instance.galaxies.lens.bulge
+    disk = light_result.instance.galaxies.lens.disk
+
+    source = al.util.chaining.source_from(result=source_result_for_source)
+
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
+                redshift=source_result_for_lens.instance.galaxies.lens.redshift,
+                bulge=bulge,
+                disk=disk,
+                mass=mass,
+                shear=source_result_for_lens.model.galaxies.lens.shear,
+            ),
+            source=source,
+        ),
+    )
+
+    search = af.Nautilus(
+        name="mass_total[1]",
+        **settings_search.search_dict,
+        n_live=150,
+        n_batch=n_batch,
+    )
+
+    return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
+
+
+dataset_name = "simple"
+dataset_path = Path("dataset") / "imaging" / dataset_name
+
+dataset = al.Imaging.from_fits(
+    data_path=dataset_path / "data.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    psf_path=dataset_path / "psf.fits",
+    pixel_scales=0.1,
+)
+
+mask_radius = 3.0
+
+mask = al.Mask2D.circular(
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
+)
+
+dataset = dataset.apply_mask(mask=mask)
+
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=dataset.grid,
+    sub_size_list=[4, 2, 1],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0)],
+)
+
+dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
+
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+"""
+__Settings AutoFit__
+
+The settings of autofit, which controls the output paths, parallelization, database use, etc.
+"""
+settings_search = af.SettingsSearch(
+    path_prefix=Path("imaging") / "slam_delaunay",
+    unique_tag=dataset_name,
+    info=None,
+    session=None,
+    #   use_jax_vmap=False # Set to False if CPU performance is slow or hangs
+)
+
+"""
+__Redshifts__
+
+The redshifts of the lens and source galaxies.
+"""
+redshift_lens = 0.5
+redshift_source = 1.0
+
+"""
+__SLaM Pipeline__
+
+The code below calls the full SLaM PIPELINE. See the documentation string above each Python function for
+a description of each pipeline step.
+"""
+source_lp_result = source_lp(
+    settings_search=settings_search,
+    dataset=dataset,
+    mask_radius=mask_radius,
+    redshift_lens=redshift_lens,
+    redshift_source=redshift_source,
+)
+
+source_pix_result_1 = source_pix_1(
+    settings_search=settings_search,
+    dataset=dataset,
+    mask_radius=mask_radius,
+    source_lp_result=source_lp_result,
+)
+
+source_pix_result_2 = source_pix_2(
+    settings_search=settings_search,
+    dataset=dataset,
+    mask_radius=mask_radius,
+    source_lp_result=source_lp_result,
+    source_pix_result_1=source_pix_result_1,
+)
+
+light_result = light_lp(
+    settings_search=settings_search,
+    dataset=dataset,
+    mask_radius=mask_radius,
+    source_result_for_lens=source_pix_result_1,
+    source_result_for_source=source_pix_result_2,
+)
+
+mass_result = mass_total(
+    settings_search=settings_search,
+    dataset=dataset,
+    source_result_for_lens=source_pix_result_1,
+    source_result_for_source=source_pix_result_2,
+    light_result=light_result,
+)
+
+"""
+__Likelihood Function__
+
+The example `imaging/features/pixelization/likelihood_function.py` provides a step-by-step description of how
+a likelihood evaluation is performed for imaging data using a pixelized source reconstruction with a rectangular
+mesh.
+
+We now give the same step-by-step description for a pixelized source reconstruction using a Delaunay mesh and
+adaptive features.
+
+We only describe code which is specific to Delaunay meshes and adaptive features -- for all other aspects of the likelihood
+evaluation, refer to rectangular mesh example.
+"""
+dataset_path = Path("dataset", "imaging", "simple")
+
+dataset = al.Imaging.from_fits(
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    pixel_scales=0.1,
+)
+
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+mask_radius = 3.0
+
+mask = al.Mask2D.circular(
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
+)
+
+masked_dataset = dataset.apply_mask(mask=mask)
+
+aplt.subplot_imaging_dataset(dataset=masked_dataset)
+
+masked_dataset = masked_dataset.apply_over_sampling(
+    over_sample_size_lp=1,
+    over_sample_size_pixelization=1,
+)
+
+aplt.plot_grid(grid=masked_dataset.grids.pixelization, title="")
+
+bulge = al.lp.Sersic(
+    centre=(0.0, 0.0),
+    ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+    intensity=2.0,
+    effective_radius=0.6,
+    sersic_index=3.0,
+)
+
+mass = al.mp.Isothermal(
+    centre=(0.0, 0.0),
+    einstein_radius=1.6,
+    ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+)
+
+shear = al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
+
+lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+
+"""
+__Source Galaxy Pixelization and Regularization__
+
+The source galaxy is reconstructed using a pixel-grid, in this example a Delaunay mesh, which accounts for 
+irregularities and asymmetries in the source's surface brightness. 
+
+A constant regularization scheme is applied which applies a smoothness prior on the reconstruction. 
+
+One of the biggest differences between a Delaunay mesh and rectangular mesh is how the centres of the mesh pixels
+in the source-plane are computed. 
+
+For the rectangular mesh, the pixel centres are computed by overlaying a uniform grid over the source-plane.
+
+For a Delaunay mesh, the uniform grid is instead laid over the image-plane to create a course grid of (y,x) coordinates.
+These are then ray-traced to the source-plane and are used as the vertexes of the Delaunay triangles.
+"""
+pixelization = al.Pixelization(
+    mesh=al.mesh.Delaunay(
+        pixels=masked_dataset.grids.pixelization.shape[0],
+        zeroed_pixels=edge_pixels_total,
+    ),
+    regularization=al.reg.ConstantSplit(coefficient=1.0),
+)
+
+source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
+
+"""
+__Lens Light__
+"""
+image = lens_galaxy.image_2d_from(grid=masked_dataset.grid)
+
+
+blurring_image_2d = lens_galaxy.image_2d_from(grid=masked_dataset.grids.blurring)
+
+
+convolved_image_2d = masked_dataset.psf.convolved_image_from(
+    image=image, blurring_image=blurring_image_2d
+)
+
+aplt.plot_array(array=convolved_image_2d, title="")
+
+
+lens_subtracted_image = masked_dataset.data - convolved_image_2d
+
+aplt.plot_array(array=lens_subtracted_image, title="")
+
+"""
+__Source Pixel Centre Calculation__
+
+In order to reconstruct the source galaxy using a Delaunay mesh, we need to determine the centres of the Delaunay
+source pixels.
+
+The image-mesh `Overlay` object computes the source-pixel centres in the image-plane (which are ray-traced to the
+source-plane below). The source pixelization therefore adapts to the lens model magnification, because more
+source pixels will congregate in higher magnification regions.
+
+This calculation is performed by overlaying a uniform regular grid with an `pixelization_shape_2d` over the image
+mask and retaining all pixels that fall within the mask. This uses a `Grid2DSparse` object.
+"""
+image_mesh = al.image_mesh.Overlay(shape=(30, 30))  # Specific to Delaunay
+
+image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
+    mask=masked_dataset.mask,
+)
+
+adapt_images = al.AdaptImages(
+    galaxy_image_plane_mesh_grid_dict={source_galaxy: image_plane_mesh_grid},
+    galaxy_name_image_plane_mesh_grid_dict={
+        "('galaxies', 'source')": image_plane_mesh_grid
+    },
+)
+
+"""
+Plotting this grid shows a sparse grid of (y,x) coordinates within the mask, which will form our source pixel centres.
+"""
+aplt.plot_array(array=masked_dataset.data, title="Data")
+
+"""
+__Ray Tracing__
+"""
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+
+"""
+The source code gets quite complex when handling grids for a pixelization, but it is all handled in
+the `TracerToInversion` objects.
+
+The plots at the bottom of this cell show the traced grids used by the source pixelization, showing
+how the Delaunay mesh and traced image pixels are constructed.
+"""
+tracer_to_inversion = al.TracerToInversion(
+    tracer=tracer, dataset=masked_dataset, adapt_images=adapt_images
+)
+
+# A list of every grid (e.g. image-plane, source-plane) however we only need the source plane grid with index -1.
+traced_grid_pixelization = tracer.traced_grid_2d_list_from(
+    grid=masked_dataset.grids.pixelization
+)[-1]
+
+# This functions a bit weird - it returns a list of lists of ndarrays. Best not to worry about it for now!
+traced_mesh_grid = tracer_to_inversion.traced_mesh_grid_pg_list[-1][-1]
+
+
+aplt.plot_grid(grid=traced_grid_pixelization, title="")
+
+"""
+We have also ray-traced the coarse grid of image-pixel coordinates used to form the source pixelization's
+Delaunay mesh, which we can also plot.
+"""
+aplt.plot_grid(grid=traced_mesh_grid, title="")
+
+"""
+__Border Relocation__
+
+Coordinates that are ray-traced near the mass profile centres are heavily demagnified and may trace to far outskirts of
+the source-plane. 
+
+Border relocation is performed on both the traced image-pixel grid and traced mesh pixels, therefore ensuring that
+the vertexes of the Delaunay triangles are not at the extreme outskirts of the source-plane.
+"""
+from autoarray.inversion.mesh.border_relocator import BorderRelocator
+
+border_relocator = BorderRelocator(mask=masked_dataset.mask, sub_size=1)
+
+relocated_grid = border_relocator.relocated_grid_from(grid=traced_grid_pixelization)
+
+relocated_mesh_grid = border_relocator.relocated_mesh_grid_from(
+    grid=traced_grid_pixelization, mesh_grid=traced_mesh_grid
+)
+
+
+aplt.plot_grid(grid=relocated_grid, title="")
+
+aplt.plot_grid(grid=relocated_mesh_grid, title="")
+
+"""
+__Delaunay Mesh__
+
+The relocated mesh grid is used to create the `Pixelization`'s Delaunay mesh using the `scipy.spatial` library.
+"""
+interpolator = al.InterpolatorDelaunay(
+    mesh=pixelization.mesh,
+    mesh_grid=relocated_mesh_grid,
+    data_grid=relocated_grid,
+)
+
+"""
+Plotting the Delaunay mesh shows that the source-plane and been discretized into a grid of irregular Delaunay pixels.
+
+(To plot the Delaunay mesh, we have to convert it to a `Mapper` object, which is described in the next likelihood step).
+
+Below, we plot the Delaunay mesh without the traced image-grid pixels (for clarity) and with them as black dots in order
+to show how each set of image-pixels fall within a Delaunay pixel.
+"""
+mapper = al.Mapper(
+    interpolator=interpolator,
+    image_plane_mesh_grid=image_plane_mesh_grid,
+)
+
+aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
+
+aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
+
+"""
+__Interpolation__
+"""
+pix_indexes_for_sub_slim_index = mapper.pix_indexes_for_sub_slim_index
+
+print(pix_indexes_for_sub_slim_index[0:9])
+
+
+aplt.plot_array(array=lens_subtracted_image, title="Image", positions=mapper.image_plane_data_grid)
+aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
+
+pix_indexes = [[200]]
+
+indexes = mapper.slim_indexes_for_pix_indexes(pix_indexes=pix_indexes)
+
+
+
+aplt.plot_array(array=lens_subtracted_image, title="Image", positions=mapper.image_plane_data_grid)
+aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
+
+mapping_matrix = al.util.mapper.mapping_matrix_from(
+    pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,
+    pix_size_for_sub_slim_index=mapper.pix_sizes_for_sub_slim_index,  # unused for Delaunay
+    pix_weights_for_sub_slim_index=mapper.pix_weights_for_sub_slim_index,  # unused for Delaunay
+    pixels=mapper.pixels,
+    total_mask_pixels=mapper.source_plane_data_grid.mask.pixels_in_mask,
+    slim_index_for_sub_slim_index=mapper.slim_index_for_sub_slim_index,
+    sub_fraction=mapper.over_sampler.sub_fraction,
+)
+
+plt.imshow(mapping_matrix, aspect=(mapping_matrix.shape[1] / mapping_matrix.shape[0]))
+plt.show()
+plt.close()
+
+indexes_source_pix_200 = np.nonzero(mapping_matrix[:, 200])
+
+print(indexes_source_pix_200[0])
+
+array_2d = al.Array2D(values=mapping_matrix[:, 200], mask=masked_dataset.mask)
+
+aplt.plot_array(array=array_2d, title="")
+
+blurred_mapping_matrix = masked_dataset.psf.convolved_mapping_matrix_from(
+    mapping_matrix=mapping_matrix, mask=masked_dataset.mask
+)
+
+plt.imshow(
+    blurred_mapping_matrix,
+    aspect=(blurred_mapping_matrix.shape[1] / blurred_mapping_matrix.shape[0]),
+)
+plt.colorbar()
+plt.show()
+plt.close()
+
+indexes_source_pix_200 = np.nonzero(blurred_mapping_matrix[:, 200])
+
+print(indexes_source_pix_200[0])
+
+array_2d = al.Array2D(values=blurred_mapping_matrix[:, 200], mask=masked_dataset.mask)
+
+aplt.plot_array(array=array_2d, title="")
+
+print(f"Mapping between image pixel 0 and source pixel 2 = {mapping_matrix[0, 2]}")
+
+data_vector = al.util.inversion_imaging.data_vector_via_blurred_mapping_matrix_from(
+    blurred_mapping_matrix=blurred_mapping_matrix,
+    image=np.array(lens_subtracted_image),
+    noise_map=np.array(masked_dataset.noise_map),
+)
+
+plt.imshow(
+    data_vector.reshape(data_vector.shape[0], 1), aspect=10.0 / data_vector.shape[0]
+)
+plt.colorbar()
+plt.show()
+plt.close()
+
+curvature_matrix = al.util.inversion.curvature_matrix_via_mapping_matrix_from(
+    mapping_matrix=blurred_mapping_matrix, noise_map=masked_dataset.noise_map
+)
+
+plt.imshow(curvature_matrix)
+plt.colorbar()
+plt.show()
+plt.close()
+
+source_pixel_0 = 0
+source_pixel_1 = 1
+
+print(curvature_matrix[source_pixel_0, source_pixel_1])
+
+array_2d = al.Array2D(
+    values=blurred_mapping_matrix[:, source_pixel_0], mask=masked_dataset.mask
+)
+
+aplt.plot_array(array=array_2d, title="")
+
+array_2d = al.Array2D(
+    values=blurred_mapping_matrix[:, source_pixel_1], mask=masked_dataset.mask
+)
+
+aplt.plot_array(array=array_2d, title="")
+
+regularization_matrix = al.util.regularization.constant_regularization_matrix_from(
+    coefficient=source_galaxy.pixelization.regularization.coefficient,
+    neighbors=mapper.neighbors,
+    neighbors_sizes=mapper.neighbors.sizes,
+)
+
+plt.imshow(regularization_matrix)
+plt.colorbar()
+plt.show()
+plt.close()
+
+curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
+
+reconstruction = np.linalg.solve(curvature_reg_matrix, data_vector)
+
+
+aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
+
+mapped_reconstructed_operated_data = (
+    al.util.inversion.mapped_reconstructed_data_via_mapping_matrix_from(
+        mapping_matrix=blurred_mapping_matrix, reconstruction=reconstruction
+    )
+)
+
+mapped_reconstructed_operated_data = al.Array2D(
+    values=mapped_reconstructed_operated_data, mask=mask
+)
+
+aplt.plot_array(array=mapped_reconstructed_operated_data, title="")
+
+"""
+__Likelihood Function__
+"""
+model_image = convolved_image_2d + mapped_reconstructed_operated_data
+
+residual_map = masked_dataset.data - model_image
+normalized_residual_map = residual_map / masked_dataset.noise_map
+chi_squared_map = normalized_residual_map**2.0
+
+chi_squared = np.sum(chi_squared_map)
+
+print(chi_squared)
+
+chi_squared_map = al.Array2D(values=chi_squared_map, mask=mask)
+
+aplt.plot_array(array=chi_squared_map, title="")
+
+regularization_term = np.matmul(
+    reconstruction.T, np.matmul(regularization_matrix, reconstruction)
+)
+
+print(regularization_term)
+
+log_curvature_reg_matrix_term = np.linalg.slogdet(curvature_reg_matrix)[1]
+log_regularization_matrix_term = np.linalg.slogdet(regularization_matrix)[1]
+
+print(log_curvature_reg_matrix_term)
+print(log_regularization_matrix_term)
+
+noise_normalization = float(np.sum(np.log(2 * np.pi * masked_dataset.noise_map**2.0)))
+
+log_evidence = float(
+    -0.5
+    * (
+        chi_squared
+        + regularization_term
+        + log_curvature_reg_matrix_term
+        - log_regularization_matrix_term
+        + noise_normalization
+    )
+)
+
+print(log_evidence)
+
+"""
+__Fit__
+
+This process to perform a likelihood function evaluation is what is performed in the `FitImaging` object.
+"""
+fit = al.FitImaging(
+    dataset=masked_dataset,
+    tracer=tracer,
+    adapt_images=adapt_images,
+    settings=al.Settings(use_border_relocator=True),
+)
+fit_log_evidence = fit.log_evidence
+print(fit_log_evidence)
+
+aplt.subplot_fit_imaging(fit=fit)
+
+
+"""
+__Lens Modeling__
+
+To fit a lens model to data, the likelihood function illustrated in this tutorial is sampled using a
+non-linear search algorithm.
+
+The default sampler is the nested sampling algorithm `Nautilus` (https://github.com/joshspeagle/Nautilus)
+multiple MCMC and optimization algorithms are supported.
+
+__Sub Gridding__
+
+The calculation above uses a `Grid2D` object, with a `sub-size=1`, meaning it does not perform oversampling to
+evaluate the light profile flux at every image pixel.
+
+**PyAutoLens** has alternative methods of computing the lens galaxy images above, which uses a grid whose sub-size
+adaptively increases depending on a required fractional accuracy of the light profile.
+
+ https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/structures/grids/two_d/grid_iterate.py
+
+__Sourrce Plane Interpolation__
+
+For the `Delaunay` mesh used in this example, every image-sub pixel maps to a single source Voronoi
+pixel. Therefore, the plural use of `pix_indexes` is not required. However, for other pixelizations each sub-pixel
+can map to multiple source pixels with an interpolation weight (e.g. `Delaunay` triangulation or a `Voronoi` mesh
+which uses natural neighbor interpolation).
+
+`MapperVoronoiNoInterp.pix_index_for_sub_slim_index`:
+https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/inversion/mappers/voronoi.py
+
+`pixelization_index_for_voronoi_sub_slim_index_from`:
+ https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/util/mapper_util.py
+
+The number of pixels that each sub-pixel maps too is also stored and extracted. This is used for speeding up
+the calculation of the `mapping_matrix` described next.
+
+As discussed above, because for the `VoronoiNoInterp` pixelization where every sub-pixel maps to one source pixel,
+every entry of this array will be equal to 1.
+"""
+# pix_sizes_for_sub_slim_index = mapper.pix_sizes_for_sub_slim_index
+
+"""
+When each sub-pixel maps to multiple source pixels, the mappings are described via an interpolation weight. For 
+example, for a `Delaunay` triangulation, every sub-pixel maps to 3 Delaunay triangles based on which triangle
+it lands in.
+
+For the `VoronoiNoInterp` pixelization where every sub-pixel maps to a single source pixel without inteprolation,
+every entry of this weight array is 1.0.
+"""
+# pix_weights_for_sub_slim_index = mapper.pix_weights_for_sub_slim_index
+
+"""
+__Wrap Up__
+
+We have presented a visual step-by-step guide to the **PyAutoLens** likelihood function, which uses a pixelization, 
+regularization scheme and inversion to reconstruct the source galaxy.
+
+There are a number of other inputs features which slightly change the behaviour of this likelihood function, which
+are described in additional notebooks found in this package. In brief, these describe:
+
+ - **Sub-gridding**: Oversampling the image grid into a finer grid of sub-pixels, which are all individually 
+ ray-traced to the source-plane and paired fractionally with each source pixel.
+ 
+ - **Source-plane Interpolation**: Using a Delaunay triangulation or Delaunay mesh with natural neighbor interpolation
+ to pair each image (sub-)pixel to multiple source-plane pixels with interpolation weights.
+ 
+ - **Source Morphology Pixelization Adaption**: Adapting the pixelization such that is congregates source pixels around
+ the source's brightest regions, as opposed to the magnification-based pixelization used here.
+ 
+ - **Luminosity Weighted Regularization**: Using an adaptive regularization coefficient which adapts the level of 
+ regularization applied to the source based on its luminosity.
+"""

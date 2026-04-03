@@ -1,0 +1,19 @@
+model.FlatLambdaCDM:
+  H0:
+    type: Constant
+    value: 67.66
+  Om0:
+    type: Constant
+    value: 0.30966
+  Tcmb0:
+    type: Constant
+    value: 2.7255
+  Neff:
+    type: Constant
+    value: 3.046
+  m_nu:
+    type: Constant
+    value: 0.06
+  Ob0:
+    type: Constant
+    value: 0.04897

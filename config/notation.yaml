@@ -1,0 +1,163 @@
+# The notation configs define the labels of every model parameter and its derived quantities, which are used when
+# visualizing results (for example labeling the axis of the PDF triangle plots output by a non-linear search).
+
+
+# label: The label given to the each parameter, for plots like PDF corner plots.
+
+# For example, if `centre=x`, the plot axis will be labeled 'x'.
+
+
+# superscript: the superscript used on certain plots that show the results of different model-components.
+
+# For example, if `Gaussian=g`, plots where the parameters of the Gaussian model-component have superscript `g`.
+
+label:
+  label:
+    sigma: \sigma
+    alpha: \alpha
+    angle_binary: \theta
+    beta: \beta
+    break_radius: \theta_{\rm B}
+    centre_0: y
+    centre_1: x
+    coefficient: \lambda
+    contribution_factor: \omega_{\rm 0}
+    core_radius: C_{\rm r}
+    core_radius_0: C_{rm r0}
+    core_radius_1: C_{\rm r1}
+    effective_radius: R_{\rm eff}
+    einstein_radius: \theta_{\rm Ein}
+    ell_comps_0: \epsilon_{\rm 1}
+    ell_comps_1: \epsilon_{\rm 2}
+    multipole_comps_0: M_{\rm 1}
+    multipole_comps_1: M_{\rm 2}
+    flux: F
+    gamma: \gamma
+    gamma_1: \gamma
+    gamma_2: \gamma
+    inner_coefficient: \lambda_{\rm 1}
+    inner_slope: t_{\rm 1}
+    intensity: I_{\rm b}
+    kappa: \kappa
+    kappa_s: \kappa_{\rm s}
+    log10m_vir: log_{\rm 10}(m_{vir})
+    m: m
+    mass: M
+    mass_at_200: M_{\rm 200}
+    mass_ratio: M_{\rm ratio}
+    mass_to_light_gradient: \Gamma
+    mass_to_light_ratio: \Psi
+    mass_to_light_ratio_base: \Psi_{\rm base}
+    mass_to_light_radius: R_{\rm ref}
+    noise_factor: \omega_{\rm 1}
+    noise_power: \omega{\rm 2}
+    noise_scale: \sigma_{\rm 1}
+    normalization_scale: n
+    outer_coefficient: \lambda_{\rm 2}
+    outer_slope: t_{\rm 2}
+    overdens: \Delta_{\rm vir}
+    pixels: N_{\rm pix}
+    radius_break: R_{\rm b}
+    redshift: z
+    redshift_object: z_{\rm obj}
+    redshift_source: z_{\rm src}
+    rs: r_{\rm s}
+    ra: r_{\rm a}
+    scale_radius: R_{\rm s}
+    scatter: \sigma
+    sigma_scale: \sigma
+    separation: s
+    sersic_index: n
+    shape_0: y_{\rm pix}
+    shape_1: x_{\rm pix}
+    signal_scale: V
+    sky_scale: \sigma_{\rm 0}
+    slope: \gamma
+    truncation_radius: R_{\rm t}
+    weight_floor: W_{\rm f}
+    weight_power: W_{\rm p}
+  superscript:
+    ExternalShear: ext
+    Mesh: mesh
+    Point: point
+    SMBH: smbh
+    Redshift: z
+    Regularization: reg
+    HyperBackgroundNoise: hyper
+    HyperGalaxy: hyper
+    HyperImageSky: hyper
+    InputDeflections: defl
+
+# label_format: The format certain parameters are output as in output files like the `model.results` file.
+
+# For example, if `centre={:.2d}`, the format of the centre parameter in results files will use this Python format.
+
+label_format:
+  format:
+    sigma: '{:.4f}'
+    alpha: '{:.4f}'
+    angle_binary: '{:.4f}'
+    angular_diameter_distance_to_earth: '{:.4f}'
+    beta: '{:.4f}'
+    c_2: '{:.4f}'
+    centre_0: '{:.4f}'
+    centre_1: '{:.4f}'
+    coefficient: '{:.4f}'
+    concentration: '{:.4f}'
+    contribution_factor: '{:.4f}'
+    core_radius: '{:.4f}'
+    core_radius_0: '{:.4f}'
+    core_radius_1: '{:.4f}'
+    effective_radius: '{:.4f}'
+    einstein_mass: '{:.4e}'
+    einstein_radius: '{:.4f}'
+    ell_comps_0: '{:.4f}'
+    ell_comps_1: '{:.4f}'
+    multipole_comps_0: '{:.4f}'
+    multipole_comps_1: '{:.4f}'
+    flux: '{:.4e}'
+    gamma: '{:.4f}'
+    inner_coefficient: '{:.4f}'
+    inner_slope: '{:.4f}'
+    intensity: '{:.4f}'
+    kappa: '{:.4f}'
+    kappa_s: '{:.4f}'
+    kpc_per_arcsec: '{:.4f}'
+    log10m_vir: '{:.4f}'
+    luminosity: '{:.4e}'
+    m: '{:.1f}'
+    mass: '{:.4e}'
+    mass_at_200: '{:.4e}'
+    mass_at_truncation_radius: '{:.4e}'
+    mass_ratio: '{:.4f}'
+    mass_to_light_gradient: '{:.4f}'
+    mass_to_light_ratio: '{:.4f}'
+    n_x: '{:.1d}'
+    n_y: '{:.1d}'
+    noise_factor: '{:.3f}'
+    noise_power: '{:.3f}'
+    noise_scale: '{:.3f}'
+    normalization_scale: '{:.4f}'
+    outer_coefficient: '{:.4f}'
+    outer_slope: '{:.4f}'
+    overdens: '{:.4f}'
+    pixels: '{:.4f}'
+    ra : '{:.4f}'
+    radius: '{:.4f}'
+    radius_break: '{:.4f}'
+    redshift: '{:.4f}'
+    redshift_object: '{:.4f}'
+    redshift_source: '{:.4f}'
+    rho: '{:.4f}'
+    rs: '{:.4f}'
+    scale_radius: '{:.4f}'
+    separation: '{:.4f}'
+    sersic_index: '{:.4f}'
+    shape_0: '{:.4f}'
+    shape_1: '{:.4f}'
+    signal_scale: '{:.4f}'
+    sky_scale: '{:.4f}'
+    slope: '{:.4f}'
+    truncation_radius: '{:.4f}'
+    weight_floor: '{:.4f}'
+    weight_power: '{:.4f}'

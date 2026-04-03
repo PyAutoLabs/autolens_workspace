@@ -1,0 +1,482 @@
+"""
+Modeling Features: Extra Galaxies
+=================================
+
+There may be extra galaxies nearby the lens and source galaxies, whose emission blends with the lens and source
+and whose mass may contribute to the ray-tracing and lens model.
+
+If their emission is significant, and close enough to the lens and source, we may simply mask it from the data
+to ensure it does not impact the model-fit. In this script, we first illustrate how to do this, and outline two
+different approaches to masking the emission of these extra galaxies which is appropriate for different lens models.
+
+Next, we consider a different approach which extends the modeling API to include these extra galaxies in the model-fit.
+This includes both light profiles which fit and subtract their emission and mass profiles which account for their
+contribution to the lensing of the source galaxy. The centres of each galaxy (e.g. their brightest pixels in the data)
+are used as the centre of the light and mass profiles of these galaxies, in order to reduce model complexity.
+
+The second approach is more complex and computationally expensive, but if the emission of the extra galaxies blends
+significantly with the lensed source emission, or if their mass is anticipated to contributed signficiantly, it is the
+best approach to take.
+
+__Data Preparation__
+
+To perform modeling which accounts for extra galaxies, a mask of their emission or list of the centre of each extra
+galaxy are used to set up the model-fit. For the example dataset used here, these tasks have already been performed and
+the metadata (`mask_extra_galaxies.fits` and `extra_galaxies_centres.json` are already included in results folder.
+
+The tutorial `autolens_workspace/*/imaging/data_preparation/optional/extra_galaxies_centres.py`
+describes how to create these centres and output them to a `.json` file.
+
+To mask the emission of extra galaxies and omit them from the fit, a `mask_extra_galaxies.fits` file is required.
+The `data_preparation` tutorial `autolens_workspace/*/imaging/data_preparation/optional/mask_extra_galaxies.py`
+describes how to create this mask.
+
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
+"""
+
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
+
+# %matplotlib inline
+# from pyprojroot import here
+# workspace_path = str(here())
+# %cd $workspace_path
+# print(f"Working Directory has been set to `{workspace_path}`")
+
+from pathlib import Path
+import autofit as af
+import autolens as al
+import autolens.plot as aplt
+
+"""
+__Dataset__
+
+Load and plot the strong lens dataset `extra_galaxies` via .fits files.
+"""
+dataset_name = "extra_galaxies"
+dataset_path = Path("dataset") / "imaging" / dataset_name
+
+dataset = al.Imaging.from_fits(
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    pixel_scales=0.1,
+)
+
+"""
+Visualization of this dataset shows two galaxies either side of the lensed source. 
+"""
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+"""
+__Mask__
+
+We define a bigger circular mask of 6.0" than the 3.0" masks used in other tutorials, to ensure the extra galaxy's 
+emission is included.
+"""
+mask_radius = 6.0
+
+mask_main = al.Mask2D.circular(
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    radius=mask_radius,
+)
+
+dataset = dataset.apply_mask(mask=mask_main)
+
+"""
+Lets plot the masked imaging to make sure the extra galaxies are included.
+"""
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+"""
+__Extra Galaxies Over Sampling__
+
+Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
+on a higher resolution grid than the image data to ensure the calculation is accurate. 
+
+For a new user, the details of over-sampling are not important, therefore just be aware that below we make it so that 
+all calculations use an adaptive over sampling scheme which ensures high accuracy and precision.
+
+Crucially, this over sampling is applied at the centre of both extra galaxies, ensuring the light of both are over 
+sampled correctly.
+
+Once you are more experienced, you should read up on over-sampling in more detail via 
+the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
+"""
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=dataset.grid,
+    sub_size_list=[4, 2, 1],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0), (1.0, 3.5), (-2.0, -3.5)],
+)
+
+dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
+
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+"""
+__Extra Galaxies Noise Scaling__
+
+To prevent extra galaxies from impacting the model-fit, we do not mask them entirely from the fit, which
+would be analogous to making the circular mask smaller or using a more refined mask. When pixels are masked and
+removed entirely from the fit, their coordinates are not used when performing ray-tracing and the light of the
+lens and source galaxies in these pixels not evaluated.
+
+Instead, the pixels are kept in the fit, but their data values are scaled to zero and their noise-map values
+are increased to very large values. This means that during the model-fit, these pixels contribute negligibly to
+the likelihood of the fit, and therefore do not impact the lens model.
+
+This approach is used because for certain types of modeling approaches, like a pixelized source reconstruction, 
+masking regions of the image in a way that removes  their image pixels entirely from the fit can produce 
+discontinuities in the pixelixation. This can lead to unexpected systematics and unsatisfactory results
+
+In this case, applying the mask in a way where the image pixels are not removed from the fit, but their data and 
+noise-map values are scaled such that they contribute negligibly to the fit, is a better approach. 
+
+We illustrate the API for doing this below, and show the subplot imaging where the extra galaxies mask has scaled
+the data values to zeros, increasing the noise-map values to large values and in turn made the signal to noise
+of its pixels effectively zero.
+
+We reload the dataset to ensure that the trimming performed for the FFT, based on the previous mask,
+does not impact the noise-scaling.
+"""
+dataset = al.Imaging.from_fits(
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    pixel_scales=0.1,
+)
+
+mask_extra_galaxies = al.Mask2D.from_fits(
+    file_path=Path(dataset_path, "mask_extra_galaxies.fits"),
+    pixel_scales=0.1,
+    invert=True,  # Note that we invert the mask here as `True` means a pixel is scaled.
+)
+
+dataset = dataset.apply_noise_scaling(mask=mask_extra_galaxies)
+
+mask = al.Mask2D.circular(
+    shape_native=dataset.shape_native, pixel_scales=0.1, centre=(0.0, 0.0), radius=6.0
+)
+
+dataset = dataset.apply_mask(mask=mask)
+
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+
+"""
+We now perform a model-fit using the standard API, where the extra galaxies are not included in the model.
+
+The mask we have applied ensures the extra galaxies do not impact the fit, and the model-fit returns a good fit to the
+lensed source.
+"""
+# Lens:
+
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
+)
+
+mass = af.Model(al.mp.Isothermal)
+
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+
+# Source:
+
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+
+# Overall Lens Model:
+
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+search = af.Nautilus(
+    path_prefix=Path("imaging") / "features",
+    name="extra_galaxies_noise_scaling",
+    unique_tag=dataset_name,
+    n_live=150,
+    iterations_per_quick_update=20000,
+)
+
+analysis = al.AnalysisImaging(dataset=dataset)
+
+result = search.fit(model=model, analysis=analysis)
+
+
+"""
+In the `features/pixelization` example we perform a fit using this noise scaling scheme and a pixelization,
+so check this out if you are interested in how to do this.
+
+__Extra Galaxies Dataset__
+
+We are now going to model the dataset with extra galaxies included in the model, where these galaxies include
+both the light and mass profiles of the extra galaxies.
+
+We therefore reload the dataset and apply the 6.0" circular mask to it, but do not use the extra galaxies mask
+as the emission of the extra galaxies is included in the model.
+"""
+dataset = al.Imaging.from_fits(
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    pixel_scales=0.1,
+)
+
+mask_main = al.Mask2D.circular(
+    shape_native=dataset.shape_native, pixel_scales=dataset.pixel_scales, radius=6.0
+)
+
+dataset = dataset.apply_mask(mask=mask_main)
+
+"""
+__Extra Galaxies Centres__
+
+To set up a lens model including each extra galaxy with light and / or mass profile, we input manually the centres of
+the extra galaxies.
+
+In principle, a lens model including the extra galaxies could be composed without these centres. For example, if 
+there were two extra galaxies in the data, we could simply add two additional light and mass profiles into the model. 
+The modeling API does support this, but we will not use it in this example.
+
+This is because models where the extra galaxies have free centres are often too complex to fit. It is likely the fit 
+will infer an inaccurate lens model and local maxima, because the parameter space is too complex.
+
+For example, a common problem is that one of the extra galaxy light profiles intended to model a nearby galaxy instead 
+fit  one of the lensed source's multiple images. Alternatively, an extra galaxy's mass profile may recenter itself and 
+act as part of the main lens galaxy's mass distribution.
+
+Therefore, when modeling extra galaxies we input the centre of each, in order to fix their light and mass profile 
+centres or set up priors centre around these values.
+
+The `data_preparation` tutorial `autolens_workspace/*/imaging/data_preparation/examples/optional/extra_galaxies_centres.py` 
+describes how to create these centres. Using this script they have been output to the `.json` file we load below.
+"""
+extra_galaxies_centres = al.Grid2DIrregular(
+    al.from_json(file_path=Path(dataset_path, "extra_galaxies_centres.json"))
+)
+
+print(extra_galaxies_centres)
+
+"""
+__Extra Galaxies Over Sampling__
+
+Over sampling was discussed above, below we show how to apply it using the loaded centres of the extra galaxies.
+
+There is still a galaxy at the centre of the image so we include this in the `centre_list` with a centre 
+of (0.0", 0.0").
+"""
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=dataset.grid,
+    sub_size_list=[4, 2, 1],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0)] + extra_galaxies_centres.in_list,
+)
+
+dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
+
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+"""
+__Model__ 
+
+Perform the normal steps to set up the main model of the lens galaxy and source.
+
+A full description of model composition is provided by the model cookbook: 
+
+https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
+"""
+# Lens:
+
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
+)
+mass = af.Model(al.mp.Isothermal)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+
+# Source:
+
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=1,
+    centre_prior_is_uniform=False,
+)
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+
+"""
+__Extra Galaxies Model__ 
+
+We now use the modeling API to create the model for the extra galaxies.
+
+Currently, the extra galaxies API require that the centres of the light and mass profiles are fixed to the input centres
+(but the other parameters of the light and mass profiles remain free). 
+
+Therefore, in this example fits a lens model where:
+
+ - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
+
+ - The source galaxy's light is a Multi Gaussian Expansion [4 parameters].
+
+ - Each extra galaxy's light is a Multi Gaussian expansion with fixed centre [2 extra galaxies x 2 parameters = 4 parameters].
+
+ - Each extra galaxy's total mass distribution is a `IsothermalSph` profile with fixed 
+ centre [2 extra galaxies x 1 parameters = 2 parameters].
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=20.
+
+Extra galaxy mass profiles often to go unphysically high `einstein_radius` values, degrading the fit. The 
+`einstein_radius` parameter is set a `UniformPrior` with an upper limit of 0.1" to prevent this.
+"""
+# Extra Galaxies:
+
+extra_galaxies_list = []
+
+for extra_galaxy_centre in extra_galaxies_centres:
+
+    # Extra Galaxy Light
+
+    bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius, total_gaussians=10, centre_fixed=extra_galaxy_centre
+    )
+
+    # Extra Galaxy Mass
+
+    mass = af.Model(al.mp.IsothermalSph)
+
+    mass.centre = extra_galaxy_centre
+    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+
+    # Extra Galaxy
+
+    extra_galaxy = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+
+    extra_galaxies_list.append(extra_galaxy)
+
+extra_galaxies = af.Collection(extra_galaxies_list)
+
+# Overall Lens Model:
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source), extra_galaxies=extra_galaxies
+)
+
+"""
+The `info` attribute confirms the model includes extra galaxies that we defined above.
+"""
+print(model.info)
+
+"""
+__Search + Analysis__ 
+
+The code below performs the normal steps to set up a model-fit.
+
+Given the extra model parameters due to the extra gaxies, we increase the number of live points to 200.
+"""
+search = af.Nautilus(
+    path_prefix=Path("imaging") / "features",
+    name="extra_galaxies_model",
+    unique_tag=dataset_name,
+    n_live=200,
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
+    iterations_per_quick_update=20000,
+)
+
+analysis = al.AnalysisImaging(dataset=dataset)
+
+"""
+__VRAM__
+
+The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
+required by a model.
+
+Adding extra galaxies increases VRAM usage because each additional component adds calculations that JAX stores 
+in GPU memory. If you see VRAM warnings or errors, or if model fitting is slower than expected, you should 
+print the estimated VRAM usage and compare 
+
+__Run Time__
+
+Adding extra galaxies to the model increases the likelihood evaluation times, because their light profiles need 
+their images evaluated and their mass profiles need their deflection angles computed. These calculations are pretty 
+fast, so only a small increase in time is expected.
+
+The bigger hit on run time is due to the extra free parameters, 2 free parameters for the `ell_comps` of each 
+multi Gaussian expansion of each extra galaxy and 1 `einstein_radius` for its mass. This increases the dimensionality 
+of non-linear parameter space.  This means Nautilus takes longer to converge on the highest likelihood regions of 
+parameter space.
+
+The Source, Light and Mass (SLaM) pipelines support extra galaxies but in a way that reduces the number of free
+parameters they add to the model. This is described in the `slam` examples. The `group` package, which models systems
+with 10+ extra galaxies, introduces even more clever parameterizations which add 0 free parameters per extra galaxy,
+so if your model has many extra galaxies you should check out the `group` package.
+
+__Model-Fit__
+
+We can now begin the model-fit by passing the model and analysis object to the search, which performs a non-linear
+search to find which models fit the data with the highest likelihood.
+"""
+result = search.fit(model=model, analysis=analysis)
+
+"""
+__Result__
+
+By plotting the maximum log likelihood `FitImaging` object we can confirm the extra galaxies contribute to the fit.
+"""
+aplt.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
+
+"""
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
+
+These examples show how the results API can be extended to investigate extra galaxies in the results.
+
+__Approaches to Extra Galaxies__
+
+We illustrated two extremes of how to prevent the emission of extra galaxies impacting the model-fit:
+
+- **Noise Scaling**: We scaled the emission of the extra galaxies, such that their light did not impact the fit,
+  and ignored their mass entirely.
+
+- **Modeling**: We included the extra galaxies in the model, such that their light and mass profiles were fitted.
+
+There are approach that fall between these two, for example the light profiles could be omitted from the model
+by applying an extra galaxies mask, but their mass profiles can still be included via the modeling API. You could also
+include just the light profiles and not the mass profiles, or visa versa. You could also make the redshifts of the
+extra galaxies free parameters in the model, or provide different light and mass profiles for each galaxy.
+
+Extending the modeling API should be straight forward given the above examples, and if anything is unclear then
+checkout the model cookbook: 
+
+https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
+
+__Scaling Relations__
+
+The modeling API has full support for composing the extra galaxies such that their light and or mass follow scaling
+relations. For example, you could assume that the mass of the extra galaxies is related to their luminosity via a
+constant mass-to-light ratio.
+
+This is documented in the `autolens_workspace/*/imaging/features/scaling_relation` example.
+
+__Wrap Up__
+
+The extra galaxies API makes it straight forward for us to model galaxy-scale strong lenses with additional components for
+the light and mass of nearby objects.
+
+The `autolens_workspace` includes a `group` package, for modeling group scale strong lenses which have multiple lens 
+galaxies. When you should use the extra galaxies API as shown here, and when you should use the group package? 
+
+The distinction is as follows:
+
+ - A galaxy scale lens is a system which can be modeled to a high level of accuracy using a single light and mass 
+ distribution for the main lens galaxy. Including additional galaxies in the model via the extra galaxies API makes small 
+ improvements on the lens model, but a good fit is possible without them. 
+
+ - A group scale lens is a system which cannot be modeled to a high level of accuracy using a single light and mass 
+ distribution. Defining a 'main' lens galaxy is unclear and two or more main lens galaxies are required to fit an 
+ accurate model. 
+
+The `group` package also uses the extra galaxies API for model composition, but does so to compose and fit more complex lens 
+models.
+"""
