@@ -10,15 +10,22 @@ readable code for different use-cases.
 
 __Contents__
 
-**Simple Lens Model:** A simple lens model has a lens galaxy with a Sersic light profile, Isothermal mass profile and.
-**More Complex Lens Models:** The API above can be easily extended to compose lens models where each galaxy has multiple light or.
-**Concise API:** If a light or mass profile is passed directly to the `af.Model` of a galaxy, it is automatically.
-**Prior Customization:** We can customize the priors of the lens model component individual parameters, using the following.
-**Model Customization:** We can customize the lens model parameters in a number of different ways, as shown below: """ #.
-**Redshift Free:** The redshift of a galaxy can be treated as a free parameter in the model-fit by using the following.
-**Available Model Components:** The light profiles, mass profiles and other components that can be used for lens modeling are given.
-**PyAutoFit API:** **PyAutoFit** is a general model composition library which offers even more ways to compose lens.
-**Wrap Up:** Summary of the script and next steps.
+**Simple Lens Model:** Compose a simple lens model with a lens galaxy and source galaxy.
+**More Complex Lens Models:** Extend the simple model to have multiple light or mass profiles and multiple galaxies.
+**Concise API:** Compose a lens model using the concise API, which is more readable and concise.
+**Prior Customization:** Customize the priors of individual lens model parameters using uniform, log-uniform and Gaussian priors.
+**Model Customization:** Customize the lens model parameters, including parameter pairing, fixing and offsets.
+**Redshift Free:** Make the redshift of a galaxy a free parameter in the model-fit.
+**Available Model Components:** List the available light profiles, mass profiles and other components that can be used for lens modeling.
+
+Advanced Features:
+
+**JSon Outputs:** Output a model to a .json file on hard-disk, which can be loaded and modified.
+**Many Profile Models:** Compose and fit models with many light profiles, such as the Multi Gaussian Expansion (MGE) and shapelets.
+**Model Linking:** Link the inferred model of one phase to the model in a non-linear search chain.
+**Across Datasets:** Compose models where the same model component is used across multiple datasets, with certain parameters free to vary.
+**Relations:** Compose models where the free parameter(s) vary according to a user-specified function.
+**PyAutoFit API:** Use the PyAutoFit API to compose lens models in more advanced ways.
 
 __Start Here Notebook__
 
@@ -164,7 +171,7 @@ print(model.info)
 
 """
 The above lens model consists of only two planes (an image-plane and source-plane), but has four galaxies in total.
-This is because the lens galaxies have the same redshift and the souece galaxies have the same redshift.
+This is because the lens galaxies have the same redshift and the source galaxies have the same redshift.
 
 If we gave one of the lens galaxies a different redshift, it would be included in a third plane, and the model would
 perform multi-plane ray tracing when the model-fit is performed.
@@ -304,7 +311,7 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 # Assert that the effective radius of the bulge is larger than that of the disk.
 # (Assertions can only be added at the end of model composition, after all components
-# have been bright together in a `Collection`.
+# have been brought together in a `Collection`.
 model.add_assertion(
     model.galaxies.lens.bulge.effective_radius
     > model.galaxies.lens.disk.effective_radius
@@ -347,8 +354,10 @@ API documentation pages:
  - https://pyautolens.readthedocs.io/en/latest/api/light.html
  - https://pyautolens.readthedocs.io/en/latest/api/mass.html
  - https://pyautolens.readthedocs.io/en/latest/api/pixelization.html
- 
- __JSon Outputs__
+"""
+
+"""
+__JSon Outputs__
 
 After a model is composed, it can easily be output to a .json file on hard-disk in a readable structure:
 """
