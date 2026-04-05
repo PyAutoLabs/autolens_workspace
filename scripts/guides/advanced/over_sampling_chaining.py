@@ -24,8 +24,14 @@ This example shows how to combine lensed source adaptive over sampling with sear
 
 __Contents__
 
-**Paths:** The path the results of all chained searches are output: """ path_prefix = Path("imaging") /.
+**Start Here Notebook:** If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.
+**Dataset + Masking:** Load, plot and mask the `Imaging` data.
+**Paths:** The path the results of all chained searches are output.
 **Redshifts:** The redshifts of the lens and source galaxies.
+**Model (Search 1):** Search 1 fits a lens model where the lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` and the source galaxy's light is an MGE.
+**Search + Analysis + Model-Fit (Search 1):** We now create the non-linear search, analysis and perform the model-fit using this model.
+**Result (Search 1):** The results which are used for prior passing are summarised in the `info` attribute.
+**Over Sampling (Search 2):** We update the over sampling grid between searches using the results of search 1.
 
 __Start Here Notebook__
 

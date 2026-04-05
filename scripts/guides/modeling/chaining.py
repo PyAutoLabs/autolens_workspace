@@ -21,12 +21,19 @@ The benefits of non-linear search chaining are:
 
 __Contents__
 
-**Concise Model Composition API:** Chaining uses the concise `Model` API to compose lens models, which is nearly identical to the.
-**This Example:** This script gives an overview of the API for search chaining, a description of how the priors on.
-**Paths:** The path the results of all chained searches are output: """ path_prefix = Path("imaging") /.
+**Concise Model Composition API:** Chaining uses the concise `Model` API to compose lens models, which is nearly identical to the standard API but avoids the need to use `Model` objects to compose the lens model when a light or mass profile is passed to a `Collection` object.
+**This Example:** This script gives an overview of the API for search chaining, a description of how the priors on parameters are used to pass information between searches as well as tools for customizing prior passing.
+**Dataset + Masking:** Load, plot and mask the `Imaging` data.
+**Paths:** The path the results of all chained searches are output.
+**Model (Search 1):** We compose our lens model using `Model` objects, which represent the galaxies we fit to our data.
+**Search + Analysis + Model-Fit (Search 1):** We now create the non-linear search, analysis and perform the model-fit using this model.
+**Result (Search 1):** The results which are used for prior passing are summarised in the `info` attribute.
 **Model Chaining:** We use the results of search 1 to create the `Model` components that we fit in search 2.
-**Model Centred Chaining:** We use the results of search 1 to create the `Model` components that we fit in search 2.
-**Detailed Explanation Of Prior Passing:** Overview of detailed explanation of prior passing for this example.
+**Model Centred Chaining:** We use the results of search 1 to create the `Model` components that we fit in search 2, using `model_centred` to pass priors centered on the maximum likelihood parameter values.
+**Search + Analysis + Model-Fit (Search 2):** We now create the non-linear search, analysis and perform the model-fit using the chained model.
+**Result (Search 2):** The final results of the chained model-fit.
+**How is Search Chaining Used?:** Overview of how search chaining is used in practice for automated lens modeling and SLaM pipelines.
+**Detailed Explanation Of Prior Passing:** Detailed overview of how prior passing works and tools to customize its behaviour.
 **EXAMPLE:** Lets go through an example using a real parameter.
 
 __Concise Model Composition API__

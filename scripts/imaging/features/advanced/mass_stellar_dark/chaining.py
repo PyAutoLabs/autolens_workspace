@@ -33,8 +33,16 @@ provides the following benefits:
 
 __Contents__
 
-**Paths:** The path the results of all chained searches are output: """ path_prefix = Path("imaging") /.
-**Wrap Up:** Summary of the script and next steps.
+**Dataset + Masking:** Load, plot and mask the `Imaging` data.
+**Paths:** The path the results of all chained searches are output.
+**Model (Search 1):** Search 1 fits a lens model where the lens galaxy's light is an MGE bulge and the lens galaxy's mass and source galaxy are omitted.
+**Search + Analysis + Model-Fit (Search 1):** We now create the non-linear search, analysis and perform the model-fit using this model.
+**Result (Search 1):** The results which are used for prior passing are summarised in the `info` attribute.
+**Model (Search 2):** Search 2 fits the lens galaxy's mass using a stellar mass distribution initialized from the bulge light model inferred by search 1, alongside a dark matter profile.
+**Search + Analysis + Model-Fit (Search 2):** We now create the non-linear search, analysis and perform the model-fit using this model.
+**Result (Search 2):** The final results of the chained model-fit.
+**Wrap Up:** In this example, we passed a bulge lens light model to a decomposed stellar + dark matter mass model.
+**SLaM (Source, Light and Mass):** An even more advanced approach which uses search chaining are the SLaM pipelines, which break the lens modeling processing into a series of fits.
 
 __Start Here Notebook__
 

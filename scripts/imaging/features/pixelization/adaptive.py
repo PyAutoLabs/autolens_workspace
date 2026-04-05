@@ -42,13 +42,16 @@ pixelization in one search:
 
 __Contents__
 
-**Model:** Compose the lens model fitted to the data.
-**Paths:** The path the results of all chained searches are output: """ path_prefix = Path("imaging") /.
-**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
-**Brief Description:** In this example we update the positions between searches, where the positions correspond to the.
-**Adaptive Pixelization:** Search 3 uses two adaptive pixelization classes that have not been used elsewhere in the workspace.
-**Adapt Images:** When we create the analysis, we pass it an `adapt_images`, which contains a dictionary mapping each.
-**SLaM Pipelines:** The API above allows you to write modeling code using adaptive features yourself.
+**Model:** This script chains three searches to fit `Imaging` data of a 'galaxy-scale' strong lens with a model where the lens galaxy's total mass distribution is an `Isothermal` and the source galaxy's light uses an MGE followed by a pixelization.
+**Dataset + Masking + Positions:** Load, plot and mask the `Imaging` data.
+**Paths:** The path the results of all chained searches are output.
+**Model (Search 1):** Search 1 fits a lens model where the lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` and the source galaxy's light is an MGE.
+**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before modeling.
+**Analysis + Position Likelihood:** We add a penalty term to the likelihood function, which penalizes models where the brightest multiple images of the lensed source galaxy do not trace close to one another in the source plane.
+**Brief Description:** In this example we update the positions between searches, where the positions correspond to the (y,x) locations of the lensed source's multiple images.
+**Adaptive Pixelization:** Search 3 uses two adaptive pixelization classes: `RectangularAdaptImage` mesh and `Adapt` regularization, which adapt the source reconstruction to the source galaxy's morphology.
+**Adapt Images:** When we create the analysis, we pass it an `adapt_images`, which contains a dictionary mapping each galaxy name to the corresponding lens subtracted image of the source galaxy from the result of a previous search.
+**SLaM Pipelines:** The API above allows you to write modeling code using adaptive features yourself, but it is recommended you use the Source, Light and Mass (SLaM) pipeline.
 
 __Model__
 

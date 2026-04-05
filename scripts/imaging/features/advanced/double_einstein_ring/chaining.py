@@ -33,12 +33,18 @@ of the second source from the model-fit. A larger mask included both sources is 
 
 __Contents__
 
-**Dataset:** Load and plot the strong lens dataset.
-**Paths:** The path the results of all chained searches are output: """ path_prefix = Path("imaging") /.
+**Dataset:** Load and plot the strong lens `Imaging` dataset.
+**Paths:** The path the results of all chained searches are output.
+**Masking (Search 1):** We apply a smaller circular mask, the radius of which is chosen to remove the light of the second source galaxy.
+**Model (Search 1):** Search 1 fits a lens model where the lens galaxy's total mass distribution is an `Isothermal` and the first source galaxy's light is an MGE.
+**Search + Analysis + Model-Fit (Search 1):** We now create the non-linear search, analysis and perform the model-fit using this model.
+**Result (Search 1):** The results which are used for prior passing are summarised in the `info` attribute.
+**Masking (Search 2):** We apply a larger circular mask which includes the light of both source galaxies.
+**Model (Search 2):** Search 2 fits the lens, first and second source galaxies, where the first source's mass is an `IsothermalSph` and the second source is an MGE.
+**Search + Analysis + Model-Fit (Search 2):** We now create the non-linear search, analysis and perform the model-fit using this model.
+**Result (Search 2):** The final results of the chained model-fit.
 **Wrap Up:** Summary of the script and next steps.
-**Pipelines:** Advanced search chaining uses `pipelines` that chain together multiple searches to perform complex.
-**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**Pipelines:** Advanced search chaining uses `pipelines` that chain together multiple searches to perform complex lens modeling in a robust and efficient way.
 
 __Start Here Notebook__
 
