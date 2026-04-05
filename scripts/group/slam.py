@@ -894,16 +894,6 @@ dataset = al.Imaging.from_fits(
     pixel_scales=pixel_scale,
 )
 
-try:
-    mask_extra_galaxies = al.Mask2D.from_fits(
-        file_path=dataset_path / "mask_extra_galaxies.fits",
-        pixel_scales=pixel_scale,
-        invert=True,
-    )
-    dataset = dataset.apply_noise_scaling(mask=mask_extra_galaxies)
-except FileNotFoundError:
-    pass
-
 aplt.subplot_imaging_dataset(dataset=dataset)
 
 """

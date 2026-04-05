@@ -81,6 +81,23 @@ if not dataset_path.exists():
         check=True,
     )
 
+imaging_dataset_path = Path("dataset") / "imaging" / dataset_name
+if not imaging_dataset_path.exists():
+    import subprocess
+    import sys
+    subprocess.run(
+        [sys.executable, "scripts/imaging/features/no_lens_light/simulator.py"],
+        check=True,
+    )
+
+if not (dataset_path / "positions.json").exists():
+    import subprocess
+    import sys
+    subprocess.run(
+        [sys.executable, "scripts/imaging/data_preparation/examples/optional/positions.py"],
+        check=True,
+    )
+
 dataset_list = [
     al.Imaging.from_fits(
         data_path=Path(dataset_path) / f"{waveband}_data.fits",

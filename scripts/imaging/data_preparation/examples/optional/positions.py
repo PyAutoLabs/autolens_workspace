@@ -89,5 +89,17 @@ al.output_to_json(
 )
 
 """
+Output to additional dataset folders that share the same positions.
+"""
+for extra_path in [
+    Path("dataset", "multi", "imaging", dataset_name),
+]:
+    if extra_path.exists():
+        al.output_to_json(
+            obj=positions,
+            file_path=extra_path / "positions.json",
+        )
+
+"""
 Finished.
 """
