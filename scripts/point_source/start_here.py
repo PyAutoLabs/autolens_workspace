@@ -196,6 +196,7 @@ solver = al.PointSolver.for_grid(
     grid=grid,
     pixel_scale_precision=0.001,
     magnification_threshold=0.1,
+    xp=jnp
 )
 
 """

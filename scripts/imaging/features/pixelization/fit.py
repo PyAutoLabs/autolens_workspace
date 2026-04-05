@@ -297,6 +297,22 @@ the signal to noise of its pixels effectively zero.
 dataset_name = "extra_galaxies"
 dataset_path = Path("dataset") / "imaging" / dataset_name
 
+if not dataset_path.exists():
+    import subprocess
+    import sys
+    subprocess.run(
+        [sys.executable, "scripts/imaging/features/extra_galaxies/simulator.py"],
+        check=True,
+    )
+
+if not (dataset_path / "mask_extra_galaxies.fits").exists():
+    import subprocess
+    import sys
+    subprocess.run(
+        [sys.executable, "scripts/imaging/data_preparation/examples/optional/mask_extra_galaxies.py"],
+        check=True,
+    )
+
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",
     psf_path=dataset_path / "psf.fits",
