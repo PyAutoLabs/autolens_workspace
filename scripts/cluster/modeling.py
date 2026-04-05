@@ -115,6 +115,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/cluster/simulator.py"],
         check=True,
@@ -161,6 +162,7 @@ aplt.plot_array(array=data, title="")
 We can also just plot the positions, omitting the image.
 """
 import numpy as np
+
 for positions in positions_list:
     aplt.plot_grid(grid=al.Grid2DIrregular(np.atleast_2d(positions)), title="")
 
@@ -616,7 +618,9 @@ Checkout `autolens_workspace/*/guides/results` for a full description of analysi
 """
 print(result_list[0].max_log_likelihood_instance)
 
-aplt.subplot_tracer(tracer=result_list[0].max_log_likelihood_tracer, grid=result_list[0].grids.lp)
+aplt.subplot_tracer(
+    tracer=result_list[0].max_log_likelihood_tracer, grid=result_list[0].grids.lp
+)
 
 """
 It also contains information on the posterior as estimated by the non-linear search (in this example `Nautilus`). 

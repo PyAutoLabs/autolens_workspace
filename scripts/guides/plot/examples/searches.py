@@ -62,6 +62,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/features/no_lens_light/simulator.py"],
         check=True,
@@ -206,10 +207,9 @@ All plots use dynesty's inbuilt plotting library and the model.
 """
 try:
     from dynesty import plotting as dyplot
-    
+
     model = result.model
-    
-    
+
     """
     The boundplot plots the bounding distribution used to propose either (1) live points at a given iteration or (2) a 
     specific dead point during the course of a run, projected onto the two dimensions specified by `dims`.
@@ -235,10 +235,10 @@ try:
         span=None,
         fig=None,
     )
-    
+
     plt.show()
     plt.close()
-    
+
     """
     The cornerbound plots the bounding distribution used to propose either (1) live points at a given iteration or (2) a 
     specific dead point during the course of a run, projected onto all pairs of dimensions.
@@ -265,17 +265,17 @@ try:
             span=None,
             fig=None,
         )
-    
+
         plt.show()
         plt.close()
-    
+
     except ValueError:
         pass
-    
+
     """
     The cornerplot plots a corner plot of the 1-D and 2-D marginalized posteriors.
     """
-    
+
     try:
         dyplot.cornerplot(
             results=search_internal.results,
@@ -300,14 +300,13 @@ try:
             use_math_text=False,
             verbose=False,
         )
-    
+
         plt.show()
         plt.close()
-    
+
     except ValueError:
         pass
-    
-    
+
     """
     The cornerpoints plots a (sub-)corner plot of (weighted) samples.
     """
@@ -330,11 +329,10 @@ try:
         use_math_text=False,
         fig=None,
     )
-    
+
     plt.show()
     plt.close()
-    
-    
+
     """
     The runplot plots live points, ln(likelihood), ln(weight), and ln(evidence) as a function of ln(prior volume).
     """
@@ -357,11 +355,10 @@ try:
         mark_final_live=True,
         fig=None,
     )
-    
+
     plt.show()
     plt.close()
-    
-    
+
     """
     The traceplot plots traces and marginalized posteriors for each parameter.
     """
@@ -395,7 +392,7 @@ try:
         verbose=False,
         fig=None,
     )
-    
+
     plt.show()
     plt.close()
 except (AttributeError, TypeError):
@@ -509,7 +506,9 @@ try:
     """
     This method shows the parameter values of every walker at every step.
     """
-    fig, axes = plt.subplots(result.samples.model.prior_count, figsize=(10, 7), sharex=True)
+    fig, axes = plt.subplots(
+        result.samples.model.prior_count, figsize=(10, 7), sharex=True
+    )
 
     for i in range(result.samples.model.prior_count):
         ax = axes[i]
@@ -615,7 +614,9 @@ try:
     """
     This method shows the parameter values of every walker at every step.
     """
-    fig, axes = plt.subplots(result.samples.model.prior_count, figsize=(10, 7), sharex=True)
+    fig, axes = plt.subplots(
+        result.samples.model.prior_count, figsize=(10, 7), sharex=True
+    )
 
     for i in range(result.samples.model.prior_count):
         ax = axes[i]

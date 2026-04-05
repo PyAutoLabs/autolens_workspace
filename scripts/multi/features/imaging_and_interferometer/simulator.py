@@ -166,8 +166,12 @@ aplt.subplot_interferometer_dirty_images(
     dataset=dataset, output_path=dataset_path, output_format="png"
 )
 
-aplt.subplot_tracer(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
-aplt.subplot_galaxies_images(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
+aplt.subplot_tracer(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
+aplt.subplot_galaxies_images(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
 
 """
 __Tracer json__

@@ -70,6 +70,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/simulator.py"],
         check=True,
@@ -268,7 +269,9 @@ mass = al.mp.Isothermal(
 
 shear = al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
 
-aplt.plot_array(array=mass.convergence_2d_from(grid=masked_dataset.grid), title="Convergence")
+aplt.plot_array(
+    array=mass.convergence_2d_from(grid=masked_dataset.grid), title="Convergence"
+)
 
 """
 From each mass profile we can compute its deflection angles, which describe how due to gravitational lensing

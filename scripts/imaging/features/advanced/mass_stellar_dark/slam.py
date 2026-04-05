@@ -65,6 +65,8 @@ Identical to `slam_start_here.py`, except:
 The linear `Sersic` profile is used here because the MASS LIGHT DARK PIPELINE requires a `LightMassProfile`
 (`al.lmp.Sersic`) for the lens stellar mass, which shares the same profile type as the light model.
 """
+
+
 def source_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -117,6 +119,8 @@ __SOURCE PIX PIPELINE 1__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def source_pix_1(
     settings_search: af.SettingsSearch,
     dataset,
@@ -135,7 +139,9 @@ def source_pix_1(
         dataset=dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[
-            source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
+            source_lp_result.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2
+            )
         ],
         use_jax=True,
     )
@@ -188,6 +194,8 @@ Note that between SOURCE PIX PIPELINE 1 and this search, the calling section app
 the dataset using the pixelized source reconstruction from search 1. This improves the accuracy of the
 pixelization by ensuring the over-sampling is adapted to the source morphology.
 """
+
+
 def source_pix_2(
     settings_search: af.SettingsSearch,
     dataset,
@@ -248,6 +256,8 @@ Identical to `slam_start_here.py`, except the lens galaxy's bulge uses a linear 
 (`al.lp_linear.Sersic`) instead of an MGE. This ensures the light model is consistent with the
 MASS LIGHT DARK PIPELINE, which links stellar mass to a `Sersic` light profile.
 """
+
+
 def light_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -306,6 +316,8 @@ The lens bulge is modeled as a `LightMassProfile` (`al.lmp.Sersic`) whose parame
 LIGHT LP PIPELINE result via `al.util.chaining.mass_light_dark_from`. The dark matter halo (`NFWMCRLudlow`) centre
 is aligned with the stellar bulge centre.
 """
+
+
 def mass_light_dark(
     settings_search: af.SettingsSearch,
     dataset,
@@ -413,8 +425,12 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
-        [sys.executable, "scripts/imaging/features/advanced/mass_stellar_dark/simulator.py"],
+        [
+            sys.executable,
+            "scripts/imaging/features/advanced/mass_stellar_dark/simulator.py",
+        ],
         check=True,
     )
 

@@ -123,6 +123,8 @@ pipeline. This is because fitting light profiles to interferometer datasets with
 
 The search therefore uses a `Constant` regularization (not adaptive) as there is no adapt image available.
 """
+
+
 def source_pix_1(
     settings_search: af.SettingsSearch,
     dataset,
@@ -180,6 +182,8 @@ pixelization and regularization.
 Note that the LIGHT LP PIPELINE from `slam_start_here.py` is omitted here, as interferometer data does not
 contain lens light emission.
 """
+
+
 def source_pix_2(
     settings_search: af.SettingsSearch,
     dataset,
@@ -238,6 +242,8 @@ __MASS TOTAL PIPELINE__
 Identical to `slam_start_here.py`, except no lens light model is included as interferometer data does not
 contain lens light emission.
 """
+
+
 def mass_total(
     settings_search: af.SettingsSearch,
     dataset,
@@ -259,7 +265,9 @@ def mass_total(
         dataset=dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[
-            source_pix_result_1.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
+            source_pix_result_1.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2
+            )
         ],
         settings=settings,
     )
@@ -302,6 +310,8 @@ __SUBHALO PIPELINE (no subhalo)__
 The first search of the SUBHALO PIPELINE refits the lens model from the MASS TOTAL PIPELINE without a DM subhalo.
 This establishes a Bayesian evidence baseline for model comparison with the fits that include a subhalo.
 """
+
+
 def subhalo_no_subhalo(
     settings_search: af.SettingsSearch,
     dataset,
@@ -351,6 +361,8 @@ of the image plane via uniform priors.
 
 This grid search maps out where in the image plane including a DM subhalo provides a better fit to the data.
 """
+
+
 def subhalo_grid_search(
     settings_search: af.SettingsSearch,
     dataset,
@@ -389,8 +401,12 @@ def subhalo_grid_search(
     )
 
     subhalo.redshift = subhalo_no_subhalo_result.instance.galaxies.lens.redshift
-    subhalo.mass.redshift_object = subhalo_no_subhalo_result.instance.galaxies.lens.redshift
-    subhalo.mass.redshift_source = subhalo_no_subhalo_result.instance.galaxies.source.redshift
+    subhalo.mass.redshift_object = (
+        subhalo_no_subhalo_result.instance.galaxies.lens.redshift
+    )
+    subhalo.mass.redshift_source = (
+        subhalo_no_subhalo_result.instance.galaxies.source.redshift
+    )
 
     lens = mass_result.model.galaxies.lens
     source = al.util.chaining.source_from(result=mass_result)
@@ -431,6 +447,8 @@ subhalo centre from the highest log evidence grid cell of the grid search.
 The Bayesian evidence from this fit is compared to the no-subhalo fit to determine whether a DM subhalo
 was detected.
 """
+
+
 def subhalo_refine(
     settings_search: af.SettingsSearch,
     dataset,
@@ -464,7 +482,9 @@ def subhalo_refine(
     )
 
     subhalo.redshift = subhalo_no_subhalo_result.instance.galaxies.lens.redshift
-    subhalo.mass.redshift_object = subhalo_no_subhalo_result.instance.galaxies.lens.redshift
+    subhalo.mass.redshift_object = (
+        subhalo_no_subhalo_result.instance.galaxies.lens.redshift
+    )
     subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
     subhalo.mass.centre = subhalo_grid_search_result.model_centred_absolute(
         a=1.0
@@ -514,6 +534,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/interferometer/simulator.py"],
         check=True,

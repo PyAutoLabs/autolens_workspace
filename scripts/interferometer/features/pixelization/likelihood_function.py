@@ -136,6 +136,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/interferometer/simulator.py"],
         check=True,
@@ -368,7 +369,9 @@ It also shows that image-pixel indexing begins from the top-left and goes rightw
 all image-pixels which are not masked.
 """
 
-aplt.plot_array(array=dataset.dirty_image, title="Image", positions=mapper.image_plane_data_grid)
+aplt.plot_array(
+    array=dataset.dirty_image, title="Image", positions=mapper.image_plane_data_grid
+)
 aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
 
 """
@@ -382,8 +385,9 @@ pix_indexes = [[200]]
 indexes = mapper.slim_indexes_for_pix_indexes(pix_indexes=pix_indexes)
 
 
-
-aplt.plot_array(array=dataset.dirty_image, title="Image", positions=mapper.image_plane_data_grid)
+aplt.plot_array(
+    array=dataset.dirty_image, title="Image", positions=mapper.image_plane_data_grid
+)
 aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
 
 """

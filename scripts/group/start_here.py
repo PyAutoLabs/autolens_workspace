@@ -133,9 +133,7 @@ are used to initialize the model for each lens galaxy.
 After modeling the data, this example will provide a GUI for you to determine the centres of the lens galaxies in
 your own data, if they are not already known.
 """
-main_lens_centres = al.from_json(
-    file_path=dataset_path / "main_lens_centres.json"
-)
+main_lens_centres = al.from_json(file_path=dataset_path / "main_lens_centres.json")
 
 """
 __Masking__

@@ -76,4 +76,6 @@ aplt.plot_array(array=data, title="")
 """
 Output it to the dataset folder of the lens, so that we can load it from a .fits in our modeling scripts.
 """
-aplt.fits_array(array=mask, file_path=Path(dataset_path, "mask_gui.fits"), overwrite=True)
+aplt.fits_array(
+    array=mask, file_path=Path(dataset_path, "mask_gui.fits"), overwrite=True
+)

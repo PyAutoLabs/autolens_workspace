@@ -68,6 +68,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/howtolens/simulator/lens_sersic.py"],
         check=True,
@@ -157,6 +158,7 @@ aplt.plot_array(array=tracer.potential_2d_from(grid=grid), title="Potential")
 deflections_yx = tracer.deflections_yx_2d_from(grid=grid)
 
 import autoarray as aa
+
 aplt.plot_array(
     array=aa.Array2D(values=deflections_yx.slim[:, 0], mask=grid.mask),
     title="Deflections Y",
@@ -217,12 +219,8 @@ aplt.plot_array(array=fit.chi_squared_map, title="Chi-Squared Map")
 """
 Per-plane model images are accessed via `model_images_of_planes_list`.
 """
-aplt.plot_array(
-    array=fit.model_images_of_planes_list[0], title="Plane 0 Model Image"
-)
-aplt.plot_array(
-    array=fit.model_images_of_planes_list[1], title="Plane 1 Model Image"
-)
+aplt.plot_array(array=fit.model_images_of_planes_list[0], title="Plane 0 Model Image")
+aplt.plot_array(array=fit.model_images_of_planes_list[1], title="Plane 1 Model Image")
 
 """
 A multi-panel fit subplot is produced with `aplt.subplot_fit_imaging()`.

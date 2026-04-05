@@ -339,7 +339,7 @@ try:
     data = dataset.data.apply_mask(mask=mask)
 
     aplt.fits_array(
-    array=mask,
+        array=mask,
         file_path=dataset_path / "mask_extra_galaxies.fits",
         overwrite=True,
     )

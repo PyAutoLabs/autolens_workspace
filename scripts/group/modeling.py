@@ -121,6 +121,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/group/simulator.py"],
         check=True,
@@ -259,7 +260,9 @@ If for your dataset the lens is not centred at (0.0", 0.0"), we recommend that y
 # Load centres from JSON files:
 
 main_lens_centres = al.from_json(file_path=dataset_path / "main_lens_centres.json")
-extra_galaxies_centres = al.from_json(file_path=dataset_path / "extra_galaxies_centres.json")
+extra_galaxies_centres = al.from_json(
+    file_path=dataset_path / "extra_galaxies_centres.json"
+)
 
 # Main Lens Galaxies:
 
@@ -272,7 +275,10 @@ for i, centre in enumerate(main_lens_centres):
     mass = af.Model(al.mp.Isothermal)
 
     lens = af.Model(
-        al.Galaxy, redshift=0.5, bulge=bulge, mass=mass,
+        al.Galaxy,
+        redshift=0.5,
+        bulge=bulge,
+        mass=mass,
         shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
 
@@ -402,7 +408,10 @@ for i, centre in enumerate(main_lens_centres):
     mass = af.Model(al.mp.Isothermal)
 
     lens = af.Model(
-        al.Galaxy, redshift=0.5, bulge=bulge, mass=mass,
+        al.Galaxy,
+        redshift=0.5,
+        bulge=bulge,
+        mass=mass,
         shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
 

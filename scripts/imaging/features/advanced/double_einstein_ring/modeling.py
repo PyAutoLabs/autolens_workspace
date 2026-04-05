@@ -72,8 +72,12 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
-        [sys.executable, "scripts/imaging/features/advanced/double_einstein_ring/simulator.py"],
+        [
+            sys.executable,
+            "scripts/imaging/features/advanced/double_einstein_ring/simulator.py",
+        ],
         check=True,
     )
 

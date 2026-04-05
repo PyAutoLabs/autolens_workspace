@@ -98,6 +98,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/multi/simulator.py"],
         check=True,
@@ -256,7 +257,9 @@ def source_pix_1(
                     redshift=source_lp_result[i].instance.galaxies.source.redshift,
                     pixelization=af.Model(
                         al.Pixelization,
-                        mesh=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+                        mesh=af.Model(
+                            al.mesh.RectangularAdaptDensity, shape=mesh_shape
+                        ),
                         regularization=al.reg.Adapt,
                     ),
                 ),

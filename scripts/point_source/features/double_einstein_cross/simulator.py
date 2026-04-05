@@ -150,8 +150,12 @@ positions_1_with_noise = al.Grid2DIrregular(
 """
 Use the positions to compute the magnification of the `Tracer` at every position.
 """
-magnifications_0 = al.LensCalc.from_tracer(tracer=tracer).magnification_2d_via_hessian_from(grid=positions_0)
-magnifications_1 = al.LensCalc.from_tracer(tracer=tracer).magnification_2d_via_hessian_from(grid=positions_1)
+magnifications_0 = al.LensCalc.from_tracer(
+    tracer=tracer
+).magnification_2d_via_hessian_from(grid=positions_0)
+magnifications_1 = al.LensCalc.from_tracer(
+    tracer=tracer
+).magnification_2d_via_hessian_from(grid=positions_1)
 
 """
 We can now compute the observed fluxes of the `Point`, give we know how much each is magnified.
@@ -182,8 +186,12 @@ modeling and to `.png` for general inspection.
 
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 
-aplt.subplot_tracer(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
-aplt.subplot_galaxies_images(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
+aplt.subplot_tracer(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
+aplt.subplot_galaxies_images(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
 
 """
 __Point Datasets__
@@ -233,8 +241,12 @@ aplt.subplot_point_dataset(
     dataset=dataset_1, output_path=dataset_path, output_format="png"
 )
 
-aplt.subplot_tracer(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
-aplt.subplot_galaxies_images(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
+aplt.subplot_tracer(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
+aplt.subplot_galaxies_images(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
 
 """
 __Tracer json__

@@ -179,7 +179,7 @@ Output each simulated dataset to the dataset path as .fits files, with a tag des
 """
 for waveband, dataset in zip(waveband_list, dataset_list):
     aplt.fits_imaging(
-    dataset=dataset,
+        dataset=dataset,
         data_path=Path(dataset_path) / f"{waveband}_data.fits",
         psf_path=Path(dataset_path) / f"{waveband}_psf.fits",
         noise_map_path=Path(dataset_path) / f"{waveband}_noise_map.fits",

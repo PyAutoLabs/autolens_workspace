@@ -115,6 +115,8 @@ Identical to `slam_start_here.py`, except:
  - The lens galaxy's MGE uses 30 Gaussians (instead of 20) to better capture complex lens light morphology.
  - The source galaxy's MGE uses `gaussian_per_basis=1` (instead of 2) for a simpler source model.
 """
+
+
 def source_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -172,6 +174,8 @@ __SOURCE PIX PIPELINE 1__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def source_pix_1(
     settings_search: af.SettingsSearch,
     dataset,
@@ -190,7 +194,9 @@ def source_pix_1(
         dataset=dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[
-            source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
+            source_lp_result.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2
+            )
         ],
         use_jax=True,
     )
@@ -243,6 +249,8 @@ Note that between SOURCE PIX PIPELINE 1 and this search, the calling section app
 the dataset using the pixelized source reconstruction from search 1. This improves the accuracy of the
 pixelization by ensuring the over-sampling is adapted to the source morphology.
 """
+
+
 def source_pix_2(
     settings_search: af.SettingsSearch,
     dataset,
@@ -304,6 +312,8 @@ Identical to `slam_start_here.py`, except:
  - The lens galaxy's MGE uses 30 Gaussians (consistent with SOURCE LP PIPELINE).
  - `use_jax=True` is passed to the analysis for faster computation.
 """
+
+
 def light_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -364,6 +374,8 @@ __MASS TOTAL PIPELINE__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def mass_total(
     settings_search: af.SettingsSearch,
     dataset,
@@ -433,6 +445,8 @@ __SUBHALO PIPELINE (no subhalo)__
 The first search of the SUBHALO PIPELINE refits the lens model from the MASS TOTAL PIPELINE without a DM subhalo.
 This establishes a Bayesian evidence baseline for model comparison with the fits that include a subhalo.
 """
+
+
 def subhalo_no_subhalo(
     settings_search: af.SettingsSearch,
     dataset,
@@ -480,6 +494,8 @@ of the image plane via uniform priors.
 
 This grid search maps out where in the image plane including a DM subhalo provides a better fit to the data.
 """
+
+
 def subhalo_grid_search(
     settings_search: af.SettingsSearch,
     dataset,
@@ -516,8 +532,12 @@ def subhalo_grid_search(
     )
 
     subhalo.redshift = subhalo_no_subhalo_result.instance.galaxies.lens.redshift
-    subhalo.mass.redshift_object = subhalo_no_subhalo_result.instance.galaxies.lens.redshift
-    subhalo.mass.redshift_source = subhalo_no_subhalo_result.instance.galaxies.source.redshift
+    subhalo.mass.redshift_object = (
+        subhalo_no_subhalo_result.instance.galaxies.lens.redshift
+    )
+    subhalo.mass.redshift_source = (
+        subhalo_no_subhalo_result.instance.galaxies.source.redshift
+    )
 
     lens = mass_result.model.galaxies.lens
     source = al.util.chaining.source_from(result=mass_result)
@@ -558,6 +578,8 @@ subhalo centre from the highest log evidence grid cell of the grid search.
 The Bayesian evidence from this fit is compared to the no-subhalo fit to determine whether a DM subhalo
 was detected.
 """
+
+
 def subhalo_refine(
     settings_search: af.SettingsSearch,
     dataset,
@@ -589,7 +611,9 @@ def subhalo_refine(
     )
 
     subhalo.redshift = subhalo_no_subhalo_result.instance.galaxies.lens.redshift
-    subhalo.mass.redshift_object = subhalo_no_subhalo_result.instance.galaxies.lens.redshift
+    subhalo.mass.redshift_object = (
+        subhalo_no_subhalo_result.instance.galaxies.lens.redshift
+    )
     subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
     subhalo.mass.centre = subhalo_grid_search_result.model_centred_absolute(
         a=1.0
@@ -633,6 +657,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/features/advanced/subhalo/simulator.py"],
         check=True,

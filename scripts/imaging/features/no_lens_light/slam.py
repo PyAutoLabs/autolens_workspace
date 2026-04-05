@@ -68,6 +68,8 @@ __SOURCE LP PIPELINE__
 
 Identical to `slam_start_here.py` with `lens_bulge=None` to omit lens light from the model.
 """
+
+
 def source_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -114,6 +116,8 @@ __SOURCE PIX PIPELINE 1__
 Identical to `slam_start_here.py`. Because no lens light components were included in `source_lp`, they
 are automatically omitted from the lens galaxy model here.
 """
+
+
 def source_pix_1(
     settings_search: af.SettingsSearch,
     dataset,
@@ -132,7 +136,9 @@ def source_pix_1(
         dataset=dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[
-            source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
+            source_lp_result.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2
+            )
         ],
     )
 
@@ -179,6 +185,8 @@ __SOURCE PIX PIPELINE 2__
 Identical to `slam_start_here.py`. Note that the LIGHT LP PIPELINE from `slam_start_here` is not included
 as there is no lens light to model.
 """
+
+
 def source_pix_2(
     settings_search: af.SettingsSearch,
     dataset,
@@ -234,6 +242,8 @@ __MASS TOTAL PIPELINE__
 
 Identical to `slam_start_here.py` except no lens light is included in the model.
 """
+
+
 def mass_total(
     settings_search: af.SettingsSearch,
     dataset,
@@ -302,6 +312,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/features/no_lens_light/simulator.py"],
         check=True,

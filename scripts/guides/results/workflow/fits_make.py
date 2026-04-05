@@ -115,6 +115,7 @@ for i in range(2):
     if not dataset_path.exists():
         import subprocess
         import sys
+
         subprocess.run(
             [sys.executable, "scripts/imaging/features/no_lens_light/simulator.py"],
             check=True,
@@ -209,6 +210,7 @@ for i in range(2):
 
             if hasattr(instance.galaxies.lens, "shear"):
                 import jax.numpy as jnp
+
                 magnitude, angle = al.convert.shear_magnitude_and_angle_from(
                     gamma_1=instance.galaxies.lens.shear.gamma_1,
                     gamma_2=instance.galaxies.lens.shear.gamma_2,

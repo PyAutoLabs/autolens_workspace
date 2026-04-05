@@ -107,7 +107,9 @@ Critical curves are plotted as lines over the image using the `lines=` keyword a
 `tangential_critical_curve_list_from` returns a list of `Grid2DIrregular` objects, one per
 tangential critical curve. Pass this list directly to `lines=`.
 """
-tangential_critical_curve_list = lens_calc.tangential_critical_curve_list_from(grid=grid)
+tangential_critical_curve_list = lens_calc.tangential_critical_curve_list_from(
+    grid=grid
+)
 
 image = tracer.image_2d_from(grid=grid)
 
@@ -135,7 +137,9 @@ __Multiple Critical Curves__
 If a `Tracer` has multiple lens galaxies it may have multiple tangential and radial critical
 curves. These are all contained in the returned lists and plotted together.
 """
-tangential_critical_curve_list = lens_calc_x2.tangential_critical_curve_list_from(grid=grid)
+tangential_critical_curve_list = lens_calc_x2.tangential_critical_curve_list_from(
+    grid=grid
+)
 radial_critical_curve_list = lens_calc_x2.radial_critical_curve_list_from(grid=grid)
 
 image_x2 = tracer_x2.image_2d_from(grid=grid)
@@ -251,7 +255,9 @@ __Combined Overlays__
 
 `lines=` and `positions=` can be used together on the same plot.
 """
-tangential_critical_curve_list = lens_calc.tangential_critical_curve_list_from(grid=grid)
+tangential_critical_curve_list = lens_calc.tangential_critical_curve_list_from(
+    grid=grid
+)
 
 aplt.plot_array(
     array=image,

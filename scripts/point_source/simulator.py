@@ -207,14 +207,20 @@ __Visualize__
 
 Output a subplot of the simulated point source dataset as a .png file.
 """
-aplt.subplot_point_dataset(dataset=dataset, output_path=dataset_path, output_format="png")
+aplt.subplot_point_dataset(
+    dataset=dataset, output_path=dataset_path, output_format="png"
+)
 
 """
 Output subplots of the tracer's images, including the positions of the multiple images on the image.
 """
 
-aplt.subplot_tracer(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
-aplt.subplot_galaxies_images(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
+aplt.subplot_tracer(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
+aplt.subplot_galaxies_images(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
 
 """
 __Tracer json__
@@ -293,7 +299,9 @@ calculated.
 Below, we compute the magnification for every multiple image coordinate, which will then be used to simulate their 
 fluxes.
 """
-magnifications = al.LensCalc.from_tracer(tracer=tracer).magnification_2d_via_hessian_from(grid=positions)
+magnifications = al.LensCalc.from_tracer(
+    tracer=tracer
+).magnification_2d_via_hessian_from(grid=positions)
 
 """
 To simulate the fluxes, we assume the source galaxy point-source has a total flux of 1.0.

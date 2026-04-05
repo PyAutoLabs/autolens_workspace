@@ -127,6 +127,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not Path(dataset_path).exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/point_source/features/deblending/simulator.py"],
         check=True,

@@ -154,6 +154,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/interferometer/simulator.py"],
         check=True,
@@ -442,7 +443,6 @@ for sample_index in range(total_datasets):
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
     dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
-
 
 
 """

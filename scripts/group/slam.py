@@ -124,6 +124,8 @@ Fits multiple main-lens galaxies (`lens_0`, `lens_1`, ...) under `galaxies`, ext
 under `extra_galaxies`, and scaling galaxies under `scaling_galaxies`. `n_live` scales with
 the total number of galaxies across all three categories.
 """
+
+
 def source_lp_0(
     dataset,
     settings_search,
@@ -148,7 +150,9 @@ def source_lp_0(
             centre_sigma=0.1,
         )
         lens_light_models.append(
-            af.Model(al.Galaxy, redshift=redshift_lens, bulge=bulge, disk=None, point=None)
+            af.Model(
+                al.Galaxy, redshift=redshift_lens, bulge=bulge, disk=None, point=None
+            )
         )
 
     # --- extra lens galaxy light models ---
@@ -219,6 +223,8 @@ Multiple main-lens galaxies each get an `Isothermal` mass; only `lens_0` carries
 `scaling_factor` and `scaling_relation`, so their masses follow
 `einstein_radius = scaling_factor * luminosity^scaling_relation`.
 """
+
+
 def source_lp_1(
     dataset,
     settings_search,
@@ -305,7 +311,9 @@ def source_lp_1(
         )
 
         extra_mass_models.append(
-            af.Model(al.Galaxy, redshift=redshift_lens, bulge=lp0_extra.bulge, mass=mass)
+            af.Model(
+                al.Galaxy, redshift=redshift_lens, bulge=lp0_extra.bulge, mass=mass
+            )
         )
 
     extra_galaxies = af.Collection(extra_mass_models) if extra_mass_models else None
@@ -376,6 +384,8 @@ Pixelization over-sampling is signal-adaptive: pixels above the S/N threshold us
 the rest sub-size 2. The re-sampled dataset and adapt_images are returned alongside the result.
 Extra and scaling galaxy models are carried forward as free `model` parameters, not fixed instances.
 """
+
+
 def source_pix_1(
     dataset,
     mask,
@@ -472,7 +482,9 @@ def source_pix_1(
         redshift=source_lp_result_1.instance.galaxies.source.redshift,
         pixelization=af.Model(
             al.Pixelization,
-            mesh=al.mesh.Delaunay(pixels=hilbert_pixels, zeroed_pixels=edge_pixels_total),
+            mesh=al.mesh.Delaunay(
+                pixels=hilbert_pixels, zeroed_pixels=edge_pixels_total
+            ),
             regularization=af.Model(al.reg.AdaptSplit),
         ),
     )
@@ -503,6 +515,8 @@ Identical to `source_pix_1` above, except the adapt data for the Hilbert image m
 at a S/N threshold of 3.0 to prevent over-concentration of source pixels on the brightest peak,
 and extra and scaling galaxy models are fixed as instances from `source_pix[1]`.
 """
+
+
 def source_pix_2(
     dataset,
     mask,
@@ -593,7 +607,9 @@ def source_pix_2(
         redshift=source_lp_result_1.instance.galaxies.source.redshift,
         pixelization=af.Model(
             al.Pixelization,
-            mesh=al.mesh.Delaunay(pixels=hilbert_pixels, zeroed_pixels=edge_pixels_total),
+            mesh=al.mesh.Delaunay(
+                pixels=hilbert_pixels, zeroed_pixels=edge_pixels_total
+            ),
             regularization=af.Model(al.reg.AdaptSplit),
         ),
     )
@@ -622,6 +638,8 @@ Identical to `light_lp` in `slam_start_here.py`, except extra galaxies receive a
 MGE bulge (centred on the `source_pix[1]` mass centre) with mass fixed from `source_pix[1]`,
 and scaling galaxies are fully fixed from `source_pix[2]`.
 """
+
+
 def light_lp(
     dataset,
     settings_search,
@@ -671,7 +689,9 @@ def light_lp(
             centre=pix1_extra.mass.centre,
         )
         extra_light_models.append(
-            af.Model(al.Galaxy, redshift=redshift_lens, bulge=bulge, mass=pix1_extra.mass)
+            af.Model(
+                al.Galaxy, redshift=redshift_lens, bulge=bulge, mass=pix1_extra.mass
+            )
         )
 
     extra_galaxies = af.Collection(extra_light_models) if extra_light_models else None
@@ -721,6 +741,8 @@ Identical to `mass_total` in `slam_start_here.py`, except extra galaxies receive
 luminosity-bounded `Isothermal` mass (using `light[1]` luminosities) and scaling galaxies
 receive a new shared luminosity scaling relation, both paired with their fixed `light[1]` bulge.
 """
+
+
 def mass_total(
     dataset,
     settings_search,
@@ -768,12 +790,12 @@ def mass_total(
         )
 
         extra_mass_models.append(
-            af.Model(al.Galaxy, redshift=redshift_lens, bulge=light_extra.bulge, mass=mass)
+            af.Model(
+                al.Galaxy, redshift=redshift_lens, bulge=light_extra.bulge, mass=mass
+            )
         )
 
-    extra_galaxies = (
-        af.Collection(extra_mass_models) if extra_mass_models else None
-    )
+    extra_galaxies = af.Collection(extra_mass_models) if extra_mass_models else None
 
     # --- scaling galaxies: fixed light, free shared scaling relation ---
     scaling_factor = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
@@ -874,6 +896,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/group/simulator.py"],
         check=True,
@@ -915,9 +938,7 @@ all_galaxy_centres = al.Grid2DIrregular(
     + scaling_lens_centres.in_list
 )
 
-positions = al.Grid2DIrregular(
-    al.from_json(file_path=dataset_path / "positions.json")
-)
+positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.json"))
 
 """
 __Mask__

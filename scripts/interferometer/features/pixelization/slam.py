@@ -97,6 +97,8 @@ pipeline. This is because fitting light profiles to interferometer datasets with
 
 The search therefore uses a `Constant` regularization (not adaptive) as there is no adapt image available.
 """
+
+
 def source_pix_1(
     settings_search: af.SettingsSearch,
     dataset,
@@ -154,6 +156,8 @@ pixelization and regularization.
 Note that the LIGHT LP PIPELINE from `slam_start_here.py` is omitted here, as interferometer data does not
 contain lens light emission.
 """
+
+
 def source_pix_2(
     settings_search: af.SettingsSearch,
     dataset,
@@ -212,6 +216,8 @@ __MASS TOTAL PIPELINE__
 Identical to `slam_start_here.py`, except no lens light model is included as interferometer data does not
 contain lens light emission.
 """
+
+
 def mass_total(
     settings_search: af.SettingsSearch,
     dataset,
@@ -233,7 +239,9 @@ def mass_total(
         dataset=dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[
-            source_pix_result_1.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
+            source_pix_result_1.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2
+            )
         ],
         settings=settings,
     )
@@ -293,6 +301,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/interferometer/simulator.py"],
         check=True,

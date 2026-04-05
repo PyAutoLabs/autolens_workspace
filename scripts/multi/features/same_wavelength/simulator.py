@@ -177,7 +177,7 @@ Output each simulated dataset to the dataset path as .fits files, with a tag des
 """
 for i, dataset in enumerate(dataset_list):
     aplt.fits_imaging(
-    dataset=dataset,
+        dataset=dataset,
         data_path=Path(dataset_path, f"image_{i}.fits"),
         psf_path=Path(dataset_path, f"psf_{i}.fits"),
         noise_map_path=Path(dataset_path, f"noise_map_{i}.fits"),

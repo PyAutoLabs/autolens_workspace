@@ -107,6 +107,8 @@ The search therefore uses a `Constant` regularization (not adaptive) as there is
 The `extra_galaxies` are included in the model, each with an `IsothermalSph` mass profile whose centre is fixed
 to the centre of the extra galaxy.
 """
+
+
 def source_pix_1(
     settings_search: af.SettingsSearch,
     dataset,
@@ -168,6 +170,8 @@ The extra galaxies are passed from `source_pix_result_1` as fixed instances.
 Note that the LIGHT LP PIPELINE from `slam_start_here.py` is omitted here, as interferometer data does not
 contain lens light emission.
 """
+
+
 def source_pix_2(
     settings_search: af.SettingsSearch,
     dataset,
@@ -230,6 +234,8 @@ contain lens light emission.
 The extra galaxies are passed from `source_pix_result_1` as free model parameters, so their masses are
 updated during this search.
 """
+
+
 def mass_total(
     settings_search: af.SettingsSearch,
     dataset,
@@ -251,7 +257,9 @@ def mass_total(
         dataset=dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[
-            source_pix_result_1.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
+            source_pix_result_1.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2
+            )
         ],
         settings=settings,
     )
@@ -312,6 +320,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/features/extra_galaxies/simulator.py"],
         check=True,

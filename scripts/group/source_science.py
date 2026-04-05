@@ -55,6 +55,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/group/simulator.py"],
         check=True,
@@ -140,7 +141,9 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer(galaxies=[lens_galaxy, extra_galaxy_0, extra_galaxy_1, source_galaxy])
+tracer = al.Tracer(
+    galaxies=[lens_galaxy, extra_galaxy_0, extra_galaxy_1, source_galaxy]
+)
 
 """
 By plotting the image of the tracer, we confirm it looks identical to the simulated dataset but does not have
@@ -258,7 +261,9 @@ lensed_source_image_main_only = source_galaxy.bulge.image_2d_from(
 
 total_image_plane_flux_main_only = np.sum(lensed_source_image_main_only)
 
-source_magnification_main_only = total_image_plane_flux_main_only / total_source_plane_flux
+source_magnification_main_only = (
+    total_image_plane_flux_main_only / total_source_plane_flux
+)
 
 print(f"Source Magnification (main lens only): {source_magnification_main_only}")
 print(

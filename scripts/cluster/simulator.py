@@ -369,8 +369,12 @@ aplt.subplot_point_dataset(
 Output subplots of the tracer's images, including the positions of the multiple images on the image.
 """
 
-aplt.subplot_tracer(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
-aplt.subplot_galaxies_images(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
+aplt.subplot_tracer(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
+aplt.subplot_galaxies_images(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
 
 """
 __Tracer json__

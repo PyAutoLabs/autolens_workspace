@@ -244,8 +244,12 @@ For a faster run time, this visualization uses a regular grid which does not per
 aplt.subplot_imaging_dataset(dataset=dataset)
 aplt.plot_array(array=dataset.data, title="Data")
 
-aplt.subplot_tracer(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
-aplt.subplot_galaxies_images(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
+aplt.subplot_tracer(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
+aplt.subplot_galaxies_images(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
 
 """
 __Tracer json__

@@ -91,8 +91,12 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
-        [sys.executable, "scripts/imaging/features/advanced/mass_stellar_dark/simulator.py"],
+        [
+            sys.executable,
+            "scripts/imaging/features/advanced/mass_stellar_dark/simulator.py",
+        ],
         check=True,
     )
 

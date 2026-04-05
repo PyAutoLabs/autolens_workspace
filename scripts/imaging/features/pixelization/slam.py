@@ -61,6 +61,8 @@ __SOURCE LP PIPELINE__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def source_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -115,6 +117,8 @@ __SOURCE PIX PIPELINE 1__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def source_pix_1(
     settings_search: af.SettingsSearch,
     dataset,
@@ -133,7 +137,9 @@ def source_pix_1(
         dataset=dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[
-            source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
+            source_lp_result.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2
+            )
         ],
     )
 
@@ -184,6 +190,8 @@ Identical to `slam_start_here.py`, except `AdaptSplit` regularization is used in
 `AdaptSplit` splits the regularization into two components: one for the source and one for the image, enabling
 more flexible regularization that better adapts to the pixelization mesh.
 """
+
+
 def source_pix_2(
     settings_search: af.SettingsSearch,
     dataset,
@@ -242,6 +250,8 @@ __LIGHT LP PIPELINE__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def light_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -302,6 +312,8 @@ __MASS TOTAL PIPELINE__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def mass_total(
     settings_search: af.SettingsSearch,
     dataset,
@@ -382,6 +394,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/simulator.py"],
         check=True,

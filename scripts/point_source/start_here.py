@@ -142,6 +142,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/point_source/simulator.py"],
         check=True,
@@ -193,10 +194,7 @@ grid = al.Grid2D.uniform(
 )
 
 solver = al.PointSolver.for_grid(
-    grid=grid,
-    pixel_scale_precision=0.001,
-    magnification_threshold=0.1,
-    xp=jnp
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1, xp=jnp
 )
 
 """
@@ -525,7 +523,9 @@ positions = solver.solve(
     tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
 )
 
-magnifications = al.LensCalc.from_tracer(tracer=tracer).magnification_2d_via_hessian_from(grid=positions)
+magnifications = al.LensCalc.from_tracer(
+    tracer=tracer
+).magnification_2d_via_hessian_from(grid=positions)
 
 time_delays = tracer.time_delays_from(grid=positions)
 
@@ -599,7 +599,9 @@ for sample_index in range(total_datasets):
     positions = solver.solve(
         tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
     )
-    magnifications = al.LensCalc.from_tracer(tracer=tracer).magnification_2d_via_hessian_from(grid=positions)
+    magnifications = al.LensCalc.from_tracer(
+        tracer=tracer
+    ).magnification_2d_via_hessian_from(grid=positions)
     time_delays = tracer.time_delays_from(grid=positions)
 
     flux = 1.0

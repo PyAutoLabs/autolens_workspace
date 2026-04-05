@@ -133,6 +133,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/features/advanced/subhalo/simulator.py"],
         check=True,
@@ -553,10 +554,14 @@ class SimulateImaging:
             The tracer used to simulate the imaging dataset, which is visualized and output to a .json file.
         """
 
-
         aplt.subplot_imaging_dataset(dataset=dataset)
 
-        aplt.subplot_lensed_images(tracer=tracer, grid=dataset.grid, output_path=simulate_path, output_format="png")
+        aplt.subplot_lensed_images(
+            tracer=tracer,
+            grid=dataset.grid,
+            output_path=simulate_path,
+            output_format="png",
+        )
 
         al.output_to_json(
             obj=tracer,

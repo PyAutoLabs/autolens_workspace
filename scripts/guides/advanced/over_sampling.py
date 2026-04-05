@@ -204,7 +204,9 @@ to compute the fractional residuals.
 fractional_residual_map = residual_map / image_sub_2
 
 
-aplt.plot_array(array=fractional_residual_map, title="Fractional Over-Sampling Residuals")
+aplt.plot_array(
+    array=fractional_residual_map, title="Fractional Over-Sampling Residuals"
+)
 
 """
 The fractional residuals in the centre exceed 0.1, or 10%, which is a significant error in the image and
@@ -232,7 +234,9 @@ aplt.plot_array(array=residual_map, title="Over-Sampling Reduces Residuals")
 
 fractional_residual_map = residual_map / image_sub_32
 
-aplt.plot_array(array=fractional_residual_map, title="Fractional Residuals With Over-Sampling")
+aplt.plot_array(
+    array=fractional_residual_map, title="Fractional Residuals With Over-Sampling"
+)
 
 """
 __Adaptive Over Sampling__
@@ -438,6 +442,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/features/no_lens_light/simulator.py"],
         check=True,

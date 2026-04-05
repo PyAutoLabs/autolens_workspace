@@ -121,6 +121,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/features/no_lens_light/simulator.py"],
         check=True,
@@ -129,8 +130,12 @@ if not dataset_path.exists():
 if not (dataset_path / "positions.json").exists():
     import subprocess
     import sys
+
     subprocess.run(
-        [sys.executable, "scripts/imaging/data_preparation/examples/optional/positions.py"],
+        [
+            sys.executable,
+            "scripts/imaging/data_preparation/examples/optional/positions.py",
+        ],
         check=True,
     )
 
@@ -562,6 +567,8 @@ __SOURCE LP PIPELINE__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def source_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -619,6 +626,8 @@ Identical to `slam_start_here.py`, except the source pixelization uses a Delauna
 The `source_pix_1` search uses an `Overlay` image-mesh to place the initial Delaunay mesh pixels, with
 additional edge points added around the mask boundary to ensure full coverage.
 """
+
+
 def source_pix_1(
     settings_search: af.SettingsSearch,
     dataset,
@@ -656,7 +665,9 @@ def source_pix_1(
         dataset=dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[
-            source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
+            source_lp_result.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2
+            )
         ],
     )
 
@@ -710,6 +721,8 @@ Identical to `slam_start_here.py`, except the source pixelization uses a Delauna
 The `source_pix_2` search uses a `Hilbert` image-mesh to place the final Delaunay mesh pixels, which adapts
 the mesh to the source morphology using the high-quality adapt images from search 1.
 """
+
+
 def source_pix_2(
     settings_search: af.SettingsSearch,
     dataset,
@@ -789,6 +802,8 @@ __LIGHT LP PIPELINE__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def light_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -848,6 +863,8 @@ __MASS TOTAL PIPELINE__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def mass_total(
     settings_search: af.SettingsSearch,
     dataset,
@@ -1238,7 +1255,9 @@ pix_indexes_for_sub_slim_index = mapper.pix_indexes_for_sub_slim_index
 print(pix_indexes_for_sub_slim_index[0:9])
 
 
-aplt.plot_array(array=lens_subtracted_image, title="Image", positions=mapper.image_plane_data_grid)
+aplt.plot_array(
+    array=lens_subtracted_image, title="Image", positions=mapper.image_plane_data_grid
+)
 aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
 
 pix_indexes = [[200]]
@@ -1246,8 +1265,9 @@ pix_indexes = [[200]]
 indexes = mapper.slim_indexes_for_pix_indexes(pix_indexes=pix_indexes)
 
 
-
-aplt.plot_array(array=lens_subtracted_image, title="Image", positions=mapper.image_plane_data_grid)
+aplt.plot_array(
+    array=lens_subtracted_image, title="Image", positions=mapper.image_plane_data_grid
+)
 aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
 
 mapping_matrix = al.util.mapper.mapping_matrix_from(

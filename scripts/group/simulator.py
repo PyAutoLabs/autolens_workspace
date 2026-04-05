@@ -220,9 +220,7 @@ Use all galaxies to setup a tracer, which will generate the image for the simula
 
 The tracer combines main lens galaxies, extra galaxies and the source galaxy.
 """
-tracer = al.Tracer(
-    galaxies=main_lens_galaxies + extra_galaxies + [source_galaxy]
-)
+tracer = al.Tracer(galaxies=main_lens_galaxies + extra_galaxies + [source_galaxy])
 
 """
 Lets look at the tracer`s image, this is the image we'll be simulating.

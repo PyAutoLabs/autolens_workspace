@@ -147,6 +147,8 @@ this example:
 
 The mass and source models from this search initialize the SOURCE PIX PIPELINE searches that follow.
 """
+
+
 def source_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -224,6 +226,8 @@ An adapt image is computed from the SOURCE LP result and passed to the analysis.
 estimate of the source morphology for the `Adapt` regularization scheme, even though the MGE source model
 may not fully capture the source structure. Search 2 improves upon this using a pixelized adapt image.
 """
+
+
 def source_pix_1(
     settings_search: af.SettingsSearch,
     dataset,
@@ -242,7 +246,9 @@ def source_pix_1(
         dataset=dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[
-            source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
+            source_lp_result.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2
+            )
         ],
     )
 
@@ -294,6 +300,8 @@ adapt images computed from search 1's pixelized source reconstruction.
 The `RectangularAdaptImage` mesh and `Adapt` regularization adapt the source pixels and regularization
 weights to the source's morphology using the high-quality adapt images from search 1.
 """
+
+
 def source_pix_2(
     settings_search: af.SettingsSearch,
     dataset,
@@ -365,6 +373,8 @@ This search aims to produce an accurate model of the lens galaxy's light, which 
 in the SOURCE PIPELINE as the mass and source models were not yet precisely estimated. The adapt images
 from SOURCE PIX PIPELINE search 1 are reused, providing a stable basis for the lens-light subtraction.
 """
+
+
 def light_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -439,6 +449,8 @@ Positions are computed from the SOURCE PIX PIPELINE search 2 result, which provi
 image positions than the SOURCE LP PIPELINE (as the pixelized source gives a better source-plane
 reconstruction).
 """
+
+
 def mass_total(
     settings_search: af.SettingsSearch,
     dataset,
@@ -518,6 +530,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/simulator.py"],
         check=True,

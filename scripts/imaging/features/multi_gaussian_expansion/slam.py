@@ -70,6 +70,8 @@ Identical to `slam_start_here.py` with `gaussian_per_basis=1` for both the lens 
 Because the source is parametric (an MGE), the SOURCE PIX PIPELINE is skipped. The LIGHT LP and MASS TOTAL
 pipelines use `source_lp_result` directly as both the lens and source initialization result.
 """
+
+
 def source_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -132,6 +134,8 @@ Identical to `slam_start_here.py`, except:
    there is no SOURCE PIX PIPELINE for an MGE source.
  - The analysis does not use adapt images (not required for a parametric MGE source).
 """
+
+
 def light_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -185,6 +189,8 @@ Identical to `slam_start_here.py`, except:
    there is no SOURCE PIX PIPELINE for an MGE source.
  - The analysis does not use adapt images or positions likelihood (not required for a parametric MGE source).
 """
+
+
 def mass_total(
     settings_search: af.SettingsSearch,
     dataset,
@@ -249,6 +255,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/simulator.py"],
         check=True,

@@ -73,6 +73,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/features/no_lens_light/simulator.py"],
         check=True,
@@ -129,7 +130,9 @@ We now have the `Result` object we will cover in this script.
 As a reminder, in the `modeling` scripts we use the `max_log_likelihood_tracer` and `max_log_likelihood_fit` to plot 
 the results of the fit.
 """
-aplt.subplot_tracer(tracer=result.max_log_likelihood_tracer, grid=mask.derive_grid.all_false)
+aplt.subplot_tracer(
+    tracer=result.max_log_likelihood_tracer, grid=mask.derive_grid.all_false
+)
 aplt.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 """

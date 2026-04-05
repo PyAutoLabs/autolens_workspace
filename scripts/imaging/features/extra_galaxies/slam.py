@@ -76,6 +76,8 @@ Identical to `slam_start_here.py`, except each extra galaxy is included in the m
 spherical MGE light profile (`GaussianSph` basis) and a free `IsothermalSph` mass, both
 centred on its known position from `extra_galaxies_centres`.
 """
+
+
 def source_lp(
     settings_search,
     dataset,
@@ -123,7 +125,9 @@ def source_lp(
         mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.1)
 
         extra_galaxies_list.append(
-            af.Model(al.Galaxy, redshift=redshift_lens, bulge=extra_galaxy_bulge, mass=mass)
+            af.Model(
+                al.Galaxy, redshift=redshift_lens, bulge=extra_galaxy_bulge, mass=mass
+            )
         )
 
     extra_galaxies = af.Collection(extra_galaxies_list)
@@ -163,6 +167,8 @@ __SOURCE PIX PIPELINE 1__
 Identical to `slam_start_here.py`, except extra-galaxy light is fixed from `source_lp` and
 their `IsothermalSph` mass priors are carried forward as free parameters.
 """
+
+
 def source_pix_1(
     settings_search,
     dataset,
@@ -180,7 +186,9 @@ def source_pix_1(
         dataset=dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[
-            source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
+            source_lp_result.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2
+            )
         ],
     )
 
@@ -191,7 +199,9 @@ def source_pix_1(
     )
 
     extra_galaxies = source_lp_result.model.extra_galaxies
-    for galaxy, result_galaxy in zip(extra_galaxies, source_lp_result.instance.extra_galaxies):
+    for galaxy, result_galaxy in zip(
+        extra_galaxies, source_lp_result.instance.extra_galaxies
+    ):
         galaxy.bulge = result_galaxy.bulge
 
     model = af.Collection(
@@ -233,6 +243,8 @@ __SOURCE PIX PIPELINE 2__
 Identical to `slam_start_here.py`, except extra galaxies are fully fixed as instances
 from `source_pix[1]`.
 """
+
+
 def source_pix_2(
     settings_search,
     dataset,
@@ -292,6 +304,8 @@ __LIGHT LP PIPELINE__
 Identical to `slam_start_here.py`, except extra-galaxy mass is fixed from `source_pix[1]`
 and their light is a new free spherical MGE centred on the same position.
 """
+
+
 def light_lp(
     settings_search,
     dataset,
@@ -359,6 +373,8 @@ __MASS TOTAL PIPELINE__
 Identical to `slam_start_here.py`, except extra-galaxy light is fixed from `light[1]` and
 their `IsothermalSph` mass priors are carried forward as free parameters from `source_pix[1]`.
 """
+
+
 def mass_total(
     settings_search,
     dataset,
@@ -395,7 +411,9 @@ def mass_total(
     source = al.util.chaining.source_from(result=source_result_for_source)
 
     extra_galaxies = source_result_for_lens.model.extra_galaxies
-    for galaxy, result_galaxy in zip(extra_galaxies, light_result.instance.extra_galaxies):
+    for galaxy, result_galaxy in zip(
+        extra_galaxies, light_result.instance.extra_galaxies
+    ):
         galaxy.bulge = result_galaxy.bulge
 
     model = af.Collection(
@@ -440,6 +458,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/features/extra_galaxies/simulator.py"],
         check=True,

@@ -107,6 +107,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/interferometer/simulator.py"],
         check=True,
@@ -468,7 +469,9 @@ Checkout `autolens_workspace/*/guides/results` for a full description of analysi
 """
 print(result.max_log_likelihood_instance)
 
-aplt.subplot_tracer(tracer=result.max_log_likelihood_tracer, grid=real_space_mask.derive_grid.unmasked)
+aplt.subplot_tracer(
+    tracer=result.max_log_likelihood_tracer, grid=real_space_mask.derive_grid.unmasked
+)
 
 aplt.subplot_fit_interferometer(fit=result.max_log_likelihood_fit)
 aplt.subplot_fit_dirty_images(fit=fit)

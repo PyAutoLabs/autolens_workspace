@@ -183,7 +183,9 @@ try:
         )
         mass_concentration_coefficients[i] = mass_concentration_ab_from(redshift=z)
 
-    print("Computed mass function and mass-concentration coefficients from hmf/colossus.")
+    print(
+        "Computed mass function and mass-concentration coefficients from hmf/colossus."
+    )
 
 except ImportError:
     print("hmf/colossus not available, using approximate pre-computed coefficients.")
@@ -311,8 +313,12 @@ Output subplots and summary images as .png files for quick inspection.
 aplt.subplot_imaging_dataset(dataset=dataset)
 aplt.plot_array(array=dataset.data, title="Data")
 
-aplt.subplot_tracer(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
-aplt.subplot_galaxies_images(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
+aplt.subplot_tracer(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
+aplt.subplot_galaxies_images(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
 
 """
 __Tracer json__
@@ -338,14 +344,16 @@ sheet_info = []
 
 for g in los_galaxies:
     if hasattr(g, "mass") and isinstance(g.mass, al.mp.NFWTruncatedSph):
-        halo_info.append([
-            g.redshift,
-            g.mass.centre[0],
-            g.mass.centre[1],
-            g.mass.kappa_s,
-            g.mass.scale_radius,
-            g.mass.truncation_radius,
-        ])
+        halo_info.append(
+            [
+                g.redshift,
+                g.mass.centre[0],
+                g.mass.centre[1],
+                g.mass.kappa_s,
+                g.mass.scale_radius,
+                g.mass.truncation_radius,
+            ]
+        )
     elif hasattr(g, "mass_sheet") and isinstance(g.mass_sheet, al.mp.MassSheet):
         sheet_info.append([g.redshift, g.mass_sheet.kappa])
 

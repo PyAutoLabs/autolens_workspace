@@ -123,7 +123,10 @@ image = sersic_light_profile.image_2d_from(grid=grid)
 """
 The **PyAutoLens** plot module provides methods for plotting objects and their properties, like light profile's image.
 """
-aplt.plot_array(array=sersic_light_profile.image_2d_from(grid=grid), title="Image of Sersic Light Profile")
+aplt.plot_array(
+    array=sersic_light_profile.image_2d_from(grid=grid),
+    title="Image of Sersic Light Profile",
+)
 
 """
 __Mass Profiles__
@@ -159,8 +162,14 @@ potential.
 If you are not familiar with gravitational lensing and therefore are unclear on what the convergence and potential 
 are, don't worry for now!
 """
-aplt.plot_array(array=isothermal_mass_profile.convergence_2d_from(grid=grid), title="Isothermal Mass Convergence")
-aplt.plot_array(array=isothermal_mass_profile.potential_2d_from(grid=grid), title="Isothermal Mass Potential")
+aplt.plot_array(
+    array=isothermal_mass_profile.convergence_2d_from(grid=grid),
+    title="Isothermal Mass Convergence",
+)
+aplt.plot_array(
+    array=isothermal_mass_profile.potential_2d_from(grid=grid),
+    title="Isothermal Mass Potential",
+)
 
 """
 __Galaxies__
@@ -199,7 +208,9 @@ the source's appears as a multiply imaged and strongly lensed Einstein ring.
 """
 image = tracer.image_2d_from(grid=grid)
 
-aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image of Strong Lens System")
+aplt.plot_array(
+    array=tracer.image_2d_from(grid=grid), title="Image of Strong Lens System"
+)
 
 """
 __Log10__
@@ -212,7 +223,9 @@ logarithm of its values and plot it in log10 space.
 The `plot_array`/`subplot_\*` object has an input `use_log10`, which will do this automatically when we call the `plot_array` method.
 Below, we can see that the image plotted now appears more clearly, with the outskirts of the light profile more visible.
 """
-aplt.plot_array(array=tracer.image_2d_from(grid=grid.mask.derive_grid.all_false), title="Image")
+aplt.plot_array(
+    array=tracer.image_2d_from(grid=grid.mask.derive_grid.all_false), title="Image"
+)
 
 """
 The `aplt.subplot_tracer` includes the mass quantities we plotted previously, which can be plotted as a subplot 
@@ -301,7 +314,9 @@ This is what the lens looks like.
 
 Note how crazy the critical curves are!
 """
-aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image of Complex Strong Lens")
+aplt.plot_array(
+    array=tracer.image_2d_from(grid=grid), title="Image of Complex Strong Lens"
+)
 
 
 """

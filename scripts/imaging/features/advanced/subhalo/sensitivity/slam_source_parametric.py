@@ -68,6 +68,8 @@ __SOURCE LP PIPELINE__
 
 Identical to `slam_start_here.py`, except the lens mass uses an `Isothermal` with its centre fixed to (0.0, 0.0).
 """
+
+
 def source_lp(
     settings_search,
     dataset,
@@ -127,6 +129,8 @@ __LIGHT LP PIPELINE__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def light_lp(
     settings_search,
     dataset,
@@ -184,6 +188,8 @@ __MASS TOTAL PIPELINE__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def mass_total(
     settings_search,
     dataset,
@@ -485,7 +491,12 @@ class SimulateImaging:
 
         aplt.subplot_imaging_dataset(dataset=dataset)
 
-        aplt.subplot_lensed_images(tracer=tracer, grid=dataset.grid, output_path=simulate_path, output_format="png")
+        aplt.subplot_lensed_images(
+            tracer=tracer,
+            grid=dataset.grid,
+            output_path=simulate_path,
+            output_format="png",
+        )
 
         al.output_to_json(
             obj=tracer,
@@ -493,7 +504,7 @@ class SimulateImaging:
         )
 
         aplt.fits_imaging(
-    dataset=dataset,
+            dataset=dataset,
             data_path=os.path.join(simulate_path, "data.fits"),
             psf_path=os.path.join(simulate_path, "psf.fits"),
             noise_map_path=os.path.join(simulate_path, "noise_map.fits"),
@@ -869,6 +880,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/features/advanced/subhalo/simulator.py"],
         check=True,
@@ -963,9 +975,7 @@ sensitivity_mask = None
 
 base_model = mass_result.model
 
-base_model = base_model_narrow_priors_from(
-    base_model=base_model, result=mass_result
-)
+base_model = base_model_narrow_priors_from(base_model=base_model, result=mass_result)
 
 perturb_model = af.Model(al.Galaxy, redshift=0.5, mass=subhalo_mass)
 

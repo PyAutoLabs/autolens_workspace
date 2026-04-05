@@ -83,6 +83,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/features/extra_galaxies/simulator.py"],
         check=True,
@@ -91,8 +92,12 @@ if not dataset_path.exists():
 if not (dataset_path / "mask_extra_galaxies.fits").exists():
     import subprocess
     import sys
+
     subprocess.run(
-        [sys.executable, "scripts/imaging/data_preparation/examples/optional/mask_extra_galaxies.py"],
+        [
+            sys.executable,
+            "scripts/imaging/data_preparation/examples/optional/mask_extra_galaxies.py",
+        ],
         check=True,
     )
 

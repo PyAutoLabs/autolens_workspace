@@ -76,8 +76,12 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
-        [sys.executable, "scripts/multi/features/imaging_and_interferometer/simulator.py"],
+        [
+            sys.executable,
+            "scripts/multi/features/imaging_and_interferometer/simulator.py",
+        ],
         check=True,
     )
 
@@ -246,7 +250,10 @@ The search returns a result object, which includes:
 """
 print(result_list[0].max_log_likelihood_instance)
 
-aplt.subplot_tracer(tracer=result_list[0].max_log_likelihood_tracer, grid=real_space_mask.derive_grid.unmasked)
+aplt.subplot_tracer(
+    tracer=result_list[0].max_log_likelihood_tracer,
+    grid=real_space_mask.derive_grid.unmasked,
+)
 
 aplt.subplot_fit_imaging(fit=result_list[0].max_log_likelihood_fit)
 

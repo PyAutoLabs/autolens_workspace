@@ -55,8 +55,12 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
-        [sys.executable, "scripts/imaging/features/advanced/double_einstein_ring/simulator.py"],
+        [
+            sys.executable,
+            "scripts/imaging/features/advanced/double_einstein_ring/simulator.py",
+        ],
         check=True,
     )
 
@@ -130,15 +134,9 @@ __Per-Plane Images__
 For a double Einstein ring (3-plane system), per-plane images are accessed via
 `model_images_of_planes_list`, which has one entry per plane.
 """
-aplt.plot_array(
-    array=fit.model_images_of_planes_list[0], title="Plane 0 Model Image"
-)
-aplt.plot_array(
-    array=fit.model_images_of_planes_list[1], title="Plane 1 Model Image"
-)
-aplt.plot_array(
-    array=fit.model_images_of_planes_list[2], title="Plane 2 Model Image"
-)
+aplt.plot_array(array=fit.model_images_of_planes_list[0], title="Plane 0 Model Image")
+aplt.plot_array(array=fit.model_images_of_planes_list[1], title="Plane 1 Model Image")
+aplt.plot_array(array=fit.model_images_of_planes_list[2], title="Plane 2 Model Image")
 
 """
 __Full Subplot__

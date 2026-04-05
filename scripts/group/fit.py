@@ -72,6 +72,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/group/simulator.py"],
         check=True,
@@ -443,7 +444,8 @@ image has the light of all lens galaxies (main and extra) removed.
 lens_subtracted_image = fit.subtracted_images_of_planes_list[1]
 aplt.fits_array(
     array=lens_subtracted_image,
-    file_path=dataset_path / "lens_subtracted_data.fits", overwrite=True
+    file_path=dataset_path / "lens_subtracted_data.fits",
+    overwrite=True,
 )
 
 """

@@ -120,7 +120,9 @@ __Fluxes__
 
 Use the positions to compute the magnification of the `Tracer` at every position.
 """
-magnifications = al.LensCalc.from_tracer(tracer=tracer).magnification_2d_via_hessian_from(grid=positions)
+magnifications = al.LensCalc.from_tracer(
+    tracer=tracer
+).magnification_2d_via_hessian_from(grid=positions)
 
 """
 We can now compute the observed fluxes of the `Point`, give we know how much each is magnified.
@@ -164,14 +166,20 @@ __Visualize (Point Source)__
 
 Visualize the `PointDataset` using identical code to the `start_here.ipynb` example.
 """
-aplt.subplot_point_dataset(dataset=dataset, output_path=dataset_path, output_format="png")
+aplt.subplot_point_dataset(
+    dataset=dataset, output_path=dataset_path, output_format="png"
+)
 
 """
 Output subplots of the tracer's images, including the positions of the multiple images on the image.
 """
 
-aplt.subplot_tracer(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
-aplt.subplot_galaxies_images(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
+aplt.subplot_tracer(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
+aplt.subplot_galaxies_images(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
 
 """
 __Tracer json (Point Source)__
@@ -316,11 +324,20 @@ modeling and to `.png` for general inspection.
 aplt.subplot_imaging_dataset(dataset=dataset)
 aplt.plot_array(array=dataset.data, title="Data")
 
-aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image", output_path=dataset_path, output_format="png")
+aplt.plot_array(
+    array=tracer.image_2d_from(grid=grid),
+    title="Image",
+    output_path=dataset_path,
+    output_format="png",
+)
 
 
-aplt.subplot_tracer(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
-aplt.subplot_galaxies_images(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
+aplt.subplot_tracer(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
+aplt.subplot_galaxies_images(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
 
 """
 __Tracer json__

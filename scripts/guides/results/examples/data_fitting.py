@@ -156,7 +156,6 @@ for fit_list in fit_gen:
     # Only one `Analysis` so take first and only dataset.
     fit = fit_list[0]
 
-
     aplt.plot_array(array=fit.normalized_residual_map, title="Normalized Residual Map")
 
 """

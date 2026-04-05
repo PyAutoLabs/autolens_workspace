@@ -70,6 +70,8 @@ Identical to `slam_start_here.py`, except the lens galaxy's bulge uses a linear 
 The linear `Sersic` profile has fewer free parameters than an MGE, as `intensity` is solved analytically.
 This makes the source LP search faster and more reliable.
 """
+
+
 def source_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -119,6 +121,8 @@ __SOURCE PIX PIPELINE 1__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def source_pix_1(
     settings_search: af.SettingsSearch,
     dataset,
@@ -137,7 +141,9 @@ def source_pix_1(
         dataset=dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[
-            source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
+            source_lp_result.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2
+            )
         ],
     )
 
@@ -185,6 +191,8 @@ __SOURCE PIX PIPELINE 2__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def source_pix_2(
     settings_search: af.SettingsSearch,
     dataset,
@@ -247,6 +255,8 @@ Identical to `slam_start_here.py`, except the lens galaxy's bulge uses a linear 
 Using the linear `Sersic` in the LIGHT LP PIPELINE ensures the lens-light model is consistent with the
 SOURCE LP PIPELINE and reduces the number of free parameters in this fit.
 """
+
+
 def light_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -300,6 +310,8 @@ __MASS TOTAL PIPELINE__
 
 Identical to `slam_start_here.py`.
 """
+
+
 def mass_total(
     settings_search: af.SettingsSearch,
     dataset,
@@ -379,6 +391,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/imaging/simulator.py"],
         check=True,

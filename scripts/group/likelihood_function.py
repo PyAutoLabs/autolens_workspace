@@ -77,6 +77,7 @@ simulator script. This ensures that all example scripts can be run without manua
 if not dataset_path.exists():
     import subprocess
     import sys
+
     subprocess.run(
         [sys.executable, "scripts/group/simulator.py"],
         check=True,
@@ -260,8 +261,12 @@ values not within the mask, which are close enough to it that their flux blurs i
 We compute blurring images for ALL lens galaxies and sum them.
 """
 lens_blurring_image_2d = lens_galaxy.image_2d_from(grid=masked_dataset.grids.blurring)
-extra_0_blurring_image_2d = extra_galaxy_0.image_2d_from(grid=masked_dataset.grids.blurring)
-extra_1_blurring_image_2d = extra_galaxy_1.image_2d_from(grid=masked_dataset.grids.blurring)
+extra_0_blurring_image_2d = extra_galaxy_0.image_2d_from(
+    grid=masked_dataset.grids.blurring
+)
+extra_1_blurring_image_2d = extra_galaxy_1.image_2d_from(
+    grid=masked_dataset.grids.blurring
+)
 
 total_lens_blurring_image_2d = (
     lens_blurring_image_2d + extra_0_blurring_image_2d + extra_1_blurring_image_2d

@@ -137,7 +137,10 @@ fit_with_subhalo_gen = fit_agg_with_subhalo.max_log_likelihood_gen_from()
 fit_with_subhalo = list(fit_with_subhalo_gen)[0]
 
 
-aplt.subplot_detection_fits(fit_imaging_no_subhalo=fit_no_subhalo, fit_imaging_with_subhalo=fit_imaging_with_subhalo)
+aplt.subplot_detection_fits(
+    fit_imaging_no_subhalo=fit_no_subhalo,
+    fit_imaging_with_subhalo=fit_imaging_with_subhalo,
+)
 
 """
 __Grid Searches__
@@ -202,10 +205,14 @@ for agg_grid, fit_no_subhalo, fit_with_subhalo, samples_no_subhalo in zip(
         result=result_subhalo_grid_search
     )
 
-
-
-    aplt.subplot_detection_imaging(result=result_subhalo_grid_search, fit_imaging_with_subhalo=fit_imaging_with_subhalo)
-    aplt.subplot_detection_fits(fit_imaging_no_subhalo=fit_no_subhalo, fit_imaging_with_subhalo=fit_imaging_with_subhalo)
+    aplt.subplot_detection_imaging(
+        result=result_subhalo_grid_search,
+        fit_imaging_with_subhalo=fit_imaging_with_subhalo,
+    )
+    aplt.subplot_detection_fits(
+        fit_imaging_no_subhalo=fit_no_subhalo,
+        fit_imaging_with_subhalo=fit_imaging_with_subhalo,
+    )
 
 
 """

@@ -158,10 +158,16 @@ __Visualize__
 Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset path as .png files.
 """
 
-aplt.subplot_interferometer_dirty_images(dataset=dataset, output_path=dataset_path, output_format="png")
+aplt.subplot_interferometer_dirty_images(
+    dataset=dataset, output_path=dataset_path, output_format="png"
+)
 
-aplt.subplot_tracer(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
-aplt.subplot_galaxies_images(tracer=tracer, grid=grid, output_path=dataset_path, output_format="png")
+aplt.subplot_tracer(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
+aplt.subplot_galaxies_images(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
 
 """
 __Tracer json__
