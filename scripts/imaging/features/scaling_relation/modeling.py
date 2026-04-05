@@ -20,6 +20,21 @@ to the mass profile's quantities.
 
 The free parameters are now only those related to the scaling relation, for example is normalization and gradient.
 
+__Contents__
+
+**Mass Model And Scaling Relation:** This example shows how to compose a scaling-relation lens model using the dual Pseudo-Isothermal.
+**Centres:** Scaling relations parameterize the mass of each galaxy, but not their centres.
+**Redshifts:** In this example all line of sight galaxies are at the same redshift as the lens galaxy, meaning.
+**Extra Galaxies API:** **PyAutoLens** refers to all galaxies surrounded the strong lens as `extra_galaxies`, with the.
+**Dataset:** Load and plot the strong lens dataset.
+**Luminosities:** We also need the luminosity of each galaxy, which in this example is the measured property we.
+**Scaling Relation:** We now compose our scaling relation models, using **PyAutoFits** relational model API, which works.
+**Model:** Compose the lens model fitted to the data.
+**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+**Run Time:** Profiling the expected run time of the model-fit.
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Wrap Up:** Summary of the script and next steps.
+
 __Mass Model And Scaling Relation__
 
 This example shows how to compose a scaling-relation lens model using the dual Pseudo-Isothermal Elliptical (dPIE)

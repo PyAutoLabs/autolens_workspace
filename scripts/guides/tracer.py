@@ -11,6 +11,28 @@ following:
 This tutorial focuses on explaining how to use the inferred tracer to compute results as numpy arrays and only
 briefly discusses visualization.
 
+__Contents__
+
+**Units:** In this example, all quantities use the source code's internal unit coordinates, with spatial.
+**Data Structures:** Arrays inspected in this example use bespoke data structures for storing arrays, grids, vectors and.
+**Other Models:** This tutorial does not use a pixelized source reconstruction or linear light profiles, which have.
+**Grids:** To describe the deflection of light, **PyAutoLens** uses `Grid2D` data structures, which are.
+**Light Profiles:** We will ray-trace this `Grid2D`'s coordinates to calculate how the lens galaxy's mass deflects the.
+**Mass Profiles:** **PyAutoLens** uses `MassProfile` objects to represent a galaxy's mass distribution and perform.
+**Galaxies:** A `Galaxy` object is a collection of `LightProfile` and `MassProfile` objects at a given redshift.
+**Ray Tracing:** We can now create the image of the strong lens system!
+**Log10:** The light and masss distributions of galaxies are closer to a log10 distribution than a linear one.
+**Extending Objects:** The API has been designed such that all of the objects introduced above are extensible.
+**Attributes:** Printing individual attributes of the max log likelihood tracer gives us access to the inferred.
+**Lensing Quantities:** The maximum log likelihood tracer contains a lot of information about the inferred model.
+**Grid Choices:** We can input a different grid, which is not masked, to evaluate the image everywhere of interest.
+**Sub Gridding:** A grid can also have a sub-grid, defined via its `sub_size`, which defines how each pixel on the 2D.
+**Positions Grid:** We may want the image at specific (y,x) coordinates.
+**Scalar Lensing Quantities:** The tracer has many scalar lensing quantities, which are all returned using an `Array2D` and.
+**Vector Quantities:** Many lensing quantities are vectors.
+**Other Vector Lensing Quantities:** The tracer has other vector lensing quantities, which use the same interface described above.
+**Other Quantities:** Many more quantities are shown below.
+
 __Units__
 
 In this example, all quantities use the source code's internal unit coordinates, with spatial coordinates in

@@ -40,6 +40,16 @@ pixelization in one search:
  image-plane position of the lensed source. In the second search, we then require that a mass model must trace these
  positions within a threshold arc-secoond value of one another in the source-plane, removing these unphysical solutions.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Paths:** The path the results of all chained searches are output: """ path_prefix = Path("imaging") /.
+**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
+**Brief Description:** In this example we update the positions between searches, where the positions correspond to the.
+**Adaptive Pixelization:** Search 3 uses two adaptive pixelization classes that have not been used elsewhere in the workspace.
+**Adapt Images:** When we create the analysis, we pass it an `adapt_images`, which contains a dictionary mapping each.
+**SLaM Pipelines:** The API above allows you to write modeling code using adaptive features yourself.
+
 __Model__
 
 This script chains three searches to fit `Imaging` data of a 'galaxy-scale' strong lens with a model where:

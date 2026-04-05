@@ -11,6 +11,14 @@ must be modeled. This data preparation script is the group-scale equivalent of t
 with additional sections covering the specification of main lens galaxy centres, extra galaxy centres, and scaling
 galaxy centres.
 
+__Contents__
+
+**Pixel Scale:** The "pixel_scale" of the image (and the data in general) is pixel-units to arcsecond-units.
+**Image:** The image is the image of your group-scale strong lens, which comes from a telescope like the.
+**Noise Map:** The noise-map defines the uncertainty in every pixel of your strong lens image, where values are.
+**PSF:** The Point Spread Function (PSF) describes blurring due the optics of your dataset`s telescope.
+**Data Processing Complete:** If your image, noise-map and PSF conform the standards above, you are ready to analyse your dataset!
+
 __Pixel Scale__
 
 The "pixel_scale" of the image (and the data in general) is pixel-units to arcsecond-units conversion factor of

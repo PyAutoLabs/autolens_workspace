@@ -22,6 +22,11 @@ searches the over sampling grid is updated.
 
 This example shows how to combine lensed source adaptive over sampling with search chaining.
 
+__Contents__
+
+**Paths:** The path the results of all chained searches are output: """ path_prefix = Path("imaging") /.
+**Redshifts:** The redshifts of the lens and source galaxies.
+
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.

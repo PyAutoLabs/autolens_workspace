@@ -19,6 +19,16 @@ The benefits of non-linear search chaining are:
  time. These may impact the quality of the model-fit overall, but they can be reverted to the more accurate but more
  computationally expense setting in the final searches.
 
+__Contents__
+
+**Concise Model Composition API:** Chaining uses the concise `Model` API to compose lens models, which is nearly identical to the.
+**This Example:** This script gives an overview of the API for search chaining, a description of how the priors on.
+**Paths:** The path the results of all chained searches are output: """ path_prefix = Path("imaging") /.
+**Model Chaining:** We use the results of search 1 to create the `Model` components that we fit in search 2.
+**Model Centred Chaining:** We use the results of search 1 to create the `Model` components that we fit in search 2.
+**Detailed Explanation Of Prior Passing:** Overview of detailed explanation of prior passing for this example.
+**EXAMPLE:** Lets go through an example using a real parameter.
+
 __Concise Model Composition API__
 
 Chaining uses the concise `Model` API to compose lens models, which is nearly identical to

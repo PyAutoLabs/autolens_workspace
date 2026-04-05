@@ -11,6 +11,23 @@ imaging data of the cluster for visualization. Advanced PyAutoLens tools support
 
 After reading this script, the `examples` folder provide examples for simulating more complex lenses in different ways.
 
+__Contents__
+
+**Scaling Relation:** This example uses a scaling-relation lens model using the dual Pseudo-Isothermal Elliptical (dPIE).
+**Model:** Compose the lens model fitted to the data.
+**Dataset Paths:** The `dataset_type` describes the type of data being simulated (in this case, `PointDataset` data).
+**Grid:** Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated and.
+**CSV:** For cluster strong lenses, there are often 50 or more galaxies, whose centres, luminosities and.
+**Centres:** Before using the scaling relation, we need to define the centres of the 50 lens galaxies galaxies.
+**Luminosities:** We also need the luminosity of each galaxy, which in this example is the measured property we.
+**Source Galaxies:** We now create the centres of the 5 source galaxies being lensed by the cluster.
+**Ray Tracing:** Setup the lens galaxies and source galaxies for this simulated cluster lens.
+**Point Solver:** For cluster sources, our goal is to find the (y, x) coordinates in the image plane that map.
+**Point Datasets:** All the quantities computed above are stored in a `PointDataset` object, which organizes.
+**Visualize:** Output a subplot of the simulated point source dataset as a .png file.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+**Imaging:** Strong lens clusters typically comes with imaging data, for example showing the foreground lens.
+
 __Scaling Relation__
 
 This example uses a scaling-relation lens model using the dual Pseudo-Isothermal Elliptical (dPIE)

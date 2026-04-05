@@ -11,6 +11,17 @@ Two images are simulated, corresponding to a greener ('g' band) redder image (`r
 
 This is an advanced script and assumes previous knowledge of the core **PyAutoLens** API for simulating images. Thus,
 certain parts of code are not documented to ensure the script is concise.
+
+__Contents__
+
+**Colors:** The colors of the multi-wavelength image, which in this case are green (g-band) and red (r-band).
+**Dataset Paths:** Overview of dataset paths for this example.
+**Simulate:** The pixel-scale of each color image is different meaning we make a list of grids for the simulation.
+**Ray Tracing:** Setup the lens galaxy's mass (SIE+Shear) for this simulated lens.
+**Output:** Output each simulated dataset to the dataset path as .fits files, with a tag describing its color.
+**Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

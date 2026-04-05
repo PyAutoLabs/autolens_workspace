@@ -12,6 +12,21 @@ fit your first lens.
 We focus on a *galaxy-scale* lens (a single lens galaxy). If you have multiple lens galaxies,
 see the `start_here_group.ipynb` and `start_here_cluster.ipynb` examples.
 
+__Contents__
+
+**JAX:** JAX acceleration for fast GPU/CPU model-fitting.
+**Number of Visibilities:** This example fits a **low-resolution interferometric dataset** with a small number of visibilities.
+**Google Colab Setup:** The introduction `start_here` examples are available on Google Colab, which allows you to run them.
+**Imports:** Import the required Python libraries.
+**Dataset:** Load and plot the strong lens dataset.
+**Model:** Compose the lens model fitted to the data.
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Result:** Overview of the results of the model-fit.
+**Model Your Own Lens:** If you have your own strong lens interferometer data, and it has less than ~10000 visibilities, you.
+**Simulator:** Let’s now switch gears and simulate our own strong lens interferometer.
+**Sample:** Often we want to simulate *many* strong lenses — for example, to train a neural network or to.
+**Wrap Up:** Summary of the script and next steps.
+
 __JAX__
 
 PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU

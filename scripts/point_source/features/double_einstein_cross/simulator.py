@@ -7,6 +7,15 @@ This script simulates `PointDataset` data of a strong lens where:
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source `Galaxy` is a `Point`.
 
+__Contents__
+
+**Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
+**Ray Tracing:** Setup the lens galaxy's mass (SIE+Shear) and source galaxy `Point` for this simulated lens.
+**Point Solver:** We use a `PointSolver` to locate the multiple images.
+**Point Datasets:** Create a point-source data object and output this to a `.json` file, which is the format used to.
+**Visualize:** Output a subplot of the simulated point source dictionary and the tracer's quantities to the.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.

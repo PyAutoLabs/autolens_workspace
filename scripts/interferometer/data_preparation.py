@@ -6,6 +6,15 @@ When an interferometer dataset is analysed, it must conform to certain standards
 the analysis to be performed correctly. This tutorial describes these standards and links to more detailed scripts
 which will help you prepare your dataset to adhere to them if it does not already.
 
+__Contents__
+
+**SLACK:** The interferometer data preparation scripts are currently being developed and are not yet complete.
+**Pixel Scale:** When fitting an interferometer dataset, the images of the lens and source galaxies are first.
+**Visibilities:** The image is the image of your strong lens, which comes from a telescope like the Hubble Space.
+**UV Wavelengths:** The uv-wavelengths define the baselines of the interferometer.
+**Real Space Mask:** The `modeling` scripts also define a real-space mask, which defines where the image is evalated in.
+**Data Processing Complete:** If your visibilities, noise-map, uv_wavelengths and real space mask conform the standards above.
+
 __SLACK__
 
 The interferometer data preparation scripts are currently being developed and are not yet complete. If you are

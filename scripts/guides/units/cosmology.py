@@ -8,6 +8,15 @@ electrons per second, dimensionless mass units) to physical units (e.g. kilopars
 This is used on a variety of important lens model cosmological quantities for example the lens's Einstein radius and
 Mass or the effective radii of the galaxies in the lens model.
 
+__Contents__
+
+**Errors:** To produce errors on unit converted quantities, you`ll may need to perform marginalization over.
+**Tracer:** We set up a simple strong lens tracer and grid which will illustrate the unit conversion.
+**Arcsec to Kiloparsec:** The majority of distance quantities in **PyAutoLens** are in arcseconds, because this means that.
+**Einstein Radius:** Given a tracer, galaxy or mass profile we can compute its Einstein Radius, which is defined as the.
+**Einstein Mass:** The Einstein mass can also be computed from a tracer, galaxy or mass profile.
+**Convergence:** The `colorbar_convert_factor` and `colorbar_label` inputs above can also be used to convert the.
+
 __Errors__
 
 To produce errors on unit converted quantities, you`ll may need to perform marginalization over samples of these

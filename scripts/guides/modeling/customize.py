@@ -7,10 +7,9 @@ reasons explaining why each customization is useful.
 
 __Contents__
 
-**Dataset**: Load a dataset which is used to illustrate the customizations.
-**Mask:** Apply a custom mask to the dataset, which can be used to remove regions of the image that contain no emission.
-**Over Sampling:** Change the over sampling used to compute the surface brightness of every image-pixel.
-**Positions:** Specify the positions of the lensed source's multiple images, which can be used to discard unphysical mass models.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Positions:** Before fitting a strong lens, we can manually specify a grid of image-plane coordinates.
 
 __Start Here Notebook__
 

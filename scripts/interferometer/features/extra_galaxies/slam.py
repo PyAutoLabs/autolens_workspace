@@ -11,6 +11,25 @@ guide before working through this example.
 This example only provides documentation specific to the extra galaxies, describing how the pipeline
 differs from the standard SLaM pipelines described in the SLaM start here guide.
 
+__Contents__
+
+**Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
+**Group SLaM:** This SLaM pipeline is designed for the regime where one is modeling galaxy scale lenses with nearby.
+**This Script:** Using a SOURCE LP PIPELINE, SOURCE PIX PIPELINE, LIGHT LP PIPELINE and TOTAL MASS PIPELINE this.
+**SOURCE PIX PIPELINE 1:** Unlike `slam_start_here.py`, this pipeline does not use a `source_lp` pipeline before the pixelized.
+**SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`, using adapt images from `source_pix_result_1` to improve the.
+**MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`, except no lens light model is included as interferometer data.
+**Extra Galaxies Centres:** This is the same API as described in the `features/extra_galaxies.ipynb` example, where the centres.
+**Sparse Operators:** The `pixelization/modeling` example describes how the sparse operator formalism speeds up.
+**Position Likelihood:** Load the multiple image positions used for the position likelihood, which resamples bad mass models.
+**Settings:** Disable the default position only linear algebra solver so the source reconstruction can have.
+**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+**Redshifts:** The redshifts of the lens and source galaxies.
+**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
+**Extra Galaxies:** Build the extra galaxies model: each extra galaxy has an `IsothermalSph` mass profile with its.
+**SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
+**Output:** The `start_here.ipynb` example describes how results can be output to hard-disk after the SLaM.
+
 __Prerequisites__
 
 Before using this SLaM pipeline, you should be familiar with:

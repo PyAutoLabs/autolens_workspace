@@ -19,6 +19,22 @@ should make it quick and easy to at least have a go doing multi-wavelength model
 We focus on a *galaxy-scale* lens (a single lens galaxy). If you have multiple lens galaxies,
 see the `start_here_group.ipynb` and `start_here_cluster.ipynb` examples.
 
+__Contents__
+
+**JAX:** JAX acceleration for fast GPU/CPU model-fitting.
+**Google Colab Setup:** The introduction `start_here` examples are available on Google Colab, which allows you to run them.
+**Imports:** Import the required Python libraries.
+**Dataset:** Load and plot the strong lens dataset.
+**Extra Galaxy Removal:** There may be regions of an image that have signal near the lens and source that is from other.
+**Masking:** Lens modeling does not need to fit the entire image, only the region containing lens and source.
+**Model:** Compose the lens model fitted to the data.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Result:** Overview of the results of the model-fit.
+**Model Your Own Lens:** If you have your own strong lens imaging data, you are now ready to model it yourself by adapting.
+**Simulator:** In the example `start_here_imaging.ipynb`, we showed how to simulate CCD imaging of a strong lens.
+**Wrap Up:** Summary of the script and next steps.
+
 __JAX__
 
 PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU

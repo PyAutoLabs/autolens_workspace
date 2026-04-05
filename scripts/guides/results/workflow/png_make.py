@@ -31,6 +31,22 @@ model-fits and output th em as .png files and .fits files to quickly summarise r
 
 The same initial fit creating results in a folder called `results_folder_csv_png_fits` is therefore used.
 
+__Contents__
+
+**Interferometer:** This script can easily be adapted to analyse the results of charge injection imaging model-fits.
+**Database File:** The aggregator can also load results from a `.sqlite` database file.
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Unique Tag:** One thing to note is that the `unique_tag` of the search is given the name of the dataset with an.
+**Workflow Paths:** The workflow examples are designed to take large libraries of results and distill them down to the.
+**Aggregator:** Set up the aggregator as shown in `start_here.py`.
+**Extract Images:** We now extract 3 images from the `subplot_fit.png` file and make them together into a single image.
+**Output Single Png:** The `image` object which has been extracted is a `Image` object from the Python package `PIL`.
+**Output to Folder:** An alternative way to output the image is to output them as single .png files for each model-fit in.
+**Naming Convention:** We require a naming convention for the output files.
+**Combine Images From Subplots:** We now combine images from two different subplots into a single image, which we will save to the.
+**Custom Subplots in Analysis:** Describe how a user can extend the `Analysis` class to compute custom images that are output to the.
+**Path Navigation:** Example combinng `subplot_fit.png` from `source_lp[1]` and `mass_total[0]`.
+
 __Interferometer__
 
 This script can easily be adapted to analyse the results of charge injection imaging model-fits.

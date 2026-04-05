@@ -29,6 +29,10 @@ __Links / Resources__
 The script `data_preparation/gui/extra_galaxies_mask.ipynb` shows how to use a Graphical User Interface (GUI) to create
 the extra galaxies mask.
 
+__Contents__
+
+**Output:** Output to a .png file for easy inspection.
+
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `data_preparation/start_here.ipynb` notebook.

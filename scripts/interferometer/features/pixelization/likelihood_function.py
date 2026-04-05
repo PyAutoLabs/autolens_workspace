@@ -12,6 +12,36 @@ This script has the following aims:
 
  - To make inversions in **PyAutoLens** less of a "black-box" to users.
 
+__Contents__
+
+**Simplifications:** This example uses a `RectangularUniform` mesh, where all rectangular source pixels have the same.
+**Prerequisites:** The likelihood function of pixelizations is the most complicated likelihood function.
+**Mesh Shape:** The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the.
+**Edge Zeroing:** By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero.
+**Mask:** Define the 2D mask applied to the dataset for the model-fit.
+**Dataset:** Load and plot the strong lens dataset.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Masked Image Grid:** To perform galaxy calculations we define a 2D image-plane grid of (y,x) coordinates.
+**Lens Galaxy:** We set up a lens galaxy with the lens light and mass, which we will use to demonstrate a pixelized.
+**Source Galaxy Pixelization and Regularization:** We combine the pixelization into a single `Galaxy` object.
+**Ray Tracing:** To perform lensing calculations we ray-trace every 2d (y,x) coordinate $\theta$ from the.
+**Border Relocation:** Coordinates that are ray-traced near the mass profile centres are heavily demagnified and may trace.
+**Source Pixel Centre Calculation:** In order to reconstruct the source galaxy using a mesh, we need to determine the centres of the.
+**Interpolation:** We now combine grids computed above to create an `Interpolator`, which describes how image grid.
+**Mapper:** We now use the interpolator to create a `Mapper`, which describes the mapping between every image.
+**Alternative Meshes:** We can briefly consider how this step differs for other mesh types.
+**Mapping Matrix:** The `mapping_matrix` represents the image-pixel to source-pixel mappings above in a 2D matrix.
+**Visibilities Reconstruction:** Using the reconstructed pixel fluxes we can map the reconstruction back to the image plane (via the.
+**Likelihood Function:** We now quantify the goodness-of-fit of our pixelization source galaxy reconstruction.
+**Chi Squared:** The first term is a $\chi^2$ statistic, which is defined above in our merit function as and is.
+**Regularization Term:** The second term, $s^{T} H s$, corresponds to the $\lambda $G_{\rm L}$ regularization term we added.
+**Complexity Terms:** Up to this point, it is unclear why we chose a value of `regularization_coefficient=1.0`.
+**Noise Normalization Term:** Our likelihood function assumes the imaging data consists of independent Gaussian noise in every.
+**Calculate The Log Likelihood:** We can now, finally, compute the `log_likelihood` of the model, by combining the five terms.
+**Fit:** Fit the lens model to the dataset.
+**Lens Modeling:** To fit a lens model to data, the likelihood function illustrated in this tutorial is sampled using.
+**Wrap Up:** Summary of the script and next steps.
+
 __Simplifications__
 
 This example uses a `RectangularUniform` mesh, where all rectangular source pixels have the same size. Most

@@ -17,6 +17,19 @@ the script `autolens_workspace/*/features/extra_galaxies/modeling`.
 This script simulates an imaging dataset which includes extra galaxies near the lens and source
 galaxies. This is used to illustrate the extra galaxies API in the script above.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Other Scripts:** This dataset is used in the following scripts.
+**Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
+**Simulate:** Simulate the image using a (y,x) grid with the adaptive over sampling scheme.
+**Galaxies:** Setup the lens galaxy's light, mass and source galaxy light for this simulated lens.
+**Extra Galaxies:** Includes two extra galaxies, which must be modeled or masked to ensure they do not impact the fit.
+**Output:** Output the simulated dataset to the dataset path as .fits files.
+**Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+**Multiple Images:** Output the multiple image positions of the source galaxy which can help with lens modeling.
+
 __Model__
 
 This script simulates `Imaging` of a 'galaxy-scale' strong lens where:

@@ -11,12 +11,22 @@ behaviour of plotting visuals.
 
 __Contents__
 
-- **Setup:** Sets up a dataset and model which we will perform quick model-fits to for illustration.
-- **Nested Sampling Plots:**: Plots results of the nested sampling method Dynesty.
-- **MCMC Plots (Emcee):**: Plots results of an Emcee fit (e.g. cornerplot).
-- **MLE Plots (PySwarms):**: Plots results of a PySwarms fit (e.g. contour).
-- **MCMC Plots (Zeus):**: Plots results of a Zeus fit (e.g. cornerplot).
-- **GetDist:**: Plot results of any MCMC / nested sampler non-linear search using the library GetDist.
+**Setup:** General setup for the analysis.
+**Notation:** Plot are labeled with short hand parameter names (e.g.
+**DynestyPlotter:** We set up the Dynesty non-linear search and perform the fit to get the samples we will plot below.
+**Plots:** All plots use dynesty's inbuilt plotting library and the model.
+**EmceePlotter:** We now use the MCMC plotting functions to visualize emcee's results.
+**Search Specific Visualization:** The internal sampler can be used to plot the results of the non-linear search.
+**ZeusPlotter:** We now use the MCMC plotting functions to visualize Zeus's results.
+**PySwarmsPlotter:** We now use the MLE plotting functions to visualize pyswarms's results.
+**GetDist:** This example illustrates how to plot visualization summarizing the results of model-fit using any.
+**Parameter Names:** Note that in order to customize the figure, we will use the `samples.model.parameter_names` list.
+**GetDist Plotter:** To make plots we use a GetDist plotter object, which can be customized to change the appearance of.
+**GetDist Subplots:** Using the plotter we can make different plots, for example a triangle plot showing the 1D and 2D.
+**GetDist Single Plots:** We can make plots of specific 1D or 2D PDFs, using the single plotter object.
+**Output:** A figure can be output using standard matplotlib functionality.
+**GetDist Other Plots:** There are many more ways to visualize PDFs possible with GetDist, checkout the official.
+**Plotting Multiple Samples:** Finally, we can plot the results of multiple different non-linear searches on the same plot, using.
 
 __Setup__
 

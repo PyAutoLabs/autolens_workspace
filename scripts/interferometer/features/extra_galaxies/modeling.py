@@ -14,6 +14,21 @@ This example shows how to perform lens modeling which accounts for the mass of t
 each galaxy (e.g. their brightest pixels observed from imaging data) are used as the centre of the mass profiles of
 these galaxies, in order to reduce model complexity.
 
+__Contents__
+
+**Data Preparation:** Data standards required for fitting with PyAutoLens.
+**Mask:** Define the 2D mask applied to the dataset for the model-fit.
+**Dataset:** Load and plot the strong lens dataset.
+**Extra Galaxies Dataset:** We are now going to model the dataset with extra galaxies included in the model, where these.
+**Extra Galaxies Centres:** To set up a lens model including each extra galaxy with a mass profile, we input manually the.
+**Model:** Compose the lens model fitted to the data.
+**Extra Galaxies Model:** We now use the modeling API to create the model for the extra galaxies.
+**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+**Run Time:** Profiling the expected run time of the model-fit.
+**Result:** Overview of the results of the model-fit.
+**Scaling Relations:** The modeling API has full support for composing the extra galaxies such that their mass follows.
+**Wrap Up:** Summary of the script and next steps.
+
 __Data Preparation__
 
 To perform modeling which accounts for extra galaxies, a list of the centre of each extra galaxy are used to set up

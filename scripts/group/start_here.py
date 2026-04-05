@@ -18,6 +18,21 @@ The lens has 2 main lens galaxies, so the model is not too complex, meaning this
 good GPU. More complex groups with more galaxies will take longer to fit, but the workflow is identical and
 PyAutoLens can efficiently scale to these more complex systems.
 
+__Contents__
+
+**JAX:** JAX acceleration for fast GPU/CPU model-fitting.
+**Google Colab Setup:** The introduction `start_here` examples are available on Google Colab, which allows you to run them.
+**Imports:** Import the required Python libraries.
+**Dataset:** Load and plot the strong lens dataset.
+**Main Lens Galaxies:** For a group-scale lens, we have multiple lens galaxies whose light and mass all contribute.
+**Masking:** Lens modeling does not need to fit the entire image, only the region containing lens and source.
+**Model:** Compose the lens model fitted to the data.
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Result:** Overview of the results of the model-fit.
+**Centre Input GUI:** The centres of the main lens galaxies above were loaded from a .json file, which was created using.
+**Model Your Own Lens:** If you have your own strong lens imaging data, you are now ready to model it yourself by adapting.
+**Wrap Up:** Summary of the script and next steps.
+
 __JAX__
 
 PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU

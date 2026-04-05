@@ -21,6 +21,20 @@ discussed above shows the PSF features.
 Operated light profiles bypass the convolution step entirely, and therefore if you had a use-case which
 required fitting other components of a galaxy without convolution they could be used for this purpose too.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Fit:** Fit the lens model to the dataset.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Model Cookbook:** A full description of model composition is provided by the model cookbook.
+**Search:** Configure the non-linear search used to fit the model.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+**Run Time:** Profiling the expected run time of the model-fit.
+**Result:** Overview of the results of the model-fit.
+**Wrap Up:** Summary of the script and next steps.
+
 __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:

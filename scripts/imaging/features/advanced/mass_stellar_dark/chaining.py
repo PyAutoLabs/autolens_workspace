@@ -31,6 +31,11 @@ provides the following benefits:
  - The lens galaxy's light traces its mass, so we can use the lens light model inferred in search 1 to initialize
  sampling of the stellar mass model in search 2.
 
+__Contents__
+
+**Paths:** The path the results of all chained searches are output: """ path_prefix = Path("imaging") /.
+**Wrap Up:** Summary of the script and next steps.
+
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.

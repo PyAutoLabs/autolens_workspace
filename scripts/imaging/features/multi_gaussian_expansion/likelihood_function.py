@@ -17,6 +17,26 @@ Accompanying this script is the `contributor_guide.py` which provides URL's to e
 is illustrated in this guide. This gives contributors a sequential run through of what source-code functions, modules and
 packages are called when the likelihood is evaluated.
 
+__Contents__
+
+**Prerequisites:** The likelihood function of a multi Gaussian expansion builds on that used for standard light.
+**Dataset:** Load and plot the strong lens dataset.
+**Masked Image Grid:** To perform galaxy calculations we used a 2D image-plane grid of (y,x) coordinates, which evaluated.
+**Multiple Gaussians & Linear Light Profiles:** To use a linear light profile, whose `intensity` is computed via linear algebra, we simply use the.
+**Basis:** For a multi-Gaussian expansion (and other mdoels where the light profile is a superposition of.
+**Comparison To Linear Light Profiles Example:** The text below is nearly identical to the `linear_light_profile/likelihood_function.ipynb` example.
+**LightProfileLinearObjFuncList:** For standard light profiles, we combined our linear light profiles into a single `Galaxies` object.
+**Combining Matrices:** In the `linear_light_profile/log_likelihood_function.py` example, we used two.
+**Mapping Matrix:** The `mapping_matrix` is a matrix where each column is an image of each Gaussian linear light.
+**Image Reconstruction:** Using the reconstructed `intensity` values we can map the reconstruction back to the image plane.
+**Likelihood Function:** We now quantify the goodness-of-fit of our galaxy model.
+**Chi Squared:** The first term is a $\chi^2$ statistic, which is defined above in our merit function as and is.
+**Noise Normalization Term:** Our likelihood function assumes the imaging data consists of independent Gaussian noise in every.
+**Calculate The Log Likelihood:** We can now, finally, compute the `log_likelihood` of the galaxy model, by combining the two terms.
+**Fit:** Fit the lens model to the dataset.
+**Galaxy Modeling:** To fit a galaxy model to data, the likelihood function illustrated in this tutorial is sampled.
+**Wrap Up:** Summary of the script and next steps.
+
 __Prerequisites__
 
 The likelihood function of a multi Gaussian expansion builds on that used for standard light profiles and

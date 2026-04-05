@@ -14,6 +14,17 @@ This script describes how to perform point source lens modeling using the time d
 as additional information on top of the positions of the point source, in case you are studying the Hubble constant
 or another measureable quantity that uses time delays.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Dataset:** Load and plot the strong lens dataset.
+**Point Solver:** We set up the `PointSolver`, which is used to compute the multiple images of the point source in.
+**Search:** Configure the non-linear search used to fit the model.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**Run Times:** Profiling the expected run time of the model-fit.
+**Result:** Overview of the results of the model-fit.
+**Cosmology:** Time Delay lenses allow the Hubble constant to be constrained, because the difference between the.
+
 __Model__
 
 This script fits a `PointDataset` data of a 'galaxy-scale' strong lens with a model where:

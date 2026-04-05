@@ -25,6 +25,16 @@ so far figured the above settings are important.
 If you need customization of the model or pipeline, you should pick apart the SLaM pipeline and customize
 them as you see fit.
 
+__Contents__
+
+**Preqrequisites:** Before reading this script, you should have familiarity with the following key concepts.
+**This Script:** Using a SOURCE LP PIPELINE, SOURCE PIX PIPELINE, LIGHT LP PIPELINE and TOTAL MASS PIPELINE this.
+**Dataset:** Load and plot the strong lens dataset.
+**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+**Redshifts:** The redshifts of the lens and source galaxies.
+**SLaM Pipeline Functions:** Overview of slam pipeline functions for this example.
+**SLaM Pipeline:** Overview of slam pipeline for this example.
+
 __Preqrequisites__
 
 Before reading this script, you should have familiarity with the following key concepts:

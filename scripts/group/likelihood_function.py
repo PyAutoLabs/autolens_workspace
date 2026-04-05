@@ -17,6 +17,28 @@ This script has the following aims:
 
 Accompanying this script is the imaging `likelihood_function.py` which provides the same step-by-step guide
 for a single lens galaxy. This script extends that to the group scale.
+
+__Contents__
+
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Masked Image Grid:** To perform galaxy calculations we define a 2D image-plane grid of (y,x) coordinates.
+**Main Lens Galaxy:** The main lens galaxy is at the centre of the group.
+**Extra Galaxies:** The two extra galaxies are companion galaxies near the main lens.
+**Source Galaxy Light Profile:** The source galaxy is fitted using an analytic light profile, in this example a cored elliptical.
+**Lens Light:** Compute a 2D image of each lens galaxy's light and sum them together.
+**Lens Galaxy Mass:** We next consider the mass profiles of all galaxies in the group.
+**Ray Tracing:** To perform lensing calculations we ray-trace every 2d (y,x) coordinate $\\theta$ from the.
+**Source Image:** We pass the traced grid and blurring grid of coordinates to the source galaxy to evaluate its 2D.
+**Convolution:** Convolve the 2D image of the lens galaxies and source above with the PSF in real-space (as opposed.
+**Likelihood Function:** We now quantify the goodness-of-fit of our group-scale lens model.
+**Chi Squared:** The first term is a $\chi^2$ statistic, which is defined above in our merit function as and is.
+**Noise Normalization Term:** Our likelihood function assumes the imaging data consists of independent Gaussian noise in every.
+**Calculate The Log Likelihood:** We can now, finally, compute the `log_likelihood` of the lens model, by combining the two terms.
+**Fit:** Fit the lens model to the dataset.
+**Lens Modeling:** To fit a lens model to data, the likelihood function illustrated in this tutorial is sampled using.
+**Wrap Up:** Summary of the script and next steps.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

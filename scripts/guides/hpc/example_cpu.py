@@ -22,6 +22,20 @@ example to your HPC`s job management system.
 
 This example will likely require adaptation for you to run it on your HPC enviroment, its goal is to simply
 illustrate the general principles of how to set up lens modeling on an HPC.
+
+__Contents__
+
+**HPC Output Path:** We first set the `hpc_output_path`, where the results of lens modeling are output on your HPC.
+**HPC Dataset Path:** We next set the `hpc_dataset_path`, which is the path where datasets are stored on the hpc.
+**HPC Home Path:** The `home_path` is in your the hpc home directory, which again may be different from your output.
+**Batch Script Many Lenses:** HPC submissions require a batch script, which tells the HPC the CPU hardware you want the job to.
+**Batch Script One Lenses:** Lets now look at the second example batch script, `example_cpu_one_dataset_parallel`, which fits a.
+**Dataset:** Load and plot the strong lens dataset.
+**Nautilus CPUs:** The final change we need to make is to set the number of CPUs Nautilus uses in the model-fit.
+**Lens Modeling:** Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
+**Model:** Compose the lens model fitted to the data.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+
 """
 
 # %%

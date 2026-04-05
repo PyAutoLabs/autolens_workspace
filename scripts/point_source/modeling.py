@@ -5,6 +5,27 @@ Modeling: Start Here
 This script is the starting point for lens modeling of point-source lens datasets, for example the multiple image
 positions of a lensed quasar.
 
+__Contents__
+
+**Not Using Light Profiles:** Users who are familiar with analysing imaging or interferometer data will be used to performing.
+**Model:** Compose the lens model fitted to the data.
+**Dataset:** Load and plot the strong lens dataset.
+**Point Solver:** For point-source modeling we require a `PointSolver`, which determines the multiple-images of the.
+**Model Composition:** Compose the lens model using the Model and Collection API.
+**Name Pairing:** Every point-source dataset in the `PointDataset` has a name, which in this example was `point_0`.
+**Coordinates:** Coordinate system assumptions for the model-fit.
+**Search:** Configure the non-linear search used to fit the model.
+**Unique Identifier:** In the path above, the `unique_identifier` appears as a collection of characters, where this.
+**Chi Squared:** For point-source modeling, there are many different ways to define the likelihood function, broadly.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**JAX:** JAX acceleration for fast GPU/CPU model-fitting.
+**VRAM Use:** When running AutoLens with JAX on a GPU, the analysis must fit within the GPU’s available VRAM.
+**Run Times:** Profiling the expected run time of the model-fit.
+**Output Folder:** Now this is running you should checkout the `autolens_workspace/output` folder.
+**Result:** Overview of the results of the model-fit.
+**Results:** Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
+**Modeling Customization:** The folders `autolens_workspace/*/guides/modeling/searches` gives an overview of alternative.
+
 __Not Using Light Profiles__
 
 Users who are familiar with analysing imaging or interferometer data will be used to

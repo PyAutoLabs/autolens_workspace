@@ -19,21 +19,18 @@ feature).
 
 __Contents__
 
-**Advantages & Disadvantages:** Benefits and drawbacks of using shapelets.
-**Dataset & Mask:** Standard set up of imaging dataset that is fitted.
-**Basis:** How to create a basis of multiple light profiles, in this example shapelets.
-**Coefficients:** A visualization of the real and imaginary shapelet coefficients in the Basis.
-**Linear Light Profiles:** How to create a basis of linear light profiles to perform the shapelet decomposition.
-**Fit:** Perform a fit to a dataset using linear light profile MGE.
-**Intensities:** Access the solved for intensities of linear light profiles from the fit.
-**Model:** Composing a model using shapelets and how it changes the number of free parameters.
-**Search & Analysis:** Standard set up of non-linear search and analysis.
-**Run Time:** Profiling of shapelet run times and discussion of how they compare to standard light profiles.
-**Model-Fit:** Performs the model fit using standard API.
-**Result:** Shaeplet results, including accessing light profiles with solved for intensity values.
-**Cartesian Shapelets:** Using shapelets definedon a Cartesian coordinate system instead of polar coordinates.
-**Lens Shapelets:** Using shapelets to decompose the lens galaxy instead of the source galaxy.
-**Regularization:** API for applying regularization to shapelets, which is not recommend but included for illustration.
+**Advantages & Disadvantages:** Symmetric light profiles (e.g.
+**Model:** Compose the lens model fitted to the data.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Basis:** We first build a `Basis`, which is built from multiple light profiles (in this case, shapelets).
+**Coefficients:** The `Basis` is composed of many shapelets, each with different coefficients (n and m) values and a.
+**Linear Light Profiles:** We now show Composing a basis of multiple shapelets and use them to fit the source galaxy's light.
+**Fit:** Fit the lens model to the dataset.
+**Positive Negative Solver:** In other examples which use linear algebra to fit the data, for example linear light profiles, the.
+**Intensities:** The fit contains the solved for intensity values.
+**Shapelet Cartesian:** The shapelets above were defined on a polar grid, which is suitable for modeling radially symmetric.
+**Wrap Up:** Summary of the script and next steps.
 
 __Advantages__
 

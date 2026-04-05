@@ -11,6 +11,14 @@ using this script.
 
 This script uses a GUI to mark the (y,x) arcsecond locations of these extra galaxies, in contrast to the example
 above which requires you to input these values manually.
+
+__Contents__
+
+**Dataset:** Load and plot the strong lens dataset.
+**Search Box:** When you click on a pixel to mark a position, the search box looks around this click and finds the.
+**Clicker:** Set up the `Clicker` object from the `clicker.py` module, which monitors your mouse clicks in order.
+**Output:** Now lets plot the image and extra galaxy centres, so we can check that the centre overlaps the.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

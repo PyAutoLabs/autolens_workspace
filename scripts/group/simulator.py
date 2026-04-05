@@ -12,6 +12,22 @@ This script simulates `Imaging` of a 'group-scale' strong lens where:
  profiles and total mass distributions are `IsothermalSph` profiles.
  - A single source galaxy is observed whose `LightProfile` is a `SersicCore`.
 
+__Contents__
+
+**Main Lens Galaxies vs Extra Galaxies:** For group-scale lens modeling, galaxies are organized into two categories.
+**Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
+**Grid:** Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated and.
+**Galaxy Centres:** Define the centres of the main lens galaxies and extra galaxies.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Main Lens Galaxies:** The main lens galaxy is at the origin (0.0, 0.0).
+**Extra Galaxies:** The two extra galaxies are companion galaxies near the lens system.
+**Source Galaxy:** The source galaxy whose lensed images we simulate.
+**Ray Tracing:** Use all galaxies to setup a tracer, which will generate the image for the simulated `Imaging`.
+**Dataset:** Load and plot the strong lens dataset.
+**Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+**Centre JSON Files:** Save the centres of the main lens galaxies and extra galaxies as JSON files.
+
 __Main Lens Galaxies vs Extra Galaxies__
 
 For group-scale lens modeling, galaxies are organized into two categories:

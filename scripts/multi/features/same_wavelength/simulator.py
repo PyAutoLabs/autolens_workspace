@@ -17,6 +17,16 @@ An example use case might be analysing undithered HST images before they are com
 to remove correlated noise in the data.
 
 TODO: NEED TO INCLUDE DIFFERENT POINTING / CENTERINGS.
+
+__Contents__
+
+**Dataset Paths:** Overview of dataset paths for this example.
+**Simulate:** If observed at the same wavelength, it is likely the datasets have the same pixel-scale.
+**Ray Tracing:** Setup the lens galaxy's mass (SIE+Shear) for this simulated lens.
+**Output:** Output each simulated dataset to the dataset path as .fits files, with a tag describing its color.
+**Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

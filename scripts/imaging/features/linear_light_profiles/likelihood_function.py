@@ -19,6 +19,24 @@ Accompanying this script is the `contributor_guide.py` which provides URL's to e
 is illustrated in this guide. This gives contributors a sequential run through of what source-code functions, modules and
 packages are called when the likelihood is evaluated.
 
+__Contents__
+
+**Prerequisites:** The likelihood function of a linear light profile builds on that used for standard light profiles.
+**Dataset:** Load and plot the strong lens dataset.
+**Masked Image Grid:** To perform galaxy calculations we used a 2D image-plane grid of (y,x) coordinates, which evaluated.
+**Linear Light Profiles:** To use a linear light profile, whose `intensity` is computed via linear algebra, we simply use the.
+**LightProfileLinearObjFuncList:** For standard light profiles, we combined our linear light profiles into a single `Galaxies` object.
+**Mapping Matrix:** The `mapping_matrix` is a matrix where each column is an image of each linear light profiles.
+**Combining Matrices:** The linear algebra system solves for all light profile `intensity` values at once, so we need to.
+**Image Reconstruction:** Using the reconstructed `intensity` values we can map the reconstruction back to the image plane.
+**Likelihood Function:** We now quantify the goodness-of-fit of our galaxy model.
+**Chi Squared:** The first term is a $\chi^2$ statistic, which is defined above in our merit function as and is.
+**Noise Normalization Term:** Our likelihood function assumes the imaging data consists of independent Gaussian noise in every.
+**Calculate The Log Likelihood:** We can now, finally, compute the `log_likelihood` of the galaxy model, by combining the two terms.
+**Fit:** Fit the lens model to the dataset.
+**Lens Modeling:** To fit a lens model to data, the likelihood function illustrated in this tutorial is sampled using.
+**Wrap Up:** Summary of the script and next steps.
+
 __Prerequisites__
 
 The likelihood function of a linear light profile builds on that used for standard light profiles,

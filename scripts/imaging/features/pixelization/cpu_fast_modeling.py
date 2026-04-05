@@ -14,6 +14,18 @@ which is not currently optimized in JAX.
 > Note: This performance advantage applies **only to pixelized sources**.
 > For parametric sources or multi-Gaussian models, JAX (especially with a GPU) is significantly faster, and even JAX
 > on a CPU outperforms the `numba` approach shown here.
+
+__Contents__
+
+**Sparse Operators:** Pixelized source modeling requires dense linear algebra operations.
+**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
+**Fit:** Fit the lens model to the dataset.
+**Model:** Compose the lens model fitted to the data.
+**SLaM Pipeline:** The example `guides/modeling//slam_start_here.ipynb` introduces the SLaM (Source, Light and Mass).
+**SLaM Pipeline Functions:** Overview of slam pipeline functions for this example.
+**CPU Fast SLaM Pipelines:** The SLaM pipeline is mostly identical to other examples, but via the `SettingsSearch` it uses a.
+**Wrap Up:** Summary of the script and next steps.
+
 """
 
 try:

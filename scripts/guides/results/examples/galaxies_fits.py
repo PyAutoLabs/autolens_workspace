@@ -14,6 +14,17 @@ The galaxies and fit API is described fully in the guides:
 This result example only explains specific functionality for using a `Result` object to inspect galaxies or a fit
 and therefore you should read these guides in detail first.
 
+__Contents__
+
+**Units:** In this example, all quantities use the source code's internal unit coordinates, with spatial.
+**Data Structures:** Arrays inspected in this example use bespoke data structures for storing arrays, grids, vectors and.
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Max Likelihood Tracer:** As seen elsewhere in the workspace, the result contains a `max_log_likelihood_tracer` which we can.
+**Refitting:** Using the API introduced in the first tutorial, we can also refit the data locally.
+**Samples API:** In the first results tutorial, we used `Samples` objects to inspect the results of a model.
+**Max Likelihood Fit:** As seen elsewhere in the workspace, the result contains a `max_log_likelihood_fit` which we can.
+**Wrap Up:** Summary of the script and next steps.
+
 __Units__
 
 In this example, all quantities use the source code's internal unit coordinates, with spatial coordinates in

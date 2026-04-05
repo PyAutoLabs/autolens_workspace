@@ -17,13 +17,14 @@ Refer to `plots/start_here.ipynb` for a general introduction to the new plotting
 
 __Contents__
 
-- **Setup**: Set up all objects used to illustrate overlays.
-- **Critical Curves**: Plot tangential and radial critical curves using `lines=`.
-- **Caustics**: Plot tangential and radial caustics using `lines=`.
-- **Multiple Critical Curves**: Plot critical curves for a multi-galaxy system.
-- **Image Positions**: Plot image positions using `positions=`.
-- **Light Profile Centres**: Overlay centre positions on an image.
-- **Mass Profile Centres**: Overlay mass profile centres on an image.
+**Setup:** General setup for the analysis.
+**Critical Curves:** Critical curves are plotted as lines over the image using the `lines=` keyword argument.
+**Multiple Critical Curves:** If a `Tracer` has multiple lens galaxies it may have multiple tangential and radial critical curves.
+**Caustics:** Caustics are the critical curves mapped to the source plane.
+**Image Positions:** The multiple image positions of a lensed source can be plotted using `positions=`.
+**Light Profile Centres:** The centres of light profiles can be extracted and plotted as positions over an image.
+**Mass Profile Centres:** Mass profile centres can be extracted and overlaid in the same way.
+**Combined Overlays:** `lines=` and `positions=` can be used together on the same plot.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

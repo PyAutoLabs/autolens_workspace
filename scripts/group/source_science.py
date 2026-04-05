@@ -10,6 +10,18 @@ size of the source.
 This example shows how to perform these calculations for a group-scale lens, where multiple galaxies at the same
 redshift contribute to the lensing potential. The key difference from the single-galaxy imaging case is that ALL
 mass profiles in the group must be included when computing ray-tracing and magnification.
+
+__Contents__
+
+**Simulated Dataset:** We load and plot the `simple` group example dataset, which is simulated imaging of a group-scale.
+**Mask:** Define the 2D mask applied to the dataset for the model-fit.
+**Source Values:** Source science calculations for real lenses are performed using the best-fitting model inferred.
+**Source Flux:** A key quantity for a source galaxy is its total flux, which can be used to compute magnitudes (see.
+**Source Magnification:** The overall magnification of the source is estimated as the ratio of total surface brightness in.
+**Impact of Extra Galaxies:** For group-scale lenses, the magnification is determined by ALL mass profiles in the group: the main.
+**Tracer:** Lens modeling returns a `max_log_likelihood_tracer`, which is likely the object you have at hand to.
+**Parametric Source Models:** If your lens modeling uses a parametric source model (e.g.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

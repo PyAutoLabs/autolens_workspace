@@ -8,6 +8,20 @@ stars and dark matter, using a light plus dark matter mass model.
 Unlike other example SLaM pipelines, which end with the MASS TOTAL PIPELINE, this script ends with the
 MASS LIGHT DARK PIPELINE.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**SOURCE LP PIPELINE:** Identical to `slam_start_here.py`, except.
+**SOURCE PIX PIPELINE 1:** Identical to `slam_start_here.py`.
+**SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`.
+**LIGHT LP PIPELINE:** Identical to `slam_start_here.py`, except the lens galaxy's bulge uses a linear `Sersic` light.
+**MASS LIGHT DARK PIPELINE:** The MASS LIGHT DARK PIPELINE fits a mass model where the stellar mass is tied to the lens light.
+**Dataset:** Load and plot the strong lens dataset.
+**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+**Redshifts:** The redshifts of the lens and source galaxies.
+**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
+**SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
+
 __Model__
 
 Using a SOURCE LP PIPELINE, SOURCE PIX PIPELINE, LIGHT LP PIPELINE and a MASS LIGHT DARK PIPELINE this SLaM script

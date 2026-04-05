@@ -12,18 +12,22 @@ light profiles!
 
 __Contents__
 
-**Advantages & Disadvatanges:** Benefits and drawbacks of linear light profiles.
-**Positive Only Solver:** How a positive solution to the light profile intensities is ensured.
-**Dataset & Mask:** Standard set up of imaging dataset that is fitted.
-**Fit:** Perform a fit to a dataset using linear light profile with inputs for other light profile parameters.
-**Intensities:** Access the solved for intensities of light profiles from the fit.
-**Model:** Composing a model using linear light profiles and how it changes the number of free parameters.
-**Search & Analysis:** Standard set up of non-linear search and analysis.
-**Run Time:** Profiling of linear light profile run times and discussion of how they compare to standard light profiles.
-**Model-Fit:** Performs the model fit using standard API.
-**Result & Intensities:** Linear light profiles results, including how to access light profiles with solved for intensity values.
-**Visualization:** Plotting images of model-fits using linear light profiles.
-**Linear Objects (Source Code)**: Internal source code implementation of linear light profiles (for contributors).
+**Advantages & Disadvantages:** Each light profile's `intensity` parameter is therefore not a free parameter in the model-fit.
+**Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+**Model:** Compose the lens model fitted to the data.
+**Notes:** This script is identical to `modeling/start_here.py` except that the light profiles are switched to.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Model Cookbook:** A full description of model composition is provided by the model cookbook.
+**Search:** Configure the non-linear search used to fit the model.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+**Run Time:** Profiling the expected run time of the model-fit.
+**Result:** Overview of the results of the model-fit.
+**Intensities:** The intensities of linear light profiles are not a part of the model parameterization and therefore.
+**Visualization:** Linear light profiles and objects containing them (e.g.
+**Wrap Up:** Summary of the script and next steps.
+**Max Likelihood Inversion:** As seen elsewhere in the workspace, the result contains a `max_log_likelihood_fit`, which contains.
 
 __Advantages__
 

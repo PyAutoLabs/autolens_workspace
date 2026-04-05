@@ -19,21 +19,25 @@ feature).
 
 __Contents__
 
-**Advantages & Disadvantages:** Benefits and drawbacks of using shapelets.
-**Dataset & Mask:** Standard set up of imaging dataset that is fitted.
-**Basis:** How to create a basis of multiple light profiles, in this example shapelets.
-**Coefficients:** A visualization of the real and imaginary shapelet coefficients in the Basis.
-**Linear Light Profiles:** How to create a basis of linear light profiles to perform the shapelet decomposition.
-**Fit:** Perform a fit to a dataset using linear light profile MGE.
-**Intensities:** Access the solved for intensities of linear light profiles from the fit.
-**Model:** Composing a model using shapelets and how it changes the number of free parameters.
-**Search & Analysis:** Standard set up of non-linear search and analysis.
-**Run Time:** Profiling of shapelet run times and discussion of how they compare to standard light profiles.
-**Model-Fit:** Performs the model fit using standard API.
-**Result:** Shaeplet results, including accessing light profiles with solved for intensity values.
-**Cartesian Shapelets:** Using shapelets definedon a Cartesian coordinate system instead of polar coordinates.
-**Lens Shapelets:** Using shapelets to decompose the lens galaxy instead of the source galaxy.
-**Regularization:** API for applying regularization to shapelets, which is not recommend but included for illustration.
+**Advantages & Disadvantages:** Symmetric light profiles (e.g.
+**Model:** Compose the lens model fitted to the data.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Positive Negative Solver:** In other examples which use linear algebra to fit the data, for example linear light profiles, the.
+**Model Cookbook:** A full description of model composition is provided by the model cookbook.
+**Search:** Configure the non-linear search used to fit the model.
+**Position Likelihood:** We add a penalty term ot the likelihood function, which penalizes models where the brightest.
+**Brief Description:** Unlike other example scripts, we also pass the `AnalysisImaging` object below a `PositionsLH`.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+**Run Time:** Profiling the expected run time of the model-fit.
+**Result:** Overview of the results of the model-fit.
+**Shapelet Cartesian:** The shapelets above were defined on a polar grid, which is suitable for modeling radially symmetric.
+**Cartesian Shapelets:** Overview of cartesian shapelets for this example.
+**Fit:** Fit the lens model to the dataset.
+**Lens Shapelets:** A model where the lens is modeled as shapelets can be composed and fitted as shown below.
+**Regularization:** There is one downside to `Basis` functions, we may compose a model with too much freedom.
+**Wrap Up:** Summary of the script and next steps.
 
 __Advantages__
 

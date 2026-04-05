@@ -19,6 +19,19 @@ infrared I-band (wavelength=806nm) observations.
 
 This is an advanced script and assumes previous knowledge of the core **PyAutoLens** API for simulating images. Thus,
 certain parts of code are not documented to ensure the script is concise.
+
+__Contents__
+
+**Colors:** The colors of the multi-wavelength image, which in this case are green (g-band), red (r-band) and.
+**Wavelengths:** The intensity of each source galaxy is parameterized as a function of wavelength.
+**Dataset Paths:** Overview of dataset paths for this example.
+**Simulate:** The pixel-scale of each color image is different meaning we make a list of grids for the simulation.
+**Intensity vs Wavelength:** We will assume that the `intensity` of the lens and source galaxies linearly varies as a function.
+**Ray Tracing:** Setup the lens galaxy's mass (SIE+Shear) for this simulated lens.
+**Output:** Output each simulated dataset to the dataset path as .fits files, with a tag describing its color.
+**Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

@@ -6,6 +6,14 @@ This tool allows one to input the positions of strong lenses via a GUI, which ca
 mass models during lensing modeling.
 
 This GUI is adapted from the following code: https://gist.github.com/brikeats/4f63f867fd8ea0f196c78e9b835150ab
+
+__Contents__
+
+**Dataset:** Load and plot the strong lens dataset.
+**Search Box:** When you click on a pixel to mark a position, the search box looks around this click and finds the.
+**Clicker:** Set up the `Clicker` object from the `clicker.py` module, which monitors your mouse clicks in order.
+**Output:** Now lets plot the image and positions,, so we can check that the positions overlap the brightest.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

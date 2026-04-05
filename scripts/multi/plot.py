@@ -14,6 +14,15 @@ In the new API, we load each dataset and use matplotlib subplots directly.
 
 The dedicated `aplt.subplot_imaging_dataset()` function is also shown for single-dataset plots.
 
+__Contents__
+
+**Dataset:** Load and plot the strong lens dataset.
+**Single Dataset Subplots:** Plot the full subplot overview of each dataset using `aplt.subplot_imaging_dataset()`.
+**Multi Dataset Plot:** Plot the data image from each dataset side-by-side on the same matplotlib figure.
+**Multi Dataset Array Plot:** We can also call `aplt.plot_array()` for each dataset separately.
+**Multi Fits:** We can also output a list of figures to a single `.fits` file, where each image goes in each HDU.
+**Wrap Up:** Summary of the script and next steps.
+
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to `plot/start_here.ipynb`.

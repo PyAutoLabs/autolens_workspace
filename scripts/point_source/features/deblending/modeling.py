@@ -26,6 +26,20 @@ of the PSF is key for accurate flux measurements).
 In this example, we perform this deblending so that we can accurately measure the point-source positions, fluxes and
 properties of the lens galaxy's light.
 
+__Contents__
+
+**Image Plane Multiple Images:** When fitting the `Imaging` dataset in order to deblend the lensed point-source images and lens.
+**Point Source Host Galaxy:** For high quality imaging of a lensed point source, the light from the point source's host galaxy.
+**Imaging:** This example script fits `Imaging` data, using many of the features described in the.
+**Model:** Compose the lens model fitted to the data.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Model Cookbook:** A full description of model composition is provided by the model cookbook.
+**Search:** Configure the non-linear search used to fit the model.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**Run Time:** Profiling the expected run time of the model-fit.
+**Result:** Overview of the results of the model-fit.
+**Point Source:** After the analysis above is complete, the lens model infers the following information.
+
 __Image Plane Multiple Images__
 
 When fitting the `Imaging` dataset in order to deblend the lensed point-source images and lens galaxies, the four

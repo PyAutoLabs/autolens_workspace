@@ -11,6 +11,15 @@ This dataset is paired with the script `multi/simulators/lens_sersic.py` and the
 provides interferometer observations of the same strong lens.
 
 It is used to demonstrate the combination of imaging and interferometer datasets.
+
+__Contents__
+
+**Simulate:** For simulating interferometer data of a strong lens, we recommend using a Grid2D object with a.
+**Ray Tracing:** Setup the lens galaxy's mass (SIE+Shear) and source galaxy light (elliptical Sersic) for this.
+**Output:** Output the simulated dataset to the dataset path as .fits files.
+**Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

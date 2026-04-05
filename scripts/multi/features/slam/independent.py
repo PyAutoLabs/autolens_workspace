@@ -30,6 +30,19 @@ the VIS instrument will be high resolution but many other wavebands will be lowe
 The subsequent fits to the lower resolution data use a reduced and simplified SLaM pipeline with the mass model
 fixed to the result of the VIS fit.
 
+__Contents__
+
+**Preqrequisites:** Before using this SLaM pipeline, you should be familiar with.
+**This Script:** Using a SOURCE LP PIPELINE, SOURCE PIX PIPELINE, LIGHT LP PIPELINE and TOTAL MASS PIPELINE this.
+**Dataset:** Load and plot the strong lens dataset.
+**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+**Redshifts:** The redshifts of the lens and source galaxies.
+**SLaM Pipeline Functions:** Overview of slam pipeline functions for this example.
+**SLaM Pipeline:** Overview of slam pipeline for this example.
+**Second Dataset Fits:** We now fit the secondary multi-wavelength datasets, which are lower resolution than the main.
+**Dataset Wavebands:** The following list gives the names of the wavebands we are going to fit.
+**Result Dict:** The results of each fit are stored in a dictionary, which is used to pass the results of each fit.
+
 __Preqrequisites__
 
 Before using this SLaM pipeline, you should be familiar with:

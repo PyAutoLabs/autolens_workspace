@@ -7,6 +7,20 @@ dark matter and other components combined). This typically uses an `Isothermal` 
 
 This script fits a mass model which decomposes the lens galaxy's mass into its stars and dark matter.
 
+__Contents__
+
+**Advantages & Disadvantages:** Decomposed mass models measure direct properties of the stars and dark matter, for example the.
+**Model:** Compose the lens model fitted to the data.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Model Cookbook:** A full description of model composition is provided by the model cookbook.
+**Search:** Configure the non-linear search used to fit the model.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+**Run Time:** Profiling the expected run time of the model-fit.
+**Result:** Overview of the results of the model-fit.
+**Wrap Up:** Summary of the script and next steps.
+
 __Advantages__
 
 Decomposed mass models measure direct properties of the stars and dark matter, for example the lens's stellar mass,

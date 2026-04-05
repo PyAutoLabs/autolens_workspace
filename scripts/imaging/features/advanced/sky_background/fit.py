@@ -19,6 +19,14 @@ further out, like the effective radius and Sersic index, fully account for the u
 This example script illustrates how to include the sky background in the model-fitting of an `Imaging` dataset as
 a non-linear free parameter (e.g. an extra dimension in the non-linear parameter space).
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Fit:** Fit the lens model to the dataset.
+**Wrap Up:** Summary of the script and next steps.
+
 __Model__
 
 This script fits an `Imaging` dataset of a galaxy with a model where:

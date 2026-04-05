@@ -8,6 +8,23 @@ surrounding the main lens, whose light and mass are both included in the model.
 A full overview of SLaM is provided in `guides/modeling/slam_start_here`. This script
 only documents how the pipeline differs from that reference.
 
+__Contents__
+
+**Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
+**Group SLaM:** This pipeline is designed for the galaxy-scale regime with a small number of nearby extra galaxies.
+**This Script:** Using SOURCE LP, SOURCE PIX, LIGHT LP and MASS TOTAL pipelines this script fits `Imaging` data.
+**SOURCE LP PIPELINE:** Identical to `slam_start_here.py`, except each extra galaxy is included in the model with a.
+**SOURCE PIX PIPELINE 1:** Identical to `slam_start_here.py`, except extra-galaxy light is fixed from `source_lp` and their.
+**SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`, except extra galaxies are fully fixed as instances from.
+**LIGHT LP PIPELINE:** Identical to `slam_start_here.py`, except extra-galaxy mass is fixed from `source_pix[1]` and their.
+**MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`, except extra-galaxy light is fixed from `light[1]` and their.
+**Dataset:** Load and plot the strong lens dataset.
+**Extra Galaxies Centres:** The centres of the extra galaxies are loaded from a `.json` file and used to set up the light and.
+**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+**Redshifts:** The redshifts of the lens and source galaxies.
+**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
+**SLaM Pipeline:** Overview of slam pipeline for this example.
+
 __Prerequisites__
 
 Before using this SLaM pipeline, you should be familiar with:

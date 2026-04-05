@@ -11,6 +11,18 @@ guide before working through this example.
 This example only provides documentation specific to the use of an MGE source, describing how the pipeline
 differs from the standard SLaM pipelines described in the SLaM start here guide.
 
+__Contents__
+
+**Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
+**Model:** Compose the lens model fitted to the data.
+**SOURCE LP PIPELINE:** Identical to `slam_start_here.py` with `gaussian_per_basis=1` for both the lens and source MGE.
+**LIGHT LP PIPELINE:** Identical to `slam_start_here.py`, except.
+**MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`, except.
+**Dataset:** Load and plot the strong lens dataset.
+**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+**Redshifts:** The redshifts of the lens and source galaxies.
+**SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
+
 __Prerequisites__
 
 Before using this SLaM pipeline, you should be familiar with:

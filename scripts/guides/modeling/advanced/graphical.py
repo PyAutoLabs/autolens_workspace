@@ -30,6 +30,19 @@ This example illustrates graphical models using point-source datasets and the Hu
 and intuitive model whereby a single shared parameter (H0) links multiple lenses. The API and concepts demonstrated
 here can be directly applied to imaging and interferometer datasets, and more complex models with many shared can
 be composed and fitted using the same framework.
+
+__Contents__
+
+**Initialization:** Load 3 simulated time-delay lens datasets which are all simulated with different mass models but.
+**Point Solver:** We set up the `PointSolver`, which is used to compute the multiple images of the point source in.
+**Model:** Compose the lens model fitted to the data.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**Analysis Factors:** Above, we created a `model_list` containing three lens models, each sharing the same prior on `H0`.
+**Factor Graph:** We now combine our `AnalysisFactor` objects to form a **factor graph**.
+**Search:** Configure the non-linear search used to fit the model.
+**Result:** Overview of the results of the model-fit.
+**Wrap Up:** Summary of the script and next steps.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

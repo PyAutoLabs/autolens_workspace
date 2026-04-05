@@ -12,6 +12,13 @@ using this script.
 
 This script uses a GUI to mark the regions of the image where these extra galaxies are located, in contrast to the
 example above which requires you to input these values manually.
+
+__Contents__
+
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Scribbler:** Load the Scribbler GUI for spray painting the scaled regions of the dataset.
+**Output:** The new image is plotted for inspection.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

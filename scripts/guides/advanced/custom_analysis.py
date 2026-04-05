@@ -15,6 +15,20 @@ galaxy's mass. **PyAutoLens** as the lensing capabilities to produce the shears 
 
 This example demonstrates how you can write your own `Analysis` class to fit a dataset with **PyAutoLens**.
 
+__Contents__
+
+**PyAutoFit:** The `Analysis` class is the interface between the data and model, whereby a.
+**Source Code:** This example contains URLs to the locations of the source code of the classes used when creating.
+**Example Analysis Class:** The `Analysis` classes available in **PyAutoLens** are actually located in both **PyAutoLens** and.
+**Lens Model:** To illustrate how to write a custom `Analysis` class, we require an example lens model that we will.
+**Instances:** Instances of the model above can be created, where an input `vector` of parameters is mapped to.
+**Simple Analysis Example:** For simplicity, a shortened version of an `AnalysisImaging` class is shown below where certain.
+**Analysis Class Considerations:** Lets quickly think about the design of an `Analysis` class and how this can help us to set up any.
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Weak Lensing Example:** Now lets consider how to write our own custom `Analysis` class, for the example of performing a.
+**Result:** Overview of the results of the model-fit.
+**To Do List:** The following `Analysis` cookbook from the **PyAutoFit** readthedocs should help you get started.
+
 __PyAutoFit__
 
 The `Analysis` class is the interface between the data and model, whereby a `log_likelihood_function` is defined

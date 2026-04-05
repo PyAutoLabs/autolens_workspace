@@ -5,6 +5,25 @@ SLaM (Source, Light and Mass): Start Here
 This scripts gives an introduce to the Source, (lens) Light and Mass (SLaM) pipelines. These are advanced modeling
 pipelines which use many aspects of core PyAutoLens functionality to automate the modeling of strong lenses.
 
+__Contents__
+
+**Preqrequisites:** Before using SLaM, you should understand.
+**Overview:** SLaM chains together four or more sequential modeling searches, with each stage passing its results.
+**Design Choices:** The structure of the SLaM pipelines is driven by the requirements of **adaptive pixelized source.
+**This Script:** Using a SOURCE LP PIPELINE, SOURCE PIX PIPELINE, LIGHT LP PIPELINE and TOTAL MASS PIPELINE this.
+**SOURCE LP PIPELINE:** The SOURCE LP PIPELINE uses one search to initialize a robust model for the source galaxy's light.
+**SOURCE PIX PIPELINE 1:** The SOURCE PIX PIPELINE uses two searches to initialize a robust pixelized model of the source.
+**Positions:** Image positions are used to prevent unphysical source reconstructions (see `features/pixelization`.
+**Adapt Images:** An adapt image is computed from the SOURCE LP result and passed to the analysis.
+**SOURCE PIX PIPELINE 2:** The second search of the SOURCE PIX PIPELINE fits the final pixelized source model using the.
+**LIGHT LP PIPELINE:** The LIGHT LP PIPELINE uses one search to fit a complex lens light model to a high level of.
+**MASS TOTAL PIPELINE:** The MASS TOTAL PIPELINE uses one search to fit a complex lens mass model to a high level of.
+**Dataset:** Load and plot the strong lens dataset.
+**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+**Redshifts:** The redshifts of the lens and source galaxies.
+**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
+**SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
+
 __Preqrequisites__
 
 Before using SLaM, you should understand:

@@ -21,6 +21,23 @@ of the strong lens which aid its interpretation.
 This script therefore also shows how to plot the CCD imaging of a point source lens, but does not use the
 imaging data to constrain the lens model itself.
 
+__Contents__
+
+**JAX:** JAX acceleration for fast GPU/CPU model-fitting.
+**Google Colab Setup:** The introduction `start_here` examples are available on Google Colab, which allows you to run them.
+**Imports:** Import the required Python libraries.
+**Dataset:** Load and plot the strong lens dataset.
+**Point Solver:** For point-source modeling we require a `PointSolver`, which determines the multiple-images of the.
+**Model:** Compose the lens model fitted to the data.
+**Name Pairing:** The `PointDataset` above had a name, `point_0`.
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Result:** Overview of the results of the model-fit.
+**Model Your Own Lens:** If you have your own strong lens point source data, you are now ready to model it yourself by.
+**Fluxes and Time Delays:** If you have measured the fluxes and/or time delays of the lensed point sources, these can also be.
+**Simulator:** Let’s now switch gears and simulate our own strong lens point sources.
+**Sample:** Often we want to simulate *many* strong lenses — for example, to train a neural network or to.
+**Wrap Up:** Summary of the script and next steps.
+
 __JAX__
 
 PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU

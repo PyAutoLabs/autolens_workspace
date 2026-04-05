@@ -3,6 +3,10 @@ THIS SCRIPT IS INCOMPLETE AND IN DEVELOPMENT BUT IT HOPEFULLY IS INFORMATIVE ENO
 
 If not contact us on SLACK!
 
+__Contents__
+
+**CASA to PyAutoLens:** The interferometer object in AutoLens takes as arguments the visibilities, uv_wavelengths and.
+
 __CASA to PyAutoLens__
 
 The interferometer object in AutoLens takes as arguments the visibilities, uv_wavelengths and noise_map (i.e. the

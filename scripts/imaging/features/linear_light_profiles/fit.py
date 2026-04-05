@@ -12,13 +12,16 @@ light profiles!
 
 __Contents__
 
-**Advantages & Disadvatanges:** Benefits and drawbacks of linear light profiles.
-**Positive Only Solver:** How a positive solution to the light profile intensities is ensured.
-**Dataset & Mask:** Standard set up of imaging dataset that is fitted.
-**Fit:** Perform a fit to a dataset using linear light profile with inputs for other light profile parameters.
-**Intensities:** Access the solved for intensities of light profiles from the fit.
-**Visualization:** Plotting images of model-fits using linear light profiles.
-**Linear Objects (Source Code)**: Internal source code implementation of linear light profiles (for contributors).
+**Advantages & Disadvantages:** Each light profile's `intensity` parameter is therefore not a free parameter in the model-fit.
+**Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+**Model:** Compose the lens model fitted to the data.
+**Notes:** This script is identical to `modeling/start_here.py` except that the light profiles are switched to.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Fit:** Fit the lens model to the dataset.
+**Intensities:** The fit contains the solved for intensity values.
+**Visualization:** Linear light profiles and objects containing them (e.g.
+**Wrap Up:** Summary of the script and next steps.
 
 __Advantages__
 

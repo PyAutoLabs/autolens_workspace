@@ -6,6 +6,14 @@ When a CCD imaging dataset is analysed, it must conform to certain standards in 
 to be performed correctly. This tutorial describes these standards and links to more detailed scripts which will help
 you prepare your dataset to adhere to them if it does not already.
 
+__Contents__
+
+**Pixel Scale:** The "pixel_scale" of the image (and the data in general) is pixel-units to arcsecond-units.
+**Image:** The image is the image of your strong lens, which comes from a telescope like the Hubble Space.
+**Noise Map:** The noise-map defines the uncertainty in every pixel of your strong lens image, where values are.
+**PSF:** The Point Spread Function (PSF) describes blurring due the optics of your dataset`s telescope.
+**Data Processing Complete:** If your image, noise-map and PSF conform the standards above, you are ready to analyse your dataset!
+
 __Pixel Scale__
 
 The "pixel_scale" of the image (and the data in general) is pixel-units to arcsecond-units conversion factor of

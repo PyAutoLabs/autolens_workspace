@@ -12,15 +12,18 @@ profiles like the `Sersic`.
 
 __Contents__
 
-**Advantages & Disadvantages:** Benefits and drawbacks of using an MGE.
-**Positive Only Solver:** How a positive solution to the light profile intensities is ensured.
-**MGE Source Galaxy:** Discussion of using the MGE for the source galaxy, which is illustrated fully at the end of the example.
-**Dataset & Mask:** Standard set up of imaging dataset that is fitted.
-**Basis:** How to create a basis of multiple light profiles, in this example Gaussians.
-**Gaussians:** A visualization of the Gaussians in the Basis that make up the MGE.
-**Linear Light Profiles:** How to create a basis of linear light profiles to perform the MGE.
-**Fit:** Perform a fit to a dataset using linear light profile MGE.
-**Intensities:** Access the solved for intensities of linear light profiles from the fit.
+**Advantages & Disadvantages:** Symmetric light profiles (e.g.
+**Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+**MGE Source Galaxy:** The MGE was designed to model the light of lens galaxies, because they are typically elliptical.
+**Model:** Compose the lens model fitted to the data.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Basis:** We first build a `Basis`, which is built from multiple light profiles (in this case, Gaussians).
+**Gaussians:** The `Basis` is composed of many Gaussians, each with different sizes (the `sigma` value) and.
+**Linear Light Profiles:** We now show Composing a basis of multiple Gaussians and use them to fit the lens galaxy's light in.
+**Fit:** Fit the lens model to the dataset.
+**Intensities:** The fit contains the solved for intensity values.
+**Wrap Up:** Summary of the script and next steps.
 
 __Advantages__
 

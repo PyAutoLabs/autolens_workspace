@@ -6,6 +6,14 @@ The image is the image of your galaxy, which comes from a telescope like the Hub
 
 This tutorial describes preprocessing your dataset`s image to adhere to the units and formats required by PyAutoLens.
 
+__Contents__
+
+**Pixel Scale:** The "pixel_scale" of the image (and the data in general) is pixel-units to arcsecond-units.
+**Loading Data From Individual Fits Files:** Load an image from .fits files (a format commonly used by Astronomers) via the `Array2D` object.
+**Converting Data To Electrons Per Second:** Brightness units: the image`s flux values should be in units of electrons per second (as opposed to.
+**Resizing Data:** The bigger the postage stamp cut-out of the image the more memory it requires to store.
+**Background Subtraction:** The background of an image is the light that is not associated with the lens or source galaxies we.
+
 __Pixel Scale__
 
 The "pixel_scale" of the image (and the data in general) is pixel-units to arcsecond-units conversion factor of

@@ -8,6 +8,15 @@ This script simulates `Interferometer` data of a 'galaxy-scale' strong lens wher
  - The subhalo`s `MassProfile` is a `NFWSph`.
  - The source galaxy's light is an `Sersic`.
 
+__Contents__
+
+**Dataset Paths:** The `dataset_type` describes the type of data being simulated (in this case, `Interferometer` data).
+**Simulate:** For simulating interferometer data of a strong lens, we recommend using a Grid2D object with a.
+**Ray Tracing:** Setup the lens galaxy's mass (SIE+Shear), subhalo (NFW) and source galaxy light (elliptical Sersic).
+**Output:** Output the simulated dataset to the dataset path as .fits files.
+**Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.

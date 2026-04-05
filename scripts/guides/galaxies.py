@@ -12,6 +12,15 @@ This tutorial illustrates how to compute these more complicated results. We ther
 lens model, where the lens galaxy's light is composed of two components (a bulge and disk) and the source-plane
 comprises two galaxies.
 
+__Contents__
+
+**Units:** In this example, all quantities use the source code's internal unit coordinates, with spatial.
+**Data Structures:** Arrays inspected in this example use bespoke data structures for storing arrays, grids, vectors and.
+**Grids:** To describe the luminous emission of galaxies, **PyAutoGalaxy** uses `Grid2D` data structures.
+**Tracer:** We first set up a tracer with a lens galaxy and two source galaxies, which we will use to.
+**Individual Lens Galaxy Components:** We are able to create an image of the lens galaxy as follows, which includes the emission of both.
+**Log10:** The light distributions of galaxies are closer to a log10 distribution than a linear one.
+
 __Units__
 
 In this example, all quantities use the source code's internal unit coordinates, with spatial coordinates in

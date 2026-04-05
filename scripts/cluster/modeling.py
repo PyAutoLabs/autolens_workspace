@@ -10,6 +10,33 @@ The primary method for modeling cluster scale strong lenses uses `point` source 
 as a point source, where the positions of its multiple images are fitted (but not the extended emission observed at a
 pixel level).
 
+__Contents__
+
+**Scaling Relations:** This example models the mass of the cluster galaxies by putting them on a scaling relation which.
+**Example:** This script fits a `PointDataset` dataset of a 'cluster-scale' strong lens where.
+**Simulation:** Overview of how the simulated dataset was generated.
+**Data Preparation:** Data standards required for fitting with PyAutoLens.
+**Dataset:** Load and plot the strong lens dataset.
+**Centres:** The centre of every extra lens galaxy is used to compose the lens model, fixing their mass.
+**Luminosities:** We also need the luminosity of each galaxy, which in this example is the measured property we.
+**Point Solver:** For point-source modeling we require a `PointSolver`, which determines the multiple-images of the.
+**Chi Squared:** For point-source modeling, there are many different ways to define the likelihood function, broadly.
+**Main Galaxies and Extra Galaxies:** For a cluster-scale lens, we designate there to be the following lensing objects in the system.
+**Redshifts:** In this example all galaxies are at the same redshift in the image-plane, meaning multi-plane.
+**Model:** Compose the lens model fitted to the data.
+**Name Pairing:** Every point-source dataset in the `PointDataset` has a name, (e.g.
+**Search:** Configure the non-linear search used to fit the model.
+**Unique Identifier:** In the path above, the `unique_identifier` appears as a collection of characters, where this.
+**Iterations Per Update:** Every N iterations, the non-linear search outputs the maximum likelihood model and its best fit.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**JAX:** JAX acceleration for fast GPU/CPU model-fitting.
+**Analysis Factor:** Each analysis object is wrapped in an `AnalysisFactor`, which pairs each analysis it with the model.
+**Factor Graph:** All `AnalysisFactor` objects are combined into a `FactorGraphModel`, which represents a global.
+**Run Times:** Profiling the expected run time of the model-fit.
+**Output Folder:** Now this is running you should checkout the `autolens_workspace/output` folder.
+**Result:** Overview of the results of the model-fit.
+**HowToLens:** This `start_here.py` script, and the features examples above, do not explain many details of how.
+
 __Scaling Relations__
 
 This example models the mass of the cluster galaxies by putting them on a scaling relation which links light (measured

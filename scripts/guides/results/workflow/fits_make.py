@@ -29,6 +29,23 @@ model-fits and output th em as .png files and .fits files to quickly summarise r
 
 The same initial fit creating results in a folder called `results_folder_csv_png_fits` is therefore used.
 
+__Contents__
+
+**Interferometer:** This script can easily be adapted to analyse the results of charge injection imaging model-fits.
+**Database File:** The aggregator can also load results from a `.sqlite` database file.
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Unique Tag:** One thing to note is that the `unique_tag` of the search is given the name of the dataset with an.
+**Workflow Paths:** The workflow examples are designed to take large libraries of results and distill them down to the.
+**Aggregator:** Set up the aggregator as shown in `start_here.py`.
+**Extract Images:** We now extract 2 images from the `fit.fits` file and combine them together into a single .fits file.
+**Output Single Fits:** The `image` object which has been extracted is an `astropy` `Fits` object, which we use to save the.
+**Output to Folder:** An alternative way to output the .fits files is to output them as single .fits files for each.
+**Naming Convention:** We require a naming convention for the output files.
+**CSV Files:** In the results `image` folder .csv files containing the information to visualize aspects of a.
+**Add Extra Fits:** We can also add an extra .fits image to the extracted .fits file, for example an RGB image of the.
+**Custom Fits Files in Analysis:** Describe how a user can extend the `Analysis` class to compute custom images that are output to the.
+**Path Navigation:** Example combinig `fit.fits` from `source_lp[1]` and `mass_total[0]`.
+
 __Interferometer__
 
 This script can easily be adapted to analyse the results of charge injection imaging model-fits.

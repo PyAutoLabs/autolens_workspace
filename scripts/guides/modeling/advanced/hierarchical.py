@@ -21,6 +21,20 @@ Note that hierarchical models **do not have to be fit through graphical models**
 single-object problems where multiple components of a lens share a parent distribution. For example, a single
 lens could contain multiple mass components whose parameters are drawn from a common parent distribution. While
 no such example is included in the current workspace, the structure shown here could be adapted easily for that case.
+
+__Contents__
+
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**Model Individual Factors:** We first set up a model for each lens, with an `PowerLawSph` mass and `ExponentialSph` bulge, which.
+**Analysis Factors:** Now we have our `Analysis` classes and model components, we can compose our `AnalysisFactor`'s.
+**Model:** Compose the lens model fitted to the data.
+**Factor Graph:** We now create the factor graph for this model, using the list of `AnalysisFactor`'s and the.
+**Search:** Configure the non-linear search used to fit the model.
+**Result:** Overview of the results of the model-fit.
+**Concept:** A hierarchical model yields more precise and accurate estimates of the parent distribution’s.
+**Wrap Up:** Summary of the script and next steps.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

@@ -13,6 +13,28 @@ This script has the following aims:
 Accompanying this script is the `contributor_guide.py` which provides URL's to every part of the source-code that
 is illustrated in this guide. This gives contributors a sequential run through of what source-code functions, modules and
 packages are called when the likelihood is evaluated.
+
+__Contents__
+
+**Mask:** Define the 2D mask applied to the dataset for the model-fit.
+**Dataset:** Load and plot the strong lens dataset.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Masked Image Grid:** To perform galaxy calculations we define a 2D image-plane grid of (y,x) coordinates.
+**Lens Galaxy Mass:** We next define the mass profiles which represents the lens galaxy's mass, which will be used to.
+**Lens Galaxy:** We now combine the light and mass profiles into a single `Galaxy` object for the lens galaxy.
+**Source Galaxy Light Profile:** The source galaxy is fitted using another analytic light profile, in this example another.
+**Lens Light:** Compute a 2D image of the lens galaxy's light as the sum of its individual light profiles (the an.
+**Ray Tracing:** To perform lensing calculations we ray-trace every 2d (y,x) coordinate $\theta$ from the.
+**Source Image:** We pass the traced grid of coordinates to the source galaxy to evaluate its 2D image.
+**Fourier Transform:** Fourier Transform the 2D image of the galaxy above using the Non Uniform Fast Fourier Transform.
+**Likelihood Function:** We now quantify the goodness-of-fit of our galaxy model.
+**Chi Squared:** The first term is a $\chi^2$ statistic, which is defined above in our merit function as and is.
+**Noise Normalization Term:** Our likelihood function assumes the imaging data consists of independent Gaussian noise in every.
+**Calculate The Log Likelihood:** We can now, finally, compute the `log_likelihood` of the galaxy model, by combining the two terms.
+**Fit:** Fit the lens model to the dataset.
+**Lens Modeling:** To fit a lens model to data, the likelihood function illustrated in this tutorial is sampled using.
+**Wrap Up:** Summary of the script and next steps.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

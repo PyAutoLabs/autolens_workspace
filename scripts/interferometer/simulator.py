@@ -6,6 +6,19 @@ This script simulates `Interferometer` data of a 'galaxy-scale' strong lens wher
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is an `Sersic`.
+
+__Contents__
+
+**Grid:** Define the 2d grid of (y,x) coordinates that the galaxy images are evaluated and therefore.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Ray Tracing:** Setup the lens galaxy's mass (SIE+Shear) and source galaxy light (elliptical Sersic) for this.
+**Output:** Output the simulated dataset to the dataset path as .fits files.
+**Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+**Multiple Images:** Lens modeling can use a "positions likelihood penalty", whereby mass models which traces the (y,x).
+**Many Visibilities:** Simulating interferometer datasets with many visibilities can be computationally expensive if a.
+**High Resolution Dataset:** A high-resolution `uv_wavelengths` file for ALMA is available in a separate repository that hosts.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

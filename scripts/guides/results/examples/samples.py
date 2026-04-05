@@ -8,6 +8,24 @@ Bayesian evidence.
 
 This script illustrates how to use the result to inspect the non-linear search samples.
 
+__Contents__
+
+**Units:** In this example, all quantities use the source code's internal unit coordinates, with spatial.
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Info:** As seen throughout the workspace, the `info` attribute shows the result in a readable format.
+**Plot:** We now have the `Result` object we will cover in this script.
+**Samples:** The result contains a `Samples` object, which contains all samples of the non-linear search.
+**Parameters:** The parameters are stored as a list of lists, where.
+**Figures of Merit:** The `Samples` class contains the log likelihood, log prior, log posterior and weight_list of every.
+**Instances:** Many results can be returned as an instance of the model, using the Python class structure of the.
+**Errors:** Methods for computing error estimates on all parameters are provided.
+**Sample Instance:** A non-linear search retains every model that is accepted during the model-fit.
+**Search Plots:** The Probability Density Functions (PDF's) of the results can be plotted using the non-linear search.
+**Maximum Likelihood:** The maximum log likelihood value of the model-fit can be estimated by simple taking the maximum of.
+**Bayesian Evidence:** Nested sampling algorithms like Nautilus also estimate the Bayesian evidence (estimated via the.
+**Lists:** All results can alternatively be returned as a 1D list of values, by passing `as_instance=False`.
+**Latex:** If you are writing modeling results up in a paper, you can use inbuilt latex tools to create latex.
+
 __Units__
 
 In this example, all quantities use the source code's internal unit coordinates, with spatial coordinates in

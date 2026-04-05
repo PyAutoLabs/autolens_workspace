@@ -15,6 +15,15 @@ The simulation procedure in this script simulates the lens in two steps:
 1) Simulate the point-source dataset, in an identical fashion to the `start_here.ipynb` example.
 2) Use this result to simulate the imaging dataset of the lensed point source and lens galaxy.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
+**Point Solver:** We use a `PointSolver` to locate the multiple images.
+**Fluxes:** Use the positions to compute the magnification of the `Tracer` at every position.
+**Output:** Output the simulated dataset to the dataset path as .fits files.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+
 __Model__
 
 This script simulates `Imaging` and `PointDataset` data of a strong lens where:

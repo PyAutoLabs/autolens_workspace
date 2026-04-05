@@ -17,6 +17,24 @@ model-fits and output th em as .png files and .fits files to quickly summarise r
 
 The same initial fit creating results in a folder called `results_folder_csv_png_fits` is therefore used.
 
+__Contents__
+
+**Interferometer:** This script can easily be adapted to analyse the results of charge injection imaging model-fits.
+**Database File:** The aggregator can also load results from a `.sqlite` database file.
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Unique Tag:** One thing to note is that the `unique_tag` of the search is given the name of the dataset with an.
+**Workflow Paths:** The workflow examples are designed to take large libraries of results and distill them down to the.
+**Aggregator:** Set up the aggregator as shown in `start_here.py`.
+**Model Paths:** The paths are the tuples which define how model parameters are accessed from the model.
+**Adding CSV Columns:** We first make a simple .csv which contains two columns, corresponding to the inferred median PDF.
+**Saving the CSV:** We can now output the results of all our model-fits to the .csv file, using the `save` method.
+**Customizing CSV Headers:** The headers of the .csv file are by default the argument input above based on the model.
+**Maximum Likelihood Values:** We can also output the maximum likelihood values of each parameter to the .csv file, using the.
+**Errors:** We can also output PDF values at a given sigma confidence of each parameter to the .csv file, using.
+**Column Label List:** We can add a list of values to the .csv file, provided the list is the same length as the number of.
+**Latent Variables:** Latent variables are not free model parameters but can be derived from the model, and they are.
+**Computed Columns:** We can also add columns to the .csv file that are computed from the non-linear search samples (e.g.
+
 __Interferometer__
 
 This script can easily be adapted to analyse the results of charge injection imaging model-fits.

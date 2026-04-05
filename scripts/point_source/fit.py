@@ -19,6 +19,27 @@ functionality. This functionality is described here and used throughout the `poi
 examples.
 
 If you are new to analyzing strong lenses with point sources, this guide is the ideal place to start!
+
+__Contents__
+
+**Lensed Point Source:** To begin, we create a strong lens image using an isothermal mass model and a source with a compact.
+**Point Source:** The image above visually illustrates where the source’s light is traced on the image plane.
+**Point Solver:** For a point source, our goal is to find the (y, x) coordinates in the image plane that map directly.
+**Number of Solutions:** The number of solutions (e.g.
+**Solving the Lens Equation:** In the literature, the process of finding the multiple images of a source in the image-plane is.
+**Triangle Tracing:** Computing the multiple image positions of a point source is a non-linear problem.
+**Dataset:** Load and plot the strong lens dataset.
+**Name Pairing:** The names of the point-source datasets have an even more important role, the names are used to pair.
+**Fitting:** Fit the lens model to the dataset and inspect the results.
+**Chi Squared:** For point-source modeling, there are many different ways to define the likelihood function, broadly.
+**Fluxes:** Another measurable quantity of a point source is its flux—the total amount of light received from.
+**Flux Point Dataset:** The fluxes are not input a `PointDataset` object, alongside the image-plane coordinates of the.
+**Flux Fitting:** Above, we used a `FitPointDataset` to fit the positions of the point source in the image-plane.
+**Time Delays:** Another measurable quantity of a point source is its time delay—the time it takes for light to.
+**Time Delay Fitting:** We can also use the `FitPointDataset` to fit the time delays of the point source, which is done by.
+**New User Wrap Up:** The `point_source` package of the `autolens_workspace` contains numerous example scripts for.
+**Shape Solver:** All calculations above assumed the source was a point source with no size.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

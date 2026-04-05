@@ -12,6 +12,24 @@ Two images are fitted, corresponding to a greener ('g' band) redder image (`r` b
 
 This is an advanced script and assumes previous knowledge of the core **PyAutoLens** API for lens modeling. Thus,
 certain parts of code are not documented to ensure the script is concise.
+
+__Contents__
+
+**Colors:** The colors of the multi-wavelength image, which in this case are green (g-band) and red (r-band).
+**Pixel Scales:** Every multi-wavelength dataset can have its own unique pixel-scale.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Model:** Compose the lens model fitted to the data.
+**Model Extension:** Galaxies change appearance across wavelength, for example their ellipticities.
+**Linear Light Profiles:** As an advanced user you should be familiar wiht linear light profiles, see elsewhere in the.
+**Analysis List:** Set up two instances of the `Analysis` class object, one for each dataset.
+**JAX:** JAX acceleration for fast GPU/CPU model-fitting.
+**Analysis Factor:** Each analysis object is wrapped in an `AnalysisFactor`, which pairs it with the model and prepares.
+**Factor Graph:** All `AnalysisFactor` objects are combined into a `FactorGraphModel`, which represents a global.
+**Search:** Configure the non-linear search used to fit the model.
+**VRAM Use:** The `modeling` examples of individual dataset types explain how VRAM is used during GPU-based.
+**Result:** Overview of the results of the model-fit.
+**Wrap Up:** Summary of the script and next steps.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

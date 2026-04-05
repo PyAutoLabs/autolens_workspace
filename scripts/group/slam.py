@@ -5,6 +5,23 @@ SLaM (Source, Light and Mass): Group Scale
 This script uses the SLaM pipelines to fit a group-scale strong lens, including extra galaxies and
 scaling galaxies surrounding the main lens whose light and mass are both modeled.
 
+__Contents__
+
+**Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
+**Extra Galaxies and Scaling Galaxies:** This group-scale SLaM pipeline handles two distinct categories of companion galaxy, which differ in.
+**This Script:** Using a SOURCE LP PIPELINE (two searches), SOURCE PIX PIPELINE (two searches), LIGHT LP PIPELINE.
+**SOURCE LP PIPELINE 0:** Not present in `slam_start_here.py`.
+**SOURCE LP PIPELINE 1:** Equivalent to `source_lp` in `slam_start_here.py`, except lens light is fixed from `source_lp[0]`.
+**SOURCE PIX PIPELINE 1:** Equivalent to `source_pix_1` in `slam_start_here.py`, except a Hilbert image mesh is used instead.
+**SOURCE PIX PIPELINE 2:** Identical to `source_pix_1` above, except the adapt data for the Hilbert image mesh is capped at a.
+**LIGHT LP PIPELINE:** Identical to `light_lp` in `slam_start_here.py`, except extra galaxies receive a fresh free MGE.
+**MASS TOTAL PIPELINE:** Identical to `mass_total` in `slam_start_here.py`, except extra galaxies receive a new.
+**Dataset:** Load and plot the strong lens dataset.
+**Galaxy Centres:** main_lens_centres.json — required; determines the number of main lenses.
+**Mask:** Define the 2D mask applied to the dataset for the model-fit.
+**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+**SLaM Pipeline:** Overview of slam pipeline for this example.
+
 __Prerequisites__
 
 Before using this SLaM pipeline, you should be familiar with:

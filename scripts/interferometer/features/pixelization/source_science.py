@@ -14,6 +14,19 @@ However, this does make the source reconstructions different to share with other
 to understand how to manipulate irregular meshes. The end of this example shows how a .csv source reconstruction file
 is output by a pixelization model-fit, which allows anyone to easy interpolate the source reconstruction on to a uniform grid
 for analysis without the need for PyAutoLens.
+
+__Contents__
+
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Interpolated Source:** The simplest way to perform source science calculations on a pixelized source reconstruction is to.
+**Source Flux:** A key quantity for a source galaxy is its total flux, which can be used to compute magnitudes (see.
+**Zoom:** The interpolation grid above was large in extent (-3.0" to 3.0" in both the y and x directions).
+**Errors:** The interpolated errors on the source reconstruction can also be computed, which will allow you to.
+**Magnification:** The overall magnification of the source is estimated as the ratio of total surface brightness in.
+**Masking:** Reconstructions can be imperfect, for example having faint source flux in pixels at the edge of the.
+**Magnification via Mesh:** The calculations above used an interpolation of the source-plane reconstruction to a 2D grid of.
+**Reconstruction CSV:** In the results `image` folder there is a .csv file called `source_plane_reconstruction_0.csv` which.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

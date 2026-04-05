@@ -29,6 +29,19 @@ in the central regions of the image, 4x4 further out and 1x1 beyond that.
 cored light profiles for the source are used which can be evaluated accurate without over-sampling.
 
 This guide will explain why these choices were made for the default over-sampling behaviour.
+
+__Contents__
+
+**Illustration:** To illustrate over sampling, lets first create a uniform grid which does not over sample the.
+**Numerics:** Lets quickly check how the sub-grid is defined and stored numerically.
+**Images:** We now use over-sampling to compute the image of a Sersic light profile, which has a steep.
+**Adaptive Over Sampling:** We have shown that over-sampling is important for accurate image evaluation.
+**Multiple Lens Galaxies:** The analysis may contain multiple lens galaxies, each of which must be over-sampled accurately.
+**Ray Tracing:** So far, we have evaluated the image of a light profile using over-sampling on an unlensed uniform.
+**Default Ray Tracing:** By assuming the lens galaxy is near (0.0", 0.0"), it was simple to set up an adaptive over sampling.
+**Dataset & Modeling:** Throughout this guide, grid objects have been used to compute the image of light and mass profiles.
+**Pixelization:** Source galaxies can be reconstructed using pixelizations, which discretize the source's light onto.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

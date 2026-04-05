@@ -7,6 +7,13 @@ can then be loaded before a pipeline is run and passed to that pipeline so as to
 search (if a mask function is not passed to that search).
 
 This GUI is adapted from the following code: https://gist.github.com/brikeats/4f63f867fd8ea0f196c78e9b835150ab
+
+__Contents__
+
+**Dataset:** Load and plot the strong lens dataset.
+**Scribbler:** Load the Scribbler GUI for drawing the mask.
+**Output:** Now lets plot the image and mask, so we can check that the mask includes the regions of the image.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

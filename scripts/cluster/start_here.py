@@ -16,6 +16,25 @@ fit your first cluster-scale lens.
 We focus on a *cluster-scale* lens (20 + lenses, many sources). If you have a single lens galaxy responsible for
 most th lensing, lensing a single source, you should instead checlout the `start_here_group.ipynb` example.
 
+__Contents__
+
+**JAX:** JAX acceleration for fast GPU/CPU model-fitting.
+**Beta Feature:** Modeling strong lens clusters with PyAutoLens is a feature in beta testing, and there are many.
+**Google Colab Setup:** The introduction `start_here` examples are available on Google Colab, which allows you to run them.
+**Imports:** Import the required Python libraries.
+**Dataset:** Load and plot the strong lens dataset.
+**Main Galaxies and Extra Galaxies:** For a group-scale lens, we designate there to be two types of lens galaxies in the system.
+**Centres:** For group-scale lenses we must manually specify the centres of the extra galaxies, which are fixed.
+**Masking:** Lens modeling does not need to fit the entire image, only the region containing lens and source.
+**Model:** Compose the lens model fitted to the data.
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Result:** Overview of the results of the model-fit.
+**Centre Input GUI:** __Model Your Own Lens__.
+**Model Your Own Lens:** If you have your own strong lens imaging data, you are now ready to model it yourself by adapting.
+**Simulator:** In the galaxy-scale examples (`start_here_imaging.ipynb`, `start_here_interferometer.ipynb`.
+**Scaling Relations:** This example models the mass of each galaxy individually, which means the number of dimensions of.
+**Wrap Up:** Summary of the script and next steps.
+
 __JAX__
 
 PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU

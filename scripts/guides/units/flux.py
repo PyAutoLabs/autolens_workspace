@@ -21,6 +21,11 @@ light profile from electrons per second to solar luminosities or AB magnitudes. 
 unit, like a solar luminosity or AB magnitude, it becomes a lot more straightforward to follow Astropy tutorials
 (or other resources) to convert these values to other units or perform calculations with them.
 
+__Contents__
+
+**Zero Point:** In astronomy, a zero point refers to a reference value used in photometry and spectroscopy to.
+**Total Flux:** A key quantity for computing the magnitudes of galaxies is the total flux of a light profile.
+
 __Zero Point__
 
 In astronomy, a zero point refers to a reference value used in photometry and spectroscopy to calibrate the brightness

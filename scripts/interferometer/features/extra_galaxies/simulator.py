@@ -20,6 +20,19 @@ This uses the modeling API, which is illustrated in the script `autolens_workspa
 This script simulates an interferometer dataset which includes extra galaxies near the lens and source
 galaxies. This is used to illustrate the extra galaxies API in the script above.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Other Scripts:** To illustrate how compose and fit a lens model which includes the extra galaxies as light and mass.
+**Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
+**Simulate:** Simulate the image using a (y,x) grid.
+**Galaxies:** Setup the lens galaxy's light, mass and source galaxy light for this simulated lens.
+**Extra Galaxies:** Includes two extra galaxies, which must be modeled to ensure the lens model is accurate.
+**Output:** Output the simulated dataset to the dataset path as .fits files.
+**Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+**Multiple Images:** Output the multiple image positions of the source galaxy which can help with lens modeling.
+
 __Model__
 
 This script simulates `Interferometer` of a 'galaxy-scale' strong lens where:

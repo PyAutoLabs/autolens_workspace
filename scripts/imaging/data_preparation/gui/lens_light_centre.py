@@ -4,6 +4,14 @@ GUI Preprocessing: Lens Light Centre
 
 This tool allows one to input the lens light centre(s) of a strong lens(es) via a GUI, which can be used as a fixed
 value in pipelines.
+
+__Contents__
+
+**Dataset:** Load and plot the strong lens dataset.
+**Search Box:** When you click on a pixel to mark a position, the search box looks around this click and finds the.
+**Clicker:** Set up the `Clicker` object from the `clicker.py` module, which monitors your mouse clicks in order.
+**Output:** Now lets plot the image and lens light centres, so we can check that the centre overlaps the.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

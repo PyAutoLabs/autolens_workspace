@@ -5,6 +5,31 @@ Modeling: Start Here
 This script is the starting point for lens modeling of interferometer datasets with less than 1000
 visibilities (e.g. SMA, ALMA) and it provides an overview of the lens modeling API.
 
+__Contents__
+
+**Number of Visibilities:** This example fits a **low-resolution interferometric dataset** with a small number of visibilities.
+**Model:** Compose the lens model fitted to the data.
+**Mask:** Define the 2D mask applied to the dataset for the model-fit.
+**Dataset:** Load and plot the strong lens dataset.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Coordinates:** Coordinate system assumptions for the model-fit.
+**Improved Lens Model:** The previous model used Sérsic light profiles for the source galaxy.
+**Linear Light Profiles:** The MGE model below uses a **linear light profile** for the bulge via the ``lp_linear`` API.
+**Concise API:** The MGE model composition API is quite long and technical, so we simply load the MGE models for the.
+**Search:** Configure the non-linear search used to fit the model.
+**Unique Identifier:** In the path above, the `unique_identifier` appears as a collection of characters, where this.
+**Iterations Per Update:** Every `iterations_per_quick_update`, the non-linear search outputs the maximum likelihood model and.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**JAX:** JAX acceleration for fast GPU/CPU model-fitting.
+**VRAM Use:** When running AutoLens with JAX on a GPU, the analysis must fit within the GPU’s available VRAM.
+**Run Times:** Profiling the expected run time of the model-fit.
+**Output Folder:** Now this is running you should checkout the `autolens_workspace/output` folder.
+**Result:** Overview of the results of the model-fit.
+**Features:** This script gives a concise overview of the basic modeling API, fitting one the simplest lens.
+**Data Preparation:** Data standards required for fitting with PyAutoLens.
+**HowToLens:** This `start_here.py` script, and the features examples above, do not explain many details of how.
+**Modeling Customization:** The folders `autolens_workspace/*/guides/modeling/searches` gives an overview of alternative.
+
 __Number of Visibilities__
 
 This example fits a **low-resolution interferometric dataset** with a small number of visibilities (273). The

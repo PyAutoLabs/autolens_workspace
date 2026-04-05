@@ -14,6 +14,30 @@ attributes we inspect are the same as those shown in the `samples.py` script.
 This script is simply an API cheat sheet for accessing the results of a non-linear search via the `Aggregator`, so you
 can copy and paste the code to use in your own scripts!
 
+__Contents__
+
+**Samples via Result:** A fraction of this example repeats the API for manipulating samples given in the.
+**Files:** In the `start_here.py` script, we discussed the `files` that are output by the non-linear search.
+**Aggregator:** First, set up the aggregator as shown in `start_here.py`.
+**Generators:** The `start_here.py` database example gives an explanation of what Python generators are and why and.
+**Samples:** The result contains a `Samples` object, which contains all samples of the non-linear search, which.
+**Parameters:** The parameters are stored as a list of lists, where.
+**Samples Info:** The samples info contains additional information on the samples, which depends on the non-linear.
+**Figures of Merit:** The `Samples` class contains the log likelihood, log prior, log posterior and weight_list of every.
+**Samples Summary:** The samples summary contains a subset of results access via the `Samples`, for example the maximum.
+**Maximum Likelihood Model:** We can use the outputs to create a list of the maximum log likelihood model of each fit to our.
+**Parameter Names:** Vectors return a lists of all model parameters, but do not tell us which values correspond to which.
+**Instances:** We can use the `Aggregator` to create a list of instances of the model, using the Python class.
+**Errors:** Methods for computing error estimates on all parameters are provided.
+**Sample Instance:** A non-linear search retains every model that is accepted during the model-fit.
+**Search Plots:** The Probability Density Functions (PDF's) of the results can be plotted using the non-linear search.
+**Maximum Likelihood:** The maximum log likelihood value of the model-fit can be estimated by simple taking the maximum of.
+**Bayesian Evidence:** Nested sampling algorithms like Nautilus also estimate the Bayesian evidence (estimated via the.
+**Lists:** All results can alternatively be returned as a 1D list of values, by passing `as_instance=False`.
+**Latex:** If you are writing modeling results up in a paper, you can use inbuilt latex tools to create latex.
+**Ordering:** The default ordering of the results can be a bit random, as it depends on how the sqlite database.
+**Samples Filtering:** The samples object has the results for all model parameter.
+
 __Samples via Result__
 
 A fraction of this example repeats the API for manipulating samples given in the

@@ -8,6 +8,18 @@ This script fits an `Interferometer` and `Imaging` dataset of a 'galaxy-scale' s
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is an MGE.
 
+__Contents__
+
+**Benefits:** A number of benefits are apparently if we combine the analysis of both datasets at both wavelengths.
+**Interferometer Masking:** We define the ‘real_space_mask’ which defines the grid the image the strong lens is evaluated using.
+**Interferometer Dataset:** Load and plot the strong lens `Interferometer` dataset `simple__no_lens_light` from .fits files.
+**Imaging Dataset:** Load and plot the strong lens dataset `simple__no_lens_light` via .fits files, which we will fit.
+**Imaging Masking:** Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**Model:** Compose the lens model fitted to the data.
+**Search:** Configure the non-linear search used to fit the model.
+**Result:** Overview of the results of the model-fit.
+
 __Benefits__
 
  A number of benefits are apparently if we combine the analysis of both datasets at both wavelengths:

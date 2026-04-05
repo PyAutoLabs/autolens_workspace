@@ -15,14 +15,10 @@ The new API uses standalone functions:
 
 __Contents__
 
-- **Dataset**: Load objects used to illustrate plotting.
-- **plot_array**: The fundamental function for 2D visualization.
-- **plot_grid**: Plot a Grid2D of coordinates.
-- **Customization**: Pass title, colormap, use_log10, output_path, output_format directly.
-- **Config Defaults**: Adjust defaults via config files.
-- **Overlays**: Use `lines=` and `positions=` to add overlays.
-- **subplot_* Functions**: Multi-panel subplots for standard objects.
-- **What Is Gone**: MatPlot2D, Visuals2D, and all *Plotter classes removed.
+**Dataset:** Load and plot the strong lens dataset.
+**Customization:** Each plotting function accepts direct keyword arguments for customization.
+**Config Defaults:** All default plotting values are configured via config files in.
+**Overlays:** Overlays are added to plots using the `lines=` and `positions=` keyword arguments.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

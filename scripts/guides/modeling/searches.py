@@ -23,12 +23,12 @@ object and pass these to the search to perform the fit. We skip these steps for 
 
 __Contents__
 
-**Dynesty**: A nested sampling algorithm that is effective for lens modeling, with a lot of customization.
-**Emcee**: An ensemble MCMC sampler that is commonly used in Astronomy and Astrophysics.
-**Zeus**: An ensemble MCMC slice sampler that is the most effective MCMC method for lens modeling.
-**PySwarms**: A particle swarm optimization (PSO) algorithm that is a maximum likelihood estimator (MLE) method.
-**Start Point**: An API that allows the user to specify the start-point of a model-fit, which is useful for MCMC and MLE methods.
-**Search Cookbook**: A cookbook that documents all searches available in **PyAutoFit**, including those not documented here.
+**Dynesty:** Dynesty (https://github.com/joshspeagle/dynesty) is a nested sampling algorithm.
+**Emcee:** Emcee (https://github.com/dfm/emcee) is an ensemble MCMC sampler that is commonly used in Astronomy.
+**Zeus:** Zeus (https://zeus-mcmc.readthedocs.io/en/latest/) is an ensemble MCMC slice sampler.
+**PySwarms:** PySwarms is a particle swarm optimization (PSO) algorithm.
+**Start Point:** For maximum likelihood estimator (MLE) and Markov Chain Monte Carlo (MCMC) non-linear searches.
+**Search Cookbook:** There are a number of other searches supported by **PyAutoFit** and therefore which can be used.
 
 __Start Here Notebook__
 

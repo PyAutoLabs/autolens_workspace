@@ -22,6 +22,22 @@ to datasets with many visibilities is slow, whereas pixelized sources are fast. 
 
 Other than that, the interferometer SLaM pipeline is identical to the imaging SLaM pipeline.
 
+__Contents__
+
+**Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
+**Interferometer SLaM Description:** The `slam_start_here` notebook provides a detailed description of the SLaM pipelines, but it does.
+**High Resolution Dataset:** A high-resolution `uv_wavelengths` file for ALMA is available in a separate repository that hosts.
+**SOURCE PIX PIPELINE 1:** Unlike `slam_start_here.py`, this pipeline does not use a `source_lp` pipeline before the pixelized.
+**SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`, using adapt images from `source_pix_result_1` to improve the.
+**MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`, except no lens light model is included as interferometer data.
+**Sparse Operators:** The `pixelization/modeling` example describes how the sparse operator formalism speeds up.
+**Position Likelihood:** Load the multiple image positions used for the position likelihood, which resamples bad mass models.
+**Settings:** Disable the default position only linear algebra solver so the source reconstruction can have.
+**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+**Redshifts:** The redshifts of the lens and source galaxies.
+**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
+**SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
+
 __Prerequisites__
 
 Before using this SLaM pipeline, you should be familiar with:

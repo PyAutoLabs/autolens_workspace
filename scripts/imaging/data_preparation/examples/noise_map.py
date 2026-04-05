@@ -10,6 +10,12 @@ You MUST be certain that the noise-map is the RMS standard deviations or else yo
 This tutorial describes preprocessing your dataset`s noise-map to adhere to the units and formats required
 by **PyAutoLens**.
 
+__Contents__
+
+**Pixel Scale:** The "pixel_scale" of the image (and the data in general) is pixel-units to arcsecond-units.
+**Loading Data From Individual Fits Files:** Load a noise-map from .fits files (a format commonly used by Astronomers) via the `Array2D` object.
+**Noise Conversions:** There are many different ways the noise-map can be reduced, and it varies depending on the.
+
 __Pixel Scale__
 
 The "pixel_scale" of the image (and the data in general) is pixel-units to arcsecond-units conversion factor of

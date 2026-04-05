@@ -16,6 +16,20 @@ be loaded.
 This script fits a sample of three simulated strong lenses using the same non-linear search. The results will be used
 to illustrate the database in the database tutorials that follow.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Unique Identifiers:** Results output to hard-disk are contained in a folder named via a unique identifier (a random.
+**Dataset:** Load and plot the strong lens dataset.
+**Results From Hard Disk:** In this example, results will be first be written to hard-disk using the standard output directory.
+**Building a Database File From an Output Folder:** The fits above wrote the results to hard-disk in folders, not as an .sqlite database file.
+**Writing Directly To Database:** Results can be written directly to the .sqlite database file, skipping output to hard-disk.
+**Files:** When performing fits which output results to hard-disc, a `files` folder is created containing.
+**Generators:** Before using the aggregator to inspect results, lets discuss Python generators.
+**Search:** Configure the non-linear search used to fit the model.
+**Samples:** The `Samples` class contains all information on the non-linear search samples, for example the.
+**Wrap Up:** Summary of the script and next steps.
+
 __Model__
 
 The search fits each lens with:

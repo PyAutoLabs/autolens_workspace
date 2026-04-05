@@ -36,19 +36,26 @@ to make things run extra fast on GPU.
 
 __Contents__
 
-**Advantages & Disadvantages:** Benefits and drawbacks of using a pixelization to model a source galaxy.
-**Positive Only Solver:** How a positive solution to the reconstructed source pixel fluxes is ensured.
-**Dataset & Mask:** Standard set up of imaging dataset that is fitted.
-**Pixelization:** How to create a pixelization, including a description of its inputs.
-**Model:** Composing a model using a pixelization and how it changes the number of free parameters.
-**Search & Analysis:** Standard set up of non-linear search and analysis.
-**Positions Likelihood:** Removing unphysical pixelized source solutions using a likelihood penalty using the lensed multiple images.
-**Run Time:** Profiling of pixelization run times and discussion of how they compare to standard light profiles.
-**Model-Fit:** Performs the model fit using standard API.
-**Result:** Pixelization results and visualizaiton.
-**Chaining:** How the advanced modeling feature, non-linear search chaining, can significantly improve lens modeling with pixelizaitons.
-**Result (Advanced):** API for various pixelization outputs (magnifications, mappings) which requires some polishing.
-**Simulate (Advanced):** Simulating a strong lens dataset with the inferred pixelized source.
+**GPU Run Times:** On consumer laptop GPUs, the run times of pixelization modeling can be a bit prohibitive, for.
+**CPU Users:** On CPU, JAX pixelization calculations are not accelerated and are therefore relatively slow.
+**Advantages & Disadvantages:** Many strongly lensed source galaxies exhibit complex, asymmetric, and irregular morphologies.
+**Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+**Model:** Compose the lens model fitted to the data.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Mesh Shape:** The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the.
+**Edge Zeroing:** By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero.
+**Search:** Configure the non-linear search used to fit the model.
+**Position Likelihood:** We add a penalty term ot the likelihood function, which penalizes models where the brightest.
+**Brief Description:** Unlike other example scripts, we also pass the `AnalysisImaging` object below a `PositionsLH`.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+**Run Time:** Profiling the expected run time of the model-fit.
+**Result:** Overview of the results of the model-fit.
+**Mask Extra Galaxies:** There may be extra galaxies nearby the lens and source galaxies, whose emission blends with the.
+**Wrap Up:** Summary of the script and next steps.
+**Chaining:** Modeling with a pixelization can be made more efficient, robust, and automated using the non-linear.
+**HowToGalaxy:** A full description of how pixelizations work—which relies heavily on linear algebra, Bayesian.
 
 __Advantages__
 

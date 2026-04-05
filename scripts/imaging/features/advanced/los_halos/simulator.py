@@ -14,6 +14,22 @@ Without the negative kappa sheets, LOS halos systematically over-lens the images
 convergence is not conserved. The negative sheets account for the smooth average contribution of
 all halos, so that only the *fluctuations* above the mean affect the lensing.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Dataset Paths:** The simulated dataset is output to the ``dataset/imaging/los_halos`` folder.
+**Grid:** Define the 2D grid on which the image is evaluated and simulated.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**PSF:** A Gaussian PSF models the telescope optics.
+**Simulator:** The simulator defines the exposure time, PSF, background sky level, and noise properties.
+**LOS Configuration:** Parameters controlling the line-of-sight halo population.
+**Sample LOS Halos:** The ``LOSSampler`` handles the full pipeline.
+**Ray Tracing:** Define the main lens galaxy and source galaxy, then combine with the LOS galaxies to create a.
+**Output:** Output the simulated dataset to .fits files.
+**Visualize:** Output subplots and summary images as .png files for quick inspection.
+**Tracer json:** Save the tracer as a .json file for reproducibility.
+**LOS Diagnostics:** Save the LOS halo sample list and negative sheet values for post-simulation analysis.
+
 __Model__
 
 This script simulates ``Imaging`` of a galaxy-scale strong lens where:

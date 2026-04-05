@@ -7,6 +7,20 @@ or supernova, and it provides an overview of the lens simulation API.
 
 After reading this script, the `examples` folder provide examples for simulating more complex lenses in different ways.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Dataset Paths:** The `dataset_type` describes the type of data being simulated (in this case, `PointDataset` data).
+**Ray Tracing:** Setup the lens galaxy's mass (SIE) and source galaxy (a point source) for this simulated lens.
+**Point Solver:** For a point source, our goal is to find the (y, x) coordinates in the image plane that map directly.
+**Point Datasets:** All the quantities computed above are stored in a `PointDataset` object, which organizes.
+**Visualize:** Output a subplot of the simulated point source dataset as a .png file.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+**Imaging:** Point-source data typically comes with imaging data of the strong lens, for example showing the 4.
+**Fluxes:** Another measurable quantity of a point source is its flux—the total amount of light received from.
+**Point Dataset:** The fluxes are not input a `PointDataset` object, alongside the image-plane coordinates of the.
+**Time Delays:** Another measurable quantity of a point source is its time delay—the time it takes for light to.
+
 __Model__
 
 This script simulates `PointDataset` data of a strong lens where:

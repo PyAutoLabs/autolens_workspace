@@ -9,6 +9,22 @@ The sensitivity mapping simulation procedure for a pixelized source is different
 sources are used, the source reconstruction on the mesh is used, such that the simulations capture the irregular
 morphologies of real source galaxies.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**SOURCE LP PIPELINE:** Identical to `slam_start_here.py`, except the lens mass uses an `Isothermal` with its centre fixed.
+**SOURCE PIX PIPELINE 1:** Identical to `slam_start_here.py`.
+**SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`.
+**LIGHT LP PIPELINE:** Identical to `slam_start_here.py`.
+**MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`.
+**Simulate Function Class:** We now write the `simulate_cls`, which takes the `simulation_instance` of our model (defined above).
+**Base Fit:** We have defined a `Simulate` class that will be used to simulate every dataset simulated by the.
+**Perturb Fit:** We now define a `PerturbFit` class, which defines how the `perturb_model` is fitted to each.
+**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+**Redshifts:** The redshifts of the lens and source galaxies.
+**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
+**SLaM Pipeline:** Overview of slam pipeline for this example.
+
 __Model__
 
 Using a SOURCE LP PIPELINE, LIGHT LP PIPELINE, MASS TOTAL PIPELINE and SUBHALO PIPELINE this SLaM script

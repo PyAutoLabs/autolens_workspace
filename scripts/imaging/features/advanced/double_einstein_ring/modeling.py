@@ -11,6 +11,21 @@ simultaneously, and the emission of both source galaxies must be modeled simulta
 
 This script illustrates the PyAutoLens API for modeling a double Einstein ring lens.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Model Cookbook:** A full description of model composition is provided by the model cookbook.
+**Cheating:** Initializing a double Einstein ring lens model is difficult, due to the complexity of parameter.
+**Cosmology:** Double Einstein rings allow cosmological parameters to be constrained, because they provide.
+**Search:** Configure the non-linear search used to fit the model.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+**Run Time:** Profiling the expected run time of the model-fit.
+**Result:** Overview of the results of the model-fit.
+**Wrap Up:** Summary of the script and next steps.
+
 __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a double Einstein ring where:

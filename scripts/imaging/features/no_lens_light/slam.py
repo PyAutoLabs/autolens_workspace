@@ -11,6 +11,19 @@ guide before working through this example.
 This example only provides documentation specific to the use of SLaM for data without lens light, describing
 how the pipeline differs from the standard SLaM pipelines described in the SLaM start here guide.
 
+__Contents__
+
+**Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
+**Model:** Compose the lens model fitted to the data.
+**SOURCE LP PIPELINE:** Identical to `slam_start_here.py` with `lens_bulge=None` to omit lens light from the model.
+**SOURCE PIX PIPELINE 1:** Identical to `slam_start_here.py`.
+**SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`.
+**MASS TOTAL PIPELINE:** Identical to `slam_start_here.py` except no lens light is included in the model.
+**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+**Redshifts:** The redshifts of the lens and source galaxies.
+**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
+**SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
+
 __Prerequisites__
 
 Before using this SLaM pipeline, you should be familiar with:

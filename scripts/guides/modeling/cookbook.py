@@ -10,20 +10,15 @@ readable code for different use-cases.
 
 __Contents__
 
-**Simple Lens Model:** Compose a simple lens model with a lens galaxy and source galaxy.
-**Concise API:** Compose a lens model using the concise API, which is more readable and concise.
-**Model Customization:** Customize the lens model parameters, including parameter pairing, fixing and offsets.
-**Redshift Free:** Make the redshift of a galaxy a free parameter in the model-fit.
-**Available Model Components:** List the available light profiles, mass profiles and other components that can be used for lens modeling.
-
-Advanced Features:
-
-**JSon Outputs:** Output a model to a .json file on hard-disk, which can be loaded and modified.
-**Many Profile Models:** Compose and fit models with many light profiles, such as the Multi Gaussian Expansion (MGE) and shapelets.
-**Model Linking:** Link the inferred model of one phase to the model in a non-linear search chain.
-**Across Datasets:** Compose models where the same model component is used across multiple datasets, with certain parameters free to vary.
-**Relations:** Compose models where the free parameter(s) vary according to a user-specified function.
-**PyAutoFit API:** Use the PyAutoFit API to compose lens models in more advanced ways.
+**Simple Lens Model:** A simple lens model has a lens galaxy with a Sersic light profile, Isothermal mass profile and.
+**More Complex Lens Models:** The API above can be easily extended to compose lens models where each galaxy has multiple light or.
+**Concise API:** If a light or mass profile is passed directly to the `af.Model` of a galaxy, it is automatically.
+**Prior Customization:** We can customize the priors of the lens model component individual parameters, using the following.
+**Model Customization:** We can customize the lens model parameters in a number of different ways, as shown below: """ #.
+**Redshift Free:** The redshift of a galaxy can be treated as a free parameter in the model-fit by using the following.
+**Available Model Components:** The light profiles, mass profiles and other components that can be used for lens modeling are given.
+**PyAutoFit API:** **PyAutoFit** is a general model composition library which offers even more ways to compose lens.
+**Wrap Up:** Summary of the script and next steps.
 
 __Start Here Notebook__
 

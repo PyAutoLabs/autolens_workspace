@@ -13,6 +13,23 @@ claim the detection of a DM subhalo.
 
 The example illustrates DM subhalo detection with **PyAutoLens**.
 
+__Contents__
+
+**SLaM Pipelines:** The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pipelines which.
+**Grid Search:** The second stage of the SUBHALO PIPELINE uses a grid-search of non-linear searches to determine the.
+**Pixelized Source:** Detecting a DM subhalo requires the lens model to be sufficiently accurate that the residuals of.
+**Model:** Compose the lens model fitted to the data.
+**SOURCE PIX PIPELINE 1:** Unlike `slam_start_here.py`, this pipeline does not use a `source_lp` pipeline before the pixelized.
+**SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`, using adapt images from `source_pix_result_1` to improve the.
+**MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`, except no lens light model is included as interferometer data.
+**Sparse Operators:** The `pixelization/modeling` example describes how the sparse operator formalism speeds up.
+**Position Likelihood:** Load the multiple image positions used for the position likelihood, which resamples bad mass models.
+**Settings:** Disable the default position only linear algebra solver so the source reconstruction can have.
+**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+**Redshifts:** The redshifts of the lens and source galaxies.
+**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
+**SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
+
 __SLaM Pipelines__
 
 The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pipelines which automate the fitting

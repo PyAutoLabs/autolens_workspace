@@ -31,6 +31,15 @@ The only problem is that the light of the second source is included in the data 
 could bias or impact its model fit. To circumvent this, the first search uses a smaller mask which removes the light
 of the second source from the model-fit. A larger mask included both sources is then used in the second search.
 
+__Contents__
+
+**Dataset:** Load and plot the strong lens dataset.
+**Paths:** The path the results of all chained searches are output: """ path_prefix = Path("imaging") /.
+**Wrap Up:** Summary of the script and next steps.
+**Pipelines:** Advanced search chaining uses `pipelines` that chain together multiple searches to perform complex.
+**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `guides/modeling/chaining.ipynb` notebook.

@@ -18,6 +18,23 @@ The second approach is more complex and computationally expensive, but if the em
 significantly with the lensed source emission, or if their mass is anticipated to contributed signficiantly, it is the
 best approach to take.
 
+__Contents__
+
+**Data Preparation:** Data standards required for fitting with PyAutoLens.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Extra Galaxies Over Sampling:** Over sampling is a numerical technique where the images of light profiles and galaxies are.
+**Extra Galaxies Noise Scaling:** To prevent extra galaxies from impacting the model-fit, we do not mask them entirely from the fit.
+**Extra Galaxies Dataset:** We are now going to model the dataset with extra galaxies included in the model, where these.
+**Extra Galaxies Centres:** To set up a lens model including each extra galaxy with light and / or mass profile, we input.
+**Model:** Compose the lens model fitted to the data.
+**Extra Galaxies Model:** We now use the modeling API to create the model for the extra galaxies.
+**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+**Run Time:** Profiling the expected run time of the model-fit.
+**Result:** Overview of the results of the model-fit.
+**Approaches to Extra Galaxies:** We illustrated two extremes of how to prevent the emission of extra galaxies impacting the.
+**Scaling Relations:** The modeling API has full support for composing the extra galaxies such that their light and or.
+**Wrap Up:** Summary of the script and next steps.
+
 __Data Preparation__
 
 To perform modeling which accounts for extra galaxies, a mask of their emission or list of the centre of each extra

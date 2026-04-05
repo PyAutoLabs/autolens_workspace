@@ -8,6 +8,13 @@ visualize and interpret its results.
 We then show how the aggregator also allows us to load many `Tracer`'s correspond to many samples of the non-linear
 search. This allows us to compute the errors on quantities that the `Tracer` contains, but were not sampled directly
 by the non-linear search.
+
+__Contents__
+
+**Aggregator:** First, set up the aggregator as shown in `start_here.py`.
+**Tracer via Aggregator:** Having performed a model-fit, we now want to interpret and visualize the results.
+**Einstein Mass Example:** Each tracer has the information we need to compute the Einstein mass of a model.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

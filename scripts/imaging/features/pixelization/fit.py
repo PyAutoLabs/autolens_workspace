@@ -26,15 +26,22 @@ initial setup can be performed before lens modeling and saved to hard disk for f
 
 __Contents__
 
-**Advantages & Disadvantages:** Benefits and drawbacks of using an MGE.
-**Positive Only Solver:** How a positive solution to the light profile intensities is ensured.
-**Dataset & Mask:** Standard set up of imaging dataset that is fitted.
-**Mesh Shape**: Setting up the mesh shape in advance, such that JAX knows their shapes in advance.
-**Pixelization:** How to create a pixelization, including a description of its inputs.
-**Fit:** Perform a fit to a dataset using a pixelization, and visualize its results.
-**Interpolated Source:** Interpolate the source reconstruction from an irregular Voronoi mesh to a uniform square grid and output to a .fits file.
-**Result (Advanced):** API for various pixelization outputs (magnifications, mappings) which requires some polishing.
-**Simulate (Advanced):** Simulating a strong lens dataset with the inferred pixelized source.
+**CPU Users:** Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra.
+**Advantages & Disadvantages:** Many strongly lensed source galaxies are complex, and have asymmetric and irregular morphologies.
+**Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Mesh Shape:** The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the.
+**Edge Zeroing:** By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero.
+**Pixelization:** We create a `Pixelization` object to perform the pixelized source reconstruction, which is made up.
+**Fit:** Fit the lens model to the dataset.
+**Mask Extra Galaxies:** There may be extra galaxies nearby the lens and source galaxies, whose emission blends with the.
+**Wrap Up:** Summary of the script and next steps.
+**Linear Objects:** An `Inversion` contains all of the linear objects used to reconstruct the data in its.
+**Grids:** The role of a mapper is to map between the image-plane and source-plane.
+**Reconstruction:** The source reconstruction is also available as a 1D numpy array of values representative of the.
+**Mapped Reconstructed Images:** The source reconstruction(s) are mapped to the image-plane in order to fit the lens model.
+**Simulated Imaging:** We load the source galaxy image from the pixelized inversion of a previous fit, which was performed.
 
 __Advantages__
 

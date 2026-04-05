@@ -26,20 +26,29 @@ initial setup can be performed before lens modeling and saved to hard disk for f
 
 __Contents__
 
-**Advantages & Disadvantages:** Benefits and drawbacks of using an MGE.
-**Positive Only Solver:** How a positive solution to the reconstructed source pixel fluxes can be ensured, but is often disabled for interferometer data.
-**Dataset & Mask:** Standard set up of imaging dataset that is fitted.
-**Pixelization:** How to create a pixelization, including a description of its inputs.
-**Model:** Composing a model using a pixelization and how it changes the number of free parameters.
-**Search & Analysis:** Standard set up of non-linear search and analysis.
-**Positions Likelihood:** Removing unphysical pixelized source solutions using a likelihood penalty using the lensed multiple images.
-**VRAM:** Profiling of pixelization VRAM use and discussion of how it compares to standard light profiles.
-**Run Time:** Profiling of pixelization run times and discussion of how they compare to standard light profiles.
-**Model-Fit:** Performs the model fit using standard API.
-**Result:** Pixelization results and visualizaiton.
-**Chaining:** How the advanced modeling feature, non-linear search chaining, can significantly improve lens modeling with pixelizaitons.
-**Result (Advanced):** API for various pixelization outputs (magnifications, mappings) which requires some polishing.
-**Simulate (Advanced):** Simulating a strong lens dataset with the inferred pixelized source.
+**CPU Users:** Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra.
+**Advantages & Disadvantages:** Many strongly lensed source galaxies exhibit complex, asymmetric, and irregular morphologies.
+**Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+**Model:** Compose the lens model fitted to the data.
+**High Resolution Dataset:** A high-resolution `uv_wavelengths` file for ALMA is available in a separate repository that hosts.
+**Mask:** Define the 2D mask applied to the dataset for the model-fit.
+**Dataset:** Load and plot the strong lens dataset.
+**Sparse Operators:** Pixelized source modeling requires dense linear algebra operations.
+**Settings:** As discussed above, disable the default position only linear algebra solver so the source.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Mesh Shape:** The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the.
+**Edge Zeroing:** By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero.
+**Search:** Configure the non-linear search used to fit the model.
+**Position Likelihood:** We add a penalty term ot the likelihood function, which penalizes models where the brightest.
+**Brief Description:** Unlike other example scripts, we also pass the `AnalysisImaging` object below a `PositionsLH`.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+**Run Time:** Profiling the expected run time of the model-fit.
+**Result:** Overview of the results of the model-fit.
+**Result Use:** There are many things you can do with the result of a pixelixaiton, including analysing the.
+**Wrap Up:** Summary of the script and next steps.
+**Chaining:** Modeling using a pixelization can be more efficient, robust and automated using the non-linear.
+**HowToLens:** A full description of how pixelizations work, which comes down to a lot of linear algebra, Bayesian.
 
 __Advantages__
 

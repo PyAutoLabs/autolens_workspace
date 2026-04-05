@@ -54,6 +54,39 @@ size of the source.
 The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
 including examples using a Delaunay source reconstruction. Once you have completed lens modeling using a Delaunay mesh,
 you can jump to that example to study the source galaxy.
+
+__Contents__
+
+**Image Mesh:** For a Delaunay mesh, the vertices of the triangles are defined by (y, x) coordinates in the.
+**Edge Zeroing:** By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero.
+**Fit:** Fit the lens model to the dataset.
+**Source Science:** Source science focuses on studying the highly magnified properties of the background lensed source.
+**Model:** Compose the lens model fitted to the data.
+**JAX CPU:** On CPU, the Delaunay mesh computation via JAX can lead to slow down or indefinite freezing.
+**VRAM:** The `pixelization/modeling` example explains how VRAM use is an important consideration for.
+**Adaptive Delaunay:** The example `imaging/features/pixelization/adaptive.py` illustrates how to use adaptive features to.
+**SLaM Pipelines:** The API above allows you to use adaptive features yourself, and you should go ahead an explore them.
+**SOURCE LP PIPELINE:** Identical to `slam_start_here.py`.
+**SOURCE PIX PIPELINE 1:** Identical to `slam_start_here.py`, except the source pixelization uses a Delaunay mesh.
+**SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`, except the source pixelization uses a Delaunay mesh.
+**LIGHT LP PIPELINE:** Identical to `slam_start_here.py`.
+**MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`.
+**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+**Redshifts:** The redshifts of the lens and source galaxies.
+**SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
+**Likelihood Function:** The example `imaging/features/pixelization/likelihood_function.py` provides a step-by-step.
+**Source Galaxy Pixelization and Regularization:** The source galaxy is reconstructed using a pixel-grid, in this example a Delaunay mesh, which.
+**Lens Light:** Overview of lens light for this example.
+**Source Pixel Centre Calculation:** In order to reconstruct the source galaxy using a Delaunay mesh, we need to determine the centres.
+**Ray Tracing:** Overview of ray tracing for this example.
+**Border Relocation:** Coordinates that are ray-traced near the mass profile centres are heavily demagnified and may trace.
+**Delaunay Mesh:** The relocated mesh grid is used to create the `Pixelization`'s Delaunay mesh using the.
+**Interpolation:** Overview of interpolation for this example.
+**Lens Modeling:** To fit a lens model to data, the likelihood function illustrated in this tutorial is sampled using.
+**Sub Gridding:** The calculation above uses a `Grid2D` object, with a `sub-size=1`, meaning it does not perform.
+**Sourrce Plane Interpolation:** For the `Delaunay` mesh used in this example, every image-sub pixel maps to a single source Voronoi.
+**Wrap Up:** Summary of the script and next steps.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

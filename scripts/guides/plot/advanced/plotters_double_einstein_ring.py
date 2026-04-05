@@ -19,10 +19,11 @@ Refer to `plots/start_here.ipynb` for an introduction to the new plotting API.
 
 __Contents__
 
-- **Setup**: Set up all objects used to illustrate plotting.
-- **Fit Imaging**: Plot the fit of a tracer to an imaging dataset for a double Einstein ring.
-- **Per-Plane Images**: Plot per-plane model and subtracted images.
-- **Inversion**: Plot the pixelized source reconstruction.
+**Setup:** General setup for the analysis.
+**Fit Imaging:** Plot individual fit attributes with `aplt.plot_array()`.
+**Full Subplot:** A multi-panel subplot overview is produced with `aplt.subplot_fit_imaging()`.
+**Pixelized Source Reconstruction:** Now set up a double Einstein ring fit using pixelized source reconstructions.
+**Inversion:** The inversion is computed directly from a `Tracer` using `TracerToInversion`.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

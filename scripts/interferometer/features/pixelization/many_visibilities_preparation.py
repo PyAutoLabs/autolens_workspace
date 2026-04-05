@@ -30,6 +30,14 @@ This example therefore creates the `nufft_precision_operator` matrix using indep
 for modeling. The `cpu_fast_modeling` example loads this matrix from hard-disk if it is available,
 and computes it from scratch if not.
 
+__Contents__
+
+**High Resolution Dataset:** A high-resolution `uv_wavelengths` file for ALMA is available in a separate repository that hosts.
+**Profiling Dataset:** The code above loads a dataset with very few visibilities and a low resolution real space mask, so.
+**Curvature Preload:** Pixelized source modeling requires dense linear algebra operations.
+**Curvature Preload Output:** We now output the `nufft_precision_operator` object to hard-disk, so it can be loaded quickly in.
+**Wrap Up:** Summary of the script and next steps.
+
 __High Resolution Dataset__
 
 A high-resolution `uv_wavelengths` file for ALMA is available in a separate repository that hosts large files which

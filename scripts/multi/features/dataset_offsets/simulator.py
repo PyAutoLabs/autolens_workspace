@@ -17,6 +17,18 @@ This script simulate a multi-wavelength `Imaging` dataset where the two images h
 offset impacts the lensing calculation and modeling if not accounted for. It is used in the `modeling` examples to show
 how to include the offset as a free parameter in the model-fit.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Colors:** The colors of the multi-wavelength image, which in this case are green (g-band) and red (r-band).
+**Dataset Paths:** Overview of dataset paths for this example.
+**Simulate:** The pixel-scale of each color image is different meaning we make a list of grids for the simulation.
+**Offset:** Offset the second grid from the first grid by the pixel scale in both the y and x directions.
+**Ray Tracing:** The lens galaxy light at each wavelength has a different intensity, thus we create two lens.
+**Output:** Output each simulated dataset to the dataset path as .fits files, with a tag describing its color.
+**Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+
 __Model__
 
 This script simulates multi-wavelength `Imaging` of a 'galaxy-scale' strong lens where:

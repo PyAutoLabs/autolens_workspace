@@ -13,6 +13,19 @@ whereas the source-plane coordinates must be stored in 1D (because after lensing
 These data structures use the `slim` and `native` data representations API to make it simple to map quantities from
 1D dimensions to their native dimensions.
 
+__Contents__
+
+**Units:** In this example, all quantities use the source code's internal unit coordinates, with spatial.
+**API:** We discuss in detail why these data structures and illustrate their functionality below.
+**Grids:** We now illustrate data structures using a `Grid2D` object, which is a set of two-dimensional.
+**Native:** This plot shows the grid in its `native` format, that is in 2D dimensions where the y and x.
+**Slim:** Every `Grid2D` object is accessible via two attributes, `native` and `slim`, which store the grid.
+**Masked Data Structures:** When a mask is applied to a grid or other data structure, this changes the `slim` and `native`.
+**Data:** Two dimensional arrays of data are stored using the `Array2D` object, which has `slim` and `native`.
+**Tracer:** The `Tracer` produces many lensing quantities all of which use the `slim` and `native` data.
+**Irregular Structures:** We may want to perform calculations at specific (y,x) coordinates which are not tied to a uniform.
+**Vector Quantities:** Many lensing quantities are vectors.
+
 __Units__
 
 In this example, all quantities use the source code's internal unit coordinates, with spatial coordinates in

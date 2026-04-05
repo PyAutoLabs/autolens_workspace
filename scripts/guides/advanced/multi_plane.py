@@ -20,6 +20,13 @@ Examples of multi-plane lensing systems include:
  - A galaxy cluster, where the observed different background source galaxies are at a range of different redshifts
  and their deflections due to one another must be included.
 
+__Contents__
+
+**Example:** To illustrate multi-plane ray-tracing, we first set up a simple lens system, using a `Tracer`.
+**Ray Tracing:** Multi-plane ray tracing is implemented in the `tracer_util.py` module of the following package.
+**Profiles With Physical Units:** The above ray-tracing used dimensionless angular units (e.g.
+**SLACK:** This script was written after discussion on the PyAutoLens Slack channel, where some users modeling.
+
 __Example__
 
 To illustrate multi-plane ray-tracing, we first set up a simple lens system, using a `Tracer` object.

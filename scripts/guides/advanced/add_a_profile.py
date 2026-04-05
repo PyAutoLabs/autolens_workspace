@@ -14,6 +14,20 @@ We begin by explaining how to add a new _mass profile_, as this introduces the c
 concepts required for defining custom profiles in **PyAutoLens**. These concepts
 are then applied to show how custom _light profiles_ can be implemented.
 
+__Contents__
+
+**Source Code:** This example includes direct links to the source code of the classes used to define mass and light.
+**Example Mass Profile:** The mass profiles available in **PyAutoLens** are located in its parent package, **PyAutoGalaxy**.
+**Inheritance Structure:** Let us next consider the inheritance structure of the ``Isothermal`` profile, defined by the class.
+**Data Structure Decorators:** Different grids can be input into each mass profile function (e.g.
+**Transform Decorator:** Overview of transform decorator for this example.
+**Lens Modeling:** **PyAutoLens** assumes that all input parameters of a mass profile (for example, those listed in.
+**Lens Modeling Configs:** In most **PyAutoLens** examples, you will notice we compose models without manually specifying.
+**Deflections:** We are therefore ready to implement a mass profile, and the best place to start is the.
+**Spherical Template:** radial_grid removal of ell_comps.
+**Physical Profiles:** Show how to wrap existing profiles with physical units?
+**Light Profiles:** Pretty much the same but need to add text.
+
 __Source Code__
 
 This example includes direct links to the source code of the classes used to define

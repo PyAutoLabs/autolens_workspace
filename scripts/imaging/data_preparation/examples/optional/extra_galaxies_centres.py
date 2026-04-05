@@ -15,6 +15,11 @@ surrounding these centres).
 This tutorial closely mirrors tutorial 7, `lens_light_centre`, where the main purpose of this script is to mark the
 centres of every object we'll model as an extra galaxy. A GUI is also available to do this.
 
+__Contents__
+
+**Masking Extra Galaxies:** The example `mask_extra_galaxies.py` masks the regions of an image where extra galaxies are present.
+**Output:** Save this as a .png image in the dataset folder for easy inspection later.
+
 __Masking Extra Galaxies__
 
 The example `mask_extra_galaxies.py` masks the regions of an image where extra galaxies are present. This mask is used

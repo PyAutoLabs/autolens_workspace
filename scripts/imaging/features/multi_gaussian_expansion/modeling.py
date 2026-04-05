@@ -12,17 +12,21 @@ profiles like the `Sersic`.
 
 __Contents__
 
-**Advantages & Disadvantages:** Benefits and drawbacks of using an MGE.
-**Positive Only Solver:** How a positive solution to the light profile intensities is ensured.
-**MGE Source Galaxy:** Discussion of using the MGE for the source galaxy, which is illustrated fully at the end of the example.
-**Dataset & Mask:** Standard set up of imaging dataset that is fitted.
-**Model:** Composing a model using an MGE and how it changes the number of free parameters.
-**Search & Analysis:** Standard set up of non-linear search and analysis.
-**Run Time:** Profiling of MGE run times and discussion of how they compare to standard light profiles.
-**Model-Fit:** Performs the model fit using standard API.
-**Result:** MGE results, including accessing light profiles with solved for intensity values.
-**MGE Source:** Detailed illustration of using MGE source.
-**Regularization:** API for applying regularization to MGE, which is not recommend but included for illustration.
+**Advantages & Disadvantages:** Symmetric light profiles (e.g.
+**Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+**MGE Source Galaxy:** The MGE was designed to model the light of lens galaxies, because they are typically elliptical.
+**Model:** Compose the lens model fitted to the data.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Model Cookbook:** A full description of model composition is provided by the model cookbook.
+**Search:** Configure the non-linear search used to fit the model.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+**Run Time:** Profiling the expected run time of the model-fit.
+**Result:** Overview of the results of the model-fit.
+**Source MGE:** As discussed at the beginning of this tutorial, an MGE is an effective way to model the light of a.
+**Wrap Up:** Summary of the script and next steps.
+**Description:** There is one downside to `Basis` functions, we may compose a model with too much freedom.
 
 __Advantages__
 

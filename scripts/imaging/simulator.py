@@ -7,6 +7,19 @@ Telescope, Euclid) and it provides an overview of the lens simulation API.
 
 After reading this script, the `examples` folder provide examples for simulating more complex lenses in different ways.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Plotters:** Overview of plotting tools used for visualization.
+**Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
+**Grid:** Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated and.
+**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+**Ray Tracing:** We now define the lens galaxy's light (elliptical Sersic + Exponential), mass (SIE+Shear) and.
+**Output:** Output the simulated dataset to the dataset path as .fits files.
+**Visualize:** In the same folder as the .fits files, we also output subplots of the simulated dataset in .png.
+**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+**Multiple Images:** Lens modeling can use a "positions likelihood penalty", whereby mass models which traces the (y,x).
+
 __Model__
 
 This script simulates `Imaging` of a 'galaxy-scale' strong lens where:

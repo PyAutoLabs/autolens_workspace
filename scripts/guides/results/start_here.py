@@ -8,6 +8,23 @@ an overview of the lens modeling API.
 After reading this script, the `examples` folder provides more detailed examples for analysing the different aspects of
 performing  modeling results outlined here.
 
+__Contents__
+
+**Model:** Compose the lens model fitted to the data.
+**Model Fit:** Perform the model-fit using the search and analysis.
+**Info:** As seen throughout the workspace, the `info` attribute shows the result in a readable format.
+**Generators:** Before using the aggregator to inspect results, lets discuss Python generators.
+**Database File:** The aggregator can also load results from a `.sqlite` database file.
+**Workflow Examples:** The `results/workflow` folder contains examples describing how to build a scientific workflow using.
+**Result:** Overview of the results of the model-fit.
+**Samples:** The result's `Samples` object contains the complete set of non-linear search Nautilus samples.
+**Linear Light Profiles:** In the model fit, linear light profiles are used, solving for the `intensity` of each profile.
+**Tracer:** The result's maximum likelihood `Tracer` object contains everything necessary to perform.
+**Fits:** The result's maximum likelihood `FitImaging` object contains everything necessary to inspect the.
+**Galaxies:** The result's maximum likelihood `Galaxy` objects contained within the `Tracer` contain everything.
+**Units and Cosmological Quantities:** The maximum likelihood model includes cosmological quantities, which can be computed via the result.
+**Pixelization:** The lens model can reconstruct the source galaxy using a pixelization, for example on a Voronoi.
+
 __Model__
 
 We begin by fitting a quick lens model to a simple lens dataset, which we will use to illustrate the lens modeling

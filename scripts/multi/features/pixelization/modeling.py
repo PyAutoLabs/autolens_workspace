@@ -12,6 +12,19 @@ Two images are fitted, corresponding to a greener ('g' band) redder image (`r` b
 
 This is an advanced script and assumes previous knowledge of the core **PyAutoLens** API for lens modeling. Thus,
 certain parts of code are not documented to ensure the script is concise.
+
+__Contents__
+
+**Colors:** The colors of the multi-wavelength image, which in this case are green (g-band) and red (r-band).
+**Pixel Scales:** Every multi-wavelength dataset can have its own unique pixel-scale.
+**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+**Positions:** This fit also uses the arc-second positions of the multiply imaged lensed source galaxy, which were.
+**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
+**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+**Model:** Compose the lens model fitted to the data.
+**Search:** Configure the non-linear search used to fit the model.
+**Result:** Overview of the results of the model-fit.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
