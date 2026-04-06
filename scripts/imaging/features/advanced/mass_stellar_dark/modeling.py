@@ -231,8 +231,11 @@ required by a model.
 Deflection angle calculations of stellar mass models and dark matter mass models can use techniques whichs
 store more data in VRAM than other methods. 
 
-Given VRAM use is an important consideration, we print out the estimated VRAM required for this 
+Given VRAM use is an important consideration, we print out the estimated VRAM required for this
 model-fit and advise you do this for your own double source plane lens model-fits.
+
+The method below prints the VRAM usage estimate for the analysis and model with the specified batch size,
+it takes about 20-30 seconds to run so you may want to comment it out once you are familiar with your GPU's VRAM limits.
 """
 analysis.print_vram_use(model=model, batch_size=search.batch_size)
 

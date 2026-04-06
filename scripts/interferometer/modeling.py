@@ -474,7 +474,7 @@ aplt.subplot_tracer(
 )
 
 aplt.subplot_fit_interferometer(fit=result.max_log_likelihood_fit)
-aplt.subplot_fit_dirty_images(fit=fit)
+aplt.subplot_fit_dirty_images(fit=result.max_log_likelihood_fit)
 
 """
 The result contains the full posterior information of our non-linear search, including all parameter samples, 

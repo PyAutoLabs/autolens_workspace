@@ -368,8 +368,11 @@ Before running an analysis, users should check that the estimated VRAM usage for
 chosen batch size is comfortably below their GPU’s total VRAM.
 
 For a point solver with an image-plane chi squared and one set of positions with a single plane VRAM use is relatively
-low (~0.1GB). For models with more planes and datasets with more multiple images it can be much higher (> 1GB going 
+low (~0.1GB). For models with more planes and datasets with more multiple images it can be much higher (> 1GB going
 beyond 10GB).
+
+The method below prints the VRAM usage estimate for the analysis and model with the specified batch size,
+it takes about 20-30 seconds to run so you may want to comment it out once you are familiar with your GPU's VRAM limits.
 """
 analysis.print_vram_use(model=model, batch_size=search.batch_size)
 

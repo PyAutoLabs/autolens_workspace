@@ -399,8 +399,11 @@ In sparse operator mode, the **amount of VRAM used is independent of the number 
 This is because the sparse operator compresses all the visibility information into a matrix whose size depends only on
 the number of pixels in the real-space mask. VRAM use is therefore mostly driven by how many pixels are in the real space mask.
 
-VRAM does scale with batch size though, and for high resoluiton datasets may require you to reduce from the value of 
+VRAM does scale with batch size though, and for high resoluiton datasets may require you to reduce from the value of
 20 set above if your GPU does not have too much VRAM (e.g. < 4GB).
+
+The method below prints the VRAM usage estimate for the analysis and model with the specified batch size,
+it takes about 20-30 seconds to run so you may want to comment it out once you are familiar with your GPU's VRAM limits.
 """
 analysis.print_vram_use(model=model, batch_size=search.batch_size)
 
