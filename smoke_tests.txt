@@ -2,7 +2,7 @@ imaging/start_here.py
 imaging/fit.py
 imaging/data_preparation/start_here.py
 interferometer/start_here.py
-point_source/start_here.py
+# point_source/start_here.py  # disabled: bypass mode tuple-path KeyError on point source models (rhayes777/PyAutoFit#1179)
 group/start_here.py
 multi/start_here.py
 guides/galaxies.py
