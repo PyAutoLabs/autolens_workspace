@@ -421,6 +421,9 @@ The `pixelization/modeling` example explains how VRAM use is an important consid
 and how it depends on image resolution, number of source pixels and batch size.
 
 This is true for the Delaunay mesh, therefore we print out the estimated VRAM required for this model-fit.
+
+The method below prints the VRAM usage estimate for the analysis and model with the specified batch size,
+it takes about 20-30 seconds to run so you may want to comment it out once you are familiar with your GPU's VRAM limits.
 """
 analysis_1.print_vram_use(model=model_1, batch_size=search_1.batch_size)
 
