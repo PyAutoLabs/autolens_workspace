@@ -81,7 +81,7 @@ __Dataset Auto-Simulation__
 If the dataset does not already exist on your system, it will be created by running the corresponding
 simulator script. This ensures that all example scripts can be run without manually simulating data first.
 """
-if not dataset_path.exists():
+if al.util.dataset.should_simulate(str(dataset_path)):
     import subprocess
     import sys
 
@@ -236,7 +236,7 @@ for analysis in analysis_list:
     ell_comps_0_prior = af.GaussianPrior(mean=0.0, sigma=0.3)
     ell_comps_1_prior = af.GaussianPrior(mean=0.0, sigma=0.3)
 
-    for i in range(total_gaussians):
+    for i in range(len(model_analysis.galaxies.lens.bulge.profile_list)):
 
         model_analysis.galaxies.lens.bulge.profile_list[i].ell_comps.ell_comps_0 = (
             ell_comps_0_prior
