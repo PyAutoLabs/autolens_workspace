@@ -30,6 +30,16 @@ python scripts/imaging/modeling/start_here.py
 PYAUTOFIT_TEST_MODE=1 python scripts/imaging/modeling/start_here.py
 ```
 
+**Fast smoke tests**: For maximum speed, combine test mode with small datasets and disabled critical curves:
+
+```bash
+PYAUTOFIT_TEST_MODE=2 PYAUTO_WORKSPACE_SMALL_DATASETS=1 PYAUTO_DISABLE_CRITICAL_CAUSTICS=1 PYAUTO_FAST_PLOTS=1 python scripts/imaging/modeling.py
+```
+
+- `PYAUTO_WORKSPACE_SMALL_DATASETS=1` — caps all grids/masks to 15x15 pixels at 0.6"/px, making simulators and all downstream computations dramatically faster. Delete `dataset/` when toggling this variable.
+- `PYAUTO_DISABLE_CRITICAL_CAUSTICS=1` — skips critical curve and caustic overlay computation in plots.
+- `PYAUTO_FAST_PLOTS=1` — skips `plt.tight_layout()` in subplot functions, avoiding expensive matplotlib font/text metrics computation.
+
 **Codex / sandboxed runs**: when running from Codex or any restricted environment, set writable cache directories so `numba` and `matplotlib` do not fail on unwritable home or source-tree paths:
 
 ```bash
