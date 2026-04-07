@@ -297,8 +297,11 @@ print the estimated VRAM required by a model.
 When multiple datasets are fitted simultaneously, as in this example, VRAM usage increases with each
 dataset, as their data structures must all be stored in VRAM.
 
-Given VRAM use is an important consideration, we print out the estimated VRAM required for this 
+Given VRAM use is an important consideration, we print out the estimated VRAM required for this
 model-fit and advise you do this for your own pixelization model-fits.
+
+The method below prints the VRAM usage estimate for the analysis and model with the specified batch size,
+it takes about 20-30 seconds to run so you may want to comment it out once you are familiar with your GPU's VRAM limits.
 """
 factor_graph.print_vram_use(
     model=factor_graph.global_prior_model, batch_size=search.batch_size

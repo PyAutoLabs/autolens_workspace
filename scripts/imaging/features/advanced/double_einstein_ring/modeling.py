@@ -265,8 +265,11 @@ Double source plane lenses can use a lot of VRAM, because the multi-plane ray-tr
 images for different source planes can require all the additional data to be stored in VRAM. This will
 at least double the VRAM requirements compared to a single lens plane model, but often more than this.
 
-Given VRAM use is an important consideration, we print out the estimated VRAM required for this 
+Given VRAM use is an important consideration, we print out the estimated VRAM required for this
 model-fit and advise you do this for your own double source plane lens model-fits.
+
+The method below prints the VRAM usage estimate for the analysis and model with the specified batch size,
+it takes about 20-30 seconds to run so you may want to comment it out once you are familiar with your GPU's VRAM limits.
 """
 analysis.print_vram_use(model=model, batch_size=search.batch_size)
 
