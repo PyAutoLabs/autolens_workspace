@@ -266,5 +266,16 @@ al.output_to_json(
 )
 
 """
+__Extra Galaxies Centres__
+
+Output the centres of the extra galaxies to a .json file, so that they can be used to set up the model
+in the modeling scripts.
+"""
+al.output_to_json(
+    obj=al.Grid2DIrregular(values=[extra_galaxy_0_centre, extra_galaxy_1_centre]),
+    file_path=dataset_path / "extra_galaxies_centres.json",
+)
+
+"""
 The dataset can be viewed in the folder `autolens_workspace/imaging/extra_galaxies`.
 """

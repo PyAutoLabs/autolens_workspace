@@ -75,7 +75,7 @@ string to do this, so lets create a list of the 3 dataset names.
 dataset_names = [
     "simple",
     "lens_sersic",
-    "mass_power_law",
+    "simple__no_lens_light",
 ]
 
 pixel_scales = 0.1
