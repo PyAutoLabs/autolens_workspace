@@ -137,8 +137,8 @@ Build Configuration
 The ``config/`` directory contains two files used by the automated build and test system
 (CI, smoke tests, and pre-release checks). These are not relevant to normal workspace usage.
 
-- ``config/no_run.yaml`` — scripts to skip during automated runs. Each entry is a filename stem
+- ``config/build/no_run.yaml`` — scripts to skip during automated runs. Each entry is a filename stem
   or path pattern with an inline comment explaining why it is skipped.
-- ``config/env_vars.yaml`` — environment variables applied to each script during automated runs.
+- ``config/build/env_vars.yaml`` — environment variables applied to each script during automated runs.
   Defines default values (e.g. test mode, small datasets) and per-script overrides for scripts
   that need different settings.
