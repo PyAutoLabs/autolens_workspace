@@ -1,0 +1,28 @@
+# Per-script environment variable configuration for automated runs
+# (smoke tests, pre-release checks, CI).
+#
+# "defaults" are applied to every script on top of the inherited environment.
+# "overrides" selectively unset or replace vars for matching path patterns.
+#
+# Pattern convention (same as no_run.yaml):
+#   - Patterns containing '/' do a substring match against the file path
+#   - Patterns without '/' match the file stem exactly
+
+defaults:
+  PYAUTOFIT_TEST_MODE: "2"              # 0=normal, 1=reduced iterations, 2=skip sampler (fastest)
+  PYAUTO_WORKSPACE_SMALL_DATASETS: "1"  # Cap grids/masks to 15x15, reduce MGE gaussians
+  PYAUTO_DISABLE_CRITICAL_CAUSTICS: "1" # Skip critical curve/caustic overlays in plots
+  PYAUTO_DISABLE_JAX: "1"              # Force use_jax=False, avoid JIT compilation overhead
+  PYAUTO_FAST_PLOTS: "1"               # Skip tight_layout() in subplots
+  JAX_ENABLE_X64: "True"               # Enable 64-bit precision in JAX
+  NUMBA_CACHE_DIR: "/tmp/numba_cache"   # Writable cache dir for numba
+  MPLCONFIGDIR: "/tmp/matplotlib"       # Writable config dir for matplotlib
+
+overrides:
+  # start_here scripts load real FITS data that breaks with small datasets
+  - pattern: "imaging/start_here"
+    unset: [PYAUTO_WORKSPACE_SMALL_DATASETS]
+  - pattern: "interferometer/start_here"
+    unset: [PYAUTO_WORKSPACE_SMALL_DATASETS]
+  - pattern: "group/start_here"
+    unset: [PYAUTO_WORKSPACE_SMALL_DATASETS]

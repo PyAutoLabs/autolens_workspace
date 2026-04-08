@@ -6,3 +6,5 @@ __pycache__/
 output/
 dataset/
 notebooks/plot/
+test_report.md
+test_results/
