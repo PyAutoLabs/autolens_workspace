@@ -26,3 +26,5 @@ overrides:
     unset: [PYAUTO_WORKSPACE_SMALL_DATASETS]
   - pattern: "group/start_here"
     unset: [PYAUTO_WORKSPACE_SMALL_DATASETS]
+  - pattern: "multi/start_here"
+    unset: [PYAUTO_WORKSPACE_SMALL_DATASETS]

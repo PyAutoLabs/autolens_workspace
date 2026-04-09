@@ -30,3 +30,4 @@
 - sensitivity/slam_source_parametric # Need to update when visuaization refactored.
 - sensitivity/slam_source_pixelized # Need to update, when visuaization refactored.
 - plot/visuals # Bugged, but visuals being refactored soon.
+- point_source/features/double_einstein_cross/simulator # PointSolver finds 0 positions on small grid

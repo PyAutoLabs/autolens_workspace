@@ -270,7 +270,7 @@ pixel_area_kpc = (
 )
 
 print(
-    f"Total mass in central pixel: {convergence.native[50, 50] * critical_surface_density * pixel_area_kpc} MSun"
+    f"Total mass in central pixel: {convergence.native[convergence.shape_native[0] // 2, convergence.shape_native[1] // 2] * critical_surface_density * pixel_area_kpc} MSun"
 )
 
 """
