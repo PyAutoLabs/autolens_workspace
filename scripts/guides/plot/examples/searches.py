@@ -18,7 +18,6 @@ __Contents__
 **EmceePlotter:** We now use the MCMC plotting functions to visualize emcee's results.
 **Search Specific Visualization:** The internal sampler can be used to plot the results of the non-linear search.
 **ZeusPlotter:** We now use the MCMC plotting functions to visualize Zeus's results.
-**PySwarmsPlotter:** We now use the MLE plotting functions to visualize pyswarms's results.
 **GetDist:** This example illustrates how to plot visualization summarizing the results of model-fit using any.
 **Parameter Names:** Note that in order to customize the figure, we will use the `samples.model.parameter_names` list.
 **GetDist Plotter:** To make plots we use a GetDist plotter object, which can be customized to change the appearance of.
@@ -629,63 +628,6 @@ try:
 except AttributeError:
     pass  # MCMC-specific methods not available for non-MCMC searches
 
-"""
-__PySwarmsPlotter__
-
-We now use the MLE plotting functions to visualize pyswarms's results.
-
-The pyswarms readthedocs describes fully all of the methods used below
-
- - https://pyswarms.readthedocs.io/en/latest/api/pyswarms.utils.plotters.html
-
-In all the examples below, we use the `kwargs` of this function to pass in any of the input parameters that are
-described in the API docs.
-"""
-
-"""
-__Search Specific Visualization__
-
-The internal sampler can be used to plot the results of the non-linear search. 
-
-We do this using the `search_internal` attribute which contains the sampler in its native form.
-
-The first time you run a search, the `search_internal` attribute will be available because it is passed ot the
-result via memory. 
-
-If you rerun the fit on a completed result, it will not be available in memory, and therefore
-will be loaded from the `files/search_internal` folder. The `search_internal` entry of the `output.yaml` must be true 
-for this to be possible.
-"""
-search_internal = result.search_internal
-
-"""
-__Plots__
-
-The `contour` method shows a 2D projection of the particle trajectories.
-"""
-try:
-    from pyswarms.utils import plotters
-
-    plotters.plot_contour(
-        pos_history=search_internal.pos_history,
-        canvas=None,
-        title="Trajectories",
-        mark=None,
-        designer=None,
-        mesher=None,
-        animator=None,
-    )
-    plt.show()
-
-    plotters.plot_cost_history(
-        cost_history=search_internal.cost_history,
-        ax=None,
-        title="Cost History",
-        designer=None,
-    )
-    plt.show()
-except (AttributeError, ImportError, TypeError):
-    pass  # pyswarms or search_internal unavailable
 
 """
 __GetDist__

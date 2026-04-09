@@ -26,7 +26,7 @@ __Contents__
 **Dynesty:** Dynesty (https://github.com/joshspeagle/dynesty) is a nested sampling algorithm.
 **Emcee:** Emcee (https://github.com/dfm/emcee) is an ensemble MCMC sampler that is commonly used in Astronomy.
 **Zeus:** Zeus (https://zeus-mcmc.readthedocs.io/en/latest/) is an ensemble MCMC slice sampler.
-**PySwarms:** PySwarms is a particle swarm optimization (PSO) algorithm.
+**LBFGS:** LBFGS is a quasi-Newton optimization algorithm from scipy.
 **Start Point:** For maximum likelihood estimator (MLE) and Markov Chain Monte Carlo (MCMC) non-linear searches.
 **Search Cookbook:** There are a number of other searches supported by **PyAutoFit** and therefore which can be used.
 
@@ -43,7 +43,6 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 # %cd $workspace_path
 # print(f"Working Directory has been set to `{workspace_path}`")
 
-import numpy as np
 from pathlib import Path
 import autofit as af
 import autolens as al
@@ -174,34 +173,21 @@ search = af.Zeus(
 )
 
 """
-__PySwarms__
+__LBFGS__
 
-PySwarms is a particle swarm optimization (PSO) algorithm.
+LBFGS is a quasi-Newton optimization algorithm from scipy.
 
-Information about PySwarms can be found at the following links:
+An optimizer only seeks to find the maximum likelihood lens model, unlike MCMC or nested sampling algorithms
+like Zeus and Nautilus, which aim to map out parameter space and infer errors on the parameters. Therefore, in
+principle, an optimizer like LBFGS should fit a lens model very fast.
 
- - https://github.com/ljvmiranda921/pyswarms
- - https://pyswarms.readthedocs.io/en/latest/index.html
- - https://pyswarms.readthedocs.io/en/latest/api/pyswarms.single.html#module-pyswarms.single.global_best
-
-An PSO algorithm only seeks to only find the maximum likelihood lens model, unlike MCMC or nested sampling algorithms
-like Zzeus and Nautilus, which aims to map-out parameter space and infer errors on the parameters.Therefore, in
-principle, a PSO like PySwarm should fit a lens model very fast.
-
-In our experience, the parameter spaces fitted by lens models are too complex for `PySwarms` to be used without a lot
-of user attention and care.  
+In our experience, the parameter spaces fitted by lens models are often too complex for optimizers to be used without
+careful initialization.
 """
-search = af.PySwarmsGlobal(
+search = af.LBFGS(
     path_prefix=Path("imaging", "searches"),
-    name="PySwarmsGlobal",
+    name="LBFGS",
     unique_tag="example",
-    n_particles=30,
-    iters=300,
-    cognitive=0.5,
-    social=0.3,
-    inertia=0.9,
-    ftol=-np.inf,
-    iterations_per_quick_update=1000,
 )
 
 """
@@ -295,7 +281,7 @@ search = af.Emcee(
 __Search Cookbook__
 
 There are a number of other searches supported by **PyAutoFit** and therefore which can be used, which are not 
-explictly documented here. These include Ultranest and LBFGS. 
+explictly documented here. These include LBFGS.
 
 The **PyAutoFit** search cookbook documents all searches that are available, including those not documented here,
 and provides the code you can easily copy and paste to use these methods.
