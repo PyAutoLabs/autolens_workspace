@@ -28,3 +28,9 @@ overrides:
     unset: [PYAUTO_WORKSPACE_SMALL_DATASETS]
   - pattern: "multi/start_here"
     unset: [PYAUTO_WORKSPACE_SMALL_DATASETS]
+  # guides/results/start_here.py must produce real samples so the example
+  # scripts that read from `output/results_folder` afterwards
+  # (data_fitting, queries, models, samples_via_aggregator) find a
+  # non-empty aggregator. Covers all scripts under guides/results/.
+  - pattern: "guides/results/"
+    unset: [PYAUTOFIT_TEST_MODE]
