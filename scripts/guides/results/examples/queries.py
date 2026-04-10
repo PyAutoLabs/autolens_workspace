@@ -115,17 +115,6 @@ agg_query = agg.query(lens.mass == al.mp.Isothermal)
 print("Total Samples Objects via `Isothermal` model query = ", len(agg_query), "\n")
 
 """
-We can also query the model on whether a component is None, which was the case for the `disk` we created the source
-galaxy using. 
-
-When performing model comparison with search-chaining pipelines, it is common for certain components to be included or 
-omitted via a `None`. Querying via `None` therefore allows us to load the results of different model-fits.
-"""
-source = agg.model.galaxies.source
-agg_query = agg.query(source.disk == None)
-print("Total Samples Objects via `Isothermal` model query = ", len(agg_query), "\n")
-
-"""
 Queries using the results of model-fitting are also supported. Below, we query the database to find all fits where the 
 inferred value of `sersic_index` for the `Sersic` of the source's bulge is less than 3.0 (which returns only 
 the first of the three model-fits).
