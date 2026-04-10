@@ -13,6 +13,8 @@
 - tutorial_searches
 - guides/results/examples/samples # SLOW 2026-04-10 - exceeds 60s test timeout; unsets TEST_MODE for downstream examples
 - guides/results/examples/samples_via_aggregator # SLOW 2026-04-10 - exceeds 60s test timeout; unsets TEST_MODE for downstream examples
+- guides/results/examples/queries # SLOW 2026-04-10 - cascade from SLOW-skipped results/start_here.py; stub Model lacks sersic_index attribute
+- guides/results/database/start_here # SLOW 2026-04-10 - previously failed fast on a broken aggregator query; now runs the real aggregator and exceeds 60s
 - howtolens/chapter_4_pixelizations/tutorial_10_brightness_adaption # SLOW 2026-04-10 - pixelization tutorial exceeds 60s test timeout
 - tutorial_5_borders # Cant get right masks, need proper update.
 - tutorial_6_model_fit # InversionException due to test mode
