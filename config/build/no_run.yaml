@@ -9,6 +9,13 @@
 #   skipped because they exceed the 60s per-script timeout cap. These are
 #   NOT permanent skips — every mega-run surfaces them with a loud warning
 #   banner. Fix the performance issue and remove the SLOW marker.
+#
+# NEEDS_FIX convention:
+#   Entries tagged `# NEEDS_FIX <YYYY-MM-DD> - <reason>` mark scripts that
+#   are broken and parked as a to-do list. Like SLOW-skips, these are NOT
+#   permanent skips — every mega-run surfaces them with a loud warning
+#   banner. Investigate the failure, fix the underlying bug, and remove
+#   the NEEDS_FIX marker.
 
 - tutorial_searches
 - guides/results/examples/samples # SLOW 2026-04-10 - exceeds 60s test timeout; unsets TEST_MODE for downstream examples
@@ -41,3 +48,14 @@
 - imaging/features/advanced/subhalo/sensitivity/ # All sensitivity scripts need updating when visualization refactored.
 - plot/visuals # Bugged, but visuals being refactored soon.
 - point_source/features/double_einstein_cross/simulator # PointSolver finds 0 positions on small grid
+- dataset/imaging/slacs1430+4105 # Dataset folder contains data.py helper, not a runnable script
+- group/slam # NEEDS_FIX 2026-04-10 - PriorException: upper limit must be greater than lower limit in group SLaM pipeline
+- howtolens/chapter_1_introduction/tutorial_3_more_ray_tracing # NEEDS_FIX 2026-04-10 - ValueError: Axis limits cannot be NaN or Inf in plotting
+- howtolens/chapter_2_lens_modeling/tutorial_2_practicalities # NEEDS_FIX 2026-04-10 - NameError: 'af' not defined; tutorial missing ~80 lines of imports + setup boilerplate (compare tutorial_1)
+- howtolens/chapter_2_lens_modeling/tutorial_6_masking_and_positions # NEEDS_FIX 2026-04-10 - ValueError: zero-size array reduction, empty mask after pre-computed positions load
+- howtolens/chapter_4_pixelizations/tutorial_2_mappers # NEEDS_FIX 2026-04-10 - ValueError: zero-size array reduction, empty mapper array
+- imaging/data_preparation/manual/mask_irregular # NEEDS_FIX 2026-04-10 - silent failure, needs investigation
+- imaging/features/pixelization/delaunay # NEEDS_FIX 2026-04-10 - autofit.exc.FitException in Delaunay pixelization fit
+- imaging/features/pixelization/slam # NEEDS_FIX 2026-04-10 - autofit.exc.FitException in SLaM pixelization pipeline
+- interferometer/features/pixelization/delaunay # NEEDS_FIX 2026-04-10 - broadcast shape mismatch (2,2) vs (1032,1032) in Delaunay interferometer
+- multi/features/wavelength_dependence/modeling # NEEDS_FIX 2026-04-10 - autofit.exc.FitException in multi-wavelength modeling
