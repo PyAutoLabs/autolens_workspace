@@ -420,7 +420,6 @@ def source_lp_secondary(
                 redshift=redshift_lens,
                 bulge=light_result.instance.galaxies.lens.bulge,
                 disk=None,
-                point=light_result.instance.galaxies.lens.point,
                 mass=mass_result.instance.galaxies.lens.mass,
                 shear=mass_result.instance.galaxies.lens.shear,
             ),
