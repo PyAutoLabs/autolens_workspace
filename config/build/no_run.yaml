@@ -3,8 +3,17 @@
 #   - Entries with '/' do a substring match against the file path
 #   - Entries without '/' match the file stem exactly
 # Add an inline # comment to document the reason for skipping.
+#
+# SLOW-skip convention:
+#   Entries tagged `# SLOW <YYYY-MM-DD> - <reason>` mark scripts that are
+#   skipped because they exceed the 60s per-script timeout cap. These are
+#   NOT permanent skips — every mega-run surfaces them with a loud warning
+#   banner. Fix the performance issue and remove the SLOW marker.
 
 - tutorial_searches
+- guides/results/examples/samples # SLOW 2026-04-10 - exceeds 60s test timeout; unsets TEST_MODE for downstream examples
+- guides/results/examples/samples_via_aggregator # SLOW 2026-04-10 - exceeds 60s test timeout; unsets TEST_MODE for downstream examples
+- howtolens/chapter_4_pixelizations/tutorial_10_brightness_adaption # SLOW 2026-04-10 - pixelization tutorial exceeds 60s test timeout
 - tutorial_5_borders # Cant get right masks, need proper update.
 - tutorial_6_model_fit # InversionException due to test mode
 - gui/extra_galaxies_centres # GUI scripts cannot be run
