@@ -20,7 +20,7 @@ python scripts/imaging/modeling/start_here.py
 
 ## Testing
 
-Set `PYAUTOFIT_TEST_MODE=1` so non-linear searches skip actual sampling (fast test run).
+Set `PYAUTO_TEST_MODE=1` so non-linear searches skip actual sampling (fast test run).
 
 Run all scripts:
 
@@ -28,7 +28,7 @@ Run all scripts:
 bash run_all_scripts.sh
 ```
 
-This sets `PYAUTOFIT_TEST_MODE=1` automatically, runs every script in `scripts/`, and reports pass/fail/skipped counts. Failure logs are written to `failed/<relative_path>.log`.
+This sets `PYAUTO_TEST_MODE=1` automatically, runs every script in `scripts/`, and reports pass/fail/skipped counts. Failure logs are written to `failed/<relative_path>.log`.
 
 ### Script ordering
 

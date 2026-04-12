@@ -297,7 +297,7 @@ modeling scripts (e.g. SLaM pipeline) to help the non-linear search converge.
 """
 import os
 
-small_datasets = os.environ.pop("PYAUTO_WORKSPACE_SMALL_DATASETS", None)
+small_datasets = os.environ.pop("PYAUTO_SMALL_DATASETS", None)
 
 solver = al.PointSolver.for_grid(
     grid=al.Grid2D.uniform(shape_native=(500, 500), pixel_scales=0.1),
@@ -310,7 +310,7 @@ positions = solver.solve(
 )
 
 if small_datasets is not None:
-    os.environ["PYAUTO_WORKSPACE_SMALL_DATASETS"] = small_datasets
+    os.environ["PYAUTO_SMALL_DATASETS"] = small_datasets
 
 al.output_to_json(
     obj=positions,
