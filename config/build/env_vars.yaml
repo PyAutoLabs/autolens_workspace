@@ -30,6 +30,15 @@ overrides:
     unset: [PYAUTO_SMALL_DATASETS]
   - pattern: "multi/start_here"
     unset: [PYAUTO_SMALL_DATASETS]
+  # Non-simulator scripts that load committed FITS data need full-size
+  # datasets to avoid shape mismatch with pre-existing 100x100 data.
+  # Simulators run first and regenerate data at the capped size, but
+  # scripts using the old `if not dataset_path.exists()` pattern skip
+  # re-simulation when data already exists.
+  - pattern: "howtolens/"
+    unset: [PYAUTO_SMALL_DATASETS]
+  - pattern: "guides/"
+    unset: [PYAUTO_SMALL_DATASETS]
   # guides/results/start_here.py must produce real samples so the example
   # scripts that read from `output/results_folder` afterwards
   # (data_fitting, queries, models, samples_via_aggregator) find a
