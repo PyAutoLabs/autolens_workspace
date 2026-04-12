@@ -13,7 +13,7 @@ You are working on the **autolens_workspace**, a tutorial/example repository for
 
 ## Testing
 
-`run_all_scripts.sh` sets `PYAUTOFIT_TEST_MODE=1` automatically. Every script should pass in this mode. A script that fails in test mode indicates a real problem (broken import, wrong function name, etc.).
+`run_all_scripts.sh` sets `PYAUTO_TEST_MODE=1` automatically. Every script should pass in this mode. A script that fails in test mode indicates a real problem (broken import, wrong function name, etc.).
 
 ## Notebook Generation
 

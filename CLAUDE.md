@@ -24,19 +24,19 @@ Scripts are run from the repository root so relative paths to `dataset/` and `ou
 python scripts/imaging/modeling/start_here.py
 ```
 
-**Integration testing / fast mode**: Set `PYAUTOFIT_TEST_MODE=1` to skip non-linear search sampling:
+**Integration testing / fast mode**: Set `PYAUTO_TEST_MODE=1` to skip non-linear search sampling:
 
 ```bash
-PYAUTOFIT_TEST_MODE=1 python scripts/imaging/modeling/start_here.py
+PYAUTO_TEST_MODE=1 python scripts/imaging/modeling/start_here.py
 ```
 
-**Fast smoke tests**: For maximum speed, combine test mode with small datasets and fast plots:
+**Fast smoke tests**: For maximum speed, combine test mode with all skip flags and small datasets:
 
 ```bash
-PYAUTOFIT_TEST_MODE=2 PYAUTO_WORKSPACE_SMALL_DATASETS=1 PYAUTO_FAST_PLOTS=1 python scripts/imaging/modeling.py
+PYAUTO_TEST_MODE=2 PYAUTO_SKIP_FIT_OUTPUT=1 PYAUTO_SKIP_VISUALIZATION=1 PYAUTO_SKIP_CHECKS=1 PYAUTO_SMALL_DATASETS=1 PYAUTO_FAST_PLOTS=1 python scripts/imaging/modeling.py
 ```
 
-- `PYAUTO_WORKSPACE_SMALL_DATASETS=1` — caps all grids/masks to 15x15 pixels at 0.6"/px, making simulators and all downstream computations dramatically faster. Delete `dataset/` when toggling this variable.
+- `PYAUTO_SMALL_DATASETS=1` — caps all grids/masks to 15x15 pixels at 0.6"/px, making simulators and all downstream computations dramatically faster. Delete `dataset/` when toggling this variable.
 - `PYAUTO_FAST_PLOTS=1` — skips `plt.tight_layout()` and critical curve/caustic overlay computation in subplot functions.
 
 **Codex / sandboxed runs**: when running from Codex or any restricted environment, set writable cache directories so `numba` and `matplotlib` do not fail on unwritable home or source-tree paths:
