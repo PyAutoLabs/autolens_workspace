@@ -27,64 +27,9 @@ If any code in this script is unclear, refer to the `data_preparation/start_here
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
-# %matplotlib inline
-# from pyprojroot import here
-# workspace_path = str(here())
-# %cd $workspace_path
-# print(f"Working Directory has been set to `{workspace_path}`")
+# from autoconf import setup_notebook; setup_notebook()
 
 from pathlib import Path
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
-# %matplotlib inline
-
-"""
-The path where info is output, which is `dataset/imaging/simple__no_lens_light`
-"""
-dataset_type = "imaging"
-dataset_name = "simple__no_lens_light"
-dataset_path = Path("dataset", dataset_type, dataset_name)
-
-"""
-The info is written as a Python dictionary and can have as many entries as desired added to it. Any information you
-want to include int he interpretation of your lens models should be included here.
-"""
-info = {
-    "redshift_lens": 0.5,
-    "redshift_source": 1.0,
-    "velocity_dispersion": 250000,
-    "stellar mass": 1e11,
-}
-
-"""
-The info is stored in the dataset folder as a .json file. 
-
-We cannot `dump` a .json file using a string which contains a directory, so we dump it to the location of this
-script and move it to the appropriate dataset folder. We first delete existing info file in the dataset folder.
-"""
-import os
-import shutil
-import json
-
-info_file = "info.json"
-
-with open(info_file, "w+") as f:
-    json.dump(info, f, indent=4)
-
-if os.path.exists(Path(dataset_path, "info.json")):
-    os.remove(Path(dataset_path, "info.json"))
-
-shutil.move("info.json", Path(dataset_path, "info.json"))
-
-"""
-For the info to be available to the results of a model-fit, the modeling script must load the info file from the .json and 
-pass it to the search.run() or pipeline.run() function:
-
-info_file = Path(dataset_path, "info.json")
-
-with open(info_file, "r") as f:
-    info = json.load(f)
-
-result = search.fit(model=model, analysis=analysis, info=info)
-"""

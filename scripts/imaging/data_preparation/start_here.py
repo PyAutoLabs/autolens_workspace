@@ -32,11 +32,7 @@ It is absolutely vital you use the correct pixel scale, so double check this val
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
-# %matplotlib inline
-# from pyprojroot import here
-# workspace_path = str(here())
-# %cd $workspace_path
-# print(f"Working Directory has been set to `{workspace_path}`")
+# from autoconf import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autolens as al

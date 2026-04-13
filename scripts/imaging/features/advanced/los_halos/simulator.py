@@ -42,11 +42,7 @@ This script simulates ``Imaging`` of a galaxy-scale strong lens where:
 
 from autoconf import jax_wrapper
 
-# %matplotlib inline
-# from pyprojroot import here
-# workspace_path = str(here())
-# %cd $workspace_path
-# print(f"Working Directory has been set to `{workspace_path}`")
+# from autoconf import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import numpy as np
