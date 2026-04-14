@@ -58,7 +58,7 @@ __Other Models__
 This tutorial does not use a pixelized source reconstruction or linear light profiles, which have their own dediciated
 functionality that interfacts with the `FitImaging` object.
 
-These are described in the dedicated example scripts `results/examples/linear.py` and `results/examples/pixelizaiton.py`.
+These are described in the dedicated example scripts `results/aggregator/linear.py` and `results/aggregator/pixelizaiton.py`.
 
 __Start Here Notebook__
 
@@ -349,7 +349,7 @@ The image above is returned as a 1D numpy array.
 **PyAutoLens** includes dedicated functionality for manipulating this array, for example mapping it to 2D or
 performing the calculation on a high resolution sub-grid which is then binned up. 
 
-This uses the data structure API, which is described in the `results/examples/data_structures.py` example. This 
+This uses the data structure API, which is described in the `results/aggregator/data_structures.py` example. This 
 tutorial will avoid using this API, but if you need to manipulate results in more detail you should check it out.
 """
 print(image.slim)
@@ -458,7 +458,7 @@ Many lensing quantities are vectors. That is, they are (y,x) coordinates that ha
 magnitudes in both the y and x directions.
 
 These quantities also have a dedicated data structure which is described fully in 
-the `results/examples/data_structure.py` example.
+the `results/aggregator/data_structure.py` example.
 
 The most obvious of these is the deflection angles, which are used throughout lens modeling to ray-trace grids
 from the image-plane to the source-plane via a lens galaxy mass model.

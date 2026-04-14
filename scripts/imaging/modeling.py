@@ -541,6 +541,35 @@ mass its name `mass` defined when making the `Model` above is used).
 aplt.corner_anesthetic(samples=result.samples)
 
 """
+__Loading From Output Folder__
+
+Everything the `Result` object contains has also been written to hard-disk, inside the fit's output folder. Each
+file loads back into a full Python object with a single line — much faster and simpler than re-running the fit.
+
+For example, the maximum log likelihood `Tracer` is saved as a `.json` file and the tracer image-plane images as
+a `.fits` file:
+"""
+from autoconf.dictable import from_json
+
+result_path = search.paths.output_path  # Points at the fit's unique output folder.
+
+if (result_path / "files" / "tracer.json").exists():
+    tracer = from_json(file_path=result_path / "files" / "tracer.json")
+
+    tracer_fits = al.Array2D.from_fits(
+        file_path=result_path / "image" / "tracer.fits", hdu=0, pixel_scales=0.1
+    )
+
+"""
+The output folder also contains `model.json`, `samples.csv`, `dataset.fits`, `fit.fits` and more. A full walkthrough
+of loading results from the output folder is given in:
+
+  `autolens_workspace/*/guides/results/start_here.py`
+
+For multi-fit, memory-efficient workflows using the aggregator instead, see:
+
+  `autolens_workspace/*/guides/results/aggregator/start_here.py`
+
 __Source Science (Magnification, Flux and More)__
 
 Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).

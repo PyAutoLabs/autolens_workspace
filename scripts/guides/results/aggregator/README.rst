@@ -1,4 +1,4 @@
-The ``results/examples`` folder contains example scripts for using the results of a **PyAutoLens** model-fit.
+The ``results/aggregator`` folder contains example scripts for using the results of a **PyAutoLens** model-fit.
 
 Files
 -----
