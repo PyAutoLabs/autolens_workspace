@@ -111,13 +111,17 @@ class Isothermal(MassProfile):
         self.slope = 2.0
 
     @aa.grid_dec.to_vector_yx
-    @aa.grid_dec.transform
+    @aa.grid_dec.transform(rotate_back=True)
     def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike, xp=np, **kwargs):
         """
         Calculate the deflection angles on a grid of (y,x) arc-second coordinates.
 
         The input grid of (y,x) coordinates are transformed to a coordinate system centred on the profile centre with
         and rotated based on the position angle defined from its `ell_comps` (this is described fully below).
+
+        Because this method computes deflection components using the rotated grid coordinates (i.e. the
+        components are expressed in the profile's frame), ``rotate_back=True`` is set so the decorator
+        automatically rotates them back to the observer frame.
 
         The numerical backend can be selected via the ``xp`` argument, allowing this
         method to be used with both NumPy and JAX (e.g. inside ``jax.jit``-compiled
@@ -154,11 +158,7 @@ class Isothermal(MassProfile):
                 psi,
             )
         )
-        return self.rotated_grid_from_reference_frame_from(
-            grid=xp.multiply(factor, xp.vstack((deflection_y, deflection_x)).T),
-            xp=xp,
-            **kwargs,
-        )
+        return xp.multiply(factor, xp.vstack((deflection_y, deflection_x)).T)
 
 
 """
@@ -446,11 +446,29 @@ mass.deflections_yx_2d_from(grid=grid)
 """
 __Do I Rotate Back?__
 
-The ``aa.grid_dec.transform`` decorator does not rotate the deflection angles back to the original reference frame.
+Whether the returned result needs back-rotation depends on what kind of quantity the function returns
+and which coordinate frame its components are expressed in.
 
-This is because deflection angles are typically applied in the same reference frame as the mass profile itself, 
-making such a rotation unnecessary. When implementing a custom mass profile, you should therefore ensure that any
-required rotation of the deflection angles is correctly accounted for after they are calculated.
+**Scalars** (convergence, potential): frame-invariant — no back-rotation needed.
+
+**Vectors** (deflection angles): it depends on how the function computes them. The ``@aa.grid_dec.transform``
+decorator transforms the input grid into the profile's rotated reference frame. If the function then computes
+deflection components ``(alpha_y, alpha_x)`` using that rotated grid — as the ``Isothermal`` example above does —
+those components are expressed in the profile's frame. Since the ray-tracing code expects observer-frame
+components, they must be rotated back. Setting ``rotate_back=True`` handles this automatically by calling
+``self.rotated_grid_from_reference_frame_from(...)`` on the result.
+
+However, back-rotation is **not** always needed for vectors. If a function computes a scalar quantity in the
+profile frame (e.g. a radial deflection magnitude) and then reconstructs the Cartesian vector using
+observer-frame geometry, the result is already in the observer frame. In that case, ``rotate_back`` should
+remain ``False``.
+
+The rule is: look at which coordinate basis the returned components are expressed in. If they use the rotated
+basis, set ``rotate_back=True``. If they are already observer-frame components, leave it as ``False``.
+
+**Spin-2 quantities** (shear): these transform under a coordinate rotation by twice the profile angle (the
+spin-2 transformation law). This is not handled by ``rotate_back`` — shear methods must apply the ``2 * angle``
+rotation manually via ``self.rotated_grid_from_reference_frame_from(grid=..., angle=self.angle(xp) * 2)``.
 
 __Lens Modeling__
 
@@ -579,10 +597,15 @@ class TemplateMass(EllProfile):
         # super().__init__(centre=centre, ell_comps=(0.0, 0.0))
 
     @aa.grid_dec.to_vector_yx
-    @aa.grid_dec.transform
+    @aa.grid_dec.transform(rotate_back=True)
     def deflections_yx_2d_from(self, grid: aa.type.Grid2DLike, xp=np, **kwargs):
         """
         REQUIRED: The function is key for all lensing calculations and must be implemented.
+
+        Set ``rotate_back=True`` if your function computes deflection components using the rotated
+        grid coordinates (i.e. the components are expressed in the profile's frame). The decorator
+        will rotate them back to the observer frame automatically. If your function reconstructs
+        observer-frame components from scalar quantities, leave ``rotate_back=False``.
         """
         pass
 

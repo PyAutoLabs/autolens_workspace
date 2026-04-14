@@ -195,7 +195,7 @@ to read. We then use the PyAutoLens Model API to compose the overall lens model.
 """
 # Main Lens Galaxies:
 
-lens_models = []
+lens_dict = {}
 
 for i, centre in enumerate(main_lens_centres):
 
@@ -209,15 +209,13 @@ for i, centre in enumerate(main_lens_centres):
     mass = af.Model(al.mp.Isothermal)
     mass.centre = (centre[0], centre[1])
 
-    lens = af.Model(
+    lens_dict[f"lens_{i}"] = af.Model(
         al.Galaxy,
         redshift=0.5,
         bulge=bulge,
         mass=mass,
         shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
-
-    lens_models.append(lens)
 
 # Source:
 
@@ -232,10 +230,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-lens_dict["source"] = source
-
-model = af.Collection(galaxies=af.Collection(**lens_dict))
+model = af.Collection(galaxies=af.Collection(**lens_dict, source=source))
 
 """
 We can print the model to show the parameters that the model is composed of, which shows many of the MGE's fixed

@@ -262,7 +262,7 @@ extra_galaxies_centres = al.from_json(
 
 # Main Lens Galaxies:
 
-lens_models = []
+lens_dict = {}
 
 for i, centre in enumerate(main_lens_centres):
 
@@ -270,15 +270,13 @@ for i, centre in enumerate(main_lens_centres):
 
     mass = af.Model(al.mp.Isothermal)
 
-    lens = af.Model(
+    lens_dict[f"lens_{i}"] = af.Model(
         al.Galaxy,
         redshift=0.5,
         bulge=bulge,
         mass=mass,
         shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
-
-    lens_models.append(lens)
 
 # Extra Galaxies:
 
@@ -313,11 +311,8 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-lens_dict["source"] = source
-
 model = af.Collection(
-    galaxies=af.Collection(**lens_dict),
+    galaxies=af.Collection(**lens_dict, source=source),
     extra_galaxies=extra_galaxies,
 )
 
@@ -393,7 +388,7 @@ with uniform centre priors, while extra galaxies use 10 Gaussians with centres f
 """
 # Main Lens Galaxies:
 
-lens_models = []
+lens_dict = {}
 
 for i, centre in enumerate(main_lens_centres):
 
@@ -403,15 +398,13 @@ for i, centre in enumerate(main_lens_centres):
 
     mass = af.Model(al.mp.Isothermal)
 
-    lens = af.Model(
+    lens_dict[f"lens_{i}"] = af.Model(
         al.Galaxy,
         redshift=0.5,
         bulge=bulge,
         mass=mass,
         shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
-
-    lens_models.append(lens)
 
 # Extra Galaxies:
 
@@ -453,11 +446,8 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-lens_dict["source"] = source
-
 model = af.Collection(
-    galaxies=af.Collection(**lens_dict),
+    galaxies=af.Collection(**lens_dict, source=source),
     extra_galaxies=extra_galaxies,
 )
 

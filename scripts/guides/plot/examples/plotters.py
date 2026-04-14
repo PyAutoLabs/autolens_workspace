@@ -46,6 +46,7 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 # from autoconf import setup_notebook; setup_notebook()
 
 import matplotlib.pyplot as plt
+import numpy as np
 from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
@@ -279,12 +280,13 @@ plt.show()
 plt.close()
 
 """
-Using a `Grid1D` which starts from 0.0" plots the 1D quantity with both negative and positive radial coordinates.
+Using a radial grid of (y,x) coordinates along the x-axis plots the 1D radial profile.
 """
-grid_1d = al.Grid1D.uniform_from_zero(shape_native=(10000,), pixel_scales=0.01)
-image_1d = bulge.image_2d_from(grid=grid_1d)
+radii = np.arange(10000) * 0.01
+grid_radial = al.Grid2DIrregular(values=[(0.0, r) for r in radii])
+image_1d = bulge.image_2d_from(grid=grid_radial)
 
-plt.plot(grid_1d, image_1d)
+plt.plot(radii, image_1d)
 plt.xlabel("Radius (arcseconds)")
 plt.ylabel("Luminosity")
 plt.show()
