@@ -29,7 +29,7 @@ This script fits an ``Imaging`` dataset of a 'group-scale' strong lens where:
 
  - Each main lens galaxy's light is a linear ``Sersic`` bulge plus an operated linear ``Gaussian`` PSF component.
  - The first main lens galaxy's total mass distribution is an ``Isothermal`` and ``ExternalShear``.
- - There are two extra lens galaxies with linear operated ``SersicSph`` light and ``IsothermalSph`` total mass
+ - There are two extra lens galaxies with linear operated ``Sersic`` light and ``IsothermalSph`` total mass
    distributions, with centres fixed to the observed centres of light.
  - The source galaxy's light is a linear ``SersicCore`` (which IS convolved with the PSF as normal).
 
@@ -142,7 +142,7 @@ We compose a group lens model where:
 
  - The main lens galaxy's total mass distribution is an ``Isothermal`` and ``ExternalShear``.
 
- - The extra galaxies use linear operated ``SersicSph`` light profiles. Because the data was simulated with
+ - The extra galaxies use linear operated ``Sersic`` light profiles. Because the data was simulated with
    operated profiles for these galaxies, we model them with the same type. Their centres are fixed to the
    observed centres of light.
 

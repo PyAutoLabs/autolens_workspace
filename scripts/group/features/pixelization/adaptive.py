@@ -225,10 +225,9 @@ pixelization = af.Model(
 )
 
 source_2 = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
-lens_dict_2["source"] = source_2
 
 model_2 = af.Collection(
-    galaxies=af.Collection(**lens_dict_2),
+    galaxies=af.Collection(**lens_dict_2, source=source_2),
     extra_galaxies=result_1.model.extra_galaxies,
 )
 
@@ -283,10 +282,9 @@ pixelization_3 = af.Model(
 )
 
 source_3 = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization_3)
-lens_dict_3["source"] = source_3
 
 model_3 = af.Collection(
-    galaxies=af.Collection(**lens_dict_3),
+    galaxies=af.Collection(**lens_dict_3, source=source_3),
     extra_galaxies=result_2.instance.extra_galaxies,
 )
 
@@ -323,20 +321,19 @@ __Search 4: Free Mass Model__
 
 Finally, we refit the lens mass model with the adaptive pixelization fixed from search 3.
 """
-lens_models_4 = []
+lens_dict_4 = {}
 for i, _ in enumerate(main_lens_centres):
     bulge_i = getattr(result_2.instance.galaxies, f"lens_{i}").bulge
 
     mass = af.Model(al.mp.Isothermal)
 
-    lens = af.Model(
+    lens_dict_4[f"lens_{i}"] = af.Model(
         al.Galaxy,
         redshift=0.5,
         bulge=bulge_i,
         mass=mass,
         shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
-    lens_models_4.append(lens)
 
 extra_galaxies_4_list = []
 for centre in extra_galaxies_centres:
@@ -354,11 +351,8 @@ source_4 = af.Model(
     pixelization=result_3.instance.galaxies.source.pixelization,
 )
 
-lens_dict_4 = {f"lens_{i}": m for i, m in enumerate(lens_models_4)}
-lens_dict_4["source"] = source_4
-
 model_4 = af.Collection(
-    galaxies=af.Collection(**lens_dict_4),
+    galaxies=af.Collection(**lens_dict_4, source=source_4),
     extra_galaxies=extra_galaxies_4,
 )
 

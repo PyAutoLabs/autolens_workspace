@@ -112,13 +112,11 @@ def source_lp(
 
         mass = af.Model(al.mp.Isothermal)
 
-        lens_models.append(
-            af.Model(
-                al.Galaxy,
-                redshift=redshift_lens,
-                mass=mass,
-                shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
-            )
+        lens_dict[f"lens_{i}"] = af.Model(
+            al.Galaxy,
+            redshift=redshift_lens,
+            mass=mass,
+            shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
         )
 
     # --- extra galaxy mass models (no light) ---
@@ -144,7 +142,7 @@ def source_lp(
     )
 
     n_extra = len(extra_galaxies) if extra_galaxies is not None else 0
-    n_live = 150 + 30 * len(lens_models) + 30 * n_extra
+    n_live = 150 + 30 * len(lens_dict) + 30 * n_extra
 
     search = af.Nautilus(
         name="source_lp[1]",

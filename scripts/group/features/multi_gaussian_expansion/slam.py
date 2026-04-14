@@ -239,8 +239,10 @@ def light_lp(
 
     # Source (fixed from SOURCE LP):
 
-    source = al.util.chaining.source_custom_model_from(
-        result=source_lp_result, source_is_model=False
+    source = af.Model(
+        al.Galaxy,
+        redshift=source_lp_result.instance.galaxies.source.redshift,
+        bulge=source_lp_result.instance.galaxies.source.bulge,
     )
 
     # Overall Lens Model:
@@ -283,7 +285,7 @@ def mass_total(
     redshift_lens: float,
     n_batch: int = 20,
 ) -> af.Result:
-    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisImaging(dataset=dataset)
 
     n_main = sum(
         1 for k in vars(light_result.instance.galaxies) if k.startswith("lens_")
@@ -339,7 +341,11 @@ def mass_total(
 
     # Source (fixed from SOURCE LP):
 
-    source = al.util.chaining.source_from(result=source_lp_result)
+    source = af.Model(
+        al.Galaxy,
+        redshift=source_lp_result.instance.galaxies.source.redshift,
+        bulge=source_lp_result.model.galaxies.source.bulge,
+    )
 
     # Overall Lens Model:
 

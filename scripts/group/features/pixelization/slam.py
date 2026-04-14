@@ -17,10 +17,10 @@ The SLaM pipeline makes the following pixelization-specific decisions:
    along a space-filling Hilbert curve. The pixel count is set automatically based on the data's pixel scale
    via `al.model_util.hilbert_pixels_from_pixel_scale`. This ensures the mesh resolution scales with data quality.
 
- - **AdaptSplit regularization**: Rather than constant regularization, `AdaptSplit` adapts the smoothing
+ - **Adapt regularization**: Rather than constant regularization, `Adapt` adapts the smoothing
    to the source morphology. Bright source regions receive less smoothing (preserving detail) while faint
-   regions receive more smoothing (suppressing noise). This is the recommended regularization for science-grade
-   fits.
+   regions receive more smoothing (suppressing noise). Rectangular pixelizations use `Adapt` (not
+   `AdaptSplit`, which is only appropriate for irregular meshes such as Delaunay or Voronoi).
 
  - **Edge pixels**: The Hilbert mesh includes `edge_pixels_total=30` padding pixels at the border of the
    source-plane reconstruction, preventing edge artifacts.
@@ -57,7 +57,7 @@ where in the final model:
 
  - Each main lens galaxy has a free MGE bulge and a `PowerLaw` total mass.
  - Each extra galaxy has a free MGE bulge and a luminosity-bounded `Isothermal` mass.
- - The source galaxy's light is a `Hilbert` `Pixelization` with `AdaptSplit` regularization.
+ - The source galaxy's light is a rectangular adaptive `Pixelization` with `Adapt` regularization.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
@@ -101,8 +101,8 @@ def source_lp_0(
     analysis = al.AnalysisImaging(dataset=dataset)
 
     # --- main lens light models (one per centre, light only) ---
-    lens_light_models = []
-    for centre in main_lens_centres:
+    lens_dict = {}
+    for i, centre in enumerate(main_lens_centres):
         bulge = al.model_util.mge_model_from(
             mask_radius=mask_radius,
             total_gaussians=30,
@@ -111,10 +111,8 @@ def source_lp_0(
             centre=(centre[0], centre[1]),
             centre_sigma=0.1,
         )
-        lens_light_models.append(
-            af.Model(
-                al.Galaxy, redshift=redshift_lens, bulge=bulge, disk=None, point=None
-            )
+        lens_dict[f"lens_{i}"] = af.Model(
+            al.Galaxy, redshift=redshift_lens, bulge=bulge, disk=None, point=None
         )
 
     # --- extra lens galaxy light models ---
@@ -134,9 +132,9 @@ def source_lp_0(
     extra_galaxies = af.Collection(extra_light_models) if extra_light_models else None
 
     n_extra = len(extra_galaxies) if extra_galaxies is not None else 0
-    n_live = 100 + 30 * len(lens_light_models) + 30 * n_extra
+    n_live = 100 + 30 * len(lens_dict) + 30 * n_extra
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict, source=source),
+        galaxies=af.Collection(**lens_dict),
         extra_galaxies=extra_galaxies,
     )
 
@@ -201,7 +199,7 @@ def source_lp_1(
     )
 
     # --- main lens full models (light fixed from stage 0, mass + shear free) ---
-    lens_full_models = []
+    lens_dict = {}
     for i in range(n_main):
         lp0_lens = getattr(source_lp_result_0.instance.galaxies, f"lens_{i}")
 
@@ -209,16 +207,14 @@ def source_lp_1(
         mass.centre = lp0_lens.bulge.centre
         mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=5.0)
 
-        lens_full_models.append(
-            af.Model(
-                al.Galaxy,
-                redshift=redshift_lens,
-                bulge=lp0_lens.bulge,
-                disk=lp0_lens.disk,
-                point=lp0_lens.point,
-                mass=mass,
-                shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
-            )
+        lens_dict[f"lens_{i}"] = af.Model(
+            al.Galaxy,
+            redshift=redshift_lens,
+            bulge=lp0_lens.bulge,
+            disk=lp0_lens.disk,
+            point=lp0_lens.point,
+            mass=mass,
+            shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
         )
 
     # --- extra lens galaxy models (light fixed, mass bounded by luminosity) ---
@@ -274,13 +270,13 @@ def source_lp_1(
 __SOURCE PIX PIPELINE 1__
 
 This is where the pixelization is first introduced. The source switches from a parametric MGE to a
-Hilbert pixelization with AdaptSplit regularization.
+rectangular adaptive pixelization with `Adapt` regularization.
 
 Key pixelization choices:
- - `al.mesh.Hilbert`: A space-filling curve mesh that distributes source pixels efficiently.
- - Pixel count from `al.model_util.hilbert_pixels_from_pixel_scale`: scales with data resolution.
- - `edge_pixels_total=30`: padding pixels at source-plane boundaries to prevent edge artifacts.
- - `al.reg.AdaptSplit`: adaptive regularization that varies smoothing based on source brightness.
+ - `al.mesh.RectangularAdaptDensity`: a rectangular mesh whose cell density adapts to the source brightness.
+ - Fixed `mesh_shape = (28, 28)` pixels, chosen to match data resolution.
+ - `al.reg.Adapt`: adaptive regularization that varies smoothing based on source brightness.
+   Rectangular meshes use `Adapt` (not `AdaptSplit`, which is reserved for irregular meshes).
 
 Signal-adaptive over-sampling is applied: pixels above the S/N threshold use sub_size=4, others sub_size=2.
 """
@@ -297,21 +293,11 @@ def source_pix_1(
     positions,
     n_batch=20,
 ):
-    hilbert_pixels = al.model_util.hilbert_pixels_from_pixel_scale(pixel_scale)
-    edge_pixels_total = 30
-    signal_to_noise_threshold = 3.0
-
-    # Signal-adaptive over-sampling for the pixelization grid.
-    over_sample_size_pixelization = al.util.over_sample.over_sample_size_via_signal_to_noise_from(
-        signal_to_noise_map=dataset.signal_to_noise_map,
-        sub_size_lower=2,
-        sub_size_upper=4,
-        signal_to_noise_threshold=signal_to_noise_threshold,
-    )
+    mesh_shape = (28, 28)
 
     dataset = dataset.apply_over_sampling(
         over_sample_size_lp=over_sample_size,
-        over_sample_size_pixelization=over_sample_size_pixelization,
+        over_sample_size_pixelization=4,
     )
 
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
@@ -346,17 +332,15 @@ def source_pix_1(
             unfix_mass_centre=True,
         )
 
-        lens_models.append(
-            af.Model(
-                al.Galaxy,
-                redshift=prev_lens.redshift,
-                bulge=prev_lens.bulge,
-                disk=prev_lens.disk,
-                mass=mass,
-                shear=source_lp_result_1.model.galaxies.lens_0.shear
-                if i == 0
-                else None,
-            )
+        lens_dict[f"lens_{i}"] = af.Model(
+            al.Galaxy,
+            redshift=prev_lens.redshift,
+            bulge=prev_lens.bulge,
+            disk=prev_lens.disk,
+            mass=mass,
+            shear=source_lp_result_1.model.galaxies.lens_0.shear
+            if i == 0
+            else None,
         )
 
     # Extra galaxies: carried forward as model parameters.
@@ -366,15 +350,11 @@ def source_pix_1(
         else None
     )
 
-    # Source: Hilbert pixelization with AdaptSplit regularization.
+    # Source: RectangularAdaptDensity mesh with Adapt regularization.
     pixelization = af.Model(
         al.Pixelization,
-        mesh=af.Model(
-            al.mesh.Hilbert,
-            pixels=hilbert_pixels,
-            edge_pixels_total=edge_pixels_total,
-        ),
-        regularization=af.Model(al.reg.AdaptSplit),
+        mesh=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+        regularization=af.Model(al.reg.Adapt),
     )
 
     source = af.Model(
@@ -417,8 +397,7 @@ def source_pix_2(
     pixel_scale,
     n_batch=20,
 ):
-    hilbert_pixels = al.model_util.hilbert_pixels_from_pixel_scale(pixel_scale)
-    edge_pixels_total = 30
+    mesh_shape = (28, 28)
 
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
         result=source_pix_result_1
@@ -442,18 +421,14 @@ def source_pix_2(
     lens_dict = {}
     for i in range(n_main):
         prev_lens = getattr(source_pix_result_1.instance.galaxies, f"lens_{i}")
-        lens_models.append(prev_lens)
+        lens_dict[f"lens_{i}"] = prev_lens
 
     extra_galaxies = source_pix_result_1.instance.extra_galaxies
 
     pixelization = af.Model(
         al.Pixelization,
-        mesh=af.Model(
-            al.mesh.Hilbert,
-            pixels=hilbert_pixels,
-            edge_pixels_total=edge_pixels_total,
-        ),
-        regularization=af.Model(al.reg.AdaptSplit),
+        mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
+        regularization=af.Model(al.reg.Adapt),
     )
 
     source = af.Model(
@@ -519,14 +494,12 @@ def light_lp(
             centre_sigma=0.1,
         )
 
-        lens_models.append(
-            af.Model(
-                al.Galaxy,
-                redshift=redshift_lens,
-                bulge=bulge,
-                mass=prev_lens.mass,
-                shear=prev_lens.shear if i == 0 else None,
-            )
+        lens_dict[f"lens_{i}"] = af.Model(
+            al.Galaxy,
+            redshift=redshift_lens,
+            bulge=bulge,
+            mass=prev_lens.mass,
+            shear=prev_lens.shear if i == 0 else None,
         )
 
     # Extra galaxies: fresh MGE light, mass fixed.
@@ -620,17 +593,14 @@ def mass_total(
             unfix_mass_centre=True,
         )
 
-        lens_models.append(
-            af.Model(
-                al.Galaxy,
-                redshift=redshift_lens,
-                bulge=light_lens.bulge,
-                disk=light_lens.disk,
-                mass=mass,
-                shear=source_pix_result_1.model.galaxies.lens_0.shear
-                if i == 0
-                else None,
-            )
+        lens_dict[f"lens_{i}"] = af.Model(
+            al.Galaxy,
+            redshift=redshift_lens,
+            bulge=light_lens.bulge,
+            mass=mass,
+            shear=source_pix_result_1.model.galaxies.lens_0.shear
+            if i == 0
+            else None,
         )
 
     # Extra galaxies: fresh mass, light fixed from LIGHT LP.
@@ -856,11 +826,10 @@ __Wrap Up__
 This script demonstrated the full SLaM pipeline for group-scale lenses with a pixelized source.
 
 The key pixelization choices are:
- - Hilbert mesh with automatic pixel count based on data resolution.
- - AdaptSplit regularization for brightness-dependent smoothing.
+ - Rectangular adaptive mesh with a fixed shape (28, 28).
+ - `Adapt` regularization for brightness-dependent smoothing.
  - Two-stage pixelization refinement with capped adapt data.
- - Signal-adaptive over-sampling for the pixelization grid.
- - Edge pixel padding to prevent boundary artifacts.
+ - Fixed pixelization over-sampling of 4.
 
 These choices are the recommended defaults for science-grade group-scale lens modeling.
 """
