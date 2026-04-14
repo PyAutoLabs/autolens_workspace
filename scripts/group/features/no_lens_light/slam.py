@@ -107,7 +107,7 @@ def source_lp(
     )
 
     # --- main lens mass models (no light) ---
-    lens_models = []
+    lens_dict = {}
     for i, centre in enumerate(main_lens_centres):
 
         mass = af.Model(al.mp.Isothermal)
@@ -134,14 +134,12 @@ def source_lp(
         )
 
     extra_galaxies = af.Collection(extra_mass_models) if extra_mass_models else None
-
-    lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-    lens_dict["source"] = af.Model(
+    source = af.Model(
         al.Galaxy, redshift=redshift_source, bulge=source_bulge
     )
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -252,7 +250,7 @@ def source_pix_1(
             shear=lp_lens_model.shear,
         )
 
-    lens_dict["source"] = af.Model(
+    source = af.Model(
         al.Galaxy,
         redshift=source_lp_result.instance.galaxies.source.redshift,
         pixelization=af.Model(
@@ -265,7 +263,7 @@ def source_pix_1(
     )
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=source_lp_result.model.extra_galaxies,
     )
 
@@ -371,7 +369,7 @@ def source_pix_2(
             shear=pix1_lens_instance.shear,
         )
 
-    lens_dict["source"] = af.Model(
+    source = af.Model(
         al.Galaxy,
         redshift=source_lp_result.instance.galaxies.source.redshift,
         pixelization=af.Model(
@@ -384,7 +382,7 @@ def source_pix_2(
     )
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=source_pix_result_1.instance.extra_galaxies,
     )
 
@@ -474,10 +472,8 @@ def mass_total(
             shear=lens_model.shear,
         )
 
-    lens_dict["source"] = source
-
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 

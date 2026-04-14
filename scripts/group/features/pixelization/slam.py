@@ -135,10 +135,8 @@ def source_lp_0(
 
     n_extra = len(extra_galaxies) if extra_galaxies is not None else 0
     n_live = 100 + 30 * len(lens_light_models) + 30 * n_extra
-
-    lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_light_models)}
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -249,14 +247,12 @@ def source_lp_1(
         )
 
     extra_galaxies = af.Collection(extra_mass_models) if extra_mass_models else None
-
-    lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_full_models)}
-    lens_dict["source"] = af.Model(
+    source = af.Model(
         al.Galaxy, redshift=redshift_source, bulge=source_bulge
     )
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -340,7 +336,7 @@ def source_pix_1(
     )
 
     # Main lens galaxies: mass as model from previous result.
-    lens_models = []
+    lens_dict = {}
     for i in range(n_main):
         prev_lens = getattr(source_lp_result_1.instance.galaxies, f"lens_{i}")
 
@@ -387,11 +383,8 @@ def source_pix_1(
         pixelization=pixelization,
     )
 
-    lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-    lens_dict["source"] = source
-
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -446,7 +439,7 @@ def source_pix_2(
     )
 
     # Main lens galaxies: mass fixed from SOURCE PIX 1.
-    lens_models = []
+    lens_dict = {}
     for i in range(n_main):
         prev_lens = getattr(source_pix_result_1.instance.galaxies, f"lens_{i}")
         lens_models.append(prev_lens)
@@ -469,11 +462,8 @@ def source_pix_2(
         pixelization=pixelization,
     )
 
-    lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-    lens_dict["source"] = source
-
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -516,7 +506,7 @@ def light_lp(
         if k.startswith("lens_")
     )
 
-    lens_models = []
+    lens_dict = {}
     for i in range(n_main):
         prev_lens = getattr(source_pix_result_1.instance.galaxies, f"lens_{i}")
 
@@ -570,11 +560,8 @@ def light_lp(
         result=source_pix_result_2, source_is_model=False
     )
 
-    lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-    lens_dict["source"] = source
-
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -622,7 +609,7 @@ def mass_total(
         if k.startswith("lens_")
     )
 
-    lens_models = []
+    lens_dict = {}
     for i in range(n_main):
         light_lens = getattr(light_result.instance.galaxies, f"lens_{i}")
 
@@ -671,11 +658,8 @@ def mass_total(
 
     source = al.util.chaining.source_from(result=source_pix_result_2)
 
-    lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-    lens_dict["source"] = source
-
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 

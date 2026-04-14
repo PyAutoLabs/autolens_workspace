@@ -130,10 +130,8 @@ def source_lp_0(
     n_extra = len(extra_galaxies) if extra_galaxies is not None else 0
     n_scaling = len(scaling_galaxies) if scaling_galaxies is not None else 0
     n_live = 100 + 30 * len(lens_light_models) + 30 * n_extra + 30 * n_scaling
-
-    lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_light_models)}
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
         scaling_galaxies=scaling_galaxies,
     )
@@ -277,14 +275,12 @@ def source_lp_1(
     scaling_galaxies = (
         af.Collection(scaling_mass_models) if scaling_mass_models else None
     )
-
-    lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_full_models)}
-    lens_dict["source"] = af.Model(
+    source = af.Model(
         al.Galaxy, redshift=redshift_source, bulge=source_bulge
     )
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
         scaling_galaxies=scaling_galaxies,
     )
@@ -403,7 +399,7 @@ def source_pix_1(
             shear=lp_lens_model.shear,
         )
 
-    lens_dict["source"] = af.Model(
+    source = af.Model(
         al.Galaxy,
         redshift=source_lp_result_1.instance.galaxies.source.redshift,
         pixelization=af.Model(
@@ -416,7 +412,7 @@ def source_pix_1(
     )
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=source_lp_result_1.model.extra_galaxies,
         scaling_galaxies=source_lp_result_1.model.scaling_galaxies,
     )
@@ -527,7 +523,7 @@ def source_pix_2(
             shear=pix1_lens_instance.shear,
         )
 
-    lens_dict["source"] = af.Model(
+    source = af.Model(
         al.Galaxy,
         redshift=source_lp_result_1.instance.galaxies.source.redshift,
         pixelization=af.Model(
@@ -540,7 +536,7 @@ def source_pix_2(
     )
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=source_pix_result_1.instance.extra_galaxies,
         scaling_galaxies=source_pix_result_1.instance.scaling_galaxies,
     )
@@ -629,10 +625,8 @@ def light_lp(
             shear=lens_instance.shear,
         )
 
-    lens_dict["source"] = source
-
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
         scaling_galaxies=source_pix_result_2.instance.scaling_galaxies,
     )
@@ -773,10 +767,8 @@ def mass_total(
             shear=lens_model.shear,
         )
 
-    lens_dict["source"] = source
-
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
         scaling_galaxies=scaling_galaxies,
     )

@@ -90,7 +90,7 @@ def source_lp(
 
     # Main Lens Galaxies:
 
-    lens_models = []
+    lens_dict = {}
 
     for i, centre in enumerate(main_lens_centres):
 
@@ -111,7 +111,7 @@ def source_lp(
             shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
         )
 
-        lens_models.append(lens)
+        lens_dict[f"lens_{i}"] = lens
 
     # Extra Galaxies:
 
@@ -147,11 +147,8 @@ def source_lp(
 
     # Overall Lens Model:
 
-    lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-    lens_dict["source"] = source
-
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -192,7 +189,7 @@ def light_lp(
 
     # Main Lens Galaxies (fresh MGE, mass fixed):
 
-    lens_models = []
+    lens_dict = {}
 
     n_main = sum(
         1 for k in vars(source_lp_result.instance.galaxies) if k.startswith("lens_")
@@ -216,7 +213,7 @@ def light_lp(
             shear=lens_instance.shear,
         )
 
-        lens_models.append(lens)
+        lens_dict[f"lens_{i}"] = lens
 
     # Extra Galaxies (fresh MGE, mass fixed):
 
@@ -248,11 +245,8 @@ def light_lp(
 
     # Overall Lens Model:
 
-    lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-    lens_dict["source"] = source
-
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -297,7 +291,7 @@ def mass_total(
 
     # Main Lens Galaxies (fixed light, free PowerLaw mass):
 
-    lens_models = []
+    lens_dict = {}
 
     for i in range(n_main):
         light_lens_instance = getattr(light_result.instance.galaxies, f"lens_{i}")
@@ -319,7 +313,7 @@ def mass_total(
             else None,
         )
 
-        lens_models.append(lens)
+        lens_dict[f"lens_{i}"] = lens
 
     # Extra Galaxies (fixed light, free bounded mass):
 
@@ -349,11 +343,8 @@ def mass_total(
 
     # Overall Lens Model:
 
-    lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-    lens_dict["source"] = source
-
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 

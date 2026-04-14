@@ -83,7 +83,7 @@ def source_lp(
 
     # Main Lens Galaxies:
 
-    lens_models = []
+    lens_dict = {}
 
     for i, centre in enumerate(main_lens_centres):
 
@@ -102,7 +102,7 @@ def source_lp(
             shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
         )
 
-        lens_models.append(lens)
+        lens_dict[f"lens_{i}"] = lens
 
     # Extra Galaxies:
 
@@ -139,11 +139,8 @@ def source_lp(
 
     # Overall Model:
 
-    lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-    lens_dict["source"] = source
-
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -222,10 +219,8 @@ def source_pix_1(
         ),
     )
 
-    lens_dict["source"] = source
-
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -289,10 +284,8 @@ def source_pix_2(
         ),
     )
 
-    lens_dict["source"] = source
-
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -358,7 +351,7 @@ def light_lp(
     extra_galaxies = source_result_for_lens.instance.extra_galaxies
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -429,7 +422,7 @@ def mass_total(
     extra_galaxies = light_result.instance.extra_galaxies
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -479,7 +472,7 @@ def subhalo_no_subhalo(
     extra_galaxies = mass_result.instance.extra_galaxies
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -558,7 +551,7 @@ def subhalo_grid_search(
     extra_galaxies = mass_result.instance.extra_galaxies
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 
@@ -649,7 +642,7 @@ def subhalo_refine(
     extra_galaxies = mass_result.instance.extra_galaxies
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict),
+        galaxies=af.Collection(**lens_dict, source=source),
         extra_galaxies=extra_galaxies,
     )
 

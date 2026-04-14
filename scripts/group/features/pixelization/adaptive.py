@@ -131,7 +131,7 @@ Search 1 fits a parametric group model to establish the lens mass model and sour
 """
 # Main Lens Galaxies:
 
-lens_models = []
+lens_dict = {}
 
 for i, centre in enumerate(main_lens_centres):
 
@@ -149,7 +149,7 @@ for i, centre in enumerate(main_lens_centres):
         shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
 
-    lens_models.append(lens)
+    lens_dict[f"lens_{i}"] = lens
 
 # Extra Galaxies:
 
@@ -183,11 +183,8 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 
 # Overall Lens Model:
 
-lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-lens_dict["source"] = source
-
 model_1 = af.Collection(
-    galaxies=af.Collection(**lens_dict),
+    galaxies=af.Collection(**lens_dict, source=source),
     extra_galaxies=extra_galaxies,
 )
 

@@ -150,7 +150,7 @@ In this example, the true sky level is 5.0 electrons per second.
 """
 # Main Lens Galaxies:
 
-lens_models = []
+lens_dict = {}
 
 for i, centre in enumerate(main_lens_centres):
 
@@ -168,7 +168,7 @@ for i, centre in enumerate(main_lens_centres):
         shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
 
-    lens_models.append(lens)
+    lens_dict[f"lens_{i}"] = lens
 
 # Extra Galaxies:
 
@@ -215,12 +215,9 @@ dataset_model.background_sky_level = af.UniformPrior(lower_limit=0.0, upper_limi
 
 # Overall Lens Model:
 
-lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-lens_dict["source"] = source
-
 model = af.Collection(
     dataset_model=dataset_model,
-    galaxies=af.Collection(**lens_dict),
+    galaxies=af.Collection(**lens_dict, source=source),
     extra_galaxies=extra_galaxies,
 )
 

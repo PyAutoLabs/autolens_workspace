@@ -145,7 +145,7 @@ a `bulge` parameter — mass only.
 """
 # Main Lens Galaxies (mass only):
 
-lens_models = []
+lens_dict = {}
 
 for i, centre in enumerate(main_lens_centres):
 
@@ -158,7 +158,7 @@ for i, centre in enumerate(main_lens_centres):
         shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
 
-    lens_models.append(lens)
+    lens_dict[f"lens_{i}"] = lens
 
 # Extra Galaxies (mass only):
 
@@ -190,11 +190,8 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-lens_dict = {f"lens_{i}": m for i, m in enumerate(lens_models)}
-lens_dict["source"] = source
-
 model = af.Collection(
-    galaxies=af.Collection(**lens_dict),
+    galaxies=af.Collection(**lens_dict, source=source),
     extra_galaxies=extra_galaxies,
 )
 
