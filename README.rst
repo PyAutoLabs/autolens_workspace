@@ -8,7 +8,7 @@ PyAutoLens Workspace
 
 `Installation Guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ |
 `readthedocs <https://pyautolens.readthedocs.io/en/latest/index.html>`_ |
-`Introduction on Colab <https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here.ipynb>`_ |
+`Introduction on Colab <https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.4.13.6/start_here.ipynb>`_ |
 `HowToLens <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
 
 .. image:: https://github.com/Jammy2211/PyAutoLogo/blob/main/gifs/pyautolens.gif?raw=true
@@ -23,7 +23,7 @@ You can get set up on your personal computer by following the installation guide
 our `readthedocs <https://pyautolens.readthedocs.io/>`_.
 
 Alternatively, you can try **PyAutoLens** out in a web browser by going to
-the `autolens workspace on Colab <https://colab.research.google.com/github/Jammy2211/autolens_workspace>`_.
+the `autolens workspace on Colab <https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.4.13.6/start_here.ipynb>`_.
 
 New Users
 ---------
@@ -33,7 +33,7 @@ overview of **PyAutoLens**'s core features and API.
 
 This can be done via a web browser by going to the following Google Colab link:
 
-https://colab.research.google.com/github/Jammy2211/autolens_workspace/blob/release/start_here.ipynb
+https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.4.13.6/start_here.ipynb
 
 Then checkout the `new user starting guide <https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html>`_ to navigate the
 workspace for your science case.
