@@ -1,3 +1,8 @@
+import autolens as al
+from autoconf import check_version
+
+check_version(al.__version__)
+
 input(
     "############################################\n"
     "### WELCOME TO THE AUTOLENS WORKSPACE ###\n"
