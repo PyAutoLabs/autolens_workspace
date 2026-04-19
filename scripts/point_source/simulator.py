@@ -199,6 +199,18 @@ al.output_to_json(
 )
 
 """
+__CSV Output__
+
+In addition to JSON, a point dataset can be written to a CSV file.  CSV is a hand-editable,
+spreadsheet-friendly format that becomes especially convenient for cluster-scale datasets
+with tens of sources where a single file with one row per observed image is easier to curate
+than many per-source JSON files.
+"""
+dataset.to_csv(
+    file_path=dataset_path / "point_dataset_positions_only.csv",
+)
+
+"""
 __Visualize__
 
 Output a subplot of the simulated point source dataset as a .png file.
@@ -439,6 +451,16 @@ dataset = al.PointDataset(
 al.output_to_json(
     obj=dataset,
     file_path=dataset_path / "point_dataset_with_fluxes_and_time_delays.json",
+)
+
+"""
+__CSV Output__
+
+The full-column dataset (positions, fluxes and time delays) can also be saved to CSV
+as the spreadsheet-friendly counterpart to the JSON above.
+"""
+dataset.to_csv(
+    file_path=dataset_path / "point_dataset_with_fluxes_and_time_delays.csv",
 )
 
 """
