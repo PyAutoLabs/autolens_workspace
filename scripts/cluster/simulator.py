@@ -353,6 +353,18 @@ for i, dataset in enumerate(dataset_list):
     )
 
 """
+__CSV Output__
+
+For cluster-scale workflows with tens or hundreds of sources, a single CSV with one row
+per observed image — grouped by ``name`` — is often easier to edit in a spreadsheet than
+many per-source JSON files.  ``al.output_to_csv`` writes all datasets into one file.
+"""
+al.output_to_csv(
+    datasets=dataset_list,
+    file_path=dataset_path / "point_datasets.csv",
+)
+
+"""
 __Visualize__
 
 Output a subplot of the simulated point source dataset as a .png file.

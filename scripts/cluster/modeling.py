@@ -135,6 +135,18 @@ for i in range(5):
     dataset_list.append(dataset)
 
 """
+__CSV Loading__
+
+The ``dataset_list`` above is equivalent to a single CSV loaded in one call.  If the
+simulator also wrote ``point_datasets.csv`` (see ``cluster/simulator.py``), the same
+``dataset_list`` can be recovered with::
+
+    dataset_list = al.list_from_csv(file_path=dataset_path / "point_datasets.csv")
+
+This is the recommended form for hand-edited cluster datasets with tens of sources.
+"""
+
+"""
 We can print this dictionary to see the dataset's `name` and `positions` and noise-map values.
 """
 for dataset in dataset_list:

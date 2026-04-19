@@ -226,6 +226,17 @@ al.output_to_json(
 )
 
 """
+__CSV Output__
+
+Both datasets can also be saved to a single CSV — one row per observed image grouped by
+``name`` — as the hand-editable spreadsheet format alternative to per-source JSON.
+"""
+al.output_to_csv(
+    datasets=[dataset_0, dataset_1],
+    file_path=dataset_path / "point_datasets.csv",
+)
+
+"""
 __Visualize__
 
 Output a subplot of the simulated point source dictionary and the tracer's quantities to the dataset path as .png files.
