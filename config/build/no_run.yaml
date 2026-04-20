@@ -38,7 +38,6 @@
 - hpc/example_cpu # HPC paths dont exist locally.
 - examples/searches # Test mode breaks search visualization.
 - data_fitting # Test mode breaks .fits file output
-- cluster/simulator # Requires manual lens_galaxies.csv input file
 - cluster/modeling # Cluster modeling is not maintained and test mode breaks it.
 - cluster/start_here # Cluster analysis is not maintained and test mode breaks it.
 - mass_stellar_dark/modeling # Requires CSE to be JAX enabled.

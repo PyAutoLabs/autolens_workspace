@@ -1,350 +1,303 @@
 """
-Simulator: Start Here
-=====================
+Simulator: Cluster
+==================
 
-This script is the starting point for simulating strong lens cluster datasets, which typically have a Brighest Custer
-Galaxy (BCG), large host dark matter halo, 20+ lens galaxies and 5+ source galaxies.
+This script simulates an example strong lens on the 'cluster' scale, a small cluster consisting of 5 main lens
+galaxies, a single host dark matter halo not tied to any individual galaxy, and 2 multiply-imaged background
+source galaxies observed at the same redshift.
 
-Given how complex these systems are, modeling typically uses the point source API such that only the brightest pixels
-in each multiple image in the image plane are fitted. This script therefore outputs both this information and CCD
-imaging data of the cluster for visualization. Advanced PyAutoLens tools support extended source modeling of clusters.
+This is a deliberately small cluster — real clusters can have tens or hundreds of member galaxies and several
+background sources. Building the example at this scale lets us exercise every piece of the cluster workflow
+(scaling, CSV I/O, visualization, modeling) end-to-end before scaling up to the full problem.
 
-After reading this script, the `examples` folder provide examples for simulating more complex lenses in different ways.
+Modeling at cluster scale almost always uses the *point source* API: rather than fitting the extended arc light
+of a lensed source, we fit only the image-plane positions of the brightest pixels of each multiple image. This
+script simulates that point-source data alongside CCD imaging, which is used to *measure* the point positions
+in real datasets and to visually confirm the lens configuration.
 
 __Contents__
 
-**Scaling Relation:** This example uses a scaling-relation lens model using the dual Pseudo-Isothermal Elliptical (dPIE).
-**Model:** Compose the lens model fitted to the data.
-**Dataset Paths:** The `dataset_type` describes the type of data being simulated (in this case, `PointDataset` data).
-**Grid:** Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated and.
-**CSV:** For cluster strong lenses, there are often 50 or more galaxies, whose centres, luminosities and.
-**Centres:** Before using the scaling relation, we need to define the centres of the 50 lens galaxies galaxies.
-**Luminosities:** We also need the luminosity of each galaxy, which in this example is the measured property we.
-**Source Galaxies:** We now create the centres of the 5 source galaxies being lensed by the cluster.
-**Ray Tracing:** Setup the lens galaxies and source galaxies for this simulated cluster lens.
-**Point Solver:** For cluster sources, our goal is to find the (y, x) coordinates in the image plane that map.
-**Point Datasets:** All the quantities computed above are stored in a `PointDataset` object, which organizes.
-**Visualize:** Output a subplot of the simulated point source dataset as a .png file.
-**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
-**Imaging:** Strong lens clusters typically comes with imaging data, for example showing the foreground lens.
+**Main Lens Galaxies vs Host Halo vs Source Galaxies:** Galaxies are organized into three categories.
+**Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a name.
+**Grid:** Define the 2D grid of (y,x) coordinates the lens and source galaxy images are evaluated on.
+**Galaxy Centres:** Define the centres of the main lens galaxies and sources; used for over-sampling and JSON output.
+**Over Sampling:** Adaptive over-sampling grid for accurate light profile evaluation near galaxy centres.
+**Main Lens Galaxies:** The 5 cluster member galaxies — each has a `SersicSph` light profile and a `dPIEMassSph` mass.
+**Host Dark Matter Halo:** A standalone `NFWMCRLudlowSph` halo with `mass_at_200 = 10^14.5` at z=0.5.
+**Source Galaxies:** The 2 background sources at the same redshift, each a `SersicCore` light + a `Point` model.
+**Ray Tracing:** Combine all galaxies into a single `Tracer`.
+**Point Solver:** Solve for image-plane multiple-image positions of each source.
+**Point Datasets:** Collect per-source image positions (with noise) into `PointDataset` objects, one per source.
+**Combined CSV:** Write *all* datasets to a single CSV so a user can hand-edit positions and noise in a spreadsheet.
+**Manual CSV Editing:** Instructions for editing the combined CSV by hand, which is the preferred cluster workflow.
+**Tracer JSON:** Save the true `Tracer` for future inspection.
+**Centre JSON Files:** Save the main lens and source centres as JSON.
+**Imaging:** Simulate CCD imaging of the cluster (used to measure positions in real datasets and for visualization).
+**Visualize:** Plot the point-source dataset, tracer, and imaging. Note that cluster-scale visualization has specific
+requirements beyond what the default galaxy-scale plotters provide, and a follow-up prompt refines these.
 
-__Scaling Relation__
+__Main Lens Galaxies vs Host Halo vs Source Galaxies__
 
-This example uses a scaling-relation lens model using the dual Pseudo-Isothermal Elliptical (dPIE)
-mass distribution introduced in Eliasdottir 2007: https://arxiv.org/abs/0710.5636.
+- `main_lens_galaxies`: The 5 cluster member galaxies that dominate the light and contribute to the mass through
+  individual `dPIEMassSph` profiles. Each is modeled individually with light and mass profiles in modeling scripts.
 
-It relates the luminosity of every galaxy to a cut radius (r_cut), a core radius (r_core) and a mass normaliaton b0:
+- `host_halo_galaxy`: A standalone `Galaxy` holding the cluster's `NFWMCRLudlowSph` dark matter halo. It is not
+  tied to any individual member galaxy — the halo is a separate mass component sitting "on top of" the members.
 
-$r_cut = r_cut^* (L/L^*)^{0.5}$
+- `source_galaxies`: The 2 background sources at the same redshift. Each carries both a `SersicCore` light profile
+  (for visualization of the lensed arcs) and a `Point` model component (used during point-source modeling).
 
-$r_core = r_core^* (L/L^*)^{0.5}$
+Centres of each category are saved to separate JSON files so the modeling scripts can load them directly.
 
-$b0 = b0^* (L/L^*)^{0.25}$
+__dPIE Mass Profile__
 
-This mass model differs from the `Isothermal` profile used commonly throughout the **PyAutoLens** examples. The dPIE
-is more commonly used in strong lens cluster studies where scaling relations are used to model the lensing contribution
-of many cluster galaxies.
+The cluster member galaxies use the dual Pseudo-Isothermal Elliptical (dPIE) mass profile introduced in
+Eliasdottir 2007 (https://arxiv.org/abs/0710.5636), the de facto standard for cluster strong lens modeling.
+In spherical form (`dPIEMassSph`), its parameters are:
 
-__Model__
+ - `ra` (arcsec): the core radius, below which the density profile flattens (kept small, ~0.05–0.1" at z=0.5).
+ - `rs` (arcsec): the truncation radius, above which the density falls as R^-4 (kept ~10–30" for cluster members).
+ - `b0` (arcsec): the mass normalization, roughly setting the galaxy-scale Einstein radius.
 
-This script simulates `PointDataset` and `Imaging` data of a strong lens where:
+These per-galaxy values are hand-tuned below for a physically plausible small cluster. In real analyses a scaling
+relation is commonly used to derive `ra`, `rs`, and `b0` from each galaxy's luminosity — that variant is shown in
+a separate example.
 
- - There are 50 lens galaxies whose mass is a `dPIEMass` profile with parameters set via a scaling relation.
- - There are 3 source galaxies each described as a point source.
+__NFWMCRLudlow Host Halo__
+
+The host dark matter halo uses `NFWMCRLudlowSph`, which parameterises an NFW profile by the physical mass within
+r_200 (`mass_at_200`) and the lens and source redshifts. Internally the concentration-mass relation of
+Ludlow et al. (2016) sets the concentration, which together with the cosmology determines `kappa_s` and
+`scale_radius`. `mass_at_200 = 10^15.3` (~2e15 M_sun) is chosen so that the combined halo + member lensing
+produces genuinely multiply-imaged sources within the field — lighter halos (10^14.5) would only weakly lens
+these source positions and give a single image each, which is not useful as a modeling testbed.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # from autoconf import setup_notebook; setup_notebook()
 
-import pandas as pd
-from pathlib import Path
-import jax.numpy as jnp
 import numpy as np
+from pathlib import Path
 import autolens as al
 import autolens.plot as aplt
 
 """
 __Dataset Paths__
 
-The `dataset_type` describes the type of data being simulated (in this case, `PointDataset` data) and `dataset_name` 
-gives it a descriptive name. They define the folder the dataset is output to on your hard-disk:
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. They
+define the folder the dataset is output to on your hard-disk:
 
- - The image will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/positions.json`.
- - The noise-map will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/noise_map.json`.
+ - The image will be output to `/autolens_workspace/dataset/cluster/simple/data.fits`.
+ - The point datasets will be written to `/autolens_workspace/dataset/cluster/simple/point_datasets.csv`.
 """
 dataset_type = "cluster"
 dataset_name = "simple"
 
-"""
-The path where the dataset will be output. 
-
-In this example, this is: `/autolens_workspace/dataset/cluster/simple`
-"""
 dataset_path = Path("dataset") / dataset_type / dataset_name
+
+"""
+__Redshifts__
+
+All main lens galaxies and the host dark matter halo sit at the same redshift `z=0.5`. Both sources sit at `z=1.0`
+(the prompt specifies identical source redshifts for this simple example — multi-plane cluster setups follow later).
+"""
+redshift_lens = 0.5
+redshift_source = 1.0
 
 """
 __Grid__
 
-Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated and therefore simulated 
-on, via the inputs:
-
- - `shape_native`: The (y_pixels, x_pixels) 2D shape of the grid defining the shape of the data that is simulated.
- - `pixel_scales`: The arc-second to pixel conversion factor of the grid and data.
-
-Note how for a cluster lens this spans a large arc second region, from -50.0" to 50.0".
+Define the 2D grid of (y,x) coordinates that the lens and source galaxy images are evaluated on. For a cluster lens
+the field spans a large arc-second region — here 100"x100" — because the Einstein radius of a ~10^14.5 M_sun halo is
+~20-30" and the member galaxies span ~30" across.
 """
 grid = al.Grid2D.uniform(
-    shape_native=(400, 400),
-    pixel_scales=0.1,
+    shape_native=(500, 500),
+    pixel_scales=0.2,
 )
 
 """
-__CSV__
+__Galaxy Centres__
 
-For cluster strong lenses, there are often 50 or more galaxies, whose centres, luminosities and other parameters we
-need to keep track of.
-
-We use .csv files to store and load the parameter values of all galaxies, noting that .csv files are not used
-elsewhere in the workspace where lens models are simpler.
-
-We load a .csv containing the centres and luminosities of the 50 cluster member galaxies as a pandas data frame.  
+Define the centres of the main lens galaxies and sources. The host halo is anchored at the origin.
 """
-df = pd.read_csv(dataset_path / "lens_galaxies.csv")
+main_lens_centres = [
+    (0.0, 0.0),      # BCG at cluster centre
+    (10.0, 8.0),
+    (-12.0, 5.0),
+    (8.0, -15.0),
+    (-5.0, -10.0),
+]
 
-print(df)
+host_halo_centre = (0.0, 0.0)
 
-"""
-__Centres__
-
-Before using the scaling relation, we need to define the centres of the 50 lens galaxies galaxies. 
-
-The 50 values of centres load via a .csv below are drawn from a realisitic strong lens cluster model.
-"""
-extra_galaxies_centre_list = []
-
-for _, row in df.iterrows():
-    centre_0 = row["centre_y"]
-    centre_1 = row["centre_x"]
-
-    extra_galaxies_centre_list.append((centre_0, centre_1))
-
-print(extra_galaxies_centre_list)
+source_centres = [
+    (0.3, 0.5),
+    (-0.8, 1.2),
+]
 
 """
-__Luminosities__
+__Over Sampling__
 
-We also need the luminosity of each galaxy, which in this example is the measured property we relate to mass via
-the scaling relation.
+Over sampling evaluates light profiles on a higher resolution grid in bright central regions, trading compute for
+accuracy. For cluster lenses, we over-sample around the centre of every cluster member so each galaxy's Sersic
+profile is rendered accurately.
 
-We again use luminosity values drawn from a realistic galaxy cluster.
-
-This could be other measured properties, like stellar mass or velocity dispersion.
+Source galaxies use a cored `SersicCore` profile so that lensed arcs can be evaluated without explicit
+over-sampling.
 """
-extra_galaxies_luminosity_list = []
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=grid,
+    sub_size_list=[32, 8, 2],
+    radial_list=[0.3, 0.6],
+    centre_list=main_lens_centres,
+)
 
-for _, row in df.iterrows():
-    luminosity = row["luminosity"]
-
-    extra_galaxies_luminosity_list.append(luminosity)
-
-print(extra_galaxies_luminosity_list)
+grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
 
 """
-__Scaling Relation__
-
-We now compose our mass parameters using the scaling relation models, which works as follows:
-
-- Compute the parameters for a given mass model using the scaling relations defined at the top of this example
-  with the parameters `ra_star`, `rs_star` and `b0_star` .
-
-- For every extra galaxy centre and luminosity, create a mass profile (using `dPIEPotentialSph`), where  the centre 
-  of the mass profile is the extra galaxy centres and its other parameters are set via the scaling relation  priors.
-
-- Make each extra galaxy a galaxy (via `Galaxy`) and associate it with th mass profile, where the
-  redshifts of the extra galaxies are set to the same values as the lens galaxy.
-
-We also include a `Sersic` lens light component for each galaxy. This is not used in modeling, but it will mean we
-output an image where the lens's are visible, making the cluster's lensing configuration easier to inspect.
+Simulate a simple Gaussian PSF for the image.
 """
-ra_star = 0.1
-rs_star = 2.0
-b0_star = 1e2 * 0.0
-luminosity_star = 1e9
+psf = al.Convolver.from_gaussian(
+    shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
+)
 
-extra_galaxies_list = []
+"""
+__Main Lens Galaxies__
 
-for extra_galaxy_centre, extra_galaxy_luminosity in zip(
-    extra_galaxies_centre_list, extra_galaxies_luminosity_list
+The 5 cluster member galaxies. Each is given a `SersicSph` light profile (used only for visualization — the
+imaging data is not used in point-source modeling) and a `dPIEMassSph` mass profile with hand-tuned parameters
+representative of cluster members: a larger central BCG and 4 smaller satellite galaxies.
+"""
+main_lens_dpie_params = [
+    # (ra,  rs,   b0)  per galaxy — arcsec
+    (8.0, 20.0, 3.0),   # BCG — strongest
+    (5.0, 12.0, 1.2),
+    (4.0, 10.0, 1.0),
+    (5.0, 12.0, 1.1),
+    (4.0, 10.0, 0.9),
+]
+
+main_lens_sersic_params = [
+    # (intensity, effective_radius, sersic_index)
+    (1.5, 3.0, 4.0),    # BCG — bright and extended
+    (0.8, 1.5, 3.5),
+    (0.7, 1.2, 3.5),
+    (0.8, 1.3, 3.5),
+    (0.6, 1.1, 3.0),
+]
+
+main_lens_galaxies = []
+for centre, (ra, rs, b0), (intensity, effective_radius, sersic_index) in zip(
+    main_lens_centres, main_lens_dpie_params, main_lens_sersic_params
 ):
     bulge = al.lp.SersicSph(
-        centre=extra_galaxy_centre,
-        intensity=extra_galaxy_luminosity / luminosity_star,
-        effective_radius=1.0,
-        sersic_index=2.0,
+        centre=centre,
+        intensity=intensity,
+        effective_radius=effective_radius,
+        sersic_index=sersic_index,
+    )
+    mass = al.mp.dPIEMassSph(centre=centre, ra=ra, rs=rs, b0=b0)
+    main_lens_galaxies.append(
+        al.Galaxy(redshift=redshift_lens, bulge=bulge, mass=mass)
     )
 
-    ra = ra_star * (extra_galaxy_luminosity / luminosity_star) ** 0.5
-    rs = rs_star * (extra_galaxy_luminosity / luminosity_star) ** 0.5
-    b0 = b0_star * (extra_galaxy_luminosity / luminosity_star) ** 0.5
+"""
+__Host Dark Matter Halo__
 
-    mass = al.mp.dPIEMassSph(centre=extra_galaxy_centre, ra=ra, rs=rs, b0=b0)
+A standalone galaxy holding the cluster's NFW dark matter halo. It has no light profile — it sits in the tracer
+solely to contribute mass. `NFWMCRLudlowSph` is parameterised by the physical halo mass within r_200 and the
+redshifts; the concentration is set by the Ludlow et al. (2016) concentration-mass relation.
+"""
+host_halo = al.mp.NFWMCRLudlowSph(
+    centre=host_halo_centre,
+    mass_at_200=10**15.3,
+    redshift_object=redshift_lens,
+    redshift_source=redshift_source,
+)
 
-    extra_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass)
-
-    extra_galaxies_list.append(extra_galaxy)
+host_halo_galaxy = al.Galaxy(redshift=redshift_lens, dark=host_halo)
 
 """
 __Source Galaxies__
 
-We now create the centres of the 5 source galaxies being lensed by the cluster.
-
-Their image-plane multiple images will be solved for, and these are the observations
-which are input into cluster lens modeling examples in order to constrain the lens model.
-
-We also include a `Sersic` lens light component for each galaxy. This is not used in modeling, 
-but it will mean we output an image where the source arcS are visible, making the cluster's 
-lensing configuration easier to inspect.
+The 2 background sources at the same redshift. Each carries a `SersicCore` light profile (used only for visual
+confirmation of the lensed arcs — the cored profile changes gradually in the centre so explicit source-plane
+over-sampling is unnecessary) and a `Point` model component whose multiple-image positions we solve for and use
+as the modeling data.
 """
-source_galaxy_centre_list = [
-    (0.01, 0.01),
-    #   (1.15, 0.15),
-    #   (0.2, 0.2),
-    #   (-2.0, -3.0),
-    #   (3.0, 2.0),
-]
-
-source_galaxy_list = []
-
-for i, source_galaxy_centre in enumerate(source_galaxy_centre_list):
-    bulge = al.lp.SersicSph(
-        centre=source_galaxy_centre,
-        intensity=1.0,
-        effective_radius=0.1,
+source_galaxies = []
+for i, centre in enumerate(source_centres):
+    bulge = al.lp.SersicCore(
+        centre=centre,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0 + 30.0 * i),
+        intensity=2.0,
+        effective_radius=0.3,
         sersic_index=1.0,
     )
-
-    point = al.ps.Point(centre=source_galaxy_centre)
-
-    source_galaxy = al.Galaxy(redshift=1.0, **{f"point_{i}": point})
-
-    source_galaxy_list.append(source_galaxy)
+    point = al.ps.Point(centre=centre)
+    source_galaxies.append(
+        al.Galaxy(redshift=redshift_source, bulge=bulge, **{f"point_{i}": point})
+    )
 
 """
 __Ray Tracing__
 
-Setup the lens galaxies and source galaxies for this simulated cluster lens. 
-
-For lens modeling, defining ellipticity in terms of the `ell_comps` improves the model-fitting procedure.
-
-However, for simulating a strong lens you may find it more intuitive to define the elliptical geometry using the 
-axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle, where angle is
-in degrees and defined counter clockwise from the positive x-axis.
-
-We can use the `convert` module to determine the elliptical components from the axis-ratio and angle.
+Combine main lens galaxies, the host halo galaxy, and the source galaxies into a single tracer that produces
+the simulated image.
 """
-dark = al.mp.NFWMCRLudlowSph(
-    centre=(0.0, 0.0),
-    mass_at_200=1e14,
-    redshift_object=0.5,
-    redshift_source=1.0,
+tracer = al.Tracer(
+    galaxies=main_lens_galaxies + [host_halo_galaxy] + source_galaxies
 )
-
-lens = al.Galaxy(redshift=0.5, dark=dark)
-
-tracer = al.Tracer(galaxies=[lens] + extra_galaxies_list + source_galaxy_list)
 
 """
 __Point Solver__
 
-For cluster sources, our goal is to find the (y, x) coordinates in the image plane that map directly to the center of 
-the source's centre in the source plane—these are its "multiple images." This is achieved using a `PointSolver`, 
-which  determines the multiple images of the mass model for a point source located at a given (y, x) position in the 
-source plane.
+For each source's `Point` component we solve for the (y, x) coordinates in the image plane that map to the
+source-plane centre — these are the multiple images. The `PointSolver` ray-traces triangles from the image plane
+back to the source plane, iteratively refining until the requested precision is reached.
 
-The solver works by ray tracing triangles from the image plane back to the source plane and checking whether the 
-source-plane (y, x) center lies inside each triangle. It iteratively refines this process by ray tracing progressively 
-smaller triangles, allowing the multiple image positions to be determined with sub-pixel precision.
-
-The `PointSolver` requires an initial grid of (y, x) coordinates in the image plane (defined above), which defines the 
-first set of triangles to ray trace spanning the whole cluster. It also needs a `pixel_scale_precision` parameter, 
-specifying the resolution at which the multiple images are computed. Smaller values increase precision but requiring 
-longer computation times. The value of 0.001 used here balances efficiency and accuracy.
-
-Strong lens mass models often predict a "central image," a multiple image that is usually heavily demagnified and thus 
-not observed. Since the `PointSolver` finds all valid multiple images, it will locate this central image regardless of 
-its visibility. To avoid including this unobservable image, we set a `magnification_threshold=0.1`, which discards any 
-images with magnifications below this value.
-
-If your dataset does include a detectable central image, you should lower this threshold accordingly to include it in 
-your analysis.
-
-We now compute the multiple image positions by creating a `PointSolver` object and passing it the tracer of our 
-strong lens system.
+The solver uses its own higher-resolution starting grid because the image-plane grid above is tuned for
+image simulation, not triangle root-finding. `magnification_threshold=0.1` discards heavily demagnified central
+images, which are usually undetectable in real data.
 """
 solver = al.PointSolver.for_grid(
-    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+    grid=al.Grid2D.uniform(shape_native=(800, 800), pixel_scales=0.1),
+    pixel_scale_precision=0.001,
+    magnification_threshold=0.1,
 )
 
-"""
-We now pass the tracer to the solver, to determine the image-plane multiple images for the source centres.
-
-The solver finds the image-plane coordinates that map directly to the source-plane coordinates defined above, it is
-called iteratively for each source centre with the multiple images stored in a list.
-"""
 positions_list = []
-
-for i, source_galaxy_centre in enumerate(source_galaxy_centre_list):
-    point = getattr(source_galaxy_list[i], f"point_{i}")
-
+for i, centre in enumerate(source_centres):
+    point = getattr(source_galaxies[i], f"point_{i}")
     positions = solver.solve(tracer=tracer, source_plane_coordinate=point.centre)
-
-    # remove infinitys from point solver required for JAX
-
-    print(positions)
-
-    mask = jnp.all(jnp.isfinite(positions.array), axis=1)
+    mask = np.all(np.isfinite(np.asarray(positions.array)), axis=1)
     positions = positions[mask]
-
-    print(positions)
-
     positions_list.append(positions)
 
 """
 __Point Datasets__
 
-All the quantities computed above are stored in a `PointDataset` object, which organizes information about the multiple 
-images of a point-source strong lens system.
+One `PointDataset` per source. The `name` (e.g. `point_0`, `point_1`) pairs each dataset with the matching
+`Point` component in the lens model during modeling.
 
-Each dataset is labeled with a `name` (e.g. `point_0`, `point_1`), identifying it as corresponding to a single point 
-source called. The name is essential for associating each dataset with the correct point source in the lens model 
-for lens modeling.
-
-The dataset contains the image-plane coordinates of the multiple images and their corresponding noise-map values. 
-Typically, the noise value for each position is set to the pixel scale of the CCD image, representing the area the 
-point source occupies. Although sub-pixel accuracy can be achieved with more detailed analysis, this example does not 
-cover those techniques.
-
-Note also that this dataset does not contain fluxes or time delays, which are often included in point source datasets
-and are simulated elsewhere in the workspace.
+`redshift` is populated on each `PointDataset` so that the source redshifts round-trip through the combined CSV
+below. This is the piece that makes the CSV self-describing for cluster modeling — position, noise, and
+redshift live in a single spreadsheet.
 """
 dataset_list = []
-
 for i, positions in enumerate(positions_list):
     dataset = al.PointDataset(
         name=f"point_{i}",
         positions=positions,
         positions_noise_map=grid.pixel_scale,
+        redshift=redshift_source,
     )
-
     dataset_list.append(dataset)
 
-""""
-We now output the point dataset to the dataset path as a .json file, which is loaded in the point source modeling
-examples.
-
-In this example, there is just one point source dataset. However, for group and cluster strong lenses there
-can be many point source datasets in a single dataset, and separate .json files are output for each.
+"""
+Output one .json file per dataset (exact round-trip; this is the canonical modeling input).
 """
 for i, dataset in enumerate(dataset_list):
     al.output_to_json(
@@ -353,11 +306,12 @@ for i, dataset in enumerate(dataset_list):
     )
 
 """
-__CSV Output__
+__Combined CSV__
 
-For cluster-scale workflows with tens or hundreds of sources, a single CSV with one row
-per observed image — grouped by ``name`` — is often easier to edit in a spreadsheet than
-many per-source JSON files.  ``al.output_to_csv`` writes all datasets into one file.
+For cluster-scale workflows with tens or hundreds of sources, a single CSV with one row per observed image —
+grouped by ``name`` — is far easier to edit in a spreadsheet than many per-source JSON files. ``al.output_to_csv``
+writes every dataset into one file. The `redshift` column is emitted automatically because each dataset has its
+redshift set above.
 """
 al.output_to_csv(
     datasets=dataset_list,
@@ -365,32 +319,32 @@ al.output_to_csv(
 )
 
 """
-__Visualize__
+__Manual CSV Editing__
 
-Output a subplot of the simulated point source dataset as a .png file.
+The combined CSV is the preferred cluster input: it is human-readable, editable in Excel / LibreOffice / any text
+editor, and round-trips cleanly back into `list_from_csv`. The expected format is one row per observed multiple
+image with the following columns:
+
+ - `name`    — the source identifier (e.g. `point_0`). All rows sharing a `name` belong to the same source.
+ - `y`, `x`  — the image-plane position of the multiple image, in arc-seconds.
+ - `positions_noise` — the positional uncertainty (typically the pixel scale of the imaging used to measure it).
+ - `redshift` — the source redshift. Every row for a given `name` must share the *same* redshift (validated on
+   load; `list_from_csv` raises if a group's rows disagree). Leave the cell blank if the redshift is unknown;
+   blank is tolerated as long as *all* rows in a group are blank.
+
+Optional columns `flux`, `flux_noise`, `time_delay`, `time_delay_noise` are also round-tripped — populate them
+when the observation provides those measurements, leave them blank otherwise.
+
+To build a cluster dataset by hand, simulate or manually collect one set of images per source, then edit the CSV
+directly: add or remove rows, adjust positions or noises, and save. Reload the dataset in a modeling script with
+``al.list_from_csv(file_path=dataset_path / "point_datasets.csv")``.
 """
-aplt.subplot_point_dataset(
-    dataset=dataset_list[0], output_path=dataset_path, output_format="png"
-)
 
 """
-Output subplots of the tracer's images, including the positions of the multiple images on the image.
-"""
+__Tracer JSON__
 
-aplt.subplot_tracer(
-    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
-)
-aplt.subplot_galaxies_images(
-    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
-)
-
-"""
-__Tracer json__
-
-Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass profiles and galaxies
-are safely stored and available to check how the dataset was simulated in the future. 
-
-This can be loaded via the method `tracer = al.from_json()`.
+Save the `Tracer` so the true light profiles, mass profiles and galaxies can be inspected after the fact. This
+can be loaded via `tracer = al.from_json(file_path)`.
 """
 al.output_to_json(
     obj=tracer,
@@ -398,30 +352,43 @@ al.output_to_json(
 )
 
 """
-__Imaging__
+__Centre JSON Files__
 
-Strong lens clusters typically comes with imaging data, for example showing the foreground lens distribution and
-arcs of the sources.
-
-This is used to measure the locations of the point source multiple images in the first place, and is also useful for 
-visually confirming the images we are using are in  right place. It may also contain emission from the lens galaxy's 
-light, which can be used to perform point-source modeling.
-
-We therefore simulate imaging dataset of this point source and output it to the dataset folder in an `imaging` folder
-as .fits and .png files. 
-
-The grid for point sources tracing above had a pixel scale of 0.1", which would make a very low resolution CCD imaging.
-We therefore use a higher resolution grid for this image.
-
-If you are not familiar with the imaging simulator API, checkout the `imaging/simulator.py` example 
-in the `autolens_workspace`.
+Save the main lens galaxy centres, the host halo centre, and the source centres as JSON so the modeling scripts
+can load them directly (e.g. to fix positions, define priors, or set up scaling relations).
 """
-grid = al.Grid2D.uniform(
-    shape_native=(1000, 1000), pixel_scales=0.1, over_sample_size=1
+al.output_to_json(
+    obj=al.Grid2DIrregular(main_lens_centres),
+    file_path=dataset_path / "main_lens_centres.json",
+)
+al.output_to_json(
+    obj=al.Grid2DIrregular([host_halo_centre]),
+    file_path=dataset_path / "host_halo_centre.json",
+)
+al.output_to_json(
+    obj=al.Grid2DIrregular(source_centres),
+    file_path=dataset_path / "source_centres.json",
 )
 
-psf = al.Convolver.from_gaussian(
-    shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
+"""
+__Imaging__
+
+Strong lens clusters typically come with imaging data — used to *measure* the point positions and to visually
+confirm the lens configuration. Although modeling here is point-source only, we output CCD imaging so the
+dataset looks like a realistic cluster observation.
+
+A higher-resolution grid is used for the image than for the point-source solver input.
+"""
+imaging_grid = al.Grid2D.uniform(
+    shape_native=(1000, 1000),
+    pixel_scales=0.1,
+).apply_over_sampling(
+    over_sample_size=al.util.over_sample.over_sample_size_via_radial_bins_from(
+        grid=al.Grid2D.uniform(shape_native=(1000, 1000), pixel_scales=0.1),
+        sub_size_list=[32, 8, 2],
+        radial_list=[0.3, 0.6],
+        centre_list=main_lens_centres,
+    )
 )
 
 simulator = al.SimulatorImaging(
@@ -431,23 +398,37 @@ simulator = al.SimulatorImaging(
     add_poisson_noise_to_data=True,
 )
 
-imaging = simulator.via_tracer_from(tracer=tracer, grid=grid)
-
-imaging_path = dataset_path / "imaging"
-
-
-aplt.subplot_imaging_dataset(dataset=imaging)
+dataset = simulator.via_tracer_from(tracer=tracer, grid=imaging_grid)
 
 aplt.fits_imaging(
-    dataset=imaging,
+    dataset=dataset,
     data_path=dataset_path / "data.fits",
     psf_path=dataset_path / "psf.fits",
     noise_map_path=dataset_path / "noise_map.fits",
     overwrite=True,
 )
 
-aplt.subplot_imaging_dataset(dataset=imaging)
-aplt.plot_array(array=imaging.data, title="Data")
+"""
+__Visualize__
+
+Output .png plots of the simulated dataset, the tracer, and the per-source point datasets.
+
+These use the default galaxy-scale plotters and are known to be suboptimal for cluster-scale systems — arcs
+span a much larger field, per-source images benefit from distinct colours, and multi-source overlays are useful. A
+follow-up prompt (`admin_jammy/prompt/cluster/1_visualization.md`) addresses these visualization requirements.
+"""
+for i, pd in enumerate(dataset_list):
+    aplt.subplot_point_dataset(
+        dataset=pd, output_path=dataset_path, output_format="png"
+    )
+
+aplt.subplot_imaging_dataset(dataset=dataset)
+aplt.subplot_tracer(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
+aplt.subplot_galaxies_images(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
 
 """
 Finished.
