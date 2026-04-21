@@ -88,7 +88,6 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # from autoconf import setup_notebook; setup_notebook()
 
-import jax.numpy as jnp
 import numpy as np
 from pathlib import Path
 
@@ -190,7 +189,7 @@ grid = al.Grid2D.uniform(
 )
 
 solver = al.PointSolver.for_grid(
-    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1, xp=jnp
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
 )
 
 """
@@ -265,18 +264,9 @@ search = af.Nautilus(
     iterations_per_quick_update=250000,  # Every N iterations the max likelihood model is visualized and written to output folder.
 )
 
-# Hacky way to use JAX PointSolver, fix soon
-
-solver_jax = al.PointSolver.for_grid(
-    grid=grid,
-    pixel_scale_precision=0.001,
-    magnification_threshold=0.1,
-    xp=jnp,
-)
-
 analysis = al.AnalysisPoint(
     dataset=dataset,
-    solver=solver_jax,
+    solver=solver,
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 
