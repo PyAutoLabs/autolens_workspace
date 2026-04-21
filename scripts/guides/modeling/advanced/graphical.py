@@ -50,7 +50,6 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 # from autoconf import setup_notebook; setup_notebook()
 
 import numpy as np
-import jax.numpy as jnp
 from pathlib import Path
 import autolens as al
 import autofit as af
@@ -109,7 +108,7 @@ grid = al.Grid2D.uniform(
 )
 
 solver = al.PointSolver.for_grid(
-    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1, xp=jnp
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
 )
 
 """

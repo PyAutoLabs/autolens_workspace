@@ -56,7 +56,6 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # from autoconf import setup_notebook; setup_notebook()
 
-import jax.numpy as jnp
 from pathlib import Path
 import autofit as af
 import autolens as al
@@ -327,18 +326,9 @@ JAX will still provide a speed up via multithreading, with fits taking around 20
 
 If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 """
-# Hacky way to use JAX PointSolver, fix soon
-
-solver_jax = al.PointSolver.for_grid(
-    grid=grid,
-    pixel_scale_precision=0.001,
-    magnification_threshold=0.1,
-    xp=jnp,
-)
-
 analysis = al.AnalysisPoint(
     dataset=dataset,
-    solver=solver_jax,
+    solver=solver,
     fit_positions_cls=al.FitPositionsImagePairRepeat,  # Image-plane chi-squared with repeat image pairs.
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )

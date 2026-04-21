@@ -75,7 +75,6 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # from autoconf import setup_notebook; setup_notebook()
 
-import jax.numpy as jnp
 import numpy as np
 from pathlib import Path
 import autofit as af
@@ -248,7 +247,7 @@ grid = al.Grid2D.uniform(
 )
 
 solver = al.PointSolver.for_grid(
-    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1, xp=jnp
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
 )
 
 """
