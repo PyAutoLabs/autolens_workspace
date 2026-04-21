@@ -375,20 +375,12 @@ should just read through a few different notebooks and go from there.
 
 __HowToLens Lectures__
 
-For experienced scientists, the above start_here examples will be straight forward to follow. Concepts surrounding 
-strong lensing ware already familiar and the statistical techniques used for fitting and modeling already understood.
+If the start_here examples move too quickly — or you want a slower, more detailed grounding in strong lensing and lens
+modeling — **HowToLens** is a separate four-chapter tutorial lecture series written for undergraduates, new PhD
+students, or anyone new to the field. It lives in its own repository: https://github.com/PyAutoLabs/HowToLens.
 
-For those less familiar with these concepts (e.g. undergraduate students, new PhD students or interested members of the 
-public), things may be less clear and a slower more detailed explanation of each concept would be beneficial.
-
-The **HowToLens** Jupyter Notebook lectures are provide exactly this. They are a 3+ chapter guide which thoroughly 
-take you through the core concepts of strong lensing, teach you the principles of the statistical techniques 
-used in modeling and ultimately will allow you to undertake scientific research like a professional astronomer.
-
-To complete thoroughly, they'll probably take 2-4 days. The recommendation is you first look at the start_here
-example relevant to your science, then go through the lectures to understand the concepts in more detail.
-
-If this sounds like it suits you, checkout the `autolens_workspace/notebooks/howtolens` package now.
+The recommendation is you first look at the start_here example relevant to your science, then go through the lectures
+to understand the concepts in more detail.
 
 __Features__
 

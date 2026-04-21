@@ -9,7 +9,7 @@ PyAutoLens Workspace
 `Installation Guide <https://pyautolens.readthedocs.io/en/latest/installation/overview.html>`_ |
 `readthedocs <https://pyautolens.readthedocs.io/en/latest/index.html>`_ |
 `Introduction on Colab <https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.4.13.6/start_here.ipynb>`_ |
-`HowToLens <https://pyautolens.readthedocs.io/en/latest/howtolens/howtolens.html>`_
+`HowToLens <https://github.com/PyAutoLabs/HowToLens>`_
 
 .. image:: https://github.com/Jammy2211/PyAutoLogo/blob/main/gifs/pyautolens.gif?raw=true
   :width: 900
@@ -41,20 +41,9 @@ workspace for your science case.
 HowToLens
 ---------
 
-For experienced scientists, the workspace examples will be easy to follow. Concepts surrounding strong lensing were
-already familiar and the statistical techniques used for fitting and modeling already understood.
-
-For those less familiar with these concepts (e.g. undergraduate students, new PhD students or interested members of the
-public), things may have been less clear and a slower more detailed explanation of each concept would be beneficial.
-
-The **HowToLens** Jupyter Notebook lectures are provide exactly this. They are a 3+ chapter guide which thoroughly
-take you through the core concepts of strong lensing, teach you the principles of the statistical techniques
-used in modeling and ultimately will allow you to undertake scientific research like a professional astronomer.
-
-To complete thoroughly, they'll probably take 2-4 days, so you may want try moving ahead to the examples but can
-go back to these lectures if you find them hard to follow.
-
-If this sounds like it suits you, checkout the ``autolens_workspace/notebooks/howtolens`` package.
+If the workspace examples move too quickly, **HowToLens** is a separate four-chapter tutorial lecture series that walks
+through strong lensing and lens modeling step by step — ideal for undergraduates, new PhD students, or anyone new to the
+field. It lives in its own repository: `PyAutoLabs/HowToLens <https://github.com/PyAutoLabs/HowToLens>`_.
 
 Workspace Structure
 -------------------
@@ -76,7 +65,8 @@ The examples in the ``notebooks`` and ``scripts`` folders are structured as foll
 - ``point_source``: Examples for strong lens point source datasets.
 - ``group``: Examples for group scale strong lenses.
 - ``cluster``: Examples for cluster scale strong lenses.
-- ``howtolens``: The **HowToLens** lectures which teach inexperienced scientists what strong lensing is how to use **PyAutoLens**.
+
+The tutorial lecture series is shipped as a standalone repo: `PyAutoLabs/HowToLens <https://github.com/PyAutoLabs/HowToLens>`_.
 
 The dataset packages (e.g. ``imaging``, ``interferometer``, ``point_source``, ``group`` and ``cluster``) include the
 following types of examples:

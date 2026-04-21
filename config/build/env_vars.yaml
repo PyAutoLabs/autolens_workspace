@@ -35,8 +35,6 @@ overrides:
   # Simulators run first and regenerate data at the capped size, but
   # scripts using the old `if not dataset_path.exists()` pattern skip
   # re-simulation when data already exists.
-  - pattern: "howtolens/"
-    unset: [PYAUTO_SMALL_DATASETS]
   - pattern: "guides/"
     unset: [PYAUTO_SMALL_DATASETS]
   # guides/results/start_here.py must produce real samples so the example

@@ -667,8 +667,8 @@ performed, for example:
 You do not need to be able to answer these questions in order to fit lens models with PyAutoLens and do science.
 However, having a deeper understanding of how it all works is both interesting and will benefit you as a scientist
 
-This deeper insight is offered by the **HowToLens** Jupyter notebook lectures, found 
-at `autolens_workspace/*/howtolens`. 
+This deeper insight is offered by the **HowToLens** Jupyter notebook lectures, which live in their own repository:
+https://github.com/PyAutoLabs/HowToLens.
 
 I recommend that you check them out if you are interested in more details!
 """

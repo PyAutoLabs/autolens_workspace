@@ -22,7 +22,6 @@
 - guides/results/examples/samples_via_aggregator # SLOW 2026-04-10 - exceeds 60s test timeout; unsets TEST_MODE for downstream examples
 - guides/results/examples/queries # SLOW 2026-04-10 - cascade from SLOW-skipped results/start_here.py; stub Model lacks sersic_index attribute
 - guides/results/database/start_here # SLOW 2026-04-10 - previously failed fast on a broken aggregator query; now runs the real aggregator and exceeds 60s
-- howtolens/chapter_4_pixelizations/tutorial_10_brightness_adaption # SLOW 2026-04-10 - pixelization tutorial exceeds 60s test timeout
 - tutorial_5_borders # Cant get right masks, need proper update.
 - tutorial_6_model_fit # InversionException due to test mode
 - gui/extra_galaxies_centres # GUI scripts cannot be run
@@ -49,10 +48,6 @@
 - point_source/features/double_einstein_cross/simulator # PointSolver finds 0 positions on small grid
 - dataset/imaging/slacs1430+4105 # Dataset folder contains data.py helper, not a runnable script
 - group/slam # NEEDS_FIX 2026-04-10 - PriorException: upper limit must be greater than lower limit in group SLaM pipeline
-- howtolens/chapter_1_introduction/tutorial_3_more_ray_tracing # NEEDS_FIX 2026-04-10 - ValueError: Axis limits cannot be NaN or Inf in plotting
-- howtolens/chapter_2_lens_modeling/tutorial_2_practicalities # NEEDS_FIX 2026-04-10 - NameError: 'af' not defined; tutorial missing ~80 lines of imports + setup boilerplate (compare tutorial_1)
-- howtolens/chapter_2_lens_modeling/tutorial_6_masking_and_positions # NEEDS_FIX 2026-04-10 - ValueError: zero-size array reduction, empty mask after pre-computed positions load
-- howtolens/chapter_4_pixelizations/tutorial_2_mappers # NEEDS_FIX 2026-04-10 - ValueError: zero-size array reduction, empty mapper array
 - imaging/data_preparation/manual/mask_irregular # NEEDS_FIX 2026-04-10 - silent failure, needs investigation
 - imaging/features/pixelization/delaunay # NEEDS_FIX 2026-04-10 - autofit.exc.FitException in Delaunay pixelization fit
 - imaging/features/pixelization/slam # NEEDS_FIX 2026-04-10 - autofit.exc.FitException in SLaM pixelization pipeline
