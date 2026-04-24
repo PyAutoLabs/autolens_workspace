@@ -123,18 +123,6 @@ if not dataset_path.exists():
         check=True,
     )
 
-if not (dataset_path / "positions.json").exists():
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [
-            sys.executable,
-            "scripts/imaging/data_preparation/examples/optional/positions.py",
-        ],
-        check=True,
-    )
-
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",
     psf_path=dataset_path / "psf.fits",

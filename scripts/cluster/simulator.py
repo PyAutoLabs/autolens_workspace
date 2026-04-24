@@ -23,7 +23,7 @@ __Contents__
 **Galaxy Centres:** Define the centres of the main lens galaxies and sources; used for over-sampling and JSON output.
 **Over Sampling:** Adaptive over-sampling grid for accurate light profile evaluation near galaxy centres.
 **Main Lens Galaxies:** The 5 cluster member galaxies — each has a `SersicSph` light profile and a `dPIEMassSph` mass.
-**Host Dark Matter Halo:** A standalone `NFWMCRLudlowSph` halo with `mass_at_200 = 10^14.5` at z=0.5.
+**Host Dark Matter Halo:** A standalone `NFWMCRLudlowSph` halo with `mass_at_200 = 10^15.3` at z=0.5.
 **Source Galaxies:** The 2 background sources at the same redshift, each a `SersicCore` light + a `Point` model.
 **Ray Tracing:** Combine all galaxies into a single `Tracer`.
 **Point Solver:** Solve for image-plane multiple-image positions of each source.
@@ -155,13 +155,6 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
 )
 
 grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
-
-"""
-Simulate a simple Gaussian PSF for the image.
-"""
-psf = al.Convolver.from_gaussian(
-    shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
-)
 
 """
 __Main Lens Galaxies__
@@ -389,6 +382,10 @@ imaging_grid = al.Grid2D.uniform(
         radial_list=[0.3, 0.6],
         centre_list=main_lens_centres,
     )
+)
+
+psf = al.Convolver.from_gaussian(
+    shape_native=(11, 11), sigma=0.1, pixel_scales=imaging_grid.pixel_scales
 )
 
 simulator = al.SimulatorImaging(
