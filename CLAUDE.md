@@ -100,3 +100,17 @@ All other SLaM scripts are documented relative to it ("Identical to `slam_start_
 - **PyAutoLens** source: `../PyAutoLens`
 - **PyAutoGalaxy** source: `../PyAutoGalaxy`
 - **PyAutoBuild**: `../PyAutoBuild` — notebook generation and CI/CD tooling
+
+## Bulk-edit safety
+
+When editing the same region across many scripts in one pass — adding a new section, renaming a symbol, updating an import block — only rewrite the targeted region. **Never produce a whole-file write unless you have read the entire current contents of that file.** A whole-file `Write` based on a header skim will silently delete every section below the header.
+
+This rule exists because of an actual incident: the commit `27eda214 "Add and update __Contents__ sections across all workspace scripts"` was meant to insert a new `__Contents__` block into each script's header. For 17 `data_preparation` scripts across this and `autogalaxy_workspace`, it instead replaced the entire file body with the new header alone, wiping ~80% of each file. The damage was only caught much later when the user noticed the scripts no longer ran.
+
+**Guard:** `.script_sizes.json` records the byte size of every `scripts/**/*.py` file. Run `scripts/check_sizes.sh` to flag any script that has shrunk by >50% since the snapshot. If the shrinkage is intentional (e.g. a deliberate rewrite), confirm by re-running with `ALLOW_SHRINK=1` and refresh the snapshot via `scripts/check_sizes.sh --update` in the same diff. The snapshot must be committed alongside whatever caused the shrinkage so the audit trail is preserved.
+
+Practical heuristics for bulk edits:
+
+- Prefer `Edit` (targeted) over `Write` (whole-file). `Edit` cannot accidentally delete unread content.
+- If `Write` is genuinely needed (new file, full rewrite), read the file first end-to-end.
+- After a bulk pass that touches many files, run `scripts/check_sizes.sh` before committing.

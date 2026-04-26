@@ -43,7 +43,78 @@ __Start Here Notebook__
 If any code in this script is unclear, refer to the `data_preparation/start_here.ipynb` notebook.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
-
 # from autoconf import setup_notebook; setup_notebook()
 
+from pathlib import Path
+import autolens as al
+import autolens.plot as aplt
+
+"""
+The path where the extra galaxy centres are output, which is `dataset/imaging/simple`.
+"""
+dataset_type = "imaging"
+dataset_name = "simple"
+dataset_path = Path("dataset", dataset_type, dataset_name)
+
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if al.util.dataset.should_simulate(str(dataset_path)):
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "scripts/imaging/simulator.py"],
+        check=True,
+    )
+
+"""
+The pixel scale of the imaging dataset.
+"""
+pixel_scales = 0.1
+
+"""
+Load the `Imaging` dataset, so that the lens light centres can be plotted over the strong lens image.
+"""
+data = al.Array2D.from_fits(
+    file_path=dataset_path / "data.fits", pixel_scales=pixel_scales
+)
+
+"""
+Create the extra galaxy centres, which is a `Grid2DIrregular` object of (y,x) values.
+"""
+extra_galaxies_centres = al.Grid2DIrregular(values=[(1.0, 3.5), (-2.0, -3.5)])
+
+"""
+Plot the image and extra galaxy centres, so we can check that the centre overlaps the lens light.
+"""
+
+aplt.plot_array(array=data, title="")
+
+"""
+__Output__
+
+Save this as a .png image in the dataset folder for easy inspection later.
+"""
+
+aplt.plot_array(array=data, title="")
+
+"""
+Output the extra galaxy centres to the dataset folder of the lens, so that we can load them from a .json file
+when we model them.
+"""
+al.output_to_json(
+    obj=extra_galaxies_centres,
+    file_path=Path(dataset_path, "extra_galaxies_centres.json"),
+)
+
+"""
+The workspace also includes a GUI for drawing extra galaxy centres, which can be found at
+`autolens_workspace/*/imaging/data_preparation/gui/extra_galaxies_centres.py`.
+
+This tools allows you `click` on the image where an image of the lensed source is, and it will use the brightest pixel
+within a 5x5 box of pixels to select the coordinate.
+"""

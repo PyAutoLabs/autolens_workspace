@@ -12,9 +12,10 @@ by **PyAutoLens**.
 
 __Contents__
 
-**Pixel Scale:** The "pixel_scale" of the image (and the data in general) is pixel-units to arcsecond-units.
-**Loading Data From Individual Fits Files:** Load a noise-map from .fits files (a format commonly used by Astronomers) via the `Array2D` object.
-**Noise Conversions:** There are many different ways the noise-map can be reduced, and it varies depending on the.
+**Pixel Scale:** Overview of the pixel-to-arcsecond conversion factor for common telescopes.
+**Loading Data From Individual Fits Files:** Loading a noise-map from FITS files and inspecting its standards.
+**1) Tools Illustrated In Image:** Overview of unit conversion and resizing tools from the image preparation script.
+**Noise Conversions:** Functions for computing noise-maps from various input formats.
 
 __Pixel Scale__
 
@@ -36,9 +37,95 @@ __Start Here Notebook__
 If any code in this script is unclear, refer to the `data_preparation/start_here.ipynb` notebook.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
-
 # from autoconf import setup_notebook; setup_notebook()
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from pathlib import Path
+import autolens as al
+import autolens.plot as aplt
 
+"""
+__Loading Data From Individual Fits Files__
+
+Load a noise-map from .fits files (a format commonly used by Astronomers) via the `Array2D` object.
+
+This noise-map represents a good data-reduction that conforms **PyAutoLens** formatting standards!
+"""
+dataset_path = Path("dataset", "imaging", "simple")
+
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if al.util.dataset.should_simulate(str(dataset_path)):
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "scripts/imaging/simulator.py"],
+        check=True,
+    )
+
+noise_map = al.Array2D.from_fits(
+    file_path=dataset_path / "noise_map.fits", pixel_scales=0.1
+)
+
+aplt.plot_array(array=noise_map, title="")
+
+"""
+This noise-map conforms to **PyAutoLens** standards for the following reasons:
+
+ - Units: Like its corresponding image, it is in units of electrons per second (as opposed to electrons, counts,
+   ADU`s etc.). Internal **PyAutoLens** functions for computing quantities like a galaxy magnitude assume the data and
+   model light profiles are in electrons per second.
+
+ - Values: The noise-map values themselves are the RMS standard deviations of the noise in every pixel. When a model
+   is fitted to data in **PyAutoLens** and a likelihood is evaluated, this calculation assumes that this is the
+   corresponding definition of the noise-map. The noise map therefore should not be the variance of the noise, or
+   another definition of noise.
+
+ - Poisson: The noise-map includes the Poisson noise contribution of the image (e.g. due to Poisson count statistics
+   in the lens and source galaxies), in addition to the contribution of background noise from the sky background.
+   Data reduction pipelines often remove the Poisson noise contribution, but this is incorrect and will lead to
+   incorrect results.
+
+Given the image should be centred and cut-out around the lens and source galaxies, so should the noise-map.
+
+If your noise-map conforms to all of the above standards, you are good to use it for an analysis (but must also check
+you image and PSF conform to standards first!).
+
+If it does not conform to standards, this script illustrates **PyAutoLens** functionality which can be used to
+convert it to standards.
+
+__1) Tools Illustrated In Image__
+
+The script `data_prepatation/examples/image.ipynb` illustrates the following preparation steps:
+
+1) Converted it from counts / ADUs / other units to electrons per second.
+2) Trimmed / padded the image.
+3) Recentered the image.
+
+You can perform identical operations on your noise-map (assuming it is in the same units and has the dimensions as the
+image.
+
+__Noise Conversions__
+
+There are many different ways the noise-map can be reduced, and it varies depending on the telescope and its
+specific data reduction.
+
+The preprocess module contains example functions for computing noise-maps, which may help you calculate your noise-map
+from the data you currently have (if it is not already RMS values including the Poisson noise contribution and
+background sky contribution).
+
+https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/dataset/preprocess.py
+
+Functions related to the noise map are:
+
+- `noise_map_via_data_eps_and_exposure_time_map_from`
+- `noise_map_via_weight_map_from`
+- `noise_map_via_inverse_noise_map_from`
+- `noise_map_via_data_eps_exposure_time_map_and_background_noise_map_from`
+- `noise_map_via_data_eps_exposure_time_map_and_background_variances_from`
+- `poisson_noise_via_data_eps_from`
+"""
