@@ -26,9 +26,70 @@ __Start Here Notebook__
 If any code in this script is unclear, refer to the `data_preparation/start_here.ipynb` notebook.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
-
 # from autoconf import setup_notebook; setup_notebook()
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from pathlib import Path
+import autolens as al
+import autolens.plot as aplt
 
+"""
+The path where the lens light centre is output, which is `dataset/imaging/simple`.
+"""
+dataset_type = "imaging"
+dataset_name = "simple"
+dataset_path = Path("dataset", dataset_type, dataset_name)
+
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if al.util.dataset.should_simulate(str(dataset_path)):
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "scripts/imaging/simulator.py"],
+        check=True,
+    )
+
+"""
+The pixel scale of the imaging dataset.
+"""
+pixel_scales = 0.1
+
+"""
+Load the `Imaging` dataset, so that the lens light centres can be plotted over the strong lens image.
+"""
+data = al.Array2D.from_fits(
+    file_path=dataset_path / "data.fits", pixel_scales=pixel_scales
+)
+
+"""
+Now, create a lens light centre, which is a `Grid2DIrregular` object of (y,x) values.
+"""
+light_centre = al.Grid2DIrregular(values=[(0.0, 0.0)])
+
+"""
+Now lets plot the image and lens light centre, so we can check that the centre overlaps the lens light.
+"""
+
+aplt.plot_array(array=data, title="")
+
+"""
+Now we`re happy with the lens light centre(s), lets output them to the dataset folder of the lens, so that we can
+load them from a .json file in our pipelines!
+"""
+al.output_to_json(
+    obj=light_centre,
+    file_path=Path(dataset_path, "lens_light_centre.json"),
+)
+
+"""
+The workspace also includes a GUI for drawing lens light centres, which can be found at
+`autolens_workspace/*/imaging/data_preparation/gui/light_centres.py`.
+
+This tools allows you `click` on the image where the lens light centres are, and it uses the brightest
+pixel within a 5x5 box of pixels to select the coordinate.
+"""
