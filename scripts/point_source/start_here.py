@@ -165,7 +165,6 @@ lensed source's multiple images.
 """
 data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.05)
 
-
 aplt.plot_array(array=data, title="")
 
 """
@@ -410,7 +409,7 @@ search = af.Nautilus(
 
 analysis = al.AnalysisPoint(
     dataset=dataset,
-    solver=solver_jax,
+    solver=solver,
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 

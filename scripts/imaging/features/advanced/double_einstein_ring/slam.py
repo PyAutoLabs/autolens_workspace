@@ -228,7 +228,7 @@ def source_pix_1_source_0(
     )
 
     mass = al.util.chaining.mass_from(
-        mass=source_lp_result_2.model.galaxies.lens.mass,
+        mass=af.Model(al.mp.Isothermal),
         mass_result=source_lp_result_2.model.galaxies.lens.mass,
         unfix_mass_centre=True,
     )
@@ -324,7 +324,7 @@ def source_pix_1_source_1(
     )
 
     source_0_mass = al.util.chaining.mass_from(
-        mass=source_lp_result_2.model.galaxies.source_0.mass,
+        mass=af.Model(al.mp.Isothermal),
         mass_result=source_lp_result_2.model.galaxies.source_0.mass,
         unfix_mass_centre=True,
     )

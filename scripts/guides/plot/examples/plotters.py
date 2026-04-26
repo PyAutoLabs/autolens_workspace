@@ -285,6 +285,21 @@ Interferometer datasets and fits are plotted using their dedicated subplot funct
 dataset_name = "simple"
 dataset_path = Path("dataset") / "interferometer" / dataset_name
 
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if not dataset_path.exists():
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "scripts/interferometer/simulator.py"],
+        check=True,
+    )
+
 real_space_mask = al.Mask2D.circular(
     shape_native=(200, 200), pixel_scales=0.05, radius=3.0
 )

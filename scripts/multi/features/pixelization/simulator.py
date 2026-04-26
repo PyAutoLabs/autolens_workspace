@@ -211,5 +211,29 @@ This can be loaded via the method `tracer = al.from_json()`.
 ]
 
 """
+__Positions__
+
+Use a `PointSolver` to compute the multiple image positions of the source galaxy and output them
+to `positions.json`. Pixelization-based lens modeling uses these positions to penalise solutions
+where the source plane reconstruction does not produce the observed multiple images.
+
+The positions depend only on the lens mass and source-plane coordinate, so a single waveband's
+grid and tracer is sufficient.
+"""
+solver = al.PointSolver.for_grid(
+    grid=grid_list[0], pixel_scale_precision=0.001, magnification_threshold=0.1
+)
+
+positions = solver.solve(
+    tracer=tracer_list[0],
+    source_plane_coordinate=source_galaxy_list[0].bulge.centre,
+)
+
+al.output_to_json(
+    file_path=dataset_path / "positions.json",
+    obj=positions,
+)
+
+"""
 The dataset can be viewed in the folder `autolens_workspace/imaging/multi/simple__no_lens_light`.
 """
