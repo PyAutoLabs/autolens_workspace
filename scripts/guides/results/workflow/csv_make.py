@@ -139,6 +139,13 @@ for i in range(2):
         ),
     )
 
+    """
+    __N Like Max__
+
+    `n_like_max=300` caps the search at 300 likelihood evaluations so this workflow example runs in
+    seconds and produces the .csv files it demonstrates without waiting for a full Nautilus
+    convergence. Remove the cap (or raise it substantially) for a real model fit.
+    """
     search = af.Nautilus(
         path_prefix=Path("results_folder_csv_png_fits"),
         name="results",
@@ -146,6 +153,7 @@ for i in range(2):
         n_live=100,
         n_batch=50,  # GPU batching and VRAM use explained in `modeling` examples.
         iterations_per_quick_update=10000,
+        n_like_max=300,  # samples capped for quick result generation
     )
 
     class AnalysisLatent(al.AnalysisImaging):

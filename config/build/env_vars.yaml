@@ -43,3 +43,11 @@ overrides:
   # non-empty aggregator. Covers all scripts under guides/results/.
   - pattern: "guides/results/"
     unset: [PYAUTO_TEST_MODE, PYAUTO_SKIP_FIT_OUTPUT]
+  # fits_make / png_make produce .fits / .png outputs from real fits, so they need
+  # visualization turned on AND PYAUTO_FAST_PLOTS turned off (the latter would
+  # close every figure without saving via the subplot_save / save_figure short-circuit
+  # in autoarray/plot/utils.py).
+  - pattern: fits_make
+    unset: [PYAUTO_SKIP_VISUALIZATION, PYAUTO_FAST_PLOTS]
+  - pattern: png_make
+    unset: [PYAUTO_SKIP_VISUALIZATION, PYAUTO_FAST_PLOTS]
