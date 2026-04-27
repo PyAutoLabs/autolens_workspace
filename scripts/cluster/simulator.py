@@ -549,7 +549,7 @@ Output .png plots of the simulated dataset, the tracer, and the per-source point
 
 These use the default galaxy-scale plotters and are known to be suboptimal for cluster-scale systems —
 arcs span a much larger field, per-source images benefit from distinct colours, and multi-source overlays
-are useful. A follow-up prompt (`admin_jammy/prompt/cluster/1_visualization.md`) addresses these
+are useful. A follow-up prompt (`PyAutoPrompt/cluster/1_visualization.md`) addresses these
 visualization requirements.
 """
 for i, pd in enumerate(dataset_list):
