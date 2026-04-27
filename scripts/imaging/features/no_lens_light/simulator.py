@@ -16,6 +16,7 @@ __Contents__
 **Ray Tracing:** Setup the lens galaxy's light, mass and source galaxy light for this simulated lens.
 **Output:** Output the simulated dataset to the dataset path as .fits files.
 **Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
+**Mask Extra Galaxies:** Save an empty `mask_extra_galaxies.fits` so noise-scaling tutorials can load it.
 **Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
 
 __Model__
@@ -161,10 +162,31 @@ aplt.subplot_galaxies_images(
 )
 
 """
+__Mask Extra Galaxies__
+
+This dataset has no extra galaxies, but pixelization tutorials that load it (e.g.
+`imaging/features/pixelization/modeling.py`, `imaging/features/pixelization/fit.py`) demonstrate the
+noise-scaling API by applying a `mask_extra_galaxies` mask to the dataset. Output an empty (all-False,
+no-pixels-masked) mask so those tutorials can call `apply_noise_scaling(mask=...)` without crashing on a
+missing FITS file. The mask shape tracks `dataset.shape_native`, so `PYAUTO_SMALL_DATASETS=1` is honoured
+automatically.
+"""
+mask_extra_galaxies = al.Mask2D.all_false(
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+)
+
+aplt.fits_array(
+    array=mask_extra_galaxies,
+    file_path=dataset_path / "mask_extra_galaxies.fits",
+    overwrite=True,
+)
+
+"""
 __Tracer json__
 
 Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass profiles and galaxies
-are safely stored and available to check how the dataset was simulated in the future. 
+are safely stored and available to check how the dataset was simulated in the future.
 
 This can be loaded via the method `tracer = al.from_json()`.
 """
