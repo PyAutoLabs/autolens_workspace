@@ -41,16 +41,21 @@ If any code in this script is unclear, refer to the `data_preparation/start_here
 # from autoconf import setup_notebook; setup_notebook()
 
 from pathlib import Path
-import autolens as al
-import autolens.plot as aplt
 
 import numpy as np
 
+import autolens as al
+import autolens.plot as aplt
+
 """
-The path where the extra galaxy centres are output, which is `dataset/imaging/simple`.
+The path where the extra galaxy mask is output, which is `dataset/imaging/extra_galaxies`.
+
+The corresponding simulator (`scripts/imaging/features/extra_galaxies/simulator.py`) already writes a default
+`mask_extra_galaxies.fits` automatically. This script demonstrates how to override that default with your own
+centres + radii — useful when working with real data where the extra galaxy locations are not known in advance.
 """
 dataset_type = "imaging"
-dataset_name = "simple"
+dataset_name = "extra_galaxies"
 dataset_path = Path("dataset", dataset_type, dataset_name)
 
 """
@@ -64,33 +69,39 @@ if al.util.dataset.should_simulate(str(dataset_path)):
     import sys
 
     subprocess.run(
-        [sys.executable, "scripts/imaging/simulator.py"],
+        [sys.executable, "scripts/imaging/features/extra_galaxies/simulator.py"],
         check=True,
     )
 
 """
-The pixel scale of the imaging dataset.
-"""
-pixel_scales = 0.1
-
-"""
 Load the dataset image, so that the location of galaxies is clear when scaling the noise-map.
 """
-data = al.Array2D.from_fits(
-    file_path=dataset_path / "data.fits", pixel_scales=pixel_scales
-)
+data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.1)
 
 aplt.plot_array(array=data, title="")
 
 """
-Manually define the extra galaxies mask corresponding to the regions of the image where extra galaxies are located
-whose emission needs to be omitted from the model-fit.
+Define the extra galaxies mask as the union of circles centred on each extra galaxy.
+
+`Mask2D.circular` honours `PYAUTO_SMALL_DATASETS=1` (caps to 15x15 at 0.6"/px) and works on the actual loaded
+data shape, so the same code path runs under both normal and small-dataset modes without modification.
 """
-mask = al.Mask2D.all_false(
-    shape_native=data.shape_native, pixel_scales=data.pixel_scales
-)
-mask[80:120, 21:58] = True
-mask[50:80, 100:125] = True
+extra_galaxies_mask = np.zeros(data.shape_native, dtype=bool)
+
+for centre, radius in [
+    ((1.0, 3.5), 1.5),
+    ((-2.0, -3.5), 2.4),
+]:
+    circle = al.Mask2D.circular(
+        shape_native=data.shape_native,
+        pixel_scales=data.pixel_scales,
+        centre=centre,
+        radius=radius,
+        invert=True,  # True inside the circle (i.e. masked region)
+    )
+    extra_galaxies_mask = np.logical_or(extra_galaxies_mask, circle.native)
+
+mask = al.Mask2D(mask=extra_galaxies_mask, pixel_scales=data.pixel_scales)
 
 """
 Apply the extra galaxies mask to the image, which will remove them from visualization.

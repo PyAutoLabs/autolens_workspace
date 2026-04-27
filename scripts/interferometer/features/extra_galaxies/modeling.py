@@ -91,7 +91,7 @@ if not dataset_path.exists():
     import sys
 
     subprocess.run(
-        [sys.executable, "scripts/imaging/features/extra_galaxies/simulator.py"],
+        [sys.executable, "scripts/interferometer/features/extra_galaxies/simulator.py"],
         check=True,
     )
 
