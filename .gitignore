@@ -10,3 +10,12 @@ dataset/
 notebooks/plot/
 test_report.md
 test_results/
+
+# Generated artifacts — never check in
+image.fits
+path/
+scripts/path/
+scripts/scripts/
+output_path/
+*.log
+.codex/
