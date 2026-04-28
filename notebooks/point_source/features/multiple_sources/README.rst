@@ -1,4 +1,4 @@
-The ``multiple_sources`` folder contains example notebooks for simulating and fitting a strong lens with
+The ``multiple_sources`` folder contains example scripts for simulating and fitting a strong lens with
 multiple lensed point sources at different redshifts (e.g. an Einstein Cross configuration).
 
 Files
