@@ -44,7 +44,8 @@
 - detect/database # Unsure but not a feature actively used currently.
 - imaging/features/advanced/subhalo/sensitivity/ # All sensitivity scripts need updating when visualization refactored.
 - plot/visuals # Bugged, but visuals being refactored soon.
-- point_source/features/double_einstein_cross/simulator # PointSolver finds 0 positions on small grid
+- point_source/features/multiple_sources/simulator # Blocked by PyAutoLens #480: solver finds 0 positions for intermediate-plane source
+- point_source/features/multiple_sources/modeling # Blocked by PyAutoLens #480: same root cause as simulator above
 - interferometer/casa_reduction # Requires CASA MeasurementSet output, not runnable standalone
 - dataset/imaging/slacs1430+4105 # Dataset folder contains data.py helper, not a runnable script
 - group/slam # NEEDS_FIX 2026-04-10 - PriorException: upper limit must be greater than lower limit in group SLaM pipeline

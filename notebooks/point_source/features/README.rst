@@ -18,7 +18,7 @@ Folders
 -------
 
 - ``deblending``: Deblend the point-source images (e.g. of a lensed quasar) from the lens galaxy light to determine the positions of the point sources and measure the lens galaxy's properties.
-- ``double_einstein_cross``: Fit a lens model to a point source dataset where the source is doubly imaged, forming an Einstein Cross configuration.
+- ``multiple_sources``: Simulate and fit a strong lens with multiple lensed point sources at different redshifts (e.g. an Einstein Cross configuration).
 
 Notes
 -----

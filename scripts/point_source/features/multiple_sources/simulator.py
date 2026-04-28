@@ -1,11 +1,30 @@
 """
-Simulator: Point Source
-=======================
+Simulator: Multiple Sources
+===========================
 
-This script simulates `PointDataset` data of a strong lens where:
+This script simulates `PointDataset` data of a strong lens which has multiple lensed point sources at different
+redshifts (the example below has two sources, but the same approach extends to any number).
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source `Galaxy` is a `Point`.
+The simulated system is a multi-plane lens where source_0 is itself a deflector for source_1 behind it: a
+foreground galaxy lens (z=0.5) lenses both background sources, while source_0's own mass at z=1.0 additionally
+lenses source_1 at z=2.0. The result is two interleaved sets of multiple images (a "double Einstein cross"-like
+configuration). Each source's multiple images are stored as a separate `PointDataset`, and the companion
+`modeling.py` script fits both datasets jointly using the multi/factor-graph API.
+
+The lens model below uses:
+
+ - The foreground lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The first source `Galaxy` (at z=1.0) is itself a `Galaxy` with a mass profile and a `Point`.
+ - The second source `Galaxy` (at z=2.0) is a `Point`-only galaxy.
+
+__Currently Blocked By PyAutoLens #480__
+
+This script does not run end-to-end on the current PyAutoLens release. The `PointSolver` magnification filter
+uses the tracer's last-plane magnification instead of the requested `plane_redshift`'s magnification, so every
+candidate image position for source_0 (which is at the intermediate plane z=1.0) is rejected and the solver
+returns 0 positions. See https://github.com/PyAutoLabs/PyAutoLens/issues/480 — the simulator and modeling scripts
+in this folder are listed in `config/build/no_run.yaml` until that bug is fixed. The script is left here in its
+intended form so the example is correct as soon as #480 lands; no script changes will be needed once it does.
 
 __Contents__
 
@@ -36,7 +55,7 @@ __Dataset Paths__
 The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. 
 """
 dataset_type = "point_source"
-dataset_name = "double_einstein_cross"
+dataset_name = "multiple_sources"
 
 """
 The path where the dataset will be output.
@@ -46,14 +65,13 @@ dataset_path = Path("dataset") / dataset_type / dataset_name
 """
 __Ray Tracing__
 
-Setup the lens galaxy's mass (SIE+Shear) and source galaxy `Point` for this simulated lens. We include a 
-faint dist in the source for purely visualization purposes to show where the multiple images appear.
+Setup the lens galaxy's mass (SIE+Shear) and source galaxy `Point` for this simulated lens. We include a
+faint disk in the source for purely visualisation purposes to show where the multiple images appear.
 
-For lens modeling, defining ellipticity in terms of the `ell_comps` improves the model-fitting procedure.
-
-However, for simulating a strong lens you may find it more intuitive to define the elliptical geometry using the 
-axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle, where angle is
-in degrees and defined counter clockwise from the positive x-axis.
+For lens modeling, defining ellipticity in terms of the `ell_comps` improves the model-fitting procedure. However,
+for simulating a strong lens you may find it more intuitive to define the elliptical geometry using the
+axis-ratio of the profile (axis_ratio = semi-major axis / semi-minor axis = b/a) and position angle, where angle
+is in degrees and defined counter clockwise from the positive x-axis.
 
 We can use the `convert` module to determine the elliptical components from the axis-ratio and angle.
 """
@@ -108,12 +126,12 @@ solver = al.PointSolver.for_grid(
 )
 
 """
-We now pass the `Tracer` to the solver. 
+We now pass the `Tracer` to the solver.
 
-This finds the image-plane coordinates that map directly to the source-plane centres (0.02", 0.03") and (0.0", 0.0").
-
-A double Einstein ring is a multi-plane lensing system, therefore for each source we also input their redshifts into
-the solver so that it finds the multiple images properly accounting for the multi-plane lensing.
+This finds the image-plane coordinates that map directly to the source-plane centres (0.02", 0.03") and
+(0.0", 0.0"). A double Einstein cross is a multi-plane lensing system, therefore for each source we also pass
+their redshift into the solver as `plane_redshift` so that it finds the multiple images while properly accounting
+for the multi-plane lensing.
 """
 positions_0 = solver.solve(
     tracer=tracer,
@@ -136,7 +154,7 @@ positions_1 = solver.solve(
 )
 
 positions_1_with_noise = positions_1 + np.random.normal(
-    loc=0.0, scale=grid.pixel_scale, size=positions_0.shape
+    loc=0.0, scale=grid.pixel_scale, size=positions_1.shape
 )
 
 positions_1_with_noise = al.Grid2DIrregular(
@@ -204,7 +222,7 @@ dataset_0 = al.PointDataset(
 )
 dataset_1 = al.PointDataset(
     name="point_1",
-    positions=positions_1,
+    positions=positions_1_with_noise,
     positions_noise_map=grid.pixel_scale,
     fluxes=fluxes_1_with_noise,
     fluxes_noise_map=fluxes_1_noise_map,
