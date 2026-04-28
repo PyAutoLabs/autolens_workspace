@@ -562,13 +562,10 @@ if (result_path / "files" / "tracer.json").exists():
 
 """
 The output folder also contains `model.json`, `samples.csv`, `dataset.fits`, `fit.fits` and more. A full walkthrough
-of loading results from the output folder is given in:
+of loading results from the output folder — covering both single-fit (`from_json`) and multi-fit (aggregator)
+workflows — is given in:
 
   `autolens_workspace/*/guides/results/start_here.py`
-
-For multi-fit, memory-efficient workflows using the aggregator instead, see:
-
-  `autolens_workspace/*/guides/results/aggregator/start_here.py`
 
 __Source Science (Magnification, Flux and More)__
 
