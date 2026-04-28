@@ -16,4 +16,6 @@ Folders
 - ``group``: Examples for group scale strong lenses.
 - ``cluster``: Examples for cluster scale strong lenses.
 - ``multi``: Examples for multiple datasets simultaneously (E.g. multi-wavelength imaging, imaging and interferometry).
-- ``howtolens``: The **HowToLens** lectures which teach inexperienced scientists what strong lensing is how to use **PyAutoLens**.
+
+The **HowToLens** tutorial lecture series — which teaches inexperienced scientists what strong lensing is and how to
+use **PyAutoLens** — ships as a separate repository: https://github.com/PyAutoLabs/HowToLens.
