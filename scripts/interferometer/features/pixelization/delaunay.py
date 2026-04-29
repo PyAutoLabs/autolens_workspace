@@ -485,13 +485,6 @@ def source_lp(
 ) -> af.Result:
     analysis = al.AnalysisInterferometer(dataset=dataset)
 
-    lens_bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius,
-        total_gaussians=20,
-        gaussian_per_basis=2,
-        centre_prior_is_uniform=True,
-    )
-
     source_bulge = al.model_util.mge_model_from(
         mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
     )
@@ -501,7 +494,8 @@ def source_lp(
             lens=af.Model(
                 al.Galaxy,
                 redshift=redshift_lens,
-                bulge=lens_bulge,
+                # interferometry does not support lens light
+                bulge=None,
                 disk=None,
                 mass=af.Model(al.mp.Isothermal),
                 shear=af.Model(al.mp.ExternalShear),
@@ -673,8 +667,9 @@ def source_pix_2(
             lens=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.lens.redshift,
-                bulge=source_lp_result.instance.galaxies.lens.bulge,
-                disk=source_lp_result.instance.galaxies.lens.disk,
+                # interferometry does not support lens light
+                bulge=None,
+                disk=None,
                 mass=source_pix_result_1.instance.galaxies.lens.mass,
                 shear=source_pix_result_1.instance.galaxies.lens.shear,
             ),
