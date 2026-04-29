@@ -226,10 +226,6 @@ if al.util.dataset.should_simulate(str(dataset_path)):
 
     Solve for the lensed positions of the source galaxy.
     """
-    import os
-
-    small_datasets = os.environ.pop("PYAUTO_SMALL_DATASETS", None)
-
     solver = al.PointSolver.for_grid(
         grid=al.Grid2D.uniform(shape_native=(500, 500), pixel_scales=0.1),
         pixel_scale_precision=0.001,
@@ -239,9 +235,6 @@ if al.util.dataset.should_simulate(str(dataset_path)):
     positions = solver.solve(
         tracer=tracer, source_plane_coordinate=source_galaxy.bulge.centre
     )
-
-    if small_datasets is not None:
-        os.environ["PYAUTO_SMALL_DATASETS"] = small_datasets
 
     al.output_to_json(
         obj=positions,

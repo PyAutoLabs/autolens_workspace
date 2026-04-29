@@ -254,10 +254,6 @@ __Positions__
 Solve for the lensed positions of the source galaxy, which are used as input for the group
 modeling scripts (e.g. SLaM pipeline) to help the non-linear search converge.
 """
-import os
-
-small_datasets = os.environ.pop("PYAUTO_SMALL_DATASETS", None)
-
 solver = al.PointSolver.for_grid(
     grid=al.Grid2D.uniform(shape_native=(500, 500), pixel_scales=0.1),
     pixel_scale_precision=0.001,
@@ -267,9 +263,6 @@ solver = al.PointSolver.for_grid(
 positions = solver.solve(
     tracer=tracer, source_plane_coordinate=source_galaxy.bulge.centre
 )
-
-if small_datasets is not None:
-    os.environ["PYAUTO_SMALL_DATASETS"] = small_datasets
 
 al.output_to_json(
     obj=positions,
