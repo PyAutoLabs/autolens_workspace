@@ -179,8 +179,9 @@ def source_pix_2(
             lens=af.Model(
                 al.Galaxy,
                 redshift=source_pix_result_1.instance.galaxies.lens.redshift,
-                bulge=source_pix_result_1.instance.galaxies.lens.bulge,
-                disk=source_pix_result_1.instance.galaxies.lens.disk,
+                # interferometry does not support lens light
+                bulge=None,
+                disk=None,
                 mass=source_pix_result_1.instance.galaxies.lens.mass,
                 shear=source_pix_result_1.instance.galaxies.lens.shear,
             ),
