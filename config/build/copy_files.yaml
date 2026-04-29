@@ -1,0 +1,11 @@
+# Files copied as-is into notebooks/ instead of being converted from
+# scripts/. Used by PyAutoBuild's generate.py during the pre-build step.
+#
+# Format: flat list of script paths relative to the workspace root.
+# Patterns matched by suffix — any file path ending with one of these
+# entries is treated as copy-only.
+#
+# This file overrides PyAutoBuild/autobuild/config/copy_files.yaml for
+# this workspace. Add or remove entries here, not there.
+
+- imaging/advanced/chaining/hyper_mode/extensions.py

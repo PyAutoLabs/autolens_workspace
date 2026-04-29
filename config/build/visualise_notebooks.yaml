@@ -1,0 +1,10 @@
+# Notebook stems that should run when PyAutoBuild's generate / run pipeline
+# is invoked with --visualise. Used to refresh notebook output cells in main.
+#
+# Format: flat list of notebook stems (no extension, no path).
+# An empty list means no notebooks need re-visualisation in this workspace.
+#
+# This file overrides PyAutoBuild/autobuild/config/visualise_notebooks.yaml
+# for this workspace. Add or remove entries here, not there.
+
+- start_here
