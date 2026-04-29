@@ -726,7 +726,12 @@ def mass_total(
         result=source_pix_result_1, use_model_images=True
     )
 
-    adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+    adapt_images = al.AdaptImages(
+        galaxy_name_image_dict=galaxy_image_name_dict,
+        galaxy_name_image_plane_mesh_grid_dict=(
+            source_pix_result_2.analysis.adapt_images.galaxy_name_image_plane_mesh_grid_dict
+        ),
+    )
 
     analysis = al.AnalysisInterferometer(
         dataset=dataset,

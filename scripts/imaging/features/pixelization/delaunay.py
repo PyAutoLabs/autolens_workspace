@@ -803,7 +803,12 @@ def light_lp(
         result=source_result_for_lens
     )
 
-    adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+    adapt_images = al.AdaptImages(
+        galaxy_name_image_dict=galaxy_image_name_dict,
+        galaxy_name_image_plane_mesh_grid_dict=(
+            source_result_for_source.analysis.adapt_images.galaxy_name_image_plane_mesh_grid_dict
+        ),
+    )
 
     analysis = al.AnalysisImaging(
         dataset=dataset,
@@ -867,7 +872,12 @@ def mass_total(
         result=source_result_for_lens
     )
 
-    adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+    adapt_images = al.AdaptImages(
+        galaxy_name_image_dict=galaxy_image_name_dict,
+        galaxy_name_image_plane_mesh_grid_dict=(
+            source_result_for_source.analysis.adapt_images.galaxy_name_image_plane_mesh_grid_dict
+        ),
+    )
 
     analysis = al.AnalysisImaging(
         dataset=dataset,
