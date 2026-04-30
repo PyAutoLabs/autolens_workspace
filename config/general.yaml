@@ -50,3 +50,5 @@ test:
   disable_positions_lh_inversion_check: true
 version:
   python_version_check: True        # If False, bypass the PyAutoConf Python 3.12+ recommendation (3.9/3.10/3.11 technically work but are not officially supported).
+  workspace_version: 2026.4.13.6    # Pinned by the release pipeline; must match the installed library version.
+  workspace_version_check: True     # If False, bypass the workspace/library version check. Set to False on `main`-branch clones — `main` updates faster than releases, so mismatches are expected and not actionable.
