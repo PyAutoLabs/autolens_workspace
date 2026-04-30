@@ -1,0 +1,107 @@
+name: Smoke Tests
+
+on: [push, pull_request]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.13']
+    steps:
+    - name: Checkout PyAutoConf
+      uses: actions/checkout@v4
+      with:
+        repository: PyAutoLabs/PyAutoConf
+        path: PyAutoConf
+    - name: Checkout PyAutoFit
+      uses: actions/checkout@v4
+      with:
+        repository: PyAutoLabs/PyAutoFit
+        path: PyAutoFit
+    - name: Checkout PyAutoArray
+      uses: actions/checkout@v4
+      with:
+        repository: PyAutoLabs/PyAutoArray
+        path: PyAutoArray
+    - name: Checkout PyAutoGalaxy
+      uses: actions/checkout@v4
+      with:
+        repository: PyAutoLabs/PyAutoGalaxy
+        path: PyAutoGalaxy
+    - name: Checkout PyAutoLens
+      uses: actions/checkout@v4
+      with:
+        repository: PyAutoLabs/PyAutoLens
+        path: PyAutoLens
+    - name: Checkout PyAutoBuild
+      uses: actions/checkout@v4
+      with:
+        repository: PyAutoLabs/PyAutoBuild
+        path: PyAutoBuild
+    - name: Checkout workspace
+      uses: actions/checkout@v4
+      with:
+        path: workspace
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Extract branch name
+      id: extract_branch
+      shell: bash
+      run: |
+        cd workspace
+        echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> "$GITHUB_OUTPUT"
+    - name: Match library branches
+      shell: bash
+      run: |
+        BRANCH="${{ steps.extract_branch.outputs.branch }}"
+        for PKG in PyAutoConf PyAutoFit PyAutoArray PyAutoGalaxy PyAutoLens; do
+          pushd "$PKG"
+          if [[ -n "$(git ls-remote --heads origin "$BRANCH")" ]]; then
+            echo "Branch $BRANCH exists in $PKG — checking out"
+            git fetch origin "$BRANCH"
+            git checkout "$BRANCH"
+          else
+            echo "Branch $BRANCH not in $PKG — staying on main"
+          fi
+          popd
+        done
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip setuptools wheel
+        pip install pyyaml
+        if [ "${{ matrix.python-version }}" = "3.12" ]; then
+          pip install ./PyAutoConf ./PyAutoFit ./PyAutoArray ./PyAutoGalaxy ./PyAutoLens
+          pip install "./PyAutoArray[optional]" "./PyAutoGalaxy[optional]" "./PyAutoLens[optional]"
+        else
+          pip install ./PyAutoConf ./PyAutoFit ./PyAutoArray ./PyAutoGalaxy ./PyAutoLens
+          pip install numba
+        fi
+        pip install tensorflow-probability==0.25.0
+        pip install jupyter nbconvert ipynb-py-convert
+    - name: Prepare cache dirs
+      run: |
+        mkdir -p /tmp/numba_cache /tmp/matplotlib
+    - name: Run smoke tests
+      env:
+        JAX_ENABLE_X64: "True"
+        NUMBA_CACHE_DIR: /tmp/numba_cache
+        MPLCONFIGDIR: /tmp/matplotlib
+        PYTHONPATH: ${{ github.workspace }}/PyAutoBuild/autobuild
+      run: |
+        cd workspace
+        python .github/scripts/run_smoke.py
+    - name: Slack notify on failure
+      if: ${{ failure() }}
+      uses: slackapi/slack-github-action@v1.21.0
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      with:
+        channel-id: C03S98FEDK2
+        payload: |
+          {
+            "text": "${{ github.repository }}/${{ github.ref_name }} smoke tests (Python ${{ matrix.python-version }}) ${{ job.status }}\n${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          }
