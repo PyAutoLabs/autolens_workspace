@@ -1,2 +1,2 @@
-autolens
+autolens[jax]
 numba
