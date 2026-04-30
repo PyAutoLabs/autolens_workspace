@@ -106,10 +106,10 @@ isothermal_mass_profile = al.mp.Isothermal(
 )
 
 deflections = isothermal_mass_profile.deflections_yx_2d_from(grid=grid)
-deflections_y = aa.Array2D(values=deflections.slim[:, 0], mask=grid.mask)
+deflections_y = al.Array2D(values=deflections.slim[:, 0], mask=grid.mask)
 aplt.plot_array(array=deflections_y, title="Deflections Y")
 deflections = isothermal_mass_profile.deflections_yx_2d_from(grid=grid)
-deflections_x = aa.Array2D(values=deflections.slim[:, 1], mask=grid.mask)
+deflections_x = al.Array2D(values=deflections.slim[:, 1], mask=grid.mask)
 aplt.plot_array(array=deflections_x, title="Deflections X")
 
 input(
