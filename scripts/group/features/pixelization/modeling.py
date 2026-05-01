@@ -12,7 +12,8 @@ whereas a pixelized mesh can reconstruct arbitrarily complex source-plane emissi
 
 The main lens galaxies and extra galaxies are modeled with MGE light profiles (via ``al.model_util.mge_model_from``)
 and Isothermal mass profiles, following the standard group modeling pattern. The source galaxy uses a
-Delaunay pixelization with AdaptSplit regularization.
+Delaunay pixelization with ConstantSplit regularization (`AdaptSplit` requires adapt data from a
+prior search and is wired up later by the SLaM pipeline — see `scripts/group/slam.py`).
 
 __Contents__
 
@@ -30,7 +31,7 @@ This script fits an `Imaging` dataset of a 'group-scale' strong lens where:
 
  - There is a main lens galaxy whose light is an MGE and total mass is `Isothermal` with `ExternalShear`.
  - There are two extra lens galaxies with MGE light and `IsothermalSph` mass, centres fixed.
- - The source galaxy's light is reconstructed using a `Delaunay` mesh with `AdaptSplit` regularization.
+ - The source galaxy's light is reconstructed using a `Delaunay` mesh with `ConstantSplit` regularization.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
@@ -103,13 +104,39 @@ extra_galaxies_centres = al.from_json(
 )
 
 """
+__Image-Plane Mesh Grid__
+
+The Delaunay mesh requires an image-plane mesh grid whose ray-traced positions become the Delaunay
+vertices in the source plane. We build it via an `Overlay` image-mesh covering the masked field, then
+append a ring of edge pixels at the mask boundary so the linear inversion can zero them out.
+
+This grid is reused below: its shape sets the number of source pixels in the mesh, and the grid
+itself is paired with the source galaxy via `AdaptImages` when the analysis is constructed.
+"""
+edge_pixels_total = 30
+
+image_mesh = al.image_mesh.Overlay(shape=(22, 22))
+
+image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(mask=dataset.mask)
+
+image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
+    image_plane_mesh_grid=image_plane_mesh_grid,
+    centre=mask.mask_centre,
+    radius=mask_radius + mask.pixel_scale / 2.0,
+    n_points=edge_pixels_total,
+)
+
+"""
 __Model__
 
 We compose a group lens model where:
 
  - Each main lens galaxy has MGE light and Isothermal mass. Only lens_0 carries ExternalShear.
  - Each extra galaxy has MGE light and IsothermalSph mass with fixed centres and bounded Einstein radii.
- - The source galaxy uses a Delaunay pixelization with AdaptSplit regularization.
+ - The source galaxy uses a Delaunay pixelization with ConstantSplit regularization. `ConstantSplit`
+   is used for this first-pass model because adapt data (per-galaxy images from a previous search)
+   is not yet available; a SLaM pipeline can later upgrade to `AdaptSplit` once the source has been
+   imaged — see `scripts/group/slam.py` for the chained pattern.
 
 The pixelized source captures complex lensed morphologies far better than parametric profiles, which is
 especially important for group lenses where the extended mass distribution creates intricate arc structures.
@@ -164,11 +191,16 @@ for centre in extra_galaxies_centres:
 extra_galaxies = af.Collection(extra_galaxies_list)
 
 # Source:
+#
+# The Delaunay mesh is built as a concrete instance (not `af.Model`) because its `pixels` count is
+# fixed by the image-plane mesh grid built above. JAX requires this to be static across samples.
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=af.Model(al.mesh.Delaunay),
-    regularization=af.Model(al.reg.AdaptSplit),
+    mesh=al.mesh.Delaunay(
+        pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+    ),
+    regularization=al.reg.ConstantSplit,
 )
 
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
@@ -229,9 +261,19 @@ __Analysis__
 The `AnalysisImaging` object defines how the model is fitted to the data.
 
 For pixelized source fits, we enable mixed precision to speed up GPU run times on consumer hardware.
+
+The image-plane mesh grid is paired with the source galaxy via `AdaptImages`, keyed by the model
+path so it resolves at instance time during the non-linear search.
 """
+adapt_images = al.AdaptImages(
+    galaxy_name_image_plane_mesh_grid_dict={
+        "('galaxies', 'source')": image_plane_mesh_grid
+    },
+)
+
 analysis = al.AnalysisImaging(
     dataset=dataset,
+    adapt_images=adapt_images,
     settings=al.Settings(use_mixed_precision=True),
 )
 
@@ -278,7 +320,9 @@ The pixelized source is particularly powerful for group lenses because:
 
  - The combined mass of multiple galaxies creates complex arc structures that parametric profiles cannot capture.
  - The Delaunay mesh adapts to the source morphology, placing more triangles where the source is brightest.
- - AdaptSplit regularization allows different smoothing in bright vs. faint source regions.
+ - `ConstantSplit` regularization is used as a first-pass scheme; chained pipelines can upgrade to
+   `AdaptSplit` once an adapt image of the source is available, allowing different smoothing in
+   bright vs. faint source regions.
 
 For automated modeling of large samples, the SLaM pipeline (see `group/features/pixelization/slam.py`) provides
 a robust framework that chains parametric and pixelized source fits.

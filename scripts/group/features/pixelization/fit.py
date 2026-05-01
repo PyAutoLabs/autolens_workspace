@@ -112,12 +112,34 @@ dataset = dataset.apply_over_sampling(
 )
 
 """
+__Image-Plane Mesh Grid__
+
+The Delaunay mesh requires an image-plane mesh grid whose ray-traced positions become the Delaunay
+vertices in the source plane. We build it via an `Overlay` image-mesh covering the masked field, then
+append a ring of edge pixels at the mask boundary so the linear inversion can zero them out.
+"""
+edge_pixels_total = 30
+
+image_mesh = al.image_mesh.Overlay(shape=(22, 22))
+
+image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(mask=dataset.mask)
+
+image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
+    image_plane_mesh_grid=image_plane_mesh_grid,
+    centre=mask.mask_centre,
+    radius=mask_radius + mask.pixel_scale / 2.0,
+    n_points=edge_pixels_total,
+)
+
+"""
 __Fitting__
 
 We create concrete galaxy objects for the group lens system. The main lens and extra galaxies have
 light and mass profiles, while the source galaxy uses a pixelized reconstruction.
 
-The `Pixelization` is created with a `Delaunay` mesh (500 pixels) and `Constant` regularization.
+The `Pixelization` uses a `Delaunay` mesh whose pixel count matches the image-plane mesh grid
+computed above (with `edge_pixels_total` boundary vertices reserved for zeroing) and `Constant`
+regularization.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -144,7 +166,9 @@ extra_galaxy_1 = al.Galaxy(
 )
 
 pixelization = al.Pixelization(
-    mesh=al.mesh.Delaunay(pixels=500),
+    mesh=al.mesh.Delaunay(
+        pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+    ),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -161,8 +185,15 @@ tracer = al.Tracer(
 The `FitImaging` object handles the full group-scale fit automatically: it sums the lens light from all
 galaxies, computes the combined deflection field from all mass profiles, ray-traces to the source plane,
 performs the pixelized source reconstruction, convolves with the PSF, and computes the log likelihood.
+
+The image-plane mesh grid is supplied via an `AdaptImages` object, which pairs it with the source
+galaxy so the Delaunay vertices can be ray-traced to the source plane during the fit.
 """
-fit = al.FitImaging(dataset=dataset, tracer=tracer)
+adapt_images = al.AdaptImages(
+    galaxy_image_plane_mesh_grid_dict={source_galaxy: image_plane_mesh_grid}
+)
+
+fit = al.FitImaging(dataset=dataset, tracer=tracer, adapt_images=adapt_images)
 
 aplt.subplot_fit_imaging(fit=fit)
 

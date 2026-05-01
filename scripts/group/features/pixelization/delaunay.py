@@ -113,9 +113,31 @@ dataset = dataset.apply_over_sampling(
 )
 
 """
+__Image-Plane Mesh Grid__
+
+The Delaunay mesh requires an image-plane mesh grid whose ray-traced positions become the Delaunay
+vertices in the source plane. We build it via an `Overlay` image-mesh covering the masked field, then
+append a ring of edge pixels at the mask boundary so the linear inversion can zero them out. The same
+image-plane mesh grid is reused below for both the concrete fit and the modeling section.
+"""
+edge_pixels_total = 30
+
+image_mesh = al.image_mesh.Overlay(shape=(22, 22))
+
+image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(mask=dataset.mask)
+
+image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
+    image_plane_mesh_grid=image_plane_mesh_grid,
+    centre=mask.mask_centre,
+    radius=mask_radius + mask.pixel_scale / 2.0,
+    n_points=edge_pixels_total,
+)
+
+"""
 __Fit__
 
-We create a fit using a Delaunay mesh with 500 source pixels and constant regularization.
+We create a fit using a Delaunay mesh whose source-pixel count matches the image-plane mesh grid
+computed above, with constant regularization.
 
 For the group lens, we include the main lens galaxy and extra galaxies with their light and mass
 profiles, and a source galaxy with the Delaunay pixelization.
@@ -145,7 +167,9 @@ extra_galaxy_1 = al.Galaxy(
 )
 
 pixelization = al.Pixelization(
-    mesh=al.mesh.Delaunay(pixels=500),
+    mesh=al.mesh.Delaunay(
+        pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+    ),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -155,7 +179,11 @@ tracer = al.Tracer(
     galaxies=[lens_galaxy, extra_galaxy_0, extra_galaxy_1, source_galaxy]
 )
 
-fit = al.FitImaging(dataset=dataset, tracer=tracer)
+adapt_images = al.AdaptImages(
+    galaxy_image_plane_mesh_grid_dict={source_galaxy: image_plane_mesh_grid}
+)
+
+fit = al.FitImaging(dataset=dataset, tracer=tracer, adapt_images=adapt_images)
 
 """
 The fit subplot shows the pixelized source does a good job at capturing the appearance of the lensed
@@ -255,12 +283,21 @@ for centre in extra_galaxies_centres:
 
 extra_galaxies = af.Collection(extra_galaxies_list)
 
-# Source: Delaunay pixelization with AdaptSplit regularization.
+# Source: Delaunay pixelization with ConstantSplit regularization.
+#
+# The Delaunay mesh is constructed as a concrete instance (not `af.Model`) because its `pixels` count
+# is fixed by the image-plane mesh grid built above. JAX requires this to be static across samples.
+#
+# `ConstantSplit` is used for this first-pass model because adapt data (per-galaxy images from a
+# previous search) is not yet available. A SLaM pipeline can later upgrade to `AdaptSplit` once the
+# source has been imaged — see `scripts/group/slam.py` for the canonical chained pattern.
 
 pix = af.Model(
     al.Pixelization,
-    mesh=af.Model(al.mesh.Delaunay),
-    regularization=af.Model(al.reg.AdaptSplit),
+    mesh=al.mesh.Delaunay(
+        pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+    ),
+    regularization=al.reg.ConstantSplit,
 )
 
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pix)
@@ -288,9 +325,19 @@ search = af.Nautilus(
 
 """
 __Analysis__
+
+The image-plane mesh grid is paired with the source galaxy via `AdaptImages`, keyed by the model
+path so it resolves at instance time during the non-linear search.
 """
+adapt_images = al.AdaptImages(
+    galaxy_name_image_plane_mesh_grid_dict={
+        "('galaxies', 'source')": image_plane_mesh_grid
+    },
+)
+
 analysis = al.AnalysisImaging(
     dataset=dataset,
+    adapt_images=adapt_images,
     settings=al.Settings(use_mixed_precision=True),
 )
 
