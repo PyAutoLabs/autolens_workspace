@@ -45,7 +45,7 @@ def fit():
         jax_wrapper,
     )  # Ensures JAX environment variables are set before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+    # from autoconf import setup_notebook; setup_notebook()
 
     from os import path
     from pathlib import Path

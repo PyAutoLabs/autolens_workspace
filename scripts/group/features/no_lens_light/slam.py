@@ -127,14 +127,10 @@ def source_lp(
         mass.centre = centre
         mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
 
-        extra_mass_models.append(
-            af.Model(al.Galaxy, redshift=redshift_lens, mass=mass)
-        )
+        extra_mass_models.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
     extra_galaxies = af.Collection(extra_mass_models) if extra_mass_models else None
-    source = af.Model(
-        al.Galaxy, redshift=redshift_source, bulge=source_bulge
-    )
+    source = af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge)
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
@@ -356,9 +352,7 @@ def source_pix_2(
 
     lens_dict = {}
     for i in range(n_lenses):
-        pix1_lens_instance = getattr(
-            source_pix_result_1.instance.galaxies, f"lens_{i}"
-        )
+        pix1_lens_instance = getattr(source_pix_result_1.instance.galaxies, f"lens_{i}")
 
         lens_dict[f"lens_{i}"] = af.Model(
             al.Galaxy,
@@ -416,9 +410,7 @@ def mass_total(
     n_batch=20,
 ):
     n_lenses = sum(
-        1
-        for k in vars(source_pix_result_1.instance.galaxies)
-        if k.startswith("lens_")
+        1 for k in vars(source_pix_result_1.instance.galaxies) if k.startswith("lens_")
     )
     n_extra = (
         len(list(source_pix_result_1.instance.extra_galaxies))
@@ -435,9 +427,7 @@ def mass_total(
         mass.centre = pix1_extra.mass.centre
         mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
 
-        extra_mass_models.append(
-            af.Model(al.Galaxy, redshift=redshift_lens, mass=mass)
-        )
+        extra_mass_models.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
     extra_galaxies = af.Collection(extra_mass_models) if extra_mass_models else None
 

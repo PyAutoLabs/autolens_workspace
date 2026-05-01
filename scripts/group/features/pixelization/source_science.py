@@ -301,7 +301,9 @@ interpolated_reconstruction_zoom = al.Array2D.no_mask(
     pixel_scales=interpolation_grid_zoom.pixel_scales,
 )
 
-aplt.plot_array(array=interpolated_reconstruction_zoom, title="Zoomed Interpolated Source")
+aplt.plot_array(
+    array=interpolated_reconstruction_zoom, title="Zoomed Interpolated Source"
+)
 
 """
 __Errors__
@@ -312,7 +314,9 @@ for source science calculations.
 reconstruction_noise_map = inversion.reconstruction_noise_map
 
 interpolated_noise_map = griddata(
-    points=source_plane_mesh_grid, values=reconstruction_noise_map, xi=interpolation_grid
+    points=source_plane_mesh_grid,
+    values=reconstruction_noise_map,
+    xi=interpolation_grid,
 )
 
 interpolated_noise_map_ndarray = interpolated_noise_map.reshape(

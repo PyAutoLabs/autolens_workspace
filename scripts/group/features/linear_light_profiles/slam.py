@@ -101,8 +101,12 @@ def source_lp_0(
     extra_light_models = []
     for centre in extra_lens_centres:
         bulge = af.Model(al.lp_linear.SersicSph)
-        bulge.centre_0 = af.UniformPrior(lower_limit=centre[0] - 0.5, upper_limit=centre[0] + 0.5)
-        bulge.centre_1 = af.UniformPrior(lower_limit=centre[1] - 0.5, upper_limit=centre[1] + 0.5)
+        bulge.centre_0 = af.UniformPrior(
+            lower_limit=centre[0] - 0.5, upper_limit=centre[0] + 0.5
+        )
+        bulge.centre_1 = af.UniformPrior(
+            lower_limit=centre[1] - 0.5, upper_limit=centre[1] + 0.5
+        )
 
         extra_light_models.append(
             af.Model(al.Galaxy, redshift=redshift_lens, bulge=bulge)
@@ -114,8 +118,12 @@ def source_lp_0(
     scaling_light_models = []
     for centre in scaling_lens_centres:
         bulge = af.Model(al.lp_linear.SersicSph)
-        bulge.centre_0 = af.UniformPrior(lower_limit=centre[0] - 0.5, upper_limit=centre[0] + 0.5)
-        bulge.centre_1 = af.UniformPrior(lower_limit=centre[1] - 0.5, upper_limit=centre[1] + 0.5)
+        bulge.centre_0 = af.UniformPrior(
+            lower_limit=centre[0] - 0.5, upper_limit=centre[0] + 0.5
+        )
+        bulge.centre_1 = af.UniformPrior(
+            lower_limit=centre[1] - 0.5, upper_limit=centre[1] + 0.5
+        )
 
         scaling_light_models.append(
             af.Model(al.Galaxy, redshift=redshift_lens, bulge=bulge)
@@ -229,9 +237,10 @@ def source_lp_1(
 
         # For linear Sersic profiles, compute luminosity from the solved profile.
         galaxy_with_intensity = tracer.galaxies[n_main + i]
-        total_luminosity = abs(
-            galaxy_with_intensity.bulge.luminosity_within_circle_from(radius=10.0)
-        ) / pixel_scale**2
+        total_luminosity = (
+            abs(galaxy_with_intensity.bulge.luminosity_within_circle_from(radius=10.0))
+            / pixel_scale**2
+        )
         mass.einstein_radius = af.UniformPrior(
             lower_limit=0.0,
             upper_limit=min(5 * 0.5 * total_luminosity**0.6, 5.0),
@@ -257,9 +266,10 @@ def source_lp_1(
         mass.centre = lp0_scaling.bulge.centre
 
         galaxy_with_intensity = tracer.galaxies[n_main + n_extra + i]
-        total_luminosity = abs(
-            galaxy_with_intensity.bulge.luminosity_within_circle_from(radius=10.0)
-        ) / pixel_scale**2
+        total_luminosity = (
+            abs(galaxy_with_intensity.bulge.luminosity_within_circle_from(radius=10.0))
+            / pixel_scale**2
+        )
         mass.einstein_radius = scaling_factor * total_luminosity**scaling_relation
 
         scaling_mass_models.append(
@@ -271,9 +281,7 @@ def source_lp_1(
     scaling_galaxies = (
         af.Collection(scaling_mass_models) if scaling_mass_models else None
     )
-    source = af.Model(
-        al.Galaxy, redshift=redshift_source, bulge=source_bulge
-    )
+    source = af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge)
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
@@ -687,9 +695,10 @@ def mass_total(
         mass.centre = light_extra.bulge.centre
 
         galaxy_with_intensity = tracer.galaxies[n_lenses + 1 + i]
-        total_luminosity = abs(
-            galaxy_with_intensity.bulge.luminosity_within_circle_from(radius=10.0)
-        ) / pixel_scale**2
+        total_luminosity = (
+            abs(galaxy_with_intensity.bulge.luminosity_within_circle_from(radius=10.0))
+            / pixel_scale**2
+        )
         mass.einstein_radius = af.UniformPrior(
             lower_limit=0.0,
             upper_limit=min(5 * 0.5 * total_luminosity**0.6, 5.0),
@@ -715,9 +724,10 @@ def mass_total(
         mass.centre = light_scaling.bulge.centre
 
         galaxy_with_intensity = tracer.galaxies[n_lenses + 1 + n_extra + i]
-        total_luminosity = abs(
-            galaxy_with_intensity.bulge.luminosity_within_circle_from(radius=10.0)
-        ) / pixel_scale**2
+        total_luminosity = (
+            abs(galaxy_with_intensity.bulge.luminosity_within_circle_from(radius=10.0))
+            / pixel_scale**2
+        )
         mass.einstein_radius = scaling_factor * total_luminosity**scaling_relation
 
         scaling_mass_models.append(

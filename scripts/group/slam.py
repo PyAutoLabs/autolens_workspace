@@ -338,9 +338,7 @@ def source_lp_1(
         af.Collection(scaling_mass_models) if scaling_mass_models else None
     )
 
-    source = af.Model(
-        al.Galaxy, redshift=redshift_source, bulge=source_bulge
-    )
+    source = af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge)
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),

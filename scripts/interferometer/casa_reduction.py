@@ -186,6 +186,7 @@ import numpy as np
 try:
     from astropy import units, constants
     from astropy.io import fits
+
     astropy_is_imported = True
 except ImportError:
     astropy_is_imported = False
@@ -214,8 +215,8 @@ def getcol_wrapper(ms, table, colname):
         raise IOError(f"{ms} does not exist")
 
     tb.open(f"{ms}/{table}" if table else ms)  # noqa: F821 — `tb` is the CASA tool
-    col = np.squeeze(tb.getcol(colname))        # noqa: F821
-    tb.close()                                  # noqa: F821
+    col = np.squeeze(tb.getcol(colname))  # noqa: F821
+    tb.close()  # noqa: F821
     return col
 
 
@@ -280,8 +281,8 @@ is later reshaped to `(n_vis_total, 2)` once you flatten over channels.
 def convert_array_to_wavelengths(array, frequency):
     if astropy_is_imported:
         return (
-            (array * units.m) * (frequency * units.Hz) / constants.c
-        ).decompose().value
+            ((array * units.m) * (frequency * units.Hz) / constants.c).decompose().value
+        )
     return array * frequency / 299792458.0
 
 

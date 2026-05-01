@@ -243,9 +243,7 @@ def source_lp_1(
         )
 
     extra_galaxies = af.Collection(extra_mass_models) if extra_mass_models else None
-    source = af.Model(
-        al.Galaxy, redshift=redshift_source, bulge=source_bulge
-    )
+    source = af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge)
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
@@ -316,9 +314,7 @@ def source_pix_1(
     )
 
     n_main = sum(
-        1
-        for k in vars(source_lp_result_1.instance.galaxies)
-        if k.startswith("lens_")
+        1 for k in vars(source_lp_result_1.instance.galaxies) if k.startswith("lens_")
     )
 
     # Main lens galaxies: mass as model from previous result.
@@ -338,9 +334,7 @@ def source_pix_1(
             bulge=prev_lens.bulge,
             disk=prev_lens.disk,
             mass=mass,
-            shear=source_lp_result_1.model.galaxies.lens_0.shear
-            if i == 0
-            else None,
+            shear=source_lp_result_1.model.galaxies.lens_0.shear if i == 0 else None,
         )
 
     # Extra galaxies: carried forward as model parameters.
@@ -412,9 +406,7 @@ def source_pix_2(
     )
 
     n_main = sum(
-        1
-        for k in vars(source_pix_result_1.instance.galaxies)
-        if k.startswith("lens_")
+        1 for k in vars(source_pix_result_1.instance.galaxies) if k.startswith("lens_")
     )
 
     # Main lens galaxies: mass fixed from SOURCE PIX 1.
@@ -476,9 +468,7 @@ def light_lp(
     )
 
     n_main = sum(
-        1
-        for k in vars(source_pix_result_1.instance.galaxies)
-        if k.startswith("lens_")
+        1 for k in vars(source_pix_result_1.instance.galaxies) if k.startswith("lens_")
     )
 
     lens_dict = {}
@@ -577,9 +567,7 @@ def mass_total(
     )
 
     n_main = sum(
-        1
-        for k in vars(light_result.instance.galaxies)
-        if k.startswith("lens_")
+        1 for k in vars(light_result.instance.galaxies) if k.startswith("lens_")
     )
 
     lens_dict = {}
@@ -598,9 +586,7 @@ def mass_total(
             redshift=redshift_lens,
             bulge=light_lens.bulge,
             mass=mass,
-            shear=source_pix_result_1.model.galaxies.lens_0.shear
-            if i == 0
-            else None,
+            shear=source_pix_result_1.model.galaxies.lens_0.shear if i == 0 else None,
         )
 
     # Extra galaxies: fresh mass, light fixed from LIGHT LP.

@@ -294,7 +294,9 @@ fit = result.max_log_likelihood_fit
 
 tracer = fit.tracer
 
-print(f"Main lens galaxy bulge intensity (via fit): {tracer.galaxies[0].bulge.intensity}")
+print(
+    f"Main lens galaxy bulge intensity (via fit): {tracer.galaxies[0].bulge.intensity}"
+)
 
 """
 Fin.

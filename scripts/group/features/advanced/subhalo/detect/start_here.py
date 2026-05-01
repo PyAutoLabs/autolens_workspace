@@ -523,9 +523,7 @@ def subhalo_grid_search(
 
     subhalo = af.Model(al.Galaxy, mass=subhalo_mass)
 
-    subhalo.mass.mass_at_200 = af.LogUniformPrior(
-        lower_limit=1.0e6, upper_limit=1.0e11
-    )
+    subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
     subhalo.mass.centre_0 = af.UniformPrior(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
@@ -533,9 +531,7 @@ def subhalo_grid_search(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
 
-    subhalo.redshift = (
-        subhalo_no_subhalo_result.instance.galaxies.lens_0.redshift
-    )
+    subhalo.redshift = subhalo_no_subhalo_result.instance.galaxies.lens_0.redshift
     subhalo.mass.redshift_object = (
         subhalo_no_subhalo_result.instance.galaxies.lens_0.redshift
     )
@@ -615,22 +611,16 @@ def subhalo_refine(
         mass=subhalo_mass,
     )
 
-    subhalo.redshift = (
-        subhalo_no_subhalo_result.instance.galaxies.lens_0.redshift
-    )
+    subhalo.redshift = subhalo_no_subhalo_result.instance.galaxies.lens_0.redshift
     subhalo.mass.redshift_object = (
         subhalo_no_subhalo_result.instance.galaxies.lens_0.redshift
     )
-    subhalo.mass.mass_at_200 = af.LogUniformPrior(
-        lower_limit=1.0e6, upper_limit=1.0e11
-    )
+    subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
     subhalo.mass.centre = subhalo_grid_search_result.model_centred_absolute(
         a=1.0
     ).galaxies.subhalo.mass.centre
 
-    subhalo.redshift = (
-        subhalo_grid_search_result.model.galaxies.subhalo.redshift
-    )
+    subhalo.redshift = subhalo_grid_search_result.model.galaxies.subhalo.redshift
     subhalo.mass.redshift_object = subhalo.redshift
 
     lens_dict = {

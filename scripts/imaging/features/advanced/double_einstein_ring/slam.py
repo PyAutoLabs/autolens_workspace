@@ -303,10 +303,12 @@ def source_pix_1_source_1(
     }
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_name_image_dict)
 
-    positions_likelihood_source_0 = source_pix_result_1_source_0.positions_likelihood_from(
-        factor=3.0,
-        minimum_threshold=0.2,
-        plane_redshift=source_lp_result_2.instance.galaxies.source_0.redshift,
+    positions_likelihood_source_0 = (
+        source_pix_result_1_source_0.positions_likelihood_from(
+            factor=3.0,
+            minimum_threshold=0.2,
+            plane_redshift=source_lp_result_2.instance.galaxies.source_0.redshift,
+        )
     )
     positions_likelihood_source_1 = source_lp_result_2.positions_likelihood_from(
         factor=3.0,

@@ -300,9 +300,7 @@ aplt.plot_grid(grid=grid, title="Over-Sampled Grid")
 We can compare this adaptive grid to the grid with over sampling of 32 x 32 to confine it produces low amounts
 of residuals.
 """
-grid_masked_sub_32 = al.Grid2D(
-    values=grid, mask=mask, over_sample_size=32
-)
+grid_masked_sub_32 = al.Grid2D(values=grid, mask=mask, over_sample_size=32)
 
 image_adaptive = light.image_2d_from(grid=grid_adaptive)
 image_masked_sub_32 = light.image_2d_from(grid=grid_masked_sub_32)

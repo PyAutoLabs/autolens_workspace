@@ -310,9 +310,7 @@ def mass_total(
             redshift=light_lens_instance.redshift,
             bulge=light_lens_instance.bulge,
             mass=mass,
-            shear=source_lp_result.model.galaxies.lens_0.shear
-            if i == 0
-            else None,
+            shear=source_lp_result.model.galaxies.lens_0.shear if i == 0 else None,
         )
 
         lens_dict[f"lens_{i}"] = lens

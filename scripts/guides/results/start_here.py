@@ -150,9 +150,7 @@ The full set of non-linear search samples is saved to `files/samples.csv` and it
 """
 if (files_path / "samples.csv").exists() and (files_path / "model.json").exists():
     model = from_json(file_path=files_path / "model.json")
-    samples = af.SamplesNest.from_csv(
-        file_path=files_path / "samples.csv", model=model
-    )
+    samples = af.SamplesNest.from_csv(file_path=files_path / "samples.csv", model=model)
     print(samples.max_log_likelihood())
 
 """

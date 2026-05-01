@@ -109,7 +109,11 @@ already been convolved with the PSF and will not be convolved again during simul
 lens_0 = al.Galaxy(
     redshift=0.5,
     bulge=al.lp_operated.Sersic(
-        centre=(0.0, 0.0), ell_comps=(0.0, 0.0), intensity=0.7, effective_radius=2.0, sersic_index=4.0
+        centre=(0.0, 0.0),
+        ell_comps=(0.0, 0.0),
+        intensity=0.7,
+        effective_radius=2.0,
+        sersic_index=4.0,
     ),
     mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=4.0),
 )
@@ -124,7 +128,11 @@ The extra galaxies also use operated ``Sersic`` light profiles.
 extra_galaxy_0 = al.Galaxy(
     redshift=0.5,
     bulge=al.lp_operated.Sersic(
-        centre=(3.5, 2.5), ell_comps=(0.0, 0.0), intensity=0.9, effective_radius=0.8, sersic_index=3.0
+        centre=(3.5, 2.5),
+        ell_comps=(0.0, 0.0),
+        intensity=0.9,
+        effective_radius=0.8,
+        sersic_index=3.0,
     ),
     mass=al.mp.IsothermalSph(centre=(3.5, 2.5), einstein_radius=0.8),
 )
@@ -132,7 +140,11 @@ extra_galaxy_0 = al.Galaxy(
 extra_galaxy_1 = al.Galaxy(
     redshift=0.5,
     bulge=al.lp_operated.Sersic(
-        centre=(-4.4, -5.0), ell_comps=(0.0, 0.0), intensity=0.9, effective_radius=0.8, sersic_index=3.0
+        centre=(-4.4, -5.0),
+        ell_comps=(0.0, 0.0),
+        intensity=0.9,
+        effective_radius=0.8,
+        sersic_index=3.0,
     ),
     mass=al.mp.IsothermalSph(centre=(-4.4, -5.0), einstein_radius=1.0),
 )

@@ -89,8 +89,7 @@ We load each point-source dataset as a `PointDataset` and place them into a list
 fitted by its own `AnalysisPoint` further down in the script.
 """
 dataset_list = [
-    al.from_json(file_path=dataset_path / f"point_dataset_{i}.json")
-    for i in range(2)
+    al.from_json(file_path=dataset_path / f"point_dataset_{i}.json") for i in range(2)
 ]
 
 for dataset in dataset_list:

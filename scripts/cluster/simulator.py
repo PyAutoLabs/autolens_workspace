@@ -162,8 +162,8 @@ satellite location offset to the upper-right. Source centres are chosen so that 
 strongly-lensed region for the given halo + member configuration, producing genuine multiple images.
 """
 main_lens_centres = [
-    (0.0, 0.0),      # BCG at cluster centre
-    (10.0, 8.0),     # satellite member
+    (0.0, 0.0),  # BCG at cluster centre
+    (10.0, 8.0),  # satellite member
 ]
 
 host_halo_centre = (0.0, 0.0)
@@ -226,14 +226,14 @@ parameters representative of cluster members: a larger central BCG and one small
 """
 main_lens_dpie_params = [
     # (ra,  rs,   b0)  per galaxy — arcsec
-    (8.0, 20.0, 3.0),   # BCG — strongest
-    (5.0, 12.0, 1.2),   # satellite
+    (8.0, 20.0, 3.0),  # BCG — strongest
+    (5.0, 12.0, 1.2),  # satellite
 ]
 
 main_lens_sersic_params = [
     # (intensity, effective_radius, sersic_index)
-    (1.5, 3.0, 4.0),    # BCG — bright and extended
-    (0.8, 1.5, 3.5),    # satellite
+    (1.5, 3.0, 4.0),  # BCG — bright and extended
+    (0.8, 1.5, 3.5),  # satellite
 ]
 
 main_lens_galaxies = []
@@ -247,9 +247,7 @@ for centre, (ra, rs, b0), (intensity, effective_radius, sersic_index) in zip(
         sersic_index=sersic_index,
     )
     mass = al.mp.dPIEMassSph(centre=centre, ra=ra, rs=rs, b0=b0)
-    main_lens_galaxies.append(
-        al.Galaxy(redshift=redshift_lens, bulge=bulge, mass=mass)
-    )
+    main_lens_galaxies.append(al.Galaxy(redshift=redshift_lens, bulge=bulge, mass=mass))
 
 """
 __Host Dark Matter Halo__
@@ -301,9 +299,7 @@ Combine main lens galaxies, the host halo galaxy, and the source galaxies into a
 produces the simulated image. With sources at distinct redshifts, the tracer automatically handles
 multi-plane ray tracing.
 """
-tracer = al.Tracer(
-    galaxies=main_lens_galaxies + [host_halo_galaxy] + source_galaxies
-)
+tracer = al.Tracer(galaxies=main_lens_galaxies + [host_halo_galaxy] + source_galaxies)
 
 """
 __JAX JIT__
