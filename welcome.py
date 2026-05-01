@@ -1,6 +1,17 @@
+import sys
+
 import autolens as al
 
-input(
+
+def _prompt(msg: str) -> None:
+    """input() that gracefully no-ops on non-tty stdin (e.g. CI / piped runs)."""
+    if sys.stdin.isatty():
+        input(msg)
+    else:
+        print(msg)
+
+
+_prompt(
     "############################################\n"
     "### WELCOME TO THE AUTOLENS WORKSPACE ###\n"
     "############################################\n\n"
@@ -34,7 +45,7 @@ input(
     [Press Enter to continue]"""
 )
 
-input(
+_prompt(
     "\n"
     "###############################\n"
     "##### MATPLOTLIB BACKEND ######\n"
@@ -81,7 +92,7 @@ sersic_light_profile = al.lp.Exponential(
 
 aplt.plot_array(array=sersic_light_profile.image_2d_from(grid=grid), title="Image")
 
-input(
+_prompt(
     "\n"
     "##############################\n"
     "## LIGHT AND MASS PROFILES ###\n"
@@ -109,7 +120,7 @@ deflections = isothermal_mass_profile.deflections_yx_2d_from(grid=grid)
 deflections_x = al.Array2D(values=deflections.slim[:, 1], mask=grid.mask)
 aplt.plot_array(array=deflections_x, title="Deflections X")
 
-input(
+_prompt(
     "\n"
     "########################\n"
     "##### RAY TRACING ######\n"
@@ -129,7 +140,7 @@ tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 
-input(
+_prompt(
     "\n"
     "###########################\n"
     "##### WORKSPACE TOUR ######\n"
