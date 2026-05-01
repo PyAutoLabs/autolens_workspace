@@ -10,11 +10,6 @@ In this script, we fit `Imaging` with a strong lens model where:
 """
 
 # %matplotlib inline
-# from pyprojroot import here
-# workspace_path = str(here())
-# %cd $workspace_path
-# print(f"Working Directory has been set to `{workspace_path}`")
-
 from os import path
 import numpy as np
 import autofit as af
