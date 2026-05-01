@@ -150,6 +150,26 @@ extra_galaxy_1 = al.Galaxy(
 )
 
 """
+__Image-Plane Mesh Grid__
+
+The Delaunay mesh requires an image-plane mesh grid whose ray-traced positions become the Delaunay
+vertices in the source plane. We build it via an `Overlay` image-mesh covering the masked field, then
+append a ring of edge pixels at the mask boundary so the linear inversion can zero them out.
+"""
+edge_pixels_total = 30
+
+image_mesh = al.image_mesh.Overlay(shape=(22, 22))
+
+image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(mask=masked_dataset.mask)
+
+image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
+    image_plane_mesh_grid=image_plane_mesh_grid,
+    centre=mask.mask_centre,
+    radius=mask_radius + mask.pixel_scale / 2.0,
+    n_points=edge_pixels_total,
+)
+
+"""
 __Source Galaxy Pixelization__
 
 The source galaxy is reconstructed using a Delaunay mesh with constant regularization, rather than
@@ -157,14 +177,17 @@ an analytic light profile.
 
 The `Pixelization` consists of:
 
- - `mesh`: A `Delaunay` triangulation with 500 source pixels. The triangle vertices are determined by
-   ray-tracing a coarse image-plane grid to the source plane.
+ - `mesh`: A `Delaunay` triangulation whose source-pixel count matches the image-plane mesh grid
+   computed above (with `edge_pixels_total` boundary vertices reserved for zeroing). The triangle
+   vertices are determined by ray-tracing this image-plane grid to the source plane.
 
  - `regularization`: A `Constant` scheme that applies uniform smoothing across all source pixels, with
    a single free regularization coefficient.
 """
 pixelization = al.Pixelization(
-    mesh=al.mesh.Delaunay(pixels=500),
+    mesh=al.mesh.Delaunay(
+        pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+    ),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 
@@ -292,8 +315,17 @@ __Fit__
 
 The `FitImaging` object performs all of the above steps automatically. We verify that it produces the
 correct result for the group-scale pixelized fit.
+
+The image-plane mesh grid is supplied via an `AdaptImages` object, which pairs it with the source
+galaxy so the Delaunay vertices can be ray-traced to the source plane during the fit.
 """
-fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
+adapt_images = al.AdaptImages(
+    galaxy_image_plane_mesh_grid_dict={source_galaxy: image_plane_mesh_grid}
+)
+
+fit = al.FitImaging(
+    dataset=masked_dataset, tracer=tracer, adapt_images=adapt_images
+)
 fit_figure_of_merit = fit.figure_of_merit
 print(f"Log Likelihood: {fit_figure_of_merit}")
 
