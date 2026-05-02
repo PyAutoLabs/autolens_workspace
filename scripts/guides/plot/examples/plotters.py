@@ -348,6 +348,15 @@ A point source fit is plotted with `aplt.subplot_fit_point()`.
 dataset_name = "simple"
 dataset_path = Path("dataset") / "point_source" / dataset_name
 
+if not (dataset_path / "point_dataset_positions_only.json").exists():
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "scripts/point_source/simulator.py"],
+        check=True,
+    )
+
 dataset = al.from_json(
     file_path=Path(dataset_path, "point_dataset_positions_only.json"),
 )

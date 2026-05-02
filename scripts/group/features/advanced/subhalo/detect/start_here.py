@@ -346,7 +346,7 @@ def light_lp(
         shear=source_result_for_lens.instance.galaxies.lens_0.shear,
     )
 
-    lens_dict = {"lens_0": lens_0, "source": source}
+    lens_dict = {"lens_0": lens_0}
 
     extra_galaxies = source_result_for_lens.instance.extra_galaxies
 
@@ -417,7 +417,7 @@ def mass_total(
         shear=source_result_for_lens.model.galaxies.lens_0.shear,
     )
 
-    lens_dict = {"lens_0": lens_0, "source": source}
+    lens_dict = {"lens_0": lens_0}
 
     extra_galaxies = light_result.instance.extra_galaxies
 
@@ -467,7 +467,7 @@ def subhalo_no_subhalo(
     source = al.util.chaining.source_from(result=mass_result)
     lens_0 = mass_result.model.galaxies.lens_0
 
-    lens_dict = {"lens_0": lens_0, "source": source}
+    lens_dict = {"lens_0": lens_0}
 
     extra_galaxies = mass_result.instance.extra_galaxies
 
@@ -542,7 +542,7 @@ def subhalo_grid_search(
     lens_0 = mass_result.model.galaxies.lens_0
     source = al.util.chaining.source_from(result=mass_result)
 
-    lens_dict = {"lens_0": lens_0, "subhalo": subhalo, "source": source}
+    lens_dict = {"lens_0": lens_0, "subhalo": subhalo}
 
     extra_galaxies = mass_result.instance.extra_galaxies
 
@@ -626,7 +626,6 @@ def subhalo_refine(
     lens_dict = {
         "lens_0": subhalo_grid_search_result.model.galaxies.lens_0,
         "subhalo": subhalo,
-        "source": subhalo_grid_search_result.model.galaxies.source,
     }
 
     extra_galaxies = mass_result.instance.extra_galaxies

@@ -400,18 +400,20 @@ solver = al.PointSolver.for_grid(
 
 @jax.jit
 def jitted_solve(tracer, source_plane_coordinate):
+    # Grid2DIrregular is not a JAX pytree, so unwrap to the raw jnp array
+    # before returning out of the jit trace.
     return solver.solve(
         tracer=tracer,
         source_plane_coordinate=source_plane_coordinate,
         xp=jnp,
         remove_infinities=False,
-    )
+    ).array
 
 
 positions_list = []
 for i, src_centre in enumerate(source_centres):
     coord = jnp.asarray(src_centre)
-    raw = np.asarray(jitted_solve(tracer, coord).array)
+    raw = np.asarray(jitted_solve(tracer, coord))
     finite = ~(np.isinf(raw).any(axis=1) | np.isnan(raw).any(axis=1))
     positions_list.append(al.Grid2DIrregular(raw[finite]))
 
