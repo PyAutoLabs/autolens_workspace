@@ -49,11 +49,31 @@ import autolens as al
 import autolens.plot as aplt
 
 """
+__Quick Fit Auto-Trigger__
+
+If a previous fit has not been run yet, the shared helper ``_quick_fit.py`` is invoked to produce one.
+The helper writes a capped Nautilus fit to ``output/results_folder/`` so this tutorial (and its siblings
+in this folder) have results to work with. When that folder already exists the helper exits immediately,
+so re-running this tutorial is cheap.
+"""
+results_path = Path("output") / "results_folder"
+if not results_path.exists():
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "scripts/guides/results/_quick_fit.py"],
+        check=True,
+    )
+
+"""
 __Model Fit__
 
 To illustrate results, we need to perform a model-fit in order to create a `Result` object.
 
-The code below performs a model-fit using Nautilus. 
+The code below performs a model-fit using Nautilus. The helper above already wrote a completed fit to
+``output/results_folder/``, so the ``search.fit(...)`` call below resumes from that checkpoint and
+returns the in-memory ``Result`` object without redoing the search.
 
 You should be familiar with modeling already, if not read the `modeling/start_here.py` script before reading this one!
 """
@@ -105,6 +125,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,
     n_live=100,
     n_batch=50,  # GPU batching and VRAM use explained in `modeling` examples.
+    n_like_max=300,
 )
 
 analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)

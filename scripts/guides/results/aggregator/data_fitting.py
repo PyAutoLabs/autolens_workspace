@@ -54,7 +54,7 @@ if not results_path.exists():
     import sys
 
     subprocess.run(
-        [sys.executable, "scripts/guides/results/start_here.py"],
+        [sys.executable, "scripts/guides/results/_quick_fit.py"],
         check=True,
     )
 

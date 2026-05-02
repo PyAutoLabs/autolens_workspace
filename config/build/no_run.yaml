@@ -18,9 +18,6 @@
 #   the NEEDS_FIX marker.
 
 - tutorial_searches
-- guides/results/examples/samples # SLOW 2026-04-10 - exceeds 60s test timeout; unsets TEST_MODE for downstream examples
-- guides/results/examples/samples_via_aggregator # SLOW 2026-04-10 - exceeds 60s test timeout; unsets TEST_MODE for downstream examples
-- guides/results/examples/queries # SLOW 2026-04-10 - cascade from SLOW-skipped results/start_here.py; stub Model lacks sersic_index attribute
 - guides/results/database/start_here # SLOW 2026-04-10 - previously failed fast on a broken aggregator query; now runs the real aggregator and exceeds 60s
 - tutorial_5_borders # Cant get right masks, need proper update.
 - tutorial_6_model_fit # InversionException due to test mode
@@ -36,7 +33,6 @@
 - time_delays # Test mode does not support cosmology ift
 - hpc/example_cpu # HPC paths dont exist locally.
 - examples/searches # Test mode breaks search visualization.
-- data_fitting # Test mode breaks .fits file output
 - cluster/modeling # Cluster modeling is not maintained and test mode breaks it.
 - cluster/start_here # Cluster analysis is not maintained and test mode breaks it.
 - mass_stellar_dark/modeling # Requires CSE to be JAX enabled.
