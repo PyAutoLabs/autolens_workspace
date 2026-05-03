@@ -246,6 +246,13 @@ The reason we choose this approach is because it is closer to how we model the m
 sources, where each multiple image is modeled in the image-plane as a separate light 
 profile (see `point_source/modeling/features/debeleing.ipynb` for a description of why).
 """
+point_image_kwargs = {
+    f"point_image_{i}": al.lp_operated.Gaussian(
+        centre=positions[i], intensity=fluxes[i], sigma=psf_sigma
+    )
+    for i in range(len(positions))
+}
+
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     bulge=al.lp.Sersic(
@@ -255,23 +262,12 @@ lens_galaxy = al.Galaxy(
         effective_radius=0.6,
         sersic_index=3.0,
     ),
-    point_image_0=al.lp_operated.Gaussian(
-        centre=positions[0], intensity=fluxes[0], sigma=psf_sigma
-    ),
-    point_image_1=al.lp_operated.Gaussian(
-        centre=positions[1], intensity=fluxes[1], sigma=psf_sigma
-    ),
-    point_image_2=al.lp_operated.Gaussian(
-        centre=positions[2], intensity=fluxes[2], sigma=psf_sigma
-    ),
-    point_image_3=al.lp_operated.Gaussian(
-        centre=positions[3], intensity=fluxes[3], sigma=psf_sigma
-    ),
     mass=al.mp.Isothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+    **point_image_kwargs,
 )
 
 """
