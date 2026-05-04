@@ -9,13 +9,19 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
-                        "label": null,
                         "redshift": 0.5,
+                        "label": null,
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.isothermal.Isothermal",
                             "arguments": {
-                                "einstein_radius": 1.6,
+                                "centre": {
+                                    "type": "tuple",
+                                    "values": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
@@ -23,13 +29,7 @@
                                         3.2227547345982974e-18
                                     ]
                                 },
-                                "centre": {
-                                    "type": "tuple",
-                                    "values": [
-                                        0.0,
-                                        0.0
-                                    ]
-                                }
+                                "einstein_radius": 1.6
                             }
                         },
                         "shear": {
@@ -46,14 +46,18 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
-                        "label": null,
                         "redshift": 1.0,
+                        "label": null,
                         "bulge": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.light.standard.sersic_core.SersicCore",
                             "arguments": {
+                                "effective_radius": 0.1,
+                                "sersic_index": 1.0,
                                 "gamma": 0.25,
+                                "alpha": 3.0,
                                 "intensity": 4.0,
+                                "radius_break": 0.025,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -61,17 +65,13 @@
                                         0.0
                                     ]
                                 },
-                                "alpha": 3.0,
-                                "radius_break": 0.025,
-                                "sersic_index": 1.0,
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
                                         0.0962250448649376,
                                         -0.05555555555555551
                                     ]
-                                },
-                                "effective_radius": 0.1
+                                }
                             }
                         }
                     }
