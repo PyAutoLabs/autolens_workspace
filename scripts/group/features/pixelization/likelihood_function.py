@@ -323,9 +323,7 @@ adapt_images = al.AdaptImages(
     galaxy_image_plane_mesh_grid_dict={source_galaxy: image_plane_mesh_grid}
 )
 
-fit = al.FitImaging(
-    dataset=masked_dataset, tracer=tracer, adapt_images=adapt_images
-)
+fit = al.FitImaging(dataset=masked_dataset, tracer=tracer, adapt_images=adapt_images)
 fit_figure_of_merit = fit.figure_of_merit
 print(f"Log Likelihood: {fit_figure_of_merit}")
 
