@@ -651,7 +651,7 @@ to fit more complex models to your data.
 __Data Preparation__
 
 If you are looking to fit your own point source data of a strong lens, checkout  
-the `autolens_workspace/*/data_preparation/point_source/README.rst` script for an overview of how data should be 
+the `autolens_workspace/*/data_preparation/point_source/README.md` script for an overview of how data should be 
 prepared before being modeled.
 
 __HowToLens__
