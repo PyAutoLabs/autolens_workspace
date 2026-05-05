@@ -7,6 +7,7 @@ The following example scripts illustrate datacube lens modeling where:
 - `start_here`: A first walkthrough — load a 4-channel cube, build the FactorGraph, fit with Nautilus.
 - `simulator`: Simulate a representative cube with a Gaussian emission line in the source.
 - `modeling`: Focused FactorGraph + pixelization fit, ready to point at your own cube.
+- `modeling_parametric`: Same wiring with a parametric `Sersic` source — shared morphology, per-channel intensity. Faster than the pixelization variant; appropriate when the source is well-described by a single Sersic.
 
 # Overview
 
