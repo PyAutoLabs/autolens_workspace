@@ -29,9 +29,10 @@ __Contents__
 **Dataset:** Where the per-channel cube lives on disk and how to point this script at your own.
 **Dataset Auto-Simulation:** Run `simulator.py` automatically if the cube isn't already on disk.
 **Dataset Loading:** Loop over the channel folders and load each as an `Interferometer` object.
+**Positions:** Load multiple-image positions and build a shared `PositionsLH` penalty.
 **Settings:** Default `al.Settings()` — no positive-only-solver tweak needed (no inversion).
 **Model:** Compose the shared `Isothermal + ExternalShear` lens and `Sersic` source.
-**Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with `use_jax=True`.
+**Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with `use_jax=True` and the shared `PositionsLH`.
 **FactorGraph:** Per-factor `model.copy()` with the source `intensity` prior overridden per channel.
 **Search:** Configure the `Nautilus` non-linear search.
 **Model Fit:** Run the fit. Per-channel cost is much cheaper than the pixelization variant.
@@ -99,6 +100,18 @@ dataset_list = [
 ]
 
 """
+__Positions__
+
+Load the cube's multiple-image positions and wrap them in an `al.PositionsLH` penalty. Pixelized fits really
+need this; parametric Sersic fits less so, but the penalty still helps the search avoid local maxima where the
+mass model places multiple images far apart in the source plane.
+"""
+positions = al.Grid2DIrregular(
+    al.from_json(file_path=dataset_path / "positions.json")
+)
+positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
+
+"""
 __Settings__
 
 Parametric sources don't run a source-plane inversion, so we don't need to disable a positive-only solver
@@ -139,9 +152,17 @@ print(model.info)
 
 """
 __Per-Channel Analyses__
+
+The shared `positions_likelihood` is passed to every per-channel analysis so the multiple-image penalty applies
+globally to the lens model.
 """
 analysis_list = [
-    al.AnalysisInterferometer(dataset=dataset, settings=settings, use_jax=True)
+    al.AnalysisInterferometer(
+        dataset=dataset,
+        settings=settings,
+        positions_likelihood_list=[positions_likelihood],
+        use_jax=True,
+    )
     for dataset in dataset_list
 ]
 

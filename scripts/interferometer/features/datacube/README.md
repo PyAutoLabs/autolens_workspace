@@ -5,9 +5,12 @@ The `datacube` folder contains example scripts showing how to model an ALMA-styl
 The following example scripts illustrate datacube lens modeling where:
 
 - `start_here`: A first walkthrough — load a 4-channel cube, build the FactorGraph, fit with Nautilus.
-- `simulator`: Simulate a representative cube with a Gaussian emission line in the source.
-- `modeling`: Focused FactorGraph + pixelization fit, ready to point at your own cube.
+- `simulator`: Simulate a representative cube with a Gaussian emission line in the source. Also writes `positions.json` with the multiple-image positions used by the modeling scripts' `PositionsLH` penalty.
+- `modeling`: Focused FactorGraph + `RectangularAdaptDensity` pixelization fit, ready to point at your own cube.
 - `modeling_parametric`: Same wiring with a parametric `Sersic` source — shared morphology, per-channel intensity. Faster than the pixelization variant; appropriate when the source is well-described by a single Sersic.
+- `delaunay`: Same wiring with a Delaunay-pixelized source — image-plane `Overlay` mesh ray-traced and triangulated in the source plane, with `ConstantSplit` regularization. More flexible than the rectangular mesh; the canonical follow-up once the rectangular fit converges on a sensible lens model.
+
+Every modeling script loads `positions.json` and applies an `al.PositionsLH` penalty. **For pixelized fits this is essentially required** — without the penalty the search routinely converges on demagnified-source local maxima where the source pixels are reconstructed in low-magnification regions of the source plane.
 
 # Overview
 

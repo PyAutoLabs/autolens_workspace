@@ -25,6 +25,7 @@ __Contents__
 **Lens Galaxy:** Shared `Isothermal + ExternalShear` lens, identical for every channel.
 **Per-Channel Source:** A Gaussian emission line in channel index drives the per-channel `Sersic.intensity`.
 **Per-Channel Simulate:** Loop over channels: build the tracer, simulate, write FITS + tracer.json to disk.
+**Multiple Images:** Compute and save the lensed multiple-image positions used by the modeling scripts' `PositionsLH` penalty.
 **Cube Summary:** Dump the emission-line parameters and per-channel intensities to `cube_summary.json`.
 **Cube Overview Plot:** Row-per-channel sanity figure (lensed image, uv-plane Re/Im, |vis| vs baseline length).
 **Spectrum Plot:** Source intensity as a function of channel index.
@@ -190,6 +191,34 @@ for channel in range(N_CHANNELS):
         f"  channel {channel:03d}: intensity={intensity:.4f}, "
         f"|vis|_max={np.max(np.abs(dataset.data)):.3e}"
     )
+
+"""
+__Multiple Images__
+
+Pixelized source modeling can drift toward unphysical demagnified-source local maxima — the source pixels are
+reconstructed in low-magnification regions of the source plane that fit the noise rather than the lensed signal.
+The `PositionsLH` penalty defends against that by reading a small set of multiple-image positions from disk and
+adding a likelihood penalty for any candidate lens model whose source-plane back-projection of those positions
+spreads them apart.
+
+For simulated data we can compute the multiple-image positions automatically with `al.PointSolver`. The lens model
+and source centre are channel-invariant, so a single `positions.json` covers the entire cube — every modeling
+script in this folder loads the same file.
+"""
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+)
+positions = solver.solve(
+    tracer=tracers[0],
+    source_plane_coordinate=tracers[0].planes[-1][0].bulge.centre,
+)
+
+al.output_to_json(
+    obj=positions,
+    file_path=dataset_path / "positions.json",
+)
+
+print(f"  multiple-image positions: {len(positions)}")
 
 """
 __Cube Summary__
