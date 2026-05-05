@@ -26,8 +26,9 @@ __Contents__
 
 **JAX:** GPU/CPU acceleration via JAX — the same backend that single-channel interferometer fits use.
 **Imports:** Standard PyAutoLens imports + `autofit` for the FactorGraph wiring.
-**Cube on Disk:** Where the per-channel data lives, and how to auto-simulate a reference cube.
 **Mask:** A single 2D real-space mask shared across all channels.
+**Dataset:** Where the per-channel cube lives on disk and how to point this script at your own.
+**Dataset Auto-Simulation:** Run `simulator.py` automatically if the cube isn't already on disk.
 **Dataset Loading:** Loop over channel folders to build a `dataset_list` of `Interferometer` objects.
 **Sparse Operators:** Per-channel sparse-operator pre-compute used by the pixelized source inversion.
 **Settings:** Disable the positive-only solver (visibility inversions can take negative pixel values).
@@ -63,32 +64,6 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-__Cube on Disk__
-
-The reference cube ships in `dataset/interferometer/datacube/sim_simple/`, with one subfolder per channel
-(`channel_000/`, `channel_001/`, ...) each containing `data.fits`, `noise_map.fits`, `uv_wavelengths.fits` and
-the true `tracer.json`. If the cube isn't on disk yet — for example, on a fresh checkout — this block runs the
-sibling `simulator.py` to generate it.
-
-To point this script at your own cube, drop your channel folders in alongside the reference cube and update
-`dataset_name`. Each channel folder must contain `data.fits`, `noise_map.fits` and `uv_wavelengths.fits` in the
-shape produced by `al.SimulatorInterferometer` (visibilities and noise stored as ``(n_vis, 2)`` real/imag pairs;
-baselines as ``(n_vis, 2)`` u/v pairs).
-"""
-dataset_label = "datacube"
-dataset_name = "sim_simple"
-dataset_path = Path("dataset") / "interferometer" / dataset_label / dataset_name
-
-if not dataset_path.exists():
-    subprocess.run(
-        [sys.executable, "scripts/interferometer/features/datacube/simulator.py"],
-        check=True,
-    )
-
-channel_paths = sorted(p for p in dataset_path.iterdir() if p.is_dir() and p.name.startswith("channel_"))
-print(f"Found {len(channel_paths)} channels in {dataset_path}")
-
-"""
 __Mask__
 
 A single 2D circular mask shared across every channel. The lens galaxy and the source emission live in the same
@@ -103,6 +78,34 @@ real_space_mask = al.Mask2D.circular(
 )
 
 """
+__Dataset__
+
+The reference cube ships in `dataset/interferometer/datacube/sim_simple/`, with one subfolder per channel
+(`channel_000/`, `channel_001/`, ...) each containing `data.fits`, `noise_map.fits`, `uv_wavelengths.fits` and
+the true `tracer.json`.
+
+To point this script at your own cube, drop your channel folders in alongside the reference cube and update
+`dataset_name`. Each channel folder must contain `data.fits`, `noise_map.fits` and `uv_wavelengths.fits` in the
+shape produced by `al.SimulatorInterferometer` (visibilities and noise stored as ``(n_vis, 2)`` real/imag pairs;
+baselines as ``(n_vis, 2)`` u/v pairs).
+"""
+dataset_label = "datacube"
+dataset_name = "sim_simple"
+dataset_path = Path("dataset") / "interferometer" / dataset_label / dataset_name
+
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if not dataset_path.exists():
+    subprocess.run(
+        [sys.executable, "scripts/interferometer/features/datacube/simulator.py"],
+        check=True,
+    )
+
+"""
 __Dataset Loading__
 
 Build the cube by loading each channel folder as an `Interferometer` object. The result is a Python list — no
@@ -110,6 +113,9 @@ new dataset class involved. Every downstream component (analyses, factors, fits,
 list directly, which is the whole reason we picked the list-of-Interferometer design over a bespoke
 `Datacube3D` class.
 """
+channel_paths = sorted(p for p in dataset_path.iterdir() if p.is_dir() and p.name.startswith("channel_"))
+print(f"Found {len(channel_paths)} channels in {dataset_path}")
+
 dataset_list = [
     al.Interferometer.from_fits(
         data_path=channel_path / "data.fits",
