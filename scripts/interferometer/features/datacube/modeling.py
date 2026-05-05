@@ -117,6 +117,22 @@ dataset_list = [
 ]
 
 """
+__Positions__
+
+Load the cube's multiple-image positions (saved by `simulator.py`) and wrap them in an `al.PositionsLH` penalty.
+For pixelized fits this is essentially required: without the penalty, the search routinely converges on
+demagnified-source local maxima where the source pixels are reconstructed in low-magnification regions of the
+source plane that fit the noise rather than the lensed signal.
+
+The lens model is shared across every channel via the FactorGraph, so a single `PositionsLH` (built once and
+passed to every per-channel analysis) applies the same global constraint everywhere.
+"""
+positions = al.Grid2DIrregular(
+    al.from_json(file_path=dataset_path / "positions.json")
+)
+positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
+
+"""
 __Settings__
 
 Interferometer pixelizations disable the positive-only inversion solver — the visibility measurement process
@@ -129,8 +145,10 @@ settings = al.Settings(use_positive_only_solver=False)
 __Mesh Shape__
 
 The pixelization mesh shape is fixed before modeling because JAX needs static array shapes. We use a
-14 x 14 ``RectangularUniform`` mesh — small enough to keep the prototype cheap, large enough to capture the
-emission-line source morphology produced by the simulator.
+14 x 14 ``RectangularAdaptDensity`` mesh — small enough to keep the prototype cheap, large enough to capture the
+emission-line source morphology produced by the simulator. `RectangularAdaptDensity` adapts the source-plane
+pixel density to the lensing magnification map, giving more pixels to the highly-magnified source-plane regions
+where the lensed signal is concentrated.
 """
 mesh_pixels_yx = 14
 mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
@@ -139,7 +157,7 @@ mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 __Model__
 
 The lens galaxy is a shared `Isothermal + ExternalShear`, identical across every channel. The source galaxy is
-a `Pixelization` with a `RectangularUniform` mesh and `Constant` regularization — the inversion runs
+a `Pixelization` with a `RectangularAdaptDensity` mesh and `Constant` regularization — the inversion runs
 independently per channel inside each `AnalysisInterferometer`, giving each channel its own source-plane
 reconstruction without adding any model parameters.
 
@@ -152,7 +170,7 @@ shear = af.Model(al.mp.ExternalShear)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source (pixelization, no free priors):
-mesh = af.Model(al.mesh.RectangularUniform, shape=mesh_shape)
+mesh = af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape)
 regularization = af.Model(al.reg.Constant)
 pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
@@ -166,10 +184,15 @@ print(model.info)
 __Per-Channel Analyses__
 
 One `AnalysisInterferometer` per channel, all with `use_jax=True` so the FactorGraph fit runs on the JAX
-backend.
+backend. The shared `positions_likelihood` is passed to every analysis — same penalty, every channel.
 """
 analysis_list = [
-    al.AnalysisInterferometer(dataset=dataset, settings=settings, use_jax=True)
+    al.AnalysisInterferometer(
+        dataset=dataset,
+        settings=settings,
+        positions_likelihood_list=[positions_likelihood],
+        use_jax=True,
+    )
     for dataset in dataset_list
 ]
 
