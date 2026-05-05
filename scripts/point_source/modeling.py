@@ -21,7 +21,7 @@ __Contents__
 **JAX:** JAX acceleration for fast GPU/CPU model-fitting.
 **VRAM Use:** When running AutoLens with JAX on a GPU, the analysis must fit within the GPU’s available VRAM.
 **Run Times:** Profiling the expected run time of the model-fit.
-**Output Folder:** Now this is running you should checkout the `autolens_workspace/output` folder.
+**Output Folder Layout:** Description of the structure of the `output` folder where results are written.
 **Result:** Overview of the results of the model-fit.
 **Results:** Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
 **Modeling Customization:** The folders `autolens_workspace/*/guides/modeling/searches` gives an overview of alternative.
@@ -407,32 +407,40 @@ result = search.fit(model=model, analysis=analysis)
 print("The search has finished run - you may now continue the notebook.")
 
 """
-__Output Folder__
+__Output Folder Layout__
 
-Now this is running you should checkout the `autolens_workspace/output` folder. This is where the results of the 
-search are written to hard-disk (in the `start_here` folder), where all outputs are human readable (e.g. as .json,
-.csv or text files).
+Now the fit is running you should checkout the `autolens_workspace/output` folder. This is where results are
+written to hard-disk in human-readable formats — `.json`, `.csv`, `.png` and plain text.
 
-As the fit progresses, results are written to the `output` folder on the fly using the highest likelihood model found
-by the non-linear search so far. This means you can inspect the results of the model-fit as it runs, without having to
-wait for the non-linear search to terminate.
- 
-The `output` folder includes:
+As the fit progresses, results are written on the fly using the highest likelihood model found by the
+non-linear search so far. This means you can inspect the model-fit as it runs, without waiting for the
+non-linear search to terminate.
 
- - `model.info`: Summarizes the lens model, its parameters and their priors discussed in the next tutorial.
- 
- - `model.results`: Summarizes the highest likelihood lens model inferred so far including errors.
- 
- - `image`: Visualization of the highest likelihood model-fit to the dataset, (e.g. a fit subplot showing the lens 
- and source galaxies, model data and residuals) in .png and .fits formats.
- 
- - `files`: A folder containing human-readable .json file describing the model, search and other aspects of the fit and 
-   a `.csv` table of every non-linear search sample.
- 
- - search.summary: A file providing summary statistics on the performance of the non-linear search.
- 
- - `search_internal`: Internal files of the non-linear search (in this case Nautilus) used for resuming the fit and
-  visualizing the search.
+Each completed fit lives at a path like::
+
+    output/point_source/<dataset_name>/modeling/<unique_hash>/
+        files/                         <- JSON + CSV: loadable Python objects
+            tracer.json                <- max log likelihood Tracer
+            model.json                 <- fitted af.Collection model
+            samples.csv                <- full Nautilus samples
+            samples_summary.json       <- max log likelihood parameter values + errors
+            samples_info.json          <- metadata about the samples
+            search.json                <- non-linear search configuration
+            settings.json              <- search settings
+            cosmology.json             <- cosmology used for the fit
+            covariance.csv             <- parameter covariance matrix
+        image/                         <- PNG: point-source fit visualisations
+            positions.png              <- observed vs model-predicted multiple-image positions
+            fluxes.png                 <- observed vs model-predicted point-source fluxes
+            tracer.png                 <- tracer image-plane and source-plane plots
+        model.info                     <- human-readable model summary
+        model.results                  <- human-readable fit summary
+        search.summary                 <- search run summary
+        search_internal/               <- internal files used to resume / visualise the search
+        metadata                       <- run metadata
+
+The `<unique_hash>` is a 32-character identifier derived from the model, search and dataset, so re-running the
+same configuration resumes from the existing fit automatically.
 
 __Result__
 
