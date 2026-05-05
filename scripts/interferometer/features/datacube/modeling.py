@@ -17,7 +17,9 @@ walkthrough; this file is the one to copy and adapt for your own cube.
 __Contents__
 
 **Mask:** Define the 2D real-space mask applied to every channel.
-**Dataset Loading:** Auto-simulate the cube if missing, then load each channel as an `Interferometer` object.
+**Dataset:** Where the per-channel cube lives on disk and how to point this script at your own.
+**Dataset Auto-Simulation:** Run `simulator.py` automatically if the cube isn't already on disk.
+**Dataset Loading:** Loop over the channel folders and load each as an `Interferometer` object.
 **Sparse Operators:** Pre-compute per-channel sparse-operator matrices used by the pixelized source inversion.
 **Settings:** Disable the positive-only solver so visibility-space inversions can take negative pixel values.
 **Mesh Shape:** Pixelization mesh size — fixed before modeling because JAX needs static-shape arrays.
@@ -56,25 +58,36 @@ real_space_mask = al.Mask2D.circular(
 )
 
 """
-__Dataset Loading__
+__Dataset__
 
-The datacube lives under `dataset/interferometer/datacube/<dataset_name>/`, with one subfolder per channel.
-We discover the channel folders by sorted directory listing — that way you can drop your own simulator output
-in there with the same `channel_NNN/` layout and this script will pick it up unchanged.
-
-The auto-simulation block runs the sibling `simulator.py` if the cube is missing, so this file is runnable
-end-to-end on a fresh checkout.
+The datacube lives under `dataset/interferometer/datacube/<dataset_name>/`, with one subfolder per channel
+(`channel_000/`, `channel_001/`, ...). To point this script at your own cube, drop your channel folders in
+alongside the reference cube and update `dataset_name`. Each channel folder must contain `data.fits`,
+`noise_map.fits` and `uv_wavelengths.fits` in the shape produced by `al.SimulatorInterferometer`.
 """
 dataset_label = "datacube"
 dataset_name = "sim_simple"
 dataset_path = Path("dataset") / "interferometer" / dataset_label / dataset_name
 
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
 if not dataset_path.exists():
     subprocess.run(
         [sys.executable, "scripts/interferometer/features/datacube/simulator.py"],
         check=True,
     )
 
+"""
+__Dataset Loading__
+
+Build the cube by loading each channel folder as an `Interferometer` object. The result is a Python list — no
+new dataset class involved. Channels are discovered by sorted directory listing, so you can add channels by
+simply dropping more `channel_NNN/` folders in.
+"""
 channel_paths = sorted(p for p in dataset_path.iterdir() if p.is_dir() and p.name.startswith("channel_"))
 print(f"Loading {len(channel_paths)} channels from {dataset_path}")
 
