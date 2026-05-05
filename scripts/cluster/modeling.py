@@ -33,7 +33,7 @@ __Contents__
 **Analysis Factor:** Each analysis object is wrapped in an `AnalysisFactor`, which pairs each analysis it with the model.
 **Factor Graph:** All `AnalysisFactor` objects are combined into a `FactorGraphModel`, which represents a global.
 **Run Times:** Profiling the expected run time of the model-fit.
-**Output Folder:** Now this is running you should checkout the `autolens_workspace/output` folder.
+**Output Folder Layout:** Description of the structure of the `output` folder where results are written.
 **Result:** Overview of the results of the model-fit.
 **HowToLens:** This `start_here.py` script, and the features examples above, do not explain many details of how.
 
@@ -578,32 +578,44 @@ result = search.fit(model=model, analysis=analysis)
 print("The search has finished run - you may now continue the notebook.")
 
 """
-__Output Folder__
+__Output Folder Layout__
 
-Now this is running you should checkout the `autolens_workspace/output` folder. This is where the results of the 
-search are written to hard-disk (in the `start_here` folder), where all outputs are human readable (e.g. as .json,
-.csv or text files).
+Now the fit is running you should checkout the `autolens_workspace/output` folder. This is where results are
+written to hard-disk in human-readable formats — `.json`, `.csv`, `.fits`, `.png` and plain text.
 
-As the fit progresses, results are written to the `output` folder on the fly using the highest likelihood model found
-by the non-linear search so far. This means you can inspect the results of the model-fit as it runs, without having to
-wait for the non-linear search to terminate.
+As the fit progresses, results are written on the fly using the highest likelihood model found by the
+non-linear search so far. This means you can inspect the model-fit as it runs, without waiting for the
+non-linear search to terminate.
 
-The `output` folder includes:
+Each completed fit lives at a path like::
 
- - `model.info`: Summarizes the lens model, its parameters and their priors discussed in the next tutorial.
+    output/cluster/<dataset_name>/modeling/<unique_hash>/
+        files/                         <- JSON + CSV: loadable Python objects
+            tracer.json                <- max log likelihood Tracer (full cluster lens model)
+            model.json                 <- fitted af.Collection model (scaling-relation parameters)
+            samples.csv                <- full Nautilus samples
+            samples_summary.json       <- max log likelihood parameter values + errors
+            samples_info.json          <- metadata about the samples
+            search.json                <- non-linear search configuration
+            settings.json              <- search settings
+            cosmology.json             <- cosmology used for the fit
+            covariance.csv             <- parameter covariance matrix
+        image/                         <- FITS + PNG: imaging + point-source products
+            dataset.fits               <- data, noise-map and PSF
+            fit.fits                   <- model image, residuals, chi-squared map
+            tracer.fits                <- tracer image-plane images per cluster galaxy
+            source_plane_images.fits   <- source plane reconstructions
+            galaxy_images.fits         <- per-galaxy images
+            positions.png              <- observed vs model-predicted multiple-image positions
+            dataset.png, fit.png, tracer.png   <- visualisations
+        model.info                     <- human-readable model summary
+        model.results                  <- human-readable fit summary
+        search.summary                 <- search run summary
+        search_internal/               <- internal files used to resume / visualise the search
+        metadata                       <- run metadata
 
- - `model.results`: Summarizes the highest likelihood lens model inferred so far including errors.
-
- - `images`: Visualization of the highest likelihood model-fit to the dataset, (e.g. a fit subplot showing the lens 
- and source galaxies, model data and residuals).
-
- - `files`: A folder containing .fits files of the dataset, the model as a human-readable .json file, 
- a `.csv` table of every non-linear search sample and other files containing information about the model-fit.
-
- - search.summary: A file providing summary statistics on the performance of the non-linear search.
-
- - `search_internal`: Internal files of the non-linear search (in this case Nautilus) used for resuming the fit and
-  visualizing the search.
+The `<unique_hash>` is a 32-character identifier derived from the model, search and dataset, so re-running the
+same configuration resumes from the existing fit automatically.
 
 __Result__
 
