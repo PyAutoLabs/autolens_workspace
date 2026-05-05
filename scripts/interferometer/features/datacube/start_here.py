@@ -31,10 +31,11 @@ __Contents__
 **Dataset Auto-Simulation:** Run `simulator.py` automatically if the cube isn't already on disk.
 **Dataset Loading:** Loop over channel folders to build a `dataset_list` of `Interferometer` objects.
 **Sparse Operators:** Per-channel sparse-operator pre-compute used by the pixelized source inversion.
+**Positions:** Load the cube's multiple-image positions and build a shared `PositionsLH` penalty.
 **Settings:** Disable the positive-only solver (visibility inversions can take negative pixel values).
 **Mesh Shape:** The pixelization mesh shape — fixed before modeling because JAX needs static shapes.
 **Model:** Shared lens galaxy + pixelized source. The same model is reused unchanged across every channel.
-**Per-Channel Analyses:** One `AnalysisInterferometer` per channel.
+**Per-Channel Analyses:** One `AnalysisInterferometer` per channel, all sharing the same `PositionsLH`.
 **FactorGraph:** Wrap each analysis in an `AnalysisFactor`; combine via `af.FactorGraphModel`.
 **Search:** Configure the `Nautilus` non-linear search.
 **Model Fit:** Fit the cube — the FactorGraph routes shared lens parameters into every channel's likelihood.
@@ -143,6 +144,27 @@ dataset_list = [
 ]
 
 """
+__Positions__
+
+Pixelized source modeling has a known failure mode: without a position-likelihood penalty, the search routinely
+converges on demagnified-source local maxima where the source pixels are reconstructed in low-magnification
+regions of the source plane that fit the noise rather than the lensed signal. The `PositionsLH` penalty defends
+against that by reading a small set of multiple-image positions from disk and adding a likelihood penalty for
+any candidate lens model whose source-plane back-projection of those positions spreads them apart.
+
+For the cube we load `positions.json` (written by `simulator.py`) and build one `PositionsLH` that gets passed to
+every per-channel analysis below. The lens model is shared across channels via the FactorGraph, so applying the
+same penalty in every analysis enforces a single global constraint.
+
+The threshold of 0.3" is generous; for a real fit you'd tighten it (typically < 0.05") once the lens model has
+settled into the right region of parameter space.
+"""
+positions = al.Grid2DIrregular(
+    al.from_json(file_path=dataset_path / "positions.json")
+)
+positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
+
+"""
 __Settings__
 
 Interferometer pixelizations disable the positive-only inversion solver. The visibility measurement process
@@ -155,8 +177,10 @@ settings = al.Settings(use_positive_only_solver=False)
 __Mesh Shape__
 
 The pixelization mesh shape is fixed before modeling because JAX needs static-shape arrays for its source-plane
-linear algebra. We use a 14 x 14 `RectangularUniform` mesh — small enough to make the prototype iteration cheap,
-large enough to capture the emission-line source morphology produced by the simulator.
+linear algebra. We use a 14 x 14 `RectangularAdaptDensity` mesh — small enough to make the prototype iteration
+cheap, large enough to capture the emission-line source morphology produced by the simulator.
+`RectangularAdaptDensity` adapts the source-plane pixel density to the lensing magnification map, giving more
+pixels to the highly-magnified regions of the source plane where the lensed signal is concentrated.
 """
 mesh_pixels_yx = 14
 mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
@@ -169,7 +193,7 @@ The cube model has two ingredients:
  - A shared `Isothermal + ExternalShear` lens. There are 7 free parameters (mass centre, ellipticity components,
    einstein radius, two shear components). The lens does not change with frequency, so a single set of priors is
    used for every channel.
- - A pixelized source: a `RectangularUniform` mesh with `Constant` regularization (1 free parameter — the
+ - A pixelized source: a `RectangularAdaptDensity` mesh with `Constant` regularization (1 free parameter — the
    regularization coefficient). The pixelization itself has no per-pixel priors; the source-plane fluxes are a
    linear inversion output computed by each channel's `AnalysisInterferometer` at fit time. That is what makes
    each channel an independent linear solve while sharing all of the non-linear parameters.
@@ -182,7 +206,7 @@ shear = af.Model(al.mp.ExternalShear)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source (pixelization, no per-pixel priors):
-mesh = af.Model(al.mesh.RectangularUniform, shape=mesh_shape)
+mesh = af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape)
 regularization = af.Model(al.reg.Constant)
 pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
@@ -197,10 +221,16 @@ __Per-Channel Analyses__
 
 One `AnalysisInterferometer` per channel — there are no per-channel parameters here, only per-channel data.
 Each analysis runs its own NUFFT, builds its own visibility-space inversion, and returns its own log-evidence
-when called with a candidate lens model.
+when called with a candidate lens model. The shared `positions_likelihood` is passed to every analysis to apply
+the same global multiple-image penalty across the cube.
 """
 analysis_list = [
-    al.AnalysisInterferometer(dataset=dataset, settings=settings, use_jax=True)
+    al.AnalysisInterferometer(
+        dataset=dataset,
+        settings=settings,
+        positions_likelihood_list=[positions_likelihood],
+        use_jax=True,
+    )
     for dataset in dataset_list
 ]
 
