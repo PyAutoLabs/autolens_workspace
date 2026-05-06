@@ -98,13 +98,21 @@ solver = al.PointSolver.for_grid(
 """
 We now pass the `Tracer` to the solver. This will then find the image-plane coordinates that map directly to the
 source-plane coordinate (0.0", 0.0").
+
+Position noise is set to 0.005" (5 mas), reflecting realistic PSF-centroiding precision on HST imaging
+rather than the imaging pixel scale. Flux noise is set to 5% relative, reflecting that lensed-quasar
+flux uncertainties are dominated by microlensing systematics rather than photon noise. See
+`scripts/point_source/simulator.py` for a full discussion of these values.
 """
+position_noise = 0.005
+flux_rel_noise = 0.05
+
 positions = solver.solve(
     tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
 )
 
 positions_with_noise = positions + np.random.normal(
-    loc=0.0, scale=grid.pixel_scale, size=positions.shape
+    loc=0.0, scale=position_noise, size=positions.shape
 )
 
 positions_with_noise = al.Grid2DIrregular(
@@ -128,14 +136,12 @@ fluxes = [flux * np.abs(magnification) for magnification in magnifications]
 fluxes = al.ArrayIrregular(values=fluxes)
 
 fluxes_with_noise = fluxes + np.random.normal(
-    loc=0.0, scale=np.sqrt(fluxes), size=len(fluxes)
+    loc=0.0, scale=flux_rel_noise * np.asarray(fluxes), size=len(fluxes)
 )
 
 fluxes_with_noise = al.ArrayIrregular(values=fluxes_with_noise)
 
-fluxes_noise_map = al.ArrayIrregular(
-    values=[np.sqrt(flux) for _ in range(len(fluxes_with_noise))]
-)
+fluxes_noise_map = al.ArrayIrregular(values=flux_rel_noise * np.asarray(fluxes))
 
 
 """
@@ -146,7 +152,7 @@ Create the `PointDataset`  and `PointDataset` objects using identical code to th
 dataset = al.PointDataset(
     name="point_0",
     positions=positions_with_noise,
-    positions_noise_map=grid.pixel_scale,
+    positions_noise_map=position_noise,
     fluxes=fluxes_with_noise,
     fluxes_noise_map=fluxes_noise_map,
 )

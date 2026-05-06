@@ -132,7 +132,14 @@ This finds the image-plane coordinates that map directly to the source-plane cen
 (0.0", 0.0"). A double Einstein cross is a multi-plane lensing system, therefore for each source we also pass
 their redshift into the solver as `plane_redshift` so that it finds the multiple images while properly accounting
 for the multi-plane lensing.
+
+Position noise is set to 0.005" (5 mas, realistic PSF-centroiding precision on HST imaging) and flux noise
+to 5% relative (microlensing-dominated regime). See `scripts/point_source/simulator.py` for a full
+discussion of these values.
 """
+position_noise = 0.005
+flux_rel_noise = 0.05
+
 positions_0 = solver.solve(
     tracer=tracer,
     source_plane_coordinate=source_galaxy_0.point_0.centre,
@@ -140,7 +147,7 @@ positions_0 = solver.solve(
 )
 
 positions_0_with_noise = positions_0 + np.random.normal(
-    loc=0.0, scale=grid.pixel_scale, size=positions_0.shape
+    loc=0.0, scale=position_noise, size=positions_0.shape
 )
 
 positions_0_with_noise = al.Grid2DIrregular(
@@ -154,7 +161,7 @@ positions_1 = solver.solve(
 )
 
 positions_1_with_noise = positions_1 + np.random.normal(
-    loc=0.0, scale=grid.pixel_scale, size=positions_1.shape
+    loc=0.0, scale=position_noise, size=positions_1.shape
 )
 
 positions_1_with_noise = al.Grid2DIrregular(
@@ -178,20 +185,16 @@ flux = 1.0
 fluxes_0 = [flux * np.abs(magnification) for magnification in magnifications_0]
 fluxes_0 = al.ArrayIrregular(values=fluxes_0)
 fluxes_0_with_noise = fluxes_0 + np.random.normal(
-    loc=0.0, scale=np.sqrt(fluxes_0), size=len(fluxes_0)
+    loc=0.0, scale=flux_rel_noise * np.asarray(fluxes_0), size=len(fluxes_0)
 )
-fluxes_0_noise_map = al.ArrayIrregular(
-    values=[np.sqrt(flux) for _ in range(len(fluxes_0_with_noise))]
-)
+fluxes_0_noise_map = al.ArrayIrregular(values=flux_rel_noise * np.asarray(fluxes_0))
 
 fluxes_1 = [flux * np.abs(magnification) for magnification in magnifications_1]
 fluxes_1 = al.ArrayIrregular(values=fluxes_1)
 fluxes_1_with_noise = fluxes_1 + np.random.normal(
-    loc=0.0, scale=np.sqrt(fluxes_1), size=len(fluxes_1)
+    loc=0.0, scale=flux_rel_noise * np.asarray(fluxes_1), size=len(fluxes_1)
 )
-fluxes_1_noise_map = al.ArrayIrregular(
-    values=[np.sqrt(flux) for _ in range(len(fluxes_1_with_noise))]
-)
+fluxes_1_noise_map = al.ArrayIrregular(values=flux_rel_noise * np.asarray(fluxes_1))
 
 """
 We now output the image of this strong lens to `.fits` which can be used for visualize when performing point-source 
@@ -216,14 +219,14 @@ analyse the dataset.
 dataset_0 = al.PointDataset(
     name="point_0",
     positions=positions_0_with_noise,
-    positions_noise_map=grid.pixel_scale,
+    positions_noise_map=position_noise,
     fluxes=fluxes_0_with_noise,
     fluxes_noise_map=fluxes_0_noise_map,
 )
 dataset_1 = al.PointDataset(
     name="point_1",
     positions=positions_1_with_noise,
-    positions_noise_map=grid.pixel_scale,
+    positions_noise_map=position_noise,
     fluxes=fluxes_1_with_noise,
     fluxes_noise_map=fluxes_1_noise_map,
 )

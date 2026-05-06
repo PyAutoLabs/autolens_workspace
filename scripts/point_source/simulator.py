@@ -148,14 +148,24 @@ positions = solver.solve(
 )
 
 """
-We now add noise to the multiple image positions to simulate observational measurement errors.
+We now add Gaussian noise to the multiple image positions to simulate observational measurement errors.
 
-In real observations, the positions of point source multiple images are measured from CCD imaging data. The
-precision of these measurements is limited by factors such as the pixel scale of the CCD, which is the only
-source of noise we simulate here for simplicity.
+The positional uncertainty in real observations is *not* the pixel scale of the imaging — that is the
+detector's sampling, not its centroiding precision. Bright point sources (e.g. lensed quasars or supernovae)
+are localised by fitting the instrumental PSF to the image, and the resulting centroid uncertainty is
+typically a small fraction of a pixel. For HST/ACS or WFC3, this corresponds to ~3–5 mas (0.003–0.005");
+for adaptive optics on Keck or VLT it is similar; for VLBI radio observations of lensed quasars it can
+be sub-mas. We adopt a default of 0.005" (5 mas), which is representative of HST point-source astrometry
+in the strong-lensing literature (CASTLES, TDCOSMO/H0LiCOW). Setting the precision close to the imaging
+pixel scale (~0.05") would inflate lens-model parameter uncertainties well beyond what real data deliver.
+
+Centroid uncertainties from PSF fitting are well-approximated as Gaussian via Laplace's approximation
+around the fitted likelihood maximum, so a Gaussian noise model is appropriate here.
 """
+position_noise = 0.005
+
 positions_with_noise = positions + np.random.normal(
-    loc=0.0, scale=grid.pixel_scale, size=positions.shape
+    loc=0.0, scale=position_noise, size=positions.shape
 )
 
 positions_with_noise = al.Grid2DIrregular(
@@ -172,10 +182,9 @@ This dataset is labeled with the `name` `point_0`, identifying it as correspondi
 `point_0`. The name is essential for associating the dataset with the correct point source in the lens model during 
 fitting.
 
-The dataset contains the image-plane coordinates of the multiple images and their corresponding noise-map values. 
-Typically, the noise value for each position is set to the pixel scale of the CCD image, representing the area the 
-point source occupies. Although sub-pixel accuracy can be achieved with more detailed analysis, this example does not 
-cover those techniques.
+The dataset contains the image-plane coordinates of the multiple images and their corresponding noise-map values.
+The `positions_noise_map` is set to the same `position_noise` defined above (0.005", i.e. 5 mas), reflecting
+realistic PSF-centroiding precision rather than the imaging pixel scale.
 
 Note also that this dataset does not contain fluxes or time delays, which are often included in point source datasets
 and are included in a separate simulation below.
@@ -183,7 +192,7 @@ and are included in a separate simulation below.
 dataset = al.PointDataset(
     name="point_0",
     positions=positions_with_noise,
-    positions_noise_map=grid.pixel_scale,
+    positions_noise_map=position_noise,
 )
 
 """"
@@ -321,21 +330,25 @@ fluxes = [flux * np.abs(magnification) for magnification in magnifications]
 fluxes = al.ArrayIrregular(values=fluxes)
 
 """
-We now add noise to the fluxes to simulate observational measurement errors.
+We now add Gaussian noise to the fluxes to simulate observational measurement errors.
+
+For lensed quasars and supernovae, photometric measurements of multiple-image fluxes are not generally
+photon-noise-limited — the dominant uncertainty is microlensing, in which stars in the lens galaxy
+distort the apparent flux of each image by amounts that depend on the source size, the macro-magnification,
+and where each image lies in the lens-plane stellar field. Lens models that explicitly *exclude*
+microlensing therefore typically assume a few-percent flux uncertainty per image rather than a Poisson
+floor. We adopt a 5% relative flux error here, which is consistent with this practice and produces
+realistic flux-ratio constraints on the mass model.
 """
+flux_rel_noise = 0.05
+
 fluxes_with_noise = fluxes + np.random.normal(
-    loc=0.0, scale=np.sqrt(fluxes), size=len(fluxes)
+    loc=0.0, scale=flux_rel_noise * np.asarray(fluxes), size=len(fluxes)
 )
 
 fluxes_with_noise = al.ArrayIrregular(values=fluxes_with_noise)
 
-"""
-The noise values of the fluxes are set to the square root of the flux, which is a common given that Poisson noise
-is expected to dominate the noise of the fluxes.
-"""
-fluxes_noise_map = al.ArrayIrregular(
-    values=[np.sqrt(flux) for _ in range(len(fluxes_with_noise))]
-)
+fluxes_noise_map = al.ArrayIrregular(values=flux_rel_noise * np.asarray(fluxes))
 
 """
 __Point Dataset__
@@ -349,7 +362,7 @@ of a single point-source.
 dataset = al.PointDataset(
     name="point_0",
     positions=positions_with_noise,
-    positions_noise_map=grid.pixel_scale,
+    positions_noise_map=position_noise,
     fluxes=fluxes_with_noise,
     fluxes_noise_map=fluxes_noise_map,
 )
@@ -387,14 +400,20 @@ light to travel through the gravitational potential of the lens galaxy).
 time_delays = tracer.time_delays_from(grid=positions)
 
 """
-In real observations, times delays are measured by taking photometric measurements of the multiple images over time,
-aligning the light curves, and measuring the time delays between the images.
+In real observations, time delays are measured by photometrically monitoring the multiple images over months
+to years and cross-correlating their light curves to align the variable signals. State-of-the-art monitoring
+campaigns (e.g. COSMOGRAIL, TDCOSMO) routinely achieve ~1–3% relative precision on the longest time delays
+in well-sampled quad systems — absolute uncertainties of ~0.5–1.5 days on 30–100 day delays.
 
-This processes estimates with it uncertainties, which are often represented as noise-map values in the dataset.
-For simplicity, in this simulation we assume the time delays have a noise value which is a quarter of their
-measurement value, however it is not typical that the noise value is directly proportional to the time delay.
+For simplicity we adopt a 5% relative uncertainty here. Real-world uncertainties are not strictly
+proportional to the delay magnitude (they depend on the cadence and total length of the photometric
+monitoring, on microlensing variability that distorts the light curves, and on the lens configuration),
+but a constant fractional error is a reasonable simulator default and produces realistic relative weights
+between the multiple images.
 """
-time_delays_noise_map = al.ArrayIrregular(values=np.abs(time_delays) * 0.25)
+time_delay_rel_noise = 0.05
+
+time_delays_noise_map = al.ArrayIrregular(values=np.abs(time_delays) * time_delay_rel_noise)
 
 """
 We now add noise to the time delays to simulate observational measurement errors.
@@ -417,7 +436,7 @@ of a single point-source.
 dataset = al.PointDataset(
     name="point_0",
     positions=positions_with_noise,
-    positions_noise_map=grid.pixel_scale,
+    positions_noise_map=position_noise,
     time_delays=time_delays_with_noise,
     time_delays_noise_map=time_delays_noise_map,
 )
@@ -441,7 +460,7 @@ to perform lens modeling of all measurements simultaneously.
 dataset = al.PointDataset(
     name="point_0",
     positions=positions_with_noise,
-    positions_noise_map=grid.pixel_scale,
+    positions_noise_map=position_noise,
     fluxes=fluxes_with_noise,
     fluxes_noise_map=fluxes_noise_map,
     time_delays=time_delays_with_noise,
