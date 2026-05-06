@@ -231,8 +231,13 @@ Here is a visualization of the triangulation approach:
 __Dataset__
 
 We first create a `PointDataset` object, which is similar to an `Imaging` or `Interferometer` object but contains the
-positions of the multiple images of the point source and their noise-map values. The noise values are the pixel-scale
-of the data, as this is the uncertainty of where we measure the multiple images in the image.
+positions of the multiple images of the point source and their noise-map values.
+
+The noise values are the centroid uncertainty with which each multiple image is localised in the data. This is *not*
+the imaging pixel scale — that is the detector's sampling, not its centroiding precision. Bright point sources are
+localised by fitting the instrumental PSF to the image, and the resulting centroid uncertainty is typically a small
+fraction of a pixel: ~0.005" (5 mas) for HST or adaptive-optics imaging of lensed quasars in the strong-lensing
+literature (CASTLES, TDCOSMO/H0LiCOW). See `scripts/point_source/simulator.py` for a full discussion.
 
 We manually specify the positions of the multiple images below, which correspond to the multiple images of the
 isothermal mass model used above.
@@ -251,7 +256,7 @@ positions_data = al.Grid2DIrregular(
     ]
 )
 
-positions_noise_map = al.ArrayIrregular([0.05, 0.05, 0.05, 0.05])
+positions_noise_map = al.ArrayIrregular([0.005, 0.005, 0.005, 0.005])
 
 dataset = al.PointDataset(
     name="point_0", positions=positions_data, positions_noise_map=positions_noise_map
@@ -424,10 +429,14 @@ fluxes = [flux * np.abs(magnification) for magnification in magnifications]
 fluxes = al.ArrayIrregular(values=fluxes)
 
 """
-The noise values of the fluxes are set to the square root of the flux, which is a common given that Poisson noise
-is expected to dominate the noise of the fluxes.
+We set the flux noise to 5% of each measured flux. For lensed quasars and supernovae, photometric flux
+uncertainties are dominated by microlensing systematics rather than photon noise, so models that exclude
+microlensing typically assume a few-percent flux uncertainty per image. See `scripts/point_source/simulator.py`
+for a fuller discussion.
 """
-fluxes_noise_map = al.ArrayIrregular(values=[np.sqrt(flux) for _ in range(len(fluxes))])
+flux_rel_noise = 0.05
+
+fluxes_noise_map = al.ArrayIrregular(values=flux_rel_noise * np.asarray(fluxes))
 
 """
 __Flux Point Dataset__
@@ -505,14 +514,16 @@ light to travel through the gravitational potential of the lens galaxy).
 time_delays = tracer.time_delays_from(grid=positions)
 
 """
-In real observations, times delays are measured by taking photometric measurements of the multiple images over time,
-aligning the light curves, and measuring the time delays between the images.
-
-This processes estimates with it uncertainties, which are often represented as noise-map values in the dataset.
-For simplicity, in this simulation we assume the time delays have a noise value which is a quarter of their
-measurement value, however it is not typical that the noise value is directly proportional to the time delay.
+In real observations, time delays are measured by photometrically monitoring the multiple images over months
+to years and cross-correlating their light curves. State-of-the-art monitoring campaigns (COSMOGRAIL, TDCOSMO)
+achieve ~1–3% relative precision on the longest delays in well-sampled quad systems. For simplicity we adopt
+a 5% relative uncertainty here. Real-world uncertainties are not strictly proportional to the delay magnitude
+(they depend on monitoring cadence, length, and microlensing variability), but a constant fractional error is
+a reasonable simulator default. See `scripts/point_source/simulator.py` for a fuller discussion.
 """
-time_delays_noise_map = al.ArrayIrregular(values=time_delays * 0.25)
+time_delay_rel_noise = 0.05
+
+time_delays_noise_map = al.ArrayIrregular(values=np.abs(time_delays) * time_delay_rel_noise)
 
 """
 The time delays are input into a `PointDataset` object, alongside the image-plane coordinates of the multiple images
