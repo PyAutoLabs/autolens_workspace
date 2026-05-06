@@ -426,13 +426,20 @@ matching `Point` component in the lens model during modeling.
 `redshift` is populated on each `PointDataset` so that the per-source redshifts round-trip through the
 combined CSV below. This is the piece that makes the CSV self-describing for cluster modeling — position,
 noise, and redshift live in a single spreadsheet.
+
+The position uncertainty is set to 0.005" (5 mas), reflecting the centroid precision achievable by PSF
+fitting on HST or adaptive-optics imaging — *not* the imaging pixel scale, which is the detector's
+sampling rather than its centroiding precision. See `scripts/point_source/simulator.py` for a full
+discussion of this value.
 """
+position_noise = 0.005
+
 dataset_list = []
 for i, positions in enumerate(positions_list):
     dataset = al.PointDataset(
         name=f"point_{i}",
         positions=positions,
-        positions_noise_map=imaging_grid.pixel_scale,
+        positions_noise_map=position_noise,
         redshift=source_redshifts[i],
     )
     dataset_list.append(dataset)
@@ -468,8 +475,10 @@ observed multiple image with the following columns:
 
  - `name`    — the source identifier (e.g. `point_0`). All rows sharing a `name` belong to the same source.
  - `y`, `x`  — the image-plane position of the multiple image, in arc-seconds.
- - `positions_noise` — the positional uncertainty (typically the pixel scale of the imaging used to
-   measure it).
+ - `positions_noise` — the positional uncertainty in arc-seconds. This is the PSF-fit centroid
+   uncertainty on each multiple image, *not* the imaging pixel scale. For HST or adaptive-optics
+   data on bright cluster member images, ~0.005" (5 mas) is a defensible default; ground-based
+   seeing-limited data may warrant a few × 0.01" depending on image SNR.
  - `redshift` — the source redshift. Every row for a given `name` must share the *same* redshift
    (validated on load; `list_from_csv` raises if a group's rows disagree). Leave the cell blank if the
    redshift is unknown; blank is tolerated as long as *all* rows in a group are blank.

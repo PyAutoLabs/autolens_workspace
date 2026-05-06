@@ -166,16 +166,23 @@ for sample_index in range(total_datasets):
     """
     __Positions__
 
-    We now pass the `Tracer` to the solver to find the multiple image positions and add noise to simulate observed
-    data.
+    We now pass the `Tracer` to the solver to find the multiple image positions and add Gaussian noise to
+    simulate observational measurement errors.
+
+    The position uncertainty is set to 0.005" (5 mas), reflecting the centroid precision achievable by PSF
+    fitting on HST or adaptive-optics imaging — *not* the imaging pixel scale, which is the detector's
+    sampling rather than its centroiding precision. This value is representative of HST point-source
+    astrometry in the strong-lensing literature (CASTLES, TDCOSMO/H0LiCOW). See `simulator.py` for a
+    fuller discussion.
     """
+    position_noise = 0.005
+
     positions = solver.solve(
         tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
     )
-    positions_noise_map = grid.pixel_scale
 
     positions_with_noise = positions + np.random.normal(
-        loc=0.0, scale=grid.pixel_scale, size=positions.shape
+        loc=0.0, scale=position_noise, size=positions.shape
     )
 
     positions_with_noise = al.Grid2DIrregular(
@@ -185,11 +192,17 @@ for sample_index in range(total_datasets):
     """
     __Time Delays__
 
-    We next compute the time delays of the multiple images, with noise added to the data, which are used to 
-    constrain the Hubble constant.
+    We next compute the time delays of the multiple images, with Gaussian noise added to simulate
+    observational measurement errors, which are used to constrain the Hubble constant.
+
+    State-of-the-art photometric monitoring campaigns (e.g. COSMOGRAIL, TDCOSMO) routinely achieve ~1–3%
+    relative precision on the longest time delays in well-sampled quad systems. We adopt a 5% relative
+    uncertainty here as a conservative simulator default. See `simulator.py` for a fuller discussion.
     """
+    time_delay_rel_noise = 0.05
+
     time_delays = tracer.time_delays_from(grid=positions)
-    time_delays_noise_map = al.ArrayIrregular(values=np.abs(time_delays) * 0.25)
+    time_delays_noise_map = al.ArrayIrregular(values=np.abs(time_delays) * time_delay_rel_noise)
 
     time_delays_with_noise = time_delays + np.random.normal(
         loc=0.0, scale=time_delays_noise_map, size=len(time_delays)
@@ -208,7 +221,7 @@ for sample_index in range(total_datasets):
     dataset = al.PointDataset(
         name="point_0",
         positions=positions_with_noise,
-        positions_noise_map=grid.pixel_scale,
+        positions_noise_map=position_noise,
         time_delays=time_delays_with_noise,
         time_delays_noise_map=time_delays_noise_map,
     )

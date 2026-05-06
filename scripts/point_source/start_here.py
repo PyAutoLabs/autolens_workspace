@@ -110,7 +110,7 @@ this will be import later when we perform lens modeling.
 positions = al.Grid2DIrregular(
     [(-1.039, -1.038), (0.442, 1.608), (1.609, 0.442), (1.179, 1.179)]
 )
-noise_map = al.ArrayIrregular([0.05, 0.05, 0.05, 0.05])
+noise_map = al.ArrayIrregular([0.005, 0.005, 0.005, 0.005])
 
 dataset = al.PointDataset(
     name="point_0", positions=positions, positions_noise_map=noise_map
@@ -327,7 +327,7 @@ A few things to note, with full details on data preparation provided in the main
 positions = al.Grid2DIrregular(
     [(-1.039, -1.038), (0.442, 1.608), (1.609, 0.442), (1.179, 1.179)]
 )
-noise_map = al.ArrayIrregular([0.05, 0.05, 0.05, 0.05])
+noise_map = al.ArrayIrregular([0.005, 0.005, 0.005, 0.005])
 
 dataset = al.PointDataset(
     name="point_0", positions=positions, positions_noise_map=noise_map
@@ -348,9 +348,13 @@ positions = al.Grid2DIrregular(
 fluxes = al.ArrayIrregular(values=[6.82, 55.16, 53.63, 100.62])
 time_delays = al.ArrayIrregular(values=[-136.99, -176.85, -177.02, -176.74])
 
-positions_noise_map = al.ArrayIrregular([0.05, 0.05, 0.05, 0.05])
-fluxes_noise_map = al.ArrayIrregular(values=[1.0, 1.0, 1.0, 1.0])
-time_delays_noise_map = al.ArrayIrregular(values=[-34.25, -44.21, -44.26, -44.19])
+# Position noise = 5 mas (PSF-centroiding precision on HST imaging).
+# Flux noise = 5% relative (microlensing-dominated regime).
+# Time delay noise = 5% relative magnitude (COSMOGRAIL/TDCOSMO regime).
+# See `simulator.py` for a full discussion of these values.
+positions_noise_map = al.ArrayIrregular([0.005, 0.005, 0.005, 0.005])
+fluxes_noise_map = al.ArrayIrregular(values=[0.34, 2.76, 2.68, 5.03])
+time_delays_noise_map = al.ArrayIrregular(values=[6.85, 8.84, 8.85, 8.84])
 
 dataset = al.PointDataset(
     name="point_0",
@@ -495,14 +499,21 @@ al.output_to_fits(
 """
 __Simulator__
 
-We now compute: 
+We now compute:
 
  - The point source positions, reusing the `PointSolver` above.
- - The RMS noise map of the positions, which uses the `pixel_scale` of the CCD imaging data the quasar is observed on.
- - The point source fluxes, by computing the magnificaiton from the tracer and applying it to an input source flux.
- - The RMS noise map of the fluxes, which is the square root of the observed counts of each image.
- - The time delays, which comes from the tracer's mass model.
- - The RMS noise of the time delays, which is assumed to be 0.25 * their values but in real data uses the time delay estimate process.
+ - The RMS noise map of the positions, set to the centroid precision of PSF fitting on HST imaging
+   (~5 mas) — *not* the imaging pixel scale, which is the detector's sampling rather than its
+   centroiding precision.
+ - The point source fluxes, by computing the magnification from the tracer and applying it to an
+   input source flux.
+ - The RMS noise map of the fluxes, set to 5% relative — for lensed quasars and supernovae,
+   photometric flux uncertainties are dominated by microlensing systematics rather than photon noise.
+ - The time delays, which come from the tracer's mass model.
+ - The RMS noise of the time delays, set to 5% relative — matching COSMOGRAIL/TDCOSMO precision on
+   well-sampled photometric monitoring of multiply-imaged quasars.
+
+See `simulator.py` for a full discussion of these values.
 """
 positions = solver.solve(
     tracer=tracer, source_plane_coordinate=source_galaxy.point_0.centre
@@ -518,11 +529,15 @@ flux = 1.0
 fluxes = [flux * np.abs(magnification) for magnification in magnifications]
 fluxes = al.ArrayIrregular(values=fluxes)
 
-positions_noise_map = al.ArrayIrregular([0.05, 0.05, 0.05, 0.05])
+position_noise = 0.005
+flux_rel_noise = 0.05
+time_delay_rel_noise = 0.05
 
-fluxes_noise_map = al.ArrayIrregular(values=[np.sqrt(flux) for _ in range(len(fluxes))])
+positions_noise_map = al.ArrayIrregular([position_noise] * len(positions))
 
-time_delays_noise_map = al.ArrayIrregular(values=time_delays * 0.25)
+fluxes_noise_map = al.ArrayIrregular(values=flux_rel_noise * np.asarray(fluxes))
+
+time_delays_noise_map = al.ArrayIrregular(values=np.abs(time_delays) * time_delay_rel_noise)
 
 """
 We can pass these to a `PointDataset` and output to hard disk as a .json file.
@@ -530,7 +545,7 @@ We can pass these to a `PointDataset` and output to hard disk as a .json file.
 dataset = al.PointDataset(
     name="point_0",
     positions=positions,
-    positions_noise_map=grid.pixel_scale,
+    positions_noise_map=positions_noise_map,
     fluxes=fluxes,
     fluxes_noise_map=fluxes_noise_map,
     time_delays=time_delays,
@@ -593,11 +608,11 @@ for sample_index in range(total_datasets):
     fluxes = [flux * np.abs(magnification) for magnification in magnifications]
     fluxes = al.ArrayIrregular(values=fluxes)
 
-    positions_noise_map = al.ArrayIrregular([0.05, 0.05, 0.05, 0.05])
-    fluxes_noise_map = al.ArrayIrregular(
-        values=[np.sqrt(flux) for _ in range(len(fluxes))]
+    positions_noise_map = al.ArrayIrregular([position_noise] * len(positions))
+    fluxes_noise_map = al.ArrayIrregular(values=flux_rel_noise * np.asarray(fluxes))
+    time_delays_noise_map = al.ArrayIrregular(
+        values=np.abs(time_delays) * time_delay_rel_noise
     )
-    time_delays_noise_map = al.ArrayIrregular(values=time_delays * 0.25)
 
     dataset = al.PointDataset(
         name=f"point_0",
