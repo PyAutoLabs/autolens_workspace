@@ -231,9 +231,11 @@ def source_lp_1(
             for g in tracer.galaxies[n_main + i].bulge.profile_list
         ]
         total_luminosity = np.sum(luminosity_per_gaussian_list) / pixel_scale**2
+        luminosity_cap = 5 * 0.5 * total_luminosity**0.6
+        upper_limit = min(luminosity_cap, 5.0) if luminosity_cap > 0 else 5.0
         mass.einstein_radius = af.UniformPrior(
             lower_limit=0.0,
-            upper_limit=min(5 * 0.5 * total_luminosity**0.6, 5.0),
+            upper_limit=upper_limit,
         )
 
         extra_mass_models.append(
