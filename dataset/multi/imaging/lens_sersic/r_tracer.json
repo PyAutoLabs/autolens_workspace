@@ -9,14 +9,20 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
-                        "redshift": 0.5,
                         "label": null,
+                        "redshift": 0.5,
                         "bulge": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.light.standard.sersic.Sersic",
                             "arguments": {
                                 "intensity": 1.5,
-                                "sersic_index": 4.0,
+                                "centre": {
+                                    "type": "tuple",
+                                    "values": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
@@ -24,20 +30,15 @@
                                         3.2227547345982974e-18
                                     ]
                                 },
-                                "centre": {
-                                    "type": "tuple",
-                                    "values": [
-                                        0.0,
-                                        0.0
-                                    ]
-                                },
-                                "effective_radius": 0.8
+                                "effective_radius": 0.8,
+                                "sersic_index": 4.0
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.isothermal.Isothermal",
                             "arguments": {
+                                "einstein_radius": 1.6,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -45,7 +46,6 @@
                                         0.0
                                     ]
                                 },
-                                "einstein_radius": 1.6,
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
@@ -69,23 +69,13 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
-                        "redshift": 1.0,
                         "label": null,
+                        "redshift": 1.0,
                         "bulge": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.light.standard.sersic_core.SersicCore",
                             "arguments": {
-                                "gamma": 0.25,
                                 "intensity": 0.7,
-                                "alpha": 3.0,
-                                "sersic_index": 1.0,
-                                "ell_comps": {
-                                    "type": "tuple",
-                                    "values": [
-                                        0.0962250448649376,
-                                        -0.05555555555555551
-                                    ]
-                                },
                                 "radius_break": 0.025,
                                 "centre": {
                                     "type": "tuple",
@@ -94,7 +84,17 @@
                                         0.0
                                     ]
                                 },
-                                "effective_radius": 0.1
+                                "ell_comps": {
+                                    "type": "tuple",
+                                    "values": [
+                                        0.0962250448649376,
+                                        -0.05555555555555551
+                                    ]
+                                },
+                                "alpha": 3.0,
+                                "effective_radius": 0.1,
+                                "sersic_index": 1.0,
+                                "gamma": 0.25
                             }
                         }
                     }
