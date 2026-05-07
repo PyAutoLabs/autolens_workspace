@@ -111,14 +111,14 @@ agg_query = agg.query(lens.mass == al.mp.Isothermal)
 print("Total Samples Objects via `Isothermal` model query = ", len(agg_query), "\n")
 
 """
-Queries using the results of model-fitting are also supported. Below, we query the database to find all fits where the 
-inferred value of `sersic_index` for the `Sersic` of the source's bulge is less than 3.0 (which returns only 
+Queries using the results of model-fitting are also supported. Below, we query the database to find all fits where the
+inferred value of `einstein_radius` for the `Isothermal` mass of the lens is less than 1.5 (which returns only
 the first of the three model-fits).
 """
-bulge = agg.model.galaxies.source.bulge
-agg_query = agg.query(bulge.sersic_index < 3.0)
+mass = agg.model.galaxies.lens.mass
+agg_query = agg.query(mass.einstein_radius < 1.5)
 print(
-    "Total Samples Objects In Query `source.bulge.sersic_index < 3.0` = ",
+    "Total Samples Objects In Query `lens.mass.einstein_radius < 1.5` = ",
     len(agg_query),
     "\n",
 )
