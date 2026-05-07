@@ -211,7 +211,7 @@ def getcol_wrapper(ms, table, colname):
     np.ndarray
         The requested column, with trivial dimensions removed.
     """
-    if not os.path.isdir(ms):
+    if not Path(ms).is_dir():
         raise IOError(f"{ms} does not exist")
 
     tb.open(f"{ms}/{table}" if table else ms)  # noqa: F821 — `tb` is the CASA tool
@@ -260,7 +260,7 @@ def get_visibilities(ms):
 
 
 def export_visibilities(ms, filename):
-    if os.path.isfile(filename + ".fits") or os.path.isfile(filename + ".numpy"):
+    if Path(filename + ".fits").is_file() or Path(filename + ".numpy").is_file():
         print(f"{filename} already exists — skipping")
         return
     visibilities = get_visibilities(ms=ms)
@@ -305,7 +305,7 @@ def get_uv_wavelengths(ms):
 
 
 def export_uv_wavelengths(ms, filename):
-    if os.path.isfile(filename + ".fits") or os.path.isfile(filename + ".numpy"):
+    if Path(filename + ".fits").is_file() or Path(filename + ".numpy").is_file():
         print(f"{filename} already exists — skipping")
         return
     uv_wavelengths = get_uv_wavelengths(ms=ms)
@@ -340,7 +340,7 @@ def get_sigma(ms):
 
 
 def export_sigma(ms, filename):
-    if os.path.isfile(filename + ".fits") or os.path.isfile(filename + ".numpy"):
+    if Path(filename + ".fits").is_file() or Path(filename + ".numpy").is_file():
         print(f"{filename} already exists — skipping")
         return
     sigma = get_sigma(ms=ms)

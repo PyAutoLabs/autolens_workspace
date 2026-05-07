@@ -53,7 +53,6 @@ This example assumes results are output to the directory, where `hpc_username` i
  
 You will need to update `hpc_username` to your hpc username below.
 """
-from os import path
 from pathlib import Path
 
 hpc_output_path = Path(path.sep) / "hpc" / "data" / "hpc_username" / "output"
@@ -289,7 +288,7 @@ __Dataset Auto-Simulation__
 If the dataset does not already exist on your system, it will be created by running the corresponding
 simulator script. This ensures that all example scripts can be run without manually simulating data first.
 """
-if not dataset_path.exists():
+if not dataset_Path().exists():
     import subprocess
     import sys
 
