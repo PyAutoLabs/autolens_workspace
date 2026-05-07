@@ -78,7 +78,7 @@ info_file = "info.json"
 with open(info_file, "w+") as f:
     json.dump(info, f, indent=4)
 
-if os.path.exists(Path(dataset_path, "info.json")):
+if Path(dataset_path, "info.json").exists():
     os.remove(Path(dataset_path, "info.json"))
 
 shutil.move("info.json", Path(dataset_path, "info.json"))
