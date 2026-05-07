@@ -24,6 +24,18 @@ results_path = Path("output") / "results_folder"
 if results_path.exists():
     sys.exit(0)
 
+import os
+
+# The aggregator tutorials that invoke this helper read image/dataset.fits via
+# fit.value("dataset"). Smoke-mode env vars (PYAUTO_TEST_MODE>=2,
+# PYAUTO_SKIP_VISUALIZATION) suppress the visualizer that writes that file, so
+# neutralize them here.
+mode = os.environ.get("PYAUTO_TEST_MODE", "0")
+if mode in ("2", "3"):
+    os.environ["PYAUTO_TEST_MODE"] = "1"
+os.environ.pop("PYAUTO_SKIP_VISUALIZATION", None)
+os.environ.pop("PYAUTO_SKIP_FIT_OUTPUT", None)
+
 import autofit as af
 import autolens as al
 
