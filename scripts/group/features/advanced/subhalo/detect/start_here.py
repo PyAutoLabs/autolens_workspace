@@ -623,6 +623,8 @@ def subhalo_refine(
     subhalo.redshift = subhalo_grid_search_result.model.galaxies.subhalo.redshift
     subhalo.mass.redshift_object = subhalo.redshift
 
+    source = subhalo_grid_search_result.model.galaxies.source
+
     lens_dict = {
         "lens_0": subhalo_grid_search_result.model.galaxies.lens_0,
         "subhalo": subhalo,
