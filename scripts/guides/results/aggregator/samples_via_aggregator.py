@@ -476,19 +476,19 @@ print(samples.parameter_lists[0])
 samples = samples.with_paths(
     [
         ("galaxies", "lens", "mass", "einstein_radius"),
-        ("galaxies", "source", "bulge", "sersic_index"),
+        ("galaxies", "lens", "mass", "centre", "centre_0"),
     ]
 )
 
 print(
     "All parameters of the very first sample (containing only the lens mass's einstein radius and "
-    "source bulge's sersic index)."
+    "centre y-coordinate)."
 )
 print(samples.parameter_lists[0])
 
 print(
     "Maximum Log Likelihood Model Instances (containing only the lens mass's einstein radius and "
-    "source bulge's sersic index):\n"
+    "centre y-coordinate):\n"
 )
 print(samples.max_log_likelihood(as_instance=False))
 
@@ -503,12 +503,12 @@ We can alternatively use the following API:
 samples = list(agg.values("samples"))[0]
 
 samples = samples.with_paths(
-    ["galaxies.lens.mass.einstein_radius", "galaxies.source.bulge.sersic_index"]
+    ["galaxies.lens.mass.einstein_radius", "galaxies.lens.mass.centre.centre_0"]
 )
 
 print(
     "All parameters of the very first sample (containing only the lens mass's einstein radius and "
-    "source bulge's sersic index)."
+    "centre y-coordinate)."
 )
 
 """
