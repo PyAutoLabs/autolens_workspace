@@ -239,24 +239,19 @@ localised by fitting the instrumental PSF to the image, and the resulting centro
 fraction of a pixel: ~0.005" (5 mas) for HST or adaptive-optics imaging of lensed quasars in the strong-lensing
 literature (CASTLES, TDCOSMO/H0LiCOW). See `scripts/point_source/simulator.py` for a full discussion.
 
-We manually specify the positions of the multiple images below, which correspond to the multiple images of the
-isothermal mass model used above.
+We construct a `PointDataset` from the multiple-image positions we just solved for, with a small (5 mas) noise
+value per position. In a real analysis the positions would come from your data reduction pipeline (e.g. a
+centroid fit to each multiple image in the calibrated image), but for this demo we reuse the solver's output
+so the script adapts to whatever number of multiple images the mass model produces.
 
-The demagnified central image is not included in the dataset, as it is not observed in the image-plane. This is
-standard practice in point-source modeling.
+The demagnified central image is excluded by the solver's `magnification_threshold=0.1` setting, so it does not
+appear in the dataset either — standard practice in point-source modeling.
 
-It also contains the name `point_0`, which is an important label, as explained in more detail below.
+The dataset's name `point_0` is an important label, as explained in more detail below.
 """
-positions_data = al.Grid2DIrregular(
-    [
-        [-1.03884121e00, -1.03906250e00],
-        [4.41972024e-01, 1.60859375e00],
-        [1.17899573e00, 1.17890625e00],
-        [1.60930210e00, 4.41406250e-01],
-    ]
-)
+positions_data = al.Grid2DIrregular(positions)
 
-positions_noise_map = al.ArrayIrregular([0.005, 0.005, 0.005, 0.005])
+positions_noise_map = al.ArrayIrregular([0.005] * len(positions))
 
 dataset = al.PointDataset(
     name="point_0", positions=positions_data, positions_noise_map=positions_noise_map
