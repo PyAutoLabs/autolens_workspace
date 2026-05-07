@@ -496,14 +496,14 @@ class SimulateImaging:
 
         al.output_to_json(
             obj=tracer,
-            file_path=os.path.join(simulate_path, "tracer.json"),
+            file_path=Path(simulate_path) / "tracer.json",
         )
 
         aplt.fits_imaging(
             dataset=dataset,
-            data_path=os.path.join(simulate_path, "data.fits"),
-            psf_path=os.path.join(simulate_path, "psf.fits"),
-            noise_map_path=os.path.join(simulate_path, "noise_map.fits"),
+            data_path=Path(simulate_path) / "data.fits",
+            psf_path=Path(simulate_path) / "psf.fits",
+            noise_map_path=Path(simulate_path) / "noise_map.fits",
             overwrite=True,
         )
 
@@ -873,7 +873,7 @@ __Dataset Auto-Simulation__
 If the dataset does not already exist on your system, it will be created by running the corresponding
 simulator script. This ensures that all example scripts can be run without manually simulating data first.
 """
-if not dataset_path.exists():
+if not dataset_Path().exists():
     import subprocess
     import sys
 

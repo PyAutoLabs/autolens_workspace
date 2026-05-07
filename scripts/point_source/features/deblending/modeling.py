@@ -100,7 +100,6 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 # from autoconf import setup_notebook; setup_notebook()
 
-from os import path
 from pathlib import Path
 import autofit as af
 import autolens as al
@@ -112,7 +111,7 @@ __Dataset__
 Load and plot the strong lens dataset `deblending` via .fits files.
 """
 dataset_name = "deblending"
-dataset_path = path.join("dataset", "point_source", dataset_name)
+dataset_path = Path("dataset") / "point_source" / dataset_name
 
 """
 __Dataset Auto-Simulation__
@@ -130,9 +129,9 @@ if not Path(dataset_path).exists():
     )
 
 dataset = al.Imaging.from_fits(
-    data_path=path.join(dataset_path, "data.fits"),
-    psf_path=path.join(dataset_path, "psf.fits"),
-    noise_map_path=path.join(dataset_path, "noise_map.fits"),
+    data_path=Path(dataset_path) / "data.fits",
+    psf_path=Path(dataset_path) / "psf.fits",
+    noise_map_path=Path(dataset_path) / "noise_map.fits",
     pixel_scales=0.1,
 )
 
@@ -288,7 +287,7 @@ we have a much more complex parameter space with N=26 free parameters, therefore
 we thoroughly sample parameter space.
 """
 search = af.Nautilus(
-    path_prefix=path.join("point_source", "modeling"),
+    path_prefix=Path("point_source") / "modeling",
     name="deblending",
     unique_tag=dataset_name,
     n_live=400,

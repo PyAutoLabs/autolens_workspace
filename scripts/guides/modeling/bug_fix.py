@@ -47,7 +47,6 @@ def fit():
 
     # from autoconf import setup_notebook; setup_notebook()
 
-    from os import path
     from pathlib import Path
     import autofit as af
     import autolens as al
@@ -57,7 +56,7 @@ def fit():
     __Dataset__
     """
     dataset_name = "simple"
-    dataset_path = path.join("dataset", "imaging", dataset_name)
+    dataset_path = Path("dataset") / "imaging" / dataset_name
 
     """
     __Dataset Auto-Simulation__
@@ -65,7 +64,7 @@ def fit():
     If the dataset does not already exist on your system, it will be created by running the corresponding
     simulator script. This ensures that all example scripts can be run without manually simulating data first.
     """
-    if not path.exists(dataset_path):
+    if not Path(dataset_path).exists():
         import subprocess
         import sys
 
@@ -75,9 +74,9 @@ def fit():
         )
 
     dataset = al.Imaging.from_fits(
-        data_path=path.join(dataset_path, "data.fits"),
-        psf_path=path.join(dataset_path, "psf.fits"),
-        noise_map_path=path.join(dataset_path, "noise_map.fits"),
+        data_path=Path(dataset_path) / "data.fits",
+        psf_path=Path(dataset_path) / "psf.fits",
+        noise_map_path=Path(dataset_path) / "noise_map.fits",
         pixel_scales=0.1,
     )
 
