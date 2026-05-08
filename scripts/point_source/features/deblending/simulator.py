@@ -17,12 +17,12 @@ The simulation procedure in this script simulates the lens in two steps:
 
 __Contents__
 
-**Model:** Compose the lens model fitted to the data.
-**Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
-**Point Solver:** We use a `PointSolver` to locate the multiple images.
-**Fluxes:** Use the positions to compute the magnification of the `Tracer` at every position.
-**Output:** Output the simulated dataset to the dataset path as .fits files.
-**Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+- **Model:** Compose the lens model fitted to the data.
+- **Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
+- **Point Solver:** We use a `PointSolver` to locate the multiple images.
+- **Fluxes:** Use the positions to compute the magnification of the `Tracer` at every position.
+- **Output:** Output the simulated dataset to the dataset path as .fits files.
+- **Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
 
 __Model__
 

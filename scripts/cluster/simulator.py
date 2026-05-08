@@ -20,25 +20,25 @@ image. This script simulates that point-source data alongside CCD imaging — th
 
 __Contents__
 
-**Multi-Plane Setup:** Why the two sources sit at different redshifts and what that buys the example.
-**Main Lens Galaxies vs Host Halo vs Source Galaxies:** Galaxies are organized into three categories.
-**Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a name.
-**Imaging and Visualization Grids:** Define the high-res rendering grid and a coarse viz grid.
-**Galaxy Centres:** Define the centres of the main lens galaxies and sources; used for over-sampling and JSON output.
-**Over Sampling:** Adaptive over-sampling grid for accurate light profile evaluation near galaxy centres.
-**Main Lens Galaxies:** The 2 cluster member galaxies — each has a `SersicSph` light profile and a `dPIEMassSph` mass.
-**Host Dark Matter Halo:** A standalone `NFWMCRLudlowSph` halo with `mass_at_200 = 10^15.3` at z=0.5.
-**Source Galaxies:** The 2 multi-plane background sources, each a `SersicCore` light + a `Point` model.
-**Ray Tracing:** Combine all galaxies into a single `Tracer` capable of multi-plane ray tracing.
-**JAX JIT:** Register the tracer's underlying classes as JAX pytrees and compile the point solver.
-**Point Solver:** Solve for image-plane multiple-image positions of each source.
-**Point Datasets:** Collect per-source image positions (with noise) into `PointDataset` objects, one per source.
-**Combined CSV:** Write *all* datasets to a single CSV so a user can hand-edit positions and noise in a spreadsheet.
-**Manual CSV Editing:** Instructions for editing the combined CSV by hand, which is the preferred cluster workflow.
-**Tracer JSON:** Save the true `Tracer` for future inspection.
-**Centre JSON Files:** Save the main lens and source centres as JSON.
-**Imaging:** Simulate CCD imaging of the cluster (used to measure positions in real datasets and for visualization).
-**Visualize:** Plot the point-source dataset, tracer, and imaging.
+- **Multi-Plane Setup:** Why the two sources sit at different redshifts and what that buys the example.
+- **Main Lens Galaxies vs Host Halo vs Source Galaxies:** Galaxies are organized into three categories.
+- **Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a name.
+- **Imaging and Visualization Grids:** Define the high-res rendering grid and a coarse viz grid.
+- **Galaxy Centres:** Define the centres of the main lens galaxies and sources; used for over-sampling and JSON output.
+- **Over Sampling:** Adaptive over-sampling grid for accurate light profile evaluation near galaxy centres.
+- **Main Lens Galaxies:** The 2 cluster member galaxies — each has a `SersicSph` light profile and a `dPIEMassSph` mass.
+- **Host Dark Matter Halo:** A standalone `NFWMCRLudlowSph` halo with `mass_at_200 = 10^15.3` at z=0.5.
+- **Source Galaxies:** The 2 multi-plane background sources, each a `SersicCore` light + a `Point` model.
+- **Ray Tracing:** Combine all galaxies into a single `Tracer` capable of multi-plane ray tracing.
+- **JAX JIT:** Register the tracer's underlying classes as JAX pytrees and compile the point solver.
+- **Point Solver:** Solve for image-plane multiple-image positions of each source.
+- **Point Datasets:** Collect per-source image positions (with noise) into `PointDataset` objects, one per source.
+- **Combined CSV:** Write *all* datasets to a single CSV so a user can hand-edit positions and noise in a spreadsheet.
+- **Manual CSV Editing:** Instructions for editing the combined CSV by hand, which is the preferred cluster workflow.
+- **Tracer JSON:** Save the true `Tracer` for future inspection.
+- **Centre JSON Files:** Save the main lens and source centres as JSON.
+- **Imaging:** Simulate CCD imaging of the cluster (used to measure positions in real datasets and for visualization).
+- **Visualize:** Plot the point-source dataset, tracer, and imaging.
 
 __Multi-Plane Setup__
 

@@ -14,10 +14,10 @@ above which requires you to input these values manually.
 
 __Contents__
 
-**Dataset:** Load and plot the strong lens dataset.
-**Search Box:** When you click on a pixel to mark a position, the search box looks around this click and finds the.
-**Clicker:** Set up the `Clicker` object from the `clicker.py` module, which monitors your mouse clicks in order.
-**Output:** Now lets plot the image and extra galaxy centres, so we can check that the centre overlaps the.
+- **Dataset:** Load and plot the strong lens dataset.
+- **Search Box:** When you click on a pixel to mark a position, the search box looks around this click and finds the.
+- **Clicker:** Set up the `Clicker` object from the `clicker.py` module, which monitors your mouse clicks in order.
+- **Output:** Now lets plot the image and extra galaxy centres, so we can check that the centre overlaps the.
 
 """
 

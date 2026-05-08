@@ -23,11 +23,11 @@ is not currently optimized in JAX.
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the group dataset and 7.5" mask.
-**Galaxy Centres:** Load centres for main lens and extra galaxies.
-**Sparse Operators:** Pre-compute sparse matrices for CPU-accelerated pixelization.
-**Fit:** Fit the group lens with a pixelized source on CPU.
-**Model:** Full model-fit with CPU parallelization.
+- **Dataset & Mask:** Standard set up of the group dataset and 7.5" mask.
+- **Galaxy Centres:** Load centres for main lens and extra galaxies.
+- **Sparse Operators:** Pre-compute sparse matrices for CPU-accelerated pixelization.
+- **Fit:** Fit the group lens with a pixelized source on CPU.
+- **Model:** Full model-fit with CPU parallelization.
 
 """
 

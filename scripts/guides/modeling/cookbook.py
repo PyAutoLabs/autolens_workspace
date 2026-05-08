@@ -10,13 +10,13 @@ readable code for different use-cases.
 
 __Contents__
 
-**Simple Lens Model:** Compose a simple lens model with a lens galaxy and source galaxy.
-**More Complex Lens Models:** Extend the simple model to have multiple light or mass profiles and multiple galaxies.
-**Concise API:** Compose a lens model using the concise API, which is more readable and concise.
-**Prior Customization:** Customize the priors of individual lens model parameters using uniform, log-uniform and Gaussian priors.
-**Model Customization:** Customize the lens model parameters, including parameter pairing, fixing and offsets.
-**Redshift Free:** Make the redshift of a galaxy a free parameter in the model-fit.
-**Available Model Components:** List the available light profiles, mass profiles and other components that can be used for lens modeling.
+- **Simple Lens Model:** Compose a simple lens model with a lens galaxy and source galaxy.
+- **More Complex Lens Models:** Extend the simple model to have multiple light or mass profiles and multiple galaxies.
+- **Concise API:** Compose a lens model using the concise API, which is more readable and concise.
+- **Prior Customization:** Customize the priors of individual lens model parameters using uniform, log-uniform and Gaussian priors.
+- **Model Customization:** Customize the lens model parameters, including parameter pairing, fixing and offsets.
+- **Redshift Free:** Make the redshift of a galaxy a free parameter in the model-fit.
+- **Available Model Components:** List the available light profiles, mass profiles and other components that can be used for lens modeling.
 
 Advanced Features:
 

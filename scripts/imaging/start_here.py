@@ -14,21 +14,21 @@ see the `start_here_group.ipynb` and `start_here_cluster.ipynb` examples.
 
 __Contents__
 
-**JAX:** JAX acceleration for fast GPU/CPU model-fitting.
-**Google Colab Setup:** The introduction `start_here` examples are available on Google Colab, which allows you to run them.
-**Imports:** Import the required Python libraries.
-**Dataset:** Load and plot the strong lens dataset.
-**Extra Galaxy Removal:** There may be regions of an image that have signal near the lens and source that is from other.
-**Masking:** Lens modeling does not need to fit the entire image, only the region containing lens and source.
-**Model:** Compose the lens model fitted to the data.
-**Model Fit:** Perform the model-fit using the search and analysis.
-**Iterations Per Update:** Every `iterations_per_quick_update`, the non-linear search outputs the maximum likelihood model and.
-**Result:** Overview of the results of the model-fit.
-**Extra Galaxy Removal GUI:** The model-fit above removed a region of the image to the south-east of the lens, which contains.
-**Model Your Own Lens:** If you have your own strong lens imaging data, you are now ready to model it yourself by adapting.
-**Simulator:** Let’s now switch gears and simulate our own strong lens imaging.
-**Sample:** Often we want to simulate *many* strong lenses — for example, to train a neural network or to.
-**Wrap Up:** Summary of the script and next steps.
+- **JAX:** JAX acceleration for fast GPU/CPU model-fitting.
+- **Google Colab Setup:** The introduction `start_here` examples are available on Google Colab, which allows you to run them.
+- **Imports:** Import the required Python libraries.
+- **Dataset:** Load and plot the strong lens dataset.
+- **Extra Galaxy Removal:** There may be regions of an image that have signal near the lens and source that is from other.
+- **Masking:** Lens modeling does not need to fit the entire image, only the region containing lens and source.
+- **Model:** Compose the lens model fitted to the data.
+- **Model Fit:** Perform the model-fit using the search and analysis.
+- **Iterations Per Update:** Every `iterations_per_quick_update`, the non-linear search outputs the maximum likelihood model and.
+- **Result:** Overview of the results of the model-fit.
+- **Extra Galaxy Removal GUI:** The model-fit above removed a region of the image to the south-east of the lens, which contains.
+- **Model Your Own Lens:** If you have your own strong lens imaging data, you are now ready to model it yourself by adapting.
+- **Simulator:** Let’s now switch gears and simulate our own strong lens imaging.
+- **Sample:** Often we want to simulate *many* strong lenses — for example, to train a neural network or to.
+- **Wrap Up:** Summary of the script and next steps.
 
 __JAX__
 

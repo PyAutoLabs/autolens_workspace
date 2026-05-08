@@ -24,11 +24,11 @@ triangles naturally adapt to follow the source morphology in this environment.
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the group dataset and 7.5" mask.
-**Galaxy Centres:** Load centres for main lens and extra galaxies.
-**Fit:** Create a FitImaging with a Delaunay pixelized source for a group lens.
-**Model:** Compose a group lens model with a Delaunay pixelized source for modeling.
-**Advantages for Group Lenses:** Why Delaunay meshes are well-suited for group-scale lensing.
+- **Dataset & Mask:** Standard set up of the group dataset and 7.5" mask.
+- **Galaxy Centres:** Load centres for main lens and extra galaxies.
+- **Fit:** Create a FitImaging with a Delaunay pixelized source for a group lens.
+- **Model:** Compose a group lens model with a Delaunay pixelized source for modeling.
+- **Advantages for Group Lenses:** Why Delaunay meshes are well-suited for group-scale lensing.
 
 """
 

@@ -12,13 +12,13 @@ source in real weak-lensing data — each galaxy has a random unlensed elliptici
 
 __Contents__
 
-**Model:** Compose the lens model the shear field is computed from.
-**Dataset Paths:** The `dataset_type` and `dataset_name` define the on-disk output folder.
-**Ray Tracing:** Build a Tracer from an Isothermal lens galaxy.
-**Source Positions:** Draw a uniform-random distribution of background source galaxy positions.
-**Simulator:** Construct a `SimulatorShearYX` with the desired shape-noise level and random seed.
-**Output:** Save the simulated `WeakDataset` and the `Tracer` to JSON.
-**Visualize:** Placeholders only — the visualization layer is built in `prompt/weak/2_visualization.md`.
+- **Model:** Compose the lens model the shear field is computed from.
+- **Dataset Paths:** The `dataset_type` and `dataset_name` define the on-disk output folder.
+- **Ray Tracing:** Build a Tracer from an Isothermal lens galaxy.
+- **Source Positions:** Draw a uniform-random distribution of background source galaxy positions.
+- **Simulator:** Construct a `SimulatorShearYX` with the desired shape-noise level and random seed.
+- **Output:** Save the simulated `WeakDataset` and the `Tracer` to JSON.
+- **Visualize:** Placeholders only — the visualization layer is built in `prompt/weak/2_visualization.md`.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

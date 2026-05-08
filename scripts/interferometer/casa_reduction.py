@@ -26,18 +26,18 @@ feedback directly shapes these examples.
 
 __Contents__
 
-**PyAutoLens Requirements:** What the `al.Interferometer` object expects as input.
-**CASA in Five Steps:** The canonical CASA reduction pipeline for PyAutoLens.
-**Step 1 — Split by Field / SPW:** Isolate the lens target and each spectral window.
-**Step 2 — Channel Averaging:** Reduce visibility count by averaging channels.
-**Step 3 — Continuum Subtraction:** Optional `uvcontsub` for line observations.
-**Step 4 — Rescale Sigmas:** `statwt` makes the SIGMA column reflect real scatter.
-**Step 5 — Export to FITS:** Python helpers to read the .ms and write .fits.
-**Combining Spectral Windows:** Concatenate per-SPW arrays into a single dataset.
-**Polarisations:** Averaging XX/YY (or RR/LL) into a single complex visibility.
-**Building the Interferometer Object:** Load the FITS files into `al.Interferometer`.
-**Troubleshooting:** Common pitfalls and what to check.
-**SLACK:** Where to ask for help.
+- **PyAutoLens Requirements:** What the `al.Interferometer` object expects as input.
+- **CASA in Five Steps:** The canonical CASA reduction pipeline for PyAutoLens.
+- **Step 1 — Split by Field / SPW:** Isolate the lens target and each spectral window.
+- **Step 2 — Channel Averaging:** Reduce visibility count by averaging channels.
+- **Step 3 — Continuum Subtraction:** Optional `uvcontsub` for line observations.
+- **Step 4 — Rescale Sigmas:** `statwt` makes the SIGMA column reflect real scatter.
+- **Step 5 — Export to FITS:** Python helpers to read the .ms and write .fits.
+- **Combining Spectral Windows:** Concatenate per-SPW arrays into a single dataset.
+- **Polarisations:** Averaging XX/YY (or RR/LL) into a single complex visibility.
+- **Building the Interferometer Object:** Load the FITS files into `al.Interferometer`.
+- **Troubleshooting:** Common pitfalls and what to check.
+- **SLACK:** Where to ask for help.
 
 __PyAutoLens Requirements__
 

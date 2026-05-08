@@ -16,12 +16,12 @@ object is created.
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Galaxy Centres:** Load the centres of the main lens galaxies and extra galaxies from JSON.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Fitting:** Fit the lens model to the dataset using linear light profiles.
-**Intensities:** Extract the solved-for intensity values.
-**Visualization:** Convert linear light profiles to ordinary profiles for visualization.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Galaxy Centres:** Load the centres of the main lens galaxies and extra galaxies from JSON.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Fitting:** Fit the lens model to the dataset using linear light profiles.
+- **Intensities:** Extract the solved-for intensity values.
+- **Visualization:** Convert linear light profiles to ordinary profiles for visualization.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

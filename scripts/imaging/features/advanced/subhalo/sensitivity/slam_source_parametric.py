@@ -7,16 +7,16 @@ using light profiles.
 
 __Contents__
 
-**Model:** Compose the lens model fitted to the data.
-**SOURCE LP PIPELINE:** Identical to `slam_start_here.py`, except the lens mass uses an `Isothermal` with its centre fixed.
-**LIGHT LP PIPELINE:** Identical to `slam_start_here.py`.
-**MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`.
-**Simulate Function Class:** We now write the `simulate_cls`, which takes the `simulation_instance` of our model (defined above).
-**Base Fit:** We have defined a `Simulate` class that will be used to simulate every dataset simulated by the.
-**Perturb Fit:** We now define a `PerturbFit` class, which defines how the `perturb_model` is fitted to each.
-**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
-**Redshifts:** The redshifts of the lens and source galaxies.
-**SLaM Pipeline:** Overview of slam pipeline for this example.
+- **Model:** Compose the lens model fitted to the data.
+- **SOURCE LP PIPELINE:** Identical to `slam_start_here.py`, except the lens mass uses an `Isothermal` with its centre fixed.
+- **LIGHT LP PIPELINE:** Identical to `slam_start_here.py`.
+- **MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`.
+- **Simulate Function Class:** We now write the `simulate_cls`, which takes the `simulation_instance` of our model (defined above).
+- **Base Fit:** We have defined a `Simulate` class that will be used to simulate every dataset simulated by the.
+- **Perturb Fit:** We now define a `PerturbFit` class, which defines how the `perturb_model` is fitted to each.
+- **Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+- **Redshifts:** The redshifts of the lens and source galaxies.
+- **SLaM Pipeline:** Overview of slam pipeline for this example.
 
 __Model__
 

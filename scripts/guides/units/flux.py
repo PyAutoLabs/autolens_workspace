@@ -23,8 +23,8 @@ unit, like a solar luminosity or AB magnitude, it becomes a lot more straightfor
 
 __Contents__
 
-**Zero Point:** In astronomy, a zero point refers to a reference value used in photometry and spectroscopy to.
-**Total Flux:** A key quantity for computing the magnitudes of galaxies is the total flux of a light profile.
+- **Zero Point:** In astronomy, a zero point refers to a reference value used in photometry and spectroscopy to.
+- **Total Flux:** A key quantity for computing the magnitudes of galaxies is the total flux of a light profile.
 
 __Zero Point__
 

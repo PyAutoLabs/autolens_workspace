@@ -11,10 +11,10 @@ This illustrates the ``DatasetModel`` API for sky background subtraction using s
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Centres:** Load galaxy centres from JSON files.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Fit:** Demonstrate fitting with a ``DatasetModel`` that includes sky background.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Centres:** Load galaxy centres from JSON files.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Fit:** Demonstrate fitting with a ``DatasetModel`` that includes sky background.
 
 __Model__
 

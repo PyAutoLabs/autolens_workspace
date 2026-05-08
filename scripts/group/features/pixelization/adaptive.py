@@ -17,12 +17,12 @@ morphology, then subsequent searches use adaptive pixelization features.
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the group dataset and 7.5" mask.
-**Galaxy Centres:** Load centres for main lens and extra galaxies.
-**Search 1:** Fit a parametric model to establish the lens model and source morphology.
-**Search 2:** Introduce a pixelization with constant regularization.
-**Search 3:** Use adaptive mesh and regularization driven by adapt_data from search 2.
-**Adapt Images:** How adapt_data is constructed from the lens-subtracted source image.
+- **Dataset & Mask:** Standard set up of the group dataset and 7.5" mask.
+- **Galaxy Centres:** Load centres for main lens and extra galaxies.
+- **Search 1:** Fit a parametric model to establish the lens model and source morphology.
+- **Search 2:** Introduce a pixelization with constant regularization.
+- **Search 3:** Use adaptive mesh and regularization driven by adapt_data from search 2.
+- **Adapt Images:** How adapt_data is constructed from the lens-subtracted source image.
 
 __Adaptive Features__
 

@@ -20,12 +20,12 @@ certain parts of code are not documented to ensure the script is concise.
 
 __Contents__
 
-**Pixel Scales:** If observed at the same wavelength, it is likely the datasets have the same pixel-scale.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**Model:** Compose the lens model fitted to the data.
-**Search:** Configure the non-linear search used to fit the model.
-**Result:** Overview of the results of the model-fit.
+- **Pixel Scales:** If observed at the same wavelength, it is likely the datasets have the same pixel-scale.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **Model:** Compose the lens model fitted to the data.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Result:** Overview of the results of the model-fit.
 
 """
 

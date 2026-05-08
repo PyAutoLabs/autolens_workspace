@@ -12,21 +12,21 @@ profiles like the `Sersic`.
 
 __Contents__
 
-**Advantages & Disadvantages:** Symmetric light profiles (e.g.
-**Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
-**MGE Source Galaxy:** The MGE was designed to model the light of lens galaxies, because they are typically elliptical.
-**Model:** Compose the lens model fitted to the data.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Model Cookbook:** A full description of model composition is provided by the model cookbook.
-**Search:** Configure the non-linear search used to fit the model.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
-**Run Time:** Profiling the expected run time of the model-fit.
-**Result:** Overview of the results of the model-fit.
-**Source MGE:** As discussed at the beginning of this tutorial, an MGE is an effective way to model the light of a.
-**Wrap Up:** Summary of the script and next steps.
-**Description:** There is one downside to `Basis` functions, we may compose a model with too much freedom.
+- **Advantages & Disadvantages:** Symmetric light profiles (e.g.
+- **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+- **MGE Source Galaxy:** The MGE was designed to model the light of lens galaxies, because they are typically elliptical.
+- **Model:** Compose the lens model fitted to the data.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Model Cookbook:** A full description of model composition is provided by the model cookbook.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+- **Run Time:** Profiling the expected run time of the model-fit.
+- **Result:** Overview of the results of the model-fit.
+- **Source MGE:** As discussed at the beginning of this tutorial, an MGE is an effective way to model the light of a.
+- **Wrap Up:** Summary of the script and next steps.
+- **Description:** There is one downside to `Basis` functions, we may compose a model with too much freedom.
 
 __Advantages__
 

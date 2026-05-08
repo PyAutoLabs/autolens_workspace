@@ -18,14 +18,14 @@ differences from the standard group source science example are:
 
 __Contents__
 
-**Simulated Dataset:** Load the group dataset.
-**Mask:** Define the 2D mask.
-**Source Values:** Set up the lens and source galaxies.
-**MGE Source:** Create an MGE source and fit it to the data to obtain intensities.
-**Source Flux:** Compute the total source flux.
-**Source Magnification:** Compute the source magnification using all group galaxies.
-**Impact of Extra Galaxies:** Show that omitting extra galaxies gives incorrect magnification.
-**Tracer:** Using the tracer from lens modeling results.
+- **Simulated Dataset:** Load the group dataset.
+- **Mask:** Define the 2D mask.
+- **Source Values:** Set up the lens and source galaxies.
+- **MGE Source:** Create an MGE source and fit it to the data to obtain intensities.
+- **Source Flux:** Compute the total source flux.
+- **Source Magnification:** Compute the source magnification using all group galaxies.
+- **Impact of Extra Galaxies:** Show that omitting extra galaxies gives incorrect magnification.
+- **Tracer:** Using the tracer from lens modeling results.
 
 """
 

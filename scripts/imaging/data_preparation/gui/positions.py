@@ -9,10 +9,10 @@ This GUI is adapted from the following code: https://gist.github.com/brikeats/4f
 
 __Contents__
 
-**Dataset:** Load and plot the strong lens dataset.
-**Search Box:** When you click on a pixel to mark a position, the search box looks around this click and finds the.
-**Clicker:** Set up the `Clicker` object from the `clicker.py` module, which monitors your mouse clicks in order.
-**Output:** Now lets plot the image and positions,, so we can check that the positions overlap the brightest.
+- **Dataset:** Load and plot the strong lens dataset.
+- **Search Box:** When you click on a pixel to mark a position, the search box looks around this click and finds the.
+- **Clicker:** Set up the `Clicker` object from the `clicker.py` module, which monitors your mouse clicks in order.
+- **Output:** Now lets plot the image and positions,, so we can check that the positions overlap the brightest.
 
 """
 

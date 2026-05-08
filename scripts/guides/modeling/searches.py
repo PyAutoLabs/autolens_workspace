@@ -23,12 +23,12 @@ object and pass these to the search to perform the fit. We skip these steps for 
 
 __Contents__
 
-**Dynesty:** Dynesty (https://github.com/joshspeagle/dynesty) is a nested sampling algorithm.
-**Emcee:** Emcee (https://github.com/dfm/emcee) is an ensemble MCMC sampler that is commonly used in Astronomy.
-**Zeus:** Zeus (https://zeus-mcmc.readthedocs.io/en/latest/) is an ensemble MCMC slice sampler.
-**LBFGS:** LBFGS is a quasi-Newton optimization algorithm from scipy.
-**Start Point:** For maximum likelihood estimator (MLE) and Markov Chain Monte Carlo (MCMC) non-linear searches.
-**Search Cookbook:** There are a number of other searches supported by **PyAutoFit** and therefore which can be used.
+- **Dynesty:** Dynesty (https://github.com/joshspeagle/dynesty) is a nested sampling algorithm.
+- **Emcee:** Emcee (https://github.com/dfm/emcee) is an ensemble MCMC sampler that is commonly used in Astronomy.
+- **Zeus:** Zeus (https://zeus-mcmc.readthedocs.io/en/latest/) is an ensemble MCMC slice sampler.
+- **LBFGS:** LBFGS is a quasi-Newton optimization algorithm from scipy.
+- **Start Point:** For maximum likelihood estimator (MLE) and Markov Chain Monte Carlo (MCMC) non-linear searches.
+- **Search Cookbook:** There are a number of other searches supported by **PyAutoFit** and therefore which can be used.
 
 __Start Here Notebook__
 

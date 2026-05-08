@@ -23,14 +23,14 @@ the coordinates of the image pixels which are input into these profiles to compu
 
 __Contents__
 
-**Advantages & Disadvantages:** If one fits a lens model to one dataset and applies it to other datasets, it is common to see the.
-**Model:** Compose the lens model fitted to the data.
-**Colors:** The colors of the multi-wavelength image, which in this case are green (g-band) and red (r-band).
-**Pixel Scales:** Every multi-wavelength dataset can have its own unique pixel-scale.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**Search:** Configure the non-linear search used to fit the model.
-**Result:** Overview of the results of the model-fit.
+- **Advantages & Disadvantages:** If one fits a lens model to one dataset and applies it to other datasets, it is common to see the.
+- **Model:** Compose the lens model fitted to the data.
+- **Colors:** The colors of the multi-wavelength image, which in this case are green (g-band) and red (r-band).
+- **Pixel Scales:** Every multi-wavelength dataset can have its own unique pixel-scale.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Result:** Overview of the results of the model-fit.
 
 __Advantages__
 

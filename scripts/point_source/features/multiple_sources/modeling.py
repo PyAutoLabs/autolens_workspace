@@ -33,16 +33,16 @@ is correct as soon as #480 lands; no script changes will be needed once it does.
 
 __Contents__
 
-**Dataset:** Load the list of `PointDataset` objects, one per lensed source.
-**Point Solver:** We set up the `PointSolver`, which determines the multiple images of each point source.
-**Model:** Compose the multi-plane lens model fitted to the data.
-**Name Pairing:** Each `PointDataset` name is paired with a `Point` model component of the same name.
-**Search:** Configure the non-linear search used to fit the model.
-**Analysis List:** Set up one `AnalysisPoint` per dataset.
-**Analysis Factor:** Each analysis is wrapped in an `AnalysisFactor` paired with the shared lens model.
-**Factor Graph:** All `AnalysisFactor` objects are combined into a `FactorGraphModel`.
-**Model-Fit:** Pass the factor graph to the non-linear search.
-**Result:** Iterate the per-analysis results returned by the factor-graph fit.
+- **Dataset:** Load the list of `PointDataset` objects, one per lensed source.
+- **Point Solver:** We set up the `PointSolver`, which determines the multiple images of each point source.
+- **Model:** Compose the multi-plane lens model fitted to the data.
+- **Name Pairing:** Each `PointDataset` name is paired with a `Point` model component of the same name.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Analysis List:** Set up one `AnalysisPoint` per dataset.
+- **Analysis Factor:** Each analysis is wrapped in an `AnalysisFactor` paired with the shared lens model.
+- **Factor Graph:** All `AnalysisFactor` objects are combined into a `FactorGraphModel`.
+- **Model-Fit:** Pass the factor graph to the non-linear search.
+- **Result:** Iterate the per-analysis results returned by the factor-graph fit.
 
 __Start Here Notebook__
 

@@ -19,14 +19,14 @@ This script has the following aims:
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Linear Light Profiles:** Define the lens, extra galaxies and source using ``lp_linear`` profiles.
-**Lens Galaxy Mass:** Compute deflection angles from all mass profiles.
-**Ray Tracing:** Trace image-plane coordinates to the source plane.
-**Linear Inversion:** Explain how intensities are solved via the linear algebra system.
-**Fit:** Use the ``FitImaging`` object which handles all steps automatically.
-**Likelihood Function:** Compute the log likelihood step by step.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Linear Light Profiles:** Define the lens, extra galaxies and source using ``lp_linear`` profiles.
+- **Lens Galaxy Mass:** Compute deflection angles from all mass profiles.
+- **Ray Tracing:** Trace image-plane coordinates to the source plane.
+- **Linear Inversion:** Explain how intensities are solved via the linear algebra system.
+- **Fit:** Use the ``FitImaging`` object which handles all steps automatically.
+- **Likelihood Function:** Compute the log likelihood step by step.
 
 __Prerequisites__
 

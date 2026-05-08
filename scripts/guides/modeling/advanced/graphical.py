@@ -33,15 +33,15 @@ be composed and fitted using the same framework.
 
 __Contents__
 
-**Initialization:** Load 3 simulated time-delay lens datasets which are all simulated with different mass models but.
-**Point Solver:** We set up the `PointSolver`, which is used to compute the multiple images of the point source in.
-**Model:** Compose the lens model fitted to the data.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**Analysis Factors:** Above, we created a `model_list` containing three lens models, each sharing the same prior on `H0`.
-**Factor Graph:** We now combine our `AnalysisFactor` objects to form a **factor graph**.
-**Search:** Configure the non-linear search used to fit the model.
-**Result:** Overview of the results of the model-fit.
-**Wrap Up:** Summary of the script and next steps.
+- **Initialization:** Load 3 simulated time-delay lens datasets which are all simulated with different mass models but.
+- **Point Solver:** We set up the `PointSolver`, which is used to compute the multiple images of the point source in.
+- **Model:** Compose the lens model fitted to the data.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **Analysis Factors:** Above, we created a `model_list` containing three lens models, each sharing the same prior on `H0`.
+- **Factor Graph:** We now combine our `AnalysisFactor` objects to form a **factor graph**.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Result:** Overview of the results of the model-fit.
+- **Wrap Up:** Summary of the script and next steps.
 
 """
 
