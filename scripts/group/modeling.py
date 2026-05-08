@@ -21,31 +21,31 @@ than being hardcoded, so the same script works for different datasets without co
 
 __Contents__
 
-**Scaling Relations:** This example models the mass of each galaxy individually, which means the number of dimensions of.
-**Example:** This script fits an `Imaging` dataset of a 'group-scale' strong lens where.
-**Simulation:** Overview of how the simulated dataset was generated.
-**Data Preparation:** Data standards required for fitting with PyAutoLens.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Main Galaxies and Extra Galaxies:** For a group-scale lens, we designate there to be two types of lens galaxies in the system.
-**Centres:** The centres of both the main lens galaxies and the extra galaxies are loaded from JSON files in the.
-**Redshifts:** In this example all line of sight galaxies are at the same redshift as the lens galaxy, meaning.
-**Model:** Compose the lens model fitted to the data.
-**Coordinates:** Coordinate system assumptions for the model-fit.
-**Improved Lens Model:** The previous model used Sersic light profiles for the lens, source and extra galaxies.
-**Linear Light Profiles:** The MGE model below uses a **linear light profile** for the bulge and disk via the ``lp_linear``.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Search:** Configure the non-linear search used to fit the model.
-**Unique Identifier:** In the path above, the `unique_identifier` appears as a collection of characters, where this.
-**Iterations Per Update:** Every `iterations_per_quick_update`, the non-linear search outputs the maximum likelihood model and.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**JAX:** JAX acceleration for fast GPU/CPU model-fitting.
-**VRAM Use:** When running AutoLens with JAX on a GPU, the analysis must fit within the GPU's available VRAM.
-**Run Times:** Profiling the expected run time of the model-fit.
-**Output Folder Layout:** Description of the structure of the `output` folder where results are written.
-**Result:** Overview of the results of the model-fit.
-**Features:** The examples in the `autolens_workspace/*/imaging/features` package illustrate other lens modeling.
-**HowToLens:** This `start_here.py` script, and the features examples above, do not explain many details of how.
-**Modeling Customization:** The folders `autolens_workspace/*/guides/modeling/searches` gives an overview of alternative.
+- **Scaling Relations:** This example models the mass of each galaxy individually, which means the number of dimensions of.
+- **Example:** This script fits an `Imaging` dataset of a 'group-scale' strong lens where.
+- **Simulation:** Overview of how the simulated dataset was generated.
+- **Data Preparation:** Data standards required for fitting with PyAutoLens.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Main Galaxies and Extra Galaxies:** For a group-scale lens, we designate there to be two types of lens galaxies in the system.
+- **Centres:** The centres of both the main lens galaxies and the extra galaxies are loaded from JSON files in the.
+- **Redshifts:** In this example all line of sight galaxies are at the same redshift as the lens galaxy, meaning.
+- **Model:** Compose the lens model fitted to the data.
+- **Coordinates:** Coordinate system assumptions for the model-fit.
+- **Improved Lens Model:** The previous model used Sersic light profiles for the lens, source and extra galaxies.
+- **Linear Light Profiles:** The MGE model below uses a **linear light profile** for the bulge and disk via the ``lp_linear``.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Unique Identifier:** In the path above, the `unique_identifier` appears as a collection of characters, where this.
+- **Iterations Per Update:** Every `iterations_per_quick_update`, the non-linear search outputs the maximum likelihood model and.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **JAX:** JAX acceleration for fast GPU/CPU model-fitting.
+- **VRAM Use:** When running AutoLens with JAX on a GPU, the analysis must fit within the GPU's available VRAM.
+- **Run Times:** Profiling the expected run time of the model-fit.
+- **Output Folder Layout:** Description of the structure of the `output` folder where results are written.
+- **Result:** Overview of the results of the model-fit.
+- **Features:** The examples in the `autolens_workspace/*/imaging/features` package illustrate other lens modeling.
+- **HowToLens:** This `start_here.py` script, and the features examples above, do not explain many details of how.
+- **Modeling Customization:** The folders `autolens_workspace/*/guides/modeling/searches` gives an overview of alternative.
 
 __Scaling Relations__
 

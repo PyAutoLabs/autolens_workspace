@@ -11,9 +11,9 @@ by the non-linear search.
 
 __Contents__
 
-**Aggregator:** First, set up the aggregator as shown in `start_here.py`.
-**Tracer via Aggregator:** Having performed a model-fit, we now want to interpret and visualize the results.
-**Einstein Mass Example:** Each tracer has the information we need to compute the Einstein mass of a model.
+- **Aggregator:** First, set up the aggregator as shown in `start_here.py`.
+- **Tracer via Aggregator:** Having performed a model-fit, we now want to interpret and visualize the results.
+- **Einstein Mass Example:** Each tracer has the information we need to compute the Einstein mass of a model.
 
 """
 

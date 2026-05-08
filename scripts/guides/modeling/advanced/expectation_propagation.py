@@ -17,19 +17,19 @@ fit every dataset simultaneously.
 
 __Contents__
 
-**Sample Simulation:** The dataset fitted in this example script is simulated imaging data of a sample of 3 galaxies.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Model Individual Factors:** We first set up a model for each lens, with an `PowerLawSph` mass and `ExponentialSph` bulge, which.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**Model:** Compose the lens model fitted to the data.
-**Paths:** Overview of paths for this example.
-**Analysis Factors:** Now we have our `Analysis` classes and graphical model, we can compose our `AnalysisFactor`'s.
-**Factor Graph:** We combine our `AnalysisFactors` into one, to compose the factor graph.
-**Expectation Propagation:** In the previous tutorials, we used the `global_prior_model` of the `factor_graph` to fit the global.
-**Cyclic Fitting:** After every `AnalysisFactor` has been fitted (e.g.
-**Result:** Overview of the results of the model-fit.
-**Output:** The results of the factor graph, using the EP framework and message passing, are contained in the.
-**Results:** The `MeanField` object represent the posterior of the entire factor graph and is used to infer.
+- **Sample Simulation:** The dataset fitted in this example script is simulated imaging data of a sample of 3 galaxies.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Model Individual Factors:** We first set up a model for each lens, with an `PowerLawSph` mass and `ExponentialSph` bulge, which.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **Model:** Compose the lens model fitted to the data.
+- **Paths:** Overview of paths for this example.
+- **Analysis Factors:** Now we have our `Analysis` classes and graphical model, we can compose our `AnalysisFactor`'s.
+- **Factor Graph:** We combine our `AnalysisFactors` into one, to compose the factor graph.
+- **Expectation Propagation:** In the previous tutorials, we used the `global_prior_model` of the `factor_graph` to fit the global.
+- **Cyclic Fitting:** After every `AnalysisFactor` has been fitted (e.g.
+- **Result:** Overview of the results of the model-fit.
+- **Output:** The results of the factor graph, using the EP framework and message passing, are contained in the.
+- **Results:** The `MeanField` object represent the posterior of the entire factor graph and is used to infer.
 
 __Sample Simulation__
 

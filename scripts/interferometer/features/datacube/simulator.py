@@ -18,17 +18,17 @@ datasets look like once narrow-band continuum subtraction has been performed.
 
 __Contents__
 
-**Cube Configuration:** Number of channels and the emission-line shape used to drive the per-channel intensity.
-**Dataset Paths:** Where the per-channel datasets, summary JSON and overview plots are written.
-**uv_wavelengths:** Reuse the SMA `uv_wavelengths.fits` shipped with the workspace as a stand-in for ALMA coverage.
-**Real-Space Grid:** The 2D image-plane grid each channel is evaluated on before the Fourier transform.
-**Lens Galaxy:** Shared `Isothermal + ExternalShear` lens, identical for every channel.
-**Per-Channel Source:** A Gaussian emission line in channel index drives the per-channel `Sersic.intensity`.
-**Per-Channel Simulate:** Loop over channels: build the tracer, simulate, write FITS + tracer.json to disk.
-**Multiple Images:** Compute and save the lensed multiple-image positions used by the modeling scripts' `PositionsLH` penalty.
-**Cube Summary:** Dump the emission-line parameters and per-channel intensities to `cube_summary.json`.
-**Cube Overview Plot:** Row-per-channel sanity figure (lensed image, uv-plane Re/Im, |vis| vs baseline length).
-**Spectrum Plot:** Source intensity as a function of channel index.
+- **Cube Configuration:** Number of channels and the emission-line shape used to drive the per-channel intensity.
+- **Dataset Paths:** Where the per-channel datasets, summary JSON and overview plots are written.
+- **uv_wavelengths:** Reuse the SMA `uv_wavelengths.fits` shipped with the workspace as a stand-in for ALMA coverage.
+- **Real-Space Grid:** The 2D image-plane grid each channel is evaluated on before the Fourier transform.
+- **Lens Galaxy:** Shared `Isothermal + ExternalShear` lens, identical for every channel.
+- **Per-Channel Source:** A Gaussian emission line in channel index drives the per-channel `Sersic.intensity`.
+- **Per-Channel Simulate:** Loop over channels: build the tracer, simulate, write FITS + tracer.json to disk.
+- **Multiple Images:** Compute and save the lensed multiple-image positions used by the modeling scripts' `PositionsLH` penalty.
+- **Cube Summary:** Dump the emission-line parameters and per-channel intensities to `cube_summary.json`.
+- **Cube Overview Plot:** Row-per-channel sanity figure (lensed image, uv-plane Re/Im, |vis| vs baseline length).
+- **Spectrum Plot:** Source intensity as a function of channel index.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

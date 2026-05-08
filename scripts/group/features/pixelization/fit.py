@@ -14,11 +14,11 @@ full model-fit.
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the group dataset and 7.5" mask.
-**Galaxy Centres:** Load centres for main lens and extra galaxies from JSON files.
-**Fitting:** Create a FitImaging with a pixelized source for a group lens.
-**Inversion:** Inspect the pixelized source reconstruction via the inversion object.
-**Over Sampling:** Adaptive over-sampling at all galaxy centres.
+- **Dataset & Mask:** Standard set up of the group dataset and 7.5" mask.
+- **Galaxy Centres:** Load centres for main lens and extra galaxies from JSON files.
+- **Fitting:** Create a FitImaging with a pixelized source for a group lens.
+- **Inversion:** Inspect the pixelized source reconstruction via the inversion object.
+- **Over Sampling:** Adaptive over-sampling at all galaxy centres.
 
 """
 

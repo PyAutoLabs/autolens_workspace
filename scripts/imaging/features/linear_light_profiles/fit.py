@@ -12,16 +12,16 @@ light profiles!
 
 __Contents__
 
-**Advantages & Disadvantages:** Each light profile's `intensity` parameter is therefore not a free parameter in the model-fit.
-**Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
-**Model:** Compose the lens model fitted to the data.
-**Notes:** This script is identical to `modeling/start_here.py` except that the light profiles are switched to.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Fit:** Fit the lens model to the dataset.
-**Intensities:** The fit contains the solved for intensity values.
-**Visualization:** Linear light profiles and objects containing them (e.g.
-**Wrap Up:** Summary of the script and next steps.
+- **Advantages & Disadvantages:** Each light profile's `intensity` parameter is therefore not a free parameter in the model-fit.
+- **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+- **Model:** Compose the lens model fitted to the data.
+- **Notes:** This script is identical to `modeling/start_here.py` except that the light profiles are switched to.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Fit:** Fit the lens model to the dataset.
+- **Intensities:** The fit contains the solved for intensity values.
+- **Visualization:** Linear light profiles and objects containing them (e.g.
+- **Wrap Up:** Summary of the script and next steps.
 
 __Advantages__
 

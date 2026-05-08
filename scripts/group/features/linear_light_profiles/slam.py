@@ -18,18 +18,18 @@ composition with fewer basis functions, while still benefiting from the intensit
 
 __Contents__
 
-**Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
-**SOURCE LP PIPELINE 0:** Light-only fit using linear Sersic profiles for all galaxies.
-**SOURCE LP PIPELINE 1:** Introduces mass and source with light fixed from stage 0.
-**SOURCE PIX PIPELINE 1:** Pixelized source fitting (identical to group/slam.py).
-**SOURCE PIX PIPELINE 2:** Refined pixelized source (identical to group/slam.py).
-**LIGHT LP PIPELINE:** Refits light using linear Sersic profiles.
-**MASS TOTAL PIPELINE:** Final mass fit with PowerLaw (identical to group/slam.py).
-**Dataset:** Load and plot the strong lens dataset.
-**Galaxy Centres:** Load centres from JSON files.
-**Mask:** Define the 2D mask applied to the dataset for the model-fit.
-**Settings AutoFit:** The settings of autofit.
-**SLaM Pipeline:** Run the full pipeline.
+- **Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
+- **SOURCE LP PIPELINE 0:** Light-only fit using linear Sersic profiles for all galaxies.
+- **SOURCE LP PIPELINE 1:** Introduces mass and source with light fixed from stage 0.
+- **SOURCE PIX PIPELINE 1:** Pixelized source fitting (identical to group/slam.py).
+- **SOURCE PIX PIPELINE 2:** Refined pixelized source (identical to group/slam.py).
+- **LIGHT LP PIPELINE:** Refits light using linear Sersic profiles.
+- **MASS TOTAL PIPELINE:** Final mass fit with PowerLaw (identical to group/slam.py).
+- **Dataset:** Load and plot the strong lens dataset.
+- **Galaxy Centres:** Load centres from JSON files.
+- **Mask:** Define the 2D mask applied to the dataset for the model-fit.
+- **Settings AutoFit:** The settings of autofit.
+- **SLaM Pipeline:** Run the full pipeline.
 
 __Prerequisites__
 

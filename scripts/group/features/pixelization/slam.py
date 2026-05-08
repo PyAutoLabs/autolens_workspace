@@ -34,12 +34,12 @@ The SLaM pipeline makes the following pixelization-specific decisions:
 
 __Contents__
 
-**Prerequisites:** Before using this SLaM pipeline, you should be familiar with group/slam.py and the
-pixelization feature scripts.
-**Dataset:** Load and plot the strong lens dataset.
-**Galaxy Centres:** Load centres for main lens and extra galaxies.
-**Mask:** Define the 2D mask applied to the dataset.
-**SLaM Pipeline:** The full SLaM pipeline with pixelization-specific documentation.
+- **Prerequisites:** Before using this SLaM pipeline, you should be familiar with group/slam.py and the
+  pixelization feature scripts.
+- **Dataset:** Load and plot the strong lens dataset.
+- **Galaxy Centres:** Load centres for main lens and extra galaxies.
+- **Mask:** Define the 2D mask applied to the dataset.
+- **SLaM Pipeline:** The full SLaM pipeline with pixelization-specific documentation.
 
 __Prerequisites__
 

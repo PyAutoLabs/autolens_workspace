@@ -20,12 +20,12 @@ Cosmological parameters.
 
 __Contents__
 
-**Model:** Compose the lens model fitted to the data.
-**Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
-**Point Solver:** We use a `PointSolver` to locate the multiple images.
-**Sample Model Distributions:** To simulate a sample, we draw random instances of lens and source galaxies where the parameters of.
-**Simulate:** Simulate the image data using a (y,x) grid with the adaptive over sampling scheme.
-**Sample Instances:** Within a for loop, we will now generate instances of the lens and source galaxies using the.
+- **Model:** Compose the lens model fitted to the data.
+- **Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
+- **Point Solver:** We use a `PointSolver` to locate the multiple images.
+- **Sample Model Distributions:** To simulate a sample, we draw random instances of lens and source galaxies where the parameters of.
+- **Simulate:** Simulate the image data using a (y,x) grid with the adaptive over sampling scheme.
+- **Sample Instances:** Within a for loop, we will now generate instances of the lens and source galaxies using the.
 
 __Model__
 

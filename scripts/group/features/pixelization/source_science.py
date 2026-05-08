@@ -18,14 +18,14 @@ pixelized reconstruction can recover source properties that parametric models ma
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the group dataset and 7.5" mask.
-**Galaxy Centres:** Load centres for main lens and extra galaxies.
-**Model Fit:** Create a FitImaging with a pixelized source.
-**Source Flux:** Compute the total flux from the pixelized source reconstruction.
-**Source Magnification:** Compute the magnification using all group mass profiles.
-**Impact of Extra Galaxies:** Demonstrate how omitting extra galaxies affects magnification.
-**Interpolated Source:** Interpolate the pixelized source to a uniform grid.
-**Parametric Comparison:** Compare pixelized source flux to a parametric estimate.
+- **Dataset & Mask:** Standard set up of the group dataset and 7.5" mask.
+- **Galaxy Centres:** Load centres for main lens and extra galaxies.
+- **Model Fit:** Create a FitImaging with a pixelized source.
+- **Source Flux:** Compute the total flux from the pixelized source reconstruction.
+- **Source Magnification:** Compute the magnification using all group mass profiles.
+- **Impact of Extra Galaxies:** Demonstrate how omitting extra galaxies affects magnification.
+- **Interpolated Source:** Interpolate the pixelized source to a uniform grid.
+- **Parametric Comparison:** Compare pixelized source flux to a parametric estimate.
 
 """
 

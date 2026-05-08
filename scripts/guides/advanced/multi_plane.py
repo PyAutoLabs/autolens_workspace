@@ -22,10 +22,10 @@ Examples of multi-plane lensing systems include:
 
 __Contents__
 
-**Example:** To illustrate multi-plane ray-tracing, we first set up a simple lens system, using a `Tracer`.
-**Ray Tracing:** Multi-plane ray tracing is implemented in the `tracer_util.py` module of the following package.
-**Profiles With Physical Units:** The above ray-tracing used dimensionless angular units (e.g.
-**SLACK:** This script was written after discussion on the PyAutoLens Slack channel, where some users modeling.
+- **Example:** To illustrate multi-plane ray-tracing, we first set up a simple lens system, using a `Tracer`.
+- **Ray Tracing:** Multi-plane ray tracing is implemented in the `tracer_util.py` module of the following package.
+- **Profiles With Physical Units:** The above ray-tracing used dimensionless angular units (e.g.
+- **SLACK:** This script was written after discussion on the PyAutoLens Slack channel, where some users modeling.
 
 __Example__
 

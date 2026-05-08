@@ -15,15 +15,15 @@ will not re-simulate it.
 
 __Contents__
 
-**Dataset Paths:** Output path for the simulated dataset.
-**Grid:** Define the 2d grid of (y,x) coordinates for the simulation.
-**Galaxy Centres:** Define the centres of the main lens galaxies and extra galaxies.
-**Over Sampling:** Set up the adaptive over-sampling grid.
-**Main Lens Galaxies:** The main lens galaxy at the origin.
-**Extra Galaxies:** The two extra companion galaxies.
-**Source Galaxy:** The source galaxy whose lensed images we simulate.
-**Ray Tracing:** Use all galaxies to setup a tracer and simulate.
-**Output:** Output the simulated dataset and metadata.
+- **Dataset Paths:** Output path for the simulated dataset.
+- **Grid:** Define the 2d grid of (y,x) coordinates for the simulation.
+- **Galaxy Centres:** Define the centres of the main lens galaxies and extra galaxies.
+- **Over Sampling:** Set up the adaptive over-sampling grid.
+- **Main Lens Galaxies:** The main lens galaxy at the origin.
+- **Extra Galaxies:** The two extra companion galaxies.
+- **Source Galaxy:** The source galaxy whose lensed images we simulate.
+- **Ray Tracing:** Use all galaxies to setup a tracer and simulate.
+- **Output:** Output the simulated dataset and metadata.
 
 """
 

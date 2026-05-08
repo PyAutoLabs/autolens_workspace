@@ -17,13 +17,13 @@ prior search and is wired up later by the SLaM pipeline — see `scripts/group/s
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the group dataset and 7.5" mask.
-**Galaxy Centres:** Load centres for main lens and extra galaxies from JSON files.
-**Model:** Compose the group lens model with a pixelized source.
-**Over Sampling:** Adaptive over-sampling at all galaxy centres.
-**Search:** Configure the non-linear search.
-**Analysis:** Create the Analysis object with pixelization settings.
-**Result:** Overview of the results of the model-fit.
+- **Dataset & Mask:** Standard set up of the group dataset and 7.5" mask.
+- **Galaxy Centres:** Load centres for main lens and extra galaxies from JSON files.
+- **Model:** Compose the group lens model with a pixelized source.
+- **Over Sampling:** Adaptive over-sampling at all galaxy centres.
+- **Search:** Configure the non-linear search.
+- **Analysis:** Create the Analysis object with pixelization settings.
+- **Result:** Overview of the results of the model-fit.
 
 __Example__
 

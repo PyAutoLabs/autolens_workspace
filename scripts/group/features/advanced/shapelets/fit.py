@@ -12,12 +12,12 @@ from the simulation.
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Centres:** Load galaxy centres from JSON files.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Basis:** Build a ``Basis`` of multiple linear shapelet light profiles.
-**Fit:** Fit the lens model to the dataset using the shapelet basis.
-**Intensities:** Extract the solved-for intensity values from the fit.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Centres:** Load galaxy centres from JSON files.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Basis:** Build a ``Basis`` of multiple linear shapelet light profiles.
+- **Fit:** Fit the lens model to the dataset using the shapelet basis.
+- **Intensities:** Extract the solved-for intensity values from the fit.
 
 __Model__
 

@@ -21,11 +21,11 @@ a non-linear free parameter (e.g. an extra dimension in the non-linear parameter
 
 __Contents__
 
-**Model:** Compose the lens model fitted to the data.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Fit:** Fit the lens model to the dataset.
-**Wrap Up:** Summary of the script and next steps.
+- **Model:** Compose the lens model fitted to the data.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Fit:** Fit the lens model to the dataset.
+- **Wrap Up:** Summary of the script and next steps.
 
 __Model__
 

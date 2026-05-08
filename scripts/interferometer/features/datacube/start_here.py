@@ -24,23 +24,23 @@ that sums them.
 
 __Contents__
 
-**JAX:** GPU/CPU acceleration via JAX — the same backend that single-channel interferometer fits use.
-**Imports:** Standard PyAutoLens imports + `autofit` for the FactorGraph wiring.
-**Mask:** A single 2D real-space mask shared across all channels.
-**Dataset:** Where the per-channel cube lives on disk and how to point this script at your own.
-**Dataset Auto-Simulation:** Run `simulator.py` automatically if the cube isn't already on disk.
-**Dataset Loading:** Loop over channel folders to build a `dataset_list` of `Interferometer` objects.
-**Sparse Operators:** Per-channel sparse-operator pre-compute used by the pixelized source inversion.
-**Positions:** Load the cube's multiple-image positions and build a shared `PositionsLH` penalty.
-**Settings:** Disable the positive-only solver (visibility inversions can take negative pixel values).
-**Mesh Shape:** The pixelization mesh shape — fixed before modeling because JAX needs static shapes.
-**Model:** Shared lens galaxy + pixelized source. The same model is reused unchanged across every channel.
-**Per-Channel Analyses:** One `AnalysisInterferometer` per channel, all sharing the same `PositionsLH`.
-**FactorGraph:** Wrap each analysis in an `AnalysisFactor`; combine via `af.FactorGraphModel`.
-**Search:** Configure the `Nautilus` non-linear search.
-**Model Fit:** Fit the cube — the FactorGraph routes shared lens parameters into every channel's likelihood.
-**Result:** What the returned `result_list` contains and how to inspect per-channel reconstructions.
-**Wrap Up:** Pointers to `modeling.py`, `simulator.py`, and the JAX likelihood walkthrough.
+- **JAX:** GPU/CPU acceleration via JAX — the same backend that single-channel interferometer fits use.
+- **Imports:** Standard PyAutoLens imports + `autofit` for the FactorGraph wiring.
+- **Mask:** A single 2D real-space mask shared across all channels.
+- **Dataset:** Where the per-channel cube lives on disk and how to point this script at your own.
+- **Dataset Auto-Simulation:** Run `simulator.py` automatically if the cube isn't already on disk.
+- **Dataset Loading:** Loop over channel folders to build a `dataset_list` of `Interferometer` objects.
+- **Sparse Operators:** Per-channel sparse-operator pre-compute used by the pixelized source inversion.
+- **Positions:** Load the cube's multiple-image positions and build a shared `PositionsLH` penalty.
+- **Settings:** Disable the positive-only solver (visibility inversions can take negative pixel values).
+- **Mesh Shape:** The pixelization mesh shape — fixed before modeling because JAX needs static shapes.
+- **Model:** Shared lens galaxy + pixelized source. The same model is reused unchanged across every channel.
+- **Per-Channel Analyses:** One `AnalysisInterferometer` per channel, all sharing the same `PositionsLH`.
+- **FactorGraph:** Wrap each analysis in an `AnalysisFactor`; combine via `af.FactorGraphModel`.
+- **Search:** Configure the `Nautilus` non-linear search.
+- **Model Fit:** Fit the cube — the FactorGraph routes shared lens parameters into every channel's likelihood.
+- **Result:** What the returned `result_list` contains and how to inspect per-channel reconstructions.
+- **Wrap Up:** Pointers to `modeling.py`, `simulator.py`, and the JAX likelihood walkthrough.
 
 __JAX__
 

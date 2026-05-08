@@ -25,16 +25,16 @@ Refer to `plots/start_here.ipynb` for an introduction to the new plotting API.
 
 __Contents__
 
-**Setup:** General setup for the analysis.
-**Array2D:** Any `Array2D` — images, convergence, noise-maps, etc.
-**Grid2D:** A `Grid2D` of (y,x) coordinates is plotted with `aplt.plot_grid()`.
-**Tracer:** Tracer quantities (image, convergence, potential, deflections, magnification) are computed via.
-**Imaging Dataset:** An `Imaging` dataset's data, noise-map and PSF are plotted individually with `aplt.plot_array()`.
-**Fit Imaging:** A fit's residuals, chi-squared, model image, etc.
-**Light Profile:** A light profile image is computed via `image_2d_from()` and plotted with `aplt.plot_array()`.
-**Mass Profile:** Mass profile quantities are computed and plotted individually.
-**Galaxy:** A galaxy's image and mass quantities are computed and plotted with `aplt.plot_array()`.
-**Interferometer:** Interferometer datasets and fits are plotted using their dedicated subplot functions.
+- **Setup:** General setup for the analysis.
+- **Array2D:** Any `Array2D` — images, convergence, noise-maps, etc.
+- **Grid2D:** A `Grid2D` of (y,x) coordinates is plotted with `aplt.plot_grid()`.
+- **Tracer:** Tracer quantities (image, convergence, potential, deflections, magnification) are computed via.
+- **Imaging Dataset:** An `Imaging` dataset's data, noise-map and PSF are plotted individually with `aplt.plot_array()`.
+- **Fit Imaging:** A fit's residuals, chi-squared, model image, etc.
+- **Light Profile:** A light profile image is computed via `image_2d_from()` and plotted with `aplt.plot_array()`.
+- **Mass Profile:** Mass profile quantities are computed and plotted individually.
+- **Galaxy:** A galaxy's image and mass quantities are computed and plotted with `aplt.plot_array()`.
+- **Interferometer:** Interferometer datasets and fits are plotted using their dedicated subplot functions.
 
 __Setup__
 

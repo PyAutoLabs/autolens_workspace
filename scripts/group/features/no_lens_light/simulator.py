@@ -16,19 +16,19 @@ This script simulates `Imaging` of a 'group-scale' strong lens where:
 
 __Contents__
 
-**Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
-**Grid:** Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated and.
-**Galaxy Centres:** Define the centres of the main lens galaxies and extra galaxies.
-**Over Sampling:** Set up over-sampling at the source centre for accurate light profile evaluation.
-**Main Lens Galaxies:** The main lens galaxy at the origin, mass only, no light.
-**Extra Galaxies:** The two extra galaxies, mass only, no light.
-**Source Galaxy:** The source galaxy whose lensed images we simulate.
-**Ray Tracing:** Use all galaxies to setup a tracer, which will generate the image for the simulated `Imaging`.
-**Dataset:** Load and plot the strong lens dataset.
-**Visualize:** Output a subplot of the simulated dataset.
-**Tracer json:** Save the `Tracer` in the dataset folder as a .json file.
-**Centre JSON Files:** Save the centres of the main lens galaxies and extra galaxies as JSON files.
-**Positions:** Solve for the lensed positions of the source galaxy.
+- **Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
+- **Grid:** Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated and.
+- **Galaxy Centres:** Define the centres of the main lens galaxies and extra galaxies.
+- **Over Sampling:** Set up over-sampling at the source centre for accurate light profile evaluation.
+- **Main Lens Galaxies:** The main lens galaxy at the origin, mass only, no light.
+- **Extra Galaxies:** The two extra galaxies, mass only, no light.
+- **Source Galaxy:** The source galaxy whose lensed images we simulate.
+- **Ray Tracing:** Use all galaxies to setup a tracer, which will generate the image for the simulated `Imaging`.
+- **Dataset:** Load and plot the strong lens dataset.
+- **Visualize:** Output a subplot of the simulated dataset.
+- **Tracer json:** Save the `Tracer` in the dataset folder as a .json file.
+- **Centre JSON Files:** Save the centres of the main lens galaxies and extra galaxies as JSON files.
+- **Positions:** Solve for the lensed positions of the source galaxy.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

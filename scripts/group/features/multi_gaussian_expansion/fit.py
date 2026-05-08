@@ -16,15 +16,15 @@ where the intensities are determined automatically via linear algebra.
 
 __Contents__
 
-**Loading Data:** Load the group-scale strong lens dataset.
-**Mask:** Define the 2D mask applied to the dataset for the model-fit.
-**Galaxy Centres:** Load centres of main lens galaxies and extra galaxies from JSON files.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Fitting:** Fit the lens model to the dataset and inspect the results.
-**Bad Fit:** A bad lens model will show features in the residual-map and chi-squared map.
-**Fit Quantities:** The maximum log likelihood fit contains many 1D and 2D arrays showing the fit.
-**Figures of Merit:** There are single valued floats which quantify the goodness of fit.
-**MGE In Practice:** How MGE would be used in a real fit via modeling.
+- **Loading Data:** Load the group-scale strong lens dataset.
+- **Mask:** Define the 2D mask applied to the dataset for the model-fit.
+- **Galaxy Centres:** Load centres of main lens galaxies and extra galaxies from JSON files.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Fitting:** Fit the lens model to the dataset and inspect the results.
+- **Bad Fit:** A bad lens model will show features in the residual-map and chi-squared map.
+- **Fit Quantities:** The maximum log likelihood fit contains many 1D and 2D arrays showing the fit.
+- **Figures of Merit:** There are single valued floats which quantify the goodness of fit.
+- **MGE In Practice:** How MGE would be used in a real fit via modeling.
 
 """
 

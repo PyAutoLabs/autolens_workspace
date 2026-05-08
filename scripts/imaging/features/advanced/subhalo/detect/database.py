@@ -14,11 +14,11 @@ can also write results directly to the database during the fit by using a sessio
 
 __Contents__
 
-**Model:** Compose the lens model fitted to the data.
-**Start Here Notebooks:** You should be familiar with dark matter subhalo detection, by reading the example.
-**Grid Searches:** If the results of the database include a grid search of non-linear searches, the aggregator has a.
-**Grid Search Visualization:** The grid search visualization tools can also be used to plot the results of the grid search.
-**Best Fit:** We can retrieve a new aggregator containing only the maximum log evidence results of the grid.
+- **Model:** Compose the lens model fitted to the data.
+- **Start Here Notebooks:** You should be familiar with dark matter subhalo detection, by reading the example.
+- **Grid Searches:** If the results of the database include a grid search of non-linear searches, the aggregator has a.
+- **Grid Search Visualization:** The grid search visualization tools can also be used to plot the results of the grid search.
+- **Best Fit:** We can retrieve a new aggregator containing only the maximum log evidence results of the grid.
 
 __Model__
 

@@ -17,8 +17,8 @@ centres of every object we'll model as an extra galaxy. A GUI is also available 
 
 __Contents__
 
-**Masking Extra Galaxies:** The example `mask_extra_galaxies.py` masks the regions of an image where extra galaxies are present.
-**Output:** Save this as a .png image in the dataset folder for easy inspection later.
+- **Masking Extra Galaxies:** The example `mask_extra_galaxies.py` masks the regions of an image where extra galaxies are present.
+- **Output:** Save this as a .png image in the dataset folder for easy inspection later.
 
 __Masking Extra Galaxies__
 

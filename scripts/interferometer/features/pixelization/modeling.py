@@ -26,29 +26,29 @@ initial setup can be performed before lens modeling and saved to hard disk for f
 
 __Contents__
 
-**CPU Users:** Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra.
-**Advantages & Disadvantages:** Many strongly lensed source galaxies exhibit complex, asymmetric, and irregular morphologies.
-**Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
-**Model:** Compose the lens model fitted to the data.
-**High Resolution Dataset:** A high-resolution `uv_wavelengths` file for ALMA is available in a separate repository that hosts.
-**Mask:** Define the 2D mask applied to the dataset for the model-fit.
-**Dataset:** Load and plot the strong lens dataset.
-**Sparse Operators:** Pixelized source modeling requires dense linear algebra operations.
-**Settings:** As discussed above, disable the default position only linear algebra solver so the source.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Mesh Shape:** The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the.
-**Edge Zeroing:** By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero.
-**Search:** Configure the non-linear search used to fit the model.
-**Position Likelihood:** We add a penalty term ot the likelihood function, which penalizes models where the brightest.
-**Brief Description:** Unlike other example scripts, we also pass the `AnalysisImaging` object below a `PositionsLH`.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
-**Run Time:** Profiling the expected run time of the model-fit.
-**Result:** Overview of the results of the model-fit.
-**Result Use:** There are many things you can do with the result of a pixelixaiton, including analysing the.
-**Wrap Up:** Summary of the script and next steps.
-**Chaining:** Modeling using a pixelization can be more efficient, robust and automated using the non-linear.
-**HowToLens:** A full description of how pixelizations work, which comes down to a lot of linear algebra, Bayesian.
+- **CPU Users:** Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra.
+- **Advantages & Disadvantages:** Many strongly lensed source galaxies exhibit complex, asymmetric, and irregular morphologies.
+- **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+- **Model:** Compose the lens model fitted to the data.
+- **High Resolution Dataset:** A high-resolution `uv_wavelengths` file for ALMA is available in a separate repository that hosts.
+- **Mask:** Define the 2D mask applied to the dataset for the model-fit.
+- **Dataset:** Load and plot the strong lens dataset.
+- **Sparse Operators:** Pixelized source modeling requires dense linear algebra operations.
+- **Settings:** As discussed above, disable the default position only linear algebra solver so the source.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Mesh Shape:** The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the.
+- **Edge Zeroing:** By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Position Likelihood:** We add a penalty term ot the likelihood function, which penalizes models where the brightest.
+- **Brief Description:** Unlike other example scripts, we also pass the `AnalysisImaging` object below a `PositionsLH`.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+- **Run Time:** Profiling the expected run time of the model-fit.
+- **Result:** Overview of the results of the model-fit.
+- **Result Use:** There are many things you can do with the result of a pixelixaiton, including analysing the.
+- **Wrap Up:** Summary of the script and next steps.
+- **Chaining:** Modeling using a pixelization can be more efficient, robust and automated using the non-linear.
+- **HowToLens:** A full description of how pixelizations work, which comes down to a lot of linear algebra, Bayesian.
 
 __Advantages__
 

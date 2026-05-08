@@ -21,11 +21,11 @@ and source galaxies are visible in each image.
 
 __Contents__
 
-**Model:** Compose the lens model fitted to the data.
-**Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
-**Simulate:** Simulate the image using a (y,x) grid with the adaptive over sampling scheme.
-**Sample Model Distributions:** To simulate a sample, we draw random instances of lens and source galaxies where the parameters of.
-**Sample Instances:** Within a for loop, we will now generate instances of the lens and source galaxies using the.
+- **Model:** Compose the lens model fitted to the data.
+- **Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
+- **Simulate:** Simulate the image using a (y,x) grid with the adaptive over sampling scheme.
+- **Sample Model Distributions:** To simulate a sample, we draw random instances of lens and source galaxies where the parameters of.
+- **Sample Instances:** Within a for loop, we will now generate instances of the lens and source galaxies using the.
 
 __Model__
 

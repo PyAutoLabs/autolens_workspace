@@ -19,18 +19,18 @@ feature).
 
 __Contents__
 
-**Advantages & Disadvantages:** Symmetric light profiles (e.g.
-**Model:** Compose the lens model fitted to the data.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Basis:** We first build a `Basis`, which is built from multiple light profiles (in this case, shapelets).
-**Coefficients:** The `Basis` is composed of many shapelets, each with different coefficients (n and m) values and a.
-**Linear Light Profiles:** We now show Composing a basis of multiple shapelets and use them to fit the source galaxy's light.
-**Fit:** Fit the lens model to the dataset.
-**Positive Negative Solver:** In other examples which use linear algebra to fit the data, for example linear light profiles, the.
-**Intensities:** The fit contains the solved for intensity values.
-**Shapelet Cartesian:** The shapelets above were defined on a polar grid, which is suitable for modeling radially symmetric.
-**Wrap Up:** Summary of the script and next steps.
+- **Advantages & Disadvantages:** Symmetric light profiles (e.g.
+- **Model:** Compose the lens model fitted to the data.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Basis:** We first build a `Basis`, which is built from multiple light profiles (in this case, shapelets).
+- **Coefficients:** The `Basis` is composed of many shapelets, each with different coefficients (n and m) values and a.
+- **Linear Light Profiles:** We now show Composing a basis of multiple shapelets and use them to fit the source galaxy's light.
+- **Fit:** Fit the lens model to the dataset.
+- **Positive Negative Solver:** In other examples which use linear algebra to fit the data, for example linear light profiles, the.
+- **Intensities:** The fit contains the solved for intensity values.
+- **Shapelet Cartesian:** The shapelets above were defined on a polar grid, which is suitable for modeling radially symmetric.
+- **Wrap Up:** Summary of the script and next steps.
 
 __Advantages__
 

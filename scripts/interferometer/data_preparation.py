@@ -8,18 +8,18 @@ which will help you prepare your dataset to adhere to them if it does not alread
 
 __Contents__
 
-**SLACK:** Contact information for help with interferometer data preparation.
-**Pixel Scale:** Choosing the correct pixel scale for interferometer datasets.
-**Visibilities:** Loading and inspecting visibility data from FITS files.
-**Noise-Map:** Loading and inspecting the noise map for the interferometer dataset.
-**UV Wavelengths:** Loading and inspecting the uv-wavelength baselines.
-**Real Space Mask:** Setting up the real-space mask for Fourier transform evaluation.
-**Data Processing Complete:** Summary of required data standards and overview of optional steps.
-**Positions (Optional):** Marking multiply-imaged source positions to constrain mass models.
-**Lens Light Centre (Optional):** Marking the lens galaxy light centre to fix or constrain mass model parameters.
-**Extra Galaxies (Optional):** Marking centres of nearby extra galaxies for inclusion in the model.
-**Mask Extra Galaxies (Optional):** Creating masks to remove signal from nearby extra galaxies.
-**Info (Optional):** Storing auxiliary information like redshifts as a JSON file.
+- **SLACK:** Contact information for help with interferometer data preparation.
+- **Pixel Scale:** Choosing the correct pixel scale for interferometer datasets.
+- **Visibilities:** Loading and inspecting visibility data from FITS files.
+- **Noise-Map:** Loading and inspecting the noise map for the interferometer dataset.
+- **UV Wavelengths:** Loading and inspecting the uv-wavelength baselines.
+- **Real Space Mask:** Setting up the real-space mask for Fourier transform evaluation.
+- **Data Processing Complete:** Summary of required data standards and overview of optional steps.
+- **Positions (Optional):** Marking multiply-imaged source positions to constrain mass models.
+- **Lens Light Centre (Optional):** Marking the lens galaxy light centre to fix or constrain mass model parameters.
+- **Extra Galaxies (Optional):** Marking centres of nearby extra galaxies for inclusion in the model.
+- **Mask Extra Galaxies (Optional):** Creating masks to remove signal from nearby extra galaxies.
+- **Info (Optional):** Storing auxiliary information like redshifts as a JSON file.
 
 __SLACK__
 

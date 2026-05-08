@@ -17,13 +17,13 @@ dataset as a non-linear free parameter.
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Centres:** The centres of the main lens galaxies and extra galaxies are loaded from JSON files.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Model:** Compose the lens model fitted to the data.
-**Search:** Configure the non-linear search used to fit the model.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**Result:** Overview of the results of the model-fit.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Centres:** The centres of the main lens galaxies and extra galaxies are loaded from JSON files.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Model:** Compose the lens model fitted to the data.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **Result:** Overview of the results of the model-fit.
 
 __Model__
 
