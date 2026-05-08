@@ -413,7 +413,9 @@ between the multiple images.
 """
 time_delay_rel_noise = 0.05
 
-time_delays_noise_map = al.ArrayIrregular(values=np.abs(time_delays) * time_delay_rel_noise)
+time_delays_noise_map = al.ArrayIrregular(
+    values=np.abs(time_delays) * time_delay_rel_noise
+)
 
 """
 We now add noise to the time delays to simulate observational measurement errors.

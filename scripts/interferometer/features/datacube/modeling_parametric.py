@@ -85,7 +85,9 @@ if not dataset_path.exists():
 """
 __Dataset Loading__
 """
-channel_paths = sorted(p for p in dataset_path.iterdir() if p.is_dir() and p.name.startswith("channel_"))
+channel_paths = sorted(
+    p for p in dataset_path.iterdir() if p.is_dir() and p.name.startswith("channel_")
+)
 print(f"Loading {len(channel_paths)} channels from {dataset_path}")
 
 dataset_list = [
@@ -106,9 +108,7 @@ Load the cube's multiple-image positions and wrap them in an `al.PositionsLH` pe
 need this; parametric Sersic fits less so, but the penalty still helps the search avoid local maxima where the
 mass model places multiple images far apart in the source plane.
 """
-positions = al.Grid2DIrregular(
-    al.from_json(file_path=dataset_path / "positions.json")
-)
+positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.json"))
 positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
 """
@@ -194,7 +194,9 @@ for analysis in analysis_list:
 factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 print(f"  channels in factor graph:           {len(analysis_factor_list)}")
-print(f"  global model free parameters:       {factor_graph.global_prior_model.total_free_parameters}")
+print(
+    f"  global model free parameters:       {factor_graph.global_prior_model.total_free_parameters}"
+)
 
 """
 __Search__

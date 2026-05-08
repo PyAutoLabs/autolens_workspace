@@ -84,7 +84,9 @@ if not dataset_path.exists():
 """
 __Dataset Loading__
 """
-channel_paths = sorted(p for p in dataset_path.iterdir() if p.is_dir() and p.name.startswith("channel_"))
+channel_paths = sorted(
+    p for p in dataset_path.iterdir() if p.is_dir() and p.name.startswith("channel_")
+)
 print(f"Loading {len(channel_paths)} channels from {dataset_path}")
 
 dataset_list = [
@@ -112,9 +114,7 @@ __Positions__
 Multiple-image positions + `PositionsLH` are essential for Delaunay fits — without them, the search routinely
 finds demagnified-source local maxima.
 """
-positions = al.Grid2DIrregular(
-    al.from_json(file_path=dataset_path / "positions.json")
-)
+positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.json"))
 positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
 """
@@ -219,7 +219,9 @@ analysis_factor_list = [
 factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 print(f"  channels in factor graph:           {len(analysis_factor_list)}")
-print(f"  global model free parameters:       {factor_graph.global_prior_model.total_free_parameters}")
+print(
+    f"  global model free parameters:       {factor_graph.global_prior_model.total_free_parameters}"
+)
 
 """
 __Search__

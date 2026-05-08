@@ -88,7 +88,9 @@ Build the cube by loading each channel folder as an `Interferometer` object. The
 new dataset class involved. Channels are discovered by sorted directory listing, so you can add channels by
 simply dropping more `channel_NNN/` folders in.
 """
-channel_paths = sorted(p for p in dataset_path.iterdir() if p.is_dir() and p.name.startswith("channel_"))
+channel_paths = sorted(
+    p for p in dataset_path.iterdir() if p.is_dir() and p.name.startswith("channel_")
+)
 print(f"Loading {len(channel_paths)} channels from {dataset_path}")
 
 dataset_list = [
@@ -127,9 +129,7 @@ source plane that fit the noise rather than the lensed signal.
 The lens model is shared across every channel via the FactorGraph, so a single `PositionsLH` (built once and
 passed to every per-channel analysis) applies the same global constraint everywhere.
 """
-positions = al.Grid2DIrregular(
-    al.from_json(file_path=dataset_path / "positions.json")
-)
+positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.json"))
 positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
 """
@@ -212,7 +212,9 @@ analysis_factor_list = [
 factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 print(f"  channels in factor graph:           {len(analysis_factor_list)}")
-print(f"  global model free parameters:       {factor_graph.global_prior_model.total_free_parameters}")
+print(
+    f"  global model free parameters:       {factor_graph.global_prior_model.total_free_parameters}"
+)
 
 """
 __Search__
