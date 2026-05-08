@@ -246,9 +246,9 @@ if (image_path / "dataset.fits").exists():
         data_path=image_path / "dataset.fits",
         noise_map_path=image_path / "dataset.fits",
         psf_path=image_path / "dataset.fits",
-        data_hdu=0,
-        noise_map_hdu=1,
-        psf_hdu=2,
+        data_hdu=1,
+        noise_map_hdu=2,
+        psf_hdu=3,
         pixel_scales=0.1,
     )
 
