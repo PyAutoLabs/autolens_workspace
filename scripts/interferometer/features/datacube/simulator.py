@@ -25,6 +25,7 @@ __Contents__
 - **Lens Galaxy:** Shared `Isothermal + ExternalShear` lens, identical for every channel.
 - **Per-Channel Source:** A Gaussian emission line in channel index drives the per-channel `Sersic.intensity`.
 - **Per-Channel Simulate:** Loop over channels: build the tracer, simulate, write FITS + tracer.json to disk.
+- **3D-FITS Cube:** Stack the per-channel arrays into single `(n_chan, n_vis, 2)` FITS files for users whose data already lives in that shape (e.g. ALMA cubes from CASA).
 - **Multiple Images:** Compute and save the lensed multiple-image positions used by the modeling scripts' `PositionsLH` penalty.
 - **Cube Summary:** Dump the emission-line parameters and per-channel intensities to `cube_summary.json`.
 - **Cube Overview Plot:** Row-per-channel sanity figure (lensed image, uv-plane Re/Im, |vis| vs baseline length).
@@ -191,6 +192,43 @@ for channel in range(N_CHANNELS):
         f"  channel {channel:03d}: intensity={intensity:.4f}, "
         f"|vis|_max={np.max(np.abs(dataset.data)):.3e}"
     )
+
+"""
+__3D-FITS Cube__
+
+ALMA visibilities exit CASA as a single 4D FITS of shape `(n_pol, n_chan, n_vis, 2)`. After the user collapses
+the polarisation axis (averaging or concatenating — see `data_preparation.py`), the canonical input shape is
+`(n_chan, n_vis, 2)`. We write three additional files at the cube root in that shape so users with CASA-native
+data can load the cube via `data_preparation.dataset_list_from_3d_fits` without first splitting into per-channel
+folders. The per-channel `channel_NNN/` folders above are kept as well — both layouts coexist for now.
+"""
+visibilities_cube = np.stack(
+    [np.stack([d.data.real, d.data.imag], axis=-1) for d in datasets], axis=0
+)
+noise_map_cube = np.stack(
+    [np.stack([d.noise_map.real, d.noise_map.imag], axis=-1) for d in datasets], axis=0
+)
+uv_wavelengths_cube = np.stack(
+    [np.asarray(d.uv_wavelengths) for d in datasets], axis=0
+)
+
+al.output_to_fits(
+    values=visibilities_cube,
+    file_path=dataset_path / "visibilities_cube.fits",
+    overwrite=True,
+)
+al.output_to_fits(
+    values=noise_map_cube,
+    file_path=dataset_path / "noise_map_cube.fits",
+    overwrite=True,
+)
+al.output_to_fits(
+    values=uv_wavelengths_cube,
+    file_path=dataset_path / "uv_wavelengths_cube.fits",
+    overwrite=True,
+)
+
+print(f"  3D-FITS cubes: shape {visibilities_cube.shape} (n_chan, n_vis, 2)")
 
 """
 __Multiple Images__
