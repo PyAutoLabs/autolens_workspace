@@ -21,15 +21,15 @@ a non-linear free parameter (e.g. an extra dimension in the non-linear parameter
 
 __Contents__
 
-**Model:** Compose the lens model fitted to the data.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Search:** Configure the non-linear search used to fit the model.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
-**Run Time:** Profiling the expected run time of the model-fit.
-**Result:** Overview of the results of the model-fit.
-**Wrap Up:** Summary of the script and next steps.
+- **Model:** Compose the lens model fitted to the data.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+- **Run Time:** Profiling the expected run time of the model-fit.
+- **Result:** Overview of the results of the model-fit.
+- **Wrap Up:** Summary of the script and next steps.
 
 __Model__
 

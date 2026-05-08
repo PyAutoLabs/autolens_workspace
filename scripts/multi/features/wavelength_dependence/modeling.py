@@ -15,15 +15,15 @@ package. If anything is unclear check those scripts out.
 
 __Contents__
 
-**Effective Radius vs Wavelength:** Unlike other `multi` modeling scripts, the effective radius of the lens and source galaxies as a.
-**Colors:** The colors of the multi-wavelength image, which in this case are green (g-band) and red (r-band).
-**Wavelengths:** The effective_radius of each source galaxy is parameterized as a function of wavelength.
-**Pixel Scales:** Every multi-wavelength dataset can have its own unique pixel-scale.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**Model:** Compose the lens model fitted to the data.
-**Search:** Configure the non-linear search used to fit the model.
-**Result:** Overview of the results of the model-fit.
+- **Effective Radius vs Wavelength:** Unlike other `multi` modeling scripts, the effective radius of the lens and source galaxies as a.
+- **Colors:** The colors of the multi-wavelength image, which in this case are green (g-band) and red (r-band).
+- **Wavelengths:** The effective_radius of each source galaxy is parameterized as a function of wavelength.
+- **Pixel Scales:** Every multi-wavelength dataset can have its own unique pixel-scale.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **Model:** Compose the lens model fitted to the data.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Result:** Overview of the results of the model-fit.
 
 __Effective Radius vs Wavelength__
 

@@ -10,9 +10,9 @@ This GUI is adapted from the following code: https://gist.github.com/brikeats/4f
 
 __Contents__
 
-**Dataset:** Load and plot the strong lens dataset.
-**Scribbler:** Load the Scribbler GUI for drawing the mask.
-**Output:** Now lets plot the image and mask, so we can check that the mask includes the regions of the image.
+- **Dataset:** Load and plot the strong lens dataset.
+- **Scribbler:** Load the Scribbler GUI for drawing the mask.
+- **Output:** Now lets plot the image and mask, so we can check that the mask includes the regions of the image.
 
 """
 

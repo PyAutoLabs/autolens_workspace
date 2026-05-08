@@ -15,10 +15,10 @@ The new API uses standalone functions:
 
 __Contents__
 
-**Dataset:** Load and plot the strong lens dataset.
-**Customization:** Each plotting function accepts direct keyword arguments for customization.
-**Config Defaults:** All default plotting values are configured via config files in.
-**Overlays:** Overlays are added to plots using the `lines=` and `positions=` keyword arguments.
+- **Dataset:** Load and plot the strong lens dataset.
+- **Customization:** Each plotting function accepts direct keyword arguments for customization.
+- **Config Defaults:** All default plotting values are configured via config files in.
+- **Overlays:** Overlays are added to plots using the `lines=` and `positions=` keyword arguments.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

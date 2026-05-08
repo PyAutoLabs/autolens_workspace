@@ -20,22 +20,22 @@ mesh (and its regularization) changes.
 
 __Contents__
 
-**Mask:** Define the 2D real-space mask applied to every channel.
-**Dataset:** Where the per-channel cube lives on disk and how to point this script at your own.
-**Dataset Auto-Simulation:** Run `simulator.py` automatically if the cube isn't already on disk.
-**Dataset Loading:** Loop over the channel folders and load each as an `Interferometer` object.
-**Sparse Operators:** Pre-compute per-channel sparse-operator matrices used by the Delaunay inversion.
-**Positions:** Load the cube's multiple-image positions and build a shared `PositionsLH` penalty.
-**Settings:** Disable the positive-only solver so visibility-space inversions can take negative pixel values.
-**Image Mesh:** Build the image-plane mesh of (y, x) points that get ray-traced and Delaunay-triangulated.
-**Edge Zeroing:** Append a ring of edge pixels so the source-plane reconstruction zeroes at the mesh boundary.
-**Adapt Images:** Pair the image-plane mesh with the source galaxy via `al.AdaptImages`.
-**Model:** Compose the shared `Isothermal + ExternalShear` lens and Delaunay-pixelized source.
-**Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with shared `adapt_images` and `PositionsLH`.
-**FactorGraph:** Wrap each analysis in an `AnalysisFactor` and combine via `af.FactorGraphModel`.
-**Search:** Configure the `Nautilus` non-linear search.
-**Model Fit:** Run the fit. Per-channel cost is comparable to the rectangular variant.
-**Wrap Up:** Pointers to `modeling.py`, `start_here.py`, and the JAX likelihood walkthrough.
+- **Mask:** Define the 2D real-space mask applied to every channel.
+- **Dataset:** Where the per-channel cube lives on disk and how to point this script at your own.
+- **Dataset Auto-Simulation:** Run `simulator.py` automatically if the cube isn't already on disk.
+- **Dataset Loading:** Loop over the channel folders and load each as an `Interferometer` object.
+- **Sparse Operators:** Pre-compute per-channel sparse-operator matrices used by the Delaunay inversion.
+- **Positions:** Load the cube's multiple-image positions and build a shared `PositionsLH` penalty.
+- **Settings:** Disable the positive-only solver so visibility-space inversions can take negative pixel values.
+- **Image Mesh:** Build the image-plane mesh of (y, x) points that get ray-traced and Delaunay-triangulated.
+- **Edge Zeroing:** Append a ring of edge pixels so the source-plane reconstruction zeroes at the mesh boundary.
+- **Adapt Images:** Pair the image-plane mesh with the source galaxy via `al.AdaptImages`.
+- **Model:** Compose the shared `Isothermal + ExternalShear` lens and Delaunay-pixelized source.
+- **Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with shared `adapt_images` and `PositionsLH`.
+- **FactorGraph:** Wrap each analysis in an `AnalysisFactor` and combine via `af.FactorGraphModel`.
+- **Search:** Configure the `Nautilus` non-linear search.
+- **Model Fit:** Run the fit. Per-channel cost is comparable to the rectangular variant.
+- **Wrap Up:** Pointers to `modeling.py`, `start_here.py`, and the JAX likelihood walkthrough.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

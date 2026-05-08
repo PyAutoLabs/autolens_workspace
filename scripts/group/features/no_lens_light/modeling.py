@@ -14,14 +14,14 @@ removes all light-related non-linear parameters from the lens side of the model.
 
 __Contents__
 
-**Advantages:** The main advantage of fitting group data without lens light is the dramatic reduction in model.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Centres:** The centres of both the main lens galaxies and the extra galaxies are loaded from JSON files.
-**Model:** Compose the lens model fitted to the data — all galaxies have mass only.
-**Over Sampling:** Not needed for lens light when there is none.
-**Search:** Configure the non-linear search used to fit the model.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**Result:** Overview of the results of the model-fit.
+- **Advantages:** The main advantage of fitting group data without lens light is the dramatic reduction in model.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Centres:** The centres of both the main lens galaxies and the extra galaxies are loaded from JSON files.
+- **Model:** Compose the lens model fitted to the data — all galaxies have mass only.
+- **Over Sampling:** Not needed for lens light when there is none.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **Result:** Overview of the results of the model-fit.
 
 __Advantages__
 

@@ -12,10 +12,10 @@ by **PyAutoLens**.
 
 __Contents__
 
-**Pixel Scale:** Overview of the pixel-to-arcsecond conversion factor for common telescopes.
-**Loading Data From Individual Fits Files:** Loading a noise-map from FITS files and inspecting its standards.
-**1) Tools Illustrated In Image:** Overview of unit conversion and resizing tools from the image preparation script.
-**Noise Conversions:** Functions for computing noise-maps from various input formats.
+- **Pixel Scale:** Overview of the pixel-to-arcsecond conversion factor for common telescopes.
+- **Loading Data From Individual Fits Files:** Loading a noise-map from FITS files and inspecting its standards.
+- **1) Tools Illustrated In Image:** Overview of unit conversion and resizing tools from the image preparation script.
+- **Noise Conversions:** Functions for computing noise-maps from various input formats.
 
 __Pixel Scale__
 

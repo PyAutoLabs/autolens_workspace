@@ -24,12 +24,12 @@ Refer to `plots/start_here.ipynb` for a general introduction to the new plotting
 
 __Contents__
 
-**Setup:** General setup for the analysis.
-**Output:** To save a figure to disk, pass `output_path` (a directory) and `output_format`.
-**Title:** The figure title is set with the `title=` kwarg.
-**Colormap:** The colormap is set with the `colormap=` kwarg.
-**Log10:** Many lensing quantities (images, convergence, potential) span many orders of magnitude and are.
-**Config Defaults:** All default values (colormaps, tick sizes, label fonts, etc.) are configured via the config files.
+- **Setup:** General setup for the analysis.
+- **Output:** To save a figure to disk, pass `output_path` (a directory) and `output_format`.
+- **Title:** The figure title is set with the `title=` kwarg.
+- **Colormap:** The colormap is set with the `colormap=` kwarg.
+- **Log10:** Many lensing quantities (images, convergence, potential) span many orders of magnitude and are.
+- **Config Defaults:** All default values (colormaps, tick sizes, label fonts, etc.) are configured via the config files.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

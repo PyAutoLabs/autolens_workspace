@@ -15,9 +15,9 @@ example above which requires you to input these values manually.
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Scribbler:** Load the Scribbler GUI for spray painting the scaled regions of the dataset.
-**Output:** The new image is plotted for inspection.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Scribbler:** Load the Scribbler GUI for spray painting the scaled regions of the dataset.
+- **Output:** The new image is plotted for inspection.
 
 """
 

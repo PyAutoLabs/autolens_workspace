@@ -14,14 +14,14 @@ guide before working through this example.
 
 __Contents__
 
-**Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
-**This Script:** Using a SOURCE LP PIPELINE, LIGHT LP PIPELINE and MASS TOTAL PIPELINE.
-**SOURCE LP PIPELINE:** Fits lens light and source light using MGE, with Isothermal mass and ExternalShear.
-**LIGHT LP PIPELINE:** Refits lens light with a fresh MGE, mass and source fixed from SOURCE LP.
-**MASS TOTAL PIPELINE:** Refits the mass using a PowerLaw, light and source fixed from previous stages.
-**Dataset:** Load and plot the strong lens dataset.
-**Settings AutoFit:** The settings of autofit.
-**SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
+- **Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
+- **This Script:** Using a SOURCE LP PIPELINE, LIGHT LP PIPELINE and MASS TOTAL PIPELINE.
+- **SOURCE LP PIPELINE:** Fits lens light and source light using MGE, with Isothermal mass and ExternalShear.
+- **LIGHT LP PIPELINE:** Refits lens light with a fresh MGE, mass and source fixed from SOURCE LP.
+- **MASS TOTAL PIPELINE:** Refits the mass using a PowerLaw, light and source fixed from previous stages.
+- **Dataset:** Load and plot the strong lens dataset.
+- **Settings AutoFit:** The settings of autofit.
+- **SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
 
 __Prerequisites__
 

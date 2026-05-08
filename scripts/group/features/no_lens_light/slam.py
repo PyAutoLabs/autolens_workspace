@@ -15,17 +15,17 @@ simplified compared to the standard group SLaM (`group/slam.py`) because:
 
 __Contents__
 
-**Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
-**This Script:** Using a SOURCE LP PIPELINE (one search), SOURCE PIX PIPELINE (two searches), and.
-**SOURCE LP PIPELINE:** Fits mass + source directly. No lens light for any galaxy.
-**SOURCE PIX PIPELINE 1:** Pixelized source, mass carried forward. No lens light.
-**SOURCE PIX PIPELINE 2:** Refined pixelized source. No lens light.
-**MASS TOTAL PIPELINE:** Final mass fit with PowerLaw. No lens light.
-**Dataset:** Load and plot the strong lens dataset.
-**Galaxy Centres:** Load centres from JSON files.
-**Mask:** Define the 2D mask applied to the dataset for the model-fit.
-**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
-**SLaM Pipeline:** Overview of slam pipeline for this example.
+- **Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
+- **This Script:** Using a SOURCE LP PIPELINE (one search), SOURCE PIX PIPELINE (two searches), and.
+- **SOURCE LP PIPELINE:** Fits mass + source directly. No lens light for any galaxy.
+- **SOURCE PIX PIPELINE 1:** Pixelized source, mass carried forward. No lens light.
+- **SOURCE PIX PIPELINE 2:** Refined pixelized source. No lens light.
+- **MASS TOTAL PIPELINE:** Final mass fit with PowerLaw. No lens light.
+- **Dataset:** Load and plot the strong lens dataset.
+- **Galaxy Centres:** Load centres from JSON files.
+- **Mask:** Define the 2D mask applied to the dataset for the model-fit.
+- **Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+- **SLaM Pipeline:** Overview of slam pipeline for this example.
 
 __Prerequisites__
 

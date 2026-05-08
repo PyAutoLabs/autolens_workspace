@@ -8,11 +8,11 @@ This tutorial describes preprocessing your dataset`s image to adhere to the unit
 
 __Contents__
 
-**Pixel Scale:** Overview of the pixel-to-arcsecond conversion factor for common telescopes.
-**Loading Data From Individual Fits Files:** Loading an image from FITS files and inspecting its standards.
-**Converting Data To Electrons Per Second:** Converting image flux units between electrons per second, counts and ADUs.
-**Resizing Data:** Trimming or padding a large postage stamp to an appropriate size.
-**Background Subtraction:** Overview of background sky subtraction tools and modeling approaches.
+- **Pixel Scale:** Overview of the pixel-to-arcsecond conversion factor for common telescopes.
+- **Loading Data From Individual Fits Files:** Loading an image from FITS files and inspecting its standards.
+- **Converting Data To Electrons Per Second:** Converting image flux units between electrons per second, counts and ADUs.
+- **Resizing Data:** Trimming or padding a large postage stamp to an appropriate size.
+- **Background Subtraction:** Overview of background sky subtraction tools and modeling approaches.
 
 __Pixel Scale__
 

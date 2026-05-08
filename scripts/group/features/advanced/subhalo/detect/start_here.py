@@ -12,15 +12,15 @@ the dark matter subhalo.
 
 __Contents__
 
-**SLaM Pipelines:** The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pipelines.
-**Grid Search:** The second stage uses a grid-search of non-linear searches.
-**Group Adaptation:** The lens model includes all group galaxies.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Centres:** Load galaxy centres from JSON files.
-**Over Sampling:** Set up the adaptive over-sampling grid.
-**SLaM Pipeline Functions:** The pipeline functions adapted for group-scale lenses.
-**Bayesian Evidence:** Determine if a DM subhalo was detected.
-**Grid Search Result:** Inspect the grid search results.
+- **SLaM Pipelines:** The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pipelines.
+- **Grid Search:** The second stage uses a grid-search of non-linear searches.
+- **Group Adaptation:** The lens model includes all group galaxies.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Centres:** Load galaxy centres from JSON files.
+- **Over Sampling:** Set up the adaptive over-sampling grid.
+- **SLaM Pipeline Functions:** The pipeline functions adapted for group-scale lenses.
+- **Bayesian Evidence:** Determine if a DM subhalo was detected.
+- **Grid Search Result:** Inspect the grid search results.
 
 __SLaM Pipelines__
 

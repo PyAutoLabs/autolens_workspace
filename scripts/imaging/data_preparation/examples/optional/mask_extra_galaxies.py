@@ -31,7 +31,7 @@ the extra galaxies mask.
 
 __Contents__
 
-**Output:** Output to a .png file for easy inspection.
+- **Output:** Output to a .png file for easy inspection.
 
 __Start Here Notebook__
 

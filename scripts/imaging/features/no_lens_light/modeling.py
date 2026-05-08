@@ -9,18 +9,18 @@ This example illustrates how to fit a lens model to data where the lens galaxy's
 
 __Contents__
 
-**Advantages & Disadvantages:** The main advantage of fitting data without lens light is the reduction in the number of free.
-**Model:** Compose the lens model fitted to the data.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Fit:** Fit the lens model to the dataset.
-**Model Cookbook:** A full description of model composition is provided by the model cookbook.
-**Search:** Configure the non-linear search used to fit the model.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
-**Run Time:** Profiling the expected run time of the model-fit.
-**Result:** Overview of the results of the model-fit.
-**Wrap Up:** Summary of the script and next steps.
+- **Advantages & Disadvantages:** The main advantage of fitting data without lens light is the reduction in the number of free.
+- **Model:** Compose the lens model fitted to the data.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Fit:** Fit the lens model to the dataset.
+- **Model Cookbook:** A full description of model composition is provided by the model cookbook.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+- **Run Time:** Profiling the expected run time of the model-fit.
+- **Result:** Overview of the results of the model-fit.
+- **Wrap Up:** Summary of the script and next steps.
 
 __Advantages__
 

@@ -11,11 +11,11 @@ can be loaded.
 
 __Contents__
 
-**Aggregator:** First, set up the aggregator as shown in `start_here.py`.
-**Unique Tag:** We can use the `Aggregator` to query the database and return only specific fits that we are.
-**Search Name:** We can also use the `name` of the search used to fit to the model as a query.
-**Model Queries:** We can also query based on the model fitted.
-**Logic:** Advanced queries can be constructed using logic, for example we below we combine the two queries.
+- **Aggregator:** First, set up the aggregator as shown in `start_here.py`.
+- **Unique Tag:** We can use the `Aggregator` to query the database and return only specific fits that we are.
+- **Search Name:** We can also use the `name` of the search used to fit to the model as a query.
+- **Model Queries:** We can also query based on the model fitted.
+- **Logic:** Advanced queries can be constructed using logic, for example we below we combine the two queries.
 
 """
 

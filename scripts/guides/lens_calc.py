@@ -20,22 +20,22 @@ guide walks through each quantity from first principles, with equations and code
 
 __Contents__
 
-**Units:** In this example, all quantities use the source code's internal unit coordinates, with spatial.
-**Data Structures:** Arrays inspected in this example use bespoke data structures for storing arrays, grids, vectors and.
-**Grids:** To describe the deflection of light, **PyAutoLens** uses `Grid2D` data structures.
-**Mass Profile and Galaxy:** We create a simple elliptical isothermal mass profile and wrap it in a Galaxy.
-**Tracer:** We create a two-plane Tracer from a lens and source galaxy.
-**LensCalc:** We introduce the ``LensCalc`` object and how to construct one from a Tracer.
-**The Lens Equation:** The fundamental equation of gravitational lensing.
-**Deflection Angles:** The deflection angles are the input to every other lensing quantity.
-**Hessian:** The matrix of second derivatives of the lensing potential.
-**Convergence:** The projected surface mass density normalised by the critical density.
-**Shear:** The tidal distortion field that stretches lensed images.
-**Magnification:** How much a lensed image is brightened (or dimmed) relative to the unlensed source.
-**Critical Curves and Caustics:** Where magnification formally diverges and how this maps to the source plane.
-**Einstein Radius:** The characteristic angular size of a lens.
-**Fermat Potential:** The time-delay surface whose extrema locate lensed images.
-**Wrap Up:** Summary and pointers to further reading.
+- **Units:** In this example, all quantities use the source code's internal unit coordinates, with spatial.
+- **Data Structures:** Arrays inspected in this example use bespoke data structures for storing arrays, grids, vectors and.
+- **Grids:** To describe the deflection of light, **PyAutoLens** uses `Grid2D` data structures.
+- **Mass Profile and Galaxy:** We create a simple elliptical isothermal mass profile and wrap it in a Galaxy.
+- **Tracer:** We create a two-plane Tracer from a lens and source galaxy.
+- **LensCalc:** We introduce the ``LensCalc`` object and how to construct one from a Tracer.
+- **The Lens Equation:** The fundamental equation of gravitational lensing.
+- **Deflection Angles:** The deflection angles are the input to every other lensing quantity.
+- **Hessian:** The matrix of second derivatives of the lensing potential.
+- **Convergence:** The projected surface mass density normalised by the critical density.
+- **Shear:** The tidal distortion field that stretches lensed images.
+- **Magnification:** How much a lensed image is brightened (or dimmed) relative to the unlensed source.
+- **Critical Curves and Caustics:** Where magnification formally diverges and how this maps to the source plane.
+- **Einstein Radius:** The characteristic angular size of a lens.
+- **Fermat Potential:** The time-delay surface whose extrema locate lensed images.
+- **Wrap Up:** Summary and pointers to further reading.
 
 __Units__
 

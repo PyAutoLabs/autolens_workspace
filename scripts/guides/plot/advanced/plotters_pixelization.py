@@ -19,12 +19,12 @@ Refer to `plots/start_here.ipynb` for an introduction to the new plotting API.
 
 __Contents__
 
-**Setup:** General setup for the analysis.
-**Fit Imaging:** Plot the multi-panel fit overview with `aplt.subplot_fit_imaging()`.
-**Inversion:** The `inversion` property contains the linear algebra, mesh calculations and other key quantities.
-**Mapper Grids:** The mapper maps pixels from the image-plane to the source-plane pixelization.
-**Mapper Galaxy Dict:** The mapper galaxy dict maps each mapper to its corresponding galaxy.
-**Fit Interferometer:** A fit to an interferometer dataset with a pixelized source is plotted with.
+- **Setup:** General setup for the analysis.
+- **Fit Imaging:** Plot the multi-panel fit overview with `aplt.subplot_fit_imaging()`.
+- **Inversion:** The `inversion` property contains the linear algebra, mesh calculations and other key quantities.
+- **Mapper Grids:** The mapper maps pixels from the image-plane to the source-plane pixelization.
+- **Mapper Galaxy Dict:** The mapper galaxy dict maps each mapper to its corresponding galaxy.
+- **Fit Interferometer:** A fit to an interferometer dataset with a pixelized source is plotted with.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

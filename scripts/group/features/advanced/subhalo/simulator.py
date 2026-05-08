@@ -10,17 +10,17 @@ careful lens modeling.
 
 __Contents__
 
-**Dataset Paths:** The ``dataset_type`` describes the type of data being simulated.
-**Grid:** Define the 2d grid of (y,x) coordinates for the simulation.
-**Galaxy Centres:** Define the centres of the main lens galaxies and extra galaxies.
-**Over Sampling:** Set up the adaptive over-sampling grid.
-**Main Lens Galaxies:** The main lens galaxy, which includes a dark matter subhalo.
-**Extra Galaxies:** Two companion galaxies near the lens system.
-**Source Galaxy:** The source galaxy whose lensed images we simulate.
-**Ray Tracing:** Use all galaxies to set up a tracer.
-**Dataset:** Simulate and output the dataset.
-**Centre JSON Files:** Save the centres as JSON files.
-**Subhalo Difference Image:** Visualize the effect of the subhalo.
+- **Dataset Paths:** The ``dataset_type`` describes the type of data being simulated.
+- **Grid:** Define the 2d grid of (y,x) coordinates for the simulation.
+- **Galaxy Centres:** Define the centres of the main lens galaxies and extra galaxies.
+- **Over Sampling:** Set up the adaptive over-sampling grid.
+- **Main Lens Galaxies:** The main lens galaxy, which includes a dark matter subhalo.
+- **Extra Galaxies:** Two companion galaxies near the lens system.
+- **Source Galaxy:** The source galaxy whose lensed images we simulate.
+- **Ray Tracing:** Use all galaxies to set up a tracer.
+- **Dataset:** Simulate and output the dataset.
+- **Centre JSON Files:** Save the centres as JSON files.
+- **Subhalo Difference Image:** Visualize the effect of the subhalo.
 
 __Model__
 

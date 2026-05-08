@@ -7,9 +7,9 @@ reasons explaining why each customization is useful.
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Positions:** Before fitting a strong lens, we can manually specify a grid of image-plane coordinates.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Positions:** Before fitting a strong lens, we can manually specify a grid of image-plane coordinates.
 
 __Start Here Notebook__
 
