@@ -518,7 +518,9 @@ a reasonable simulator default. See `scripts/point_source/simulator.py` for a fu
 """
 time_delay_rel_noise = 0.05
 
-time_delays_noise_map = al.ArrayIrregular(values=np.abs(time_delays) * time_delay_rel_noise)
+time_delays_noise_map = al.ArrayIrregular(
+    values=np.abs(time_delays) * time_delay_rel_noise
+)
 
 """
 The time delays are input into a `PointDataset` object, alongside the image-plane coordinates of the multiple images

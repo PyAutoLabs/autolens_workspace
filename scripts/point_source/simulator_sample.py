@@ -202,7 +202,9 @@ for sample_index in range(total_datasets):
     time_delay_rel_noise = 0.05
 
     time_delays = tracer.time_delays_from(grid=positions)
-    time_delays_noise_map = al.ArrayIrregular(values=np.abs(time_delays) * time_delay_rel_noise)
+    time_delays_noise_map = al.ArrayIrregular(
+        values=np.abs(time_delays) * time_delay_rel_noise
+    )
 
     time_delays_with_noise = time_delays + np.random.normal(
         loc=0.0, scale=time_delays_noise_map, size=len(time_delays)

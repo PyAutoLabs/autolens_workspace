@@ -537,7 +537,9 @@ positions_noise_map = al.ArrayIrregular([position_noise] * len(positions))
 
 fluxes_noise_map = al.ArrayIrregular(values=flux_rel_noise * np.asarray(fluxes))
 
-time_delays_noise_map = al.ArrayIrregular(values=np.abs(time_delays) * time_delay_rel_noise)
+time_delays_noise_map = al.ArrayIrregular(
+    values=np.abs(time_delays) * time_delay_rel_noise
+)
 
 """
 We can pass these to a `PointDataset` and output to hard disk as a .json file.

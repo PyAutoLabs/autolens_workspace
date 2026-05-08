@@ -114,7 +114,9 @@ new dataset class involved. Every downstream component (analyses, factors, fits,
 list directly, which is the whole reason we picked the list-of-Interferometer design over a bespoke
 `Datacube3D` class.
 """
-channel_paths = sorted(p for p in dataset_path.iterdir() if p.is_dir() and p.name.startswith("channel_"))
+channel_paths = sorted(
+    p for p in dataset_path.iterdir() if p.is_dir() and p.name.startswith("channel_")
+)
 print(f"Found {len(channel_paths)} channels in {dataset_path}")
 
 dataset_list = [
@@ -159,9 +161,7 @@ same penalty in every analysis enforces a single global constraint.
 The threshold of 0.3" is generous; for a real fit you'd tighten it (typically < 0.05") once the lens model has
 settled into the right region of parameter space.
 """
-positions = al.Grid2DIrregular(
-    al.from_json(file_path=dataset_path / "positions.json")
-)
+positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.json"))
 positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
 """
@@ -254,7 +254,9 @@ analysis_factor_list = [
 factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 print(f"  channels in factor graph:           {len(analysis_factor_list)}")
-print(f"  global model free parameters:       {factor_graph.global_prior_model.total_free_parameters}")
+print(
+    f"  global model free parameters:       {factor_graph.global_prior_model.total_free_parameters}"
+)
 
 """
 __Search__
