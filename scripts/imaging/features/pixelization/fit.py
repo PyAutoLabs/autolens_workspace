@@ -26,22 +26,22 @@ initial setup can be performed before lens modeling and saved to hard disk for f
 
 __Contents__
 
-**CPU Users:** Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra.
-**Advantages & Disadvantages:** Many strongly lensed source galaxies are complex, and have asymmetric and irregular morphologies.
-**Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Mesh Shape:** The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the.
-**Edge Zeroing:** By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero.
-**Pixelization:** We create a `Pixelization` object to perform the pixelized source reconstruction, which is made up.
-**Fit:** Fit the lens model to the dataset.
-**Mask Extra Galaxies:** There may be extra galaxies nearby the lens and source galaxies, whose emission blends with the.
-**Wrap Up:** Summary of the script and next steps.
-**Linear Objects:** An `Inversion` contains all of the linear objects used to reconstruct the data in its.
-**Grids:** The role of a mapper is to map between the image-plane and source-plane.
-**Reconstruction:** The source reconstruction is also available as a 1D numpy array of values representative of the.
-**Mapped Reconstructed Images:** The source reconstruction(s) are mapped to the image-plane in order to fit the lens model.
-**Simulated Imaging:** We load the source galaxy image from the pixelized inversion of a previous fit, which was performed.
+- **CPU Users:** Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra.
+- **Advantages & Disadvantages:** Many strongly lensed source galaxies are complex, and have asymmetric and irregular morphologies.
+- **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Mesh Shape:** The `mesh_shape` parameter defines number of pixels used by the rectangular mesh to reconstruct the.
+- **Edge Zeroing:** By default, all pixels at the edge of the mesh in the source-plane are forced to solutions of zero.
+- **Pixelization:** We create a `Pixelization` object to perform the pixelized source reconstruction, which is made up.
+- **Fit:** Fit the lens model to the dataset.
+- **Mask Extra Galaxies:** There may be extra galaxies nearby the lens and source galaxies, whose emission blends with the.
+- **Wrap Up:** Summary of the script and next steps.
+- **Linear Objects:** An `Inversion` contains all of the linear objects used to reconstruct the data in its.
+- **Grids:** The role of a mapper is to map between the image-plane and source-plane.
+- **Reconstruction:** The source reconstruction is also available as a 1D numpy array of values representative of the.
+- **Mapped Reconstructed Images:** The source reconstruction(s) are mapped to the image-plane in order to fit the lens model.
+- **Simulated Imaging:** We load the source galaxy image from the pixelized inversion of a previous fit, which was performed.
 
 __Advantages__
 

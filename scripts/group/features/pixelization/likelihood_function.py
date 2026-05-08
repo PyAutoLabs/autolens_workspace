@@ -15,16 +15,16 @@ This script has the following aims:
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Galaxy Centres:** Load centres for main lens and extra galaxies.
-**Lens Galaxies:** Define the main lens and extra galaxies with light and mass profiles.
-**Source Galaxy Pixelization:** The source uses a Delaunay mesh with constant regularization.
-**Lens Light:** Compute the total lens light from all galaxies.
-**Deflection Angles:** Compute deflection angles from all mass profiles.
-**Ray Tracing:** Ray-trace image pixels to the source plane using combined deflections.
-**Pixelized Source Reconstruction:** The linear algebra inversion step.
-**Likelihood Function:** Compute the log likelihood including regularization evidence terms.
-**Fit:** Confirm the step-by-step calculation matches the FitImaging object.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Galaxy Centres:** Load centres for main lens and extra galaxies.
+- **Lens Galaxies:** Define the main lens and extra galaxies with light and mass profiles.
+- **Source Galaxy Pixelization:** The source uses a Delaunay mesh with constant regularization.
+- **Lens Light:** Compute the total lens light from all galaxies.
+- **Deflection Angles:** Compute deflection angles from all mass profiles.
+- **Ray Tracing:** Ray-trace image pixels to the source plane using combined deflections.
+- **Pixelized Source Reconstruction:** The linear algebra inversion step.
+- **Likelihood Function:** Compute the log likelihood including regularization evidence terms.
+- **Fit:** Confirm the step-by-step calculation matches the FitImaging object.
 
 __Prerequisites__
 

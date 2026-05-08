@@ -20,19 +20,19 @@ with different parameters.
 
 __Contents__
 
-**Subhalo Detection Discussion:** For strong lensing, this process is crucial for dark matter substructure detection, as discussed in.
-**Subhalo Sensitivity Mapping:** Sensitivity mapping is a process where we simulate many thousands of strong lens images.
-**SLaM Pipelines:** The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pipelines which.
-**Pixelized Source:** Detecting a DM subhalo requires the lens model to be sufficiently accurate that the residuals of.
-**Base Model:** We now define the `base_model` that we use to perform sensitivity mapping.
-**Perturb Model:** We now define the `perturb_model`, which is the model component whose parameters we iterate over to.
-**Mapping Grid:** Sensitivity mapping is typically performed over a large range of parameters.
-**Perturb Model Prior Func:** The default priors on the `perturb_model` are `UniformPrior`'s bounded around each sensitivity grid.
-**Simulation Instance:** We are performing sensitivity mapping to determine where a subhalo is detectable.
-**Simulate Function Class:** We now write the `simulate_cls`, which takes the `simulation_instance` of our model (defined above).
-**Base Fit:** We have defined a `Simulate` class that will be used to simulate every dataset simulated by the.
-**Perturb Fit:** We now define a `PerturbFit` class, which defines how the `perturb_model` is fitted to each.
-**Results:** You should now look at the results of the sensitivity mapping in the folder.
+- **Subhalo Detection Discussion:** For strong lensing, this process is crucial for dark matter substructure detection, as discussed in.
+- **Subhalo Sensitivity Mapping:** Sensitivity mapping is a process where we simulate many thousands of strong lens images.
+- **SLaM Pipelines:** The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pipelines which.
+- **Pixelized Source:** Detecting a DM subhalo requires the lens model to be sufficiently accurate that the residuals of.
+- **Base Model:** We now define the `base_model` that we use to perform sensitivity mapping.
+- **Perturb Model:** We now define the `perturb_model`, which is the model component whose parameters we iterate over to.
+- **Mapping Grid:** Sensitivity mapping is typically performed over a large range of parameters.
+- **Perturb Model Prior Func:** The default priors on the `perturb_model` are `UniformPrior`'s bounded around each sensitivity grid.
+- **Simulation Instance:** We are performing sensitivity mapping to determine where a subhalo is detectable.
+- **Simulate Function Class:** We now write the `simulate_cls`, which takes the `simulation_instance` of our model (defined above).
+- **Base Fit:** We have defined a `Simulate` class that will be used to simulate every dataset simulated by the.
+- **Perturb Fit:** We now define a `PerturbFit` class, which defines how the `perturb_model` is fitted to each.
+- **Results:** You should now look at the results of the sensitivity mapping in the folder.
 
 __Subhalo Detection Discussion__
 

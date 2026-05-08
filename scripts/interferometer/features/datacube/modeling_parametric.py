@@ -25,18 +25,18 @@ default, and we explicitly override the source `intensity` prior per `AnalysisFa
 
 __Contents__
 
-**Mask:** Define the 2D real-space mask applied to every channel.
-**Dataset:** Where the per-channel cube lives on disk and how to point this script at your own.
-**Dataset Auto-Simulation:** Run `simulator.py` automatically if the cube isn't already on disk.
-**Dataset Loading:** Loop over the channel folders and load each as an `Interferometer` object.
-**Positions:** Load multiple-image positions and build a shared `PositionsLH` penalty.
-**Settings:** Default `al.Settings()` — no positive-only-solver tweak needed (no inversion).
-**Model:** Compose the shared `Isothermal + ExternalShear` lens and `Sersic` source.
-**Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with `use_jax=True` and the shared `PositionsLH`.
-**FactorGraph:** Per-factor `model.copy()` with the source `intensity` prior overridden per channel.
-**Search:** Configure the `Nautilus` non-linear search.
-**Model Fit:** Run the fit. Per-channel cost is much cheaper than the pixelization variant.
-**Wrap Up:** Pointers to `modeling.py`, `start_here.py`, and the JAX likelihood walkthrough.
+- **Mask:** Define the 2D real-space mask applied to every channel.
+- **Dataset:** Where the per-channel cube lives on disk and how to point this script at your own.
+- **Dataset Auto-Simulation:** Run `simulator.py` automatically if the cube isn't already on disk.
+- **Dataset Loading:** Loop over the channel folders and load each as an `Interferometer` object.
+- **Positions:** Load multiple-image positions and build a shared `PositionsLH` penalty.
+- **Settings:** Default `al.Settings()` — no positive-only-solver tweak needed (no inversion).
+- **Model:** Compose the shared `Isothermal + ExternalShear` lens and `Sersic` source.
+- **Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with `use_jax=True` and the shared `PositionsLH`.
+- **FactorGraph:** Per-factor `model.copy()` with the source `intensity` prior overridden per channel.
+- **Search:** Configure the `Nautilus` non-linear search.
+- **Model Fit:** Run the fit. Per-channel cost is much cheaper than the pixelization variant.
+- **Wrap Up:** Pointers to `modeling.py`, `start_here.py`, and the JAX likelihood walkthrough.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

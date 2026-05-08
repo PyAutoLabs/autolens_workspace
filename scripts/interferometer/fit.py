@@ -15,14 +15,14 @@ This example uses functionality described fully in other examples in the `guides
 
 __Contents__
 
-**Mask:** Define the 2D mask applied to the dataset for the model-fit.
-**Loading Data:** We we begin by loading the strong lens dataset `simple` from .fits files, which is the dataset we.
-**Fitting:** Fit the lens model to the dataset and inspect the results.
-**Bad Fit:** A bad lens model will show features in the residual-map and chi-squared map.
-**Fit Quantities:** The maximum log likelihood fit contains many 1D and 2D arrays showing the fit.
-**Figures of Merit:** There are single valued floats which quantify the goodness of fit.
-**Plane Quantities:** The `FitInterferometer` object has specific quantities which break down each image of each plane.
-**Outputting Results:** You may wish to output certain results to .fits files for later inspection.
+- **Mask:** Define the 2D mask applied to the dataset for the model-fit.
+- **Loading Data:** We we begin by loading the strong lens dataset `simple` from .fits files, which is the dataset we.
+- **Fitting:** Fit the lens model to the dataset and inspect the results.
+- **Bad Fit:** A bad lens model will show features in the residual-map and chi-squared map.
+- **Fit Quantities:** The maximum log likelihood fit contains many 1D and 2D arrays showing the fit.
+- **Figures of Merit:** There are single valued floats which quantify the goodness of fit.
+- **Plane Quantities:** The `FitInterferometer` object has specific quantities which break down each image of each plane.
+- **Outputting Results:** You may wish to output certain results to .fits files for later inspection.
 
 """
 

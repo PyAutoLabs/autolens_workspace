@@ -10,11 +10,11 @@ like its visualization and also inspect fits randomly drawm from the PDF.
 
 __Contents__
 
-**Interferometer:** This script can easily be adapted to analyse the results of charge injection imaging model-fits.
-**Aggregator:** First, set up the aggregator as shown in `start_here.py`.
-**Fits via Aggregator:** Having performed a model-fit, we now want to interpret and visualize the results.
-**Modification:** The `FitImagingAgg` allow us to modify the fit settings.
-**Visualization Customization:** The benefit of inspecting fits using the aggregator, rather than the files outputs to the.
+- **Interferometer:** This script can easily be adapted to analyse the results of charge injection imaging model-fits.
+- **Aggregator:** First, set up the aggregator as shown in `start_here.py`.
+- **Fits via Aggregator:** Having performed a model-fit, we now want to interpret and visualize the results.
+- **Modification:** The `FitImagingAgg` allow us to modify the fit settings.
+- **Visualization Customization:** The benefit of inspecting fits using the aggregator, rather than the files outputs to the.
 
 __Interferometer__
 

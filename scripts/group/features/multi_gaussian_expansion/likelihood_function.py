@@ -14,19 +14,19 @@ concrete MGE instances requires many parameters), but explains how the MGE likel
 
 __Contents__
 
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Over Sampling:** Disable over sampling for simplicity.
-**Main Lens Galaxy:** The main lens galaxy at the centre of the group.
-**Extra Galaxies:** The two extra galaxies are companion galaxies near the main lens.
-**Source Galaxy:** The source galaxy light profile.
-**Lens Light:** Compute a 2D image of each lens galaxy's light and sum them together.
-**Lens Galaxy Mass:** Compute deflection angles from all mass profiles.
-**Ray Tracing:** Ray-trace the image-plane grid to the source plane.
-**Source Image:** Evaluate the source galaxy light on the traced grid.
-**Convolution:** Convolve the total image with the PSF.
-**Likelihood Function:** Compute the log likelihood.
-**MGE Likelihood:** How the likelihood changes when using MGE light profiles.
-**Fit:** Verify using the FitImaging object.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Over Sampling:** Disable over sampling for simplicity.
+- **Main Lens Galaxy:** The main lens galaxy at the centre of the group.
+- **Extra Galaxies:** The two extra galaxies are companion galaxies near the main lens.
+- **Source Galaxy:** The source galaxy light profile.
+- **Lens Light:** Compute a 2D image of each lens galaxy's light and sum them together.
+- **Lens Galaxy Mass:** Compute deflection angles from all mass profiles.
+- **Ray Tracing:** Ray-trace the image-plane grid to the source plane.
+- **Source Image:** Evaluate the source galaxy light on the traced grid.
+- **Convolution:** Convolve the total image with the PSF.
+- **Likelihood Function:** Compute the log likelihood.
+- **MGE Likelihood:** How the likelihood changes when using MGE light profiles.
+- **Fit:** Verify using the FitImaging object.
 
 """
 

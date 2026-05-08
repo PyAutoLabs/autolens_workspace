@@ -12,13 +12,13 @@ is conceptually the simplest case for source science calculations and a good int
 
 __Contents__
 
-**Mask:** Define the 2D mask applied to the dataset for the model-fit.
-**Loading Data:** We we begin by loading the strong lens dataset `simple` from .fits files, which is the dataset we.
-**Source Values:** Source science calculations for real lenses are performed using the best-fitting model inferred.
-**Source Flux:** A key quantity for a source galaxy is its total flux, which can be used to compute magnitudes (see.
-**Source Magnification:** The overall magnification of the source is estimated as the ratio of total surface brightness in.
-**Tracer:** Lens modeling returns a `max_log_likelihood_tracer`, which is likely the object you have at hand to.
-**Parametric Source Models:** If your lens modeling uses a parametric source model (e.g.
+- **Mask:** Define the 2D mask applied to the dataset for the model-fit.
+- **Loading Data:** We we begin by loading the strong lens dataset `simple` from .fits files, which is the dataset we.
+- **Source Values:** Source science calculations for real lenses are performed using the best-fitting model inferred.
+- **Source Flux:** A key quantity for a source galaxy is its total flux, which can be used to compute magnitudes (see.
+- **Source Magnification:** The overall magnification of the source is estimated as the ratio of total surface brightness in.
+- **Tracer:** Lens modeling returns a `max_log_likelihood_tracer`, which is likely the object you have at hand to.
+- **Parametric Source Models:** If your lens modeling uses a parametric source model (e.g.
 
 """
 

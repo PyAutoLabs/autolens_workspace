@@ -12,10 +12,10 @@ This tutorial describes preprocessing your dataset`s psf to adhere to the units 
 
 __Contents__
 
-**Pixel Scale:** The "pixel_scale" of the image (and the data in general) is pixel-units to arcsecond-units.
-**Loading Data From Individual Fits Files:** Load a PSF from .fits files (a format commonly used by Astronomers) via the `Array2D` object.
-**PSF Dimensions:** The PSF dimensions must be odd x odd (e.g.
-**PSF Normalization:** The PSF should also be normalized to unity.
+- **Pixel Scale:** The "pixel_scale" of the image (and the data in general) is pixel-units to arcsecond-units.
+- **Loading Data From Individual Fits Files:** Load a PSF from .fits files (a format commonly used by Astronomers) via the `Array2D` object.
+- **PSF Dimensions:** The PSF dimensions must be odd x odd (e.g.
+- **PSF Normalization:** The PSF should also be normalized to unity.
 
 __Pixel Scale__
 

@@ -11,16 +11,16 @@ was performed using PSF-convolved models and the residual light retains that con
 
 __Contents__
 
-**Dataset Paths:** The ``dataset_type`` describes the type of data being simulated.
-**Grid:** Define the 2d grid of (y,x) coordinates for the simulation.
-**Galaxy Centres:** Define the centres of the main lens galaxies and extra galaxies.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Main Lens Galaxies:** The main lens galaxy with an operated ``Sersic`` light profile.
-**Extra Galaxies:** The extra galaxies with operated ``Sersic`` light profiles.
-**Source Galaxy:** The source galaxy whose lensed images we simulate.
-**Ray Tracing:** Use all galaxies to set up a tracer.
-**Dataset:** Simulate and output the dataset.
-**Centre JSON Files:** Save the centres as JSON files.
+- **Dataset Paths:** The ``dataset_type`` describes the type of data being simulated.
+- **Grid:** Define the 2d grid of (y,x) coordinates for the simulation.
+- **Galaxy Centres:** Define the centres of the main lens galaxies and extra galaxies.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Main Lens Galaxies:** The main lens galaxy with an operated ``Sersic`` light profile.
+- **Extra Galaxies:** The extra galaxies with operated ``Sersic`` light profiles.
+- **Source Galaxy:** The source galaxy whose lensed images we simulate.
+- **Ray Tracing:** Use all galaxies to set up a tracer.
+- **Dataset:** Simulate and output the dataset.
+- **Centre JSON Files:** Save the centres as JSON files.
 
 __Model__
 

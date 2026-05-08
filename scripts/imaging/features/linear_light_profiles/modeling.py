@@ -12,22 +12,22 @@ light profiles!
 
 __Contents__
 
-**Advantages & Disadvantages:** Each light profile's `intensity` parameter is therefore not a free parameter in the model-fit.
-**Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
-**Model:** Compose the lens model fitted to the data.
-**Notes:** This script is identical to `modeling/start_here.py` except that the light profiles are switched to.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Model Cookbook:** A full description of model composition is provided by the model cookbook.
-**Search:** Configure the non-linear search used to fit the model.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
-**Run Time:** Profiling the expected run time of the model-fit.
-**Result:** Overview of the results of the model-fit.
-**Intensities:** The intensities of linear light profiles are not a part of the model parameterization and therefore.
-**Visualization:** Linear light profiles and objects containing them (e.g.
-**Wrap Up:** Summary of the script and next steps.
-**Max Likelihood Inversion:** As seen elsewhere in the workspace, the result contains a `max_log_likelihood_fit`, which contains.
+- **Advantages & Disadvantages:** Each light profile's `intensity` parameter is therefore not a free parameter in the model-fit.
+- **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+- **Model:** Compose the lens model fitted to the data.
+- **Notes:** This script is identical to `modeling/start_here.py` except that the light profiles are switched to.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Model Cookbook:** A full description of model composition is provided by the model cookbook.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
+- **Run Time:** Profiling the expected run time of the model-fit.
+- **Result:** Overview of the results of the model-fit.
+- **Intensities:** The intensities of linear light profiles are not a part of the model parameterization and therefore.
+- **Visualization:** Linear light profiles and objects containing them (e.g.
+- **Wrap Up:** Summary of the script and next steps.
+- **Max Likelihood Inversion:** As seen elsewhere in the workspace, the result contains a `max_log_likelihood_fit`, which contains.
 
 __Advantages__
 

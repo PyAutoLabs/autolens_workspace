@@ -12,18 +12,18 @@ profiles like the `Sersic`.
 
 __Contents__
 
-**Advantages & Disadvantages:** Symmetric light profiles (e.g.
-**Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
-**MGE Source Galaxy:** The MGE was designed to model the light of lens galaxies, because they are typically elliptical.
-**Model:** Compose the lens model fitted to the data.
-**Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-**Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
-**Basis:** We first build a `Basis`, which is built from multiple light profiles (in this case, Gaussians).
-**Gaussians:** The `Basis` is composed of many Gaussians, each with different sizes (the `sigma` value) and.
-**Linear Light Profiles:** We now show Composing a basis of multiple Gaussians and use them to fit the lens galaxy's light in.
-**Fit:** Fit the lens model to the dataset.
-**Intensities:** The fit contains the solved for intensity values.
-**Wrap Up:** Summary of the script and next steps.
+- **Advantages & Disadvantages:** Symmetric light profiles (e.g.
+- **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+- **MGE Source Galaxy:** The MGE was designed to model the light of lens galaxies, because they are typically elliptical.
+- **Model:** Compose the lens model fitted to the data.
+- **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **Basis:** We first build a `Basis`, which is built from multiple light profiles (in this case, Gaussians).
+- **Gaussians:** The `Basis` is composed of many Gaussians, each with different sizes (the `sigma` value) and.
+- **Linear Light Profiles:** We now show Composing a basis of multiple Gaussians and use them to fit the lens galaxy's light in.
+- **Fit:** Fit the lens model to the dataset.
+- **Intensities:** The fit contains the solved for intensity values.
+- **Wrap Up:** Summary of the script and next steps.
 
 __Advantages__
 

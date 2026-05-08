@@ -16,13 +16,13 @@ or confident the fluxes are not affected by it.
 
 __Contents__
 
-**Model:** Compose the lens model fitted to the data.
-**Dataset:** Load and plot the strong lens dataset.
-**Point Solver:** We set up the `PointSolver`, which is used to compute the multiple images of the point source in.
-**Search:** Configure the non-linear search used to fit the model.
-**Analysis:** Create the Analysis object that defines how the model is fitted to the data.
-**Run Times:** Profiling the expected run time of the model-fit.
-**Result:** Overview of the results of the model-fit.
+- **Model:** Compose the lens model fitted to the data.
+- **Dataset:** Load and plot the strong lens dataset.
+- **Point Solver:** We set up the `PointSolver`, which is used to compute the multiple images of the point source in.
+- **Search:** Configure the non-linear search used to fit the model.
+- **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
+- **Run Times:** Profiling the expected run time of the model-fit.
+- **Result:** Overview of the results of the model-fit.
 
 __Model__
 

@@ -13,8 +13,8 @@ Comments have therefore been removed to avoid repetition and make the script mor
 
 __Contents__
 
-**The Fix:** The fix which makes parallelization work is at the end of the script, where we use the following.
-**Trouble Shooting:** If you still cannot get parallelization to work, please ask to be added to the SLACK channel (by.
+- **The Fix:** The fix which makes parallelization work is at the end of the script, where we use the following.
+- **Trouble Shooting:** If you still cannot get parallelization to work, please ask to be added to the SLACK channel (by.
 
 __The Fix__
 

@@ -16,20 +16,20 @@ walkthrough; this file is the one to copy and adapt for your own cube.
 
 __Contents__
 
-**Mask:** Define the 2D real-space mask applied to every channel.
-**Dataset:** Where the per-channel cube lives on disk and how to point this script at your own.
-**Dataset Auto-Simulation:** Run `simulator.py` automatically if the cube isn't already on disk.
-**Dataset Loading:** Loop over the channel folders and load each as an `Interferometer` object.
-**Sparse Operators:** Pre-compute per-channel sparse-operator matrices used by the pixelized source inversion.
-**Settings:** Disable the positive-only solver so visibility-space inversions can take negative pixel values.
-**Mesh Shape:** Pixelization mesh size — fixed before modeling because JAX needs static-shape arrays.
-**Model:** Compose the shared `Isothermal + ExternalShear` lens and pixelized source.
-**Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with `use_jax=True`.
-**FactorGraph:** Wrap each analysis in an `AnalysisFactor` and combine via `af.FactorGraphModel`.
-**Search:** Configure the `Nautilus` non-linear search.
-**Model Fit:** Run the fit. Per-channel inversion cost dominates runtime — see notes inline.
-**Wrap Up:** Summary of the script and pointers to the JAX likelihood walkthrough in
-``autolens_workspace_developer/datacube/likelihood_function.py``.
+- **Mask:** Define the 2D real-space mask applied to every channel.
+- **Dataset:** Where the per-channel cube lives on disk and how to point this script at your own.
+- **Dataset Auto-Simulation:** Run `simulator.py` automatically if the cube isn't already on disk.
+- **Dataset Loading:** Loop over the channel folders and load each as an `Interferometer` object.
+- **Sparse Operators:** Pre-compute per-channel sparse-operator matrices used by the pixelized source inversion.
+- **Settings:** Disable the positive-only solver so visibility-space inversions can take negative pixel values.
+- **Mesh Shape:** Pixelization mesh size — fixed before modeling because JAX needs static-shape arrays.
+- **Model:** Compose the shared `Isothermal + ExternalShear` lens and pixelized source.
+- **Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with `use_jax=True`.
+- **FactorGraph:** Wrap each analysis in an `AnalysisFactor` and combine via `af.FactorGraphModel`.
+- **Search:** Configure the `Nautilus` non-linear search.
+- **Model Fit:** Run the fit. Per-channel inversion cost dominates runtime — see notes inline.
+- **Wrap Up:** Summary of the script and pointers to the JAX likelihood walkthrough in
+  ``autolens_workspace_developer/datacube/likelihood_function.py``.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

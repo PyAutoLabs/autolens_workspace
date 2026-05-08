@@ -53,8 +53,8 @@ Each completed fit lives at a path like::
 
 __Contents__
 
-**Model Fit:** Run a quick fit once so both halves of this guide have a real result on disk to read from.
-**Info:** Print the result in a readable format.
+- **Model Fit:** Run a quick fit once so both halves of this guide have a real result on disk to read from.
+- **Info:** Print the result in a readable format.
 
 **Simple Loading (one fit at a time):**
 

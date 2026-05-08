@@ -18,17 +18,17 @@ The differences from `slam_start_here` are:
 
 __Contents__
 
-**Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
-**SOURCE LP PIPELINE:** Identical to `slam_start_here.py`.
-**SOURCE PIX PIPELINE 1:** Identical to `slam_start_here.py`.
-**SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`, except `AdaptSplit` regularization is used instead of `Adapt`.
-**LIGHT LP PIPELINE:** Identical to `slam_start_here.py`.
-**MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`.
-**Dataset:** Load and plot the strong lens dataset.
-**Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
-**Redshifts:** The redshifts of the lens and source galaxies.
-**Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
-**SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
+- **Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
+- **SOURCE LP PIPELINE:** Identical to `slam_start_here.py`.
+- **SOURCE PIX PIPELINE 1:** Identical to `slam_start_here.py`.
+- **SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`, except `AdaptSplit` regularization is used instead of `Adapt`.
+- **LIGHT LP PIPELINE:** Identical to `slam_start_here.py`.
+- **MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`.
+- **Dataset:** Load and plot the strong lens dataset.
+- **Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+- **Redshifts:** The redshifts of the lens and source galaxies.
+- **Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
+- **SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
 
 __Prerequisites__
 
