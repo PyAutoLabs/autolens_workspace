@@ -122,34 +122,41 @@ aplt.subplot_imaging_dataset(dataset=dataset)
 """
 __Centres__
 
-Three centre JSON files — one per tier. The same `al.from_json` pattern is used by `group/modeling.py` for
-`main_lens_centres.json` and `extra_galaxies_centres.json`; we just add a third file for the scaling tier.
+Centres for the main and extra tiers come from JSON files (one (y, x) tuple per galaxy each). The scaling tier loads
+its centres AND luminosities from a single CSV via `al.galaxy_table_from_csv` — see the next section.
 """
 main_lens_centres = al.from_json(file_path=dataset_path / "main_lens_centres.json")
 extra_galaxies_centres = al.from_json(
     file_path=dataset_path / "extra_galaxies_centres.json"
 )
-scaling_galaxies_centres = al.from_json(
-    file_path=dataset_path / "scaling_galaxies_centres.json"
-)
 
 print(f"Main lens centres: {main_lens_centres}")
 print(f"Extra galaxies centres: {extra_galaxies_centres}")
-print(f"Scaling galaxies centres: {scaling_galaxies_centres}")
 
 """
-__Scaling Galaxy Luminosities__
+__Scaling Galaxy Centres + Luminosities__
 
-The scaling relation needs a measured luminosity per scaling galaxy. In a production fit these would come from a
-**prior light-only fit** rather than being hardcoded; this tutorial uses hardcoded numbers to keep the script a single
-self-contained search.
+The scaling relation needs both centres AND a measured luminosity per scaling galaxy. There are two equally-supported
+ways to provide them in PyAutoLens — both shown below so you can pick whichever fits your workflow.
 
-There are two production patterns for obtaining the luminosities:
+**Option A — CSV via `al.galaxy_table_from_csv` (recommended for non-trivial galaxy counts).** The simulator writes a
+`scaling_galaxies.csv` with columns `y, x, luminosity` (and optional `redshift`) alongside the centre JSONs. We load it
+in one call which returns a typed `GalaxyTable` with `.centres` (a `Grid2DIrregular`), `.luminosities`, and (optionally)
+`.redshifts`. This scales naturally to populations of tens or hundreds of galaxies — the source of truth lives in a
+single editable file.
+
+**Option B — JSON centres + hardcoded luminosity list (the original API, fine for short, fixed-length tutorials).**
+Load the centres from `scaling_galaxies_centres.json` with `al.from_json` (the same loader used for the main and
+extras tiers above) and define the luminosities as a Python list. Concise and obvious for small populations; awkward
+once you have more than a handful.
+
+In a real analysis the luminosities come from a prior light-only fit. Two production patterns for obtaining them:
 
  - **Standalone light-only fit.** Run a single-stage non-linear search whose model is just MGE bulges for every galaxy
    (no mass, no source). After the fit, compute total luminosity per galaxy from the bulge gaussian parameters:
-   `total_luminosity = sum(2 * pi * sigma**2 / axis_ratio * intensity) / pixel_scale**2`. See the worked example at
-   `scripts/group/features/scaling_relation/modeling_for_luminosities.py`.
+   `total_luminosity = sum(2 * pi * sigma**2 / axis_ratio * intensity) / pixel_scale**2`. The standalone example at
+   `scripts/group/features/scaling_relation/modeling_for_luminosities.py` writes its result as a `scaling_galaxies.csv`
+   in the dataset folder, which can then be loaded directly via Option A here.
 
  - **As the `source_lp[0]` stage of a SLaM pipeline.** Every group SLaM script defines a `source_lp_0` function whose
    sole purpose is to fit a light-only MGE model to the main lens, extra galaxies and scaling galaxies in one go.
@@ -163,13 +170,27 @@ There are two production patterns for obtaining the luminosities:
    docstring. The luminosity computation lives in the `source_lp_1` function that consumes the `source_lp_result_0`
    result.
 
-The order of the list below must match `scaling_galaxies_centres`.
+We use Option A by default below. The Option B equivalent is shown commented out — uncomment it (and comment out
+Option A) to switch.
 """
-scaling_galaxies_luminosity_list = [0.45, 0.45]
-
-assert len(scaling_galaxies_luminosity_list) == len(list(scaling_galaxies_centres)), (
-    "Number of scaling-galaxy luminosities must match the number of scaling-galaxy centres."
+# Option A: CSV (recommended)
+scaling_galaxies_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
 )
+scaling_galaxies_centres = scaling_galaxies_table.centres
+scaling_galaxies_luminosity_list = scaling_galaxies_table.luminosities
+
+# Option B: JSON centres + hardcoded luminosities (uncomment to use instead)
+# scaling_galaxies_centres = al.from_json(
+#     file_path=dataset_path / "scaling_galaxies_centres.json"
+# )
+# scaling_galaxies_luminosity_list = [0.45, 0.45]
+# assert len(scaling_galaxies_luminosity_list) == len(list(scaling_galaxies_centres)), (
+#     "Number of scaling-galaxy luminosities must match the number of scaling-galaxy centres."
+# )
+
+print(f"Scaling galaxies centres: {scaling_galaxies_centres}")
+print(f"Scaling galaxies luminosities: {scaling_galaxies_luminosity_list}")
 
 """
 __Main Lens Galaxies__
