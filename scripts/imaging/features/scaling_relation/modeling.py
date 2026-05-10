@@ -77,8 +77,10 @@ from the data itself. Two production patterns:
    from that result to compute luminosities and bound / scale the mass models. See `scripts/group/slam.py`,
    `scripts/group/features/pixelization/slam.py`, and the other group `slam.py` variants for production examples.
 
-This tutorial uses **hardcoded luminosity lists** for readability — they would be the *output* of one of the patterns
-above in production code.
+This tutorial loads the luminosities from a `scaling_galaxies.csv` written by the simulator (see
+`al.galaxy_table_from_csv` further down). In a real analysis the same CSV would be the *output* of one of the patterns
+above — `modeling_for_luminosities.py` already writes its result in this format, and the SLAM `source_lp[0]` stage can
+similarly emit one.
 
 __Redshifts__
 
@@ -160,31 +162,57 @@ aplt.subplot_imaging_dataset(dataset=dataset)
 """
 __Centres__
 
-Two JSON files. The naming convention used by the dataset (extras vs scaling) carries through here purely as a labelling
-convenience — both populations end up in the same `extra_galaxies` collection in the model.
+The individually-modelled tier loads its centres from a JSON file (a list of (y, x) tuples) — the centres are the only
+input the modeling script needs for that tier.
 """
 individual_extras_centres = al.from_json(
     file_path=dataset_path / "extra_galaxies_centres.json"
 )
-relational_extras_centres = al.from_json(
-    file_path=dataset_path / "scaling_galaxies_centres.json"
-)
 
 print(f"Individually-modelled extras: {individual_extras_centres}")
-print(f"Scaling-relation extras: {relational_extras_centres}")
 
 """
-__Luminosities__
+__Centres + Luminosities (scaling-relation tier)__
 
-The scaling-relation tier needs a measured luminosity per galaxy. As discussed in the header, in production these come
-from a prior light-only fit (see `modeling_for_luminosities.py` or the SLAM `source_lp[0]` stage). The order of this list
-must match `relational_extras_centres`.
+The scaling-relation tier needs both centres AND a measured luminosity per galaxy. There are two equally-supported
+ways to provide them in PyAutoLens — both shown below so you can pick whichever fits your workflow.
+
+**Option A — CSV via `al.galaxy_table_from_csv` (recommended for non-trivial galaxy counts).** The simulator writes a
+`scaling_galaxies.csv` with columns `y, x, luminosity` (and optional `redshift`) alongside the centre JSONs. We load it
+in one call which returns a typed `GalaxyTable` with `.centres` (a `Grid2DIrregular`), `.luminosities`, and (optionally)
+`.redshifts`. This scales naturally to populations of tens or hundreds of galaxies — the source of truth lives in a
+single editable file.
+
+In a real analysis, a prior light-only fit produces this CSV — see
+`scripts/group/features/scaling_relation/modeling_for_luminosities.py` for the standalone version of that fit, or the
+SLAM `source_lp[0]` stage in `scripts/group/slam.py` for the chained-pipeline equivalent.
+
+**Option B — JSON centres + hardcoded luminosity list (the original API, fine for short, fixed-length tutorials).**
+Load the centres from `scaling_galaxies_centres.json` with `al.from_json` (the same loader used for the
+individually-modelled tier above) and define the luminosities as a Python list. Concise and obvious for small
+populations; awkward once you have more than a handful.
+
+We use Option A by default below. The Option B equivalent is shown commented out — uncomment it (and comment out
+Option A) to switch.
 """
-relational_extras_luminosity_list = [0.45, 0.45]
-
-assert len(relational_extras_luminosity_list) == len(list(relational_extras_centres)), (
-    "Number of luminosities must match number of scaling-relation extra galaxy centres."
+# Option A: CSV (recommended)
+relational_extras_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
 )
+relational_extras_centres = relational_extras_table.centres
+relational_extras_luminosity_list = relational_extras_table.luminosities
+
+# Option B: JSON centres + hardcoded luminosities (uncomment to use instead)
+# relational_extras_centres = al.from_json(
+#     file_path=dataset_path / "scaling_galaxies_centres.json"
+# )
+# relational_extras_luminosity_list = [0.45, 0.45]
+# assert len(relational_extras_luminosity_list) == len(list(relational_extras_centres)), (
+#     "Number of luminosities must match number of scaling-relation extra galaxy centres."
+# )
+
+print(f"Scaling-relation extras: {relational_extras_centres}")
+print(f"Scaling-relation luminosities: {relational_extras_luminosity_list}")
 
 """
 __Lens__
