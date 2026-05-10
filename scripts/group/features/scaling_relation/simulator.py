@@ -231,6 +231,31 @@ al.output_to_json(
 )
 
 """
+__Galaxy Population CSVs__
+
+The modeling script loads luminosities (and centres) for both the extras and the scaling tier from CSVs written here.
+The simulator knows the truth values of the per-galaxy luminosities so we write them out alongside the centre JSONs.
+
+The CSV schema is `y, x, luminosity, redshift?` — see `al.galaxy_table_from_csv` /
+`al.galaxy_table_to_csv` (`autogalaxy/galaxy/galaxy_table.py`). Centre JSONs above are kept for backward compatibility;
+new consumers should prefer the CSVs.
+"""
+extra_galaxies_luminosities = [0.9, 0.9]
+scaling_galaxies_luminosities = [0.45, 0.45]
+
+al.galaxy_table_to_csv(
+    centres=extra_galaxies_centres,
+    luminosities=extra_galaxies_luminosities,
+    file_path=Path(dataset_path, "extra_galaxies.csv"),
+)
+
+al.galaxy_table_to_csv(
+    centres=scaling_galaxies_centres,
+    luminosities=scaling_galaxies_luminosities,
+    file_path=Path(dataset_path, "scaling_galaxies.csv"),
+)
+
+"""
 __Positions__
 
 Solve for the lensed source positions; written for the SLaM-style pipelines that consume this dataset.

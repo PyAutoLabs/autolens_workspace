@@ -57,7 +57,6 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 # from autoconf import setup_notebook; setup_notebook()
 
 import numpy as np
-import json
 from pathlib import Path
 import autofit as af
 import autolens as al
@@ -269,30 +268,34 @@ print("Scaling galaxy luminosities:", scaling_luminosities)
 """
 __Output__
 
-Write the luminosities to JSON next to the centre files so the scaling-relation modeling script can load them directly
-in a follow-up run.
+Write the centres + luminosities to a `scaling_galaxies.csv` next to the centre JSONs. This is the same file the
+scaling-relation modeling script consumes via `al.galaxy_table_from_csv`, so the result of this fit can be chained
+into the next step with no manual copy/paste.
 """
-luminosities_path = dataset_path / "scaling_galaxies_luminosities.json"
-with open(luminosities_path, "w") as f:
-    json.dump([float(l) for l in scaling_luminosities], f, indent=2)
+csv_path = dataset_path / "scaling_galaxies.csv"
 
-print(f"Wrote scaling-galaxy luminosities to: {luminosities_path}")
+al.galaxy_table_to_csv(
+    centres=list(scaling_galaxies_centres),
+    luminosities=[float(l) for l in scaling_luminosities],
+    file_path=csv_path,
+)
+
+print(f"Wrote scaling-galaxy centres + luminosities to: {csv_path}")
 
 """
 __Wrap Up__
 
-The numbers printed above can be pasted into the `scaling_galaxies_luminosity_list` of `modeling.py` (or loaded from
-`scaling_galaxies_luminosities.json`).
+The CSV at `dataset_path / "scaling_galaxies.csv"` is the canonical chain-point. The downstream modeling script
+loads it directly:
 
-Two ways to chain into the next step:
+    table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+    scaling_galaxies_centres        = table.centres
+    scaling_galaxies_luminosity_list = table.luminosities
 
- - **Manual:** copy the printed list into `scripts/group/features/scaling_relation/modeling.py`'s
-   `scaling_galaxies_luminosity_list = [...]`.
+Re-running this script overwrites the CSV in place, so iterating on the light fit and re-running the lens fit is
+just two `python ...` invocations.
 
- - **Programmatic:** load `scaling_galaxies_luminosities.json` at the top of `modeling.py` via
-   `json.load(open(dataset_path / "scaling_galaxies_luminosities.json"))`. This pattern matches what the SLaM pipelines
-   do when they chain `source_lp[0]` -> `source_lp[1]`.
-
-For the chained-pipeline alternative, see `scripts/group/slam.py` (section `__SOURCE LP PIPELINE — stage 0__`) and
+For the chained-pipeline alternative — where the light fit is the `source_lp[0]` stage of a SLaM run instead of a
+standalone search — see `scripts/group/slam.py` (`__SOURCE LP PIPELINE — stage 0__`) and
 `scripts/group/features/pixelization/slam.py`.
 """
