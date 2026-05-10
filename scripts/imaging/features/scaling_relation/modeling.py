@@ -1,101 +1,101 @@
 """
-Misc: Scaling Relations
-=======================
+Modeling Features: Scaling Relations
+====================================
 
-Strong lenses often have many galaxies surrounding the lens galaxy.
+Strong lenses often have many galaxies surrounding the lens galaxy whose mass contributes to the ray-tracing of the
+source. The `extra_galaxies` example shows how to add each of these galaxies into the model with their own light and
+mass profiles, fixing their centres to the observed centres of light. That works well when only a handful of extra
+galaxies are present, but rapidly becomes unwieldy as the number grows. With 10 extra galaxies modelled with
+`IsothermalSph` mass profiles, the lens model gains 10 additional `einstein_radius` free parameters; with 30, the
+parameter space is so large that the non-linear search struggles to converge and the data lacks the information content
+to constrain every galaxy individually.
 
-For galaxy-scale systems these are often far from the lensed source, meaning they individually contribute little to the
-overall lensing but may have a measurable impact when considered collectively.
+A common solution is to model the lensing contribution of these galaxies via a **scaling relation**. An easier-to-measure
+property of each galaxy (typically luminosity, but it could also be stellar mass or velocity dispersion) is related to
+its mass profile via a small number of shared free parameters:
 
-In group and cluster lenses these objects are often closer to the lensed source and can therefore individually have
-a significant impact on the lensing.
+    einstein_radius = scaling_factor * (luminosity ** scaling_exponent)
 
-In both cases, it is desirable to include these objects in the lens mass model. However, the number of parameters
-required to model each galaxy individually can be prohibitively large. For example, with 10 galaxies each modeled
-using a `IsothermalSph` profile, the lens model would have 30 parameters!
+The free parameters are now `scaling_factor` and `scaling_exponent` only — two parameters total, regardless of how many
+galaxies sit on the relation. The luminosities act as priors on the masses, ensuring each galaxy's contribution stays
+physically reasonable.
 
-It is therefore common practice to model the lensing contribution of these galaxies using a scaling relation,
-whereby easier to measure properties of the galaxy (e.g. its luminosity, stellar mass, velocity dispersion) are related
-to the mass profile's quantities.
+This example demonstrates the **mixed-strategy** pattern: a single `extra_galaxies` collection that contains BOTH
+galaxies modelled individually (each with its own free Einstein radius) AND galaxies on a shared scaling relation. This
+is the typical real-world configuration: the brighter / closer companions get individual mass parameters because they
+contribute non-trivially to the lensing on their own, while the long tail of fainter companions sit on the relation.
 
-The free parameters are now only those related to the scaling relation, for example is normalization and gradient.
+The dataset used here is `dataset/imaging/extra_and_scaling_galaxies`, simulated by the paired script
+`scripts/imaging/features/scaling_relation/simulator.py`. It contains a galaxy-scale lens at the origin, two close
+companions (the "individual" tier here), and two fainter further-out companions (the "scaling-relation" tier). All four
+companions live in the same `extra_galaxies` collection in this imaging-context example — the terminology
+`scaling_galaxies` for a separate top-level collection is reserved for the group-scale example.
 
 __Contents__
 
-- **Mass Model And Scaling Relation:** This example shows how to compose a scaling-relation lens model using the dual Pseudo-Isothermal.
-- **Centres:** Scaling relations parameterize the mass of each galaxy, but not their centres.
-- **Redshifts:** In this example all line of sight galaxies are at the same redshift as the lens galaxy, meaning.
-- **Extra Galaxies API:** **PyAutoLens** refers to all galaxies surrounded the strong lens as `extra_galaxies`, with the.
-- **Dataset:** Load and plot the strong lens dataset.
-- **Luminosities:** We also need the luminosity of each galaxy, which in this example is the measured property we.
-- **Scaling Relation:** We now compose our scaling relation models, using **PyAutoFits** relational model API, which works.
+- **Two Strategies, One Collection:** Why mix individual + relational extras in the same `extra_galaxies` collection.
+- **Centres:** Two JSON files load the centres of the individually-modelled extras and the scaling-relation extras.
+- **Luminosities:** The scaling-relation tier needs a measured luminosity per galaxy.
+- **Where do luminosities come from?:** The `modeling_for_luminosities.py` example and the SLAM `source_lp[0]` step.
+- **Redshifts:** All foreground galaxies are at the same redshift as the lens galaxy.
+- **Group vs Imaging:** Where the group-scale variant lives.
+- **Dataset & Mask:** Standard set up of the dataset and mask.
+- **Lens & Source:** MGE bulge + Isothermal mass + ExternalShear lens; MGE source.
+- **Individually-Modelled Extras:** Bounded `UniformPrior` on `einstein_radius` per galaxy.
+- **Scaling-Relation Extras:** Shared `scaling_factor` and `scaling_exponent` priors.
 - **Model:** Compose the lens model fitted to the data.
-- **VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
-- **Run Time:** Profiling the expected run time of the model-fit.
-- **Model Fit:** Perform the model-fit using the search and analysis.
+- **Over Sampling:** Adaptive over-sampling at every galaxy centre.
+- **Search and Analysis:** Configure the non-linear search and run the model-fit.
 - **Wrap Up:** Summary of the script and next steps.
 
-__Mass Model And Scaling Relation__
+__Two Strategies, One Collection__
 
-This example shows how to compose a scaling-relation lens model using the dual Pseudo-Isothermal Elliptical (dPIE)
-mass distribution introduced in Eliasdottir 2007: https://arxiv.org/abs/0710.5636.
+There is no architectural distinction in PyAutoLens between "individual" and "scaling-relation" extra galaxies — both
+sit in the same `extra_galaxies = af.Collection([...])`. The distinction is purely in how the per-galaxy `Galaxy` model
+is built:
 
-It relates the luminosity of every galaxy to a cut radius (r_cut), a core radius (r_core) and a mass normaliaton b0:
+  - For an individually-modelled galaxy: `mass.einstein_radius = af.UniformPrior(...)` — one free parameter per galaxy.
+  - For a scaling-relation galaxy: `mass.einstein_radius = scaling_factor * luminosity ** scaling_exponent` — zero new
+    free parameters per galaxy, because the relation parameters are shared across the whole tier.
 
-$r_cut = r_cut^* (L/L^*)^{0.5}$
+The two strategies coexist freely in the same collection. This script builds a Python list, pushes the individually-
+modelled galaxies onto it first, then the relational galaxies, and wraps the whole thing in a single `af.Collection`.
 
-$r_core = r_core^* (L/L^*)^{0.5}$
+__Where do luminosities come from?__
 
-$b0 = b0^* (L/L^*)^{0.25}$
+In a real analysis the luminosities used by the scaling relation are not known a priori — they have to be measured
+from the data itself. Two production patterns:
 
-The free parameters are therefore L^*, r_cut^*, r_core^* and b0^*.
+ - **Standalone light-only fit.** Run a single non-linear search whose model is just MGE bulges for every galaxy
+   (no mass, no source). After the fit, compute total luminosity per galaxy from the bulge gaussian intensities:
+   `total_luminosity = sum(2 * pi * sigma**2 / axis_ratio * intensity) / pixel_scale**2`. Feed those numbers into the
+   scaling-relation model below. See `scripts/group/features/scaling_relation/modeling_for_luminosities.py` for a
+   worked example.
 
-This mass model differs from the `Isothermal` profile used commonly throughout the **PyAutoLens** examples. The dPIE
-is more commonly used in strong lens cluster studies where scaling relations are used to model the lensing contribution
-of many cluster galaxies.
+ - **As the first stage of a SLaM pipeline.** The Source-Light-Mass (SLaM) pipelines define a `source_lp[0]` stage
+   whose only job is to fit a light-only MGE model to the lens, extras and scaling galaxies. The next stage chains
+   from that result to compute luminosities and bound / scale the mass models. See `scripts/group/slam.py`,
+   `scripts/group/features/pixelization/slam.py`, and the other group `slam.py` variants for production examples.
 
-The API provided in this example is general and can be used to compose any scaling relation mass model (or
-light model, or anything else!).
-
-__Centres__
-
-Scaling relations parameterize the mass of each galaxy, but not their centres. If the centres of the galaxies are
-treated as free parameters, one again runs into the problem of having too many parameters and a model which
-cannot be fitted efficiently.
-
-Scaling relation modeling therefore always inputs the centres of the galaxies as fixed values. In this example, we
-use a simulated dataset where the centres of the galaxies are known perfectly.
-
-In a real analysis, one must determine the centres of the galaxies before modeling them with a scaling relation.
-There are a number of ways to do this:
-
- - Use image processing software like Source Extractor (https://sextractor.readthedocs.io/en/latest/).
-
- - Fit every galaxy individually with a light profile (e.g. an `Sersic`).
-
- - Use a moment's based analysis of the data.
-
-For certain strong lenses all of the above approaches may be challenging, because the light of each galaxy may be
-blended with the lensed source's emission. This may motivate simultaneous fitting of the lensed source and galaxies.
+This tutorial uses **hardcoded luminosity lists** for readability — they would be the *output* of one of the patterns
+above in production code.
 
 __Redshifts__
 
-In this example all line of sight galaxies are at the same redshift as the lens galaxy, meaning multi-plane lensing
-is not used.
+In this example all foreground galaxies are at the same redshift as the lens galaxy, meaning multi-plane lensing is not
+used. To enable multi-plane lensing, define per-galaxy redshifts and pass them when constructing each
+`af.Model(al.Galaxy, ...)`.
 
-If you have redshift information on the line of sight galaxies and some of their redshifts are different to the lens
-galaxy, you can easily extend this example below to perform multi-plane lensing.
+__Group vs Imaging__
 
-You would simply define a `redshift_list` and use this to set up the extra `Galaxy` redshifts.
+This is the **imaging-context** example: there is a single main lens galaxy and all companions live in a single
+`extra_galaxies` collection. For the group-scale variant — multiple "main" lens galaxies AND a top-level
+`scaling_galaxies` collection separate from `extra_galaxies` — see
+`autolens_workspace/scripts/group/features/scaling_relation/modeling.py`.
 
-__Extra Galaxies API__
+__Start Here Notebook__
 
-**PyAutoLens** refers to all galaxies surrounded the strong lens as `extra_galaxies`, with the modeling API extended
-to model them.
-
-The galaxies (and their parameters) included via a scaling relation are therefore prefixed with `extra_galaxy_` to
-distinguish them from the lens galaxy and source galaxy, and in the model they are separate from the `galaxies` and
-use their own `extra_galaxies` collection.
+If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
@@ -107,188 +107,46 @@ import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
-
 """
 __Dataset__
 
-First, lets load a strong lens dataset, which is a simulated group scale lens with 2 galaxies surrounding the
-lensed source.
+We use the `dataset/imaging/extra_and_scaling_galaxies` dataset, which contains:
 
-These three galaxies will be modeled using a scaling relation.
-"""
-dataset_name = "simple"
-dataset_path = Path("dataset") / "group" / dataset_name
+ - a galaxy-scale lens at the origin
+ - two close companions (the "individual" tier here)
+ - two fainter further-out companions (the "scaling-relation" tier)
 
+The simulator at `scripts/imaging/features/scaling_relation/simulator.py` writes two centre JSON files
+(`extra_galaxies_centres.json` and `scaling_galaxies_centres.json`), one per modeling strategy.
 """
-__Dataset Auto-Simulation__
+dataset_name = "extra_and_scaling_galaxies"
+dataset_path = Path("dataset", "imaging", dataset_name)
 
-If the dataset does not already exist on your system, it will be created by running the corresponding
-simulator script. This ensures that all example scripts can be run without manually simulating data first.
-"""
-if not dataset_path.exists():
+if al.util.dataset.should_simulate(str(dataset_path)):
     import subprocess
     import sys
 
     subprocess.run(
-        [sys.executable, "scripts/group/simulator.py"],
+        [sys.executable, "scripts/imaging/features/scaling_relation/simulator.py"],
         check=True,
     )
 
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",
-    noise_map_path=dataset_path / "noise_map.fits",
     psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
 
 aplt.subplot_imaging_dataset(dataset=dataset)
 
 """
-__Centres__
+__Mask__
 
-Before composing our scaling relation model, we need to define the centres of the galaxies. 
-
-In this example, we know these centres perfectly from the simulated dataset. In a real analysis, we would have to
-determine these centres beforehand (see discussion above).
+A 6.0" circular mask, large enough to enclose the lens, the close companions, and the further-out scaling galaxies.
 """
-extra_galaxies_centre_list = [(3.5, 2.5), (-4.4, -5.0)]
+mask_radius = 6.0
 
-"""
-We can plot the centres over the strong lens dataset to check that they look like reasonable values.
-"""
-
-aplt.subplot_imaging_dataset(dataset=dataset)
-
-"""
-__Luminosities__
-
-We also need the luminosity of each galaxy, which in this example is the measured property we relate to mass via
-the scaling relation.
-
-We again uses the true values of the luminosities from the simulated dataset, but in a real analysis we would have
-to determine these luminosities beforehand (see discussion above).
-
-This could be other measured properties, like stellar mass or velocity dispersion.
-"""
-extra_galaxies_luminosity_list = [0.9, 0.9]
-
-"""
-__Scaling Relation__
-
-We now compose our scaling relation models, using **PyAutoFits** relational model API, which works as follows:
-
-- Define the free parameters of the scaling relation using priors (note how the priors below are outside the for loop,
-  meaning that every extra galaxy is associated with the same scailng relation prior and therefore parameters).
-
-- For every extra galaxy centre and lumnosity, create a model mass profile (using `af.Model(dPIEPotentialSph)`), where 
-  the centre of the mass profile is the extra galaxy centres and its other parameters are set via the scaling relation 
-  priors.
-
-- Make each extra galaxy a model galaxy (via `af.Model(Galaxy)`) and associate it with the model mass profile, where the
-  redshifts of the extra galaxies are set to the same values as the lens galaxy.
-"""
-ra_star = af.LogUniformPrior(lower_limit=1e8, upper_limit=1e11)
-rs_star = af.UniformPrior(lower_limit=-1.0, upper_limit=1.0)
-b0_star = af.LogUniformPrior(lower_limit=1e5, upper_limit=1e7)
-luminosity_star = 1e9
-
-extra_galaxies_list = []
-
-for extra_galaxy_centre, extra_galaxy_luminosity in zip(
-    extra_galaxies_centre_list, extra_galaxies_luminosity_list
-):
-    mass = af.Model(al.mp.dPIEMassSph)
-    mass.centre = extra_galaxy_centre
-    mass.ra = ra_star * (extra_galaxy_luminosity / luminosity_star) ** 0.5
-    mass.rs = rs_star * (extra_galaxy_luminosity / luminosity_star) ** 0.5
-    mass.b0 = b0_star * (extra_galaxy_luminosity / luminosity_star) ** 0.25
-
-    extra_galaxy = af.Model(al.Galaxy, redshift=0.5, mass=mass)
-
-    extra_galaxies_list.append(extra_galaxy)
-
-"""
-__Model__
-
-We compose the overall lens model using the normal API.
-"""
-mask_radius = 9.0
-
-# Lens:
-
-bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
-)
-
-mass = af.Model(al.mp.IsothermalSph)
-
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
-
-# Source:
-
-bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius,
-    total_gaussians=20,
-    gaussian_per_basis=1,
-    centre_prior_is_uniform=False,
-)
-source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
-
-"""
-When creating the overall model, we include the extra galaxies as a separate collection of galaxies.
-
-This is not strictly necessary (e.g. if we input them into the `galaxies` attribute of the model the code would still
-function correctly).
-
-However, to ensure results are easier to interpret we keep them separate.
-"""
-model = af.Collection(
-    galaxies=af.Collection(lens=lens, source=source)
-    + af.Collection(extra_galaxies_list),
-)
-
-"""
-The `model.info` shows the model we have composed.
-
-The priors and values of parameters that are set via scaling relations can be seen in the printed info.
-
-The number of free parameters is N=16, which breaks down as follows:
-
- - 4 for the lens galaxy's `SersicSph` bulge.
- - 3 for the lens galaxy's `IsothermalSph` mass.
- - 6 for the source galaxy's `Sersic` bulge.
- - 3 for the scaling relation parameters.
-
-Had we modeled both extra galaxies independently as dPIE profiles, we would of had 6 parameters per extra galaxy, 
-giving N=19. Furthermore, by using scaling relations we can add more extra galaxies to the model without increasing the 
-number of free parameters. 
-"""
-print(model.info)
-
-"""
-__VRAM__
-
-The `modeling` example explains how VRAM is used during GPU-based fitting and how to
-print the estimated VRAM required by a model.
-
-For extra light and mass profiles in the model, even when on scaling relations, extra VRAM is used. For 3-10 linear 
-Sersic light profiles this is a tiny  amount of VRAM (e.g. < 10MB  per batched likelihood). Even for large batch 
-sizes (e.g. over 100) you probably will not use enough VRAM to require monitoring when using scaling relations.
-
-__Run Time__
-
-Light and mass calculations of galaxies on scaling relations run the same speed as normal light and mass profiles, 
-so using scaling relations does not slow down the likelihood evaluation time compared to modeling each galaxy
-individually.
-
-For models with many extra galaxies, the scaling relation can lead to fewer free parameters, because for each mass
-profile we do not fits its mass individually but rather via the scaling relation parameters. This can speed up the 
-overall run time of the model-fit, because sampling will converge in fewer iterations due to the simpler parameter space.
-
-__Model Fit__
-
-We now perform the usual steps to perform a model-fit, to see our scaling relation based fit in action!
-"""
 mask = al.Mask2D.circular(
     shape_native=dataset.shape_native,
     pixel_scales=dataset.pixel_scales,
@@ -297,29 +155,213 @@ mask = al.Mask2D.circular(
 
 dataset = dataset.apply_mask(mask=mask)
 
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+"""
+__Centres__
+
+Two JSON files. The naming convention used by the dataset (extras vs scaling) carries through here purely as a labelling
+convenience — both populations end up in the same `extra_galaxies` collection in the model.
+"""
+individual_extras_centres = al.from_json(
+    file_path=dataset_path / "extra_galaxies_centres.json"
+)
+relational_extras_centres = al.from_json(
+    file_path=dataset_path / "scaling_galaxies_centres.json"
+)
+
+print(f"Individually-modelled extras: {individual_extras_centres}")
+print(f"Scaling-relation extras: {relational_extras_centres}")
+
+"""
+__Luminosities__
+
+The scaling-relation tier needs a measured luminosity per galaxy. As discussed in the header, in production these come
+from a prior light-only fit (see `modeling_for_luminosities.py` or the SLAM `source_lp[0]` stage). The order of this list
+must match `relational_extras_centres`.
+"""
+relational_extras_luminosity_list = [0.45, 0.45]
+
+assert len(relational_extras_luminosity_list) == len(list(relational_extras_centres)), (
+    "Number of luminosities must match number of scaling-relation extra galaxy centres."
+)
+
+"""
+__Lens__
+
+Standard MGE bulge + `Isothermal` mass + `ExternalShear`.
+"""
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
+)
+
+mass = af.Model(al.mp.Isothermal)
+
+shear = af.Model(al.mp.ExternalShear)
+
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+
+"""
+__Source__
+"""
+source_bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=1,
+    centre_prior_is_uniform=False,
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
+
+"""
+__Individually-Modelled Extras__
+
+The first tier inside `extra_galaxies`. Each galaxy gets:
+
+ - an MGE bulge with `centre_fixed` (the light is fit but the centre is pinned)
+ - an `IsothermalSph` mass with bounded uniform-prior `einstein_radius`
+
+Each adds 1 free Einstein-radius parameter to the model.
+"""
+extra_galaxies_list = []
+
+for centre in individual_extras_centres:
+    bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius, total_gaussians=10, centre_fixed=tuple(centre)
+    )
+
+    mass = af.Model(al.mp.IsothermalSph)
+    mass.centre = tuple(centre)
+    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=1.5)
+
+    extra_galaxies_list.append(
+        af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+    )
+
+"""
+__Scaling-Relation Extras__
+
+The second tier inside `extra_galaxies`. The two relation priors are defined ONCE outside the loop, so every galaxy
+in this tier shares them. Adding more galaxies to this tier does not add free parameters.
+
+For each galaxy:
+
+ - an MGE bulge with `centre_fixed`
+ - an `Isothermal` mass with `einstein_radius = scaling_factor * luminosity ** scaling_exponent`
+"""
+scaling_factor = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+scaling_exponent = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
+
+for relational_centre, relational_luminosity in zip(
+    relational_extras_centres, relational_extras_luminosity_list
+):
+    bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius,
+        total_gaussians=10,
+        centre_fixed=tuple(relational_centre),
+    )
+
+    mass = af.Model(al.mp.Isothermal)
+    mass.centre = tuple(relational_centre)
+    mass.einstein_radius = scaling_factor * relational_luminosity ** scaling_exponent
+
+    extra_galaxies_list.append(
+        af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+    )
+
+extra_galaxies = af.Collection(extra_galaxies_list)
+
+"""
+__Model__
+
+Two top-level components: `galaxies` (lens + source) and `extra_galaxies` (the mixed individual + relational tier).
+Keeping all extras in one collection matches the `features/extra_galaxies` naming convention while still letting us
+mix the two strategies internally.
+"""
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    extra_galaxies=extra_galaxies,
+)
+
+"""
+The `model.info` attribute prints the composed model. Notice that the first two extras have independent
+`einstein_radius` priors, while the last two share `scaling_factor` and `scaling_exponent` — the relation in action.
+"""
+print(model.info)
+
+"""
+__Over Sampling__
+
+Adaptive over-sampling at every galaxy centre — lens, individually-modelled extras, and scaling-relation extras alike.
+"""
+all_centres = (
+    [(0.0, 0.0)]
+    + list(individual_extras_centres)
+    + list(relational_extras_centres)
+)
+
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=dataset.grid,
+    sub_size_list=[4, 2, 1],
+    radial_list=[0.3, 0.6],
+    centre_list=all_centres,
+)
+
+dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
+
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+"""
+__Search__
+"""
 search = af.Nautilus(
-    path_prefix=Path("features"),
+    path_prefix=Path("imaging") / "features",
     name="scaling_relation",
     unique_tag=dataset_name,
-    n_live=150,
-    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
+    n_live=200,
+    n_batch=50,
     iterations_per_quick_update=10000,
 )
 
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
+"""
+__Run Time__
+
+The mixed-strategy model adds a small per-galaxy likelihood overhead but keeps the parameter space compact: only 2
+extra parameters from the individually-modelled tier (one Einstein radius each) plus 2 shared parameters from the
+scaling-relation tier, no matter how many galaxies sit on it.
+
+GPU log-likelihood evaluation is < 0.005 s per call; CPU is < 0.05 s. Expected end-to-end run time is ~15 minutes on
+GPU, ~30 minutes on CPU.
+
+__Model Fit__
+"""
 result = search.fit(model=model, analysis=analysis)
+
+"""
+__Result__
+"""
+print(result.info)
+
+aplt.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 """
 __Wrap Up__
 
-This example has shown how to use **PyAutoLens**'s scaling relation API to model a strong lens. 
+This example showed how to mix two strategies for `extra_galaxies` modeling — individually-modelled and on a shared
+scaling relation — within a single `extra_galaxies` collection. The same pattern works with any mass profile and any
+measured property (swap the `Isothermal` for `PowerLaw`, or the luminosity for stellar mass, and the structure is
+unchanged).
 
-We have seen how by measuring the centres and luminosities of galaxies (referred to as extra galaxies) surrounding the 
-lens galaxy, we can use scaling relations to define their mass profiles. This reduces the number of free parameters in 
-the lens model, because we only need to infer the scaling relation parameters, rather than the individual parameters of
-each extra galaxy.
+For the production-style luminosity-fitting workflow that produces the `relational_extras_luminosity_list` used here,
+see:
 
-The API shown in this script is highly flexible and you should have no problem adapting it use any scaling relation
-you wish to use in your own strong lens models! 
+ - `autolens_workspace/scripts/group/features/scaling_relation/modeling_for_luminosities.py` — a standalone light-only
+   fit that produces per-galaxy total luminosities.
+ - `autolens_workspace/scripts/group/slam.py` and `autolens_workspace/scripts/group/features/pixelization/slam.py` —
+   the SLAM `source_lp[0]` stage that does the same job inside a chained pipeline.
+
+For the group-scale variant — multiple "main" lens galaxies AND a top-level `scaling_galaxies` collection separate from
+`extra_galaxies` — see `autolens_workspace/scripts/group/features/scaling_relation/modeling.py`.
 """
