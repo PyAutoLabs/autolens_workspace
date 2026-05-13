@@ -5,7 +5,9 @@ description: Load a single PyAutoLens lens model-fit's results from its output f
 
 # Load Lens Model Results (Single Fit)
 
-This skill lets the agent load a completed PyAutoLens model-fit's results back into Python from the files that `search.fit(...)` wrote to disk. Everything it does is built around the patterns in `scripts/guides/results/start_here.py` — that script is the canonical reference and the agent should read it before running any loading code.
+This skill lets the agent load a completed PyAutoLens model-fit's results back into Python from the files that `search.fit(...)` wrote to disk. It should also help users learn what those results are, where they live in the workspace, how to read the matching notebooks / scripts, and how to share completed fit folders with other PyAutoLens users.
+
+Everything it does is built around the patterns in `scripts/guides/results/start_here.py` and `notebooks/guides/results/start_here.ipynb` — these are the canonical references and the agent should read them before running any loading code.
 
 The scope is deliberately narrow: **one fit at a time, in memory**. Bulk analysis of many fits is a separate concern with separate APIs (aggregator / workflow / database); a future `al_load_results_many` skill will wrap those.
 
@@ -27,11 +29,70 @@ The scope is deliberately narrow: **one fit at a time, in memory**. Bulk analysi
 
 ## What the agent should say when this skill activates
 
-In one or two sentences, tell the user what just became available — for example:
+When this skill activates, give the user a short orientation before asking for a path or running code. The message should do four things:
 
-> I can now load a completed lens model-fit's results from its output folder (Tracer, fitted model, samples, dataset, and FITS imaging products) directly from the `.json` and `.fits` files written by `search.fit(...)`. If you have a large sample of fits (>100), the aggregator / workflow / database routes under `scripts/guides/results/` are usually a better fit — a dedicated `al_load_results_many` skill is planned for that case.
+- Explain what loading lens modeling results means.
+- Give the most relevant workspace paths and ReadTheDocs URLs for learning more.
+- If the user's science case is clear, include one concrete scientific example.
+- Mention that a completed output folder can be shared with another PyAutoLens user, who can load the same `.json`, `.csv` and `.fits` products without rerunning the fit.
 
-Then ask the user which fit folder to load from, if they have not already given one.
+Use wording like:
+
+> Loading lens modeling results means taking a completed PyAutoLens fit from `output/` and reconstructing the objects written by `search.fit(...)`, such as the maximum likelihood `Tracer`, model, samples, dataset and FITS fit products. The best local starting points are `notebooks/guides/results/start_here.ipynb` and `scripts/guides/results/start_here.py`; for the underlying API, see the PyAutoLens docs at https://pyautolens.readthedocs.io/en/latest/, especially the Galaxy / Tracer, fitting and plotting API pages.
+
+Then adapt the next sentence to the user if possible:
+
+- If they mention HST, Euclid, JWST, CCD or imaging data: "For example, if you have modeled HST imaging, this skill can load the completed fit from hard disk so you can inspect the inferred mass model, source reconstruction, residuals and posterior samples without rerunning the non-linear search."
+- If they mention ALMA, JVLA or visibilities: "For example, if you have modeled interferometer data, this skill can load the completed fit products so you can inspect the inferred tracer, samples and interferometer-specific outputs after the search has finished."
+- If they mention sharing / collaboration: "You can also send the completed fit folder to another PyAutoLens user; provided they have a compatible PyAutoLens environment, they can load the same result files and reproduce your result inspection."
+- If no science case is clear: "Tell me the completed fit folder, for example `output/imaging/<dataset>/modeling/<unique_hash>/`, and I can load only the result objects needed for your question."
+
+If the user has a large sample of fits (>100), also mention that the aggregator / workflow / database routes under `scripts/guides/results/` are usually a better fit, and that a dedicated `al_load_results_many` skill is planned for that case.
+
+## Learning resources to show users
+
+When the skill activates, show a concise set of links / paths tailored to the task. Do not dump every reference every time; choose the smallest useful subset.
+
+### Core result loading
+
+- Notebook: `notebooks/guides/results/start_here.ipynb`
+- Script: `scripts/guides/results/start_here.py`
+- Folder README: `notebooks/guides/results/README.md`, `scripts/guides/results/README.md`
+- ReadTheDocs overview: https://pyautolens.readthedocs.io/en/latest/
+- Workspace tour: https://pyautolens.readthedocs.io/en/latest/general/workspace.html
+
+### Understanding the loaded `Tracer`
+
+- Notebook: `notebooks/guides/tracer.ipynb`
+- Script: `scripts/guides/tracer.py`
+- Galaxy / Tracer API docs: https://pyautolens.readthedocs.io/en/latest/api/galaxy.html
+- PyAutoLens overview with `Tracer` examples: https://pyautolens.readthedocs.io/en/latest/overview/overview_1_start_here.html
+
+### Inspecting galaxies and components
+
+- Notebook: `notebooks/guides/galaxies.ipynb`
+- Script: `scripts/guides/galaxies.py`
+- Galaxy / Tracer API docs: https://pyautolens.readthedocs.io/en/latest/api/galaxy.html
+
+### Samples, parameter errors and posterior analysis
+
+- Notebook: `notebooks/guides/results/aggregator/samples.ipynb`
+- Script: `scripts/guides/results/aggregator/samples.py`
+- PyAutoFit Samples API docs: https://pyautofit.readthedocs.io/en/latest/api/samples.html
+
+### Fits, residuals and plotting
+
+- Notebook: `notebooks/guides/plot/examples/plotters.ipynb`
+- Script: `scripts/guides/plot/examples/plotters.py`
+- Fitting API docs: https://pyautolens.readthedocs.io/en/latest/api/fitting.html
+- Plotting API docs: https://pyautolens.readthedocs.io/en/latest/api/plot.html
+
+### Bulk result libraries
+
+For many fits, point users at these instead of this single-fit loading workflow:
+
+- Notebooks: `notebooks/guides/results/aggregator/`, `notebooks/guides/results/workflow/`, `notebooks/guides/results/database/start_here.ipynb`
+- Scripts: `scripts/guides/results/aggregator/`, `scripts/guides/results/workflow/`, `scripts/guides/results/database/start_here.py`
 
 ## Output folder layout (what you will be reading)
 
@@ -65,11 +126,17 @@ output/imaging/<dataset_name>/modeling/<unique_hash>/
 
 Sub-paths vary slightly for interferometer / multi-wavelength fits — defer to the guide if the layout differs.
 
+## Sharing results with other PyAutoLens users
+
+A completed fit can be shared by sending the whole hashed output folder, for example `output/imaging/<dataset_name>/modeling/<unique_hash>/`. The key files for another user are usually `files/tracer.json`, `files/model.json`, `files/samples.csv`, `files/samples_summary.json`, `files/search.json`, `files/settings.json`, `files/cosmology.json`, the `image/*.fits` products, and the human-readable `model.info` / `model.results` summaries.
+
+When helping a user share results, tell them to preserve the folder structure and note the PyAutoLens / workspace version used to produce the fit. The receiving user can then use this skill to load the result without rerunning the non-linear search, provided their environment is compatible with the serialized objects.
+
 ## Steps
 
-1. **Tell the user what's available.** Use the 1–2 sentence message above. Make sure to mention the >100-fits caveat and the planned `al_load_results_many` skill.
+1. **Orient the user first.** Give the short user-facing summary from "What the agent should say when this skill activates". Include the most relevant local notebook / script paths and ReadTheDocs URLs from "Learning resources to show users". If the user's science case is clear, add a specific example of how loading completed results helps their data analysis. Make sure to mention the >100-fits caveat and the planned `al_load_results_many` skill when appropriate.
 
-2. **Read the canonical guide.** Open `scripts/guides/results/start_here.py` and reuse its API calls verbatim. Do not invent new loading patterns — if the guide does not show how to load something, surface that gap to the user rather than guessing. This guide also contains the first layer of post-load context: samples, fits, tracers, galaxies, units, linear light profiles and pixelizations.
+2. **Read the canonical guide.** Open `scripts/guides/results/start_here.py` and, when useful for user-facing explanations, `notebooks/guides/results/start_here.ipynb`. Reuse the script's API calls verbatim. Do not invent new loading patterns — if the guide does not show how to load something, surface that gap to the user rather than guessing. This guide also contains the first layer of post-load context: samples, fits, tracers, galaxies, units, linear light profiles and pixelizations.
 
 3. **Identify the fit folder.** If the user has not given a path, ask for one of the form `output/imaging/<dataset>/modeling/<unique_hash>/`. If they point at a parent directory (e.g. just `output/imaging/<dataset>/modeling/`), list its contents and ask which hashed sub-folder.
 
@@ -180,15 +247,20 @@ Use references in this order:
 
 ## Reference
 
-- **Canonical loading guide:** `scripts/guides/results/start_here.py` — single source of truth for the simple-loading API and first post-load routing.
-- **Tracer operations:** `scripts/guides/tracer.py`
-- **Galaxy and profile operations:** `scripts/guides/galaxies.py`
-- **Plotting arrays, tracers and fits:** `scripts/guides/plot/examples/plotters.py`
+- **Canonical loading guide:** `notebooks/guides/results/start_here.ipynb`, `scripts/guides/results/start_here.py` — single source of truth for the simple-loading API and first post-load routing.
+- **Tracer operations:** `notebooks/guides/tracer.ipynb`, `scripts/guides/tracer.py`
+- **Galaxy and profile operations:** `notebooks/guides/galaxies.ipynb`, `scripts/guides/galaxies.py`
+- **Plotting arrays, tracers and fits:** `notebooks/guides/plot/examples/plotters.ipynb`, `scripts/guides/plot/examples/plotters.py`
 - **Critical curves, caustics and overlays:** `scripts/guides/plot/examples/visuals.py`
 - **Multi-plane ray tracing:** `scripts/guides/advanced/multi_plane.py`
 - **Pixelization / inversion plotting:** `scripts/guides/plot/advanced/plotters_pixelization.py`, `scripts/guides/plot/advanced/plotters_double_einstein_ring.py`
 - **Physical units / mass-to-light examples:** `scripts/guides/units/mass_to_light_ratio_units.py`
-- **PyAutoLens documentation:** https://pyautolens.readthedocs.io/en/latest/index.html
+- **PyAutoLens documentation:** https://pyautolens.readthedocs.io/en/latest/
+- **Workspace tour:** https://pyautolens.readthedocs.io/en/latest/general/workspace.html
+- **Galaxy / Tracer API docs:** https://pyautolens.readthedocs.io/en/latest/api/galaxy.html
+- **Fitting API docs:** https://pyautolens.readthedocs.io/en/latest/api/fitting.html
+- **Plotting API docs:** https://pyautolens.readthedocs.io/en/latest/api/plot.html
+- **PyAutoFit Samples API docs:** https://pyautofit.readthedocs.io/en/latest/api/samples.html
 - **Bulk-analysis alternatives (NOT this skill's scope):**
   - `scripts/guides/results/aggregator/` — generator-based iteration over many fits.
   - `scripts/guides/results/workflow/` — bulk CSV / PNG / FITS summary makers.
