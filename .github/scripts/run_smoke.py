@@ -89,7 +89,12 @@ def run_script(script_rel: str, cfg: dict) -> tuple[str, int, float, str]:
         capture_output=True,
         text=True,
     )
-    return script_rel, result.returncode, time.time() - t0, result.stdout + result.stderr
+    return (
+        script_rel,
+        result.returncode,
+        time.time() - t0,
+        result.stdout + result.stderr,
+    )
 
 
 def execute_notebook(nb_path: Path, env: dict) -> tuple[int, str]:
@@ -99,9 +104,15 @@ def execute_notebook(nb_path: Path, env: dict) -> tuple[int, str]:
     try:
         result = subprocess.run(
             [
-                "jupyter", "nbconvert", "--to", "notebook", "--execute",
-                "--output-dir", str(tmp_dir),
-                "--output", nb_path.name,
+                "jupyter",
+                "nbconvert",
+                "--to",
+                "notebook",
+                "--execute",
+                "--output-dir",
+                str(tmp_dir),
+                "--output",
+                nb_path.name,
                 str(nb_path),
             ],
             cwd=str(WORKSPACE),
@@ -187,7 +198,9 @@ def main() -> int:
                 failures.append((f"script: {name}", rc, output))
 
     if notebooks:
-        print(f"\nRunning {len(notebooks)} notebook smoke test(s) from {NOTEBOOK_FILE.name}\n")
+        print(
+            f"\nRunning {len(notebooks)} notebook smoke test(s) from {NOTEBOOK_FILE.name}\n"
+        )
         for rel in notebooks:
             print(f"::group::notebook: {rel}")
             name, rc, elapsed, output = run_notebook(rel, cfg)

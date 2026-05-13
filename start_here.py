@@ -150,8 +150,12 @@ aplt.plot_array(array=deflections_y, title="Deflections Y")
 deflections = isothermal_mass_profile.deflections_yx_2d_from(grid=grid)
 deflections_x = aa.Array2D(values=deflections.slim[:, 1], mask=grid.mask)
 aplt.plot_array(array=deflections_x, title="Deflections X")
-aplt.plot_array(array=isothermal_mass_profile.convergence_2d_from(grid=grid), title="Convergence")
-aplt.plot_array(array=isothermal_mass_profile.potential_2d_from(grid=grid), title="Potential")
+aplt.plot_array(
+    array=isothermal_mass_profile.convergence_2d_from(grid=grid), title="Convergence"
+)
+aplt.plot_array(
+    array=isothermal_mass_profile.potential_2d_from(grid=grid), title="Potential"
+)
 
 """
 __Galaxy__
@@ -187,7 +191,9 @@ source_galaxy = al.Galaxy(redshift=1.0, light=source_light_profile)
 The `aplt.plot_array` function plots properties of the lens and source galaxies.
 """
 aplt.plot_array(array=lens_galaxy.image_2d_from(grid=grid), title="Lens Galaxy Image")
-aplt.plot_array(array=source_galaxy.image_2d_from(grid=grid), title="Source Galaxy Image")
+aplt.plot_array(
+    array=source_galaxy.image_2d_from(grid=grid), title="Source Galaxy Image"
+)
 
 """
 __Tracer__
