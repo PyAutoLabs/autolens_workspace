@@ -47,6 +47,7 @@ The workspace includes the following main directories:
 - `dataset`: Where data is stored, including example datasets distributed.
 - `output`: Where the **PyAutoLens** analysis and visualization are output.
 - `slam_pipeline`: The Source, Light and Mass (SLaM) pipelines to model strong lens imaging **(Advanced)**.
+- `skills`: AI agent skills (e.g. Claude, codex) for loading, inspecting and analysing workspace results with AI agents.
 
 The examples in the `notebooks` and `scripts` folders are structured as follows:
 
