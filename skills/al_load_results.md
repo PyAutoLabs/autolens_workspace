@@ -29,16 +29,19 @@ The scope is deliberately narrow: **one fit at a time, in memory**. Bulk analysi
 
 ## What the agent should say when this skill activates
 
-When this skill activates, give the user a short orientation before asking for a path or running code. The message should do four things:
+When this skill activates, give the user a short orientation before asking for a path or running code. The message should do seven things:
 
 - Explain what loading lens modeling results means.
+- State that the default loaded objects normally describe the maximum log likelihood result, while `files/samples.csv` contains all non-linear search samples.
+- Give a few concrete file-to-object mappings from the output folder.
+- Mention that loaded result objects can be combined into fit objects on command, for example an `Imaging` dataset plus `Tracer` into `FitImaging`.
 - Give the most relevant workspace paths and ReadTheDocs URLs for learning more.
 - If the user's science case is clear, include one concrete scientific example.
 - Mention that a completed output folder can be shared with another PyAutoLens user, who can load the same `.json`, `.csv` and `.fits` products without rerunning the fit.
 
 Use wording like:
 
-> Loading lens modeling results means taking a completed PyAutoLens fit from `output/` and reconstructing the objects written by `search.fit(...)`, such as the maximum likelihood `Tracer`, model, samples, dataset and FITS fit products. The best local starting points are `notebooks/guides/results/start_here.ipynb` and `scripts/guides/results/start_here.py`; for the underlying API, see the PyAutoLens docs at https://pyautolens.readthedocs.io/en/latest/, especially the Galaxy / Tracer, fitting and plotting API pages.
+> Loading lens modeling results means taking a completed PyAutoLens fit from `output/` and reconstructing the objects written by `search.fit(...)`. By default, most loaded result objects describe the maximum log likelihood solution, for example `files/tracer.json` loads the max-log-likelihood `Tracer`; the full posterior remains available in `files/samples.csv`, which can be loaded as a `Samples` object to inspect all accepted samples, parameter errors and posterior summaries. Common output mappings are `files/tracer.json` -> `Tracer`, `files/model.json` -> model / `af.Collection`, `files/samples.csv` -> `Samples`, `image/dataset.fits` -> the dataset object (`Imaging`, `Interferometer` or `PointDataset`, depending on the analysis), and `image/fit.fits` -> saved fit arrays such as the model image, residuals and chi-squared map. This skill also has the context to turn loaded objects back into fit objects if instructed; for example, a loaded `Imaging` dataset and `Tracer` can be combined as `al.FitImaging(dataset=dataset, tracer=tracer)` to inspect the log likelihood, residuals or linear-profile intensities. The best local starting points are `notebooks/guides/results/start_here.ipynb` and `scripts/guides/results/start_here.py`, especially its `FitImaging` section; for samples see `scripts/guides/results/aggregator/samples.py`. For the underlying API, see the PyAutoLens docs at https://pyautolens.readthedocs.io/en/latest/, especially https://pyautolens.readthedocs.io/en/latest/api/fitting.html, and the PyAutoFit samples docs at https://pyautofit.readthedocs.io/en/latest/api/samples.html.
 
 Then adapt the next sentence to the user if possible:
 
