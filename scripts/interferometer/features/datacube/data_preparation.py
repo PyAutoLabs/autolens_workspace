@@ -170,7 +170,8 @@ def dataset_list_from_3d_fits(
     real_space_mask
         The 2D real-space mask used by the Fourier transformer.
     transformer_class
-        `al.TransformerNUFFT` (default, recommended for >10k visibilities) or `al.TransformerDFT`.
+        `al.TransformerNUFFT` (default, JAX-native via `nufftax`, scales to many millions of visibilities)
+        or `al.TransformerDFT`.
 
     Returns
     -------

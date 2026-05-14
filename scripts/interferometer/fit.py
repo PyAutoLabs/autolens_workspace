@@ -54,13 +54,12 @@ __Loading Data__
 We we begin by loading the strong lens dataset `simple` from .fits files, which is the dataset 
 we will use to demonstrate fitting.
 
-This includes the method used to Fourier transform the real-space image of the strong lens to the uv-plane and compare 
-directly to the visiblities. We use a non-uniform fast Fourier transform, which is the most efficient method for 
-interferometer datasets containing ~1-10 million visibilities.
+This includes the method used to Fourier transform the real-space image of the strong lens to the uv-plane and
+compare directly to the visibilities. We use `TransformerNUFFT`, the JAX-native Non-Uniform Fast Fourier Transform
+backed by `nufftax`, which scales efficiently from a few hundred visibilities to tens of millions.
 
-This dataset was simulated using the `interferometer/simulator` example, read through that to have a better
-understanding of how the data this exam fits was generated. The simulation uses the `TransformerDFT` to map
-the real-space image to the uv-plane.
+This dataset was simulated using the `interferometer/simulator` example, read through that to understand how
+the data this example fits was generated.
 """
 dataset_name = "simple"
 dataset_path = Path("dataset") / "interferometer" / dataset_name
@@ -85,7 +84,7 @@ dataset = al.Interferometer.from_fits(
     noise_map_path=dataset_path / "noise_map.fits",
     uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
     real_space_mask=real_space_mask,
-    transformer_class=al.TransformerDFT,
+    transformer_class=al.TransformerNUFFT,
 )
 
 """
