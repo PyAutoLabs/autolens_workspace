@@ -2,12 +2,13 @@
 Modeling: Start Here
 ====================
 
-This script is the starting point for lens modeling of interferometer datasets with less than 1000
-visibilities (e.g. SMA, ALMA) and it provides an overview of the lens modeling API.
+This script is the starting point for lens modeling of interferometer datasets (e.g. SMA, ALMA) and it
+provides an overview of the lens modeling API. The same workflow scales from a few hundred visibilities
+to many millions, thanks to the JAX-native `TransformerNUFFT` (backed by `nufftax`).
 
 __Contents__
 
-- **Number of Visibilities:** This example fits a **low-resolution interferometric dataset** with a small number of visibilities.
+- **Number of Visibilities:** This example fits a low-resolution dataset, but the same workflow scales to many millions of visibilities.
 - **Model:** Compose the lens model fitted to the data.
 - **Mask:** Define the 2D mask applied to the dataset for the model-fit.
 - **Dataset:** Load and plot the strong lens dataset.
@@ -33,21 +34,17 @@ __Contents__
 __Number of Visibilities__
 
 This example fits a **low-resolution interferometric dataset** with a small number of visibilities (273). The
-dataset is intentionally minimal so that the example runs quickly and allows you to become familiar with the API
-and modeling workflow. The code demonstrated in this example can feasible fit datasets with up to around 10000
-visibilities, above which computational time and VRAM use become significant for this modeling approach.
+dataset is intentionally minimal so the example runs quickly and you can become familiar with the API and
+modeling workflow.
 
-High-resolution datasets with many visibilities (e.g. high-quality ALMA observations
-with **millions hundreds of millions of visibilities**) can be modeled efficiently. However, this requires
-using the more advanced **pixelized source reconstructions** modeling approach. These large datasets fully
-exploit **JAX acceleration**, enable lens modeling to run in **hours on a modern GPU**.
+The same workflow — light profiles + `TransformerNUFFT` (backed by `nufftax`, https://github.com/GragasLab/nufftax) —
+scales to high-resolution datasets with **millions to hundreds of millions of visibilities** (e.g. ALMA), with no
+change beyond the transformer choice. The NUFFT runs inside JAX's jit/vmap pipeline, so both run time and VRAM
+stay manageable on a GPU at any visibility count.
 
-If your dataset contains many visibilities, you should start by working through this example and the other examples
-in the `interferometer` folder. Once you are comfortable with the API, the `feature/pixelization` package provides a
-guided path toward efficiently modeling large interferometric datasets.
-
-The threshold between a dataset having many visibilities and therefore requiring pixelized source reconstructions, or
-being small enough to be modeled with light profiles, is around **10,000 visibilities**.
+Pixelized source reconstructions (see `features/pixelization`) remain the right tool when the source has
+complex, irregular morphology that simple light profiles cannot capture. They are no longer required purely
+because the dataset is large.
 
 __Model__
 
@@ -84,12 +81,13 @@ real_space_mask = al.Mask2D.circular(
 """
 __Dataset__
 
-Load and plot the strong lens `Interferometer` dataset `simple` from .fits files, which we will fit 
+Load and plot the strong lens `Interferometer` dataset `simple` from .fits files, which we will fit
 with the lens model.
 
-This includes the method used to Fourier transform the real-space image of the strong lens to the uv-plane and compare 
-directly to the visiblities. We use a non-uniform fast Fourier transform, which is the most efficient method for 
-interferometer datasets containing ~1-10 million visibilities.
+This includes the method used to Fourier transform the real-space image of the strong lens to the uv-plane and
+compare directly to the visibilities. We use `TransformerNUFFT`, a JAX-native Non-Uniform Fast Fourier Transform
+backed by `nufftax`. This is the recommended choice at any visibility count and scales efficiently to ALMA-class
+datasets with tens of millions of visibilities.
 """
 dataset_name = "simple"
 dataset_path = Path("dataset") / "interferometer" / dataset_name
@@ -114,7 +112,7 @@ dataset = al.Interferometer.from_fits(
     noise_map_path=dataset_path / "noise_map.fits",
     uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
     real_space_mask=real_space_mask,
-    transformer_class=al.TransformerDFT,
+    transformer_class=al.TransformerNUFFT,
 )
 
 aplt.subplot_interferometer_dirty_images(dataset=dataset)
@@ -361,18 +359,19 @@ chosen batch size is comfortably below their GPU’s total VRAM.
 The method below prints the VRAM usage estimate for the analysis and model with the specified batch size,
 it takes about 20-30 seconds to run so you may want to comment it out once you are familiar with your GPU's VRAM limits.
 
-Interferometer lens modeling using a `TransformerDFT` can be VRAM intensive, with it quickly exceed GBs for many
-visibilities (e.g. > 10000) and real space masks with pixel scales below 0.1". VRAM also does not scale
-with the batch size, so if the analysis fits within VRAM for batch size 1, you should be able to increase it to
-50 to make run times fastest. 
+With `TransformerNUFFT` (backed by `nufftax`), the dominant contributor to VRAM is usually the real-space image
+and its transforms inside the likelihood function, rather than the visibility count itself. VRAM does not scale
+with batch size for the persistent buffers, so if the analysis fits within VRAM for `batch_size=1` you should be
+able to push the batch size up (e.g. to 50) to maximise GPU throughput without running out of memory.
 
-For a MGE model with the low visibility dataset fitted in this example VRAM use is relatively low (~0.3GB). Modeling
-data with more than 273 visibilities, or a highest resolution real space mask, will quickly increase VRAM use
-into the GBs.
+For an MGE model with the small dataset fitted in this example, VRAM use is modest (~0.3 GB). Larger real-space
+masks (finer pixel scales) and higher visibility counts increase VRAM gradually rather than catastrophically, and
+a single GPU comfortably handles millions of visibilities with this approach.
 
-The large VRAM use is an important reason why pixelized source reconstructions, which exploit sparsity to minimize 
-VRAM use, are required for high resolution datasets with millions of visibilities. These keep VRAM use low 
-(e.g. 4 GB) even when there are many visibilities and a high resolution real space mask.
+Pixelized source reconstructions (see `features/pixelization`) take a different VRAM trade-off: they keep VRAM
+use low by exploiting sparsity in the linear inversion, which makes them attractive when the real-space mask is
+very large or the source morphology requires it. They are no longer required purely because the dataset has many
+visibilities.
 """
 analysis.print_vram_use(model=model, batch_size=search.batch_size)
 
@@ -519,11 +518,11 @@ This script gives a concise overview of the basic modeling API, fitting one the 
 Lets now consider what features you should read about to improve your lens modeling, especially if you are aiming
 to fit more complex models to your data.
 
-The examples in the `autolens_workspace/*/interferometer/features` package illustrate other lens modeling 
-features. 
+The examples in the `autolens_workspace/*/interferometer/features` package illustrate other lens modeling
+features.
 
-We recommend you checkout just one feature next, because it makes lens modeling of interferometer datasets 
-in more reliable and efficient and will then allow you to model high resolution datasets with many visibilities:
+We recommend you checkout the `pixelization` feature next, which lets you reconstruct sources with complex,
+irregular morphology that simple light profiles cannot capture:
 
 - ``pixelization``: The source is reconstructed using an adaptive Rectangular mesh or Delaunay mesh.
 

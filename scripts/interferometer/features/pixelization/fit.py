@@ -17,10 +17,11 @@ Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
 
 __CPU Users__
 
-Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra. On GPU, this takes
-seconds, or at most a minute for datasets with tens of millions, or more visibities. On CPU, this can be a lot slower,
-taking over hours. If you are on CPU,  the `feature/pixelization/many_visibilities_preparation` explains how this
-initial setup can be performed before lens modeling and saved to hard disk for fast loading before the model fit.
+Matrices must be set up for a pixelized source reconstruction to speed up the linear algebra. On GPU, this takes
+seconds, or at most a minute for datasets with tens of millions or more visibilities. On CPU, this can be a lot
+slower, taking over an hour for very large datasets. If you are on CPU, the
+`feature/pixelization/many_visibilities_preparation` example explains how this initial setup can be performed
+before lens modeling and saved to hard disk for fast loading before the model fit.
 
 __Contents__
 

@@ -15,14 +15,15 @@ see the `start_here_group.ipynb` and `start_here_cluster.ipynb` examples.
 __Contents__
 
 - **JAX:** JAX acceleration for fast GPU/CPU model-fitting.
-- **Number of Visibilities:** This example fits a **low-resolution interferometric dataset** with a small number of visibilities.
+- **NUFFT (nufftax):** A JAX-native Non-Uniform FFT, used for the image to uv-plane transform of light profiles.
+- **Number of Visibilities:** This example fits a low-resolution interferometric dataset, but the same workflow scales to millions of visibilities.
 - **Google Colab Setup:** The introduction `start_here` examples are available on Google Colab, which allows you to run them.
 - **Imports:** Import the required Python libraries.
 - **Dataset:** Load and plot the strong lens dataset.
 - **Model:** Compose the lens model fitted to the data.
 - **Model Fit:** Perform the model-fit using the search and analysis.
 - **Result:** Overview of the results of the model-fit.
-- **Model Your Own Lens:** If you have your own strong lens interferometer data, and it has less than ~10000 visibilities, you.
+- **Model Your Own Lens:** Adapting this script to fit your own interferometer dataset.
 - **Simulator:** Let’s now switch gears and simulate our own strong lens interferometer.
 - **Sample:** Often we want to simulate *many* strong lenses — for example, to train a neural network or to.
 - **Wrap Up:** Summary of the script and next steps.
@@ -38,24 +39,38 @@ If you don’t have a GPU locally, consider Google Colab which provides free GPU
 We also show how to simulate interferometer datasets. This is useful for building machine
 learning training datasets, or for investigating lensing effects in a controlled way.
 
+__NUFFT (nufftax)__
+
+The image-to-visibilities Fourier transform is performed by a Non-Uniform Fast Fourier Transform (NUFFT),
+exposed in **PyAutoLens** as `TransformerNUFFT`. The default backend is `nufftax`, a pure-JAX NUFFT
+that jit-compiles and vmap-batches like the rest of the library:
+
+  https://github.com/GragasLab/nufftax
+
+Because `nufftax` is JAX-native, light-profile interferometer modeling now runs at full GPU speed for
+datasets with **arbitrarily many visibilities** — including high-resolution ALMA observations with tens of
+millions to hundreds of millions of visibilities. Previously this was only practical for small datasets,
+or required switching to a pixelized source reconstruction. Pixelized sources are still recommended for
+complex, irregular source morphologies (see `features/pixelization`), but they are no longer a
+performance requirement for large datasets.
+
+If `nufftax` is not installed, install it via `pip install nufftax`. A legacy pynufft-backed
+transformer (`TransformerNUFFTPyNUFFT`) is also available as a non-JAX fallback.
+
 __Number of Visibilities__
 
 This example fits a **low-resolution interferometric dataset** with a small number of visibilities (273). The
 dataset is intentionally minimal so that the example runs quickly and allows you to become familiar with the API
-and modeling workflow. The code demonstrated in this example can feasible fit datasets with up to around 10000
-visibilities, above which computational time and VRAM use become significant for this modeling approach.
+and modeling workflow.
 
-High-resolution datasets with many visibilities (e.g. high-quality ALMA observations
-with **millions hundreds of millions of visibilities**) can be modeled efficiently. However, this requires
-using the more advanced **pixelized source reconstructions** modeling approach. These large datasets fully
-exploit **JAX acceleration**, enable lens modeling to run in **hours on a modern GPU**.
+The same modeling workflow — light profiles + `TransformerNUFFT` (nufftax) — scales to high-resolution
+datasets with **millions to hundreds of millions of visibilities** (e.g. ALMA), with no special handling
+beyond switching the transformer choice. Both computational time and VRAM use stay manageable on a GPU
+because `nufftax` runs the NUFFT inside the JAX jit/vmap pipeline.
 
-If your dataset contains many visibilities, you should start by working through this example and the other examples
-in the `interferometer` folder. Once you are comfortable with the API, the `feature/pixelization` package provides a
-guided path toward efficiently modeling large interferometric datasets.
-
-The threshold between a dataset having many visibilities and therefore requiring pixelized source reconstructions, or
-being small enough to be modeled with light profiles, is around **10,000 visibilities**.
+Pixelized source reconstructions (see `features/pixelization`) remain the right tool when the source has
+complex, irregular morphology that simple light profiles cannot capture. They are no longer required
+purely because the dataset is large.
 
 __Google Colab Setup__
 
@@ -129,14 +144,17 @@ We begin by loading an `Interferometer` dataset from FITS, three ingredients are
 - `noise_map.fits`: per-visibility complex RMS
 - `uv_wavelengths.fits`: (u, v) sampling of the interferometer in wavelengths
 
-We must also choose a transformer:
+We must also choose a transformer for mapping the real-space image to visibilities:
 
-- `TransformerDFT`: exact Discrete FT (robust, slower for large n_vis).
-- `TransformerNUFFT`: approximate Non-Uniform FFT (fast, accurate for large n_vis) using the pynufft library.
+- `TransformerNUFFT`: JAX-native Non-Uniform FFT (default, backed by `nufftax`). Recommended for any
+  dataset size — runs at full GPU speed for millions of visibilities.
+- `TransformerDFT`: exact Discrete FT. Slower than the NUFFT for large `n_vis`, but useful as a reference
+  for verification and for the pixelized source reconstruction's sparse-operator workflow (see
+  `features/pixelization`).
 
-We load a low resolution Square Mile Array (SMA) dataset for this example, which has just
-273 visibilities. This has so few visibilities that we can use the exact DFT transformer without
-the computation being too slow (for larger datasets with many visibilities the NUFFT transformer is recommended).
+We load a low resolution Square Mile Array (SMA) dataset for this example, which has just 273 visibilities.
+We use `TransformerNUFFT` so that this example reflects the recommended workflow at any visibility count;
+for 273 visibilities `TransformerDFT` would also work and produce a near-identical result.
 """
 dataset_name = "simple"
 dataset_path = Path("dataset") / "interferometer" / dataset_name
@@ -161,7 +179,7 @@ dataset = al.Interferometer.from_fits(
     noise_map_path=dataset_path / "noise_map.fits",
     uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
     real_space_mask=real_space_mask,
-    transformer_class=al.TransformerDFT,
+    transformer_class=al.TransformerNUFFT,
 )
 
 aplt.subplot_interferometer_dirty_images(dataset=dataset)
@@ -285,9 +303,9 @@ packages of the workspace contains all the information you need to analyze your 
 
 __Model Your Own Lens__
 
-If you have your own strong lens interferometer data, and it has less than ~10000 visibilities, you are now ready to 
-model it yourself by adapting the code above and simply inputting the path to your own .fits files into 
-the `Interferometer.from_fits()` function.
+If you have your own strong lens interferometer data — at any visibility count, from a handful up to the
+hundreds of millions typical of ALMA — you are ready to model it yourself by adapting the code above and
+inputting the path to your own .fits files into the `Interferometer.from_fits()` function.
 
 A few things to note, with full details on data preparation provided in the main workspace documentation:
 
@@ -385,7 +403,7 @@ simulator = al.SimulatorInterferometer(
     uv_wavelengths=uv_wavelengths,
     exposure_time=300.0,  # Length of observation in seconds, higher time = higher S/N
     noise_sigma=1000.0,  # RMS of the complex Gaussian noise added to the visibilities
-    transformer_class=al.TransformerDFT,  # keep consistent with your modeling choice
+    transformer_class=al.TransformerNUFFT,  # JAX-native NUFFT (nufftax) — scales to many visibilities
 )
 
 dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
