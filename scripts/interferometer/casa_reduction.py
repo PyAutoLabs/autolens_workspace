@@ -104,11 +104,13 @@ can omit the `spw` argument.
 
 __Step 2 — Channel Averaging__
 
-ALMA observations often have thousands of channels per SPW, producing far more
-visibilities than PyAutoLens can comfortably model (the light-profile path tops
-out around ~10,000 visibilities; the pixelized source path scales to millions
-but is more advanced). For continuum-style lens modeling you typically average
-all channels in an SPW down to one (or a handful) by setting `width`.
+ALMA observations often have thousands of channels per SPW, producing huge
+visibility counts. With the JAX-native `TransformerNUFFT` (backed by `nufftax`),
+the light-profile modeling path scales efficiently to ALMA-class datasets with
+many millions of visibilities, so channel averaging is no longer required purely
+for performance. You may still average channels (typically by setting `width`)
+to reduce the dataset size, simplify the analysis, or maximize signal-to-noise
+for continuum-style lens modeling.
 
 Note that `width` must not exceed the number of channels in the SPW — check with
 the `get_num_chan` helper below if unsure.
@@ -433,9 +435,10 @@ __Troubleshooting__
   dirty image with `aplt.subplot_interferometer_dirty_images` as a sanity
   check.
 - **Sigmas produce a flat chi-squared map** — you probably forgot `statwt`.
-- **n_vis is enormous** — use a larger `width` in `split`, or switch from
-  `TransformerDFT` to `TransformerNUFFT` (and the pixelized source workflow
-  if n_vis > 10,000).
+- **n_vis is enormous** — ensure you are using `TransformerNUFFT` (the default
+  recommendation, backed by JAX-native `nufftax`). It scales to many millions
+  of visibilities. Channel averaging via a larger `width` in `split` is still
+  useful when you want to reduce dataset size for other reasons.
 - **Only one polarisation present** — if CASA has flagged one pol the
   averaging code above will produce NaNs. Check with `get_visibilities`
   and branch accordingly.

@@ -19,10 +19,11 @@ Pixelizations are covered in detail in Chapter 4 of the HowToLens lecture series
 
 __CPU Users__
 
-Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra. On GPU, this takes
-seconds, or at most a minute for datasets with tens of millions, or more visibities. On CPU, this can be a lot slower,
-taking over hours. If you are on CPU,  the `feature/pixelization/many_visibilities_preparation` explains how this
-initial setup can be performed before lens modeling and saved to hard disk for fast loading before the model fit.
+Matrices must be set up for a pixelized source reconstruction to speed up the linear algebra. On GPU, this takes
+seconds, or at most a minute for datasets with tens of millions or more visibilities. On CPU, this can be a lot
+slower, taking over an hour for very large datasets. If you are on CPU, the
+`feature/pixelization/many_visibilities_preparation` example explains how this initial setup can be performed
+before lens modeling and saved to hard disk for fast loading before the model fit.
 
 __Contents__
 
@@ -67,10 +68,12 @@ Finally, many science applications aim to study the highly magnified source gala
 distant and intrinsically faint galaxies. pixelizations reconstruct the unlensed source emission, enabling detailed
 studies of the source-plane structure.
 
-For CCD imaging, a disadvantage of pixelized source reconstructions is they are the most computationally expensive
-modeling approach. However, for interferometer datasets, the way that JAX and GPUs can exploit the sparsity in the
-linear algebra means pixelized source reconstructions are both significantly faster than other approaches (E.g.
-light profiles) and can scale to millions of visibilities.
+For CCD imaging, a disadvantage of pixelized source reconstructions is that they are the most computationally
+expensive modeling approach. For interferometer datasets, the situation is more nuanced: light-profile modeling
+via the JAX-native `TransformerNUFFT` (backed by `nufftax`) is now also fast at large visibility counts, so
+pixelizations are no longer required purely for performance. Their continuing strengths are morphological
+flexibility (irregular sources) and VRAM efficiency on very large real-space masks, where their sparsity-aware
+linear algebra still wins.
 
 __Disadvantages__
 
