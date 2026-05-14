@@ -90,6 +90,7 @@ REGULARIZATION_COEFFICIENT = 1.0
 # Profiling helpers
 # ---------------------------------------------------------------------------
 
+
 class Timer:
     def __init__(self):
         self.records: list[tuple[str, float]] = []
@@ -215,8 +216,7 @@ print(f"  base model free parameters: {model.total_free_parameters}")
 print("\n=== PART A — Per-channel analyses ===")
 
 analysis_list = [
-    al.AnalysisInterferometer(dataset=dataset, use_jax=True)
-    for dataset in dataset_list
+    al.AnalysisInterferometer(dataset=dataset, use_jax=True) for dataset in dataset_list
 ]
 
 print(f"  channels in analysis_list: {len(analysis_list)}")

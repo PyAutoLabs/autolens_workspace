@@ -208,9 +208,7 @@ visibilities_cube = np.stack(
 noise_map_cube = np.stack(
     [np.stack([d.noise_map.real, d.noise_map.imag], axis=-1) for d in datasets], axis=0
 )
-uv_wavelengths_cube = np.stack(
-    [np.asarray(d.uv_wavelengths) for d in datasets], axis=0
-)
+uv_wavelengths_cube = np.stack([np.asarray(d.uv_wavelengths) for d in datasets], axis=0)
 
 al.output_to_fits(
     values=visibilities_cube,
