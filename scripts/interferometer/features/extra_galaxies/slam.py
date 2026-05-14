@@ -16,12 +16,13 @@ __Contents__
 - **Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
 - **Group SLaM:** This SLaM pipeline is designed for the regime where one is modeling galaxy scale lenses with nearby.
 - **This Script:** Using a SOURCE LP PIPELINE, SOURCE PIX PIPELINE, LIGHT LP PIPELINE and TOTAL MASS PIPELINE this.
-- **SOURCE PIX PIPELINE 1:** Unlike `slam_start_here.py`, this pipeline does not use a `source_lp` pipeline before the pixelized.
-- **SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`, using adapt images from `source_pix_result_1` to improve the.
+- **SOURCE LP PIPELINE:** Initializes the mass model + source-light using MGE light profiles via `TransformerNUFFT`.
+- **SOURCE PIX PIPELINE 1:** Initializes a pixelized source using the adapt image from the SOURCE LP result.
+- **SOURCE PIX PIPELINE 2:** Improves the pixelized source using adapt images from `source_pix_result_1`.
 - **MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`, except no lens light model is included as interferometer data.
 - **Extra Galaxies Centres:** This is the same API as described in the `features/extra_galaxies.ipynb` example, where the centres.
+- **Two Datasets:** Build one Interferometer with `TransformerNUFFT` (source_lp) and one with `TransformerDFT` + sparse operator (source_pix onwards).
 - **Sparse Operators:** The `pixelization/modeling` example describes how the sparse operator formalism speeds up.
-- **Position Likelihood:** Load the multiple image positions used for the position likelihood, which resamples bad mass models.
 - **Settings:** Disable the default position only linear algebra solver so the source reconstruction can have.
 - **Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
 - **Redshifts:** The redshifts of the lens and source galaxies.
@@ -93,33 +94,33 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-__SOURCE PIX PIPELINE 1__
+__SOURCE LP PIPELINE__
 
-Unlike `slam_start_here.py`, this pipeline does not use a `source_lp` pipeline before the pixelized source
-pipeline. This is because fitting light profiles to interferometer datasets with many visibilities is slow.
+Initializes a robust mass + source-light model using a Multi Gaussian Expansion (MGE), fit with light profiles.
 
-The search therefore uses a `Constant` regularization (not adaptive) as there is no adapt image available.
+This stage uses `dataset_nufft` (built with `TransformerNUFFT`, backed by JAX-native `nufftax`), which makes
+light-profile fitting fast even on ALMA-class datasets with millions of visibilities. The result provides the
+adapt image and position likelihood threaded into the pixelized pipelines that follow.
 
-The `extra_galaxies` are included in the model, each with an `IsothermalSph` mass profile whose centre is fixed
-to the centre of the extra galaxy.
+Each extra galaxy carries an `IsothermalSph` mass profile centred on its known position. Extra galaxies do not
+have light components in the interferometer pipeline, because interferometer data does not contain lens light
+emission.
 """
 
 
-def source_pix_1(
+def source_lp(
     settings_search: af.SettingsSearch,
     dataset,
+    mask_radius: float,
+    extra_galaxies,
     redshift_lens: float,
     redshift_source: float,
-    positions_likelihood,
-    mesh_shape,
-    settings,
-    extra_galaxies,
-    n_batch: int = 20,
+    n_batch: int = 50,
 ) -> af.Result:
-    analysis = al.AnalysisInterferometer(
-        dataset=dataset,
-        positions_likelihood_list=[positions_likelihood],
-        settings=settings,
+    analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
+
+    source_bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
     )
 
     model = af.Collection(
@@ -135,10 +136,87 @@ def source_pix_1(
             source=af.Model(
                 al.Galaxy,
                 redshift=redshift_source,
+                bulge=source_bulge,
+            ),
+        ),
+        extra_galaxies=extra_galaxies,
+    )
+
+    search = af.Nautilus(
+        name="source_lp[1]",
+        **settings_search.search_dict,
+        n_live=200,
+        n_batch=n_batch,
+    )
+
+    return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
+
+
+"""
+__SOURCE PIX PIPELINE 1__
+
+The first search of the SOURCE PIX PIPELINE fits a pixelization whose purpose is to generate a high-quality
+adapt image used in search 2. It uses the adapt image computed from the SOURCE LP result, with the position
+likelihood derived automatically via `source_lp_result.positions_likelihood_from(...)`.
+
+This stage uses `dataset_dft_sparse` (built with `TransformerDFT` + `apply_sparse_operator`). Pixelizations
+exploit sparsity in the linear inversion rather than the NUFFT path.
+
+The `extra_galaxies` mass priors are carried forward from the SOURCE LP result as free model parameters.
+"""
+
+
+def source_pix_1(
+    settings_search: af.SettingsSearch,
+    dataset,
+    source_lp_result: af.Result,
+    mesh_init,
+    regularization_init,
+    settings,
+    n_batch: int = 20,
+) -> af.Result:
+    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
+        result=source_lp_result
+    )
+
+    adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
+    analysis = al.AnalysisInterferometer(
+        dataset=dataset,
+        adapt_images=adapt_images,
+        positions_likelihood_list=[
+            source_lp_result.positions_likelihood_from(
+                factor=3.0, minimum_threshold=0.2
+            )
+        ],
+        settings=settings,
+    )
+
+    mass = al.util.chaining.mass_from(
+        mass=source_lp_result.model.galaxies.lens.mass,
+        mass_result=source_lp_result.model.galaxies.lens.mass,
+        unfix_mass_centre=True,
+    )
+
+    extra_galaxies = source_lp_result.model.extra_galaxies
+
+    model = af.Collection(
+        galaxies=af.Collection(
+            lens=af.Model(
+                al.Galaxy,
+                redshift=source_lp_result.instance.galaxies.lens.redshift,
+                bulge=None,
+                disk=None,
+                mass=mass,
+                shear=source_lp_result.model.galaxies.lens.shear,
+            ),
+            source=af.Model(
+                al.Galaxy,
+                redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    mesh=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
-                    regularization=al.reg.Constant,
+                    mesh=mesh_init,
+                    regularization=regularization_init,
                 ),
             ),
         ),
@@ -171,8 +249,10 @@ contain lens light emission.
 def source_pix_2(
     settings_search: af.SettingsSearch,
     dataset,
+    source_lp_result: af.Result,
     source_pix_result_1: af.Result,
-    mesh_shape,
+    mesh,
+    regularization,
     settings,
     n_batch: int = 20,
 ) -> af.Result:
@@ -192,7 +272,7 @@ def source_pix_2(
         galaxies=af.Collection(
             lens=af.Model(
                 al.Galaxy,
-                redshift=source_pix_result_1.instance.galaxies.lens.redshift,
+                redshift=source_lp_result.instance.galaxies.lens.redshift,
                 # interferometry does not support lens light
                 bulge=None,
                 disk=None,
@@ -201,11 +281,11 @@ def source_pix_2(
             ),
             source=af.Model(
                 al.Galaxy,
-                redshift=source_pix_result_1.instance.galaxies.source.redshift,
+                redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
-                    regularization=al.reg.Adapt,
+                    mesh=mesh,
+                    regularization=regularization,
                 ),
             ),
         ),
@@ -319,7 +399,7 @@ if not dataset_path.exists():
     import sys
 
     subprocess.run(
-        [sys.executable, "scripts/imaging/features/extra_galaxies/simulator.py"],
+        [sys.executable, "scripts/interferometer/features/extra_galaxies/simulator.py"],
         check=True,
     )
 
@@ -334,12 +414,31 @@ if not dataset_path.exists():
 #     )
 
 
-dataset = al.Interferometer.from_fits(
+"""
+__Two Datasets__
+
+The SLaM pipeline runs in two phases that prefer different transformers:
+
+- `dataset_nufft` uses `TransformerNUFFT` (backed by JAX-native `nufftax`) for the `source_lp` stage.
+- `dataset_dft_sparse` uses `TransformerDFT` + `apply_sparse_operator(...)` for `source_pix_1`,
+  `source_pix_2` and `mass_total`.
+
+Both datasets are built from the same FITS files; only the transformer (and sparse-operator preload) differ.
+"""
+dataset_nufft = al.Interferometer.from_fits(
     data_path=dataset_path / "data.fits",
     noise_map_path=dataset_path / "noise_map.fits",
     uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
     real_space_mask=real_space_mask,
     transformer_class=al.TransformerNUFFT,
+)
+
+dataset_dft_sparse = al.Interferometer.from_fits(
+    data_path=dataset_path / "data.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
+    real_space_mask=real_space_mask,
+    transformer_class=al.TransformerDFT,
 )
 
 """
@@ -362,7 +461,10 @@ pixelized source modeling, especially for many visibilities.
 
 We use a try / except to load the pre-computed curvature preload, which is necessary to use
 the sparse operator formalism. If this file does not exist (e.g. you have not made it manually via
-the `many_visibilities_preparartion` example it is made here.
+the `many_visibilities_preparation` example) it is made here.
+
+The sparse operator is applied only to `dataset_dft_sparse` — the NUFFT-backed `dataset_nufft` used by
+`source_lp` does not need it.
 """
 try:
     nufft_precision_operator = np.load(
@@ -371,21 +473,9 @@ try:
 except FileNotFoundError:
     nufft_precision_operator = None
 
-dataset = dataset.apply_sparse_operator(
+dataset_dft_sparse = dataset_dft_sparse.apply_sparse_operator(
     nufft_precision_operator=nufft_precision_operator, use_jax=True, show_progress=True
 )
-
-"""
-__Position Likelihood__
-
-Load the multiple image positions used for the position likelihood, which resamples bad mass
-models and prevents demagnified solutions being inferred.
-"""
-positions = al.Grid2DIrregular(
-    al.from_json(file_path=Path(dataset_path, "positions.json"))
-)
-
-positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
 """
 __Settings__
@@ -449,29 +539,41 @@ __SLaM Pipeline__
 
 The code below calls the full SLaM PIPELINE. See the documentation string above each Python function for
 a description of each pipeline step.
+
+Note the transformer split: `source_lp` is passed `dataset_nufft` (TransformerNUFFT), while every later stage
+is passed `dataset_dft_sparse` (TransformerDFT + sparse operator).
 """
-source_pix_result_1 = source_pix_1(
+source_lp_result = source_lp(
     settings_search=settings_search,
-    dataset=dataset,
+    dataset=dataset_nufft,
+    mask_radius=mask_radius,
+    extra_galaxies=extra_galaxies,
     redshift_lens=redshift_lens,
     redshift_source=redshift_source,
-    positions_likelihood=positions_likelihood,
-    mesh_shape=mesh_shape,
+)
+
+source_pix_result_1 = source_pix_1(
+    settings_search=settings_search,
+    dataset=dataset_dft_sparse,
+    source_lp_result=source_lp_result,
+    mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+    regularization_init=al.reg.Adapt,
     settings=settings,
-    extra_galaxies=extra_galaxies,
 )
 
 source_pix_result_2 = source_pix_2(
     settings_search=settings_search,
-    dataset=dataset,
+    dataset=dataset_dft_sparse,
+    source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    mesh_shape=mesh_shape,
+    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
+    regularization=al.reg.Adapt,
     settings=settings,
 )
 
 mass_result = mass_total(
     settings_search=settings_search,
-    dataset=dataset,
+    dataset=dataset_dft_sparse,
     source_pix_result_1=source_pix_result_1,
     source_pix_result_2=source_pix_result_2,
     settings=settings,

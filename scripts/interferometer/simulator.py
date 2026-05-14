@@ -16,7 +16,7 @@ __Contents__
 - **Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
 - **Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
 - **Multiple Images:** Lens modeling can use a "positions likelihood penalty", whereby mass models which traces the (y,x).
-- **Many Visibilities:** Simulating interferometer datasets with many visibilities can be computationally expensive if a.
+- **Many Visibilities:** Simulating interferometer datasets with many visibilities using the JAX-native `TransformerNUFFT`.
 - **High Resolution Dataset:** A high-resolution `uv_wavelengths` file for ALMA is available in a separate repository that hosts.
 
 """
@@ -82,14 +82,18 @@ uv_wavelengths = al.ndarray_via_fits_from(
 )
 
 """
-To simulate the interferometer dataset we first create a simulator, which defines the exposure time, noise levels 
+To simulate the interferometer dataset we first create a simulator, which defines the exposure time, noise levels
 and Fourier transform method used in the simulation.
+
+We use `TransformerNUFFT` (backed by `nufftax`, https://github.com/GragasLab/nufftax), a JAX-native Non-Uniform
+Fast Fourier Transform. This is the recommended transformer at any visibility count and is fast enough to
+simulate ALMA-class datasets with millions of visibilities end-to-end on a GPU.
 """
 simulator = al.SimulatorInterferometer(
     uv_wavelengths=uv_wavelengths,
     exposure_time=300.0,
     noise_sigma=1000.0,
-    transformer_class=al.TransformerDFT,
+    transformer_class=al.TransformerNUFFT,
 )
 
 """
@@ -230,18 +234,16 @@ The dataset can be viewed in the folder `autolens_workspace/imaging/simple`.
 
 __Many Visibilities__
 
-Simulating interferometer datasets with many visibilities can be computationally expensive
-if a direct Fourier transform is used. 
+Simulating interferometer datasets with many visibilities is fast end-to-end when `TransformerNUFFT` is used,
+which is backed by the JAX-native `nufftax` library (https://github.com/GragasLab/nufftax). The NUFFT scales
+efficiently from a few hundred visibilities up to ALMA-class datasets with tens of millions of visibilities,
+all inside the JAX jit/vmap pipeline.
 
-Therefore, for simulating high-resolution datasets with many visibilities (e.g. > 10000), we recommend using the
-`TransformerNUFFT` transformer, which uses a non-uniform fast Fourier transform via the library pynufft to 
-perform the Fourier transform efficiently.
+Higher resolution datasets also require a higher resolution real space grid, which is the dominant remaining
+cost — visibility count alone is no longer the bottleneck.
 
-Higher resolution datasets also require a higher resolution real space grid, which also increases the computational
-costs of simulating the dataset.
-
-The code below loads a `uv_wavelengths` file with many over 1 million visibilities and simulates the dataset using 
-the `TransformerNUFFT`.
+The code below loads a `uv_wavelengths` file with over 1 million visibilities and simulates the dataset using
+`TransformerNUFFT`.
 
 __High Resolution Dataset__
 
@@ -276,11 +278,11 @@ simulator = al.SimulatorInterferometer(
     uv_wavelengths=uv_wavelengths,
     exposure_time=300.0,
     noise_sigma=1000.0,
-    transformer_class=al.TransformerDFT,
+    transformer_class=al.TransformerNUFFT,
 )
 
 """
-The code below is identical to above, outputting images, data, tracer and multiple image 
+The code below is identical to above, outputting images, data, tracer and multiple image
 positions to the dataset folder.
 """
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
