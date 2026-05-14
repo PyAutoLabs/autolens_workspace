@@ -13,8 +13,9 @@ own ``data.fits`` / ``noise_map.fits`` / ``uv_wavelengths.fits`` into a separate
 for that channel. The modeling examples in this folder load the cube by listing those folders.
 
 For Phase 1 of datacube modeling we keep things deliberately simple: every channel uses the same `uv_wavelengths`
-and the same noise level, and only the source `intensity` varies. That mirrors what most ALMA spectral-line
-datasets look like once narrow-band continuum subtraction has been performed.
+and the same noise level. Two source properties vary across channels — `intensity` (a Gaussian emission-line
+profile) and `centre` (a small linear shift along the y axis, simulating the kinematic gradient that real
+emission lines almost always exhibit).
 
 __Contents__
 
@@ -23,9 +24,10 @@ __Contents__
 - **uv_wavelengths:** Reuse the SMA `uv_wavelengths.fits` shipped with the workspace as a stand-in for ALMA coverage.
 - **Real-Space Grid:** The 2D image-plane grid each channel is evaluated on before the Fourier transform.
 - **Lens Galaxy:** Shared `Isothermal + ExternalShear` lens, identical for every channel.
-- **Per-Channel Source:** A Gaussian emission line in channel index drives the per-channel `Sersic.intensity`.
+- **Per-Channel Source:** A Gaussian emission line drives the per-channel `Sersic.intensity`; the `centre` shifts linearly along y across channels to mimic a kinematic gradient.
 - **Per-Channel Simulate:** Loop over channels: build the tracer, simulate, write FITS + tracer.json to disk.
-- **3D-FITS Cube:** Stack the per-channel arrays into single `(n_chan, n_vis, 2)` FITS files for users whose data already lives in that shape (e.g. ALMA cubes from CASA).
+- **3D-FITS Cube:** Stack the per-channel arrays into single `(n_chan, n_vis, 2)` FITS files — the autolens-canonical post-polarisation-collapse shape.
+- **4D CASA-like Cube:** Wrap the 3D cubes in a polarisation axis to produce `(n_pol, n_chan, n_vis, 2)` files matching CASA's native output. Polarisations are identical here for simplicity.
 - **Multiple Images:** Compute and save the lensed multiple-image positions used by the modeling scripts' `PositionsLH` penalty.
 - **Cube Summary:** Dump the emission-line parameters and per-channel intensities to `cube_summary.json`.
 - **Cube Overview Plot:** Row-per-channel sanity figure (lensed image, uv-plane Re/Im, |vis| vs baseline length).
@@ -55,6 +57,12 @@ N_CHANNELS = 4
 PEAK_CHANNEL = 1.5
 SIGMA_CHANNEL = 1.2
 PEAK_INTENSITY = 0.6
+
+# Total source-centre shift along the y axis across the whole cube, in arcsec.
+# At the simulator's 0.1"/pixel grid, 0.12" is about 1.2 pixels end-to-end —
+# visible in the per-channel lensed image without the source jumping outside the Einstein ring.
+CENTRE_SHIFT_TOTAL = 0.12
+SOURCE_CENTRE_BASE = (0.1, 0.1)
 
 """
 __Dataset Paths__
@@ -109,9 +117,16 @@ lens_galaxy = al.Galaxy(
 """
 __Per-Channel Source__
 
-The source intensity follows a Gaussian profile in channel index — that's the simplest model of an emission line
-peaking at one velocity and falling off symmetrically. The shape (centre, ellipticity, effective radius, Sersic
-index) is held fixed; only ``intensity`` varies channel-to-channel.
+Two things vary channel-to-channel:
+
+  - ``intensity`` follows a Gaussian profile in channel index — the simplest model of an emission line peaking at
+    one velocity and falling off symmetrically.
+  - ``centre`` shifts linearly along the y axis from ``-CENTRE_SHIFT_TOTAL / 2`` to ``+CENTRE_SHIFT_TOTAL / 2``
+    relative to ``SOURCE_CENTRE_BASE``. This mimics a kinematic gradient (e.g. a rotating disk's centroid drifting
+    across the emission line) and gives each channel a visually distinct lensed image. A real cube might also shift
+    in x or rotate; one-axis is enough to demonstrate the principle.
+
+The other shape parameters (ellipticity, effective radius, Sersic index) are held fixed.
 """
 
 
@@ -121,11 +136,25 @@ def channel_intensity(channel: int) -> float:
     )
 
 
+def channel_centre(channel: int) -> tuple:
+    """Source centre for a given channel.
+
+    Linearly shifts along the y axis from channel 0 to channel N-1, centred on
+    ``SOURCE_CENTRE_BASE``. For ``N_CHANNELS=4`` and ``CENTRE_SHIFT_TOTAL=0.12"`` the per-channel
+    centres are ``(0.04, 0.1)``, ``(0.08, 0.1)``, ``(0.12, 0.1)``, ``(0.16, 0.1)``.
+    """
+    if N_CHANNELS == 1:
+        return SOURCE_CENTRE_BASE
+    fractional = (channel - (N_CHANNELS - 1) / 2.0) / (N_CHANNELS - 1)
+    offset_y = CENTRE_SHIFT_TOTAL * fractional
+    return (SOURCE_CENTRE_BASE[0] + offset_y, SOURCE_CENTRE_BASE[1])
+
+
 def source_galaxy_for(channel: int) -> al.Galaxy:
     return al.Galaxy(
         redshift=1.0,
         bulge=al.lp.SersicCore(
-            centre=(0.1, 0.1),
+            centre=channel_centre(channel),
             ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
             intensity=channel_intensity(channel),
             effective_radius=1.0,
@@ -143,12 +172,15 @@ tracer into ``channel_NNN/``. The `noise_seed` is incremented per channel so eac
 realisation.
 """
 channel_intensities = []
+channel_centres = []
 datasets = []
 tracers = []
 
 for channel in range(N_CHANNELS):
     intensity = channel_intensity(channel)
+    centre = channel_centre(channel)
     channel_intensities.append(intensity)
+    channel_centres.append(list(centre))
 
     channel_path = dataset_path / f"channel_{channel:03d}"
     channel_path.mkdir(parents=True, exist_ok=True)
@@ -190,6 +222,7 @@ for channel in range(N_CHANNELS):
 
     print(
         f"  channel {channel:03d}: intensity={intensity:.4f}, "
+        f"centre={centre}, "
         f"|vis|_max={np.max(np.abs(dataset.data)):.3e}"
     )
 
@@ -229,6 +262,42 @@ al.output_to_fits(
 print(f"  3D-FITS cubes: shape {visibilities_cube.shape} (n_chan, n_vis, 2)")
 
 """
+__4D CASA-like Cube__
+
+ALMA visibilities arrive from CASA as a single 4D FITS of shape `(n_pol, n_chan, n_vis, 2)` — for example
+`(2, 34, 16984, 2)` for a typical narrow-line observation. Users typically run a polarisation-collapse step
+(averaging or concatenating the two pols — see `data_preparation.py`) before the data is fed to autolens.
+
+We write a 4D version of each cube here so users can practice the polarisation-collapse step against the
+simulator's actual output rather than synthetic random arrays. For this synthetic simulator both polarisations
+carry **identical** data (same visibilities, same noise_map, same baselines) — that's a pedagogical
+simplification: real CASA data has independent noise realisations between polarisations, which is why
+averaging real data reduces the effective noise by `sqrt(2)`. The baselines being identical across pols is
+astronomically correct (both pols share the same antenna pairs).
+"""
+visibilities_4d_cube = np.stack([visibilities_cube, visibilities_cube], axis=0)
+noise_map_4d_cube = np.stack([noise_map_cube, noise_map_cube], axis=0)
+uv_wavelengths_4d_cube = np.stack([uv_wavelengths_cube, uv_wavelengths_cube], axis=0)
+
+al.output_to_fits(
+    values=visibilities_4d_cube,
+    file_path=dataset_path / "visibilities_4d_cube.fits",
+    overwrite=True,
+)
+al.output_to_fits(
+    values=noise_map_4d_cube,
+    file_path=dataset_path / "noise_map_4d_cube.fits",
+    overwrite=True,
+)
+al.output_to_fits(
+    values=uv_wavelengths_4d_cube,
+    file_path=dataset_path / "uv_wavelengths_4d_cube.fits",
+    overwrite=True,
+)
+
+print(f"  4D CASA-like cubes: shape {visibilities_4d_cube.shape} (n_pol, n_chan, n_vis, 2)")
+
+"""
 __Multiple Images__
 
 Pixelized source modeling can drift toward unphysical demagnified-source local maxima — the source pixels are
@@ -237,16 +306,17 @@ The `PositionsLH` penalty defends against that by reading a small set of multipl
 adding a likelihood penalty for any candidate lens model whose source-plane back-projection of those positions
 spreads them apart.
 
-For simulated data we can compute the multiple-image positions automatically with `al.PointSolver`. The lens model
-and source centre are channel-invariant, so a single `positions.json` covers the entire cube — every modeling
-script in this folder loads the same file.
+For simulated data we can compute the multiple-image positions automatically with `al.PointSolver`. The lens
+model is channel-invariant; the source centre shifts slightly across channels, so we compute positions for the
+*mean* source centre (`SOURCE_CENTRE_BASE`) — the resulting positions are within the `PositionsLH` threshold
+for every individual channel. A single `positions.json` covers the entire cube.
 """
 solver = al.PointSolver.for_grid(
     grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
 )
 positions = solver.solve(
     tracer=tracers[0],
-    source_plane_coordinate=tracers[0].planes[-1][0].bulge.centre,
+    source_plane_coordinate=SOURCE_CENTRE_BASE,
 )
 
 al.output_to_json(
@@ -267,7 +337,10 @@ summary = {
     "peak_channel": PEAK_CHANNEL,
     "sigma_channel": SIGMA_CHANNEL,
     "peak_intensity": PEAK_INTENSITY,
+    "centre_shift_total": CENTRE_SHIFT_TOTAL,
+    "source_centre_base": list(SOURCE_CENTRE_BASE),
     "channel_intensities": channel_intensities,
+    "channel_centres": channel_centres,
 }
 with open(dataset_path / "cube_summary.json", "w") as f:
     json.dump(summary, f, indent=2)
