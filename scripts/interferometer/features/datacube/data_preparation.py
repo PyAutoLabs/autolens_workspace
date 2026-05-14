@@ -67,13 +67,19 @@ n_vis = 190
 
 rng = np.random.default_rng(seed=0)
 visibilities_4d = rng.normal(size=(n_pol, n_chan, n_vis, 2)).astype(np.float64)
-noise_map_4d = 1000.0 + rng.normal(size=(n_pol, n_chan, n_vis, 2)).astype(np.float64) * 50.0
-uv_wavelengths_3d = rng.normal(size=(n_pol, n_vis, 2)) * 1e5  # baselines per polarisation, channel-invariant
+noise_map_4d = (
+    1000.0 + rng.normal(size=(n_pol, n_chan, n_vis, 2)).astype(np.float64) * 50.0
+)
+uv_wavelengths_3d = (
+    rng.normal(size=(n_pol, n_vis, 2)) * 1e5
+)  # baselines per polarisation, channel-invariant
 
 print(f"On-disk shapes:")
 print(f"  visibilities_4d:    {visibilities_4d.shape}  (n_pol, n_chan, n_vis, 2)")
 print(f"  noise_map_4d:       {noise_map_4d.shape}     (n_pol, n_chan, n_vis, 2)")
-print(f"  uv_wavelengths_3d:  {uv_wavelengths_3d.shape}     (n_pol, n_vis, 2)  [channel-invariant]")
+print(
+    f"  uv_wavelengths_3d:  {uv_wavelengths_3d.shape}     (n_pol, n_vis, 2)  [channel-invariant]"
+)
 
 """
 __Polarisation Handling__
@@ -109,7 +115,9 @@ uv_wavelengths_2d = uv_wavelengths_3d.mean(axis=0)
 print(f"\nAfter polarisation averaging:")
 print(f"  visibilities_3d:    {visibilities_3d.shape}    (n_chan, n_vis, 2)")
 print(f"  noise_map_3d:       {noise_map_3d.shape}    (n_chan, n_vis, 2)")
-print(f"  uv_wavelengths_2d:  {uv_wavelengths_2d.shape}        (n_vis, 2)  [shared across channels]")
+print(
+    f"  uv_wavelengths_2d:  {uv_wavelengths_2d.shape}        (n_vis, 2)  [shared across channels]"
+)
 
 """
 __Canonical 3D Shape__
@@ -191,7 +199,9 @@ def dataset_list_from_3d_fits(
 
     # Broadcast 2D shared arrays to (n_chan, n_vis, 2) so the per-channel loop is uniform.
     if noise_map_arr.ndim == 2:
-        noise_map_arr = np.broadcast_to(noise_map_arr[None], visibilities_3d.shape).copy()
+        noise_map_arr = np.broadcast_to(
+            noise_map_arr[None], visibilities_3d.shape
+        ).copy()
     if uv_wavelengths_arr.ndim == 2:
         uv_wavelengths_arr = np.broadcast_to(
             uv_wavelengths_arr[None], visibilities_3d.shape
@@ -229,7 +239,9 @@ if not dataset_path.exists():
     )
 
 real_space_mask = al.Mask2D.circular(
-    shape_native=(256, 256), pixel_scales=0.1, radius=3.5,
+    shape_native=(256, 256),
+    pixel_scales=0.1,
+    radius=3.5,
 )
 
 dataset_list_3d = dataset_list_from_3d_fits(
@@ -259,18 +271,26 @@ assert len(dataset_list_3d) == len(dataset_list_folders), "channel count mismatc
 
 for c, (d3d, dfolder) in enumerate(zip(dataset_list_3d, dataset_list_folders)):
     np.testing.assert_allclose(
-        np.asarray(d3d.data.real), np.asarray(dfolder.data.real),
-        rtol=1e-12, err_msg=f"channel {c}: data.real mismatch",
+        np.asarray(d3d.data.real),
+        np.asarray(dfolder.data.real),
+        rtol=1e-12,
+        err_msg=f"channel {c}: data.real mismatch",
     )
     np.testing.assert_allclose(
-        np.asarray(d3d.data.imag), np.asarray(dfolder.data.imag),
-        rtol=1e-12, err_msg=f"channel {c}: data.imag mismatch",
+        np.asarray(d3d.data.imag),
+        np.asarray(dfolder.data.imag),
+        rtol=1e-12,
+        err_msg=f"channel {c}: data.imag mismatch",
     )
     np.testing.assert_allclose(
-        np.asarray(d3d.uv_wavelengths), np.asarray(dfolder.uv_wavelengths),
-        rtol=1e-12, err_msg=f"channel {c}: uv_wavelengths mismatch",
+        np.asarray(d3d.uv_wavelengths),
+        np.asarray(dfolder.uv_wavelengths),
+        rtol=1e-12,
+        err_msg=f"channel {c}: uv_wavelengths mismatch",
     )
 
-print(f"\n3D-FITS loader and per-channel-folder loader agree on {len(dataset_list_3d)} channels.")
+print(
+    f"\n3D-FITS loader and per-channel-folder loader agree on {len(dataset_list_3d)} channels."
+)
 print(f"  visibilities/channel:  {dataset_list_3d[0].data.shape[0]}")
 print(f"  uv_wavelengths shape:  {np.asarray(dataset_list_3d[0].uv_wavelengths).shape}")

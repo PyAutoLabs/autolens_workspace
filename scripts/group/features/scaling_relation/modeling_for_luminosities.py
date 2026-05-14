@@ -237,16 +237,18 @@ The total luminosity of the galaxy is the sum of `L_g` over all gaussians in its
 
 This is the same formula used by the SLaM pipelines in `source_lp_1` (see `scripts/group/slam.py`).
 """
-fit_tracer = result.max_log_likelihood_fit.tracer_linear_light_profiles_to_light_profiles
+fit_tracer = (
+    result.max_log_likelihood_fit.tracer_linear_light_profiles_to_light_profiles
+)
 
 
 def total_luminosity_from(galaxy):
     return (
         sum(
-            2.0 * np.pi * g.sigma ** 2 / g.axis_ratio() * g.intensity
+            2.0 * np.pi * g.sigma**2 / g.axis_ratio() * g.intensity
             for g in galaxy.bulge.profile_list
         )
-        / pixel_scale ** 2
+        / pixel_scale**2
     )
 
 

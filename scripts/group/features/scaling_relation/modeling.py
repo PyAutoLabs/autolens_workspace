@@ -262,9 +262,7 @@ for scaling_galaxy_centre, scaling_galaxy_luminosity in zip(
 
     mass = af.Model(al.mp.Isothermal)
     mass.centre = tuple(scaling_galaxy_centre)
-    mass.einstein_radius = (
-        scaling_factor * scaling_galaxy_luminosity ** scaling_exponent
-    )
+    mass.einstein_radius = scaling_factor * scaling_galaxy_luminosity**scaling_exponent
 
     scaling_galaxy = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 

@@ -291,7 +291,7 @@ for relational_centre, relational_luminosity in zip(
 
     mass = af.Model(al.mp.Isothermal)
     mass.centre = tuple(relational_centre)
-    mass.einstein_radius = scaling_factor * relational_luminosity ** scaling_exponent
+    mass.einstein_radius = scaling_factor * relational_luminosity**scaling_exponent
 
     extra_galaxies_list.append(
         af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
@@ -323,9 +323,7 @@ __Over Sampling__
 Adaptive over-sampling at every galaxy centre — lens, individually-modelled extras, and scaling-relation extras alike.
 """
 all_centres = (
-    [(0.0, 0.0)]
-    + list(individual_extras_centres)
-    + list(relational_extras_centres)
+    [(0.0, 0.0)] + list(individual_extras_centres) + list(relational_extras_centres)
 )
 
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
