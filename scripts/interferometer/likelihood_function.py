@@ -299,7 +299,7 @@ adds them together.
 For example, for the `bulge`, when it computes their 2D images it computes each individually and then adds
 them together.
 """
-lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+lens_galaxy = al.Galaxy(redshift=0.5, mass=mass, shear=shear)
 
 """
 __Source Galaxy Light Profile__

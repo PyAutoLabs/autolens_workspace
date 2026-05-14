@@ -231,23 +231,16 @@ The full MGE composition API is given in the `features/multi_gaussian_expansion`
 """
 # Lens:
 
-bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius,
-    total_gaussians=20,
-    gaussian_per_basis=2,
-    centre_prior_is_uniform=True,
-)
-
 mass = af.Model(al.mp.Isothermal)
 
 shear = af.Model(al.mp.ExternalShear)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
 
 bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
+    mask_radius=mask_radius, total_gaussians=5, centre_prior_is_uniform=False
 )
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)

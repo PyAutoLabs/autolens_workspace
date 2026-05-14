@@ -157,17 +157,14 @@ https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 """
 # Lens:
 
-bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
-)
 mass = af.Model(al.mp.Isothermal)
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source:
 
 bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
-    total_gaussians=20,
+    total_gaussians=5,
     gaussian_per_basis=1,
     centre_prior_is_uniform=False,
 )

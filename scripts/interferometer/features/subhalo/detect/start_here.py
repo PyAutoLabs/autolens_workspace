@@ -136,7 +136,7 @@ def source_lp(
     analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
 
     source_bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
+        mask_radius=mask_radius, total_gaussians=5, centre_prior_is_uniform=False
     )
 
     model = af.Collection(
@@ -379,54 +379,6 @@ def mass_total(
 
 
 """
-__SUBHALO PIPELINE (no subhalo)__
-
-The first search of the SUBHALO PIPELINE refits the lens model from the MASS TOTAL PIPELINE without a DM subhalo.
-This establishes a Bayesian evidence baseline for model comparison with the fits that include a subhalo.
-"""
-
-
-def subhalo_no_subhalo(
-    settings_search: af.SettingsSearch,
-    dataset,
-    source_pix_result_1: af.Result,
-    mass_result: af.Result,
-    settings,
-    n_batch: int = 20,
-) -> af.Result:
-    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
-        result=source_pix_result_1, use_model_images=True
-    )
-
-    adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
-
-    analysis = al.AnalysisInterferometer(
-        dataset=dataset,
-        adapt_images=adapt_images,
-        positions_likelihood_list=[
-            mass_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
-        ],
-        settings=settings,
-    )
-
-    source = al.util.chaining.source_from(result=mass_result)
-    lens = mass_result.model.galaxies.lens
-
-    model = af.Collection(
-        galaxies=af.Collection(lens=lens, source=source),
-    )
-
-    search = af.Nautilus(
-        name="subhalo[1]",
-        **settings_search.search_dict,
-        n_live=200,
-        n_batch=n_batch,
-    )
-
-    return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
-
-
-"""
 __SUBHALO PIPELINE (grid search)__
 
 The second search of the SUBHALO PIPELINE performs a [number_of_steps x number_of_steps] grid search of
@@ -442,7 +394,6 @@ def subhalo_grid_search(
     dataset,
     source_pix_result_1: af.Result,
     mass_result: af.Result,
-    subhalo_no_subhalo_result: af.Result,
     subhalo_mass: af.Model,
     settings,
     grid_dimension_arcsec: float = 3.0,
@@ -474,13 +425,9 @@ def subhalo_grid_search(
         lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
     )
 
-    subhalo.redshift = subhalo_no_subhalo_result.instance.galaxies.lens.redshift
-    subhalo.mass.redshift_object = (
-        subhalo_no_subhalo_result.instance.galaxies.lens.redshift
-    )
-    subhalo.mass.redshift_source = (
-        subhalo_no_subhalo_result.instance.galaxies.source.redshift
-    )
+    subhalo.redshift = mass_result.instance.galaxies.lens.redshift
+    subhalo.mass.redshift_object = mass_result.instance.galaxies.lens.redshift
+    subhalo.mass.redshift_source = mass_result.instance.galaxies.source.redshift
 
     lens = mass_result.model.galaxies.lens
     source = al.util.chaining.source_from(result=mass_result)
@@ -490,7 +437,7 @@ def subhalo_grid_search(
     )
 
     search = af.Nautilus(
-        name="subhalo[2]_[search_lens_plane]",
+        name="subhalo[1]_[search_lens_plane]",
         **settings_search.search_dict,
         n_live=200,
         n_batch=n_batch,
@@ -528,7 +475,6 @@ def subhalo_refine(
     dataset,
     source_pix_result_1: af.Result,
     mass_result: af.Result,
-    subhalo_no_subhalo_result: af.Result,
     subhalo_grid_search_result: af.Result,
     subhalo_mass: af.Model,
     settings,
@@ -551,14 +497,12 @@ def subhalo_refine(
 
     subhalo = af.Model(
         al.Galaxy,
-        redshift=subhalo_no_subhalo_result.instance.galaxies.lens.redshift,
+        redshift=mass_result.instance.galaxies.lens.redshift,
         mass=subhalo_mass,
     )
 
-    subhalo.redshift = subhalo_no_subhalo_result.instance.galaxies.lens.redshift
-    subhalo.mass.redshift_object = (
-        subhalo_no_subhalo_result.instance.galaxies.lens.redshift
-    )
+    subhalo.redshift = mass_result.instance.galaxies.lens.redshift
+    subhalo.mass.redshift_object = mass_result.instance.galaxies.lens.redshift
     subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
     subhalo.mass.centre = subhalo_grid_search_result.model_centred_absolute(
         a=1.0
@@ -576,7 +520,7 @@ def subhalo_refine(
     )
 
     search = af.Nautilus(
-        name="subhalo[3]_[single_plane_refine]",
+        name="subhalo[2]_[single_plane_refine]",
         **settings_search.search_dict,
         n_live=600,
         n_batch=n_batch,
@@ -756,20 +700,11 @@ mass_result = mass_total(
     settings=settings,
 )
 
-result_no_subhalo = subhalo_no_subhalo(
-    settings_search=settings_search,
-    dataset=dataset_dft_sparse,
-    source_pix_result_1=source_pix_result_1,
-    mass_result=mass_result,
-    settings=settings,
-)
-
 result_subhalo_grid_search = subhalo_grid_search(
     settings_search=settings_search,
     dataset=dataset_dft_sparse,
     source_pix_result_1=source_pix_result_1,
     mass_result=mass_result,
-    subhalo_no_subhalo_result=result_no_subhalo,
     subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
     settings=settings,
     grid_dimension_arcsec=3.0,
@@ -781,7 +716,6 @@ result_with_subhalo = subhalo_refine(
     dataset=dataset_dft_sparse,
     source_pix_result_1=source_pix_result_1,
     mass_result=mass_result,
-    subhalo_no_subhalo_result=result_no_subhalo,
     subhalo_grid_search_result=result_subhalo_grid_search,
     subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
     settings=settings,
