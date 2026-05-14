@@ -93,7 +93,7 @@ simulator = al.SimulatorInterferometer(
     uv_wavelengths=uv_wavelengths,
     exposure_time=300.0,
     noise_sigma=1000.0,
-    transformer_class=al.TransformerNUFFT,
+    transformer_class=al.TransformerDFT,
 )
 
 """
@@ -128,7 +128,7 @@ source_galaxy = al.Galaxy(
     bulge=al.lp.SersicCore(
         centre=(0.0, 0.0),
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
-        intensity=0.3,
+        intensity=10.0,
         effective_radius=1.0,
         sersic_index=2.5,
     ),

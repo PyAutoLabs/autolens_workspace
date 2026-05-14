@@ -98,13 +98,6 @@ Setup the lens galaxy's light, mass and source galaxy light for this simulated l
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
-    bulge=al.lp.Sersic(
-        centre=(0.0, 0.0),
-        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
-        intensity=1.0,
-        effective_radius=0.8,
-        sersic_index=4.0,
-    ),
     mass=al.mp.Isothermal(
         centre=(0.0, 0.0),
         einstein_radius=1.6,

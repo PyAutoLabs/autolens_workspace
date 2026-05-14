@@ -486,7 +486,7 @@ def source_lp(
     analysis = al.AnalysisInterferometer(dataset=dataset)
 
     source_bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
+        mask_radius=mask_radius, total_gaussians=5, centre_prior_is_uniform=False
     )
 
     model = af.Collection(
