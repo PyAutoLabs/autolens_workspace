@@ -1,0 +1,37 @@
+# Known broken URLs grandfathered for url_check_live.sh.
+# Format: one URL per line. Lines starting with '#' and blank lines are ignored.
+# Sample location follows each URL as a trailing comment.
+#
+# This file is referenced by .github/workflows/url_check.yml (weekly cron).
+# url_check_live.sh fails CI when a URL is broken AND not in this file.
+# To accept new breakage: append the URL here. To force a fix: leave it out.
+
+# Academic citations (paywall / DOI / journal)
+https://academic.oup.com/mnras/article-abstract/478/4/4738/5001434?redirectedFrom=fulltext  # CITATIONS.md:11
+https://academic.oup.com/mnras/article/452/3/2940/1749640  # CITATIONS.md:11
+https://academic.oup.com/mnras/article/488/1/1387/5526256  # CITATIONS.md:22
+
+# Code of Conduct boilerplate
+http://geekfeminism.wikia.com/wiki/Conference_anti-harassment/Policy  # CODE_OF_CONDUCT.md:305
+
+# External dead / paywalled / departmental pages
+https://acszeropoints.stsci.edu  # scripts/guides/units/flux.py:220
+
+# GitHub refs (workspaces / removed tutorials)
+https://github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/inversion/mappers/voronoi.py  # scripts/imaging/features/pixelization/delaunay.py:1471
+https://github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/structures/grids/two_d/grid_iterate.py  # scripts/imaging/features/pixelization/delaunay.py:1461
+https://github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/util/mapper_util.py  # scripts/imaging/features/pixelization/delaunay.py:1474
+https://github.com/PyAutoLabs/PyAutoGalaxy/blob/main/autogalaxy/operate/deflections.py  # scripts/guides/tracer.py:496
+https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/advanced/guides/modeling/chaining.ipynb  # scripts/guides/modeling/cookbook.py:401
+https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/modeling/features/multi_gaussian_expansion.ipynb  # scripts/guides/modeling/cookbook.py:392
+https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/modeling/features/shapelets.ipynb  # scripts/guides/modeling/cookbook.py:393
+https://github.com/PyAutoLabs/autolens_workspace_large_files  # scripts/interferometer/simulator.py:253
+
+# Internal image refs missing from main
+https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_1_lensing/schematic.jpg  # start_here.ipynb:15
+https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/g_image.png  # start_here.ipynb:641
+https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/r_image.png  # start_here.ipynb:643
+
+# Third-party readthedocs (dynesty / nautilus / sphinx / etc.)
+https://dynesty-sampler.readthedocs.io/en/latest/api.html#module-Dynesty.plotting  # scripts/guides/plot/examples/searches.py:138
+https://dynesty-sampler.readthedocs.io/en/latest/quickstart.html  # scripts/guides/plot/examples/searches.py:137
