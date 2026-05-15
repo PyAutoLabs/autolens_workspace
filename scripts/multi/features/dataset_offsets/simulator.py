@@ -13,9 +13,9 @@ These offsets are often accounted for during the data reduction process, which a
  - Even if the reduction process does align the images, there is still a small uncertainty in the offset due to the
    precision of the telescope pointing which for detailed lens models must be accounted for.
 
-This script simulate a multi-wavelength `Imaging` dataset where the two images have a small offset between them. This
-offset impacts the lensing calculation and modeling if not accounted for. It is used in the `modeling` examples to show
-how to include the offset as a free parameter in the model-fit.
+This script simulates a multi-wavelength `Imaging` dataset where the two images have a small offset and a small
+relative rotation between them. Both impact the lensing calculation and modeling if not accounted for. The
+`modeling` examples show how to include both as free parameters of a `DatasetModel`.
 
 __Contents__
 
@@ -103,6 +103,16 @@ __Offset__
 Offset the second grid from the first grid by the pixel scale in both the y and x directions.
 """
 grid_list[1] -= pixel_scales_list[1]
+
+"""
+__Rotation__
+
+In addition to the small offset, rotate the second grid by 1.5 degrees counter-clockwise about its
+offset point. This emulates a small roll-angle difference between two multi-band exposures (e.g. JWST
+NIRCam frames acquired at slightly different telescope orientations). The modeling script recovers this
+via the `DatasetModel.grid_rotation_angle` parameter alongside `grid_offset`.
+"""
+grid_list[1] = grid_list[1].subtracted_and_rotated_from(offset=(0.0, 0.0), angle=1.5)
 
 """
 Simulate simple Gaussian PSFs for the images in the r and g bands.

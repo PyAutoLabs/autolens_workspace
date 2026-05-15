@@ -13,13 +13,14 @@ These offsets are often accounted for during the data reduction process, which a
  - Even if the reduction process does align the images, there is still a small uncertainty in the offset due to the
    precision of the telescope pointing which for detailed lens models must be accounted for.
 
-This script shows how to include an offset in the model, which is two free parameters, the y and x offsets, for every
-additional dataset after the first dataset. The offset therefore describes the offset of each dataset in the
-multi-wavelength dataset relative to the first dataset.
+This script shows how to include both an offset (two free parameters: y and x shifts) and a rotation (one free
+parameter: roll angle in degrees) in the model for every additional dataset after the first. Together these
+describe the rigid-body misalignment of each dataset relative to the reference (first) dataset, which is the
+common pattern for multi-band space-telescope data (e.g. JWST NIRCam frames at slightly different roll angles).
 
-To apply the offset, the code simply subtracts the offset from the grids aligned to the dataset pixels before performing
-lensing calculations. This means that the light and mass model centres do not change when the offset is applied, only
-the coordinates of the image pixels which are input into these profiles to compute the images.
+To apply the misalignment, the code subtracts the offset from the grids aligned to the dataset pixels and then
+rotates them about the offset point before performing lensing calculations. The light and mass model centres
+do not change; only the coordinates of the image pixels input into these profiles are transformed.
 
 __Contents__
 
@@ -171,8 +172,8 @@ __Model__
 
 We compose a lens model where:
 
- - Parameters which shift the second dataset's image (y_offset_0, x_offset_0) relative to the first dataset's image
- are included via the `DatasetModel` object [2 parameters].
+ - Parameters which shift (y_offset_0, x_offset_0) and rotate (grid_rotation_angle) the second dataset's image
+ relative to the first dataset's image are included via the `DatasetModel` object [3 parameters].
 
  - The lens galaxy's light is an MGE with 1 x 20 Gaussians [6 parameters].
 
@@ -180,7 +181,7 @@ We compose a lens model where:
 
  - The source galaxy's light is an MGE with 1 x 20 Gaussians [4 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=23.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=24.
 """
 bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
@@ -235,6 +236,10 @@ for i, analysis in enumerate(analysis_list):
         )
         model_analysis.dataset_model.grid_offset.grid_offset_1 = af.UniformPrior(
             lower_limit=-1.0, upper_limit=1.0
+        )
+        # Roll-angle misalignment between exposures (degrees, CCW about the offset point).
+        model_analysis.dataset_model.grid_rotation_angle = af.UniformPrior(
+            lower_limit=-5.0, upper_limit=5.0
         )
 
     analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
