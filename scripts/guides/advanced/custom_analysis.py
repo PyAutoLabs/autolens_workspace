@@ -78,18 +78,18 @@ __Example Analysis Class__
 The `Analysis` classes available in **PyAutoLens** are actually located in both **PyAutoLens** and its parent 
 package, **PyAutoGalaxy**: 
 
- https://github.com/Jammy2211/PyAutoGalaxy
- https://github.com/Jammy2211/PyAutoLens
+ https://github.com/PyAutoLabs/PyAutoGalaxy
+ https://github.com/PyAutoLabs/PyAutoLens
 
 All classes used for lens modeling are found in the following packages:
 
- https://github.com/Jammy2211/PyAutoGalaxy/tree/main/autogalaxy/imaging/model
- https://github.com/Jammy2211/PyAutoLens/tree/main/autolens/imaging/model
+ https://github.com/PyAutoLabs/PyAutoGalaxy/tree/main/autogalaxy/imaging/model
+ https://github.com/PyAutoLabs/PyAutoLens/tree/main/autolens/imaging/model
 
 The `AnalysisImaging` classes are found in the following modules:
 
- https://github.com/Jammy2211/PyAutoGalaxy/blob/main/autogalaxy/imaging/model/analysis.py
- https://github.com/Jammy2211/PyAutoLens/blob/main/autolens/imaging/model/analysis.py
+ https://github.com/PyAutoLabs/PyAutoGalaxy/blob/main/autogalaxy/imaging/model/analysis.py
+ https://github.com/PyAutoLabs/PyAutoLens/blob/main/autolens/imaging/model/analysis.py
 
 __Lens Model__
 

@@ -486,7 +486,7 @@ __Lens Modeling__
 To fit a lens model to data, the likelihood function illustrated in this tutorial is sampled using a
 non-linear search algorithm.
 
-The default sampler is the nested sampling algorithm `nautilus` (https://github.com/joshspeagle/nautilus)
+The default sampler is the nested sampling algorithm `nautilus` (https://github.com/johannesulf/nautilus)
 multiple MCMC and optimization algorithms are supported.
 
 __Wrap Up__

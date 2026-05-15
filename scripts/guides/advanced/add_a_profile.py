@@ -51,22 +51,22 @@ __Example Mass Profile__
 
 The mass profiles available in **PyAutoLens** are located in its parent package, **PyAutoGalaxy**: 
 
- https://github.com/Jammy2211/PyAutoGalaxy
+ https://github.com/PyAutoLabs/PyAutoGalaxy
 
 All light and mass profiles are found in the following python package:
 
- https://github.com/Jammy2211/PyAutoGalaxy/tree/main/autogalaxy/profiles
+ https://github.com/PyAutoLabs/PyAutoGalaxy/tree/main/autogalaxy/profiles
 
 Mass profiles are in the following package:
 
- https://github.com/Jammy2211/PyAutoGalaxy/tree/main/autogalaxy/profiles/mass
+ https://github.com/PyAutoLabs/PyAutoGalaxy/tree/main/autogalaxy/profiles/mass
 
 Lets look at an example mass profile. We'll use the `Isothermal` profile, which is located in the `total` package
 because it represents a total (stars + dark matter) mass distribution:
 
- https://github.com/Jammy2211/PyAutoGalaxy/tree/main/autogalaxy/profiles/mass/total
+ https://github.com/PyAutoLabs/PyAutoGalaxy/tree/main/autogalaxy/profiles/mass/total
 
- https://github.com/Jammy2211/PyAutoGalaxy/blob/main/autogalaxy/profiles/mass/total/isothermal.py
+ https://github.com/PyAutoLabs/PyAutoGalaxy/blob/main/autogalaxy/profiles/mass/total/isothermal.py
 
 For simplicity, a shortened version of the `Isothermal` profile is shown below. 
 
@@ -223,7 +223,7 @@ __Inheritance (MassProfile)__
 All mass profiles in **PyAutoLens** inherit from the `MassProfile` abstract base class, which is located in the
 following package:
 
- https://github.com/Jammy2211/PyAutoGalaxy/blob/main/autogalaxy/profiles/mass/abstract/abstract.py
+ https://github.com/PyAutoLabs/PyAutoGalaxy/blob/main/autogalaxy/profiles/mass/abstract/abstract.py
 
 This contains functions which are useful for any mass profile, which your custom mass profile will inherit.
 
@@ -234,7 +234,7 @@ __Inheritance (GeometryProfile)__
 
 The `MassProfile` class inherits from the `GeometryProfile` abstract base class, which is located here:
 
- https://github.com/Jammy2211/PyAutoGalaxy/blob/main/autogalaxy/profiles/geometry_profiles.py
+ https://github.com/PyAutoLabs/PyAutoGalaxy/blob/main/autogalaxy/profiles/geometry_profiles.py
 
 This contains functions which are useful for any elliptical (and spherical) profile, which your custom 
 mass profile will again inherit (e.g. `radial_grid_from`).
@@ -254,7 +254,7 @@ angles of a mass profile.
 Mass profiles therefore also inherit from the `OperateDeflections` abstract base class, which contains numerous 
 functions for computing these lensing quantities from the deflection angles. This is located here:
 
-https://github.com/Jammy2211/PyAutoGalaxy/blob/main/autogalaxy/operate/deflections.py
+https://github.com/PyAutoLabs/PyAutoGalaxy/blob/main/autogalaxy/operate/deflections.py
 
 This means that once you've implemented a deflections angles calculation for your mass profile, you can compute all
 lensing quantities from it without having to write any additional code!

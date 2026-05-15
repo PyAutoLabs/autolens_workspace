@@ -7,7 +7,7 @@ appears multiple times because its light is bent by the gravitational field of a
 
 Here is a schematic of a strong gravitational lens:
 
-![Schematic of Gravitational Lensing](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_1_lensing/schematic.jpg)
+![Schematic of Gravitational Lensing](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_1_lensing/schematic.jpg)
 **Credit: F. Courbin, S. G. Djorgovski, G. Meylan, et al., Caltech / EPFL / WMKO**
 https://www.astro.caltech.edu/~george/qsolens/
 
@@ -418,7 +418,7 @@ The image below shows a pixelized source reconstruction of the strong lens SLACS
 reconstructed on a Voronoi mesh adapted to the source morphology, revealing it to be a grand-design face on spiral
 galaxy:
 
-![Pixelized Source](https://github.com/Jammy2211/PyAutoLens/blob/main/files/imageaxis.png?raw=true)
+![Pixelized Source](https://github.com/PyAutoLabs/PyAutoLens/blob/main/files/imageaxis.png?raw=true)
 
 A complete overview of pixelized source reconstructions can be found
 at `notebooks/overview/overview_5_pixelizations.ipynb`.
@@ -437,11 +437,11 @@ surface brightness distribution.
 Instead, we assume that our source is a point source with a centre (y,x), and ray-trace triangles at iteratively
 higher resolutions to determine the source's exact locations in the image-plane:
 
-<img src="https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_0.png" width="200">
-<img src="https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_1.png" width="200">
-<img src="https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_2.png" width="200">
-<img src="https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_3.png" width="200">
-<img src="https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/point_4.png" width="200">
+<img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/point_0.png" width="200">
+<img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/point_1.png" width="200">
+<img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/point_2.png" width="200">
+<img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/point_3.png" width="200">
+<img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/point_4.png" width="200">
 
 Note that the image positions above include the fifth central image of the strong lens, which is often not seen in 
 strong lens imaging data. It is easy to disable this image in the point source modeling.
@@ -452,7 +452,7 @@ __Interferometry__
 
 Modeling of interferometer data from submillimeter (e.g. ALMA) and radio (e.g. LOFAR) observatories:
 
-![ALMA Image](https://raw.githubusercontent.com/Jammy2211/PyAutoGalaxy/main/paper/almacombined.png)
+![ALMA Image](https://raw.githubusercontent.com/PyAutoLabs/PyAutoGalaxy/main/paper/almacombined.png)
 
 Visibilities data is fitted directly in the uv-plane, circumventing issues that arise when fitting a dirty image
 such as correlated noise. This uses the non-uniform fast fourier transform algorithm
@@ -465,7 +465,7 @@ __Multi Gaussian Expansion (MGE)__
 
 An MGE decomposes the light of a galaxy into tens or hundreds of two dimensional Gaussians:
 
-![MGE](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/mge.png)
+![MGE](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/mge.png)
 
 In the image above, 30 Gaussians are shown, where their sizes go from below the pixel scale (in order to resolve
 point emission) to beyond the size of the galaxy (to capture its extended emission).
@@ -487,7 +487,7 @@ __Groups__
 The strong lenses we've discussed so far have just a single lens galaxy responsible for the lensing. Group-scale
 strong lenses are systems where there two or more  lens galaxies deflecting one or more background sources:
 
-![Group](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/group.png)
+![Group](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/group.png)
 
 **PyAutoLens** has built in tools for modeling group-scale lenses, with no limit on the number of
 lens and source galaxies!
@@ -501,9 +501,9 @@ __Multi-Wavelength__
 Modeling imaging datasets observed at different wavelengths (e.g. HST F814W and F150W) simultaneously or simultaneously
 analysing imaging and interferometer data:
 
-![g-band](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/g_image.png)
+![g-band](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/g_image.png)
 
-![r-band](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/r_image.png)
+![r-band](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/r_image.png)
 
 The appearance of the strong changes as a function of wavelength, therefore multi-wavelength analysis means we can learn
 more about the different components in a galaxy (e.g a redder bulge and bluer disk) or when imaging and interferometer
@@ -518,7 +518,7 @@ __Ellipse Fitting__
 Ellipse fitting is a technique which fits many ellipses to a galaxy's emission to determine its ellipticity, position
 angle and centre, without assuming a parametric form for its light (e.g. like a Seisc profile):
 
-![ellipse](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/main/docs/overview/images/overview_3/ellipse.png)
+![ellipse](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/ellipse.png)
 
 This provides complementary information to parametric light profile fitting, for example giving insights on whether
 the ellipticity and position angle are constant with radius or if the galaxy's emission is lopsided. 
