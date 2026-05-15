@@ -118,7 +118,7 @@ The preprocess module contains example functions for computing noise-maps, which
 from the data you currently have (if it is not already RMS values including the Poisson noise contribution and
 background sky contribution).
 
-https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/dataset/preprocess.py
+https://github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/dataset/preprocess.py
 
 Functions related to the noise map are:
 

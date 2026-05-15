@@ -1447,7 +1447,7 @@ __Lens Modeling__
 To fit a lens model to data, the likelihood function illustrated in this tutorial is sampled using a
 non-linear search algorithm.
 
-The default sampler is the nested sampling algorithm `Nautilus` (https://github.com/joshspeagle/Nautilus)
+The default sampler is the nested sampling algorithm `Nautilus` (https://github.com/johannesulf/nautilus)
 multiple MCMC and optimization algorithms are supported.
 
 __Sub Gridding__
@@ -1458,7 +1458,7 @@ evaluate the light profile flux at every image pixel.
 **PyAutoLens** has alternative methods of computing the lens galaxy images above, which uses a grid whose sub-size
 adaptively increases depending on a required fractional accuracy of the light profile.
 
- https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/structures/grids/two_d/grid_iterate.py
+ https://github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/structures/grids/two_d/grid_iterate.py
 
 __Sourrce Plane Interpolation__
 
@@ -1468,10 +1468,10 @@ can map to multiple source pixels with an interpolation weight (e.g. `Delaunay` 
 which uses natural neighbor interpolation).
 
 `MapperVoronoiNoInterp.pix_index_for_sub_slim_index`:
-https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/inversion/mappers/voronoi.py
+https://github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/inversion/mappers/voronoi.py
 
 `pixelization_index_for_voronoi_sub_slim_index_from`:
- https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/util/mapper_util.py
+ https://github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/util/mapper_util.py
 
 The number of pixels that each sub-pixel maps too is also stored and extracted. This is used for speeding up
 the calculation of the `mapping_matrix` described next.

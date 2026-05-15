@@ -120,7 +120,7 @@ __High Resolution Dataset__
 A high-resolution `uv_wavelengths` file for ALMA is available in a separate repository that hosts large files which
 are too big to include in the main `autolens_workspace` repository:
 
-https://github.com/Jammy2211/autolens_workspace_large_files
+https://github.com/PyAutoLabs/autolens_workspace_large_files
 
 After downloading the file, place it in the directory:
 

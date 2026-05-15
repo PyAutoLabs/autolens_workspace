@@ -205,7 +205,7 @@ functions in the `preprocess` module that can estimate and subtract the backgrou
 
 The preprocess module is found here:
 
-https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/dataset/preprocess.py
+https://github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/dataset/preprocess.py
 
 Functions related to background subtraction are:
 

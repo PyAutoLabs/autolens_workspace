@@ -493,7 +493,7 @@ Many more quantities are shown below.
 
 A full description of each can be found in the docstring of the source code of each function:
 
-   https://github.com/Jammy2211/PyAutoGalaxy/blob/main/autogalaxy/operate/deflections.py
+   https://github.com/PyAutoLabs/PyAutoGalaxy/blob/main/autogalaxy/operate/deflections.py
 """
 tangential_critical_curve = lens_calc.tangential_critical_curve_list_from(grid=grid)
 

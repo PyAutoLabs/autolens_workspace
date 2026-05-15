@@ -119,11 +119,11 @@ cd $HOME/PyAuto
 Clone all required repositories:
 
 ```
-git clone https://github.com/rhayes777/PyAutoConf
-git clone https://github.com/rhayes777/PyAutoFit
-git clone https://github.com/Jammy2211/PyAutoArray
-git clone https://github.com/Jammy2211/PyAutoGalaxy
-git clone https://github.com/Jammy2211/PyAutoLens
+git clone https://github.com/PyAutoLabs/PyAutoConf
+git clone https://github.com/PyAutoLabs/PyAutoFit
+git clone https://github.com/PyAutoLabs/PyAutoArray
+git clone https://github.com/PyAutoLabs/PyAutoGalaxy
+git clone https://github.com/PyAutoLabs/PyAutoLens
 ```
 
 ## 9. Install Python Dependencies
