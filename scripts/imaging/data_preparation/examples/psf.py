@@ -126,7 +126,7 @@ the convolution routine which can lead to systematics in the lens analysis.
 
 The preprocess module contains functions for converting an even-sized PSF to an odd-sized PSF.
 
-https://github.com/Jammy2211/PyAutoArray/blob/main/autoarray/dataset/preprocess.py
+https://github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/dataset/preprocess.py
 
 - `psf_with_odd_dimensions_from`
 

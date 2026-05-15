@@ -64,7 +64,7 @@ __Ray Tracing__
 
 Multi-plane ray tracing is implemented in the `tracer_util.py` module of the following package:
 
-https://github.com/Jammy2211/PyAutoLens/blob/main/autolens/lens/tracer_util.py
+https://github.com/PyAutoLabs/PyAutoLens/blob/main/autolens/lens/tracer_util.py
 
 It uses the function `traced_grid_2d_list_from`.
 
