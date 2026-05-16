@@ -7,6 +7,29 @@ dark matter and other components combined). This typically uses an `Isothermal` 
 
 This script fits a mass model which decomposes the lens galaxy's mass into its stars and dark matter.
 
+__Practical Use: Read This First__
+
+This script is a tutorial. It produces a working fit by "cheating" — every prior is initialised at the true
+simulator value, narrowed by a small Gaussian. On real data this is impossible, and a single Nautilus search on
+a decomposed stellar + dark matter mass model would almost certainly converge to a local maximum. The mass-to-light
+coupling between the lens light and its stellar mass component makes the parameter degeneracies more severe than
+in total-mass fits: when the M/L ratio drifts, the stellar mass deflection drifts with it, and the dark NFW
+component has to absorb the slack — these directions are hard for a non-linear search to disentangle without a
+good starting point.
+
+The script you will actually use to fit a decomposed-mass model on real data is
+`autolens_workspace/scripts/imaging/features/advanced/mass_stellar_dark/chaining.py`, which runs two chained
+non-linear searches: the first fits the lens light alone (treating it as a pure light profile), the second
+introduces the stellar-mass coupling by re-using the bulge result as a `lmp.Sersic` and adds the dark NFW. This
+gives the second search a tight prior on the bulge geometry, which is the parameter set most strongly tied to
+the stellar mass deflection.
+
+For production-quality modeling, see `slam.py` in the same directory, which uses the `MASS_LIGHT_DARK` SLaM
+pipeline to chain through SOURCE LP → SOURCE PIX → LIGHT LP → MASS_LIGHT_DARK and ends with a pixelized source
+reconstruction.
+
+Read this script to understand the model composition API, then jump to `chaining.py`.
+
 __Contents__
 
 - **Advantages & Disadvantages:** Decomposed mass models measure direct properties of the stars and dark matter, for example the.
