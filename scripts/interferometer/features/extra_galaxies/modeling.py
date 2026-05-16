@@ -240,7 +240,7 @@ search = af.Nautilus(
     iterations_per_quick_update=20000,
 )
 
-analysis = al.AnalysisInterferometer(dataset=dataset)
+analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
 
 """
 __VRAM__

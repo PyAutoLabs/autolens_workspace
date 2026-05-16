@@ -96,7 +96,7 @@ def source_lp(
     redshift_source,
     n_batch=50,
 ):
-    analysis = al.AnalysisImaging(dataset=dataset)
+    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
     # Source MGE
     source_bulge = al.model_util.mge_model_from(
@@ -220,6 +220,7 @@ def source_pix_1(
                 factor=2.0, positions=positions, minimum_threshold=0.2
             )
         ],
+        use_jax=True,
     )
 
     n_lenses = sum(
@@ -344,6 +345,7 @@ def source_pix_2(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
+        use_jax=True,
     )
 
     n_lenses = sum(
@@ -439,6 +441,7 @@ def mass_total(
                 factor=3.0, positions=positions, minimum_threshold=0.2
             )
         ],
+        use_jax=True,
     )
 
     source = al.util.chaining.source_from(result=source_pix_result_2)
