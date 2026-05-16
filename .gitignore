@@ -11,8 +11,10 @@ dataset/**
 !dataset/imaging/cosmos_web_ring/**
 !dataset/imaging/slacs1430+4105/**
 !dataset/imaging/double_einstein_ring/**
+!dataset/imaging/mass_stellar_dark/**
 !dataset/group/102021990_NEG650312660474055399/**
 !dataset/group/double_einstein_ring/**
+!dataset/group/mass_stellar_dark/**
 !dataset/interferometer/uv_wavelengths/**
 !dataset/imaging/los_halos/los_halo_list.npy
 !dataset/imaging/los_halos/los_sheet_values.npy
