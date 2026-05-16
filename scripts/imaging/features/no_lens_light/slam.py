@@ -74,7 +74,7 @@ def source_lp(
     redshift_source: float,
     n_batch: int = 50,
 ) -> af.Result:
-    analysis = al.AnalysisImaging(dataset=dataset)
+    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
     source_bulge = al.model_util.mge_model_from(
         mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
@@ -136,6 +136,7 @@ def source_pix_1(
                 factor=3.0, minimum_threshold=0.2
             )
         ],
+        use_jax=True,
     )
 
     mass = al.util.chaining.mass_from(
@@ -201,6 +202,7 @@ def source_pix_2(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
+        use_jax=True,
     )
 
     model = af.Collection(
@@ -259,6 +261,7 @@ def mass_total(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
+        use_jax=True,
     )
 
     mass = al.util.chaining.mass_from(

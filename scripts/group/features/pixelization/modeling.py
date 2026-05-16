@@ -275,6 +275,7 @@ analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
     settings=al.Settings(use_mixed_precision=True),
+    use_jax=True,
 )
 
 """

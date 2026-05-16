@@ -265,7 +265,7 @@ The analysis receives a list of `PositionsLH` objects, which allows us to use mu
 penalty, for example if there source has multiple sets of multiple images which we know how they map to one another.
 """
 analysis = al.AnalysisImaging(
-    dataset=dataset, positions_likelihood_list=[positions_likelihood]
+    dataset=dataset, positions_likelihood_list=[positions_likelihood], use_jax=True
 )
 
 """

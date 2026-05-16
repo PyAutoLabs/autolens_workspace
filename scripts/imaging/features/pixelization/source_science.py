@@ -420,6 +420,7 @@ positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 analysis = al.AnalysisImaging(
     dataset=dataset,
     positions_likelihood_list=[positions_likelihood],
+    use_jax=True,
 )
 
 result = search.fit(model=model, analysis=analysis)

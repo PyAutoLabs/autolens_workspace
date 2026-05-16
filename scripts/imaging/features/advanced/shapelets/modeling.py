@@ -343,6 +343,7 @@ analysis = al.AnalysisImaging(
     dataset=dataset,
     positions_likelihood_list=[positions_likelihood],
     settings=al.Settings(use_positive_only_solver=False),
+    use_jax=True,
 )
 
 """

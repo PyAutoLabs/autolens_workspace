@@ -132,7 +132,7 @@ def source_lp_0(
     redshift_lens,
     n_batch=50,
 ):
-    analysis = al.AnalysisImaging(dataset=dataset)
+    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
     # --- main lens light models (one per centre, light only) ---
     lens_dict = {}
@@ -232,6 +232,7 @@ def source_lp_1(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
+        use_jax=True,
     )
 
     n_main = sum(
@@ -438,6 +439,7 @@ def source_pix_1(
                 factor=2.0, positions=positions, minimum_threshold=0.2
             )
         ],
+        use_jax=True,
     )
 
     n_lenses = sum(
@@ -569,6 +571,7 @@ def source_pix_2(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
+        use_jax=True,
     )
 
     n_lenses = sum(
@@ -642,6 +645,7 @@ def light_lp(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
+        use_jax=True,
     )
 
     n_lenses = sum(
@@ -820,6 +824,7 @@ def mass_total(
                 factor=3.0, positions=positions, minimum_threshold=0.2
             )
         ],
+        use_jax=True,
     )
 
     source = al.util.chaining.source_from(result=source_pix_result_2)
