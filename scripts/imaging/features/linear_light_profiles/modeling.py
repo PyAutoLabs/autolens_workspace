@@ -44,7 +44,7 @@ can therefore fit models more reliably and faster!
 
 __Disadvantages__
 
-Althought the computation time of the inversion is small, it is not non-negligable. It is approximately 3-4x slower
+Although the computation time of the inversion is small, it is not non-negligible. It is approximately 3-4x slower
 than using a standard light profile.
 
 The gains in run times due to the simpler non-linear parameter space therefore are somewhat balanced by the slower
@@ -52,7 +52,7 @@ likelihood calculation.
 
 __Positive Only Solver__
 
-Many codes which use linear algebra typically rely on a linear algabra solver which allows for positive and negative
+Many codes which use linear algebra typically rely on a linear algebra solver which allows for positive and negative
 values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
 
 This is problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
@@ -206,7 +206,7 @@ print(model.info)
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start_here.py` for a
 full description).
 
 In the `start_here.py` example 150 live points (`n_live=150`) were used to sample parameter space. For the linear
@@ -247,7 +247,7 @@ This is still fast, but it does mean that the fit may take around five times lon
 
 However, because two free parameters have been removed from the model (the `intensity` of the lens bulge and 
 source bulge), the total number of likelihood evaluations will reduce. Furthermore, the simpler parameter space
-likely means that the fit will take less than 10000 per free parameter to converge. This is aided further
+likely means that the fit will take less than 10000 likelihood evaluations per free parameter to converge. This is aided further
 by the reduction in `n_live` to 100.
 
 Fits using standard light profiles and linear light profiles therefore take roughly the same time to run. However,
@@ -357,43 +357,43 @@ This `Inversion` can be used to plot the reconstructed image of specifically all
 """
 __Linear Objects (Internal Source Code)__
 
-An `Inversion` contains all of the linear objects used to reconstruct the data in its `linear_obj_list`. 
+An `Inversion` contains all of the linear objects used to reconstruct the data in its `linear_obj_list`.
 
 This list may include the following objects:
 
- - `LightProfileLinearObjFuncList`: This object contains lists of linear light profiles and the functionality used
- by them to reconstruct data in an inversion. For example it may only contain a list with a single light profile
- (e.g. `lp_linear.Sersic`) or many light profiles combined in a `Basis` (e.g. `lp_basis.Basis`).
+ - `LightProfileLinearObjFuncList`: Holds a list of linear light profiles and the functionality used to
+   reconstruct data in an inversion. It may contain a single light profile (e.g. `lp_linear.Sersic`) or
+   many light profiles combined in a `Basis` (e.g. `lp_basis.Basis`).
 
-- `Mapper`: The linear objected used by a `Pixelization` to reconstruct data via an `Inversion`, where the `Mapper` 
-is specific to the `Pixelization`'s `Mesh` (e.g. a `RectnagularMapper` is used for a `RectangularAdaptDensity` mesh).
+ - `Mapper`: The linear object used by a `Pixelization` to reconstruct data via an `Inversion`. The `Mapper`
+   is specific to the `Pixelization`'s `Mesh` (e.g. a `RectangularMapper` is used for a `RectangularAdaptDensity`
+   mesh).
 
-In this example, two linear objects were used to fit the data:
-
- - An `Sersic` linear light profile for the source galaxy.
- ` A `Basis` containing 5 Gaussians for the lens galaxly's light. 
+In this example, the model uses one linear `Sersic` for the lens galaxy's bulge and one linear `SersicCore`
+for the source galaxy's bulge. The inversion therefore has two `LightProfileLinearObjFuncList` entries —
+one for each plane (lens at the image-plane grid, source at the ray-traced source-plane grid).
 """
 print(inversion.linear_obj_list)
 
 """
-To extract results from an inversion many quantities will come in lists or require that we specific the linear object
-we with to use. 
+To extract results from an inversion many quantities come in lists or require us to specify the linear object
+we wish to use. Knowing what linear objects are in the `linear_obj_list`, and what indexes they correspond to,
+is therefore important.
 
-Thus, knowing what linear objects are contained in the `linear_obj_list` and what indexes they correspond to
-is important.
+The lens-plane entry comes first, followed by the source-plane entry.
 """
-print(f"LightProfileLinearObjFuncList (Basis) = {inversion.linear_obj_list[0]}")
-print(f"LightProfileLinearObjFuncList (Sersic) = {inversion.linear_obj_list[1]}")
+print(f"LightProfileLinearObjFuncList (Lens Sersic)       = {inversion.linear_obj_list[0]}")
+print(f"LightProfileLinearObjFuncList (Source SersicCore) = {inversion.linear_obj_list[1]}")
 
 """
-Each of these `LightProfileLinearObjFuncList` objects contains its list of light profiles, which for the
-`Sersic` is a single entry whereas for the `Basis` is 5 Gaussians.
+Each `LightProfileLinearObjFuncList` contains a `light_profile_list`. For both entries in this example the
+list has a single light profile.
 """
 print(
-    f"Linear Light Profile list (Basis -> x5 Gaussians) = {inversion.linear_obj_list[0].light_profile_list}"
+    f"Linear Light Profile list (Lens Sersic)       = {inversion.linear_obj_list[0].light_profile_list}"
 )
 print(
-    f"Linear Light Profile list (Sersic) = {inversion.linear_obj_list[1].light_profile_list}"
+    f"Linear Light Profile list (Source SersicCore) = {inversion.linear_obj_list[1].light_profile_list}"
 )
 
 """
