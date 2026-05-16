@@ -129,14 +129,15 @@ image = tracer.image_2d_from(grid=masked_dataset.grids.lp)
 """
 __Linear Light Profiles__
 
-To use a linear light profile, whose `intensity` is computed via linear algebra, we simply use the `lp_Linear`
+To use a linear light profile, whose `intensity` is computed via linear algebra, we simply use the `lp_linear`
 module instead of the `lp` module used throughout other example scripts. 
 
 The `intensity` parameter of the light profile is no longer passed into the light profiles created via the
 `lp_linear` module, as it is inferred via linear algebra.
 
-In this example, we assume our galaxy is composed of two light profiles, an elliptical Sersic and Exponential (a Sersic
-where `sersic_index=4`) which represent the bulge and disk of the galaxy. 
+In this example, the lens galaxy has a linear `Sersic` bulge and the source galaxy has a linear `SersicCore` bulge.
+Both are linear light profiles, so their `intensity` parameters are not free parameters of the model — they are
+solved for via linear algebra.
 """
 bulge = al.lp_linear.Sersic(
     centre=(0.0, 0.0),
@@ -169,29 +170,21 @@ source_galaxy = al.Galaxy(
 Internally in the source code, linear light profiles have an `intensity` parameter, but its value is always set to 
 1.0. It will be clear why this is later in the script.
 """
-print("Bulge Internal Intensity:")
+print("Lens Bulge Internal Intensity:")
 print(lens_galaxy.bulge.intensity)
 
-print("Disk Internal Intensity:")
+print("Source Bulge Internal Intensity:")
 print(source_galaxy.bulge.intensity)
 
 """
 Like standard light profiles, we can compute images of each linear light profile, but their overall
 normalization is arbitrary given that the internal `intensity` value of 1.0 is used.
-"""
-image_2d_bulge = lens_galaxy.bulge.image_2d_from(grid=masked_dataset.grid)
-image_2d_disk = source_galaxy.bulge.image_2d_from(grid=masked_dataset.grid)
 
+Note the source bulge image computed below is its source-plane image (i.e. before lensing); its lensed image
+that contributes to the data is computed inside `LightProfileLinearObjFuncList` further below.
 """
-If we try and plot a linear light profile using a plotter, an exception is raised.
-
-This is to ensure that a user does not plot and interpret the intensity of a linear light profile, as it is not a
-physical quantity. Plotting only works after a linear light profile has had its `intensity` computed via linear
-algebra.
-
-Uncomment and run the code below to see the exception.
-"""
-print("This will raise an exception")
+image_2d_lens_bulge = lens_galaxy.bulge.image_2d_from(grid=masked_dataset.grid)
+image_2d_source_bulge = source_galaxy.bulge.image_2d_from(grid=masked_dataset.grid)
 
 
 """
@@ -249,7 +242,7 @@ Printing the first column of the mapping matrix shows the image of the lens bulg
 """
 bulge_image = mapping_matrix[:, 0]
 print(bulge_image)
-print(image_2d_bulge.slim)
+print(image_2d_lens_bulge.slim)
 
 """
 A 2D plot of the `mapping_matrix` shows each light profile image in 1D, which is a bit odd to look at but
@@ -279,13 +272,15 @@ lp_linear_func_source = al.LightProfileLinearObjFuncList(
 )
 
 """
-Printing the first column of the mapping matrix shows the image of the source bulge light profile.
+Printing the first column of the mapping matrix shows the image of the source bulge light profile (the
+mapping_matrix entry is in the image-plane, after ray-tracing through the lens; the unlensed source-plane
+image is plotted below for comparison).
 """
 mapping_matrix = lp_linear_func_source.mapping_matrix
 
 bulge_image = mapping_matrix[:, 0]
 print(bulge_image)
-print(image_2d_bulge.slim)
+print(image_2d_source_bulge.slim)
 
 """
 __Combining Matrices__
