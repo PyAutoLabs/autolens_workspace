@@ -230,7 +230,7 @@ search = af.Nautilus(
     iterations_per_quick_update=20000,
 )
 
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 result = search.fit(model=model, analysis=analysis)
 
@@ -413,12 +413,12 @@ search = af.Nautilus(
     iterations_per_quick_update=20000,
 )
 
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 """
 __VRAM__
 
-The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
+The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM
 required by a model.
 
 Adding extra galaxies increases VRAM usage because each additional component adds calculations that JAX stores 

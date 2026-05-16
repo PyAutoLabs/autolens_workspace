@@ -396,6 +396,7 @@ analysis_1 = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
     positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
+    use_jax=True,
 )
 
 """
@@ -512,6 +513,7 @@ We now create the analysis for the second search.
 analysis_2 = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
+    use_jax=True,
 )
 
 """
@@ -564,7 +566,7 @@ def source_lp(
     redshift_source: float,
     n_batch: int = 50,
 ) -> af.Result:
-    analysis = al.AnalysisImaging(dataset=dataset)
+    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
     lens_bulge = al.model_util.mge_model_from(
         mask_radius=mask_radius,
@@ -656,6 +658,7 @@ def source_pix_1(
                 factor=3.0, minimum_threshold=0.2
             )
         ],
+        use_jax=True,
     )
 
     mass = al.util.chaining.mass_from(
@@ -747,6 +750,7 @@ def source_pix_2(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
+        use_jax=True,
     )
 
     model = af.Collection(
@@ -813,6 +817,7 @@ def light_lp(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
+        use_jax=True,
     )
 
     lens_bulge = al.model_util.mge_model_from(
@@ -887,6 +892,7 @@ def mass_total(
                 factor=3.0, minimum_threshold=0.2
             )
         ],
+        use_jax=True,
     )
 
     mass = al.util.chaining.mass_from(

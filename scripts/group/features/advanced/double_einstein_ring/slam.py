@@ -206,6 +206,7 @@ def source_lp_2(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         positions_likelihood_list=[positions_likelihood_source_0],
+        use_jax=True,
     )
 
     lens_dict = {}

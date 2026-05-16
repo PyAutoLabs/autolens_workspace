@@ -290,12 +290,12 @@ __Analysis__
 
 Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
 """
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 """
 __VRAM__
 
-The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
+The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM
 required by a model.
 
 For each linear Gaussian light profile, extra VRAM is used. For around 60 linear Gaussians this  typically requires 
