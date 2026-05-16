@@ -38,7 +38,7 @@ can therefore fit models more reliably and faster!
 
 __Disadvantages__
 
-Althought the computation time of the inversion is small, it is not non-negligable. It is approximately 3-4x slower
+Although the computation time of the inversion is small, it is not non-negligible. It is approximately 3-4x slower
 than using a standard light profile.
 
 The gains in run times due to the simpler non-linear parameter space therefore are somewhat balanced by the slower
@@ -46,7 +46,7 @@ likelihood calculation.
 
 __Positive Only Solver__
 
-Many codes which use linear algebra typically rely on a linear algabra solver which allows for positive and negative
+Many codes which use linear algebra typically rely on a linear algebra solver which allows for positive and negative
 values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
 
 This is problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
