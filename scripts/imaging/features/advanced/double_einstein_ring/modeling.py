@@ -11,6 +11,22 @@ simultaneously, and the emission of both source galaxies must be modeled simulta
 
 This script illustrates the PyAutoLens API for modeling a double Einstein ring lens.
 
+__Practical Use: Read This First__
+
+This script is a tutorial. It produces a working fit by "cheating" — every prior is initialised at the true
+simulator value, narrowed by a small Gaussian. On real data this is impossible, and a single Nautilus search on
+a 16-parameter double Einstein ring model would almost certainly converge to a local maximum.
+
+The script you will actually use to fit a double Einstein ring on real data is
+`autolens_workspace/scripts/imaging/features/advanced/double_einstein_ring/chaining.py`, which runs two chained
+non-linear searches: the first initialises the lens mass and `source_0` using a smaller mask that excludes
+`source_1`, the second introduces `source_1` and frees `source_0`'s mass. This is also significantly more
+computationally efficient than the single-search approach below.
+
+For production-quality modeling, see `slam.py` in the same directory.
+
+Read this script to understand the model composition API, then jump to `chaining.py`.
+
 __Contents__
 
 - **Model:** Compose the lens model fitted to the data.
@@ -18,7 +34,8 @@ __Contents__
 - **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
 - **Model Cookbook:** A full description of model composition is provided by the model cookbook.
 - **Cheating:** Initializing a double Einstein ring lens model is difficult, due to the complexity of parameter.
-- **Cosmology:** Double Einstein rings allow cosmological parameters to be constrained, because they provide.
+- **Cosmology:** Double Einstein rings allow cosmological parameters to be constrained — `Om0` is fixed at
+  Planck18 here, with a commented-out snippet showing how to make it free.
 - **Search:** Configure the non-linear search used to fit the model.
 - **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
 - **VRAM:** The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the.
@@ -200,32 +217,34 @@ source_0.mass.einstein_radius = af.GaussianPrior(mean=0.4, sigma=0.1)
 __Cosmology__
 
 Double Einstein rings allow cosmological parameters to be constrained, because they provide information on the
-different angular diameter distances between each source galaxy.
+different angular diameter distances between the lens, `source_0` and `source_1`. The deflection scaling factor
+between the two source-planes (sometimes written `beta_01`) depends on those distances and therefore on the
+cosmology.
 
-We therefore create a Cosmology as a `Model` object in order to make the cosmological parameter Omega_m a free 
-parameter.
-"""
-cosmology = af.Model(al.cosmo.FlatLambdaCDM)
+For this tutorial, we use a fixed `Planck18` cosmology and treat no cosmological parameters as free. This keeps
+the model dimensionality and the parameter space tractable for the single-search "cheating" workflow below; a
+realistic cosmological constraint requires both the chained-search workflow in `chaining.py` and significantly
+more data than this one simulated system.
 
+To make `Om0` (Omega_m) a free parameter in your own fit, uncomment the three lines below. They construct a
+`FlatLambdaCDM` cosmology as a free model, override the prior on `Om0`, and include the cosmology in the overall
+`Collection`. The remaining cosmological parameters (`H0`, `Tcmb0`, etc.) stay fixed at their Planck18 values.
 """
-By default, all parameters of a cosmology model are initialized as fixed values based on the Planck18 cosmology.
-
-In order to make Omega_m a free parameter, we must manually overwrite its prior.
-"""
-cosmology.Om0 = af.GaussianPrior(mean=0.3, sigma=0.1)
+# cosmology = af.Model(al.cosmo.FlatLambdaCDM)
+# cosmology.Om0 = af.GaussianPrior(mean=0.3, sigma=0.1)
 
 # Overall Lens Model:
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),
-    #    cosmology=cosmology,
+    # cosmology=cosmology,
 )
 
 """
 The `info` attribute shows the model in a readable format.
 
-This confirms the model is composed of three galaxies, two of which are lensed source galaxies, and that
-the cosmology is included as a model component.
+This confirms the model is composed of three galaxies, two of which are lensed source galaxies, and a fixed
+Planck18 cosmology.
 """
 print(model.info)
 
@@ -249,7 +268,7 @@ __Analysis__
 
 Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
 """
-analysis = al.AnalysisImaging(dataset=dataset)
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 """
 __VRAM__
