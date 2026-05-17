@@ -51,7 +51,7 @@ times (although the simpler non-linear parameter space will speed up the fit ove
 
 __Positive Only Solver__
 
-Many codes which use linear algebra typically rely on a linear algabra solver which allows for positive and negative
+Many codes which use linear algebra typically rely on a linear algebra solver which allows for positive and negative
 values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
 
 This is problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
@@ -88,7 +88,7 @@ __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's bulge is a super position of 60 `Gaussian`` profiles.
+ - The lens galaxy's bulge is a super position of 60 `Gaussian` profiles.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is a Multi Gaussian Expansion.
 
