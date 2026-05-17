@@ -6,7 +6,7 @@ A multi Gaussian expansion (MGE) decomposes the lens light into ~15-100 Gaussian
 Gaussian is solved for via a linear algebra using a process called an "inversion" (see the `linear_light_profiles.py`
 feature for a full description of this).
 
-This script peforms lensing modeling using a lens light model which uses an MGE consisting of 60 Gaussians. It is
+This script performs lensing modeling using a lens light model which uses an MGE consisting of 60 Gaussians. It is
 fitted to simulated data where the lens galaxy's light has asymmetric and irregular features, which fitted poorly by symmetric light
 profiles like the `Sersic`.
 
@@ -54,7 +54,7 @@ times (although the simpler non-linear parameter space will speed up the fit ove
 
 __Positive Only Solver__
 
-Many codes which use linear algebra typically rely on a linear algabra solver which allows for positive and negative
+Many codes which use linear algebra typically rely on a linear algebra solver which allows for positive and negative
 values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
 
 This is problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
@@ -91,7 +91,7 @@ __Model__
 
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
- - The lens galaxy's bulge is a super position of 60 `Gaussian`` profiles.
+ - The lens galaxy's bulge is a super position of 60 `Gaussian` profiles.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is a linear `SersicCore`.
 
@@ -193,7 +193,7 @@ We compose a lens model where:
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=19.
 
 Unlike the examples above, our MGE now comprises 2 * 30 Gaussians (instead of 1 * 30). Each group of 30
-have their own elliptical components meaning the lens's light is descomposed into two distinct elliptical components,
+have their own elliptical components meaning the lens's light is decomposed into two distinct elliptical components,
 which could be viewed as a bulge and disk.
 
 Note that above we combine the MGE for the lens light with a linear light profile for the source, meaning these two
@@ -270,7 +270,7 @@ print(model.info)
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start_here.py` for a
 full description).
 
 Owing to the simplicity of fitting an MGE we an use even fewer live points than other examples, reducing it to
