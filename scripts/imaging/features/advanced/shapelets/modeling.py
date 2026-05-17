@@ -7,13 +7,13 @@ has been employed in many strong lensing studies to model the light of the lense
 represent features of disky star forming galaxies that a single Sersic function cannot.
 
 - https://ui.adsabs.harvard.edu/abs/2016MNRAS.457.3066T
-- https://iopscience.iop.org/article/10.1088/0004-637X/813/2/102 t
+- https://iopscience.iop.org/article/10.1088/0004-637X/813/2/102
 
 Shapelets are described in full in the following paper:
 
  https://arxiv.org/abs/astro-ph/0105178
 
-This script performs a model-fit using shapelet, where it decomposes the galaxy light into ~20
+This script performs a model-fit using shapelets, where it decomposes the galaxy light into ~20
 Shapelets. The `intensity` of every Shapelet is solved for via linear algebra (see the `linear_light_profiles.py`
 feature).
 
@@ -49,14 +49,14 @@ The shapelet model can be composed in a way that has fewer non-linear parameters
 example, the ~20 shapelets which represent the `bulge` of the source are composed in a model corresponding to just
 N=3 non-linear parameters (a `bulge` comprising a linear Sersic would give N=6).
 
-Therefore, shapelet fit more complex source galaxy morphologies using fewer non-linear parameters than the standard
-light profile models!
+Therefore, shapelets fit more complex source galaxy morphologies using fewer non-linear parameters than the standard
+light profile models.
 
 __Disadvantages__
 
-- There are many types of galaxy structure which shapelets may struggle to represent, such as a bar or assymetric
-knots of star formation. They also rely on the galaxy have a distinct central over which the shapelets can be
-centered, which is not the case of the galaxy is multiple merging systems or has bright companion galaxies.
+- There are many types of galaxy structure which shapelets may struggle to represent, such as a bar or asymmetric
+knots of star formation. They also rely on the galaxy having a distinct centre over which the shapelets can be
+centered, which is not the case if the galaxy is multiple merging systems or has bright companion galaxies.
 
 - The linear algebra used to solve for the `intensity` of each shapelet has to allow for negative values of intensity
 in order for shapelets to work. Negative surface brightnesses are unphysical, and are often inferred in a shapelet
@@ -71,9 +71,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
-This script fits an `Imaging` dataset of a galaxy with a model where:
-
- - The source galaxy's bulge is a super position of `ShapeletCartesianSph`` profiles.
+ - The source galaxy's bulge is a superposition of `ShapeletPolar` profiles.
 
 __Start Here Notebook__
 
@@ -194,7 +192,7 @@ We compose our model using `Model` objects, which represent the galaxies we fit 
 example we fit a model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
- - The source galaxy's bulge is a superposition of 10 linear `ShapeletCartesianSph` profiles [3 parameters]. 
+ - The source galaxy's bulge is a superposition of 10 linear `ShapeletPolar` profiles [3 parameters].
  - The centres of the Shapelets are all linked together.
  - The size of the Shapelet basis is controlled by a `beta` parameter, which is the same for all Shapelet basis 
    functions.
@@ -271,7 +269,7 @@ print(model.info)
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `start_here.py` for a
 full description).
 """
 search = af.Nautilus(
@@ -368,7 +366,7 @@ Sersic.
 
 However, the multi-gaussian expansion (MGE) approach is even faster than shapelets. It uses fewer Gaussian basis
 functions (speed up the likelihood evaluation) and has fewer free parameters (speeding up the non-linear search).
-Furthermore, non of the free parameters scale the size of the source galaxy, which means the non-linear search
+Furthermore, none of the free parameters scale the size of the source galaxy, which means the non-linear search
 can converge faster.
 
 I recommend you try using an MGE approach alongside shapelets. For many science cases, the MGE approach will be
