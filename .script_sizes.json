@@ -109,6 +109,7 @@
   "scripts/guides/plot/start_here.py": 6525,
   "scripts/guides/profiles/__init__.py": 0,
   "scripts/guides/profiles/light.py": 26758,
+  "scripts/guides/profiles/mass.py": 25323,
   "scripts/guides/results/__init__.py": 0,
   "scripts/guides/results/_quick_fit.py": 2775,
   "scripts/guides/results/aggregator/__init__.py": 0,
