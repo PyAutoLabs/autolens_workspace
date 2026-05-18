@@ -580,13 +580,14 @@ aplt.plot_array(
 )
 
 aplt.plot_array(
-    array=al.mp.dPIEPotentialSph(
+    array=al.mp.dPIEPotential(
         centre=(0.0, 0.0),
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.85, angle=45.0),
         ra=0.1,
         rs=2.0,
         b0=1.0,
     ).convergence_2d_from(grid=grid),
-    title="dPIEPotentialSph Convergence",
+    title="dPIEPotential Convergence",
 )
 
 """
