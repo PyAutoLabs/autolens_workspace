@@ -3,14 +3,17 @@ Modeling: Cluster
 =================
 
 This script models the small multi-plane cluster lens simulated by ``cluster/simulator.py``: a Brightest
-Cluster Galaxy (BCG) plus one satellite member at the lens redshift ``z = 0.5``, a standalone NFW host
-dark matter halo *not* tied to any individual galaxy, and 2 background sources at *different* redshifts
-(``z = 1.0`` and ``z = 2.0``) which the cluster lenses into multiple images.
+Cluster Galaxy (BCG) plus one satellite member at the lens redshift ``z = 0.5``, 10 lower-mass cluster
+members modelled collectively via a luminosity-mass scaling relation, a standalone NFW host dark matter
+halo *not* tied to any individual galaxy, and 2 background sources at *different* redshifts (``z = 1.0``
+and ``z = 2.0``) which the cluster lenses into multiple images.
 
 Cluster modeling almost always uses the *point source* API: rather than fitting the extended arc light
 of each lensed source, only the image-plane positions of the brightest pixels of each multiple image are
 fitted. Per-source positions, noise maps, and redshifts are loaded from a single hand-editable CSV that
-the simulator writes (``point_datasets.csv``) via ``al.list_from_csv``.
+the simulator writes (``point_datasets.csv``) via ``al.list_from_csv``. Cluster-member centres and
+luminosities for the scaling tier are loaded from a second CSV (``scaling_galaxies.csv``) via
+``al.galaxy_table_from_csv``.
 
 __Contents__
 
@@ -18,11 +21,13 @@ __Contents__
 - **Simulation:** Overview of how the simulated dataset was generated.
 - **Dataset:** Load the CCD image and the per-source point datasets from the combined CSV.
 - **Centres:** Load the main lens centres and the host halo centre written by the simulator.
+- **Scaling Galaxies Table:** Load the scaling-tier centres + luminosities from the CSV.
 - **Point Solver:** Set up the image-plane multiple-image solver.
 - **Chi Squared:** Why this script uses an image-plane chi-squared.
-- **Cluster Components:** The three categories of lensing object — main lens galaxies, host halo, sources.
+- **Cluster Components:** The four categories of lensing object — main lens galaxies, scaling members, host halo, sources.
 - **Redshifts:** Multi-plane redshift handling and the source-redshift / dataset-redshift pairing.
 - **Model:** Compose the lens model fitted to the data.
+- **Scaling Relation:** The shared two-parameter relation that ties every scaling member's mass to its luminosity.
 - **Name Pairing:** How each ``Point`` model component is paired to its ``PointDataset``.
 - **Search:** Configure the non-linear search used to fit the model.
 - **Analysis:** Create the ``AnalysisPoint`` objects, one per dataset.
@@ -37,16 +42,19 @@ This script fits a ``PointDataset`` of a small multi-plane cluster where:
 
  - There are 2 main lens galaxies with ``dPIEMassSph`` total mass distributions, each with their centre
    fixed to the values written out by the simulator [6 parameters].
+ - There are 10 scaling-tier member galaxies. Each carries a ``dPIEMassSph`` mass with centre fixed,
+   ``ra`` and ``rs`` fixed at the simulator truth values, and ``b0`` derived from the *shared*
+   scaling-relation parameters and the per-member luminosity [2 parameters total for the entire tier].
  - There is 1 standalone ``NFWMCRLudlowSph`` host dark matter halo with its centre fixed and a free
    ``mass_at_200`` [1 parameter].
  - There are 2 source galaxies modeled as ``Point`` sources, each with its redshift pinned to the value
    in its ``PointDataset`` row [4 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=13.
 
-This is intentionally a *small* cluster: the same simulator + modeling.py will later be extended to
-include a scaling-relation member population. Getting the multi-plane two-source case working first is
-the prerequisite.
+The defining feature of cluster modeling is the scaling tier: 10 lower-mass members are fit jointly
+with just *2 free parameters* (``scaling_factor`` and ``scaling_exponent``). Adding more members to
+``scaling_galaxies.csv`` in the future does not grow the dimensionality of parameter space.
 
 __Simulation__
 
@@ -56,6 +64,8 @@ That simulator writes:
  - ``data.fits`` / ``noise_map.fits`` / ``psf.fits`` — CCD imaging of the cluster (used for visualization).
  - ``point_datasets.csv`` — one row per observed multiple image, grouped by source ``name``, with a
    ``redshift`` column per group. Loaded here with ``al.list_from_csv``.
+ - ``scaling_galaxies.csv`` — one row per scaling-tier member with columns ``y, x, luminosity``. Loaded
+   here with ``al.galaxy_table_from_csv``.
  - ``main_lens_centres.json`` — ``Grid2DIrregular`` of the 2 main lens galaxy centres.
  - ``host_halo_centre.json`` — ``Grid2DIrregular`` of the 1 host halo centre.
  - ``tracer.json`` / ``source_centres.json`` — true model (used by visualization, not modeling).
@@ -91,7 +101,9 @@ __Dataset Auto-Simulation__
 If the dataset does not already exist on your system, it will be created by running the corresponding
 simulator script. This ensures that all example scripts can be run without manually simulating data first.
 """
-if not (dataset_path / "data.fits").exists():
+if not (dataset_path / "data.fits").exists() or not (
+    dataset_path / "scaling_galaxies.csv"
+).exists():
     import subprocess
     import sys
 
@@ -156,6 +168,32 @@ main_lens_centres = al.from_json(file_path=dataset_path / "main_lens_centres.jso
 host_halo_centre = al.from_json(file_path=dataset_path / "host_halo_centre.json")[0]
 
 """
+__Scaling Galaxies Table__
+
+The 10 scaling-tier cluster members live in ``scaling_galaxies.csv`` — one row per member with columns
+``y, x, luminosity``. ``al.galaxy_table_from_csv`` returns a typed ``GalaxyTable`` carrying:
+
+ - ``.centres`` — a ``Grid2DIrregular`` of per-member centres (y, x).
+ - ``.luminosities`` — a list of per-member luminosities.
+
+Both arrive in the same order as the CSV rows; the model loop below zips them together. Adding more
+scaling members to a real cluster amounts to extending the CSV — no Python edits required.
+
+In a real analysis the luminosities come from a prior light-only fit (e.g. an MGE bulge fit to the
+imaging data, or a SLaM ``source_lp_0`` stage). See
+``scripts/group/features/scaling_relation/modeling_for_luminosities.py`` for the standalone-fit
+pattern, and ``scripts/group/features/scaling_relation/modeling.py`` for the full prose discussion.
+"""
+scaling_galaxies_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
+scaling_galaxies_centres = scaling_galaxies_table.centres
+scaling_galaxies_luminosity_list = scaling_galaxies_table.luminosities
+
+print(f"Scaling galaxies centres: {scaling_galaxies_centres}")
+print(f"Scaling galaxies luminosities: {scaling_galaxies_luminosity_list}")
+
+"""
 __Point Solver__
 
 For point-source modeling we require a ``PointSolver``, which determines the multiple images of the mass
@@ -191,11 +229,16 @@ solver = al.PointSolver.for_grid(
 """
 __Cluster Components__
 
-For this small cluster, we organise the lensing objects into three distinct categories that map directly
-onto the simulator:
+We organise the lensing objects into four distinct categories that map directly onto the simulator:
 
- - ``main_lens_galaxies``: The 2 cluster member galaxies (BCG + satellite). Each is modeled with a
-   ``dPIEMassSph`` total mass profile and its centre fixed to ``main_lens_centres[i]``.
+ - ``main_lens_galaxies``: The 2 individually-modelled cluster members (BCG + satellite). Each is fitted
+   with a ``dPIEMassSph`` total mass profile whose centre is fixed to ``main_lens_centres[i]``.
+
+ - ``scaling_galaxies``: The 10 scaling-tier cluster members. Each carries a ``dPIEMassSph`` mass with
+   centre fixed (from the CSV), ``ra`` and ``rs`` fixed at the simulator truth values, and ``b0``
+   derived from the *shared* ``scaling_factor`` and ``scaling_exponent`` parameters plus the per-member
+   luminosity. The whole tier contributes just 2 free parameters to the model regardless of how many
+   members are in the CSV.
 
  - ``host_halo``: A single standalone ``Galaxy`` carrying the cluster's ``NFWMCRLudlowSph`` dark matter
    halo. The halo is *not* tied to any individual member — it sits "on top of" the members and
@@ -205,9 +248,9 @@ onto the simulator:
    lens). Each is modeled as a ``Point`` source whose redshift is pinned to the value in its
    ``PointDataset``.
 
-There is no scaling-relation member population in this script — that's a follow-up extension. The
-existing scaling-relation API is demonstrated for the galaxy-scale group case in
-``scripts/imaging/features/scaling_relation/modeling.py``.
+The galaxy-scale analogue of the scaling-relation tier (with extended-light imaging modeling rather than
+point-source) is demonstrated at
+``scripts/group/features/scaling_relation/modeling.py``.
 
 __Redshifts__
 
@@ -230,12 +273,23 @@ We compose a lens model where:
 
  - The 2 main lens galaxies each have a ``dPIEMassSph`` mass profile with centre fixed and free
    ``ra``, ``rs``, ``b0`` — 3 free parameters per galaxy [6 parameters].
+ - The 10 scaling-tier members share two free parameters: ``scaling_factor`` and ``scaling_exponent``.
+   Each member's ``b0`` is computed as ``scaling_factor * luminosity ** scaling_exponent``; ``ra`` and
+   ``rs`` are held fixed at the simulator truth values (0.1" and 10.0") [2 parameters].
  - The host halo has an ``NFWMCRLudlowSph`` mass profile with centre fixed and a free ``mass_at_200``
    [1 parameter].
  - Each source has a ``Point`` model with free ``centre_0`` / ``centre_1`` priors initialised from the
    mean of that source's observed positions [4 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=13.
+
+__Scaling Relation__
+
+The scaling relation has the form ``b0 = scaling_factor * luminosity ** scaling_exponent``. With 10
+members and shared (``scaling_factor``, ``scaling_exponent``) the relation is well-constrained: as long
+as the per-member luminosities span a meaningful dynamic range, the multi-image positions pull the two
+relation parameters tightly. The simulator's truth values are ``scaling_factor = 0.3`` and
+``scaling_exponent = 1.0``. Priors below are wider than the truth to give the search room.
 """
 redshift_lens = 0.5
 source_redshifts = [dataset.redshift for dataset in dataset_list]
@@ -284,10 +338,40 @@ for i, dataset in enumerate(dataset_list):
         al.Galaxy, redshift=dataset.redshift, **{f"point_{i}": point}
     )
 
+# Scaling Tier Members (dPIEMassSph, b0 derived from shared scaling relation)
+#
+# scaling_factor and scaling_exponent are defined ONCE outside the loop. Every
+# member's b0 is a derived prior of these two shared parameters plus its own
+# (fixed) luminosity, so the entire tier contributes 2 free parameters regardless
+# of how many members are in scaling_galaxies.csv.
+
+scaling_factor = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)
+scaling_exponent = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
+
+scaling_ra_fixed = 0.1
+scaling_rs_fixed = 10.0
+
+scaling_galaxies_list = []
+for centre, luminosity in zip(
+    scaling_galaxies_centres, scaling_galaxies_luminosity_list
+):
+    mass = af.Model(al.mp.dPIEMassSph)
+    mass.centre = tuple(centre)
+    mass.ra = scaling_ra_fixed
+    mass.rs = scaling_rs_fixed
+    mass.b0 = scaling_factor * luminosity**scaling_exponent
+
+    scaling_galaxies_list.append(
+        af.Model(al.Galaxy, redshift=redshift_lens, mass=mass)
+    )
+
+scaling_galaxies = af.Collection(scaling_galaxies_list)
+
 # Overall Lens Model:
 
 model = af.Collection(
     galaxies=af.Collection(host_halo=host_halo, **main_lens_dict, **source_dict),
+    scaling_galaxies=scaling_galaxies,
 )
 
 """
