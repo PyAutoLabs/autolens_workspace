@@ -18,7 +18,7 @@ __Contents__
 - **Source Positions:** Draw a uniform-random distribution of background source galaxy positions.
 - **Simulator:** Construct a `SimulatorShearYX` with the desired shape-noise level and random seed.
 - **Output:** Save the simulated `WeakDataset` and the `Tracer` to JSON.
-- **Visualize:** Placeholders only — the visualization layer is built in `prompt/weak/2_visualization.md`.
+- **Visualize:** Plot the shear field and the dataset subplot mosaic via `aplt`.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
@@ -28,6 +28,7 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 from pathlib import Path
 
 import autolens as al
+import autolens.plot as aplt
 
 """
 __Dataset Paths__
@@ -99,17 +100,26 @@ al.output_to_json(obj=tracer, file_path=dataset_path / "tracer.json")
 """
 __Visualize__
 
-The visualization layer for `WeakDataset` is added in a follow-up prompt
-(`admin_jammy/prompt/weak/2_visualization.md`). It will use `matplotlib.quiver` (with `headwidth=0` so each
-shear vector is drawn as a headless line segment, the standard weak-lensing convention) to plot the shear
-field on top of the source-galaxy positions.
+The shear field is visualised with `matplotlib.quiver` rendered as *headless line segments*
+(`headwidth=0, headlength=0, headaxislength=0`) — the standard weak-lensing convention, because shear is a
+spin-2 quantity and a 180-degree rotation maps it back to itself, so an arrowhead would suggest a
+directionality the data does not have.
 
-For now the simulator produces the dataset — the calls below are placeholders that the visualization prompt
-will replace with real plotting code.
+`aplt.subplot_weak_dataset` produces a 2x2 mosaic combining the shear field, the per-galaxy noise map, the
+shear magnitude `|gamma|`, and the position angle `phi`. `aplt.plot_shear_yx_2d` writes a single-panel
+quiver of the shear field alone — useful for high-resolution figures where the mosaic is too dense.
 """
-# TODO(2_visualization.md): aplt.subplot_weak_dataset(dataset=dataset)
-# TODO(2_visualization.md): aplt.plot_shear_yx_2d(
-#     shear_yx=dataset.shear_yx, output_path=dataset_path, output_format="png"
-# )
+aplt.subplot_weak_dataset(
+    dataset=dataset,
+    output_path=dataset_path,
+    output_format="png",
+)
+
+aplt.plot_shear_yx_2d(
+    shear_yx=dataset.shear_yx,
+    output_path=dataset_path,
+    output_format="png",
+)
+
 print(dataset.info)
 print(f"Wrote dataset to {dataset_path}")
