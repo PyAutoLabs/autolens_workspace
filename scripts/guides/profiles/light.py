@@ -24,14 +24,14 @@ __Contents__
   `image_2d_from`, plot it.
 - **Linear Light Profiles:** One-line API for `al.lp_linear.*` — intensity solved by inversion.
 - **Operated Light Profiles:** One-line API for `al.lp_operated.*` — emission post PSF.
-- **Multipole Light Profiles:** The newer `SersicMultipole` and `GaussianMultipole`, with the
-  m=3 / m=4 Fourier perturbation on the eccentric radius explained and plotted.
 - **Basis:** The grouping object that lets many profiles behave as a single composite — the
   building block of Multi-Gaussian Expansion (MGE) and shapelet decompositions.
 - **Light Profile in a Model:** Wrap a profile in `af.Model`, compose it into an
   `af.Collection` via a `Galaxy` and a `Tracer`, inspect the model info.
 - **Model Instance from Light Profile:** Realise an instance from the model's prior medians,
   drop it into a `Tracer`, and evaluate `image_2d_from` on the tracer.
+- **Multipole Light Profiles:** The newer `SersicMultipole` and `GaussianMultipole`, with the
+  m=3 / m=4 Fourier perturbation on the eccentric radius explained and plotted.
 - **Remaining Profiles Walkthrough:** Compact `image_2d_from` block for every standard profile
   not yet shown, emphasising the API is the same as the Sersic example above.
 
@@ -248,82 +248,6 @@ The full workflow (simulating with operated profiles, modeling with them) is doc
 
 That folder contains `simulator.py` and `modeling.py`.
 
-__Multipole Light Profiles__
-
-`SersicMultipole` and `GaussianMultipole` are recent additions that bolt m=3 and m=4 Fourier
-angular perturbations onto the eccentric radius of a base profile.  The perturbed radius is
-
-    r' = r * (1 + c3 cos(3 theta) + s3 sin(3 theta)
-                + c4 cos(4 theta) + s4 sin(4 theta))
-
-where `theta` is the polar angle in the profile's elliptical reference frame, and the
-`multipole_3_comps = (c3, s3)` and `multipole_4_comps = (c4, s4)` parameters control the
-amplitude of each perturbation.
-
-When both `multipole_*_comps` are `(0.0, 0.0)` (the defaults), the profile reduces exactly
-to the base profile.  This is by design — you can swap a `Sersic` for a `SersicMultipole` in
-any model without changing its predictions, and the multipole comps simply add four extra
-free parameters that can capture boxy / discy / lopsided morphologies in lens-galaxy light
-or in resolved source morphology.
-
-Build a `SersicMultipole` with non-zero multipole components, alongside the unperturbed
-Sersic that produced our reference image above:
-"""
-sersic_multipole = al.lp.SersicMultipole(
-    centre=(0.0, 0.0),
-    ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=45.0),
-    intensity=1.0,
-    effective_radius=0.6,
-    sersic_index=3.0,
-    multipole_3_comps=(0.05, 0.00),
-    multipole_4_comps=(0.00, 0.04),
-)
-
-aplt.plot_array(
-    array=sersic_multipole.image_2d_from(grid=grid),
-    title="SersicMultipole Image (m=3 + m=4 perturbation)",
-)
-
-"""
-For comparison, here is the unperturbed Sersic image produced earlier in the guide — the
-two should look almost identical with the perturbation showing as a subtle azimuthal
-modulation:
-"""
-aplt.plot_array(
-    array=sersic.image_2d_from(grid=grid),
-    title="Sersic Image (no multipole perturbation)",
-)
-
-"""
-The `GaussianMultipole` profile applies the same perturbation to a Gaussian base — handy
-when you want a multipole component inside a Multi-Gaussian Expansion (more on that
-shortly):
-"""
-gaussian_multipole = al.lp.GaussianMultipole(
-    centre=(0.0, 0.0),
-    ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=45.0),
-    intensity=1.0,
-    sigma=0.4,
-    multipole_3_comps=(0.05, 0.00),
-    multipole_4_comps=(0.00, 0.04),
-)
-
-aplt.plot_array(
-    array=gaussian_multipole.image_2d_from(grid=grid),
-    title="GaussianMultipole Image",
-)
-
-"""
-Two practical notes on the multipole variants:
-
-- There is **no spherical (`*Sph`) variant** of either multipole.  The perturbation is an
-  angular distortion measured in the elliptical reference frame, so it only makes sense for
-  an elliptical profile (a spherical profile has no preferred angle).
-- Both multipoles exist as **linear variants** too: `al.lp_linear.SersicMultipole` and
-  `al.lp_linear.GaussianMultipole`.  In the linear form the multipole comps remain non-
-  linear parameters but the overall intensity is solved by inversion, just like for the
-  ordinary linear profiles.
-
 __Basis__
 
 A `Basis` is not a profile in its own right but a *grouping* of profiles that behave as a
@@ -499,6 +423,83 @@ print(type(source_bulge_instance))  # autogalaxy.profiles.light.standard.sersic.
 After a fit completes, `result.max_log_likelihood_tracer` returns the same shape of object,
 with the prior medians replaced by the fitted parameter values.  See
 `scripts/guides/results/start_here.py` for the full results-introspection guide.
+
+__Multipole Light Profiles__
+
+`SersicMultipole` and `GaussianMultipole` are recent additions that bolt m=3 and m=4 Fourier
+angular perturbations onto the eccentric radius of a base profile.  The perturbed radius is
+
+    r' = r * (1 + c3 cos(3 theta) + s3 sin(3 theta)
+                + c4 cos(4 theta) + s4 sin(4 theta))
+
+where `theta` is the polar angle in the profile's elliptical reference frame, and the
+`multipole_3_comps = (c3, s3)` and `multipole_4_comps = (c4, s4)` parameters control the
+amplitude of each perturbation.
+
+When both `multipole_*_comps` are `(0.0, 0.0)` (the defaults), the profile reduces exactly
+to the base profile.  This is by design — you can swap a `Sersic` for a `SersicMultipole`
+in any model without changing its predictions, and the multipole comps simply add four
+extra free parameters that can capture boxy / discy / lopsided morphologies in lens-galaxy
+light or in resolved source morphology.  Plugging one into the `af.Model` / `af.Collection`
+/ `Galaxy` / `Tracer` pattern shown above works exactly as it did for the plain `Sersic` —
+the multipole comps are picked up as priors automatically.
+
+Build a `SersicMultipole` with non-zero multipole components, alongside the unperturbed
+Sersic that produced our reference image earlier in the guide:
+"""
+sersic_multipole = al.lp.SersicMultipole(
+    centre=(0.0, 0.0),
+    ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=45.0),
+    intensity=1.0,
+    effective_radius=0.6,
+    sersic_index=3.0,
+    multipole_3_comps=(0.05, 0.00),
+    multipole_4_comps=(0.00, 0.04),
+)
+
+aplt.plot_array(
+    array=sersic_multipole.image_2d_from(grid=grid),
+    title="SersicMultipole Image (m=3 + m=4 perturbation)",
+)
+
+"""
+For comparison, here is the unperturbed Sersic image — the two should look almost
+identical with the perturbation showing as a subtle azimuthal modulation:
+"""
+aplt.plot_array(
+    array=sersic.image_2d_from(grid=grid),
+    title="Sersic Image (no multipole perturbation)",
+)
+
+"""
+The `GaussianMultipole` profile applies the same perturbation to a Gaussian base — useful
+when you want a multipole component inside a Multi-Gaussian Expansion (the `Basis` section
+above shows how to bundle Gaussians together):
+"""
+gaussian_multipole = al.lp.GaussianMultipole(
+    centre=(0.0, 0.0),
+    ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=45.0),
+    intensity=1.0,
+    sigma=0.4,
+    multipole_3_comps=(0.05, 0.00),
+    multipole_4_comps=(0.00, 0.04),
+)
+
+aplt.plot_array(
+    array=gaussian_multipole.image_2d_from(grid=grid),
+    title="GaussianMultipole Image",
+)
+
+"""
+Two practical notes on the multipole variants:
+
+- There is **no spherical (`*Sph`) variant** of either multipole.  The perturbation is an
+  angular distortion measured in the elliptical reference frame, so it only makes sense for
+  an elliptical profile (a spherical profile has no preferred angle).
+- Both multipoles exist as **linear variants** too: `al.lp_linear.SersicMultipole` and
+  `al.lp_linear.GaussianMultipole`.  In the linear form the multipole comps remain non-
+  linear parameters but the overall intensity is solved by inversion, just like for the
+  ordinary linear profiles.
 
 __Remaining Profiles Walkthrough__
 
