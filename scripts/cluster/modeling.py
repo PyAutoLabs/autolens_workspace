@@ -20,7 +20,7 @@ __Contents__
 - **Example:** What this script fits and the underlying simulator.
 - **Simulation:** Overview of how the simulated dataset was generated.
 - **Dataset:** Load the CCD image and the per-source point datasets from the combined CSV.
-- **Centres:** Load the main lens centres and the host halo centre written by the simulator.
+- **Model CSVs:** Load the named-galaxy mass + point CSVs written by the simulator.
 - **Scaling Galaxies Table:** Load the scaling-tier centres + luminosities from the CSV.
 - **Point Solver:** Set up the image-plane multiple-image solver.
 - **Chi Squared:** Why this script uses an image-plane chi-squared.
@@ -64,11 +64,12 @@ That simulator writes:
  - ``data.fits`` / ``noise_map.fits`` / ``psf.fits`` — CCD imaging of the cluster (used for visualization).
  - ``point_datasets.csv`` — one row per observed multiple image, grouped by source ``name``, with a
    ``redshift`` column per group. Loaded here with ``al.list_from_csv``.
+ - ``mass.csv`` + ``light.csv`` + ``point.csv`` — named-galaxy CSVs carrying the full truth model
+   (main galaxies + host halo + sources). Loaded here with ``al.galaxy_models_from_csv``. See
+   ``scripts/cluster/csv_api.py`` for the schema walkthrough.
  - ``scaling_galaxies.csv`` — one row per scaling-tier member with columns ``y, x, luminosity``. Loaded
    here with ``al.galaxy_table_from_csv``.
- - ``main_lens_centres.json`` — ``Grid2DIrregular`` of the 2 main lens galaxy centres.
- - ``host_halo_centre.json`` — ``Grid2DIrregular`` of the 1 host halo centre.
- - ``tracer.json`` / ``source_centres.json`` — true model (used by visualization, not modeling).
+ - ``tracer.json`` — true ``Tracer`` (used by visualization, not modeling).
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
@@ -101,9 +102,11 @@ __Dataset Auto-Simulation__
 If the dataset does not already exist on your system, it will be created by running the corresponding
 simulator script. This ensures that all example scripts can be run without manually simulating data first.
 """
-if not (dataset_path / "data.fits").exists() or not (
-    dataset_path / "scaling_galaxies.csv"
-).exists():
+if (
+    not (dataset_path / "data.fits").exists()
+    or not (dataset_path / "scaling_galaxies.csv").exists()
+    or not (dataset_path / "mass.csv").exists()
+):
     import subprocess
     import sys
 
@@ -154,18 +157,26 @@ for dataset in dataset_list:
     )
 
 """
-__Centres__
+__Model CSVs__
 
-The centres of the main lens galaxies and the host halo are loaded from the JSON files written by the
-simulator. They are fixed in the model below — for cluster-scale point-source modeling we treat the
-observed centres of light as ground truth, since they remove a large block of degenerate parameters that
-the multiple-image positions alone cannot constrain.
+The simulator writes the truth model into three family-level CSVs — ``mass.csv`` (lens + halo mass
+profiles), ``light.csv`` (lens + source light profiles), ``point.csv`` (source point components) — keyed
+by a ``galaxy`` column with ``profile_class`` dispatch (see ``scripts/cluster/csv_api.py`` for the full
+schema walkthrough). We load the mass and point families here; the light family is not needed for
+point-source modeling (light profiles do not affect the lensing).
 
-In a real analysis, the centres come from light-profile fits to the imaging data or from external source
-catalogues (e.g. Source Extractor).
+In a real analysis these CSVs come from upstream measurement: light-profile fits to the imaging data
+populate ``light.csv``; the lens-galaxy centres in ``mass.csv`` are typically pinned to the light
+centres (with their values then taken as ground truth). For cluster-scale point-source modeling the
+observed centres remove a large block of degenerate parameters that the multiple-image positions alone
+cannot constrain.
 """
-main_lens_centres = al.from_json(file_path=dataset_path / "main_lens_centres.json")
-host_halo_centre = al.from_json(file_path=dataset_path / "host_halo_centre.json")[0]
+mass_table = al.galaxy_models_from_csv(
+    file_path=dataset_path / "mass.csv", family="mass"
+)
+point_table = al.galaxy_models_from_csv(
+    file_path=dataset_path / "point.csv", family="point"
+)
 
 """
 __Scaling Galaxies Table__
@@ -294,51 +305,40 @@ relation parameters tightly. The simulator's truth values are ``scaling_factor =
 redshift_lens = 0.5
 source_redshifts = [dataset.redshift for dataset in dataset_list]
 
-# Main Lens Galaxies (dPIEMassSph, centre fixed)
+# Build af.Model[Galaxy] instances from the family CSVs. Concrete CSV values
+# become fixed af.Model defaults; we then promote selected params to priors
+# below. This dict is keyed by galaxy name (lens_0, lens_1, host_halo,
+# source_0, source_1) — the same naming convention the simulator uses.
 
-main_lens_dict = {}
+galaxy_models = al.galaxy_af_models_from_csv_tables(mass_table, point_table)
 
-for i, centre in enumerate(main_lens_centres):
+# Main Lens Galaxies: free dPIE ra / rs / b0 on each; centre stays fixed at the CSV value.
+for name in ("lens_0", "lens_1"):
+    galaxy_models[name].mass.ra = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
+    galaxy_models[name].mass.rs = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
+    galaxy_models[name].mass.b0 = af.UniformPrior(lower_limit=0.1, upper_limit=10.0)
 
-    mass = af.Model(al.mp.dPIEMassSph)
-    mass.centre = tuple(centre)
-    mass.ra = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
-    mass.rs = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
-    mass.b0 = af.UniformPrior(lower_limit=0.1, upper_limit=10.0)
-
-    main_lens_dict[f"lens_{i}"] = af.Model(
-        al.Galaxy, redshift=redshift_lens, mass=mass
-    )
-
-# Host Dark Matter Halo (NFWMCRLudlowSph, centre fixed, mass_at_200 free)
-
-host_halo_mass = af.Model(al.mp.NFWMCRLudlowSph)
-host_halo_mass.centre = tuple(host_halo_centre)
-host_halo_mass.redshift_object = redshift_lens
-host_halo_mass.redshift_source = max(source_redshifts)
-host_halo_mass.mass_at_200 = af.LogUniformPrior(
+# Host Halo: free mass_at_200; centre + redshift_object + redshift_source stay fixed.
+galaxy_models["host_halo"].dark.mass_at_200 = af.LogUniformPrior(
     lower_limit=10**14.5, upper_limit=10**16.0
 )
 
-host_halo = af.Model(al.Galaxy, redshift=redshift_lens, dark=host_halo_mass)
-
-# Source Galaxies (Point, redshift pinned to per-dataset redshift)
-
-source_dict = {}
-
+# Source Galaxies: free Point centres with GaussianPrior initialised from the
+# mean of each source's observed multiple-image positions in its PointDataset.
+# This deliberately ignores the truth centre stored in point.csv — in a real
+# analysis you don't know the source's true source-plane position, you only
+# have the image-plane positions of its multiple images.
 for i, dataset in enumerate(dataset_list):
-
     positions = np.atleast_2d(dataset.positions)
-
-    point = af.Model(al.ps.Point)
-    point.centre_0 = af.GaussianPrior(mean=float(np.mean(positions[:, 0])), sigma=3.0)
-    point.centre_1 = af.GaussianPrior(mean=float(np.mean(positions[:, 1])), sigma=3.0)
-
-    source_dict[f"source_{i}"] = af.Model(
-        al.Galaxy, redshift=dataset.redshift, **{f"point_{i}": point}
+    point_attr = getattr(galaxy_models[f"source_{i}"], f"point_{i}")
+    point_attr.centre_0 = af.GaussianPrior(
+        mean=float(np.mean(positions[:, 0])), sigma=3.0
+    )
+    point_attr.centre_1 = af.GaussianPrior(
+        mean=float(np.mean(positions[:, 1])), sigma=3.0
     )
 
-# Scaling Tier Members (dPIEMassSph, b0 derived from shared scaling relation)
+# Scaling Tier Members (dPIEMassSph, b0 derived from shared scaling relation).
 #
 # scaling_factor and scaling_exponent are defined ONCE outside the loop. Every
 # member's b0 is a derived prior of these two shared parameters plus its own
@@ -370,7 +370,7 @@ scaling_galaxies = af.Collection(scaling_galaxies_list)
 # Overall Lens Model:
 
 model = af.Collection(
-    galaxies=af.Collection(host_halo=host_halo, **main_lens_dict, **source_dict),
+    galaxies=af.Collection(**galaxy_models),
     scaling_galaxies=scaling_galaxies,
 )
 
