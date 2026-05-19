@@ -39,8 +39,8 @@ __Contents__
 - **Combined CSV:** Write *all* point datasets to a single CSV so a user can hand-edit positions and noise in a spreadsheet.
 - **Manual CSV Editing:** Instructions for editing the combined CSV by hand, which is the preferred cluster workflow.
 - **Scaling Galaxies CSV:** Write the scaling-member centres and luminosities to ``scaling_galaxies.csv``.
+- **Model CSVs:** Write the truth model to ``mass.csv`` + ``light.csv`` + ``point.csv`` (the named-galaxy CSV API).
 - **Tracer JSON:** Save the true `Tracer` for future inspection.
-- **Centre JSON Files:** Save the main lens, host halo, and source centres as JSON.
 - **Imaging:** Simulate CCD imaging of the cluster (used to measure positions in real datasets and for visualization).
 - **Visualize:** Plot the point-source dataset, tracer, and imaging.
 
@@ -617,24 +617,56 @@ al.output_to_json(
 )
 
 """
-__Centre JSON Files__
+__Model CSVs__
 
-Save the main lens galaxy centres, the host halo centre, and the source centres as JSON so the modeling
-scripts can load them directly (e.g. to fix positions, define priors). Scaling-tier centres are stored in
-``scaling_galaxies.csv`` above — the CSV carries both centres and luminosities together, so no separate
-JSON is written for that tier.
+Write the truth model out as three family-level CSVs — ``mass.csv``, ``light.csv``, ``point.csv`` —
+keyed by galaxy name. The modeling and start_here scripts load these directly with
+``al.galaxy_models_from_csv`` and compose them into ``af.Model[Galaxy]`` instances ready for non-linear
+search. See ``scripts/cluster/csv_api.py`` for the full schema walkthrough.
+
+The scaling tier keeps its narrow 3-column ``scaling_galaxies.csv`` schema written above — naming each
+scaling member and emitting an ``attr_name`` column would be more overhead than signal.
 """
-al.output_to_json(
-    obj=al.Grid2DIrregular(main_lens_centres),
-    file_path=dataset_path / "main_lens_centres.json",
+mass_profiles = {
+    **{f"lens_{i}": {"mass": g.mass} for i, g in enumerate(main_lens_galaxies)},
+    "host_halo": {"dark": host_halo_galaxy.dark},
+}
+
+light_profiles = {
+    **{f"lens_{i}": {"bulge": g.bulge} for i, g in enumerate(main_lens_galaxies)},
+    **{f"source_{i}": {"bulge": g.bulge} for i, g in enumerate(source_galaxies)},
+}
+
+point_profiles = {
+    f"source_{i}": {f"point_{i}": getattr(g, f"point_{i}")}
+    for i, g in enumerate(source_galaxies)
+}
+
+redshifts_by_galaxy = {
+    **{f"lens_{i}": redshift_lens for i in range(len(main_lens_galaxies))},
+    "host_halo": redshift_lens,
+    **{f"source_{i}": z for i, z in enumerate(source_redshifts)},
+}
+
+al.galaxy_models_to_csv(
+    profiles_by_galaxy=mass_profiles,
+    file_path=dataset_path / "mass.csv",
+    family="mass",
+    redshifts=redshifts_by_galaxy,
 )
-al.output_to_json(
-    obj=al.Grid2DIrregular([host_halo_centre]),
-    file_path=dataset_path / "host_halo_centre.json",
+
+al.galaxy_models_to_csv(
+    profiles_by_galaxy=light_profiles,
+    file_path=dataset_path / "light.csv",
+    family="light",
+    redshifts=redshifts_by_galaxy,
 )
-al.output_to_json(
-    obj=al.Grid2DIrregular(source_centres),
-    file_path=dataset_path / "source_centres.json",
+
+al.galaxy_models_to_csv(
+    profiles_by_galaxy=point_profiles,
+    file_path=dataset_path / "point.csv",
+    family="point",
+    redshifts=redshifts_by_galaxy,
 )
 
 """
