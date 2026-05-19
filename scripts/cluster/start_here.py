@@ -30,7 +30,7 @@ __Contents__
 - **Google Colab Setup:** Bootstraps the environment when running on Colab.
 - **Imports:** The libraries we'll use.
 - **Dataset:** Load the CCD image and the per-source point datasets.
-- **Centres:** Load the main lens and host halo centres.
+- **Model CSVs:** Load the named-galaxy mass + point CSVs written by the simulator.
 - **Scaling Galaxies Table:** Load the 10 scaling-tier members' centres and luminosities from a CSV.
 - **Point Solver:** Set up the image-plane multiple-image solver.
 - **Cluster Components:** The four tiers of object that make up the model.
@@ -118,9 +118,11 @@ If the dataset is missing on disk, the corresponding simulator script runs autom
 dataset_name = "simple"
 dataset_path = Path("dataset") / "cluster" / dataset_name
 
-if not (dataset_path / "data.fits").exists() or not (
-    dataset_path / "scaling_galaxies.csv"
-).exists():
+if (
+    not (dataset_path / "data.fits").exists()
+    or not (dataset_path / "scaling_galaxies.csv").exists()
+    or not (dataset_path / "mass.csv").exists()
+):
     subprocess.run(
         [sys.executable, "scripts/cluster/simulator.py"],
         check=True,
@@ -155,15 +157,23 @@ for dataset in dataset_list:
     )
 
 """
-__Centres__
+__Model CSVs__
 
-Centres of the 2 main lens galaxies and the host halo are loaded from JSON. In point-source cluster
-modeling, observed galaxy-light centres are treated as ground truth (they remove a large block of
-degenerate parameters that the multiple-image positions alone cannot constrain). In a real analysis,
-these centres come from light-profile fits to the imaging data or from external source catalogues.
+The simulator writes the truth model into three family-level CSVs — ``mass.csv``, ``light.csv``,
+``point.csv`` — keyed by a ``galaxy`` column with ``profile_class`` dispatch. See
+``scripts/cluster/csv_api.py`` for the schema walkthrough.
+
+Point-source modeling only needs the mass and point families (light profiles don't affect lensing).
+Observed galaxy-light centres are treated as ground truth — they remove a large block of degenerate
+parameters that the multiple-image positions alone cannot constrain. In a real analysis these centres
+come from light-profile fits to the imaging data or external source catalogues.
 """
-main_lens_centres = al.from_json(file_path=dataset_path / "main_lens_centres.json")
-host_halo_centre = al.from_json(file_path=dataset_path / "host_halo_centre.json")[0]
+mass_table = al.galaxy_models_from_csv(
+    file_path=dataset_path / "mass.csv", family="mass"
+)
+point_table = al.galaxy_models_from_csv(
+    file_path=dataset_path / "point.csv", family="point"
+)
 
 """
 __Scaling Galaxies Table__
@@ -240,46 +250,37 @@ blocks are then bundled into a single ``af.Collection`` model that the analysis 
 redshift_lens = 0.5
 source_redshifts = [dataset.redshift for dataset in dataset_list]
 
-# Main Lens Galaxies (dPIEMassSph, centre fixed, ra/rs/b0 free)
+# Build af.Model[Galaxy] instances directly from the family CSVs. Concrete CSV
+# values become fixed af.Model defaults; we then promote selected params to
+# priors below. Keys: lens_0, lens_1, host_halo, source_0, source_1.
 
-main_lens_dict = {}
-for i, centre in enumerate(main_lens_centres):
-    mass = af.Model(al.mp.dPIEMassSph)
-    mass.centre = tuple(centre)
-    mass.ra = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
-    mass.rs = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
-    mass.b0 = af.UniformPrior(lower_limit=0.1, upper_limit=10.0)
+galaxy_models = al.galaxy_af_models_from_csv_tables(mass_table, point_table)
 
-    main_lens_dict[f"lens_{i}"] = af.Model(
-        al.Galaxy, redshift=redshift_lens, mass=mass
-    )
+# Main Lens Galaxies: free dPIE ra / rs / b0; centre stays fixed at the CSV value.
+for name in ("lens_0", "lens_1"):
+    galaxy_models[name].mass.ra = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
+    galaxy_models[name].mass.rs = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
+    galaxy_models[name].mass.b0 = af.UniformPrior(lower_limit=0.1, upper_limit=10.0)
 
-# Host Dark Matter Halo (NFWMCRLudlowSph, centre fixed, mass_at_200 free)
-
-host_halo_mass = af.Model(al.mp.NFWMCRLudlowSph)
-host_halo_mass.centre = tuple(host_halo_centre)
-host_halo_mass.redshift_object = redshift_lens
-host_halo_mass.redshift_source = max(source_redshifts)
-host_halo_mass.mass_at_200 = af.LogUniformPrior(
+# Host Halo: free mass_at_200; centre + redshift_object + redshift_source fixed.
+galaxy_models["host_halo"].dark.mass_at_200 = af.LogUniformPrior(
     lower_limit=10**14.5, upper_limit=10**16.0
 )
-host_halo = af.Model(al.Galaxy, redshift=redshift_lens, dark=host_halo_mass)
 
-# Source Galaxies (Point, redshift pinned to per-dataset redshift)
-
-source_dict = {}
+# Source Galaxies: free Point centres with GaussianPrior initialised from the
+# mean of each source's observed multiple-image positions (NOT the truth from
+# point.csv — in a real analysis the truth is unknown).
 for i, dataset in enumerate(dataset_list):
     positions = np.atleast_2d(dataset.positions)
-
-    point = af.Model(al.ps.Point)
-    point.centre_0 = af.GaussianPrior(mean=float(np.mean(positions[:, 0])), sigma=3.0)
-    point.centre_1 = af.GaussianPrior(mean=float(np.mean(positions[:, 1])), sigma=3.0)
-
-    source_dict[f"source_{i}"] = af.Model(
-        al.Galaxy, redshift=dataset.redshift, **{f"point_{i}": point}
+    point_attr = getattr(galaxy_models[f"source_{i}"], f"point_{i}")
+    point_attr.centre_0 = af.GaussianPrior(
+        mean=float(np.mean(positions[:, 0])), sigma=3.0
+    )
+    point_attr.centre_1 = af.GaussianPrior(
+        mean=float(np.mean(positions[:, 1])), sigma=3.0
     )
 
-# Scaling Tier (shared scaling_factor + scaling_exponent; per-member b0 derived)
+# Scaling Tier (shared scaling_factor + scaling_exponent; per-member b0 derived).
 
 scaling_factor = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)
 scaling_exponent = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
@@ -306,7 +307,7 @@ scaling_galaxies = af.Collection(scaling_galaxies_list)
 # Overall Model
 
 model = af.Collection(
-    galaxies=af.Collection(host_halo=host_halo, **main_lens_dict, **source_dict),
+    galaxies=af.Collection(**galaxy_models),
     scaling_galaxies=scaling_galaxies,
 )
 
