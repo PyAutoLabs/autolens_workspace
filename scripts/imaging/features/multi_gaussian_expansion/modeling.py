@@ -493,91 +493,22 @@ For **PyAutoLens**'s advanced search chaining feature, it is common use the MGE 
 models. The lens light model is then made more complex by using an MGE with more Gaussians and the source becomes a 
 pixelized reconstruction.
 
-Now you are familiar with MGE modeling, it is recommended you adopt this as your default lens modeling approach. 
+Now you are familiar with MGE modeling, it is recommended you adopt this as your default lens modeling approach.
 However, it may not be suitable for lower resolution data, where the simpler Sersic profiles may be more appropriate.
 
-__Regularization (Advanced / Unused)__
+__Basis Regularization (Advanced / Unused)__
 
-An MGE can be regularized, whereby smoothness is enforced on the `intensity` values of the Gaussians. However,
-this feature proved to be problematic and is currently not used by any scientific analysis. It is still supported
-and documented below for completeness, but it is recommended you skip over this section and do not use it in your own
-modeling unless you have a specific reason to do so.
+An MGE `Basis` can additionally carry a regularization term (e.g. `al.reg.Constant`) that penalises non-smooth
+solutions for the Gaussian intensities. This is a research-only feature: it is not used by any production
+scientific analysis, because the positive-only linear algebra solver used above already solves the
+"positive/negative ringing" problem regularization was originally intended to address.
 
-Regularization was implemented to avoid a "positive / negative" ringing effect in the lens light model reconstruction, 
-whereby the  Gaussians went to a systematic solution which alternated between positive and negative values. 
+The code and rationale for the regularization branch have been moved out of this user-facing script to keep it
+focused on the supported MGE workflow. If you want to experiment with adding a regularization to a Basis, see:
 
-Regularization was intended to smooth over the `intensity` values of the Gaussians, such that the solution would prefer
-a positive-only solution. However, this did not work -- even with high levels of regularization, the Gaussians still
-went to negative values. The solution also became far from optimal, often leaving significant residuals in the lens
-light model reconstruction.
+    autolens_workspace_developer/basis_regularization/mge_lens.py
 
-This problem was solved by switching to a positive-only linear algebra solver, which is the default used 
-in **PyAutoLens** and was used for all fits performed above. The regularization feature is currently not used by
-any scientific analysis and it is recommended you skip over the example below and do not use it in your own modeling.
+That script is self-contained and runs the same regularized fit that used to live here.
 
-However, its implementation is detailed below for completeness, and if you think you have a use for it in your own
-modeling then go ahead! Indeed, even with a positive-only solver, it may be that regularization helps prevent 
-overfitting in certain situations.
-
-__Description__
-
-There is one downside to `Basis` functions, we may compose a model with too much freedom. The `Basis` (e.g. our 20
-Gaussians) may overfit noise in the data, or possible the lensed source galaxy emission -- neither of which we 
-want to happen! 
-
-To circumvent this issue, we have the option of adding regularization to a `Basis`. Regularization penalizes
-solutions which are not smooth -- it is essentially a prior that says we expect the component the `Basis` represents
-(e.g. a bulge or disk) to be smooth, in that its light changes smoothly as a function of radius.
-
-Below, we compose and fit a model using Basis functions which includes regularization, which adds one addition 
-parameter to the fit, the `coefficient`, which controls the degree of smoothing applied.
-"""
-# Lens:
-
-regularization = af.Model(al.reg.Constant)
-bulge = af.Model(
-    al.lp_basis.Basis,
-    profile_list=bulge_gaussian_list,
-    regularization=regularization,
-)
-mass = af.Model(al.mp.Isothermal)
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
-
-# Source:
-
-bulge = af.Model(al.lp_linear.SersicCore)
-source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
-
-# Overall Lens Model:
-
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
-
-"""
-The `info` attribute shows the model, which has addition priors now associated with regularization.
-"""
-print(model.info)
-
-search = af.Nautilus(
-    path_prefix=Path("imaging") / "features",
-    name="mge_regularized",
-    unique_tag=dataset_name,
-    n_live=150,
-    force_x1_cpu=True,
-)
-
-"""
-__Run Time__
-
-Regularization has a small impact on the run-time of the model-fit, as the likelihood evaluation time does not
-change and it adds only 1 additional parameter.
-
-__Model-Fit__
-
-We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder
-for on-the-fly visualization and results).
-"""
-result = search.fit(model=model, analysis=analysis)
-
-"""
-Finish.
+__Finish__
 """
