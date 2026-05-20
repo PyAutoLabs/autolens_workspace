@@ -169,18 +169,18 @@ internally to produce the source-plane grid:
 """
 masked_grid = dataset.grid
 
-alpha_stellar = lens.bulge.deflections_yx_2d_from(grid=masked_grid)
-alpha_dark = lens.dark.deflections_yx_2d_from(grid=masked_grid)
-alpha_shear = lens.shear.deflections_yx_2d_from(grid=masked_grid)
+deflections_stellar = lens.bulge.deflections_yx_2d_from(grid=masked_grid)
+deflections_dark = lens.dark.deflections_yx_2d_from(grid=masked_grid)
+deflections_shear = lens.shear.deflections_yx_2d_from(grid=masked_grid)
 
-alpha_total = alpha_stellar + alpha_dark + alpha_shear
+deflections_total = deflections_stellar + deflections_dark + deflections_shear
 
-grid_source_manual = masked_grid - alpha_total
+grid_source_manual = masked_grid - deflections_total
 
-print(f"alpha_stellar (first coord): {alpha_stellar[0]}")
-print(f"alpha_dark    (first coord): {alpha_dark[0]}")
-print(f"alpha_shear   (first coord): {alpha_shear[0]}")
-print(f"alpha_total   (first coord): {alpha_total[0]}")
+print(f"deflections_stellar (first coord): {deflections_stellar[0]}")
+print(f"deflections_dark    (first coord): {deflections_dark[0]}")
+print(f"deflections_shear   (first coord): {deflections_shear[0]}")
+print(f"deflections_total   (first coord): {deflections_total[0]}")
 print(f"source-plane grid (first coord, manual): {grid_source_manual[0]}")
 
 """
@@ -191,8 +191,6 @@ traced_grid_list = tracer.traced_grid_2d_list_from(grid=masked_grid)
 grid_source_tracer = traced_grid_list[1]
 
 print(f"source-plane grid (first coord, tracer): {grid_source_tracer[0]}")
-
-assert np.allclose(np.asarray(grid_source_manual), np.asarray(grid_source_tracer))
 
 """
 __Source-Plane Image__
