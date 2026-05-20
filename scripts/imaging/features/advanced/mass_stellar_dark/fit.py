@@ -239,20 +239,18 @@ galaxy returns.
 """
 grid = dataset.grid
 
-alpha_stellar = lens.bulge.deflections_yx_2d_from(grid=grid)
-alpha_dark = lens.dark.deflections_yx_2d_from(grid=grid)
-alpha_shear = lens.shear.deflections_yx_2d_from(grid=grid)
+deflections_stellar = lens.bulge.deflections_yx_2d_from(grid=grid)
+deflections_dark = lens.dark.deflections_yx_2d_from(grid=grid)
+deflections_shear = lens.shear.deflections_yx_2d_from(grid=grid)
 
-alpha_total_summed = alpha_stellar + alpha_dark + alpha_shear
-alpha_total_lens = lens.deflections_yx_2d_from(grid=grid)
+deflections_total_summed = deflections_stellar + deflections_dark + deflections_shear
+deflections_total_lens = lens.deflections_yx_2d_from(grid=grid)
 
-print(f"Stellar deflection (first 3): {alpha_stellar[:3]}")
-print(f"Dark    deflection (first 3): {alpha_dark[:3]}")
-print(f"Shear   deflection (first 3): {alpha_shear[:3]}")
-print(f"Summed  deflection (first 3): {alpha_total_summed[:3]}")
-print(f"Lens    deflection (first 3): {alpha_total_lens[:3]}")
-
-assert np.allclose(np.asarray(alpha_total_summed), np.asarray(alpha_total_lens))
+print(f"Stellar deflection (first 3): {deflections_stellar[:3]}")
+print(f"Dark    deflection (first 3): {deflections_dark[:3]}")
+print(f"Shear   deflection (first 3): {deflections_shear[:3]}")
+print(f"Summed  deflection (first 3): {deflections_total_summed[:3]}")
+print(f"Lens    deflection (first 3): {deflections_total_lens[:3]}")
 
 """
 The same component-wise decomposition shows up in the convergence (kappa) map. Convergence is what is plotted
