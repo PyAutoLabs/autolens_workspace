@@ -574,58 +574,19 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
-Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **Pyautolens**, which 
+Checkout `autolens_workspace/*/guides/results` for a full description of analysing results in **Pyautolens**, which
 includes a dedicated tutorial for linear objects like basis functions.
 
-__Regularization__
+__Basis Regularization (Advanced / Unused)__
 
-There is one downside to `Basis` functions, we may compose a model with too much freedom. The `Basis` (e.g. our 20
-Gaussians) may overfit noise in the data, or possible the lensed source galaxy emission -- neither of which we 
-want to happen! 
+A shapelet `Basis` can additionally carry a regularization term (e.g. `al.reg.Constant`) that penalises non-smooth
+intensity solutions. This is a research-only feature and is not used by any production scientific analysis.
 
-To circumvent this issue, we have the option of adding regularization to a `Basis`. Regularization penalizes
-solutions which are not smooth -- it is essentially a prior that says we expect the component the `Basis` represents
-(e.g. a bulge or disk) to be smooth, in that its light changes smoothly as a function of radius.
+The code and rationale for the regularization branch have been moved out of this user-facing script. If you want to
+experiment with adding a regularization to a shapelet `Basis`, see:
 
-Below, we compose and fit a model using Basis functions which includes regularization, which adds one addition 
-parameter to the fit, the `coefficient`, which controls the degree of smoothing applied.
-"""
-bulge = af.Model(
-    al.lp_basis.Basis,
-    profile_list=shapelets_bulge_list,
-    regularization=al.reg.Constant,
-)
-galaxy = af.Model(al.Galaxy, redshift=0.5, bulge=bulge)
+    autolens_workspace_developer/basis_regularization/shapelets_lens.py
 
-model = af.Collection(galaxies=af.Collection(galaxy=galaxy))
-
-"""
-The `info` attribute shows the model, which has addition priors now associated with regularization.
-"""
-print(model.info)
-
-search = af.Nautilus(
-    path_prefix=Path("imaging") / "features",
-    name="shapelets_regularized",
-    unique_tag=dataset_name,
-    n_live=150,
-    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
-)
-
-"""
-__Run Time__
-
-Regularization has a small impact on the run-time of the model-fit, as the likelihood evaluation time does not
-change and it adds only 1 additional parameter.
-
-__Model-Fit__
-
-We begin the model-fit by passing the model and analysis object to the non-linear search (checkout the output folder
-for on-the-fly visualization and results).
-"""
-result = search.fit(model=model, analysis=analysis)
-
-"""
 __Wrap Up__
 
 This script has illustrated how to use shapelets to model the light of galaxies.
