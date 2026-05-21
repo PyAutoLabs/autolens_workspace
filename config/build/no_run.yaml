@@ -47,5 +47,6 @@
 - imaging/features/pixelization/delaunay # NEEDS_FIX 2026-04-10 - autofit.exc.FitException in Delaunay pixelization fit
 - imaging/features/pixelization/slam # NEEDS_FIX 2026-04-10 - autofit.exc.FitException in SLaM pixelization pipeline
 - imaging/features/advanced/double_einstein_ring/slam # NEEDS_FIX 2026-05-07 - autofit.exc.FitException in SLaM bypass mode (same family as imaging/features/pixelization/slam — Adapt regularization needs adapt_data which the synthetic samples_summary doesn't carry; cascade goes deep, fixing in one PR isn't tractable)
+- group/features/advanced/double_einstein_ring/slam # NEEDS_FIX 2026-05-20 - same cascade as imaging variant — synthetic samples_summary lacks adapt_data; parking pattern of the imaging entry didn't cover this group/ twin
 - interferometer/features/pixelization/delaunay # NEEDS_FIX 2026-04-10 - broadcast shape mismatch (2,2) vs (1032,1032) in Delaunay interferometer
 - multi/features/wavelength_dependence/modeling # NEEDS_FIX 2026-04-10 - autofit.exc.FitException in multi-wavelength modeling
