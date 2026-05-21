@@ -197,7 +197,9 @@ every galaxy's light at the correct plane and sums them into a single model imag
 """
 model_image_unconvolved = tracer.image_2d_from(grid=dataset.grid)
 
-aplt.plot_array(array=model_image_unconvolved, title="Model image before PSF convolution")
+aplt.plot_array(
+    array=model_image_unconvolved, title="Model image before PSF convolution"
+)
 
 """
 What `image_2d_from` does internally for our double Einstein ring:

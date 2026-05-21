@@ -149,12 +149,18 @@ lens_dict = {}
 for i, centre in enumerate(main_lens_centres):
     lens_dict[f"lens_{i}"] = al.Galaxy(
         redshift=0.5,
-        bulge=build_basis(centre=(centre[0], centre[1]), log10_sigma_list=log10_sigma_list_lens),
+        bulge=build_basis(
+            centre=(centre[0], centre[1]), log10_sigma_list=log10_sigma_list_lens
+        ),
         mass=al.mp.IsothermalSph(centre=(centre[0], centre[1]), einstein_radius=1.2),
     )
 
-source_0_bulge = build_basis(centre=(0.0, 0.0), log10_sigma_list=log10_sigma_list_source)
-source_1_bulge = build_basis(centre=(-0.3, 0.3), log10_sigma_list=log10_sigma_list_source)
+source_0_bulge = build_basis(
+    centre=(0.0, 0.0), log10_sigma_list=log10_sigma_list_source
+)
+source_1_bulge = build_basis(
+    centre=(-0.3, 0.3), log10_sigma_list=log10_sigma_list_source
+)
 
 source_0 = al.Galaxy(
     redshift=1.0,

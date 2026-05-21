@@ -394,7 +394,9 @@ def source_pix_1_source_1(
     for i in range(n_lens):
         key = f"('galaxies', 'lens_{i}')"
         galaxy_name_image_dict[key] = lp2_dict[key]
-    galaxy_name_image_dict["('galaxies', 'source_0')"] = pix0_dict["('galaxies', 'source_0')"]
+    galaxy_name_image_dict["('galaxies', 'source_0')"] = pix0_dict[
+        "('galaxies', 'source_0')"
+    ]
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_name_image_dict)
 
@@ -513,8 +515,12 @@ def source_pix_2(
     for i in range(n_lens):
         key = f"('galaxies', 'lens_{i}')"
         galaxy_name_image_dict[key] = lp2_dict[key]
-    galaxy_name_image_dict["('galaxies', 'source_0')"] = pix0_dict["('galaxies', 'source_0')"]
-    galaxy_name_image_dict["('galaxies', 'source_1')"] = pix1_dict["('galaxies', 'source_1')"]
+    galaxy_name_image_dict["('galaxies', 'source_0')"] = pix0_dict[
+        "('galaxies', 'source_0')"
+    ]
+    galaxy_name_image_dict["('galaxies', 'source_1')"] = pix1_dict[
+        "('galaxies', 'source_1')"
+    ]
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_name_image_dict)
 

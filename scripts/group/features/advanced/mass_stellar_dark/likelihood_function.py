@@ -247,7 +247,9 @@ source MGE at the correct (ray-traced) plane and projects it into the image plan
 """
 model_image_unconvolved = tracer.image_2d_from(grid=masked_grid)
 
-aplt.plot_array(array=model_image_unconvolved, title="Model image before PSF convolution")
+aplt.plot_array(
+    array=model_image_unconvolved, title="Model image before PSF convolution"
+)
 
 """
 What `image_2d_from` does internally for our group-scale decomposed-mass lens:
@@ -275,7 +277,9 @@ fit = al.FitImaging(dataset=dataset, tracer=tracer)
 
 aplt.subplot_fit_imaging(fit=fit)
 
-print(f"\nLog likelihood of the manual group mass-stellar-dark fit: {fit.log_likelihood}")
+print(
+    f"\nLog likelihood of the manual group mass-stellar-dark fit: {fit.log_likelihood}"
+)
 
 """
 __Likelihood__

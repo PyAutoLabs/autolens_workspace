@@ -404,7 +404,9 @@ is therefore important.
 
 The single entry in this example is the source bulge.
 """
-print(f"LightProfileLinearObjFuncList (Source SersicCore) = {inversion.linear_obj_list[0]}")
+print(
+    f"LightProfileLinearObjFuncList (Source SersicCore) = {inversion.linear_obj_list[0]}"
+)
 
 """
 The `LightProfileLinearObjFuncList` contains a `light_profile_list`. In this example the list has a single

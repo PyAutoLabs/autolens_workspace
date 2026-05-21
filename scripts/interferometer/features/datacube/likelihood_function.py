@@ -302,7 +302,9 @@ mapping_matrix = al.util.mapper.mapping_matrix_from(
     sub_fraction=mapper.over_sampler.sub_fraction,
 )
 
-print(f"  mapping_matrix shape: {mapping_matrix.shape} (real-space pixels x source pixels)")
+print(
+    f"  mapping_matrix shape: {mapping_matrix.shape} (real-space pixels x source pixels)"
+)
 
 """
 __Transformed Mapping Matrix ($f$)__
@@ -517,12 +519,10 @@ def per_channel_log_evidence(dataset):
         mapping_matrix=mapping_matrix
     )
 
-    data_vector = (
-        al.util.inversion_interferometer.data_vector_via_transformed_mapping_matrix_from(
-            transformed_mapping_matrix=transformed_mapping_matrix,
-            visibilities=dataset.data,
-            noise_map=dataset.noise_map,
-        )
+    data_vector = al.util.inversion_interferometer.data_vector_via_transformed_mapping_matrix_from(
+        transformed_mapping_matrix=transformed_mapping_matrix,
+        visibilities=dataset.data,
+        noise_map=dataset.noise_map,
     )
 
     real_curvature_matrix = al.util.inversion.curvature_matrix_via_mapping_matrix_from(
@@ -544,9 +544,7 @@ def per_channel_log_evidence(dataset):
             reconstruction=reconstruction,
         )
     )
-    model_visibilities = al.Visibilities(
-        visibilities=mapped_reconstructed_visibilities
-    )
+    model_visibilities = al.Visibilities(visibilities=mapped_reconstructed_visibilities)
 
     residual_map = dataset.data - model_visibilities
     chi_squared = float(

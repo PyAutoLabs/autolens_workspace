@@ -288,8 +288,12 @@ kappa_dark_total = sum(
     lens.dark.convergence_2d_from(grid=plot_grid) for lens in lens_dict.values()
 )
 
-aplt.plot_array(array=kappa_stellar_total, title="Stellar convergence (sum over galaxies)")
-aplt.plot_array(array=kappa_dark_total, title="Dark matter convergence (sum over galaxies)")
+aplt.plot_array(
+    array=kappa_stellar_total, title="Stellar convergence (sum over galaxies)"
+)
+aplt.plot_array(
+    array=kappa_dark_total, title="Dark matter convergence (sum over galaxies)"
+)
 
 """
 __Intensities__

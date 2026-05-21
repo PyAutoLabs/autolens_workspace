@@ -382,8 +382,12 @@ is therefore important.
 
 The lens-plane entry comes first, followed by the source-plane entry.
 """
-print(f"LightProfileLinearObjFuncList (Lens Sersic)       = {inversion.linear_obj_list[0]}")
-print(f"LightProfileLinearObjFuncList (Source SersicCore) = {inversion.linear_obj_list[1]}")
+print(
+    f"LightProfileLinearObjFuncList (Lens Sersic)       = {inversion.linear_obj_list[0]}"
+)
+print(
+    f"LightProfileLinearObjFuncList (Source SersicCore) = {inversion.linear_obj_list[1]}"
+)
 
 """
 Each `LightProfileLinearObjFuncList` contains a `light_profile_list`. For both entries in this example the

@@ -142,8 +142,12 @@ for centre in main_lens_centres:
     lens_galaxies.append(
         al.Galaxy(
             redshift=0.5,
-            bulge=build_basis(centre=(centre[0], centre[1]), log10_sigma_list=log10_sigma_list_lens),
-            mass=al.mp.IsothermalSph(centre=(centre[0], centre[1]), einstein_radius=1.2),
+            bulge=build_basis(
+                centre=(centre[0], centre[1]), log10_sigma_list=log10_sigma_list_lens
+            ),
+            mass=al.mp.IsothermalSph(
+                centre=(centre[0], centre[1]), einstein_radius=1.2
+            ),
         )
     )
 
@@ -200,7 +204,9 @@ The only group-specific step is (1). Every other step is identical to the imagin
 """
 model_image_unconvolved = tracer.image_2d_from(grid=dataset.grid)
 
-aplt.plot_array(array=model_image_unconvolved, title="Model image before PSF convolution")
+aplt.plot_array(
+    array=model_image_unconvolved, title="Model image before PSF convolution"
+)
 
 """
 __Likelihood__
@@ -218,7 +224,9 @@ fit = al.FitImaging(dataset=dataset, tracer=tracer)
 
 aplt.subplot_fit_imaging(fit=fit)
 
-print(f"\nLog likelihood of the manual group double Einstein ring fit: {fit.log_likelihood}")
+print(
+    f"\nLog likelihood of the manual group double Einstein ring fit: {fit.log_likelihood}"
+)
 
 """
 __Wrap Up__

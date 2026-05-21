@@ -197,7 +197,9 @@ Evaluate the source bulge on the ray-traced source-plane grid. Because the linea
 """
 image_2d_source_bulge_internal = source_galaxy.bulge.image_2d_from(grid=traced_grid)
 
-aplt.plot_array(array=image_2d_source_bulge_internal, title="Source Bulge Image (intensity=1.0)")
+aplt.plot_array(
+    array=image_2d_source_bulge_internal, title="Source Bulge Image (intensity=1.0)"
+)
 
 """
 __Mapping Matrix__
@@ -401,7 +403,9 @@ mapped_reconstructed_visibilities = al.Visibilities(
     visibilities=mapped_reconstructed_visibilities
 )
 
-aplt.plot_grid(grid=mapped_reconstructed_visibilities.in_grid, title="Model Visibilities")
+aplt.plot_grid(
+    grid=mapped_reconstructed_visibilities.in_grid, title="Model Visibilities"
+)
 
 
 """
@@ -452,8 +456,12 @@ The `noise_normalization` term is the sum of the log of every noise-map value sq
 `noise_map` is fixed, this term does not change during modeling and has no impact on the inferred model — it
 is included so that the absolute value of `log_likelihood` has the correct calibration for model comparison.
 """
-noise_normalization_real = float(np.sum(np.log(2 * np.pi * dataset.noise_map.real ** 2.0)))
-noise_normalization_imag = float(np.sum(np.log(2 * np.pi * dataset.noise_map.imag ** 2.0)))
+noise_normalization_real = float(
+    np.sum(np.log(2 * np.pi * dataset.noise_map.real**2.0))
+)
+noise_normalization_imag = float(
+    np.sum(np.log(2 * np.pi * dataset.noise_map.imag**2.0))
+)
 noise_normalization = noise_normalization_real + noise_normalization_imag
 
 """

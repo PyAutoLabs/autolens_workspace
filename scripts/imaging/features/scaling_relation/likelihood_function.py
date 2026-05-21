@@ -121,7 +121,9 @@ individual_extras_centres = al.from_json(
     file_path=dataset_path / "extra_galaxies_centres.json"
 )
 
-scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
 scaling_extras_centres = scaling_table.centres
 scaling_extras_luminosities = scaling_table.luminosities
 
@@ -175,7 +177,9 @@ for centre, luminosity in zip(scaling_extras_centres, scaling_extras_luminositie
     scaling_extras.append(
         al.Galaxy(
             redshift=0.5,
-            mass=al.mp.IsothermalSph(centre=tuple(centre), einstein_radius=einstein_radius),
+            mass=al.mp.IsothermalSph(
+                centre=tuple(centre), einstein_radius=einstein_radius
+            ),
         )
     )
 
@@ -206,14 +210,8 @@ alpha_scaling = [
 alpha_total = alpha_lens + sum(alpha_individual) + sum(alpha_scaling)
 
 print(f"alpha_lens                       (first coord): {alpha_lens[0]}")
-print(
-    f"alpha_individual (tier sum)      (first coord): "
-    f"{sum(alpha_individual)[0]}"
-)
-print(
-    f"alpha_scaling    (tier sum)      (first coord): "
-    f"{sum(alpha_scaling)[0]}"
-)
+print(f"alpha_individual (tier sum)      (first coord): " f"{sum(alpha_individual)[0]}")
+print(f"alpha_scaling    (tier sum)      (first coord): " f"{sum(alpha_scaling)[0]}")
 print(f"alpha_total      (across all)    (first coord): {alpha_total[0]}")
 
 """
@@ -251,7 +249,9 @@ the linear-algebra step (see the MGE likelihood prerequisite).
 """
 model_image_unconvolved = tracer.image_2d_from(grid=masked_grid)
 
-aplt.plot_array(array=model_image_unconvolved, title="Model image before PSF convolution")
+aplt.plot_array(
+    array=model_image_unconvolved, title="Model image before PSF convolution"
+)
 
 """
 What `image_2d_from` does internally for our two-tier extras population:

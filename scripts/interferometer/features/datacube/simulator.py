@@ -295,7 +295,9 @@ al.output_to_fits(
     overwrite=True,
 )
 
-print(f"  4D CASA-like cubes: shape {visibilities_4d_cube.shape} (n_pol, n_chan, n_vis, 2)")
+print(
+    f"  4D CASA-like cubes: shape {visibilities_4d_cube.shape} (n_pol, n_chan, n_vis, 2)"
+)
 
 """
 __Multiple Images__

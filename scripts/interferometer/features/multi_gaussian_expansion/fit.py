@@ -217,7 +217,9 @@ do not have an `intensity` value.
 The helper-tracer created above replaces every linear `Gaussian` with an ordinary `Gaussian` carrying its
 solved-for `intensity` — that tracer can be plotted directly.
 """
-aplt.plot_array(array=tracer.image_2d_from(grid=dataset.grid), title="Tracer Image (MGE source)")
+aplt.plot_array(
+    array=tracer.image_2d_from(grid=dataset.grid), title="Tracer Image (MGE source)"
+)
 
 
 """

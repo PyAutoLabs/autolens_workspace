@@ -298,9 +298,7 @@ for centre, luminosity in zip(
     mass.rs = scaling_rs_fixed
     mass.b0 = scaling_factor * luminosity**scaling_exponent
 
-    scaling_galaxies_list.append(
-        af.Model(al.Galaxy, redshift=redshift_lens, mass=mass)
-    )
+    scaling_galaxies_list.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
 scaling_galaxies = af.Collection(scaling_galaxies_list)
 
@@ -330,7 +328,8 @@ analysis_list = [
 ]
 
 analysis_factor_list = [
-    af.AnalysisFactor(prior_model=model, analysis=analysis) for analysis in analysis_list
+    af.AnalysisFactor(prior_model=model, analysis=analysis)
+    for analysis in analysis_list
 ]
 
 factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
