@@ -112,7 +112,9 @@ extra_galaxies_centres = al.from_json(
     file_path=dataset_path / "extra_galaxies_centres.json"
 )
 
-scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
 scaling_galaxies_centres = scaling_table.centres
 scaling_galaxies_luminosities = scaling_table.luminosities
 
@@ -169,7 +171,9 @@ for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminos
     scaling_extras.append(
         al.Galaxy(
             redshift=0.5,
-            mass=al.mp.IsothermalSph(centre=tuple(centre), einstein_radius=einstein_radius),
+            mass=al.mp.IsothermalSph(
+                centre=tuple(centre), einstein_radius=einstein_radius
+            ),
         )
     )
 
@@ -240,7 +244,9 @@ __Source-Plane Image__
 """
 model_image_unconvolved = tracer.image_2d_from(grid=masked_grid)
 
-aplt.plot_array(array=model_image_unconvolved, title="Model image before PSF convolution")
+aplt.plot_array(
+    array=model_image_unconvolved, title="Model image before PSF convolution"
+)
 
 """
 What `image_2d_from` does internally for our group-scale three-tier lens:
@@ -270,7 +276,9 @@ fit = al.FitImaging(dataset=dataset, tracer=tracer)
 
 aplt.subplot_fit_imaging(fit=fit)
 
-print(f"\nLog likelihood of the manual group scaling-relation fit: {fit.log_likelihood}")
+print(
+    f"\nLog likelihood of the manual group scaling-relation fit: {fit.log_likelihood}"
+)
 
 """
 __Wrap Up__

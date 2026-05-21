@@ -122,7 +122,9 @@ individual_extras_centres = al.from_json(
     file_path=dataset_path / "extra_galaxies_centres.json"
 )
 
-scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
 scaling_extras_centres = scaling_table.centres
 scaling_extras_luminosities = scaling_table.luminosities
 
@@ -285,9 +287,7 @@ each one explicitly and confirming the sum equals what the `Tracer` returns.
 grid = dataset.grid
 
 alpha_lens = lens.mass.deflections_yx_2d_from(grid=grid)
-alpha_individual = [
-    g.mass.deflections_yx_2d_from(grid=grid) for g in individual_extras
-]
+alpha_individual = [g.mass.deflections_yx_2d_from(grid=grid) for g in individual_extras]
 alpha_scaling = [g.mass.deflections_yx_2d_from(grid=grid) for g in scaling_extras]
 
 print(f"\nalpha_lens                (first coord): {alpha_lens[0]}")

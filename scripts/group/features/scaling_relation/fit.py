@@ -105,7 +105,9 @@ extra_galaxies_centres = al.from_json(
     file_path=dataset_path / "extra_galaxies_centres.json"
 )
 
-scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
 scaling_galaxies_centres = scaling_table.centres
 scaling_galaxies_luminosities = scaling_table.luminosities
 
@@ -290,9 +292,7 @@ grid = dataset.grid
 alpha_main_per_lens = [
     g.mass.deflections_yx_2d_from(grid=grid) for g in lens_dict.values()
 ]
-alpha_individual = [
-    g.mass.deflections_yx_2d_from(grid=grid) for g in individual_extras
-]
+alpha_individual = [g.mass.deflections_yx_2d_from(grid=grid) for g in individual_extras]
 alpha_scaling = [g.mass.deflections_yx_2d_from(grid=grid) for g in scaling_extras]
 
 alpha_main_total = sum(alpha_main_per_lens)
@@ -304,7 +304,9 @@ print(f"alpha_individual (tier sum, first coord) : {alpha_individual_total[0]}")
 print(f"alpha_scaling    (tier sum, first coord) : {alpha_scaling_total[0]}")
 
 for centre, luminosity, er in zip(
-    scaling_galaxies_centres, scaling_galaxies_luminosities, scaling_extras_einstein_radii
+    scaling_galaxies_centres,
+    scaling_galaxies_luminosities,
+    scaling_extras_einstein_radii,
 ):
     print(
         f"    scaling galaxy @ {tuple(centre)}: "

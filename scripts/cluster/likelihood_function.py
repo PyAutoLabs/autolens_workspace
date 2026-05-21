@@ -68,6 +68,7 @@ __Contents__
 - **Source-Plane vs Image-Plane: When to Use Which:** Practical comparison.
 - **Wrap Up:** Pointers to ``modeling.py``, ``csv_api.py``, and the test-workspace sanity diagnostic.
 """
+
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 import subprocess
@@ -144,7 +145,9 @@ source_galaxies = [galaxies_by_name["source_0"], galaxies_by_name["source_1"]]
 scaling_galaxies = []
 SCALING_FACTOR_TRUTH = 0.3
 SCALING_EXPONENT_TRUTH = 1.0
-for centre, luminosity in zip(scaling_table.centres.in_list, scaling_table.luminosities):
+for centre, luminosity in zip(
+    scaling_table.centres.in_list, scaling_table.luminosities
+):
     b0 = SCALING_FACTOR_TRUTH * luminosity**SCALING_EXPONENT_TRUTH
     scaling_galaxies.append(
         al.Galaxy(
@@ -175,8 +178,10 @@ tracer = al.Tracer(
     + source_galaxies
 )
 
-print(f"Tracer has {len(tracer.planes)} planes at redshifts "
-      f"{[float(p.redshift) for p in tracer.planes]}")
+print(
+    f"Tracer has {len(tracer.planes)} planes at redshifts "
+    f"{[float(p.redshift) for p in tracer.planes]}"
+)
 
 
 """
@@ -257,8 +262,10 @@ for i, dataset in enumerate(dataset_list):
     traced_grids = tracer.traced_grid_2d_list_from(grid=dataset.positions)
     source_plane_positions_per_source.append(traced_grids[plane_index])
 
-    print(f"  {dataset.name}: plane_index={plane_index}, "
-          f"back-traced positions = {traced_grids[plane_index].in_list}")
+    print(
+        f"  {dataset.name}: plane_index={plane_index}, "
+        f"back-traced positions = {traced_grids[plane_index].in_list}"
+    )
 
 
 """
@@ -430,7 +437,9 @@ for i, dataset in enumerate(dataset_list):
     noise_normalizations_per_source.append(nn)
 
 total_noise_normalization_source = float(sum(noise_normalizations_per_source))
-print(f"Total source-plane noise normalization = {total_noise_normalization_source:.4e}")
+print(
+    f"Total source-plane noise normalization = {total_noise_normalization_source:.4e}"
+)
 
 
 """
@@ -445,7 +454,9 @@ The standard Gaussian log-likelihood:
 This is what Nautilus maximises during a cluster point-source model fit. The chi² term encodes
 goodness-of-fit; the normalisation absorbs the constant noise-dependent prefactor of the Gaussian.
 """
-log_likelihood_source = -0.5 * (total_chi_squared_source + total_noise_normalization_source)
+log_likelihood_source = -0.5 * (
+    total_chi_squared_source + total_noise_normalization_source
+)
 print(f"Source-plane log likelihood = {log_likelihood_source:.4e}")
 
 
@@ -470,7 +481,9 @@ for i, dataset in enumerate(dataset_list):
     sum_library_log_likelihood_source += float(fit.log_likelihood)
 
 print(f"Library source-plane log likelihood = {sum_library_log_likelihood_source:.4e}")
-print(f"Match: {np.isclose(log_likelihood_source, sum_library_log_likelihood_source, rtol=1e-6)}")
+print(
+    f"Match: {np.isclose(log_likelihood_source, sum_library_log_likelihood_source, rtol=1e-6)}"
+)
 
 
 """
@@ -630,12 +643,12 @@ def _pair_hungarian(model_positions, observed_positions):
 
 pairs_per_source = []
 for i, dataset in enumerate(dataset_list):
-    pairs = _pair_hungarian(
-        model_positions_per_source[i], dataset.positions
-    )
+    pairs = _pair_hungarian(model_positions_per_source[i], dataset.positions)
     pairs_per_source.append(pairs)
-    print(f"  {dataset.name}: {len(pairs)} pairs / {len(dataset.positions)} observed / "
-          f"{len(model_positions_per_source[i])} model")
+    print(
+        f"  {dataset.name}: {len(pairs)} pairs / {len(dataset.positions)} observed / "
+        f"{len(model_positions_per_source[i])} model"
+    )
 
 
 """
@@ -676,7 +689,9 @@ for i, dataset in enumerate(dataset_list):
 """
 __Per-Source / Total Chi Squared (Image)__
 """
-chi_squared_per_source_image = [float(np.sum(m)) for m in chi_squared_maps_image_per_source]
+chi_squared_per_source_image = [
+    float(np.sum(m)) for m in chi_squared_maps_image_per_source
+]
 total_chi_squared_image = float(sum(chi_squared_per_source_image))
 print(f"Total image-plane chi² = {total_chi_squared_image:.4e}")
 
@@ -706,7 +721,9 @@ print(f"Total image-plane noise normalization = {total_noise_normalization_image
 """
 __Image-Plane Log Likelihood__
 """
-log_likelihood_image = -0.5 * (total_chi_squared_image + total_noise_normalization_image)
+log_likelihood_image = -0.5 * (
+    total_chi_squared_image + total_noise_normalization_image
+)
 print(f"Image-plane log likelihood = {log_likelihood_image:.4e}")
 
 
@@ -732,8 +749,10 @@ for i, dataset in enumerate(dataset_list):
     sum_library_log_likelihood_image += float(fit.log_likelihood)
 
 print(f"Library image-plane log likelihood = {sum_library_log_likelihood_image:.4e}")
-print(f"Match (rtol=1e-2): "
-      f"{np.isclose(log_likelihood_image, sum_library_log_likelihood_image, rtol=1e-2)}")
+print(
+    f"Match (rtol=1e-2): "
+    f"{np.isclose(log_likelihood_image, sum_library_log_likelihood_image, rtol=1e-2)}"
+)
 
 
 """

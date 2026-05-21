@@ -2,6 +2,11 @@
     "type": "instance",
     "class_path": "autolens.lens.tracer.Tracer",
     "arguments": {
+        "cosmology": {
+            "type": "instance",
+            "class_path": "autogalaxy.cosmology.model.Planck15",
+            "arguments": {}
+        },
         "galaxies": {
             "type": "list",
             "values": [
@@ -9,25 +14,25 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
-                        "label": null,
                         "redshift": 0.5,
+                        "label": null,
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.isothermal.Isothermal",
                             "arguments": {
+                                "ell_comps": {
+                                    "type": "tuple",
+                                    "values": [
+                                        0.05263157894736841,
+                                        3.2227547345982974e-18
+                                    ]
+                                },
                                 "einstein_radius": 1.6,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
                                         0.0,
                                         0.0
-                                    ]
-                                },
-                                "ell_comps": {
-                                    "type": "tuple",
-                                    "values": [
-                                        0.05263157894736841,
-                                        3.2227547345982974e-18
                                     ]
                                 }
                             }
@@ -46,22 +51,15 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
-                        "label": null,
                         "redshift": 1.0,
+                        "label": null,
                         "bulge": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.light.standard.sersic_core.SersicCore",
                             "arguments": {
-                                "centre": {
-                                    "type": "tuple",
-                                    "values": [
-                                        0.0,
-                                        0.0
-                                    ]
-                                },
-                                "gamma": 0.25,
-                                "alpha": 3.0,
                                 "radius_break": 0.025,
+                                "effective_radius": 1.0,
+                                "gamma": 0.25,
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
@@ -69,19 +67,21 @@
                                         -0.05555555555555551
                                     ]
                                 },
+                                "centre": {
+                                    "type": "tuple",
+                                    "values": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                },
                                 "intensity": 10.0,
                                 "sersic_index": 2.5,
-                                "effective_radius": 1.0
+                                "alpha": 3.0
                             }
                         }
                     }
                 }
             ]
-        },
-        "cosmology": {
-            "type": "instance",
-            "class_path": "autogalaxy.cosmology.model.Planck15",
-            "arguments": {}
         }
     }
 }

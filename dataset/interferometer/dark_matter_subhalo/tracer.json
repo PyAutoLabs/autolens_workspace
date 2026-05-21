@@ -1,0 +1,103 @@
+{
+    "type": "instance",
+    "class_path": "autolens.lens.tracer.Tracer",
+    "arguments": {
+        "galaxies": {
+            "type": "list",
+            "values": [
+                {
+                    "type": "instance",
+                    "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
+                    "arguments": {
+                        "redshift": 0.5,
+                        "label": null,
+                        "mass": {
+                            "type": "instance",
+                            "class_path": "autogalaxy.profiles.mass.total.isothermal.Isothermal",
+                            "arguments": {
+                                "ell_comps": {
+                                    "type": "tuple",
+                                    "values": [
+                                        0.05263157894736841,
+                                        3.2227547345982974e-18
+                                    ]
+                                },
+                                "einstein_radius": 1.6,
+                                "centre": {
+                                    "type": "tuple",
+                                    "values": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                }
+                            }
+                        },
+                        "subhalo": {
+                            "type": "instance",
+                            "class_path": "autogalaxy.profiles.mass.dark.nfw_truncated_mcr.NFWTruncatedMCRLudlowSph",
+                            "arguments": {
+                                "redshift_object": 0.5,
+                                "redshift_source": 1.0,
+                                "centre": {
+                                    "type": "tuple",
+                                    "values": [
+                                        1.601,
+                                        0.0
+                                    ]
+                                },
+                                "mass_at_200": 10000000000.0
+                            }
+                        },
+                        "shear": {
+                            "type": "instance",
+                            "class_path": "autogalaxy.profiles.mass.sheets.external_shear.ExternalShear",
+                            "arguments": {
+                                "gamma_2": 0.0,
+                                "gamma_1": 0.05
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "instance",
+                    "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
+                    "arguments": {
+                        "redshift": 1.0,
+                        "label": null,
+                        "bulge": {
+                            "type": "instance",
+                            "class_path": "autogalaxy.profiles.light.standard.sersic_core.SersicCore",
+                            "arguments": {
+                                "gamma": 0.25,
+                                "radius_break": 0.025,
+                                "intensity": 4.0,
+                                "effective_radius": 0.1,
+                                "alpha": 3.0,
+                                "sersic_index": 1.0,
+                                "ell_comps": {
+                                    "type": "tuple",
+                                    "values": [
+                                        0.0962250448649376,
+                                        -0.05555555555555551
+                                    ]
+                                },
+                                "centre": {
+                                    "type": "tuple",
+                                    "values": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "cosmology": {
+            "type": "instance",
+            "class_path": "autogalaxy.cosmology.model.Planck15",
+            "arguments": {}
+        }
+    }
+}

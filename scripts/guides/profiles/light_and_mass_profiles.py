@@ -653,7 +653,9 @@ lmp_chameleon = al.lmp.Chameleon(
     core_radius_1=0.3,
     mass_to_light_ratio=2.0,
 )
-aplt.plot_array(array=lmp_chameleon.image_2d_from(grid=grid), title="lmp.Chameleon Image")
+aplt.plot_array(
+    array=lmp_chameleon.image_2d_from(grid=grid), title="lmp.Chameleon Image"
+)
 aplt.plot_array(
     array=lmp_chameleon.convergence_2d_from(grid=grid),
     title="lmp.Chameleon Convergence",

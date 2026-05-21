@@ -2,6 +2,11 @@
     "type": "instance",
     "class_path": "autolens.lens.tracer.Tracer",
     "arguments": {
+        "cosmology": {
+            "type": "instance",
+            "class_path": "autogalaxy.cosmology.model.Planck15",
+            "arguments": {}
+        },
         "galaxies": {
             "type": "list",
             "values": [
@@ -16,7 +21,6 @@
                             "class_path": "autogalaxy.profiles.light_and_mass_profiles.Sersic",
                             "arguments": {
                                 "intensity": 1.0,
-                                "effective_radius": 0.8,
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
@@ -24,15 +28,16 @@
                                         3.2227547345982974e-18
                                     ]
                                 },
+                                "mass_to_light_ratio": 0.2,
+                                "effective_radius": 0.8,
+                                "sersic_index": 4.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
                                         0.0,
                                         0.0
                                     ]
-                                },
-                                "sersic_index": 4.0,
-                                "mass_to_light_ratio": 0.2
+                                }
                             }
                         },
                         "dark": {
@@ -46,8 +51,8 @@
                                         0.0
                                     ]
                                 },
-                                "scale_radius": 20.0,
-                                "kappa_s": 0.1
+                                "kappa_s": 0.1,
+                                "scale_radius": 20.0
                             }
                         },
                         "shear": {
@@ -71,7 +76,7 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic_core.SersicCore",
                             "arguments": {
                                 "intensity": 4.0,
-                                "effective_radius": 0.1,
+                                "alpha": 3.0,
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
@@ -79,6 +84,9 @@
                                         -0.05555555555555551
                                     ]
                                 },
+                                "effective_radius": 0.1,
+                                "sersic_index": 1.0,
+                                "radius_break": 0.025,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -86,20 +94,12 @@
                                         0.0
                                     ]
                                 },
-                                "gamma": 0.25,
-                                "alpha": 3.0,
-                                "sersic_index": 1.0,
-                                "radius_break": 0.025
+                                "gamma": 0.25
                             }
                         }
                     }
                 }
             ]
-        },
-        "cosmology": {
-            "type": "instance",
-            "class_path": "autogalaxy.cosmology.model.Planck15",
-            "arguments": {}
         }
     }
 }

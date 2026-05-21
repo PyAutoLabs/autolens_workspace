@@ -14,12 +14,14 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
-                        "redshift": 0.5,
                         "label": null,
+                        "redshift": 0.5,
                         "bulge": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
+                                "intensity": 0.7,
+                                "effective_radius": 1.0,
                                 "sersic_index": 4.0,
                                 "centre": {
                                     "type": "tuple",
@@ -27,9 +29,7 @@
                                         0.0,
                                         -0.75
                                     ]
-                                },
-                                "intensity": 0.7,
-                                "effective_radius": 1.0
+                                }
                             }
                         },
                         "mass": {
@@ -52,12 +52,14 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
-                        "redshift": 0.5,
                         "label": null,
+                        "redshift": 0.5,
                         "bulge": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
+                                "intensity": 0.7,
+                                "effective_radius": 1.0,
                                 "sersic_index": 4.0,
                                 "centre": {
                                     "type": "tuple",
@@ -65,9 +67,7 @@
                                         0.0,
                                         0.75
                                     ]
-                                },
-                                "intensity": 0.7,
-                                "effective_radius": 1.0
+                                }
                             }
                         },
                         "mass": {
@@ -90,24 +90,24 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
+                        "label": null,
                         "redshift": 1.0,
-                        "label": null,
                         "bulge": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.light.standard.exponential_core.ExponentialCoreSph",
                             "arguments": {
+                                "effective_radius": 0.1,
+                                "gamma": 0.25,
                                 "alpha": 3.0,
+                                "intensity": 1.2,
+                                "radius_break": 0.01,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
                                         0.0,
                                         0.0
                                     ]
-                                },
-                                "radius_break": 0.01,
-                                "effective_radius": 0.1,
-                                "intensity": 1.2,
-                                "gamma": 0.25
+                                }
                             }
                         },
                         "mass": {
@@ -130,24 +130,24 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
-                        "redshift": 2.0,
                         "label": null,
+                        "redshift": 2.0,
                         "bulge": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.light.standard.exponential_core.ExponentialCoreSph",
                             "arguments": {
+                                "effective_radius": 0.07,
+                                "gamma": 0.25,
                                 "alpha": 3.0,
+                                "intensity": 0.6,
+                                "radius_break": 0.01,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
                                         -0.3,
                                         0.3
                                     ]
-                                },
-                                "radius_break": 0.01,
-                                "effective_radius": 0.07,
-                                "intensity": 0.6,
-                                "gamma": 0.25
+                                }
                             }
                         }
                     }

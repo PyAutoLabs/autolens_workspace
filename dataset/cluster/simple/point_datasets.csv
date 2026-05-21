@@ -1,0 +1,5 @@
+name,y,x,positions_noise,redshift
+point_0,1.0,0.0,0.005,1.0
+point_0,0.0,1.0,0.005,1.0
+point_1,1.0,0.0,0.005,2.0
+point_1,0.0,1.0,0.005,2.0

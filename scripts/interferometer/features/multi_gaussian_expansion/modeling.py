@@ -234,8 +234,12 @@ for j in range(gaussian_per_basis):
     for i, gaussian in enumerate(gaussian_list):
         gaussian.centre.centre_0 = centre_0  # All Gaussians have same y centre.
         gaussian.centre.centre_1 = centre_1  # All Gaussians have same x centre.
-        gaussian.ell_comps = gaussian_list[0].ell_comps  # All Gaussians in this group share ell_comps.
-        gaussian.sigma = 10 ** log10_sigma_list[i]  # All Gaussian sigmas are fixed to values above.
+        gaussian.ell_comps = gaussian_list[
+            0
+        ].ell_comps  # All Gaussians in this group share ell_comps.
+        gaussian.sigma = (
+            10 ** log10_sigma_list[i]
+        )  # All Gaussian sigmas are fixed to values above.
 
     bulge_gaussian_list += gaussian_list
 

@@ -67,17 +67,16 @@ swapped to `lmp.Sersic` with priors carried over from LIGHT LP, plus a new `NFWS
 
 def n_lens_from(result) -> int:
     return len(
-        [
-            name
-            for name in vars(result.instance.galaxies)
-            if name.startswith("lens_")
-        ]
+        [name for name in vars(result.instance.galaxies) if name.startswith("lens_")]
     )
 
 
 def lens_galaxy_image_dict(result, n_lens: int) -> dict:
     full = al.galaxy_name_image_dict_via_result_from(result=result)
-    return {f"('galaxies', 'lens_{i}')": full[f"('galaxies', 'lens_{i}')"] for i in range(n_lens)}
+    return {
+        f"('galaxies', 'lens_{i}')": full[f"('galaxies', 'lens_{i}')"]
+        for i in range(n_lens)
+    }
 
 
 def build_lens_dict_source_lp(
@@ -175,7 +174,9 @@ def source_pix_1(
 ) -> af.Result:
     n_lens = n_lens_from(source_lp_result)
 
-    galaxy_image_dict = al.galaxy_name_image_dict_via_result_from(result=source_lp_result)
+    galaxy_image_dict = al.galaxy_name_image_dict_via_result_from(
+        result=source_lp_result
+    )
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_dict)
 
     positions_likelihood = source_lp_result.positions_likelihood_from(
@@ -254,7 +255,9 @@ def source_pix_2(
 ) -> af.Result:
     n_lens = n_lens_from(source_lp_result)
 
-    galaxy_image_dict = al.galaxy_name_image_dict_via_result_from(result=source_pix_result_1)
+    galaxy_image_dict = al.galaxy_name_image_dict_via_result_from(
+        result=source_pix_result_1
+    )
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_dict)
 
     analysis = al.AnalysisImaging(
@@ -323,7 +326,9 @@ def light_lp(
 ) -> af.Result:
     n_lens = n_lens_from(source_result_for_lens)
 
-    galaxy_image_dict = al.galaxy_name_image_dict_via_result_from(result=source_result_for_lens)
+    galaxy_image_dict = al.galaxy_name_image_dict_via_result_from(
+        result=source_result_for_lens
+    )
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_dict)
 
     analysis = al.AnalysisImaging(dataset=dataset, adapt_images=adapt_images)
@@ -387,7 +392,9 @@ def mass_light_dark(
 ) -> af.Result:
     n_lens = n_lens_from(light_result)
 
-    galaxy_image_dict = al.galaxy_name_image_dict_via_result_from(result=source_result_for_lens)
+    galaxy_image_dict = al.galaxy_name_image_dict_via_result_from(
+        result=source_result_for_lens
+    )
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_dict)
 
     analysis = al.AnalysisImaging(
@@ -531,7 +538,9 @@ source_pix_result_1 = source_pix_1(
     regularization_init=al.reg.Adapt,
 )
 
-galaxy_image_dict = al.galaxy_name_image_dict_via_result_from(result=source_pix_result_1)
+galaxy_image_dict = al.galaxy_name_image_dict_via_result_from(
+    result=source_pix_result_1
+)
 adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_dict)
 over_sampling = al.util.over_sample.over_sample_size_via_adapt_from(
     data=adapt_images.galaxy_name_image_dict["('galaxies', 'source')"],

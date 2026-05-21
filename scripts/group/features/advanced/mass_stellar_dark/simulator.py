@@ -172,7 +172,9 @@ internally by redshift, so the deflection chain runs:
 """
 tracer = al.Tracer(galaxies=main_lens_galaxies + [source])
 
-aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Group Mass Stellar Dark Image")
+aplt.plot_array(
+    array=tracer.image_2d_from(grid=grid), title="Group Mass Stellar Dark Image"
+)
 
 """
 __Dataset__

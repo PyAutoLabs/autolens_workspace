@@ -20,7 +20,6 @@
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.isothermal.Isothermal",
                             "arguments": {
-                                "einstein_radius": 1.6,
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
@@ -34,15 +33,16 @@
                                         0.0,
                                         0.0
                                     ]
-                                }
+                                },
+                                "einstein_radius": 1.6
                             }
                         },
                         "shear": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.sheets.external_shear.ExternalShear",
                             "arguments": {
-                                "gamma_2": 0.05,
-                                "gamma_1": 0.05
+                                "gamma_1": 0.05,
+                                "gamma_2": 0.05
                             }
                         }
                     }
@@ -57,10 +57,10 @@
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.light.standard.sersic_core.SersicCore",
                             "arguments": {
-                                "radius_break": 0.025,
+                                "intensity": 0.5501132134392174,
                                 "alpha": 3.0,
+                                "radius_break": 0.025,
                                 "gamma": 0.25,
-                                "effective_radius": 1.0,
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
@@ -68,15 +68,15 @@
                                         -0.05555555555555551
                                     ]
                                 },
-                                "intensity": 0.5501132134392174,
-                                "sersic_index": 2.5,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
-                                        0.1,
+                                        0.12,
                                         0.1
                                     ]
-                                }
+                                },
+                                "effective_radius": 1.0,
+                                "sersic_index": 2.5
                             }
                         }
                     }

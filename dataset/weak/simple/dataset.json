@@ -214,7 +214,6 @@
                 }
             }
         },
-        "name": "simple",
         "shear_yx": {
             "type": "instance",
             "class_path": "autogalaxy.util.shear_field.ShearYX2DIrregular",
@@ -1032,6 +1031,7 @@
                     }
                 }
             }
-        }
+        },
+        "name": "simple"
     }
 }

@@ -346,7 +346,9 @@ range for each parameter (see the autogalaxy config for the configured ranges).
 You can override individual priors before fitting:
 """
 source_bulge_model.sersic_index = af.UniformPrior(lower_limit=0.5, upper_limit=8.0)
-source_bulge_model.effective_radius = af.UniformPrior(lower_limit=0.01, upper_limit=10.0)
+source_bulge_model.effective_radius = af.UniformPrior(
+    lower_limit=0.01, upper_limit=10.0
+)
 
 """
 A model profile by itself is not a complete model — for a strong lens we wrap each profile
@@ -421,7 +423,7 @@ You can still pull the individual light-profile instances back out of the same o
 """
 lens_bulge_instance = model_instance.galaxies.lens.bulge
 source_bulge_instance = model_instance.galaxies.source.bulge
-print(type(lens_bulge_instance))    # autogalaxy.profiles.light.standard.sersic.Sersic
+print(type(lens_bulge_instance))  # autogalaxy.profiles.light.standard.sersic.Sersic
 print(type(source_bulge_instance))  # autogalaxy.profiles.light.standard.sersic.Sersic
 
 """
