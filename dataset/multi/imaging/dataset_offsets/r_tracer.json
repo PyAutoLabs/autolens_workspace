@@ -16,13 +16,8 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic.Sersic",
                             "arguments": {
                                 "sersic_index": 4.0,
-                                "centre": {
-                                    "type": "tuple",
-                                    "values": [
-                                        0.0,
-                                        0.0
-                                    ]
-                                },
+                                "effective_radius": 0.8,
+                                "intensity": 1.5,
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
@@ -30,21 +25,20 @@
                                         3.2227547345982974e-18
                                     ]
                                 },
-                                "intensity": 1.5,
-                                "effective_radius": 0.8
+                                "centre": {
+                                    "type": "tuple",
+                                    "values": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                }
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.isothermal.Isothermal",
                             "arguments": {
-                                "centre": {
-                                    "type": "tuple",
-                                    "values": [
-                                        0.0,
-                                        0.0
-                                    ]
-                                },
+                                "einstein_radius": 1.6,
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
@@ -52,7 +46,13 @@
                                         3.2227547345982974e-18
                                     ]
                                 },
-                                "einstein_radius": 1.6
+                                "centre": {
+                                    "type": "tuple",
+                                    "values": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                }
                             }
                         },
                         "shear": {
@@ -75,15 +75,12 @@
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.light.standard.sersic_core.SersicCore",
                             "arguments": {
-                                "radius_break": 0.025,
+                                "alpha": 3.0,
+                                "effective_radius": 0.1,
                                 "sersic_index": 1.0,
-                                "centre": {
-                                    "type": "tuple",
-                                    "values": [
-                                        0.0,
-                                        0.0
-                                    ]
-                                },
+                                "radius_break": 0.025,
+                                "intensity": 0.7,
+                                "gamma": 0.25,
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
@@ -91,10 +88,13 @@
                                         -0.05555555555555551
                                     ]
                                 },
-                                "intensity": 0.7,
-                                "effective_radius": 0.1,
-                                "gamma": 0.25,
-                                "alpha": 3.0
+                                "centre": {
+                                    "type": "tuple",
+                                    "values": [
+                                        0.0,
+                                        0.0
+                                    ]
+                                }
                             }
                         }
                     }
