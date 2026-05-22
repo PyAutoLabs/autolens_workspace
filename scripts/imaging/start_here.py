@@ -516,10 +516,7 @@ we create.
 
 Each lens is simulated as if it were observed with CD imaging, therefore with a PSF and noise-map.
 """
-lens_model, source_model = al.model_util.simulator_start_here_model_from()
-
-print(lens_model.info)
-print(source_model.info)
+print(al.model_util.SIMULATOR_RANDOM_LENS_SUMMARY)
 
 """
 We now simulate a sample of strong lens, we just do 3 for efficiency here but you can increase this to any number.
@@ -528,8 +525,7 @@ total_datasets = 3
 
 for sample_index in range(total_datasets):
 
-    lens_galaxy = lens_model.random_instance()
-    source_galaxy = source_model.random_instance()
+    lens_galaxy, source_galaxy = al.model_util.random_galaxies_for_simulation_from()
 
     tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 

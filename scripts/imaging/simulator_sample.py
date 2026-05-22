@@ -45,6 +45,7 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 # from autoconf import setup_notebook; setup_notebook()
 
 from pathlib import Path
+import numpy as np
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -101,81 +102,70 @@ simulator = al.SimulatorImaging(
 )
 
 """
-__Sample Model Distributions__
+__Sample Truth Distributions__
 
-To simulate a sample, we draw random instances of lens and source galaxies where the parameters of their light and 
-mass profiles are drawn from distributions. These distributions are defined via priors -- the same objects that are used 
-when defining the priors of each parameter for a non-linear search.
+To simulate a sample, we draw random instances of lens and source galaxies. Each parameter
+is sampled directly from a numpy ``Generator`` and used to construct concrete light/mass
+profile instances — there is no ``af.Model`` involved here because we are generating
+*truths* for synthetic data, not fitting a model.
 
-Below, we define the distributions the lens galaxy's bulge light and mass profiles are drawn from alongside
-the soruce's bulge. 
+The bulges use ``al.lp_snr.Sersic`` so each lens/source hits a target signal-to-noise
+ratio in the data — SNR is a property of the data, not a fitted parameter.
 """
-bulge = af.Model(al.lp_snr.Sersic)
+rng = np.random.default_rng()
 
-bulge.centre = (0.0, 0.0)
-bulge.ell_comps.ell_comps_0 = af.TruncatedGaussianPrior(
-    mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
-)
-bulge.ell_comps.ell_comps_1 = af.TruncatedGaussianPrior(
-    mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
-)
-bulge.signal_to_noise_ratio = af.UniformPrior(lower_limit=20.0, upper_limit=60.0)
-bulge.effective_radius = af.UniformPrior(lower_limit=1.0, upper_limit=5.0)
-bulge.sersic_index = af.TruncatedGaussianPrior(
-    mean=4.0, sigma=0.5, lower_limit=0.8, upper_limit=5.0
-)
 
-mass = af.Model(al.mp.Isothermal)
+def _clipped_ell_comp() -> float:
+    return float(np.clip(rng.normal(0.0, 0.2), -1.0, 1.0))
 
-mass.centre = (0.0, 0.0)
-mass.ell_comps.ell_comps_0 = af.TruncatedGaussianPrior(
-    mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
-)
-mass.ell_comps.ell_comps_1 = af.TruncatedGaussianPrior(
-    mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
-)
-mass.einstein_radius = af.UniformPrior(lower_limit=0.2, upper_limit=1.8)
 
-shear = af.Model(al.mp.ExternalShear)
+def _random_lens_and_source() -> tuple[al.Galaxy, al.Galaxy]:
+    lens_bulge = al.lp_snr.Sersic(
+        centre=(0.0, 0.0),
+        ell_comps=(_clipped_ell_comp(), _clipped_ell_comp()),
+        effective_radius=float(rng.uniform(1.0, 5.0)),
+        sersic_index=float(np.clip(rng.normal(4.0, 0.5), 0.8, 5.0)),
+        signal_to_noise_ratio=float(rng.uniform(20.0, 60.0)),
+    )
+    mass = al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        ell_comps=(_clipped_ell_comp(), _clipped_ell_comp()),
+        einstein_radius=float(rng.uniform(0.2, 1.8)),
+    )
+    shear = al.mp.ExternalShear(
+        gamma_1=float(rng.normal(0.0, 0.05)),
+        gamma_2=float(rng.normal(0.0, 0.05)),
+    )
+    lens = al.Galaxy(redshift=0.5, bulge=lens_bulge, mass=mass, shear=shear)
 
-shear.gamma_1 = af.GaussianPrior(mean=0.0, sigma=0.05)
-shear.gamma_2 = af.GaussianPrior(mean=0.0, sigma=0.05)
+    source_bulge = al.lp_snr.Sersic(
+        centre=(float(rng.normal(0.0, 0.3)), float(rng.normal(0.0, 0.3))),
+        ell_comps=(_clipped_ell_comp(), _clipped_ell_comp()),
+        effective_radius=float(rng.uniform(0.01, 3.0)),
+        sersic_index=float(np.clip(rng.normal(2.0, 0.5), 0.8, 5.0)),
+        signal_to_noise_ratio=float(rng.uniform(10.0, 30.0)),
+    )
+    source = al.Galaxy(redshift=1.0, bulge=source_bulge)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+    return lens, source
 
-bulge = af.Model(al.lp_snr.Sersic)
-
-bulge.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
-bulge.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
-bulge.ell_comps.ell_comps_0 = af.TruncatedGaussianPrior(
-    mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
-)
-bulge.ell_comps.ell_comps_1 = af.TruncatedGaussianPrior(
-    mean=0.0, sigma=0.2, lower_limit=-1.0, upper_limit=1.0
-)
-bulge.signal_to_noise_ratio = af.UniformPrior(lower_limit=10.0, upper_limit=30.0)
-bulge.effective_radius = af.UniformPrior(lower_limit=0.01, upper_limit=3.0)
-bulge.sersic_index = af.TruncatedGaussianPrior(
-    mean=2.0, sigma=0.5, lower_limit=0.8, upper_limit=5.0
-)
-
-source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 """
 __Sample Instances__
 
-Within a for loop, we will now generate instances of the lens and source galaxies using the `Model`'s defined above.
-This loop will run for `total_datasets` iterations, which sets the number of lenses that are simulated.
+Within a for loop, we will now generate instances of the lens and source galaxies.
+This loop will run for `total_datasets` iterations, which sets the number of lenses
+that are simulated.
 
-Each iteration of the for loop will then create a tracer and use this to simulate the imaging dataset.
+Each iteration of the for loop will then create a tracer and use this to simulate the
+imaging dataset.
 """
 total_datasets = 3
 
 for sample_index in range(total_datasets):
     dataset_sample_path = Path(dataset_path, f"dataset_{sample_index}")
 
-    lens_galaxy = lens.random_instance()
-    source_galaxy = source.random_instance()
+    lens_galaxy, source_galaxy = _random_lens_and_source()
 
     """
     __Ray Tracing__
