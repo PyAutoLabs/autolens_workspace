@@ -1,0 +1,31 @@
+# Workspace overrides for the library lensing latent toggles. The
+# PyAutoLens library defaults every key to `false` so existing fits stay
+# unchanged on upgrade and unaware of `magzero`. Enabling them here
+# means a workspace fit produces real latent output as long as the user
+# also passes `magzero` to `al.AnalysisImaging(...)` when one is needed.
+#
+# Run `scripts/guides/results/latent_variables.py` for a tutorial on
+# what each key means and how to extend the catalogue with custom
+# latents in your own scripts.
+
+# total_lens_flux_mujy — integrated lens-galaxy flux in microjanskies.
+# Requires magzero. NaN when lens has no light profile.
+total_lens_flux_mujy: true
+
+# total_lensed_source_flux_mujy — image-plane source flux after lensing,
+# in microjanskies. Requires magzero.
+total_lensed_source_flux_mujy: true
+
+# total_source_flux_mujy — source-plane intrinsic source flux in microjanskies.
+# Uses fit.tracer_linear_light_profiles_to_light_profiles so MGE / linear
+# light profiles work correctly. Requires magzero.
+total_source_flux_mujy: true
+
+# magnification — dimensionless ratio of image-plane to source-plane flux.
+# magzero is not required.
+magnification: true
+
+# effective_einstein_radius — Einstein radius in arcseconds via the
+# zero-contour of the tangential eigenvalue field.
+# magzero is not required.
+effective_einstein_radius: true
