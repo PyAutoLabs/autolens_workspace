@@ -200,4 +200,76 @@ logarithm of its values and plot it in log10 space.
 
 The `plot_array`/`subplot_\*` object has an input `use_log10`, which will do this automatically when we call the `plot_array` method.
 Below, we can see that the image plotted now appears more clearly, with the outskirts of the light profile more visible.
+
+__JAX__
+
+When you write your own `@jax.jit` around a function that takes a
+`Galaxy` or `Galaxies` as an argument, JAX needs to flatten and unflatten
+that object across the JIT boundary — i.e. the class must be registered
+as a JAX pytree. The library handles this for you automatically in two
+situations:
+
+1. You constructed an `Analysis` with `use_jax=True` (the default for
+   modeling fits). `AnalysisImaging._register_fit_imaging_pytrees()`
+   walks the dataset on first `fit_from` call and registers every
+   reachable `Galaxy` / profile class.
+2. You constructed a `Simulator` with `use_jax=True` and made a call —
+   same walk happens.
+
+After either, every `Galaxy`, `LightProfile`, `MassProfile`, `Point`,
+etc. of the same class is JIT-safe forever in the current process. You
+never call `register_instance_pytree(Galaxy)` yourself.
+
+__The "I have no Analysis or Simulator handy" case__
+
+For a quick exploration script or a custom forward model that doesn't go
+through `Simulator.via_tracer_from`, you may want to JIT a function that
+takes a `Galaxy` or list of galaxies as an argument:
+
+```python
+@jax.jit
+def galaxy_image(galaxy, grid):
+    return galaxy.image_2d_from(grid=grid, xp=jnp).array
+```
+
+Without prior pytree registration this fails the first time `galaxy` is
+traced. The workaround: trigger registration at the top of your script.
+Two equivalent approaches:
+
+```python
+# (a) Reach for an Analysis instance — its first construction triggers
+# the registration walk on the (possibly dummy) dataset.
+_ = al.AnalysisImaging(dataset=dataset, use_jax=True)
+
+# (b) Use the dedicated walker on a representative tracer.
+from autolens.jax import register_tracer_classes
+register_tracer_classes(tracer)
+```
+
+After either, `galaxy_image` JITs cleanly.
+
+__Closure-captured galaxy: registration not needed__
+
+There's a way to JIT a galaxy-method call that does NOT need pytree
+registration: pass the galaxy as the bound method's `self`, not as an
+argument.
+
+```python
+jitted_image = jax.jit(galaxy.image_2d_from)   # bound method; assign ONCE
+arr = jitted_image(grid=grid, xp=jnp).array
+```
+
+`galaxy` here is closed over inside the bound method; JAX treats it as a
+closure constant, doesn't trace through it, and pytree registration
+never enters the picture.
+
+Trade-off: you can't vary `galaxy` across calls and still hit the
+compilation cache. If you want to evaluate the same function for many
+different galaxies (parameter sweep), the argument form (with prior
+registration) is the right choice.
+
+The full deep-dive on the bound-method vs traced-argument trade-off,
+cache-identity footguns, and the `@jax.jit + xp=jnp` pairing rule lives
+in `scripts/guides/lens_calc.py`. The `.array` host-transfer mechanics
+live in `scripts/guides/data_structures.py`.
 """
