@@ -429,6 +429,169 @@ geometric_array = aa.Array2D(values=geometric_delay, mask=grid.mask)
 aplt.plot_array(array=geometric_array, title="Geometric Time Delay Term")
 
 """
+__JAX (JIT-it-yourself)__
+
+This is the canonical home for the "JIT-it-yourself" advanced path.
+Audience: users building custom forward models or scientific tools
+using PyAutoLens primitives directly — not running standard fits
+(which go through `Analysis(use_jax=True)` and need zero JAX code from
+you) or standard simulations (which use `Simulator(use_jax=True)`
+similarly).
+
+If you're writing `@jax.jit` yourself around library calls like
+`tracer.image_2d_from`, `LensCalc.magnification_2d_via_hessian_from`,
+or your own `log_likelihood(instance)` function, this section is for you.
+
+__The pairing rule: `@jax.jit` + `xp=jnp`__
+
+The single rule to remember: when you decorate a function with
+`@jax.jit` that calls a PyAutoLens library method internally, **pass
+`xp=jnp` to that method inside the function body**.
+
+```python
+import jax
+import jax.numpy as jnp
+
+@jax.jit
+def magnification_fn(lens_calc, grid):
+    return lens_calc.magnification_2d_via_hessian_from(grid=grid, xp=jnp)
+```
+
+The `xp=jnp` is what tells the library "you're inside a JAX trace —
+route calls through `jax.numpy` and don't wrap the return in an
+autoarray type (it would fail to cross the JIT boundary)".
+
+__The footgun: forgetting `xp=jnp`__
+
+The default for `xp` in library method signatures is `np`. If you
+forget to pass `xp=jnp` inside `@jax.jit`, one of two things happens:
+
+- The function body does `np.sqrt(jax_array)` — NumPy routes through
+  `__array__()` on the JAX tracer, host-transferring off the GPU.
+  Your fit runs, invisibly slower than the NumPy path.
+- The `if xp is np:` guard inside library functions fires and wraps
+  the result in `aa.Array2D`, which fails at the JIT boundary with
+  `TypeError: ... is not a valid JAX type`.
+
+The library raises a clear `ValueError` on the easy mismatch — when
+you pass `xp=np` with a `grid.use_jax=True` input:
+
+```
+ValueError: Called magnification_2d_via_hessian_from with xp=np but
+the input grid is JAX-backed (grid.use_jax=True). Inside @jax.jit,
+pass xp=jnp explicitly.
+```
+
+If you see this error: add `xp=jnp` to the call site. Done.
+
+__Decorator-on-def vs `jax.jit(bound_method)`__
+
+JAX accepts any callable — `@jax.jit` is sugar for `fn = jax.jit(fn)`.
+You can JIT a standalone function (canonical) or a bound method
+(shortcut). Both work:
+
+```python
+# Form 1 (canonical): decorator on def
+@jax.jit
+def image_fn(tracer, grid):
+    return tracer.image_2d_from(grid=grid, xp=jnp).array
+
+# Form 2: jit on bound method, assign-to-variable
+jitted = jax.jit(tracer.image_2d_from)
+arr = jitted(grid=grid, xp=jnp).array
+```
+
+Form 2 is shorter for interactive use. **Footgun:** bound methods are
+fresh objects on every attribute access, so this silently misses the
+JIT cache every iteration:
+
+```python
+# DON'T DO THIS — fresh jax.jit closure every iteration
+for grid in many_grids:
+    arr = jax.jit(tracer.image_2d_from)(grid=grid, xp=jnp).array
+```
+
+If you're calling a JITted method in a loop: assign once outside the
+loop, or use the decorator-on-def form.
+
+__Closure-captured `self` vs traced argument__
+
+Form 1 and Form 2 differ in *semantics*, not just syntax:
+
+- **Form 2 (`jax.jit(tracer.image_2d_from)`):** `tracer` is the bound
+  method's `self`; JAX captures it as a closure constant and doesn't
+  trace through it. **`Tracer` does NOT need to be pytree-registered.**
+  Trade-off: a different tracer means a fresh bound-method object and a
+  fresh JIT cache key.
+- **Form 1 (`@jax.jit def image_fn(tracer, grid)`):** `tracer` is a
+  traced argument. **`Tracer` DOES need pytree registration** (which
+  `Analysis(use_jax=True)` does for you, or you can trigger via
+  `autolens.jax.register_tracer_classes(tracer)`). Trade-off: cache
+  reuse across different tracers — parameter sweeps and `jax.vmap`
+  work naturally.
+
+Pick based on whether you want to vary the tracer across calls:
+
+- Parameter sweep / `jax.vmap` over models? Form 1.
+- Quick one-off / interactive exploration? Form 2 (assign once).
+
+__`LensCalc` and the wrapped-vs-raw return type__
+
+`LensCalc.magnification_2d_via_hessian_from`,
+`.shear_yx_2d_via_hessian_from`, `.convergence_2d_via_hessian_from`,
+and the eigen-value methods all implement the `if xp is np:` guard
+inside:
+
+```python
+def magnification_2d_via_hessian_from(self, grid, xp=np):
+    ...
+    if xp is np:
+        return aa.Array2D(values=mag, mask=grid.mask)   # numpy: wrapped
+    return mag                                            # jax: raw jax.Array
+```
+
+This is intentional. Inside `@jax.jit` (where you pass `xp=jnp`), you
+get back a raw `jax.Array`. On the NumPy path (no `xp` or `xp=np`),
+you get an `aa.Array2D` wrapper. The function adapts to which path
+you're on.
+
+Implication: when you JIT-wrap a `LensCalc` method, expect a raw
+`jax.Array` back. Rewrap with `aa.Array2D(values=..., mask=...)` on
+the host if you want the wrapper for downstream plotting:
+
+```python
+@jax.jit
+def magnification_fn(lens_calc, grid):
+    return lens_calc.magnification_2d_via_hessian_from(grid=grid, xp=jnp)
+
+mag_raw = magnification_fn(lens_calc, grid)
+mag_wrapped = aa.Array2D(values=mag_raw, mask=grid.mask)
+aplt.plot_array(array=mag_wrapped)
+```
+
+For `Tracer` and `Galaxy` methods that don't have the guard internally
+(e.g. `tracer.image_2d_from`), the `.array` unwrap inside the jit +
+rewrap outside discipline applies — see `scripts/guides/data_structures.py`
+`__JAX__` section.
+
+__Summary — the three rules__
+
+The "JIT-it-yourself" path is bounded by three rules:
+
+1. **`@jax.jit` and `xp=jnp` are paired.** Forgetting `xp=jnp` either
+   silently host-transfers or fails at the boundary.
+2. **`.array` unwrap inside the jit; rewrap on the host** if you want
+   the autoarray wrapper.
+3. **Tracer-as-argument needs pytree registration** (via
+   `register_tracer_classes(tracer)` or any `Analysis(use_jax=True)`
+   construction); tracer-as-closure (bound-method form) doesn't.
+
+For the standard `Analysis` / `Simulator` paths — where you do none
+of this and JAX runs implicitly — see the top-level
+`autolens_workspace/start_here.py` `__JAX__` section.
+"""
+
+"""
 __Wrap Up__
 
 This guide introduced the `LensCalc` class and the key lensing quantities it computes:
