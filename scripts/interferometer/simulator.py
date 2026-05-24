@@ -331,4 +331,46 @@ al.output_to_json(
 
 """
 Finish.
+
+__JAX Variant__
+
+For fast repeated interferometer simulations, instantiate the simulator
+with `use_jax=True` and wrap the call in `@jax.jit`. The simulator handles
+pytree registration internally.
+
+```python
+import jax
+import jax.numpy as jnp
+
+simulator_jax = al.SimulatorInterferometer(
+    uv_wavelengths=uv_wavelengths,
+    exposure_time=300.0,
+    noise_sigma=0.1,
+    transformer_class=al.TransformerDFT,  # NUFFT (pynufft) is not JAX-traceable
+    use_jax=True,
+)
+
+@jax.jit
+def simulate(tracer):
+    image = tracer.image_2d_from(grid=real_space_grid, xp=jnp)
+    return simulator_jax.via_image_from(image=image)
+
+dataset_jax = simulate(tracer)   # Interferometer with jax.Array visibilities
+```
+
+Two notes specific to interferometer:
+
+- Use `TransformerDFT` (the default) under JAX. `TransformerNUFFT` (pynufft)
+  is faster on large UV sets but is not JAX-traceable. The `nufftax`
+  research path is tracking a JAX-native NUFFT replacement; see
+  `autolens_workspace_test/scripts/interferometer/nufft.py` for the
+  parity work.
+- Eager `simulator_jax.via_image_from(image)` already runs on JAX without
+  the `@jax.jit` wrap; the JIT only matters for repeated calls. The
+  `@jax.jit` wrap shown above is currently blocked by a pre-existing
+  `Array2D.native` autoarray limitation — eager use works today; the
+  JIT wrap works once a separate refactor lands.
+
+See `scripts/guides/lens_calc.py` for the "JIT-it-yourself" pattern
+applied to individual library methods.
 """

@@ -40,6 +40,22 @@ __Contents__
 - **New User Wrap Up:** The `point_source` package of the `autolens_workspace` contains numerous example scripts for.
 - **Shape Solver:** All calculations above assumed the source was a point source with no size.
 
+__JAX__
+
+This guide walks through point-source fitting at a low level (no
+non-linear search) — the `FitPointDataset` and `PointSolver` objects work
+on either NumPy or JAX. For the standard search-driven modeling path
+where `AnalysisPoint` auto-enables `use_jax=True` and the JIT happens
+inside the search driver, see `start_here.py` / `modeling.py`. For the
+explicit `@jax.jit + PointSolver(use_jax=True)` pattern (useful for fast
+forward-solving in custom code), see `simulator.py`'s `__JAX Variant__`
+section.
+
+Note: `PointSolver(use_jax=True)` works inside `@jax.jit` (unlike the
+imaging / interferometer simulators, which are currently blocked by a
+pre-existing `Array2D.native` autoarray limitation). The triangle-
+refinement loop doesn't go through `.native`.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
