@@ -473,4 +473,16 @@ The key differences from galaxy-scale lensing are:
  - Getting the mass of extra galaxies right is important because their deflection angles affect the
    source-plane coordinates and therefore the quality of the source reconstruction.
  - The `FitImaging` and `Tracer` objects handle all of this automatically for an arbitrary number of galaxies.
+
+__JAX__
+
+Same JAX recipe as `scripts/imaging/likelihood_function.py`: wrap the
+hand-rolled construction in `@jax.jit`, register tracer classes once via
+`autolens.jax.register_tracer_classes(tracer)`, validate via
+`Fitness._vmap`. The group dataset adds nothing JAX-specific beyond the
+imaging case — the extra galaxies are just more `Galaxy` instances and
+the registration walker handles them uniformly.
+
+See `scripts/imaging/likelihood_function.py` `__JAX__` for the full
+recipe.
 """
