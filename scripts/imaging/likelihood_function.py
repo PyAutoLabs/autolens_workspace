@@ -503,6 +503,51 @@ light profiles to fit the lens and source light.
 There are a number of other inputs features which slightly change the behaviour of this likelihood function, which
 are described in additional notebooks found in this package. In brief, these describe:
 
- - **Sub-gridding**: Oversampling the image grid into a finer grid of sub-pixels, which are all individually 
+ - **Sub-gridding**: Oversampling the image grid into a finer grid of sub-pixels, which are all individually
  ray-traced to the source-plane and used to evaluate the light profile more accurately.
+
+__JAX__
+
+The step-by-step likelihood you've just walked through can be JAX-
+accelerated by wrapping the whole construction in `@jax.jit`. The
+pattern:
+
+```python
+import jax
+import jax.numpy as jnp
+from autolens.jax import register_tracer_classes
+
+# One-time setup: register Tracer + Galaxy + profile classes as JAX
+# pytrees so the tracer can cross the @jax.jit boundary as an argument.
+register_tracer_classes(tracer)
+
+@jax.jit
+def my_log_likelihood(instance):
+    tracer = al.Tracer(galaxies=instance.galaxies)
+    fit = al.FitImaging(dataset=dataset, tracer=tracer)
+    return fit.log_likelihood
+```
+
+To validate the JAX path matches the NumPy chi-squared you just
+computed, use `Fitness._vmap` (the production validation pattern —
+single `jax.jit(fn)(concrete)` hides un-threaded `xp` sites that
+`vmap(jit(call))` exposes):
+
+```python
+from autofit.non_linear.fitness import Fitness
+
+fitness = Fitness(
+    model=model,
+    analysis=al.AnalysisImaging(dataset=dataset),
+    fom_is_log_likelihood=True,
+)
+log_l_jax = fitness._vmap(jnp.array([instance_parameters]))[0]
+assert np.isclose(log_l_jax, log_l_numpy_from_walkthrough)
+```
+
+For the canonical Analysis-driven modeling path (where you write zero
+JAX code), see `start_here.py` / `modeling.py`. For JIT-ing library
+methods directly (`tracer.image_2d_from`, `LensCalc.magnification_2d_via_hessian_from`,
+etc.) without going through `FitImaging`, see
+`scripts/guides/lens_calc.py`.
 """

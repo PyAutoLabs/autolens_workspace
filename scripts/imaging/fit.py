@@ -26,6 +26,21 @@ __Contents__
 - **Pixel Counting:** An alternative way to quantify residuals like the lens light residuals is pixel counting.
 - **Outputting Results:** You may wish to output certain results to .fits files for later inspection.
 
+__JAX__
+
+This script constructs a `FitImaging` directly from a tracer and dataset
+(no Analysis / no non-linear search). The fit itself is JAX-friendly:
+any quantities it computes (`fit.model_image`, `fit.residual_map`,
+`fit.log_likelihood`, etc.) work on either backend and return arrays
+backed by `numpy.ndarray` on the default path or `jax.Array` if you
+constructed the upstream objects with `xp=jnp`.
+
+For the standard analysis-driven modeling path — where `AnalysisImaging`
+auto-enables `use_jax=True` and the search driver handles the JIT
+internally — see `start_here.py` / `modeling.py`. For the advanced path
+where you wrap your own `@jax.jit` around `FitImaging` construction, see
+`likelihood_function.py`'s `__JAX__` section and the `lens_calc.py` guide.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

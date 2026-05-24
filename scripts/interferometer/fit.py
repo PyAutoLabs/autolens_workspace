@@ -24,6 +24,14 @@ __Contents__
 - **Plane Quantities:** The `FitInterferometer` object has specific quantities which break down each image of each plane.
 - **Outputting Results:** You may wish to output certain results to .fits files for later inspection.
 
+__JAX__
+
+`FitInterferometer` runs on either NumPy or JAX. For the standard
+analysis-driven path — where `AnalysisInterferometer` auto-enables
+`use_jax=True` and the search driver handles the JIT — see `start_here.py`
+/ `modeling.py`. For the JIT-it-yourself path around individual library
+methods, see `scripts/guides/lens_calc.py`.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
