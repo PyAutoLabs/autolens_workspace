@@ -443,9 +443,11 @@ log likelihoods; each dataset gets its own output subdirectory for visualization
 
 __JAX__
 
-PyAutoLens uses JAX under the hood for GPU/CPU acceleration. With a GPU, fits run much faster (around
-10 minutes vs an hour); on CPU JAX still helps via multithreading (20–30 minutes typical). Google Colab
-offers free GPUs.
+`AnalysisPoint(use_jax=True)` per-dataset; the search driver wraps the
+joint likelihood in `jax.vmap(jax.jit(...))`. Cluster point-source fits
+get the largest speedup from JAX on GPU (triangle refinement + multi-
+plane deflection sum dominate runtime). Force NumPy with `use_jax=False`
+when debugging.
 """
 analysis_list = [
     al.AnalysisPoint(dataset=dataset, solver=solver, use_jax=True)
