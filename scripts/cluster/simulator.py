@@ -126,19 +126,14 @@ __JAX JIT__
 
 Solving the lens equation for the image-plane positions of a point source is iterative and numerically
 expensive — at cluster scale (many lens galaxies, multi-plane ray tracing) it dominates the simulator's
-runtime by an order of magnitude. We accelerate it with JAX, jitting the ``PointSolver.solve`` call so
-the triangle-refinement loop compiles to a single fused kernel.
+runtime by an order of magnitude. We accelerate it with JAX via ``al.PointSolver(use_jax=True)`` and a
+``@jax.jit`` wrapper around the solve call.
 
-The pattern mirrors the canonical example in
-``autolens_workspace_developer/jax_profiling/point_source/image_plane.py``: every concrete class reachable
-from the `Tracer` (i.e. `Galaxy`, light/mass profiles, `Point`) is registered with ``jax.tree_util`` so
-that JAX can flatten and unflatten a `Tracer` argument. PyAutoFit's
-``autofit.jax.register_model(model)`` walks an ``af.Model`` and registers each ``cls`` it sees;
-PyAutoArray's ``register_instance_pytree(Tracer, ...)`` registers the `Tracer` container itself.
-
-The result is that ``jax.jit(solver.solve)`` accepts the concrete `Tracer` directly, traces it once,
-caches the compiled triangle-refinement kernel, and reuses it for the second source — turning what was
-~5 minutes of Python-loop overhead into a few seconds of compiled JAX execution.
+The library handles pytree registration of ``Tracer`` + every Galaxy / profile class internally via
+``autolens.jax.register_tracer_classes(tracer)`` (one user-visible setup line, called before the first
+``@jax.jit`` invocation). The compiled triangle-refinement kernel is cached and reused across both
+sources — turning what was ~5 minutes of Python-loop overhead into a few seconds of compiled JAX
+execution.
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
@@ -154,9 +149,8 @@ import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
-from autofit.jax import register_model as _register_model_pytrees
-from autoarray.abstract_ndarray import register_instance_pytree
-from autolens.lens.tracer import Tracer
+# Pytree registration is now handled by autolens.jax.register_tracer_classes,
+# called once before the @jax.jit'd PointSolver call further below.
 
 """
 __Dataset Paths__
@@ -393,116 +387,38 @@ tracer = al.Tracer(
 )
 
 """
-__JAX JIT__
+__JAX JIT — Point Solver__
 
-Register every concrete class reachable from the `Tracer` as a JAX pytree node so the tracer can be
-passed across a ``jax.jit`` boundary. We use both registration paths:
+Solving the lens equation for the image-plane positions of a point source is iterative and numerically
+expensive — at cluster scale it dominates the simulator's runtime. We use ``al.PointSolver(use_jax=True)``
+and wrap the solve in ``@jax.jit`` for the speedup.
 
- - ``register_model(...)`` (PyAutoFit) walks an ``af.Model`` mirror of the tracer and registers each
-   ``Galaxy`` / profile class, populating the constructor-arg classifier needed for round-tripping.
- - ``register_instance_pytree(Tracer, no_flatten=("cosmology",))`` (PyAutoArray) registers the `Tracer`
-   container itself via ``__dict__`` flattening, holding `cosmology` static across the JIT boundary.
+The library handles pytree registration of ``Tracer`` + every reachable galaxy / profile class via
+the one-time ``autolens.jax.register_tracer_classes(tracer)`` call below. Before
+PR PyAutoLens#538 + PyAutoArray#335 (Phase 2 of ``z_features/jax_user_intro.md``), this section was
+a ~60-line manual ceremony with an ``af.Model`` mirror, ``register_model``, and ``register_instance_pytree``;
+the new API collapses it to a single import + single registration call + ``use_jax=True`` flag.
 
-The mirror model covers one Galaxy per concrete *class* that appears in the tracer: the 2 main-tier
-galaxies (registering `Galaxy`, `SersicSph`, `dPIEMassSph`), the host halo (adding `NFWMCRLudlowSph`),
-and the 2 source-tier galaxies (adding `SersicCore`, `Point`). The 10 scaling-tier members reuse the
-exact same `Galaxy` / `SersicSph` / `dPIEMassSph` classes registered via the main-tier loop — class
-registration is global once registered, so the scaling tier does not need its own mirror entries. It is
-built solely so that ``register_model`` has something to walk — the simulator does not need an
-`Analysis` or non-linear search.
+``PointSolver(use_jax=True).solve`` defaults ``remove_infinities=False`` to honour the JAX static-shape
+contract — the returned positions are padded with ``inf`` where no image was found, which is JIT-safe.
+We strip them outside the jit below.
 """
-_lens_models = [
-    af.Model(
-        al.Galaxy,
-        redshift=redshift_lens,
-        bulge=af.Model(
-            al.lp.SersicSph,
-            centre=g.bulge.centre,
-            intensity=g.bulge.intensity,
-            effective_radius=g.bulge.effective_radius,
-            sersic_index=g.bulge.sersic_index,
-        ),
-        mass=af.Model(
-            al.mp.dPIEMassSph,
-            centre=g.mass.centre,
-            ra=g.mass.ra,
-            rs=g.mass.rs,
-            b0=g.mass.b0,
-        ),
-    )
-    for g in main_lens_galaxies
-]
+from autolens.jax import register_tracer_classes
 
-_halo_model = af.Model(
-    al.Galaxy,
-    redshift=redshift_lens,
-    dark=af.Model(
-        al.mp.NFWMCRLudlowSph,
-        centre=host_halo_centre,
-        mass_at_200=host_halo.mass_at_200,
-        redshift_object=redshift_lens,
-        redshift_source=max(source_redshifts),
-    ),
-)
+register_tracer_classes(tracer)
 
-_source_models = [
-    af.Model(
-        al.Galaxy,
-        redshift=src_z,
-        bulge=af.Model(
-            al.lp.SersicCore,
-            centre=src_centre,
-            ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0 + 30.0 * i),
-            intensity=2.0,
-            effective_radius=0.3,
-            sersic_index=1.0,
-        ),
-        **{
-            f"point_{i}": af.Model(al.ps.Point, centre=src_centre),
-        },
-    )
-    for i, (src_centre, src_z) in enumerate(zip(source_centres, source_redshifts))
-]
-
-_registration_model = af.Collection(
-    galaxies=af.Collection(*(_lens_models + [_halo_model] + _source_models))
-)
-
-_register_model_pytrees(_registration_model)
-register_instance_pytree(Tracer, no_flatten=("cosmology",))
-
-"""
-__Point Solver__
-
-For each source's `Point` component we solve for the (y, x) coordinates in the image plane that map to
-the source-plane centre — these are the multiple images. The `PointSolver` ray-traces triangles from the
-image plane back to the source plane, iteratively refining until the requested precision is reached.
-
-The solver uses its own higher-resolution starting grid because the imaging grid above is tuned for image
-rendering, not triangle root-finding. ``magnification_threshold=0.1`` discards heavily demagnified central
-images, which are usually undetectable in real data.
-
-The solve call is wrapped in ``jax.jit``: each invocation passes ``xp=jnp`` and
-``remove_infinities=False`` so the solver returns a static-shape array (padded with ``inf`` sentinels
-where no image was found), which JAX can JIT cleanly. The infinities are stripped outside the JIT after
-the call returns.
-"""
 solver = al.PointSolver.for_grid(
     grid=al.Grid2D.uniform(shape_native=(800, 800), pixel_scales=0.1),
     pixel_scale_precision=0.001,
     magnification_threshold=0.1,
+    use_jax=True,
 )
 
 
 @jax.jit
 def jitted_solve(tracer, source_plane_coordinate):
-    # Grid2DIrregular is not a JAX pytree, so unwrap to the raw jnp array
-    # before returning out of the jit trace.
     return solver.solve(
-        tracer=tracer,
-        source_plane_coordinate=source_plane_coordinate,
-        xp=jnp,
-        remove_infinities=False,
+        tracer=tracer, source_plane_coordinate=source_plane_coordinate
     ).array
 
 

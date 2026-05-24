@@ -35,14 +35,16 @@ __Contents__
 
 __JAX__
 
-PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
-support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
-JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+PyAutoLens runs group-scale model-fits on JAX by default — `al.AnalysisImaging`
+auto-enables `use_jax=True` if you installed `autolens[jax]`. Group fits
+benefit substantially from GPU acceleration (the multi-galaxy deflection
+sum is the dominant cost). Expect 5-30 minutes on GPU vs hours on pure
+NumPy.
 
-If you don't have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
-
-Finally, we also show how to simulate strong lens groups. This is useful for practice, for
-building training datasets, or for investigating lensing effects in a controlled way.
+For the broader JAX principles, see the top-level
+`autolens_workspace/start_here.py` `__JAX__` section. For per-dataset
+simulator / fit / likelihood patterns shared with imaging, see
+`scripts/imaging/start_here.py` and its companions.
 
 __Google Colab Setup__
 
@@ -250,11 +252,9 @@ the model to the imaging data.
 
 __JAX__
 
-PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
-support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
-JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
-
-If you don't have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
+`AnalysisImaging` defaults to `use_jax=True`. Search driver wraps the
+likelihood in `jax.vmap(jax.jit(...))`. Force NumPy with `use_jax=False`
+(or `PYAUTO_DISABLE_JAX=1`) when debugging.
 
 **Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce
 an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
