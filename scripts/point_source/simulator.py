@@ -486,4 +486,57 @@ dataset.to_csv(
 
 """
 Finished.
+
+__JAX Variant__
+
+The expensive step in point-source simulation is the multiple-image
+solve — `PointSolver` runs an iterative triangle-refinement loop. On
+JAX-jit this is order-of-magnitude faster than NumPy.
+
+```python
+import jax
+import jax.numpy as jnp
+from autolens.jax import register_tracer_classes
+
+# One-time setup: register Tracer + Galaxy + profile classes as JAX
+# pytrees BEFORE the first @jax.jit call. (Inside @jax.jit, JAX flattens
+# function arguments at trace time — auto-registration inside solve()
+# runs too late.)
+register_tracer_classes(tracer)
+
+solver_jax = al.PointSolver.for_grid(
+    grid=al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=1.0),
+    pixel_scale_precision=0.001,
+    magnification_threshold=0.1,
+    use_jax=True,
+)
+
+@jax.jit
+def solve(tracer, coord):
+    return solver_jax.solve(tracer=tracer, source_plane_coordinate=coord).array
+
+positions = solve(tracer, jnp.asarray(source_galaxy.bulge.centre))
+```
+
+When `use_jax=True`, `PointSolver.solve` defaults `remove_infinities=False`
+to honour the JAX static-shape contract — positions are padded with `inf`
+where no image was found. Strip them outside the jit:
+
+```python
+raw = np.asarray(positions)
+finite_positions = raw[~np.isinf(raw).any(axis=1)]
+```
+
+Two notes:
+
+- `register_tracer_classes(tracer)` is the one user-visible setup call.
+  After the first invocation, every later `@jax.jit` with the same class
+  set works without re-registering.
+- Unlike imaging / interferometer simulators, the `PointSolver.use_jax=True`
+  + `@jax.jit` wrap really does work inside jit (it doesn't go through the
+  pre-existing `Array2D.native` autoarray limitation that blocks the image
+  simulators).
+
+See `scripts/guides/lens_calc.py` for the broader "JIT-it-yourself"
+pattern applied to other library methods.
 """

@@ -40,14 +40,17 @@ __Contents__
 
 __JAX__
 
-PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
-support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
-JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+PyAutoLens runs point-source model-fits on JAX by default. `AnalysisPoint`
+auto-enables `use_jax=True` if you installed `autolens[jax]`; the search
+driver wraps the likelihood in `jax.vmap(jax.jit(...))`.
 
-If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
-
-We also show how to simulate strong lens point sources. This is useful for building machine learning
-training datasets, or for investigating lensing effects in a controlled way.
+For the broader JAX principles see `autolens_workspace/start_here.py`
+`__JAX__`. For the most user-impactful piece — the `PointSolver(use_jax=True)`
++ `@jax.jit` pattern for fast forward solving — see the `__JAX Variant__`
+at the end of `scripts/point_source/simulator.py`. Point-source solving
+is the rare case where the `@jax.jit` wrap really pays off (the
+triangle-refinement loop dominates simulation runtime); the variant
+script shows how to do it cleanly.
 
 __Google Colab Setup__
 
@@ -245,13 +248,14 @@ the model to the point source data.
 
 __JAX__
 
-PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
-support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
-JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
+`AnalysisPoint` defaults to `use_jax=True` when JAX is installed.
+`AnalysisPoint._register_fit_point_pytrees()` runs on first `fit_from`
+to register `FitPositionsSource`, `FitPositionsImagePair`, and `Tracer`
+as JAX pytrees — you don't need to call `register_tracer_classes`
+yourself for the modeling path (that's only required for the explicit
+JIT-it-yourself pattern in `simulator.py`'s `__JAX Variant__`).
 
-If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
-
-**Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce 
+**Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce
 an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
 """
 search = af.Nautilus(
