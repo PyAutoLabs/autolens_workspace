@@ -293,4 +293,48 @@ al.output_to_json(
 
 """
 The dataset can be viewed in the folder `autolens_workspace/imaging/simple`.
+
+__JAX Variant__
+
+For an order-of-magnitude speedup on large or repeated simulations
+(parameter sweeps, mock-data studies, batch figure generation), construct
+the simulator with `use_jax=True` and wrap your call in `@jax.jit`. The
+simulator handles pytree registration internally — you write nothing
+JAX-specific beyond the decorator.
+
+```python
+import jax
+
+simulator_jax = al.SimulatorImaging(
+    exposure_time=300.0,
+    psf=psf,
+    background_sky_level=0.1,
+    add_poisson_noise_to_data=True,
+    use_jax=True,
+)
+
+@jax.jit
+def simulate(tracer):
+    return simulator_jax.via_tracer_from(tracer=tracer, grid=grid)
+
+dataset_jax = simulate(tracer)   # Imaging with jax.Array data
+```
+
+The `dataset_jax.data.array` is a `jax.Array`; `aplt.fits_imaging` and the
+plotters call `numpy.asarray()` internally, so saving / plotting works
+without manual conversion.
+
+Two notes:
+
+- Eager `simulator_jax.via_tracer_from(tracer, grid)` (no `@jax.jit`)
+  already runs on JAX and is sufficient for one-off simulations. The
+  `@jax.jit` wrap is only beneficial when you call the function many times.
+- `@jax.jit` wrap is currently blocked by a pre-existing `Array2D.native`
+  jit-incompatibility in autoarray's slim/native reshape. Eager JAX works
+  today; the `@jax.jit` shown above will work once a separate refactor
+  task lands.
+
+See `scripts/guides/lens_calc.py` for the advanced "JIT-it-yourself"
+pattern that wraps individual library methods like `tracer.image_2d_from`
+directly.
 """
