@@ -33,6 +33,13 @@ __Contents__
 - **Outputting Results:** You may wish to output certain results to .fits files for later inspection.
 - **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
 
+__JAX__
+
+Same JAX story as `scripts/imaging/fit.py`: `FitImaging` runs on either
+backend. For the standard analysis-driven path see `start_here.py` /
+`modeling.py`. For JIT-ing library methods directly see
+`scripts/guides/lens_calc.py`.
+
 """
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports

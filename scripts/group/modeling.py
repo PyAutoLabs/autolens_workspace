@@ -565,11 +565,11 @@ function at ``autolens_workspace/*/imaging/log_likelihood_function`
 
 __JAX__
 
-PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU
-support, your fits will run much faster (around 10 minutes instead of an hour). If only a CPU is available,
-JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
-
-If you don't have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
+`AnalysisImaging` defaults to `use_jax=True`. For group-scale fits the
+JAX speedup is substantial — the multi-galaxy deflection sum dominates
+runtime on CPU but vectorises cleanly on GPU. Search driver wraps the
+likelihood in `jax.vmap(jax.jit(...))`. Force NumPy with `use_jax=False`
+(or `PYAUTO_DISABLE_JAX=1`) when debugging.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,

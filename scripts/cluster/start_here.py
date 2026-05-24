@@ -43,9 +43,19 @@ __Contents__
 
 __JAX__
 
-**PyAutoLens** uses JAX under the hood for fast GPU/CPU acceleration. On a GPU the cluster fit below
-runs in ~10 minutes; on CPU JAX still multi-threads the likelihood evaluation and the fit completes in
-20–30 minutes. Google Colab provides free GPUs if you don't have one locally.
+PyAutoLens runs cluster point-source fits on JAX by default —
+`al.AnalysisPoint(use_jax=True)` (auto-enabled) routes the likelihood
+through `jax.vmap(jax.jit(...))`. Cluster fits benefit the most from
+GPU acceleration: the multi-galaxy multi-plane deflection sum + the
+`PointSolver` triangle refinement loop are the dominant costs and
+both vectorise cleanly on GPU. Expect ~10 minutes per fit on GPU vs
+30+ on CPU.
+
+For the broader JAX principles, see the top-level
+`autolens_workspace/start_here.py` `__JAX__` section. The
+`scripts/cluster/simulator.py` `__JAX JIT — Point Solver__` section
+shows the post-Phase-2 `PointSolver(use_jax=True)` +
+`autolens.jax.register_tracer_classes(tracer)` pattern in action.
 
 __Beta Feature__
 
