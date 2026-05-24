@@ -212,6 +212,91 @@ image = tracer.image_2d_from(grid=grid)
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 
 """
+__JAX__
+
+**PyAutoLens** runs on either **NumPy** (the default) or **JAX** (Google's
+array library with GPU support and just-in-time compilation). JAX makes
+lens modeling 10-100x faster on large grids — sometimes more on GPU — so
+the library is built to use it automatically wherever it helps.
+
+You do not have to do anything to opt in. If you installed `autolens` with
+the JAX extra (`pip install autolens[jax]` on Python 3.11+), the
+`AnalysisImaging`, `AnalysisInterferometer`, and `AnalysisPoint` classes
+you'll meet in the `__Lens Modeling__` section below default to
+`use_jax=True`. The non-linear search driver (Nautilus, dynesty, ...)
+batches parameter vectors and evaluates the likelihood through
+`jax.vmap(jax.jit(...))` internally. You'll see a one-time log line like
+`JAX: Applying vmap and jit to likelihood function -- may take a few
+seconds.` the first time a search starts; that's the JIT compile kicking
+in, after which evaluations re-use the compiled trace.
+
+If JAX is not installed, the analysis warns once and falls back to NumPy
+automatically. You can force NumPy explicitly with
+`al.AnalysisImaging(dataset=dataset, use_jax=False)` or by setting
+`PYAUTO_DISABLE_JAX=1` — useful when debugging, where NumPy stack traces
+are easier to read than JAX traces.
+
+__When you write `@jax.jit` yourself__
+
+Two situations call for it:
+
+1. **Custom simulations.** Pass `use_jax=True` to the simulator constructor
+   and wrap your call in `@jax.jit` when you want to render many datasets
+   fast — parameter sweeps, mock-data studies, batch figure generation.
+   For example:
+
+   ```python
+   import jax
+
+   simulator = al.SimulatorImaging(
+       exposure_time=300.0, psf=psf, background_sky_level=0.1, use_jax=True
+   )
+
+   @jax.jit
+   def simulate(tracer):
+       return simulator.via_tracer_from(tracer=tracer, grid=grid)
+   ```
+
+   The per-dataset-type `simulator.py` scripts (`scripts/imaging/simulator.py`,
+   `scripts/interferometer/simulator.py`, `scripts/point_source/simulator.py`)
+   each show the canonical pattern in their `__JAX Variant__` section.
+
+2. **Custom likelihood functions** that you assemble by hand rather than
+   reaching for `AnalysisImaging`. Same shape: `@jax.jit` around your own
+   `def log_likelihood(instance): ...` that builds a `Tracer` and a
+   `FitImaging` and returns `fit.log_likelihood`. See the per-dataset-type
+   `likelihood_function.py` scripts.
+
+For the advanced path — JIT-ing library methods directly (`tracer.image_2d_from`,
+`LensCalc.magnification_2d_via_hessian_from`, etc.) without going through a
+`Simulator` or `Analysis` — see the `lens_calc.py` workspace guide
+(`scripts/guides/lens_calc.py`). That covers the "JIT-it-yourself" pattern,
+including the one-time `autolens.jax.register_tracer_classes(tracer)` call
+the user makes before the first `@jax.jit`.
+
+__Return-type contract__
+
+When `use_jax=True`, the data structures you get back (`Imaging`, `FitImaging`,
+`Tracer.image_2d_from(...)` results, ...) carry `jax.Array` data inside
+instead of `numpy.ndarray`. For nearly everything you'd do in a workspace —
+plotting, saving to `.fits`, comparing fit residuals — this is transparent:
+the plotters and FITS writers call `numpy.asarray()` internally and you see
+the same images and numbers you would on the NumPy path.
+
+What changes:
+
+- Arithmetic on JAX arrays stays on the JAX path. Direct calls into NumPy
+  (`np.sqrt(fit.residual_map.array)`) will host-transfer the array off the
+  GPU; not wrong, but slower than `jnp.sqrt(...)` if you're inside a hot
+  loop. For one-off analysis code, don't worry about it.
+- The `.array` property of `aa.Array2D` etc. is the raw backing array — a
+  `numpy.ndarray` on the NumPy path, a `jax.Array` on the JAX path.
+
+The `data_structures.py` guide (`scripts/guides/data_structures.py`) covers
+the wrapper-vs-raw-array distinction in detail.
+"""
+
+"""
 __Units__
 
 The units used throughout the strong lensing literature vary, therefore lets quickly describe the units used in
