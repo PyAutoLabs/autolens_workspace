@@ -366,10 +366,7 @@ Two notes specific to interferometer:
   `autolens_workspace_test/scripts/interferometer/nufft.py` for the
   parity work.
 - Eager `simulator_jax.via_image_from(image)` already runs on JAX without
-  the `@jax.jit` wrap; the JIT only matters for repeated calls. The
-  `@jax.jit` wrap shown above is currently blocked by a pre-existing
-  `Array2D.native` autoarray limitation — eager use works today; the
-  JIT wrap works once a separate refactor lands.
+  the `@jax.jit` wrap; the JIT only matters for repeated calls.
 
 See `scripts/guides/lens_calc.py` for the "JIT-it-yourself" pattern
 applied to individual library methods.

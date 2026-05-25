@@ -51,10 +51,8 @@ explicit `@jax.jit + PointSolver(use_jax=True)` pattern (useful for fast
 forward-solving in custom code), see `simulator.py`'s `__JAX Variant__`
 section.
 
-Note: `PointSolver(use_jax=True)` works inside `@jax.jit` (unlike the
-imaging / interferometer simulators, which are currently blocked by a
-pre-existing `Array2D.native` autoarray limitation). The triangle-
-refinement loop doesn't go through `.native`.
+Note: `PointSolver(use_jax=True)` works inside `@jax.jit`. The triangle-
+refinement loop operates on raw arrays and doesn't go through `.native`.
 
 """
 

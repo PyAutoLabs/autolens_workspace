@@ -532,10 +532,9 @@ Two notes:
 - `register_tracer_classes(tracer)` is the one user-visible setup call.
   After the first invocation, every later `@jax.jit` with the same class
   set works without re-registering.
-- Unlike imaging / interferometer simulators, the `PointSolver.use_jax=True`
-  + `@jax.jit` wrap really does work inside jit (it doesn't go through the
-  pre-existing `Array2D.native` autoarray limitation that blocks the image
-  simulators).
+- Unlike imaging / interferometer simulators, `PointSolver.use_jax=True`
+  does not go through `Array2D.native` at all — the triangle-refinement
+  loop operates on raw arrays throughout.
 
 See `scripts/guides/lens_calc.py` for the broader "JIT-it-yourself"
 pattern applied to other library methods.
