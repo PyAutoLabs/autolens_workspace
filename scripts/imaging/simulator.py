@@ -324,15 +324,9 @@ The `dataset_jax.data.array` is a `jax.Array`; `aplt.fits_imaging` and the
 plotters call `numpy.asarray()` internally, so saving / plotting works
 without manual conversion.
 
-Two notes:
-
-- Eager `simulator_jax.via_tracer_from(tracer, grid)` (no `@jax.jit`)
-  already runs on JAX and is sufficient for one-off simulations. The
-  `@jax.jit` wrap is only beneficial when you call the function many times.
-- `@jax.jit` wrap is currently blocked by a pre-existing `Array2D.native`
-  jit-incompatibility in autoarray's slim/native reshape. Eager JAX works
-  today; the `@jax.jit` shown above will work once a separate refactor
-  task lands.
+Note: eager `simulator_jax.via_tracer_from(tracer, grid)` (no `@jax.jit`)
+already runs on JAX and is sufficient for one-off simulations. The
+`@jax.jit` wrap is only beneficial when you call the function many times.
 
 See `scripts/guides/lens_calc.py` for the advanced "JIT-it-yourself"
 pattern that wraps individual library methods like `tracer.image_2d_from`

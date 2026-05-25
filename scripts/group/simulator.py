@@ -314,8 +314,7 @@ __JAX Variant__
 Same pattern as `scripts/imaging/simulator.py` `__JAX Variant__`:
 instantiate `al.SimulatorImaging(use_jax=True)` and wrap
 `via_tracer_from` in `@jax.jit`. The simulator handles pytree
-registration internally. Eager JAX path works; `@jax.jit` is currently
-blocked by the pre-existing `Array2D.native` autoarray limitation.
+registration internally.
 
 See `scripts/imaging/simulator.py` for the runnable variant block.
 """
