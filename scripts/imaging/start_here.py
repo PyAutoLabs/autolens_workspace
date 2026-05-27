@@ -23,6 +23,7 @@ __Contents__
 - **Model:** Compose the lens model fitted to the data.
 - **Model Fit:** Perform the model-fit using the search and analysis.
 - **Iterations Per Update:** Every `iterations_per_quick_update`, the non-linear search outputs the maximum likelihood model and.
+- **Live Visual Update:** Opt-in live matplotlib window (scripts) or Jupyter cell refresh (notebooks) during the fit.
 - **Result:** Overview of the results of the model-fit.
 - **Extra Galaxy Removal GUI:** The model-fit above removed a region of the image to the south-east of the lens, which contains.
 - **Model Your Own Lens:** If you have your own strong lens imaging data, you are now ready to model it yourself by adapting.
@@ -256,13 +257,26 @@ debugging — NumPy stack traces are easier to read than JAX traces.
 
 __Iterations Per Update__
 
-Every `iterations_per_quick_update`, the non-linear search outputs the maximum likelihood model and its best fit 
-image to the Jupyter Notebook display and to hard-disk.
+Every `iterations_per_quick_update`, the non-linear search outputs the maximum likelihood model and its best fit
+image to hard-disk (as `fit.png` in the output folder).
 
 This process takes around ~10 seconds, so we don't want it to happen too often so as to slow down the overall
 fit, but we also want it to happen frequently enough that we can track the progress.
 
-The value of 10000 below means this output happens every few minutes on GPU and every ~10 minutes on CPU, a good balance.
+The value of 1000 below means this output happens every few minutes on GPU and every ~10 minutes on CPU, a good balance.
+
+__Live Visual Update__
+
+By default the quick-update image is only written to disk. Set `live_visual_update=True` to also push it to a
+live display surface:
+
+- **Python script** — a matplotlib window opens automatically and refreshes with each quick update, so you can
+  watch the fit converge without leaving your terminal.
+- **Jupyter / Colab notebook** — the cell that ran `search.fit(...)` shows a single self-updating image that
+  refreshes in place every `iterations_per_quick_update`.
+
+The disk write (`fit.png`) always happens regardless of this flag. Set it to `False` (the default) if you just
+want the on-disk output, or if you are running in a headless environment (e.g. an HPC cluster).
 """
 search = af.Nautilus(
     path_prefix=Path("imaging"),  # The path where results and output are stored.
@@ -270,7 +284,8 @@ search = af.Nautilus(
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # GPU lens model fits are batched and run simultaneously, see modeling examples for details.
-    iterations_per_quick_update=1000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
+    iterations_per_quick_update=1000,  # Every N iterations the max likelihood model is visualized and output to hard-disk.
+    live_visual_update=True,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 analysis = al.AnalysisImaging(
