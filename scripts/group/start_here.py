@@ -28,6 +28,7 @@ __Contents__
 - **Masking:** Lens modeling does not need to fit the entire image, only the region containing lens and source.
 - **Model:** Compose the lens model fitted to the data.
 - **Model Fit:** Perform the model-fit using the search and analysis.
+- **Live Visual Update:** Push the quick-update image to a live display surface.
 - **Result:** Overview of the results of the model-fit.
 - **Centre Input GUI:** The centres of the main lens galaxies above were loaded from a .json file, which was created using.
 - **Model Your Own Lens:** If you have your own strong lens imaging data, you are now ready to model it yourself by adapting.
@@ -258,6 +259,19 @@ likelihood in `jax.vmap(jax.jit(...))`. Force NumPy with `use_jax=False`
 
 **Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce
 an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
+
+__Live Visual Update__
+
+By default the quick-update image is only written to disk. Set `live_visual_update=True` to also push it to a
+live display surface:
+
+- **Python script** — a matplotlib window opens automatically and refreshes with each quick update, so you can
+  watch the fit converge without leaving your terminal.
+- **Jupyter / Colab notebook** — the cell that ran `search.fit(...)` shows a single self-updating image that
+  refreshes in place every `iterations_per_quick_update`.
+
+The disk write (`fit.png`) always happens regardless of this flag. Set it to `False` (the default) if you just
+want the on-disk output, or if you are running in a headless environment (e.g. an HPC cluster).
 """
 search = af.Nautilus(
     path_prefix=Path("group"),  # The path where results and output are stored.
@@ -266,6 +280,7 @@ search = af.Nautilus(
     n_live=150,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # GPU lens model fits are batched and run simultaneously, see modeling examples for details.
     iterations_per_full_update=100000,  # Every N iterations the results are written to hard-disk for inspection.
+    live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 analysis = al.AnalysisImaging(

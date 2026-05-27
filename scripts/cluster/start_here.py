@@ -38,6 +38,7 @@ __Contents__
 - **Analysis + Factor Graph:** Combine the per-source analyses into one global fit.
 - **Search:** Configure Nautilus, the non-linear search.
 - **Model Fit:** Run the fit.
+- **Live Visual Update:** Push the quick-update image to a live display surface.
 - **Result:** Inspect the maximum-likelihood model.
 - **Wrap Up:** Where to go next.
 
@@ -354,6 +355,19 @@ evaluations for throughput.
 Results are written to ``autolens_workspace/output/cluster/simple/start_here/<unique_hash>/``. The
 ``unique_hash`` is generated from the model, search settings, and dataset — re-running with the same
 configuration resumes the existing fit.
+
+__Live Visual Update__
+
+By default the quick-update image is only written to disk. Set `live_visual_update=True` to also push it to a
+live display surface:
+
+- **Python script** — a matplotlib window opens automatically and refreshes with each quick update, so you can
+  watch the fit converge without leaving your terminal.
+- **Jupyter / Colab notebook** — the cell that ran `search.fit(...)` shows a single self-updating image that
+  refreshes in place every `iterations_per_quick_update`.
+
+The disk write (`fit.png`) always happens regardless of this flag. Set it to `False` (the default) if you just
+want the on-disk output, or if you are running in a headless environment (e.g. an HPC cluster).
 """
 search = af.Nautilus(
     path_prefix=Path("cluster"),
@@ -362,6 +376,7 @@ search = af.Nautilus(
     n_live=100,
     n_batch=50,
     iterations_per_quick_update=2500,
+    live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 """

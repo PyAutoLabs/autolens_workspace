@@ -37,6 +37,7 @@ __Contents__
 - **Search:** Configure the non-linear search used to fit the model.
 - **Unique Identifier:** In the path above, the `unique_identifier` appears as a collection of characters, where this.
 - **Iterations Per Update:** Every `iterations_per_quick_update`, the non-linear search outputs the maximum likelihood model and.
+- **Live Visual Update:** Push the quick-update image to a live display surface.
 - **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
 - **JAX:** JAX acceleration for fast GPU/CPU model-fitting.
 - **VRAM Use:** When running AutoLens with JAX on a GPU, the analysis must fit within the GPU's available VRAM.
@@ -540,6 +541,19 @@ This process takes around ~10 seconds, so we don't want it to happen too often s
 fit, but we also want it to happen frequently enough that we can track the progress.
 
 The value of 10000 below means this output happens every few minutes on GPU and every ~10 minutes on CPU, a good balance.
+
+__Live Visual Update__
+
+By default the quick-update image is only written to disk. Set `live_visual_update=True` to also push it to a
+live display surface:
+
+- **Python script** — a matplotlib window opens automatically and refreshes with each quick update, so you can
+  watch the fit converge without leaving your terminal.
+- **Jupyter / Colab notebook** — the cell that ran `search.fit(...)` shows a single self-updating image that
+  refreshes in place every `iterations_per_quick_update`.
+
+The disk write (`fit.png`) always happens regardless of this flag. Set it to `False` (the default) if you just
+want the on-disk output, or if you are running in a headless environment (e.g. an HPC cluster).
 """
 search = af.Nautilus(
     path_prefix=Path("group"),  # The path where results and output are stored.
@@ -548,6 +562,7 @@ search = af.Nautilus(
     n_live=150,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
+    live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 """

@@ -237,6 +237,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,
     n_live=100,
     number_of_cores=2,  # CPU specific code
+    live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 analysis = al.AnalysisImaging(
@@ -305,6 +306,7 @@ def source_lp(
         **settings_search.search_dict,
         n_live=200,
         n_batch=n_batch,
+        live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
     )
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
@@ -354,6 +356,7 @@ def source_pix_1(
         **settings_search.search_dict,
         n_live=150,
         n_batch=n_batch,
+        live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
     )
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
@@ -398,6 +401,7 @@ def source_pix_2(
         **settings_search.search_dict,
         n_live=75,
         n_batch=n_batch,
+        live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
     )
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
@@ -438,6 +442,7 @@ def light_lp(
         **settings_search.search_dict,
         n_live=150,
         n_batch=n_batch,
+        live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
     )
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
@@ -485,6 +490,7 @@ def mass_total(
         **settings_search.search_dict,
         n_live=150,
         n_batch=n_batch,
+        live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
     )
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)

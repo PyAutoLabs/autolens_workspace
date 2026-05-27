@@ -30,6 +30,7 @@ __Contents__
 - **Scaling Relation:** The shared two-parameter relation that ties every scaling member's mass to its luminosity.
 - **Name Pairing:** How each ``Point`` model component is paired to its ``PointDataset``.
 - **Search:** Configure the non-linear search used to fit the model.
+- **Live Visual Update:** Push the quick-update image to a live display surface.
 - **Analysis:** Create the ``AnalysisPoint`` objects, one per dataset.
 - **Factor Graph:** Combine per-dataset analyses into one global ``FactorGraphModel``.
 - **Run Times:** Profiling the expected run time of the model-fit.
@@ -421,6 +422,19 @@ __Iterations Per Update__
 
 Every N iterations the search prints the max-likelihood model and best-fit image. On GPU ~2500 keeps the
 output cadence around once per minute; on CPU a similar cadence is reached at lower N.
+
+__Live Visual Update__
+
+By default the quick-update image is only written to disk. Set `live_visual_update=True` to also push it to a
+live display surface:
+
+- **Python script** — a matplotlib window opens automatically and refreshes with each quick update, so you can
+  watch the fit converge without leaving your terminal.
+- **Jupyter / Colab notebook** — the cell that ran `search.fit(...)` shows a single self-updating image that
+  refreshes in place every `iterations_per_quick_update`.
+
+The disk write (`fit.png`) always happens regardless of this flag. Set it to `False` (the default) if you just
+want the on-disk output, or if you are running in a headless environment (e.g. an HPC cluster).
 """
 search = af.Nautilus(
     path_prefix=Path("cluster"),
@@ -429,6 +443,7 @@ search = af.Nautilus(
     n_live=100,
     n_batch=50,
     iterations_per_quick_update=10000,
+    live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 """

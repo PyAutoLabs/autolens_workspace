@@ -277,6 +277,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,
     n_live=100,
     number_of_cores=2,  # CPU specific: parallelize likelihood evaluations
+    live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 analysis = al.AnalysisImaging(

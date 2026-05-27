@@ -16,6 +16,7 @@ __Contents__
 - **Coordinates:** Coordinate system assumptions for the model-fit.
 - **Search:** Configure the non-linear search used to fit the model.
 - **Unique Identifier:** In the path above, the `unique_identifier` appears as a collection of characters, where this.
+- **Live Visual Update:** Push the quick-update image to a live display surface.
 - **Chi Squared:** For point-source modeling, there are many different ways to define the likelihood function, broadly.
 - **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
 - **JAX:** JAX acceleration for fast GPU/CPU model-fitting.
@@ -265,8 +266,21 @@ the existing results to resume the model-fit. In contrast, if you change the mod
 will be generated, ensuring that the model-fit results are output into a separate folder.
 
 We additionally want the unique identifier to be specific to the dataset fitted, so that if we fit different datasets
-with the same model and search results are output to a different folder. We achieve this below by passing 
+with the same model and search results are output to a different folder. We achieve this below by passing
 the `dataset_name` to the search's `unique_tag`.
+
+__Live Visual Update__
+
+By default the quick-update image is only written to disk. Set `live_visual_update=True` to also push it to a
+live display surface:
+
+- **Python script** — a matplotlib window opens automatically and refreshes with each quick update, so you can
+  watch the fit converge without leaving your terminal.
+- **Jupyter / Colab notebook** — the cell that ran `search.fit(...)` shows a single self-updating image that
+  refreshes in place every `iterations_per_quick_update`.
+
+The disk write (`fit.png`) always happens regardless of this flag. Set it to `False` (the default) if you just
+want the on-disk output, or if you are running in a headless environment (e.g. an HPC cluster).
 """
 search = af.Nautilus(
     path_prefix=Path("point_source"),  # The path where results and output are stored.
@@ -275,6 +289,7 @@ search = af.Nautilus(
     n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=10000,  # Every N iterations the max likelihood model, is visualized in the Jupter Notebook and output to hard-disk.
+    live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 """
