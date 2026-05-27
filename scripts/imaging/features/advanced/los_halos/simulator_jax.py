@@ -36,8 +36,8 @@ __Contents__
 - **Convert to Padded Arrays:** Pack the ``Galaxy`` list from ``LOSSampler`` into fixed-shape
   JAX arrays with boolean masks for unused slots.
 - **Scaling Matrix:** Precompute the cosmological scaling factors between all redshift planes.
-- **Closure Functions:** Wrap the lens and source galaxies as pure functions of the grid, so
-  they can be called inside ``jax.jit``.
+- **Parameterized Functions:** Define the lens mass, source light and (optionally) lens light
+  as functions of ``(grid, params)`` so their parameters are dynamic inputs to ``jax.jit``.
 - **Single Realisation:** ``simulate_substructure`` produces one noisy lensed image.
 - **Batched Realisations:** ``batched_simulate_substructure`` uses ``jax.vmap`` to produce
   many images at once.
@@ -263,33 +263,69 @@ scaling_matrix = substructure_util.precompute_scaling_matrix(
 )
 
 """
-__Closure Functions__
+__Parameterized Functions__
 
-The lens galaxy and source galaxy are wrapped as pure functions of the grid so they can be
-called inside ``jax.jit``. Because the galaxy objects are captured in the closure (rather than
-passed as array arguments), JAX traces through their profile methods once during compilation
-and bakes the result into the XLA graph. Their parameters are constants — they do not change
-between realisations.
+The lens mass model, source light, and (optionally) lens light are each wrapped as a function
+of ``(grid, params)`` where ``params`` is a 1-D JAX array of the profile parameters. The
+function body constructs the profile objects from those parameters and evaluates them on the
+grid.
 
+Because the ``params`` array is a dynamic input (not a constant captured in a closure), JAX
+traces through the profile construction with traced parameter values. This means the lens mass
+model, source light, and lens light can all be varied between realisations without triggering
+recompilation — which is essential for inference where these parameters are being fitted.
+
+The function itself (which profile classes to use, how many components) is fixed at trace time.
+Only the parameter *values* are dynamic.
+"""
+
+
+def lens_mass_fn(grid_raw, params):
+    power_law = al.mp.PowerLaw(
+        centre=(params[0], params[1]),
+        ell_comps=(params[2], params[3]),
+        slope=params[4],
+        einstein_radius=params[5],
+    )
+    shear = al.mp.ExternalShear(gamma_1=params[6], gamma_2=params[7])
+    galaxy = al.Galaxy(redshift=z_lens, mass=power_law, shear=shear)
+    g = aa.Grid2DIrregular(values=grid_raw, xp=jnp)
+    return galaxy.deflections_yx_2d_from(grid=g, xp=jnp).array
+
+
+lens_mass_params = jnp.array([0.0, 0.0, 0.059, -0.027, 2.264, 1.6, 0.0, 0.0])
+
+
+def source_light_fn(grid_raw, params):
+    bulge = al.lp.SersicCore(
+        centre=(params[0], params[1]),
+        ell_comps=(params[2], params[3]),
+        intensity=params[4],
+        effective_radius=params[5],
+        sersic_index=params[6],
+        radius_break=params[7],
+    )
+    galaxy = al.Galaxy(redshift=z_source, bulge=bulge)
+    g = aa.Grid2DIrregular(values=grid_raw, xp=jnp)
+    return galaxy.image_2d_from(grid=g, xp=jnp).array
+
+
+ell_comps_source = al.convert.ell_comps_from(axis_ratio=0.8, angle=75.0)
+source_light_params = jnp.array([
+    0.02, -0.03, ell_comps_source[0], ell_comps_source[1],
+    1.5, 0.15, 3.5, 0.025,
+])
+
+"""
 The ``lens_plane_mask`` is a float array with ``1.0`` at the lens-galaxy plane and ``0.0``
 elsewhere. Inside the scan, the lens galaxy's deflections are computed at every plane step but
 multiplied by this mask so they only contribute at the correct redshift.
 """
-
-
-def lens_deflections_fn(grid_raw):
-    g = aa.Grid2DIrregular(values=grid_raw, xp=jnp)
-    return lens_galaxy.deflections_yx_2d_from(grid=g, xp=jnp).array
-
-
-def source_image_fn(grid_raw):
-    g = aa.Grid2DIrregular(values=grid_raw, xp=jnp)
-    return source_galaxy.image_2d_from(grid=g, xp=jnp).array
-
-
 lens_plane_mask = jnp.array(
     [1.0 if abs(z - z_lens) < 1e-6 else 0.0 for z in plane_redshifts]
 )
+
+lens_plane_idx = int(jnp.argmax(lens_plane_mask))
 
 """
 __Single Realisation__
@@ -312,10 +348,12 @@ image = substructure_util.simulate_substructure(
     halo_params=halo_params,
     halo_mask=halo_mask,
     scaling_matrix=scaling_matrix,
-    macro_deflections_fn=lens_deflections_fn,
-    macro_plane_mask=lens_plane_mask,
+    lens_mass_fn=lens_mass_fn,
+    lens_mass_params=lens_mass_params,
+    lens_plane_mask=lens_plane_mask,
     sheet_kappas=sheet_kappas,
-    source_image_fn=source_image_fn,
+    source_light_fn=source_light_fn,
+    source_light_params=source_light_params,
     psf_kernel=psf_kernel,
     exposure_time=8000.0,
     background_sky_level=0.1,
@@ -368,16 +406,21 @@ hp_batch, hm_batch, sk_batch = substructure_util.los_realizations_to_arrays(
 
 keys = jax.random.split(jax.random.PRNGKey(0), batch_size)
 
+lens_mass_params_batch = jnp.tile(lens_mass_params, (batch_size, 1))
+source_light_params_batch = jnp.tile(source_light_params, (batch_size, 1))
+
 images_batch = substructure_util.batched_simulate_substructure(
     grid=grid_array,
     image_shape=image_shape,
     halo_params_batch=hp_batch,
     halo_mask_batch=hm_batch,
     scaling_matrix=scaling_matrix,
-    macro_deflections_fn=lens_deflections_fn,
-    macro_plane_mask=lens_plane_mask,
+    lens_mass_fn=lens_mass_fn,
+    lens_mass_params_batch=lens_mass_params_batch,
+    lens_plane_mask=lens_plane_mask,
     sheet_kappas_batch=sk_batch,
-    source_image_fn=source_image_fn,
+    source_light_fn=source_light_fn,
+    source_light_params_batch=source_light_params_batch,
     psf_kernel=psf_kernel,
     exposure_time=8000.0,
     background_sky_level=0.1,
