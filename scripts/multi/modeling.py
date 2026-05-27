@@ -26,6 +26,7 @@ __Contents__
 - **Analysis Factor:** Each analysis object is wrapped in an `AnalysisFactor`, which pairs it with the model and prepares.
 - **Factor Graph:** All `AnalysisFactor` objects are combined into a `FactorGraphModel`, which represents a global.
 - **Search:** Configure the non-linear search used to fit the model.
+- **Live Visual Update:** Push the quick-update image to a live display surface.
 - **VRAM Use:** The `modeling` examples of individual dataset types explain how VRAM is used during GPU-based.
 - **Result:** Overview of the results of the model-fit.
 - **Wrap Up:** Summary of the script and next steps.
@@ -272,6 +273,19 @@ print(factor_graph.global_prior_model.info)
 
 """
 __Search__
+
+__Live Visual Update__
+
+By default the quick-update image is only written to disk. Set `live_visual_update=True` to also push it to a
+live display surface:
+
+- **Python script** — a matplotlib window opens automatically and refreshes with each quick update, so you can
+  watch the fit converge without leaving your terminal.
+- **Jupyter / Colab notebook** — the cell that ran `search.fit(...)` shows a single self-updating image that
+  refreshes in place every `iterations_per_quick_update`.
+
+The disk write (`fit.png`) always happens regardless of this flag. Set it to `False` (the default) if you just
+want the on-disk output, or if you are running in a headless environment (e.g. an HPC cluster).
 """
 search = af.Nautilus(
     path_prefix=Path(
@@ -282,6 +296,7 @@ search = af.Nautilus(
     n_live=150,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
+    live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 """

@@ -30,6 +30,7 @@ __Contents__
 - **Model:** Compose the lens model fitted to the data.
 - **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
 - **Model Fit:** Perform the model-fit using the search and analysis.
+- **Live Visual Update:** Push the quick-update image to a live display surface.
 - **Result:** Overview of the results of the model-fit.
 - **Model Your Own Lens:** If you have your own strong lens imaging data, you are now ready to model it yourself by adapting.
 - **Simulator:** In the example `start_here_imaging.ipynb`, we showed how to simulate CCD imaging of a strong lens.
@@ -359,8 +360,21 @@ We now fit the data with the lens model using the non-linear fitting method and 
 This requires an `AnalysisImaging` object, which defines the `log_likelihood_function` used by Nautilus to fit
 the model to the imaging data.
 
-**Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce 
+**Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce
 an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
+
+__Live Visual Update__
+
+By default the quick-update image is only written to disk. Set `live_visual_update=True` to also push it to a
+live display surface:
+
+- **Python script** — a matplotlib window opens automatically and refreshes with each quick update, so you can
+  watch the fit converge without leaving your terminal.
+- **Jupyter / Colab notebook** — the cell that ran `search.fit(...)` shows a single self-updating image that
+  refreshes in place every `iterations_per_quick_update`.
+
+The disk write (`fit.png`) always happens regardless of this flag. Set it to `False` (the default) if you just
+want the on-disk output, or if you are running in a headless environment (e.g. an HPC cluster).
 """
 search = af.Nautilus(
     path_prefix=Path(
@@ -371,6 +385,7 @@ search = af.Nautilus(
     n_live=150,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
+    live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 """

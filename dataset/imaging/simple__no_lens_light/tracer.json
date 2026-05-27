@@ -20,7 +20,6 @@
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.isothermal.Isothermal",
                             "arguments": {
-                                "einstein_radius": 1.6,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -28,6 +27,7 @@
                                         0.0
                                     ]
                                 },
+                                "einstein_radius": 1.6,
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
@@ -57,6 +57,11 @@
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.light.standard.sersic_core.SersicCore",
                             "arguments": {
+                                "sersic_index": 1.0,
+                                "effective_radius": 0.1,
+                                "radius_break": 0.025,
+                                "gamma": 0.25,
+                                "alpha": 3.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -64,11 +69,6 @@
                                         0.0
                                     ]
                                 },
-                                "sersic_index": 1.0,
-                                "radius_break": 0.025,
-                                "alpha": 3.0,
-                                "effective_radius": 0.1,
-                                "gamma": 0.25,
                                 "intensity": 4.0,
                                 "ell_comps": {
                                     "type": "tuple",

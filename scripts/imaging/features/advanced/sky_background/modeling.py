@@ -205,6 +205,7 @@ search = af.Nautilus(
     unique_tag=dataset_name,
     n_live=125,
     n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
+    live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 """

@@ -22,6 +22,7 @@ __Contents__
 - **Dataset:** Load and plot the strong lens dataset.
 - **Model:** Compose the lens model fitted to the data.
 - **Model Fit:** Perform the model-fit using the search and analysis.
+- **Live Visual Update:** Push the quick-update image to a live display surface.
 - **Result:** Overview of the results of the model-fit.
 - **Model Your Own Lens:** Adapting this script to fit your own interferometer dataset.
 - **Simulator:** Let’s now switch gears and simulate our own strong lens interferometer.
@@ -246,6 +247,19 @@ batches of parameter vectors evaluate in parallel. Force NumPy with
 
 **Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce
 an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
+
+__Live Visual Update__
+
+By default the quick-update image is only written to disk. Set `live_visual_update=True` to also push it to a
+live display surface:
+
+- **Python script** — a matplotlib window opens automatically and refreshes with each quick update, so you can
+  watch the fit converge without leaving your terminal.
+- **Jupyter / Colab notebook** — the cell that ran `search.fit(...)` shows a single self-updating image that
+  refreshes in place every `iterations_per_quick_update`.
+
+The disk write (`fit.png`) always happens regardless of this flag. Set it to `False` (the default) if you just
+want the on-disk output, or if you are running in a headless environment (e.g. an HPC cluster).
 """
 search = af.Nautilus(
     path_prefix=Path("interferometer"),  # The path where results and output are stored.
@@ -254,6 +268,7 @@ search = af.Nautilus(
     n_live=75,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # GPU lens model fits are batched and run simultaneously, see modeling examples for details.
     iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
+    live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 analysis = al.AnalysisInterferometer(
