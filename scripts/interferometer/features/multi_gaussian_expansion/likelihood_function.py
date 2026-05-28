@@ -134,13 +134,13 @@ lens_galaxy = al.Galaxy(redshift=0.5, mass=mass, shear=shear)
 """
 __Source Galaxy MGE Basis__
 
-We build a `Basis` of 15 linear `Gaussian` profiles for the source bulge, all sharing the same centre and
+We build a `Basis` of 5 linear `Gaussian` profiles for the source bulge, all sharing the same centre and
 `ell_comps`, with `sigma` values spanning 0.01" to the mask radius in log-spaced increments.
 
 Each Gaussian is a linear light profile — its `intensity` is solved for analytically via the inversion
 below. Internally each linear profile carries `intensity=1.0`, which the inversion later rescales.
 """
-total_gaussians = 15
+total_gaussians = 5
 log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
 
 bulge_gaussian_list = []

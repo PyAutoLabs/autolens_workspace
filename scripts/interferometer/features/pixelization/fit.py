@@ -155,7 +155,7 @@ dataset = al.Interferometer.from_fits(
     noise_map_path=dataset_path / "noise_map.fits",
     uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
     real_space_mask=real_space_mask,
-    transformer_class=al.TransformerDFT,
+    transformer_class=al.TransformerNUFFT,
 )
 
 aplt.subplot_interferometer_dirty_images(dataset=dataset)
@@ -500,7 +500,7 @@ simulator = al.SimulatorInterferometer(
     uv_wavelengths=dataset.uv_wavelengths,
     exposure_time=300.0,
     noise_sigma=1000.0,
-    transformer_class=al.TransformerDFT,
+    transformer_class=al.TransformerNUFFT,
 )
 
 # dataset = simulator.via_interpolated_reconstruction_from(

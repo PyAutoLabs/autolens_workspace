@@ -24,7 +24,8 @@ as the rest of the model, so MGE fits to visibilities are now routine even at AL
   `D`/`F` solve over the joint complex visibility data.
 - `slam`: SLaM pipeline (SOURCE LP → SOURCE PIX 1 → SOURCE PIX 2 → MASS TOTAL) using an MGE source in
   the SOURCE LP stage via `al.model_util.mge_model_from`. SOURCE LP runs on `TransformerNUFFT`; the
-  pixelized stages switch to `TransformerDFT` + sparse operator.
+  pixelized stages use the same `TransformerNUFFT` plus `apply_sparse_operator` (FFT-based W̃ precision
+  matrix).
 
 # Results
 
