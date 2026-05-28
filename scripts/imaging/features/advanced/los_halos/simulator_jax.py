@@ -179,9 +179,7 @@ half = psf_size // 2
 y = np.arange(psf_size) - half
 x = np.arange(psf_size) - half
 yy, xx = np.meshgrid(y, x, indexing="ij")
-psf_kernel_np = np.exp(
-    -(yy**2 + xx**2) / (2 * (psf_sigma / grid.pixel_scales[0]) ** 2)
-)
+psf_kernel_np = np.exp(-(yy**2 + xx**2) / (2 * (psf_sigma / grid.pixel_scales[0]) ** 2))
 psf_kernel_np /= psf_kernel_np.sum()
 psf_kernel = jnp.array(psf_kernel_np)
 
@@ -311,10 +309,18 @@ def source_light_fn(grid_raw, params):
 
 
 ell_comps_source = al.convert.ell_comps_from(axis_ratio=0.8, angle=75.0)
-source_light_params = jnp.array([
-    0.02, -0.03, ell_comps_source[0], ell_comps_source[1],
-    1.5, 0.15, 3.5, 0.025,
-])
+source_light_params = jnp.array(
+    [
+        0.02,
+        -0.03,
+        ell_comps_source[0],
+        ell_comps_source[1],
+        1.5,
+        0.15,
+        3.5,
+        0.025,
+    ]
+)
 
 """
 The ``lens_plane_mask`` is a float array with ``1.0`` at the lens-galaxy plane and ``0.0``
