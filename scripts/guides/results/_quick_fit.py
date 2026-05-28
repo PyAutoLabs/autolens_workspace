@@ -20,7 +20,9 @@ fast enough to fit inside the per-script CI timeout.
 import sys
 from pathlib import Path
 
-results_path = Path("output") / "results_folder"
+from autoconf.test_mode import with_test_mode_segment
+
+results_path = with_test_mode_segment(Path("output")) / "results_folder"
 if results_path.exists():
     sys.exit(0)
 
