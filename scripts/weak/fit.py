@@ -33,35 +33,16 @@ import autolens.plot as aplt
 """
 __Dataset__
 
-We build a `WeakDataset` matching the output of `scripts/weak/simulator.py`: 200 background
+We load the simulated `WeakDataset` produced by `scripts/weak/simulator.py`: 200 background
 source-galaxy positions in a 3.0" half-extent square, each with a measured `(gamma_2, gamma_1)` shear
 vector and per-galaxy noise standard deviation 0.3. The shear field carries the signature of the
 foreground lens's mass distribution.
 
-We reconstruct the dataset inline (rather than loading the simulator's `dataset.json` from disk) so this
-tutorial is self-contained and the seed pins the same draw of source positions and noise the simulator
-script produces.
+If `dataset.json` does not yet exist, run `scripts/weak/simulator.py` first.
 """
 dataset_path = Path("dataset") / "weak" / "simple"
 
-truth_lens = al.Galaxy(
-    redshift=0.5,
-    mass=al.mp.Isothermal(
-        centre=(0.0, 0.0),
-        einstein_radius=1.6,
-        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
-    ),
-)
-truth_source = al.Galaxy(redshift=1.0)
-truth_tracer = al.Tracer(galaxies=[truth_lens, truth_source])
-
-simulator = al.SimulatorShearYX(noise_sigma=0.3, seed=1)
-dataset = simulator.via_tracer_random_positions_from(
-    tracer=truth_tracer,
-    n_galaxies=200,
-    grid_extent=3.0,
-    name="simple",
-)
+dataset = al.from_json(file_path=dataset_path / "dataset.json")
 
 print(dataset.info)
 
