@@ -155,7 +155,9 @@ latent_samples = analysis.compute_latent_samples(result.samples)
 
 median_instance = latent_samples.median_pdf()
 print(f"Median PDF magnification: {median_instance.magnification}")
-print(f"Median PDF effective_einstein_radius: {median_instance.effective_einstein_radius}")
+print(
+    f"Median PDF effective_einstein_radius: {median_instance.effective_einstein_radius}"
+)
 print(f"Median PDF total_source_flux_mujy: {median_instance.total_source_flux_mujy}")
 
 """
@@ -213,8 +215,8 @@ class AnalysisImagingWithMassAxisRatio(al.AnalysisImaging):
 
         try:
             ell_y, ell_x = instance.galaxies.lens.mass.ell_comps
-            axis_ratio = (1.0 - np.sqrt(ell_y ** 2 + ell_x ** 2)) / (
-                1.0 + np.sqrt(ell_y ** 2 + ell_x ** 2)
+            axis_ratio = (1.0 - np.sqrt(ell_y**2 + ell_x**2)) / (
+                1.0 + np.sqrt(ell_y**2 + ell_x**2)
             )
         except AttributeError:
             axis_ratio = xp.nan
