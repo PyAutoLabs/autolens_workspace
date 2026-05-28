@@ -25,6 +25,7 @@ __Contents__
 
 - **Zero Point:** In astronomy, a zero point refers to a reference value used in photometry and spectroscopy to.
 - **Total Flux:** A key quantity for computing the magnitudes of galaxies is the total flux of a light profile.
+- **Latent Variables:** Reading the same total flux directly from the `latent.csv` of a completed fit.
 
 __Zero Point__
 
@@ -239,7 +240,60 @@ For HST, a few quantitites that may be useful and worth looking into are:
 - The HST PHOTNU value, in units of Jy (e s^-1), which converts to Janskys, which is often used by SED fitting
   software.
 
+__Latent Variables: Total Flux Directly from the Fit__
 
+The examples above all computed total flux by hand: build a light profile, sample it on a grid, sum the image, then
+apply the zero point. PyAutoLens does exactly this automatically as part of every fit and records the result as a
+latent variable in the `latent/samples.csv` file beside the search output. You can skip the manual recipe entirely
+and just read the column.
+
+Three lensing flux latents ship default-on (they need no instrument inputs and run on every fit unless disabled in
+`config/latent.yaml`):
+
+- `total_lens_flux` — total integrated flux of the lens galaxy (the sum of `fit.tracer.galaxies[0]`'s model image),
+  in the *raw* image units the fit was performed in. For HST data in e- s^-1, this is e- s^-1; for JWST data in
+  MJy/sr, this is MJy/sr.
+
+- `total_lensed_source_flux` — image-plane integrated flux of the source galaxy after lensing. This is the source
+  flux as observed: stretched, multiplied, and distorted by the lens. Same raw units.
+
+- `total_source_flux` — source-plane intrinsic flux of the source galaxy: the flux the source would have if the
+  lens weren't there. Computed via `fit.tracer_linear_light_profiles_to_light_profiles` so that linear light
+  profiles (MGEs, pixelizations) work correctly. The ratio
+  `total_lensed_source_flux / total_source_flux` is the integrated magnification (also recorded directly as the
+  `magnification` latent).
+
+To convert any of these to AB magnitudes or microjanskies, apply the same zero-point recipe used above. Suppose
+you have an HST F814W fit with the F814W zero point of 25.943; reading the lens galaxy flux from your result and
+converting goes:
+"""
+from autogalaxy.imaging.model.latent import (
+    ab_mag_via_flux_from,
+    flux_mujy_via_ab_mag_from,
+)
+
+# Stand-in for what you'd read from `latent.csv` — in a real script this is one column of one row, e.g.
+#   total_lens_flux = pd.read_csv(search.paths.output_path / "latent" / "samples.csv")["total_lens_flux"].iloc[-1]
+total_lens_flux = 1234.5  # e- s^-1
+
+zero_point_f814w = 25.943
+ab_mag_lens = ab_mag_via_flux_from(flux=total_lens_flux, magzero=zero_point_f814w)
+flux_mujy_lens = flux_mujy_via_ab_mag_from(ab_mag=ab_mag_lens)
+
+"""
+The two helpers used above are the same ones the library uses internally to populate the `_mujy` variants of the
+latents (`total_lens_flux_mujy`, `total_lensed_source_flux_mujy`, `total_source_flux_mujy`). Those variants are
+default-off because they need a `magzero` you supply per-instrument. If you have a single fixed zero-point you can
+flip them on by:
+
+1. Setting `total_lens_flux_mujy: true` (and friends) in your project's `config/latent.yaml`.
+2. Passing `magzero=<value>` when constructing the analysis:
+   `analysis = al.AnalysisImaging(dataset=dataset, magzero=25.943)`.
+
+The latent dispatcher then writes the converted µJy columns into `latent/samples.csv` directly, so you don't have
+to run the conversion in post. If you enable the `_mujy` latents but forget the `magzero` keyword, the columns are
+populated with NaN and a single warning per process notes that the conversion was skipped — the fit itself is
+unaffected.
 
 Finish.
 """

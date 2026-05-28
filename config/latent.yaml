@@ -1,15 +1,31 @@
 # Workspace overrides for the library lensing latent toggles. The
-# PyAutoLens library defaults every key to `false` so existing fits stay
-# unchanged on upgrade and unaware of `magzero`. Enabling them here
-# means a workspace fit produces real latent output as long as the user
-# also passes `magzero` to `al.AnalysisImaging(...)` when one is needed.
+# PyAutoLens library defaults the three raw-flux keys to `true` (they
+# need no instrument inputs) and the µJy / dimensionless variants to
+# `false`. Enabling the µJy ones here means a workspace fit produces
+# real microjansky output as long as the user also passes `magzero` to
+# `al.AnalysisImaging(...)` — without `magzero` they return NaN and emit
+# one warning per process.
 #
 # Run `scripts/guides/results/latent_variables.py` for a tutorial on
-# what each key means and how to extend the catalogue with custom
-# latents in your own scripts.
+# what each key means and `scripts/guides/units/flux.py` for how to
+# convert a raw-flux latent to microjanskies in post.
 
-# total_lens_flux_mujy — integrated lens-galaxy flux in microjanskies.
-# Requires magzero. NaN when lens has no light profile.
+# total_lens_flux — integrated lens-galaxy flux in the fit's raw image
+# units. No instrument inputs required. NaN when lens has no light profile.
+total_lens_flux: true
+
+# total_lensed_source_flux — image-plane source flux after lensing, in
+# raw image units. No instrument inputs required.
+total_lensed_source_flux: true
+
+# total_source_flux — source-plane intrinsic source flux in raw image
+# units. Uses fit.tracer_linear_light_profiles_to_light_profiles so MGE /
+# linear light profiles work correctly. No instrument inputs required.
+total_source_flux: true
+
+# total_lens_flux_mujy — same as total_lens_flux but converted to
+# microjanskies. Requires magzero on AnalysisImaging; NaN + one warning
+# per process if missing.
 total_lens_flux_mujy: true
 
 # total_lensed_source_flux_mujy — image-plane source flux after lensing,
@@ -29,3 +45,8 @@ magnification: true
 # zero-contour of the tangential eigenvalue field.
 # magzero is not required.
 effective_einstein_radius: true
+
+# autogalaxy library default (loaded by autoconf into the same `latent`
+# conf node) — explicitly disabled here to silence the cross-library
+# "unknown latent" warning that would otherwise fire on every fit.
+total_galaxy_0_flux: false
