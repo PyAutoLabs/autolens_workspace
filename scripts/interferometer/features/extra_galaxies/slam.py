@@ -21,7 +21,7 @@ __Contents__
 - **SOURCE PIX PIPELINE 2:** Improves the pixelized source using adapt images from `source_pix_result_1`.
 - **MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`, except no lens light model is included as interferometer data.
 - **Extra Galaxies Centres:** This is the same API as described in the `features/extra_galaxies.ipynb` example, where the centres.
-- **Two Datasets:** Build one Interferometer with `TransformerNUFFT` (source_lp) and one with `TransformerDFT` + sparse operator (source_pix onwards).
+- **Two Datasets:** Build one Interferometer with `TransformerNUFFT` (source_lp) and one with `TransformerNUFFT` + sparse operator (source_pix onwards).
 - **Sparse Operators:** The `pixelization/modeling` example describes how the sparse operator formalism speeds up.
 - **Settings:** Disable the default position only linear algebra solver so the source reconstruction can have.
 - **Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
@@ -159,7 +159,7 @@ The first search of the SOURCE PIX PIPELINE fits a pixelization whose purpose is
 adapt image used in search 2. It uses the adapt image computed from the SOURCE LP result, with the position
 likelihood derived automatically via `source_lp_result.positions_likelihood_from(...)`.
 
-This stage uses `dataset_dft_sparse` (built with `TransformerDFT` + `apply_sparse_operator`). Pixelizations
+This stage uses `dataset_sparse` (built with `TransformerNUFFT` + `apply_sparse_operator`). Pixelizations
 exploit sparsity in the linear inversion rather than the NUFFT path.
 
 The `extra_galaxies` mass priors are carried forward from the SOURCE LP result as free model parameters.
@@ -420,7 +420,7 @@ __Two Datasets__
 The SLaM pipeline runs in two phases that prefer different transformers:
 
 - `dataset_nufft` uses `TransformerNUFFT` (backed by JAX-native `nufftax`) for the `source_lp` stage.
-- `dataset_dft_sparse` uses `TransformerDFT` + `apply_sparse_operator(...)` for `source_pix_1`,
+- `dataset_sparse` uses `TransformerNUFFT` + `apply_sparse_operator(...)` for `source_pix_1`,
   `source_pix_2` and `mass_total`.
 
 Both datasets are built from the same FITS files; only the transformer (and sparse-operator preload) differ.
@@ -433,12 +433,12 @@ dataset_nufft = al.Interferometer.from_fits(
     transformer_class=al.TransformerNUFFT,
 )
 
-dataset_dft_sparse = al.Interferometer.from_fits(
+dataset_sparse = al.Interferometer.from_fits(
     data_path=dataset_path / "data.fits",
     noise_map_path=dataset_path / "noise_map.fits",
     uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
     real_space_mask=real_space_mask,
-    transformer_class=al.TransformerDFT,
+    transformer_class=al.TransformerNUFFT,
 )
 
 """
@@ -463,7 +463,7 @@ We use a try / except to load the pre-computed curvature preload, which is neces
 the sparse operator formalism. If this file does not exist (e.g. you have not made it manually via
 the `many_visibilities_preparation` example) it is made here.
 
-The sparse operator is applied only to `dataset_dft_sparse` — the NUFFT-backed `dataset_nufft` used by
+The sparse operator is applied only to `dataset_sparse` — the NUFFT-backed `dataset_nufft` used by
 `source_lp` does not need it.
 """
 try:
@@ -473,7 +473,7 @@ try:
 except FileNotFoundError:
     nufft_precision_operator = None
 
-dataset_dft_sparse = dataset_dft_sparse.apply_sparse_operator(
+dataset_sparse = dataset_sparse.apply_sparse_operator(
     nufft_precision_operator=nufft_precision_operator, use_jax=True, show_progress=True
 )
 
@@ -541,7 +541,7 @@ The code below calls the full SLaM PIPELINE. See the documentation string above 
 a description of each pipeline step.
 
 Note the transformer split: `source_lp` is passed `dataset_nufft` (TransformerNUFFT), while every later stage
-is passed `dataset_dft_sparse` (TransformerDFT + sparse operator).
+is passed `dataset_sparse` (TransformerNUFFT + sparse operator).
 """
 source_lp_result = source_lp(
     settings_search=settings_search,
@@ -554,7 +554,7 @@ source_lp_result = source_lp(
 
 source_pix_result_1 = source_pix_1(
     settings_search=settings_search,
-    dataset=dataset_dft_sparse,
+    dataset=dataset_sparse,
     source_lp_result=source_lp_result,
     mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.Adapt,
@@ -563,7 +563,7 @@ source_pix_result_1 = source_pix_1(
 
 source_pix_result_2 = source_pix_2(
     settings_search=settings_search,
-    dataset=dataset_dft_sparse,
+    dataset=dataset_sparse,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
     mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
@@ -573,7 +573,7 @@ source_pix_result_2 = source_pix_2(
 
 mass_result = mass_total(
     settings_search=settings_search,
-    dataset=dataset_dft_sparse,
+    dataset=dataset_sparse,
     source_pix_result_1=source_pix_result_1,
     source_pix_result_2=source_pix_result_2,
     settings=settings,

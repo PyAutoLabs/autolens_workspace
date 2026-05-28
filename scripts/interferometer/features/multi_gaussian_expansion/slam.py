@@ -24,8 +24,9 @@ https://github.com/GragasLab/nufftax). MGE fits to visibilities are practical at
 because the per-iteration NUFFT of every Gaussian basis component runs inside the same compiled likelihood
 as the rest of the model.
 
-The SOURCE PIX and MASS TOTAL stages switch to `TransformerDFT` combined with the pre-computed sparse
-operator, because pixelized source reconstructions exploit sparsity rather than the NUFFT path.
+The SOURCE PIX and MASS TOTAL stages use the same `TransformerNUFFT` plus a pre-computed sparse
+operator (via `apply_sparse_operator`) so the pixelized source curvature matrix is assembled via the
+FFT-based W̃ precision matrix instead of the dense `transformed_mapping_matrix`.
 
 __Contents__
 
@@ -37,7 +38,7 @@ __Contents__
 - **SOURCE PIX PIPELINE 2:** Improves the pixelized source using adapt images from `source_pix_result_1`.
 - **MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`, except no lens light model is included.
 - **Two Datasets:** Build one Interferometer with `TransformerNUFFT` (source_lp) and one with
-  `TransformerDFT` + sparse operator (source_pix onwards).
+  `TransformerNUFFT` + sparse operator (source_pix onwards).
 - **Sparse Operators:** Pre-compute the sparse operator for the pixelized stages.
 - **Settings:** Disable the positive-only solver so the pixelized source reconstruction can have negative
   pixel values.
@@ -98,7 +99,7 @@ multi-Gaussian expansion (MGE). The lens galaxy mass and external shear are fitt
 
 The MGE source is built via the `al.model_util.mge_model_from` helper, which constructs a basis of N
 linear `Gaussian` profiles arranged in two groups (each sharing a centre and ell_comps; sigmas fixed to
-log-spaced values). For interferometer data we use `total_gaussians=20`, which is enough to capture the
+log-spaced values). For interferometer data we use `total_gaussians=5`, which is enough to capture the
 source morphology while keeping per-iteration cost manageable.
 
 This stage uses the `dataset_nufft` Interferometer (built with `TransformerNUFFT`, backed by `nufftax`),
@@ -124,7 +125,7 @@ def source_lp(
     analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
 
     source_bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
+        mask_radius=mask_radius, total_gaussians=5, centre_prior_is_uniform=False
     )
 
     model = af.Collection(
@@ -165,9 +166,10 @@ The first search fits a pixelization whose purpose is to generate a high-quality
 search 2. It uses the adapt image computed from the SOURCE LP result and the position likelihood is also
 derived automatically from the SOURCE LP result — no manual positions input is required.
 
-This stage uses the `dataset_dft_sparse` Interferometer (built with `TransformerDFT` +
-`apply_sparse_operator`). Pixelizations do not use the NUFFT path; the sparse-operator + DFT combination
-is what keeps pixelized source reconstructions fast and VRAM-efficient on large datasets.
+This stage uses the `dataset_sparse` Interferometer (built with `TransformerNUFFT` +
+`apply_sparse_operator`). The NUFFT keeps the one-time dirty-image setup tractable for ALMA-scale
+visibility counts, and the precomputed sparse operator makes per-likelihood curvature assembly use the
+FFT-based W̃ precision matrix instead of the dense `transformed_mapping_matrix`.
 """
 
 
@@ -245,7 +247,7 @@ pixelization and regularization.
 The LIGHT LP PIPELINE from `slam_start_here.py` is omitted here, as interferometer data does not contain
 lens light emission.
 
-Like SOURCE PIX PIPELINE 1, this stage uses the `dataset_dft_sparse` Interferometer.
+Like SOURCE PIX PIPELINE 1, this stage uses the `dataset_sparse` Interferometer.
 """
 
 
@@ -414,14 +416,15 @@ if not dataset_path.exists():
 """
 __Two Datasets__
 
-The SLaM pipeline runs in two phases that prefer different transformers:
+Both stages use `TransformerNUFFT` (backed by JAX-native `nufftax`), which keeps the dirty-image setup
+tractable at any visibility count. The two datasets differ only in whether `apply_sparse_operator` has
+been called:
 
-- `dataset_nufft` uses `TransformerNUFFT` (backed by JAX-native `nufftax`) for the `source_lp` stage. With
-  an MGE source bulge this is the fast path at any visibility count, because each Gaussian's NUFFT runs
-  inside the same compiled likelihood.
-- `dataset_dft_sparse` uses `TransformerDFT` combined with `apply_sparse_operator(...)` for `source_pix_1`,
-  `source_pix_2`, and `mass_total`. Pixelized source reconstructions exploit sparsity in the linear
-  inversion rather than the NUFFT, so this combination is the right choice for the pixelized stages.
+- `dataset_nufft` is plain `TransformerNUFFT` for the `source_lp` stage. With an MGE source bulge each
+  Gaussian's NUFFT runs inside the same compiled likelihood.
+- `dataset_sparse` is the same `TransformerNUFFT` plus `apply_sparse_operator(...)` for `source_pix_1`,
+  `source_pix_2`, and `mass_total`. The precomputed sparse operator makes the pixelized curvature matrix
+  assembly use the FFT-based W̃ precision matrix instead of the dense `transformed_mapping_matrix`.
 
 Both datasets are built from the same FITS files; only the transformer (and sparse-operator preload)
 differ.
@@ -434,12 +437,12 @@ dataset_nufft = al.Interferometer.from_fits(
     transformer_class=al.TransformerNUFFT,
 )
 
-dataset_dft_sparse = al.Interferometer.from_fits(
+dataset_sparse = al.Interferometer.from_fits(
     data_path=dataset_path / "data.fits",
     noise_map_path=dataset_path / "noise_map.fits",
     uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
     real_space_mask=real_space_mask,
-    transformer_class=al.TransformerDFT,
+    transformer_class=al.TransformerNUFFT,
 )
 
 """
@@ -451,7 +454,7 @@ pixelized source modeling, especially for many visibilities.
 We use a try / except to load the pre-computed curvature preload, which is necessary to use the sparse
 operator formalism. If this file does not exist it is made here.
 
-The sparse operator is applied only to `dataset_dft_sparse` — the NUFFT-backed `dataset_nufft` used by
+The sparse operator is applied only to `dataset_sparse` — the NUFFT-backed `dataset_nufft` used by
 `source_lp` does not need it.
 """
 try:
@@ -461,7 +464,7 @@ try:
 except FileNotFoundError:
     nufft_precision_operator = None
 
-dataset_dft_sparse = dataset_dft_sparse.apply_sparse_operator(
+dataset_sparse = dataset_sparse.apply_sparse_operator(
     nufft_precision_operator=nufft_precision_operator, use_jax=True, show_progress=True
 )
 
@@ -508,8 +511,8 @@ __SLaM Pipeline__
 The code below calls the full SLaM PIPELINE. See the documentation string above each Python function for
 a description of each pipeline step.
 
-Note the transformer split: `source_lp` is passed `dataset_nufft` (TransformerNUFFT), while every later
-stage is passed `dataset_dft_sparse` (TransformerDFT + sparse operator).
+Both datasets use `TransformerNUFFT`. `source_lp` is passed `dataset_nufft` (no sparse operator) while
+every later stage is passed `dataset_sparse` (`TransformerNUFFT` + `apply_sparse_operator`).
 """
 source_lp_result = source_lp(
     settings_search=settings_search,
@@ -521,7 +524,7 @@ source_lp_result = source_lp(
 
 source_pix_result_1 = source_pix_1(
     settings_search=settings_search,
-    dataset=dataset_dft_sparse,
+    dataset=dataset_sparse,
     source_lp_result=source_lp_result,
     mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.Adapt,
@@ -530,7 +533,7 @@ source_pix_result_1 = source_pix_1(
 
 source_pix_result_2 = source_pix_2(
     settings_search=settings_search,
-    dataset=dataset_dft_sparse,
+    dataset=dataset_sparse,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
     mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
@@ -540,7 +543,7 @@ source_pix_result_2 = source_pix_2(
 
 mass_result = mass_total(
     settings_search=settings_search,
-    dataset=dataset_dft_sparse,
+    dataset=dataset_sparse,
     source_pix_result_1=source_pix_result_1,
     source_pix_result_2=source_pix_result_2,
     settings=settings,

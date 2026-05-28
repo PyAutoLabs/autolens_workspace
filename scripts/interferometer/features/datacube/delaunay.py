@@ -95,7 +95,7 @@ dataset_list = [
         noise_map_path=channel_path / "noise_map.fits",
         uv_wavelengths_path=channel_path / "uv_wavelengths.fits",
         real_space_mask=real_space_mask,
-        transformer_class=al.TransformerDFT,
+        transformer_class=al.TransformerNUFFT,
     )
     for channel_path in channel_paths
 ]
