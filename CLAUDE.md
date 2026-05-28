@@ -2,6 +2,20 @@
 
 This is the tutorial and example workspace for **PyAutoLens**, a Python library for strong gravitational lens modeling.
 
+## Scientific Context
+
+Strong-lensing scientific context — concepts (mass models, source
+reconstruction, mass-sheet degeneracy, multipoles, substructure,
+time-delay cosmography, …), named entities (SLACS, H0liCOW, Euclid Q1,
+…), and a per-topic bibliography — lives in the lensing sub-wiki at
+[`PyAutoLabs/PyAutoPaper`](https://github.com/PyAutoLabs/PyAutoPaper),
+locally at `../PyAutoPaper/lensing_wiki/`. Start at
+`../PyAutoPaper/lensing_wiki/index.md`; see
+`../PyAutoPaper/lensing_wiki/CLAUDE.md` for the schema. Pull from it
+when example scripts or `start_here.py`-style narrative scripts would
+benefit from background — explaining a mass-model choice, citing a
+survey, framing a pipeline phase.
+
 ## Repository Structure
 
 - `scripts/` - Runnable Python scripts organised by topic
