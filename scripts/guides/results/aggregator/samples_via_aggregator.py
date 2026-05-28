@@ -52,6 +52,8 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 # from autoconf import setup_notebook; setup_notebook()
 
 from pathlib import Path
+
+from autoconf.test_mode import with_test_mode_segment
 import autofit as af
 import autolens.plot as aplt
 
@@ -91,7 +93,7 @@ First, set up the aggregator as shown in `start_here.py`.
 """
 from autofit.aggregator.aggregator import Aggregator
 
-results_path = Path("output") / "results_folder"
+results_path = with_test_mode_segment(Path("output")) / "results_folder"
 if not results_path.exists():
     import subprocess
     import sys
