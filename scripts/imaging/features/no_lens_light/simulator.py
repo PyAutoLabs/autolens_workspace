@@ -16,7 +16,7 @@ __Contents__
 - **Ray Tracing:** Setup the lens galaxy's light, mass and source galaxy light for this simulated lens.
 - **Output:** Output the simulated dataset to the dataset path as .fits files.
 - **Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
-- **Mask Extra Galaxies:** Save an empty `mask_extra_galaxies.fits` so noise-scaling tutorials can load it.
+- **Mask Extra Galaxies:** Save a `mask_extra_galaxies.fits` covering the extra galaxy for noise-scaling tutorials.
 - **Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
 
 __Model__
@@ -25,6 +25,8 @@ This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is an `Sersic`.
+ - A faint extra galaxy is included offset from the lens, whose emission must be removed via noise scaling
+   (a `mask_extra_galaxies.fits` covering it is written below).
 
 __Start Here Notebook__
 
@@ -58,11 +60,17 @@ grid = al.Grid2D.uniform(
     pixel_scales=0.1,
 )
 
+"""
+The centre of a faint extra galaxy, placed inside the 3.0" modeling mask but clear of the lensed source arcs
+(Einstein radius ~1.6"). It is reused for over-sampling, the galaxy itself and the `mask_extra_galaxies.fits`.
+"""
+extra_galaxy_centre = (2.2, 1.6)
+
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=grid,
     sub_size_list=[32, 8, 2],
     radial_list=[0.3, 0.6],
-    centre_list=[(0.0, 0.0)],
+    centre_list=[(0.0, 0.0), extra_galaxy_centre],
 )
 
 grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
@@ -113,9 +121,21 @@ source_galaxy = al.Galaxy(
 )
 
 """
+A single faint extra galaxy offset from the lens, representing a nearby contaminating object. It has a light
+profile only (no mass), so the lensed source arcs are unchanged; its emission is removed in the fit examples via
+the `__Extra Galaxies Noise Scaling__` step using the `mask_extra_galaxies.fits` written below.
+"""
+extra_galaxy = al.Galaxy(
+    redshift=0.5,
+    light=al.lp.ExponentialSph(
+        centre=extra_galaxy_centre, intensity=1.0, effective_radius=0.3
+    ),
+)
+
+"""
 Use these galaxies to setup a tracer, which will generate the image for the simulated `Imaging` dataset.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, extra_galaxy, source_galaxy])
 
 """
 Lets look at the tracer`s image, this is the image we'll be simulating.
@@ -164,16 +184,20 @@ aplt.subplot_galaxies_images(
 """
 __Mask Extra Galaxies__
 
-This dataset has no extra galaxies, but pixelization tutorials that load it (e.g.
-`imaging/features/pixelization/modeling.py`, `imaging/features/pixelization/fit.py`) demonstrate the
-noise-scaling API by applying a `mask_extra_galaxies` mask to the dataset. Output an empty (all-False,
-no-pixels-masked) mask so those tutorials can call `apply_noise_scaling(mask=...)` without crashing on a
-missing FITS file. The mask shape tracks `dataset.shape_native`, so `PYAUTO_SMALL_DATASETS=1` is honoured
+Build and output a `mask_extra_galaxies.fits` covering the extra galaxy, so the fit example (`imaging/fit.py`)
+and the pixelization tutorials that load this dataset (`imaging/features/pixelization/modeling.py`,
+`imaging/features/pixelization/fit.py`) can demonstrate the noise-scaling API on a real contaminant.
+
+The circle is sized to ~3x the galaxy's `effective_radius`, derived from the same `extra_galaxy_centre` defined
+above so it stays in sync. The mask shape tracks `dataset.shape_native`, so `PYAUTO_SMALL_DATASETS=1` is honoured
 automatically.
 """
-mask_extra_galaxies = al.Mask2D.all_false(
+mask_extra_galaxies = al.Mask2D.circular(
     shape_native=dataset.shape_native,
     pixel_scales=dataset.pixel_scales,
+    centre=extra_galaxy_centre,
+    radius=3.0 * 0.3,
+    invert=True,  # `True` inside the circle, i.e. the region whose noise is scaled.
 )
 
 aplt.fits_array(
