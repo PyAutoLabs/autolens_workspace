@@ -9,8 +9,8 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
-                        "redshift": 0.5,
                         "label": null,
+                        "redshift": 0.5,
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.isothermal.IsothermalSph",
@@ -31,8 +31,8 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
-                        "redshift": 0.5,
                         "label": null,
+                        "redshift": 0.5,
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.isothermal.IsothermalSph",
@@ -53,8 +53,8 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
-                        "redshift": 0.5,
                         "label": null,
+                        "redshift": 0.5,
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.isothermal.IsothermalSph",
@@ -75,12 +75,13 @@
                     "type": "instance",
                     "class_path": "autogalaxy.galaxy.galaxy.Galaxy",
                     "arguments": {
-                        "redshift": 1.0,
                         "label": null,
+                        "redshift": 1.0,
                         "bulge": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.light.standard.sersic_core.SersicCore",
                             "arguments": {
+                                "radius_break": 0.025,
                                 "ell_comps": {
                                     "type": "tuple",
                                     "values": [
@@ -89,7 +90,7 @@
                                     ]
                                 },
                                 "alpha": 3.0,
-                                "sersic_index": 1.0,
+                                "gamma": 0.25,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -97,10 +98,9 @@
                                         0.1
                                     ]
                                 },
-                                "gamma": 0.25,
-                                "intensity": 3.0,
+                                "sersic_index": 1.0,
                                 "effective_radius": 0.4,
-                                "radius_break": 0.025
+                                "intensity": 3.0
                             }
                         }
                     }
