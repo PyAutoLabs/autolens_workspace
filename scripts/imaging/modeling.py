@@ -12,6 +12,7 @@ __Contents__
 - **Simulation:** Overview of how the simulated dataset was generated.
 - **Data Preparation:** Data standards required for fitting with PyAutoLens.
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
+- **Extra Galaxies Noise Scaling:** Scale the noise of nearby contaminating galaxies so they do not impact the fit.
 - **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
 - **Model Composition:** Compose the lens model using the Model and Collection API.
 - **Coordinates:** Coordinate system assumptions for the model-fit.
@@ -119,9 +120,56 @@ Use an `aplt.subplot_imaging_dataset` the plot the data, including:
 aplt.subplot_imaging_dataset(dataset=dataset)
 
 """
+__Extra Galaxies Noise Scaling__
+
+Before masking, we must deal with any extra galaxies in the data: nearby galaxies (or foreground stars, or
+data-reduction artefacts) whose emission is not associated with the strong lens but blends into the field. If
+their light is left in the data it will contaminate the model-fit and bias the inferred lens model. It is too
+easy to skip straight to modeling without checking for these, so we make this step an explicit part of the
+workflow.
+
+To prevent extra galaxies from impacting the model-fit, we do not mask them entirely from the fit, which
+would be analogous to making the circular mask smaller or using a more refined mask. When pixels are masked and
+removed entirely from the fit, their coordinates are not used when performing ray-tracing and the light of the
+lens and source galaxies in these pixels not evaluated.
+
+Instead, the pixels are kept in the fit, but their data values are scaled to zero and their noise-map values
+are increased to very large values. This means that during the model-fit, these pixels contribute negligibly to
+the likelihood of the fit, and therefore do not impact the lens model.
+
+This approach is used because for certain types of modeling approaches, like a pixelized source reconstruction,
+masking regions of the image in a way that removes their image pixels entirely from the fit can produce
+discontinuities in the pixelization. This can lead to unexpected systematics and unsatisfactory results.
+
+In this case, applying the mask in a way where the image pixels are not removed from the fit, but their data and
+noise-map values are scaled such that they contribute negligibly to the fit, is a better approach.
+
+The `simple` dataset includes a faint extra galaxy, and a `mask_extra_galaxies.fits` covering it is shipped with
+the dataset (created by the simulator). If you are modeling your own data with an extra galaxy, you must either:
+
+ - Create a `mask_extra_galaxies.fits` for it using the data-preparation tools (the GUI
+   `autolens_workspace/*/imaging/data_preparation/gui/mask_extra_galaxies.py`, or the manual
+   `autolens_workspace/*/imaging/data_preparation/examples/optional/mask_extra_galaxies.py`), then load it
+   as below; or
+ - Shrink the circular mask below so the extra galaxy lies outside it and is removed from the fit entirely.
+
+We then plot the dataset, where the extra galaxy's pixels now have their data scaled to zero and noise-map
+values increased, making their signal-to-noise effectively zero.
+"""
+mask_extra_galaxies = al.Mask2D.from_fits(
+    file_path=dataset_path / "mask_extra_galaxies.fits",
+    pixel_scales=dataset.pixel_scales,
+    invert=True,  # `True` means a pixel is scaled.
+)
+
+dataset = dataset.apply_noise_scaling(mask=mask_extra_galaxies)
+
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+"""
 __Mask__
 
-The model-fit requires a 2D mask defining the regions of the image we fit the lens model to the data. 
+The model-fit requires a 2D mask defining the regions of the image we fit the lens model to the data.
 
 We create a 3.0 arcsecond circular mask and apply it to the `Imaging` object that the lens model fits.
 """

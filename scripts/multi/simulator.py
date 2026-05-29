@@ -7,6 +7,8 @@ This script simulates multi-wavelength `Imaging` of a 'galaxy-scale' strong lens
  - The lens galaxy's light profile is an `Sersic`, which has a different `intensity` at each wavelength.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is an `Sersic`, which has a different `intensity` at each wavelength.
+ - A faint extra galaxy is included offset from the lens, whose emission must be removed via noise scaling
+   (a per-waveband `{waveband}_mask_extra_galaxies.fits` covering it is written below).
 
 Two images are simulated, corresponding to a greener ('g' band) redder image (`r` band).
 
@@ -58,6 +60,13 @@ The pixel-scale of each color image is different meaning we make a list of grids
 """
 pixel_scales_list = [0.08, 0.12]
 
+"""
+The centre of a faint extra galaxy, placed inside the 3.0" modeling mask but clear of the lensed source arcs
+(Einstein radius ~1.6"). It is reused for over-sampling, the galaxy itself and the per-waveband
+`mask_extra_galaxies.fits` written further down.
+"""
+extra_galaxy_centre = (2.2, 1.6)
+
 grid_list = []
 
 for pixel_scales in pixel_scales_list:
@@ -70,7 +79,7 @@ for pixel_scales in pixel_scales_list:
         grid=grid,
         sub_size_list=[32, 8, 2],
         radial_list=[0.3, 0.6],
-        centre_list=[(0.0, 0.0)],
+        centre_list=[(0.0, 0.0), extra_galaxy_centre],
     )
 
     grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
@@ -162,12 +171,34 @@ source_galaxy_list = [
 ]
 
 """
-Use these galaxies to setup tracers at each waveband, which will generate each image for the simulated `Imaging` 
+__Extra Galaxy__
+
+A single faint extra galaxy offset from the lens, representing a nearby contaminating object whose emission is
+removed in the modeling example via the `__Extra Galaxies Noise Scaling__` step. Its intensity differs per
+waveband (like the lens and source) and it has a light profile only (no mass), so the lensed source arcs are
+unchanged.
+"""
+extra_intensity_list = [0.4, 1.0]
+
+extra_galaxy_list = [
+    al.Galaxy(
+        redshift=0.5,
+        light=al.lp.ExponentialSph(
+            centre=extra_galaxy_centre, intensity=intensity, effective_radius=0.3
+        ),
+    )
+    for intensity in extra_intensity_list
+]
+
+"""
+Use these galaxies to setup tracers at each waveband, which will generate each image for the simulated `Imaging`
 dataset.
 """
 tracer_list = [
-    al.Tracer(galaxies=[lens_galaxy, source_galaxy])
-    for lens_galaxy, source_galaxy in zip(lens_galaxy_list, source_galaxy_list)
+    al.Tracer(galaxies=[lens_galaxy, extra_galaxy, source_galaxy])
+    for lens_galaxy, extra_galaxy, source_galaxy in zip(
+        lens_galaxy_list, extra_galaxy_list, source_galaxy_list
+    )
 ]
 
 """
@@ -201,6 +232,29 @@ for waveband, dataset in zip(waveband_list, dataset_list):
         data_path=Path(dataset_path) / f"{waveband}_data.fits",
         psf_path=Path(dataset_path) / f"{waveband}_psf.fits",
         noise_map_path=Path(dataset_path) / f"{waveband}_noise_map.fits",
+        overwrite=True,
+    )
+
+"""
+__Mask Extra Galaxies__
+
+Build and output a per-waveband `{waveband}_mask_extra_galaxies.fits` covering the extra galaxy, so the modeling
+example (`multi/modeling.py`) can load each one and apply noise scaling. The mask is built per dataset because the
+wavebands have different pixel scales and therefore different `shape_native`. The circle is sized to ~3x the
+galaxy's `effective_radius`, derived from the same `extra_galaxy_centre` defined above.
+"""
+for waveband, dataset in zip(waveband_list, dataset_list):
+    mask_extra_galaxies = al.Mask2D.circular(
+        shape_native=dataset.shape_native,
+        pixel_scales=dataset.pixel_scales,
+        centre=extra_galaxy_centre,
+        radius=3.0 * 0.3,
+        invert=True,  # `True` inside the circle, i.e. the region whose noise is scaled.
+    )
+
+    aplt.fits_array(
+        array=mask_extra_galaxies,
+        file_path=Path(dataset_path) / f"{waveband}_mask_extra_galaxies.fits",
         overwrite=True,
     )
 
