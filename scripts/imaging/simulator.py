@@ -27,6 +27,8 @@ This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
  - The lens galaxy's light profile is a `Sersic`.
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is a `Sersic`.
+ - A faint extra galaxy is included offset from the lens, whose emission must be removed via noise scaling
+   (a `mask_extra_galaxies.fits` is written for this purpose).
 
 __Plotters__
 
@@ -78,6 +80,17 @@ grid = al.Grid2D.uniform(
 )
 
 """
+__Extra Galaxy Centre__
+
+This `simple` dataset deliberately includes a faint extra galaxy offset from the main lens, so that the modeling
+examples can demonstrate the `__Extra Galaxies Noise Scaling__` step end-to-end. Its centre is defined here so it
+can be reused for over-sampling, the galaxy itself and the `mask_extra_galaxies.fits` written further down.
+
+It is placed inside the 3.0" modeling mask but clear of the lensed source arcs (Einstein radius ~1.6").
+"""
+extra_galaxy_centre = (2.2, 1.6)
+
+"""
 __Over Sampling__
 
 Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
@@ -105,7 +118,7 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=grid,
     sub_size_list=[32, 8, 2],
     radial_list=[0.3, 0.6],
-    centre_list=[(0.0, 0.0)],
+    centre_list=[(0.0, 0.0), extra_galaxy_centre],
 )
 
 grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
@@ -186,12 +199,29 @@ source_galaxy = al.Galaxy(
     ),
 )
 
+"""
+__Extra Galaxy__
+
+We include a single faint extra galaxy offset from the main lens, representing a nearby object whose emission is not
+associated with the strong lens but blends into the field. Its light contaminates the model-fit and must be removed,
+which the modeling examples demonstrate via the `__Extra Galaxies Noise Scaling__` step (loading the
+`mask_extra_galaxies.fits` written below and calling `dataset.apply_noise_scaling`).
+
+We give the extra galaxy a light profile only (no mass), so the lensed source arcs are unchanged and the dataset
+remains a clean galaxy-scale lens for all other examples that load it.
+"""
+extra_galaxy = al.Galaxy(
+    redshift=0.5,
+    light=al.lp.ExponentialSph(
+        centre=extra_galaxy_centre, intensity=1.0, effective_radius=0.3
+    ),
+)
 
 """
 We now pass these galaxies to a `Tracer`, which performs the ray-tracing calculations they describe and returns
 the image of the strong lens system they produce.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, extra_galaxy, source_galaxy])
 
 """
 We can plot the `Tracer``s image, which is the image we'll next simulate as CCD imaging data.
@@ -224,6 +254,30 @@ aplt.fits_imaging(
     data_path=dataset_path / "data.fits",
     psf_path=dataset_path / "psf.fits",
     noise_map_path=dataset_path / "noise_map.fits",
+    overwrite=True,
+)
+
+"""
+__Mask Extra Galaxies__
+
+Build and output a `mask_extra_galaxies.fits` covering the extra galaxy, so the modeling examples
+(`imaging/modeling.py`, `imaging/fit.py`, `imaging/likelihood_function.py`) can load it directly and apply
+noise scaling without a separate data-preparation step.
+
+The circle is sized to ~3x the galaxy's `effective_radius`, which comfortably covers its light extent. The
+geometry is derived from the same `extra_galaxy_centre` defined above, so it stays in sync with any future tweak.
+"""
+mask_extra_galaxies = al.Mask2D.circular(
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    centre=extra_galaxy_centre,
+    radius=3.0 * 0.3,
+    invert=True,  # `True` inside the circle, i.e. the region whose noise is scaled.
+)
+
+aplt.fits_array(
+    array=mask_extra_galaxies,
+    file_path=dataset_path / "mask_extra_galaxies.fits",
     overwrite=True,
 )
 

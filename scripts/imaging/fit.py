@@ -94,6 +94,49 @@ This includes the observed image data, RMS noise map, Point Spread Function and 
 aplt.subplot_imaging_dataset(dataset=dataset)
 
 """
+__Extra Galaxies Noise Scaling__
+
+Before masking, we must deal with any extra galaxies in the data: nearby galaxies (or foreground stars, or
+data-reduction artefacts) whose emission is not associated with the strong lens but blends into the field. If
+their light is left in the data it will contaminate the fit and bias the inferred lens model. It is too easy to
+skip straight to fitting without checking for these, so we make this step an explicit part of the workflow.
+
+To prevent extra galaxies from impacting the fit, we do not mask them entirely from the fit, which would be
+analogous to making the circular mask smaller or using a more refined mask. When pixels are masked and removed
+entirely from the fit, their coordinates are not used when performing ray-tracing and the light of the lens and
+source galaxies in these pixels not evaluated.
+
+Instead, the pixels are kept in the fit, but their data values are scaled to zero and their noise-map values
+are increased to very large values. This means that during the fit, these pixels contribute negligibly to the
+likelihood, and therefore do not impact the lens model.
+
+This approach is used because for certain types of modeling approaches, like a pixelized source reconstruction,
+masking regions of the image in a way that removes their image pixels entirely from the fit can produce
+discontinuities in the pixelization. This can lead to unexpected systematics and unsatisfactory results.
+
+The dataset includes a faint extra galaxy, and a `mask_extra_galaxies.fits` covering it is shipped with the
+dataset (created by the simulator). If you are fitting your own data with an extra galaxy, you must either:
+
+ - Create a `mask_extra_galaxies.fits` for it using the data-preparation tools (the GUI
+   `autolens_workspace/*/imaging/data_preparation/gui/mask_extra_galaxies.py`, or the manual
+   `autolens_workspace/*/imaging/data_preparation/examples/optional/mask_extra_galaxies.py`), then load it
+   as below; or
+ - Shrink the circular mask below so the extra galaxy lies outside it and is removed from the fit entirely.
+
+After scaling, the extra galaxy's pixels have their data set to zero and noise-map increased, making their
+signal-to-noise effectively zero.
+"""
+mask_extra_galaxies = al.Mask2D.from_fits(
+    file_path=dataset_path / "mask_extra_galaxies.fits",
+    pixel_scales=dataset.pixel_scales,
+    invert=True,  # `True` means a pixel is scaled.
+)
+
+dataset = dataset.apply_noise_scaling(mask=mask_extra_galaxies)
+
+aplt.subplot_imaging_dataset(dataset=dataset)
+
+"""
 __Mask__
 
 We now mask the data, so that regions where there is no signal (e.g. the edges) are omitted from the fit.
