@@ -185,6 +185,27 @@ __Per-Channel Analyses__
 
 One `AnalysisInterferometer` per channel, all with `use_jax=True` so the FactorGraph fit runs on the JAX
 backend. The shared `positions_likelihood` is passed to every analysis — same penalty, every channel.
+
+__Shared Preloads__
+
+Because every channel shares the same lens model, a large fraction of each channel's likelihood is *identical
+work*. Ray-tracing the lens model, building the source-plane mapper (its mesh and mapping matrix `L`) and the
+curvature matrix `F = LᵀW̃L` are the dominant inversion-setup costs — and they are the same for every channel.
+Recomputing them once per channel is pure waste.
+
+Setting `shared_preloads=True` opts each analysis into the `FactorGraphModel` shared-state mechanism: the
+channel-invariant inversion-setup quantities (the mapper and `F`) are computed **once** on the lead channel
+and reused by every other channel, instead of being rebuilt `N` times. For a many-channel cube this collapses
+the dominant inversion-setup cost from `N ×` to `1 ×`, a large speed-up that grows with the number of channels.
+
+This is only correct when those quantities really are channel-invariant — i.e. when the lens model is shared
+(it is here) **and** the `uv_wavelengths` and `noise_map` are the same for every channel (the curvature matrix
+depends on them through `W̃`). The datacube simulated in `simulator.py` is built exactly this way (identical
+`uv_wavelengths` and noise across channels — the narrow-emission-line regime). If your cube has per-channel
+`uv`/noise that differ significantly, leave `shared_preloads=False` (the default) so each channel computes its
+own inversion — preloading an invalid quantity would silently corrupt the likelihood. The shared and unshared
+paths are asserted to give identical likelihoods in
+`autolens_workspace_test/scripts/jax_likelihood_functions/datacube/shared_preloads.py`.
 """
 analysis_list = [
     al.AnalysisInterferometer(
@@ -192,6 +213,7 @@ analysis_list = [
         settings=settings,
         positions_likelihood_list=[positions_likelihood],
         use_jax=True,
+        shared_preloads=True,
     )
     for dataset in dataset_list
 ]
