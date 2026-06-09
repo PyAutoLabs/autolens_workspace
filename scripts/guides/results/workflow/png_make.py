@@ -170,46 +170,19 @@ for i in range(2):
         n_like_max=300,  # samples capped for quick result generation
     )
 
-    class AnalysisLatent(al.AnalysisImaging):
+    class LatentShear(al.Latent):
+        """Custom catalogue replacing library defaults; subclass al.Latent (base) and override keys/variables;
+        declare via Latent = LatentShear; note: subclass al.LatentLens instead to keep library latents."""
 
-        LATENT_KEYS = [
-            "galaxies.lens.shear.magnitude",
-            "galaxies.lens.shear.angle",
-        ]
+        @staticmethod
+        def keys(analysis):
+            return [
+                "galaxies.lens.shear.magnitude",
+                "galaxies.lens.shear.angle",
+            ]
 
-        def compute_latent_variables(self, parameters, model):
-            """
-            A latent variable is not a model parameter but can be derived from the model. Its value and errors may be
-            of interest and aid in the interpretation of a model-fit.
-
-            This code implements a simple example of a latent variable, the magn
-
-            By overwriting this method we can manually specify latent variables that are calculated and output to
-            a `latent.csv` file, which mirrors the `samples.csv` file.
-
-            In the example below, the `latent.csv` file will contain at least two columns with the shear magnitude and
-            angle sampled by the non-linear search.
-
-            This function is called for every non-linear search sample, where the `instance` passed in corresponds to
-            each sample.
-
-            You can add your own custom latent variables here, if you have particular quantities that you
-            would like to output to the `latent.csv` file.
-
-            Parameters
-            ----------
-            parameters : array-like
-                The parameter vector of the model sample. This will typically come from the non-linear search.
-                Inside this method it is mapped back to a model instance via `model.instance_from_vector`.
-            model : Model
-                The model object defining how the parameter vector is mapped to an instance. Passed explicitly
-                so that this function can be used inside JAX transforms (`vmap`, `jit`) with `functools.partial`.
-
-            Returns
-            -------
-            A dictionary mapping every latent variable name to its value.
-
-            """
+        @staticmethod
+        def variables(analysis, parameters, model):
             instance = model.instance_from_vector(vector=parameters)
 
             if hasattr(instance.galaxies.lens, "shear"):
@@ -222,6 +195,9 @@ for i in range(2):
                 )
 
             return (magnitude, angle)
+
+    class AnalysisLatent(al.AnalysisImaging):
+        Latent = LatentShear
 
     analysis = AnalysisLatent(dataset=dataset)
 
