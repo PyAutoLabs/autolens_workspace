@@ -38,7 +38,7 @@ First, set up the aggregator as shown in `start_here.py`.
 from autofit.aggregator.aggregator import Aggregator
 
 results_path = with_test_mode_segment(Path("output")) / "results_folder"
-if not results_path.exists():
+if not any(results_path.glob("**/image/dataset.fits")):
     import subprocess
     import sys
 
@@ -48,7 +48,7 @@ if not results_path.exists():
     )
 
 agg = Aggregator.from_directory(
-    directory=Path("output") / "results_folder",
+    directory=results_path,
 )
 #
 
