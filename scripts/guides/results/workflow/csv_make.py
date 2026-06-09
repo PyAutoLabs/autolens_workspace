@@ -156,58 +156,45 @@ for i in range(2):
         n_like_max=300,  # samples capped for quick result generation
     )
 
-    class AnalysisLatent(al.AnalysisImaging):
+    class LatentShear(al.Latent):
+        """
+        A custom latent catalogue (replacing the library defaults) reporting the
+        lens external-shear magnitude and angle. A latent variable is not a model
+        parameter but can be derived from the model; its value and errors aid
+        interpretation and are written to `latent.csv` (mirroring `samples.csv`).
 
-        LATENT_KEYS = [
-            "galaxies.lens.shear.magnitude",
-            "galaxies.lens.shear.angle",
-        ]
+        Define a custom catalogue by subclassing `al.Latent` (the base class) and
+        overriding `keys` / `variables`, then declare it on the analysis via the
+        `Latent` class attribute. Subclass `al.LatentLens` instead if you want to
+        keep the library lensing latents alongside your custom ones.
+        """
 
-        def compute_latent_variables(self, parameters, model):
-            """
-            A latent variable is not a model parameter but can be derived from the model. Its value and errors may be
-            of interest and aid in the interpretation of a model-fit.
+        @staticmethod
+        def keys(analysis):
+            return [
+                "galaxies.lens.shear.magnitude",
+                "galaxies.lens.shear.angle",
+            ]
 
-            This code implements a simple example of a latent variable, the magn
-
-            By overwriting this method we can manually specify latent variables that are calculated and output to
-            a `latent.csv` file, which mirrors the `samples.csv` file.
-
-            In the example below, the `latent.csv` file will contain at least two columns with the shear magnitude and
-            angle sampled by the non-linear search.
-
-            This function is called for every non-linear search sample, where the `instance` passed in corresponds to
-            each sample.
-
-            You can add your own custom latent variables here, if you have particular quantities that you
-            would like to output to the `latent.csv` file.
-
-            Parameters
-            ----------
-            parameters : array-like
-                The parameter vector of the model sample. This will typically come from the non-linear search.
-                Inside this method it is mapped back to a model instance via `model.instance_from_vector`.
-            model : Model
-                The model object defining how the parameter vector is mapped to an instance. Passed explicitly
-                so that this function can be used inside JAX transforms (`vmap`, `jit`) with `functools.partial`.
-
-            Returns
-            -------
-            A dictionary mapping every latent variable name to its value.
-
-            """
+        @staticmethod
+        def variables(analysis, parameters, model):
+            # Called for every sample; `parameters` is mapped back to a model
+            # instance and the derived shear magnitude/angle are returned in a
+            # tuple positionally aligned with `keys`.
             instance = model.instance_from_vector(vector=parameters)
 
-            if hasattr(instance.galaxies.lens, "shear"):
-                import jax.numpy as jnp
+            import jax.numpy as jnp
 
-                magnitude, angle = al.convert.shear_magnitude_and_angle_from(
-                    gamma_1=instance.galaxies.lens.shear.gamma_1,
-                    gamma_2=instance.galaxies.lens.shear.gamma_2,
-                    xp=jnp,
-                )
+            magnitude, angle = al.convert.shear_magnitude_and_angle_from(
+                gamma_1=instance.galaxies.lens.shear.gamma_1,
+                gamma_2=instance.galaxies.lens.shear.gamma_2,
+                xp=jnp,
+            )
 
             return (magnitude, angle)
+
+    class AnalysisLatent(al.AnalysisImaging):
+        Latent = LatentShear
 
     analysis = AnalysisLatent(dataset=dataset)
 

@@ -198,41 +198,41 @@ __Extending with a Custom Latent__
 
 The library catalogue is intentionally narrow. If you want a different derived quantity — the lens mass's
 axis ratio, the source-plane Sérsic effective radius, the time-delay between multiply-imaged source pixels —
-subclass ``al.AnalysisImaging`` and override ``LATENT_KEYS`` and ``compute_latent_variables``.
+subclass ``al.LatentLens`` (override ``keys`` and ``variables``) and declare it on your analysis through the
+``Latent`` class attribute. This mirrors exactly how you customise visualisation with a ``Visualizer`` subclass:
+the latent catalogue is a first-class, swappable component of the analysis rather than a pair of methods you
+monkey-patch.
 
 The example below adds ``mass_axis_ratio`` (the lens-mass axis ratio derived from the ``Isothermal`` mass's
-``ell_comps``). The same pattern works for any function of the lens model instance. Composing
-``super().LATENT_KEYS + ["your.key"]`` via a ``@property`` keeps the library latents alongside your custom
-ones — the Euclid pipeline (``euclid_strong_lens_modeling_pipeline/util.py``) uses this composition pattern
-in production.
+``ell_comps``). The same pattern works for any function of the lens model instance. Calling
+``al.LatentLens.keys(analysis)`` / ``al.LatentLens.variables(...)`` from your overrides keeps the library
+latents alongside your custom ones — the Euclid pipeline
+(``euclid_strong_lens_modeling_pipeline/util.py``, ``LatentEuclid``) uses this exact composition pattern in
+production to append its FWHM aperture-flux latents.
 """
 
 import numpy as np
 
 
-class AnalysisImagingWithMassAxisRatio(al.AnalysisImaging):
+class LatentMassAxisRatio(al.LatentLens):
     """
-    AnalysisImaging extended with a custom ``mass_axis_ratio`` latent — the axis ratio of the lens galaxy's
-    Isothermal mass profile, derived from its ``ell_comps``. Demonstrates how to add a user-defined latent
-    without modifying the library.
+    The library lensing latents plus a custom ``mass_axis_ratio`` — the axis
+    ratio of the lens galaxy's Isothermal mass profile, derived from its
+    ``ell_comps``. Demonstrates adding a user-defined latent without modifying
+    the library: subclass ``al.LatentLens`` and compose its ``keys`` /
+    ``variables`` static methods.
     """
 
-    @property
-    def LATENT_KEYS(self):
-        return list(super().LATENT_KEYS) + ["mass_axis_ratio"]
+    @staticmethod
+    def keys(analysis):
+        return list(al.LatentLens.keys(analysis)) + ["mass_axis_ratio"]
 
-    def compute_latent_variables(self, parameters, model):
-        from autolens.analysis.latent import LATENT_FUNCTIONS
+    @staticmethod
+    def variables(analysis, parameters, model):
+        library_values = al.LatentLens.variables(analysis, parameters, model)
 
-        xp = self._xp
-        magzero = self.kwargs.get("magzero", None)
         instance = model.instance_from_vector(vector=parameters)
-        fit = self.fit_from(instance=instance)
-        context = {"fit": fit, "magzero": magzero, "xp": xp}
-
-        library_keys = [k for k in super().LATENT_KEYS]
-        library_values = tuple(LATENT_FUNCTIONS[k](**context) for k in library_keys)
-
+        xp = analysis._xp
         try:
             ell_y, ell_x = instance.galaxies.lens.mass.ell_comps
             axis_ratio = (1.0 - np.sqrt(ell_y**2 + ell_x**2)) / (
@@ -242,6 +242,16 @@ class AnalysisImagingWithMassAxisRatio(al.AnalysisImaging):
             axis_ratio = xp.nan
 
         return library_values + (axis_ratio,)
+
+
+class AnalysisImagingWithMassAxisRatio(al.AnalysisImaging):
+    """
+    ``AnalysisImaging`` that swaps in the custom ``LatentMassAxisRatio`` catalogue
+    via the ``Latent`` class attribute — the same one-line mechanism used to
+    declare a custom ``Visualizer`` or ``Result``. No library code is modified.
+    """
+
+    Latent = LatentMassAxisRatio
 
 
 """
