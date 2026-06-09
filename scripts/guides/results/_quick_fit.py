@@ -17,14 +17,23 @@ than running to convergence. This produces a shallow but valid posterior
 fast enough to fit inside the per-script CI timeout.
 """
 
-import sys
 from pathlib import Path
+import shutil
+import sys
 
 from autoconf.test_mode import with_test_mode_segment
 
+
+def has_imaging_dataset(results_path):
+    return any(results_path.glob("**/image/dataset.fits"))
+
+
 results_path = with_test_mode_segment(Path("output")) / "results_folder"
-if results_path.exists():
+if has_imaging_dataset(results_path):
     sys.exit(0)
+
+if results_path.exists():
+    shutil.rmtree(results_path)
 
 import os
 

@@ -59,7 +59,7 @@ in this folder) have results to work with. When that folder already exists the h
 so re-running this tutorial is cheap.
 """
 results_path = with_test_mode_segment(Path("output")) / "results_folder"
-if not results_path.exists():
+if not any(results_path.glob("**/image/dataset.fits")):
     import subprocess
     import sys
 
