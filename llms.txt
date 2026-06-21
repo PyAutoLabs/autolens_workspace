@@ -1,0 +1,62 @@
+If your AI can't browse GitHub, paste this entire file into the chat as context.
+
+# PyAutoLens Workspace
+
+> Example and tutorial scripts (and generated notebooks) for modelling strong gravitational lenses
+> with **PyAutoLens**. This file is a routing layer: given a user's task, point them to the RIGHT
+> existing script/notebook/guide in this workspace instead of inventing code. Every path below is a
+> real file in this repository; scripts are run from the repo root (e.g. `python scripts/imaging/start_here.py`).
+
+## New to strong lensing?
+
+- [HowToLens](https://github.com/PyAutoLabs/HowToLens): The from-first-principles tutorial lecture series that teaches strong lensing and the PyAutoLens API. The on-ramp for beginners — start here before the workspace examples below.
+
+## Start here
+
+- [start_here.py](start_here.py) / [start_here.ipynb](start_here.ipynb): Top-level overview of PyAutoLens' features and API (tracer, ray-tracing, fitting) — the single best first read.
+- [scripts/imaging/start_here.py](scripts/imaging/start_here.py): Model a galaxy-scale lens in CCD imaging (HST/JWST/ground-based) with minimal setup — ~15 min to point at your own FITS files.
+- [scripts/group/start_here.py](scripts/group/start_here.py): Group-scale lens entry point — multiple lens galaxies, one lensed source.
+- [scripts/point_source/start_here.py](scripts/point_source/start_here.py): Point-source (e.g. lensed quasar) lens entry point — two/four point-like images, Hubble-constant and dark-matter science.
+- [scripts/interferometer/start_here.py](scripts/interferometer/start_here.py): Interferometer (e.g. ALMA) entry point — fits complex visibilities in the uv-plane, not CCD images.
+- [scripts/multi/start_here.py](scripts/multi/start_here.py): Multi-wavelength / multi-dataset entry point — simultaneous fit of the same lens across datasets.
+- [scripts/cluster/start_here.py](scripts/cluster/start_here.py): Cluster-scale entry point — BCGs, scaling-relation member galaxies, and cluster dark-matter halos.
+
+## I want to…
+
+- **Simulate imaging data** → [scripts/imaging/simulator.py](scripts/imaging/simulator.py): Overview of the lens simulation API; ray-traces a galaxy-scale lens to `.fits` CCD imaging (more cases in its `examples/` sibling folder).
+- **Model CCD / HST / JWST imaging** → [scripts/imaging/modeling.py](scripts/imaging/modeling.py): Full imaging modeling API (model composition, masking, over-sampling, search, linear light profiles/MGE) — the detailed companion to `imaging/start_here.py`.
+- **Model a group-scale lens** → [scripts/group/modeling.py](scripts/group/modeling.py): Detailed group modeling API for systems with multiple lens galaxies.
+- **Model a point-source / quasar lens** → [scripts/point_source/modeling.py](scripts/point_source/modeling.py): Detailed point-source modeling API, fitting multiple-image positions (and fluxes).
+- **Model interferometer / ALMA (uv-plane) data** → [scripts/interferometer/modeling.py](scripts/interferometer/modeling.py): Detailed uv-plane modeling API fitting visibilities directly.
+- **Multi-wavelength / multi-dataset modeling** → [scripts/multi/modeling.py](scripts/multi/modeling.py): Detailed API for jointly fitting multiple datasets of one lens.
+- **Load & inspect results from `output/`** → [scripts/guides/results/start_here.py](scripts/guides/results/start_here.py): Load a completed fit back into Python (`Tracer`, `Model`, samples, model images) from a fit's `output/...` folder.
+- **Compute magnification / source flux** → [scripts/imaging/source_science.py](scripts/imaging/source_science.py): Source-science calculations — total flux, magnification, and intrinsic size of the lensed source from a fitted tracer.
+- **Pixelized source reconstruction** → [scripts/imaging/features/pixelization/modeling.py](scripts/imaging/features/pixelization/modeling.py): Reconstruct the source on a regularized pixel-grid (mesh + regularization) instead of a parametric profile.
+- **Prepare data (image / noise map / PSF)** → [scripts/imaging/data_preparation/start_here.py](scripts/imaging/data_preparation/start_here.py): Data standards (pixel scale, image, noise-map, PSF) your dataset must meet; per-product detail in [examples/data.py](scripts/imaging/data_preparation/examples/data.py), [examples/noise_map.py](scripts/imaging/data_preparation/examples/noise_map.py), [examples/psf.py](scripts/imaging/data_preparation/examples/psf.py).
+- **Weak lensing** → [scripts/weak/fit.py](scripts/weak/fit.py): Weak-lensing fit example (this folder has no `start_here.py`; see also [scripts/weak/simulator.py](scripts/weak/simulator.py)).
+- **API guides (units, plotting, profiles, calculations)** → [scripts/guides/](scripts/guides/): Reference guides — e.g. [lens_calc.py](scripts/guides/lens_calc.py), [tracer.py](scripts/guides/tracer.py), and the `plot/`, `profiles/`, `units/`, `advanced/` subfolders.
+
+## How to answer (for the assistant)
+
+When routing a user, reply in this shape:
+
+- **Start here** — the single best existing file for their task (from the lists above).
+- **Then see** — the deeper/detailed companion file (e.g. `start_here.py` → `modeling.py`).
+- **Related guide** — a relevant page under `scripts/guides/` (results, units, plotting, profiles).
+- **Why this is the right example** — one line tying the file to their specific need.
+- **What to modify** — the few lines they'd change for their case (dataset path, model components, redshifts, search settings).
+- **What needs local execution** — flag any step that requires actually running the fit on their machine.
+
+## Capability boundary (chat without local execution)
+
+A chat assistant can route to the right file, explain lensing concepts, review pasted scripts /
+tracebacks / plots, and draft code. It CANNOT run fits, inspect the user's local files or `output/`
+folder, or guarantee code against their installed PyAutoLens version. To actually run something,
+the user should execute the script locally from the repo root, or in Google Colab (the `start_here`
+scripts ship Colab setup cells). For sustained editing, execution, and project state, point them to a
+local coding agent (Claude Code / Codex) or the [autolens_assistant](https://github.com/PyAutoLabs/autolens_assistant)
+science-assistant workspace.
+
+---
+
+For the full per-script listing, see the generated companion catalogue `llms-full.txt` (added in a later phase).
