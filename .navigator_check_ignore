@@ -1,0 +1,7 @@
+# Exceptions for .github/scripts/check_navigator.py (path + banner checks).
+# One path or glob per line; '#' starts a comment.
+
+# This sensitivity-mapping example is intentionally shipped fully commented out
+# (every line is prefixed with '#', including the docstring's '===' underline),
+# so the banner lint flags the commented underline on line 3. Legitimate.
+scripts/interferometer/features/subhalo/sensitivity/start_here.py
