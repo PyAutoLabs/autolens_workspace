@@ -15,7 +15,7 @@ Build notebooks for the autolens_workspace, then open and merge a PR into `main`
 
    Create and check out a new branch named `notebooks-update-<YYYY-MM-DD>` (use today's date). If the branch already exists, check it out.
 
-3. **Generate notebooks**
+3. **Generate notebooks and the workspace catalogue**
 
    Run from the workspace root:
    ```bash
@@ -23,14 +23,24 @@ Build notebooks for the autolens_workspace, then open and merge a PR into `main`
    ```
    This regenerates all notebooks in `notebooks/` from `scripts/`. It may take a few minutes.
 
-4. **Commit the generated notebooks**
+   In the **same pass** it also regenerates the LLM-facing workspace catalogue from the script
+   docstrings — `llms-full.txt` (the expanded companion to the curated `llms.txt`) and
+   `workspace_index.json` (the machine-readable index). These come from
+   [PyAutoBuild](https://github.com/PyAutoLabs/PyAutoBuild)'s `navigator.py` and cannot drift out
+   of sync with the scripts, since they regenerate alongside the notebooks. Do **not** hand-edit
+   either file, and never touch the curated `llms.txt` here.
 
-   Stage all changes under `notebooks/` and any root-level `*.ipynb` files, then commit:
+4. **Commit the generated notebooks and catalogue**
+
+   Stage all changes under `notebooks/`, any root-level `*.ipynb` files, and the generated
+   catalogue files, then commit:
    ```bash
-   git add notebooks/ start_here.ipynb
+   git add notebooks/ start_here.ipynb llms-full.txt workspace_index.json
    git commit -m "Build notebooks from scripts"
    ```
-   If there is nothing to commit (notebooks already up to date), tell the user and stop.
+   Stage `llms-full.txt` and `workspace_index.json` by name (as above) — never `git add .`, so
+   unrelated `dataset/` churn is not swept in. Do not stage the curated `llms.txt`. If there is
+   nothing to commit (notebooks and catalogue already up to date), tell the user and stop.
 
 5. **Push the branch**
 
