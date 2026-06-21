@@ -1,0 +1,82 @@
+name: Navigator Check
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+# Generator project target for the staleness job. Porting this workflow to
+# another workspace is a one-word change here.
+env:
+  PROJECT: autolens
+
+jobs:
+  paths:
+    name: Navigator paths + banner lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install --quiet pyyaml
+      - name: Run navigator checker (paths hard, banners fail)
+        run: python .github/scripts/check_navigator.py --banners=fail
+
+  staleness:
+    name: Catalogue staleness
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout workspace
+        uses: actions/checkout@v4
+        with:
+          path: workspace
+      - name: Checkout PyAutoBuild
+        uses: actions/checkout@v4
+        with:
+          repository: PyAutoLabs/PyAutoBuild
+          path: PyAutoBuild
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Extract branch name
+        id: extract_branch
+        shell: bash
+        run: |
+          cd workspace
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> "$GITHUB_OUTPUT"
+      - name: Match PyAutoBuild branch
+        shell: bash
+        run: |
+          BRANCH="${{ steps.extract_branch.outputs.branch }}"
+          pushd PyAutoBuild
+          if [[ -n "$(git ls-remote --heads origin "$BRANCH")" ]]; then
+            echo "Branch $BRANCH exists in PyAutoBuild — checking out"
+            git fetch origin "$BRANCH"
+            git checkout "$BRANCH"
+          else
+            echo "Branch $BRANCH not in PyAutoBuild — staying on default branch"
+          fi
+          popd
+      - name: Install dependencies
+        run: pip install --quiet pyyaml
+      - name: Regenerate catalogue (Phase 2 only — no notebook rebuild)
+        env:
+          NAVIGATOR_PROJECT: ${{ env.PROJECT }}
+          PYAUTOBUILD_DIR: ${{ github.workspace }}/PyAutoBuild/autobuild
+        run: |
+          cd workspace
+          python .github/scripts/regenerate_navigator.py
+      - name: Fail if catalogue drifted from scripts
+        shell: bash
+        run: |
+          cd workspace
+          if ! git diff --exit-code llms-full.txt workspace_index.json; then
+            echo "::error::llms-full.txt / workspace_index.json are stale."
+            echo "Regenerate with 'generate.py ${{ env.PROJECT }}' and commit the result."
+            exit 1
+          fi
