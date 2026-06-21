@@ -47,6 +47,30 @@ When routing a user, reply in this shape:
 - **What to modify** — the few lines they'd change for their case (dataset path, model components, redshifts, search settings).
 - **What needs local execution** — flag any step that requires actually running the fit on their machine.
 
+### Code style (match the workspace, not banner comments)
+
+Drafted code must match this workspace's style: use triple-quoted `"""__Section__"""` docstrings
+with a line of prose explaining each step, and give a full script a module docstring whose title is
+underlined with `=`. Do NOT use `# -----` banner comments to mark sections. Reserve inline `#` for
+short line-level notes only.
+
+Write this:
+
+```python
+"""__Mask__
+
+Apply a 3.0" circular mask to the imaging data.
+"""
+mask = al.Mask2D.circular(shape_native=dataset.shape_native, pixel_scales=0.1, radius=3.0)
+```
+
+Not this:
+
+```python
+# ----- Mask -----
+mask = al.Mask2D.circular(shape_native=dataset.shape_native, pixel_scales=0.1, radius=3.0)
+```
+
 ## Capability boundary (chat without local execution)
 
 A chat assistant can route to the right file, explain lensing concepts, review pasted scripts /
