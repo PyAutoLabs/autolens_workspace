@@ -51,6 +51,13 @@ a recipe here — that script is kept current with the API.
 
 ## Testing
 
+On CI, every PR is gated by three workflows on Python **3.12 and 3.13**: `smoke_tests.yml` (the
+smoke runner below — the definition of green), `navigator_check.yml` (PyAutoBuild's reusable
+navigator-catalogue check; see *Notebooks vs Scripts*), and `url_check.yml` (link checking). The
+smoke and navigator jobs check out **PyAutoBuild** as a sibling and run the PyAuto* libraries from
+the **same-named branch** of each source repo, so a workspace PR is validated against matching
+library branches.
+
 The smoke-test runner verifies that the listed scripts (and notebooks) still execute end-to-end:
 
 ```bash
@@ -156,61 +163,26 @@ For local development, these are typically cloned as siblings of this repo (`../
 
 ## Task Workflows
 
-### API Update tasks
+**`[API Update]` issues:** read the PR diff, identify every renamed/moved/removed/changed public API,
+search **all** `.py` files in `scripts/` for the old API, and update each (preserving behaviour,
+docstrings, comments). Run `python .github/scripts/run_smoke.py` and fix `[FAIL]` entries until the
+summary passes; leave any script you can't fix unchanged and list it under **"Could not update"**.
+Regenerate the notebooks (see *Generating notebooks*) once scripts pass.
 
-When assigned an issue titled `[API Update]`:
+**General (non-API) issues:** read the issue and any linked plan; create/modify only files in
+`scripts/` (never edit `notebooks/` directly); preserve docstrings, comments, and tutorial prose;
+test with `run_smoke.py`; regenerate notebooks after.
 
-1. Read the PR diff in the issue body. Identify every renamed, moved, removed, or changed public
-   API (functions, classes, method signatures, parameter names, import paths).
-2. Search **all** `.py` files in `scripts/` for usages of the old API.
-3. Update each file to the new API, preserving existing behaviour, docstrings, and comments.
-4. Run `python .github/scripts/run_smoke.py` (from the repo root) to test.
-5. Read the failure output for any `[FAIL]` entries and fix the affected scripts.
-6. Repeat 4–5 until the summary reports all passed.
-7. If a script cannot be fixed (ambiguous change, missing dependency), leave it unchanged and list
-   it in the PR description under **"Could not update"** with the reason.
-8. After all scripts pass, regenerate the notebooks (see "Generating notebooks").
+**PR description:** summarise what changed and why, list the scripts touched, confirm notebooks were
+regenerated, and add a "Could not update" section for any still-failing scripts.
 
-### General Issue tasks
+## Clean state
 
-When assigned a general (non-API) issue:
-
-1. Read the issue description and any linked plan or AI prompt.
-2. Identify which scripts need to be created or modified.
-3. Only edit files in `scripts/`. Never edit `notebooks/` directly.
-4. Preserve all docstrings, comments, and tutorial explanations.
-5. Test with `python .github/scripts/run_smoke.py` after changes.
-6. Regenerate notebooks after all scripts pass.
-
-### PR description
-
-When opening your PR, include:
-
-- A summary of what changed and why.
-- A list of all scripts you updated or created.
-- Confirmation that notebooks were regenerated.
-- A "Could not update" section for any scripts that still fail, with the error and your assessment.
-
-## Never rewrite history
-
-NEVER perform these operations on any repo with a remote:
-
-- `git init` in a directory already tracked by git
-- `rm -rf .git && git init`
-- Commit with subject "Initial commit", "Fresh start", "Start fresh", "Reset for AI workflow", or
-  any equivalent message on a branch with a remote
-- `git push --force` to `main` (or any branch tracked as `origin/HEAD`)
-- `git filter-repo` / `git filter-branch` on shared branches
-- `git rebase -i` rewriting commits already pushed to a shared branch
-
-If the working tree needs a clean state, the **only** correct sequence is:
+Never rewrite history on a repo with a remote (no `git init` over a tracked tree, no force-push to
+`main`, no rebasing pushed shared branches). To reset a dirty tree the only correct sequence is:
 
 ```bash
 git fetch origin
 git reset --hard origin/main
 git clean -fd
 ```
-
-This applies equally to humans, local agents, cloud agents, and any other tool. The "Initial commit
-— fresh start" pattern this prevents has cost ~40 commits of redundant rework each time it has
-happened.
