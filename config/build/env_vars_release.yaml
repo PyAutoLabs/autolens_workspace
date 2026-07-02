@@ -9,9 +9,17 @@
 # Spec + acceptance table: PyAutoHeart/docs/release_validation.md.
 #
 # "defaults" are applied to every script on top of the inherited environment.
-# "overrides" selectively unset or replace vars for matching path patterns —
-# identical in structure and intent to env_vars.yaml's overrides; they still
-# layer on top of this profile's defaults rather than the smoke ones.
+# Every var this profile cares about is given an EXPLICIT value in "defaults"
+# (not left absent) — the runner only ever *sets* keys it's given, it never
+# clears unrelated inherited env vars, so an absent key silently falls through
+# to whatever the calling process already had (a leftover smoke-mode "1" from
+# an earlier step, a developer's local shell, ...). Pinning everything here
+# makes the profile self-contained regardless of the caller's environment.
+#
+# "overrides" then only ever `set:` a var to flip it away from this profile's
+# own default for specific scripts — never `unset:` a var that "defaults"
+# already pins, since unsetting just re-exposes the same inherited-env gap
+# `defaults` exists to close.
 #
 # Pattern convention (same as no_run.yaml):
 #   - Patterns containing '/' do a substring match against the file path
@@ -21,6 +29,10 @@ defaults:
   PYAUTO_TEST_MODE: "1"                 # reduced iterations (real sampler), not bypassed
   PYAUTO_SMALL_DATASETS: "1"           # cap grids/masks to 15x15, reduce MGE gaussians
   PYAUTO_FAST_PLOTS: "1"               # skip tight_layout() + critical curve/caustic overlays
+  PYAUTO_SKIP_FIT_OUTPUT: "0"          # real fit output (release fidelity, not smoke)
+  PYAUTO_SKIP_VISUALIZATION: "0"       # real visualization (release fidelity, not smoke)
+  PYAUTO_SKIP_CHECKS: "0"              # real mesh/position/weight checks (release fidelity)
+  PYAUTO_DISABLE_JAX: "0"              # JAX enabled (release fidelity, not smoke)
   PYAUTO_SKIP_WORKSPACE_VERSION_CHECK: "1"  # TestPyPI dev version won't match the workspace pin
   JAX_ENABLE_X64: "True"               # enable 64-bit precision in JAX
   NUMBA_CACHE_DIR: "/tmp/numba_cache"   # writable cache dir for numba
@@ -29,31 +41,33 @@ defaults:
 overrides:
   # start_here scripts load real FITS data that breaks with small datasets
   - pattern: "imaging/start_here"
-    unset: [PYAUTO_SMALL_DATASETS]
+    set: { PYAUTO_SMALL_DATASETS: "0" }
   - pattern: "interferometer/start_here"
-    unset: [PYAUTO_SMALL_DATASETS]
+    set: { PYAUTO_SMALL_DATASETS: "0" }
   - pattern: "group/start_here"
-    unset: [PYAUTO_SMALL_DATASETS]
+    set: { PYAUTO_SMALL_DATASETS: "0" }
   - pattern: "multi/start_here"
-    unset: [PYAUTO_SMALL_DATASETS]
+    set: { PYAUTO_SMALL_DATASETS: "0" }
   # Non-simulator scripts that load committed FITS data need full-size
   # datasets to avoid shape mismatch with pre-existing 100x100 data.
   # Simulators run first and regenerate data at the capped size, but
   # scripts using the old `if not dataset_path.exists()` pattern skip
   # re-simulation when data already exists.
   - pattern: "guides/"
-    unset: [PYAUTO_SMALL_DATASETS]
-  # guides/results/start_here.py must produce real samples so the example
-  # scripts that read from `output/results_folder` afterwards
-  # (data_fitting, queries, models, samples_via_aggregator) find a
-  # non-empty aggregator. Covers all scripts under guides/results/.
-  - pattern: "guides/results/"
-    unset: [PYAUTO_TEST_MODE, PYAUTO_SKIP_FIT_OUTPUT]
-  # fits_make / png_make produce .fits / .png outputs from real fits, so they need
-  # visualization turned on AND PYAUTO_FAST_PLOTS turned off (the latter would
-  # close every figure without saving via the subplot_save / save_figure short-circuit
-  # in autoarray/plot/utils.py).
+    set: { PYAUTO_SMALL_DATASETS: "0" }
+  # guides/results/start_here.py: no override needed under this profile —
+  # PYAUTO_TEST_MODE="1" already runs a real (if reduced) sampler, and
+  # PYAUTO_SKIP_FIT_OUTPUT="0" already writes real output, so
+  # `output/results_folder` is non-empty for the aggregator without help.
+  # (Under the smoke profile, PYAUTO_TEST_MODE defaults to "2" (bypass) and
+  # PYAUTO_SKIP_FIT_OUTPUT to "1", which is why env_vars.yaml needs an
+  # explicit override here and this file does not.)
+  #
+  # fits_make / png_make produce .fits / .png outputs from real fits, so they
+  # need PYAUTO_FAST_PLOTS forced off (it would otherwise close every figure
+  # without saving via the subplot_save / save_figure short-circuit in
+  # autoarray/plot/utils.py). PYAUTO_SKIP_VISUALIZATION is already "0" above.
   - pattern: fits_make
-    unset: [PYAUTO_SKIP_VISUALIZATION, PYAUTO_FAST_PLOTS]
+    set: { PYAUTO_FAST_PLOTS: "0" }
   - pattern: png_make
-    unset: [PYAUTO_SKIP_VISUALIZATION, PYAUTO_FAST_PLOTS]
+    set: { PYAUTO_FAST_PLOTS: "0" }
