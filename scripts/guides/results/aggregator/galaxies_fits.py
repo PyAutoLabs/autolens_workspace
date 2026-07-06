@@ -170,7 +170,7 @@ __Refitting__
 Using the API introduced in the first tutorial, we can also refit the data locally. 
 
 This allows us to inspect how the tracer changes for models with similar log likelihoods. We create and plot
-the tracer of the 100th last accepted model by Nautilus.
+the tracer of the tenth-last accepted model by Nautilus.
 """
 samples = result.samples
 
@@ -232,7 +232,7 @@ __Refitting__
 Using the API introduced in the first tutorial, we can also refit the data locally. 
 
 This allows us to inspect how the fit changes for models with similar log likelihoods. Below, we refit and plot
-the fit of the 100th last accepted model by Nautilus.
+the fit of the tenth-last accepted model by Nautilus.
 """
 samples = result.samples
 

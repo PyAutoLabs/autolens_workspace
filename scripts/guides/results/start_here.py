@@ -252,6 +252,7 @@ if (image_path / "dataset.fits").exists():
         noise_map_hdu=2,
         psf_hdu=3,
         pixel_scales=0.1,
+        check_noise_map=False,
     )
 
 if (image_path / "tracer.fits").exists():
