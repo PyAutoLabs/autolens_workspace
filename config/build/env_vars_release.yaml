@@ -55,13 +55,10 @@ overrides:
   # re-simulation when data already exists.
   - pattern: "guides/"
     set: { PYAUTO_SMALL_DATASETS: "0" }
-  # guides/results/start_here.py: no override needed under this profile —
-  # PYAUTO_TEST_MODE="1" already runs a real (if reduced) sampler, and
-  # PYAUTO_SKIP_FIT_OUTPUT="0" already writes real output, so
-  # `output/results_folder` is non-empty for the aggregator without help.
-  # (Under the smoke profile, PYAUTO_TEST_MODE defaults to "2" (bypass) and
-  # PYAUTO_SKIP_FIT_OUTPUT to "1", which is why env_vars.yaml needs an
-  # explicit override here and this file does not.)
+  # Results guides require the samples promised by their explicit n_like_max
+  # caps and read them back from the normal output tree.
+  - pattern: "guides/results/"
+    set: { PYAUTO_TEST_MODE: "0" }
   #
   # fits_make / png_make produce .fits / .png outputs from real fits, so they
   # need PYAUTO_FAST_PLOTS forced off (it would otherwise close every figure
