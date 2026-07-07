@@ -389,7 +389,7 @@ containing the inferred Einstein radius, in a folder you can inspect quickly.
 The `workflow_path` specifies where these files are output, in this case the .csv files which summarise the results,
 and the code below can easily be adapted to output the .png and .fits files.
 """
-workflow_path = Path("output") / "results_folder_csv_png_fits" / "workflow_make_example"
+workflow_path = Path("output") / "results_folder" / "workflow_make_example"
 
 agg_csv = af.AggregateCSV(aggregator=agg)
 agg_csv.add_variable(

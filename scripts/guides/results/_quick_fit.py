@@ -2,13 +2,14 @@
 Results: Quick Fit Helper
 =========================
 
-Internal helper invoked via subprocess from the tutorials in this folder
-(``start_here.py`` and everything under ``aggregator/``). Produces a fast,
-capped Nautilus fit at ``output/results_folder/`` so the aggregator examples
-have a populated results directory to read from.
+Internal helper invoked via subprocess from the tutorials in this folder.
+Produces two fast, capped Nautilus fits at ``output/results_folder/`` so the
+aggregator and workflow examples have a populated results directory to read
+from.
 
-Idempotent: exits immediately if ``output/results_folder/`` already exists,
-so concurrent or repeated invocations are cheap.
+Idempotent: exits immediately if ``output/results_folder/`` already contains
+the two completed imaging fits, so concurrent or repeated invocations are
+cheap.
 
 Not a tutorial. The model and dataset mirror those used in ``start_here.py``
 (``simple__no_lens_light`` imaging, isothermal lens + MGE source), but the
@@ -17,19 +18,24 @@ than running to convergence. This produces a shallow but valid posterior
 fast enough to fit inside the per-script CI timeout.
 """
 
-from pathlib import Path
 import shutil
 import sys
+from pathlib import Path
 
 from autoconf.test_mode import with_test_mode_segment
 
 
-def has_imaging_dataset(results_path):
-    return any(results_path.glob("**/image/dataset.fits"))
+def has_workflow_results(results_path):
+    return (
+        len(list(results_path.glob("**/image/dataset.fits"))) >= 2
+        and len(list(results_path.glob("**/files/latent/latent_summary.json"))) >= 2
+        and len(list(results_path.glob("**/image/fit.png"))) >= 2
+        and len(list(results_path.glob("**/image/fit.fits"))) >= 2
+    )
 
 
 results_path = with_test_mode_segment(Path("output")) / "results_folder"
-if has_imaging_dataset(results_path):
+if has_workflow_results(results_path):
     sys.exit(0)
 
 if results_path.exists():
@@ -46,6 +52,7 @@ if mode in ("2", "3"):
     os.environ["PYAUTO_TEST_MODE"] = "1"
 os.environ.pop("PYAUTO_SKIP_VISUALIZATION", None)
 os.environ.pop("PYAUTO_SKIP_FIT_OUTPUT", None)
+os.environ.pop("PYAUTO_FAST_PLOTS", None)
 
 import autofit as af
 import autolens as al
@@ -92,20 +99,60 @@ bulge = al.model_util.mge_model_from(
 
 model = af.Collection(
     galaxies=af.Collection(
-        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
+        lens=af.Model(
+            al.Galaxy,
+            redshift=0.5,
+            mass=al.mp.Isothermal,
+            shear=al.mp.ExternalShear,
+        ),
         source=af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=None),
     ),
 )
 
-search = af.Nautilus(
-    path_prefix=Path("results_folder"),
-    name="results",
-    unique_tag=dataset_name,
-    n_live=100,
-    n_batch=50,
-    n_like_max=300,
-)
 
-analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+class LatentShear(al.Latent):
+    """
+    Custom latent catalogue reporting the lens external-shear magnitude and
+    angle for the workflow CSV example.
+    """
 
-search.fit(model=model, analysis=analysis)
+    @staticmethod
+    def keys(analysis):
+        return [
+            "galaxies.lens.shear.magnitude",
+            "galaxies.lens.shear.angle",
+        ]
+
+    @staticmethod
+    def variables(analysis, parameters, model):
+        instance = model.instance_from_vector(vector=parameters)
+
+        import jax.numpy as jnp
+
+        magnitude, angle = al.convert.shear_magnitude_and_angle_from(
+            gamma_1=instance.galaxies.lens.shear.gamma_1,
+            gamma_2=instance.galaxies.lens.shear.gamma_2,
+            xp=jnp,
+        )
+
+        return (magnitude, angle)
+
+
+class AnalysisLatent(al.AnalysisImaging):
+    Latent = LatentShear
+
+
+analysis = AnalysisLatent(dataset=dataset, use_jax=True)
+
+for i in range(2):
+    search = af.Nautilus(
+        path_prefix=Path("results_folder"),
+        name="results",
+        unique_tag=f"{dataset_name}_{i}",
+        n_live=100,
+        n_batch=50,
+        iterations_per_quick_update=10000,
+        n_like_max=300,
+    )
+
+    search.fit(model=model, analysis=analysis)
