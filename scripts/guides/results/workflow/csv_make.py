@@ -15,14 +15,13 @@ __CSV, Png and Fits__
 Workflow functionality closely mirrors the `png_make.py` and `fits_make.py`  examples, which load results of
 model-fits and output th em as .png files and .fits files to quickly summarise results.
 
-The same initial fit creating results in a folder called `results_folder_csv_png_fits` is therefore used.
+The shared `_quick_fit.py` helper creates these results in `results_folder`. If you have older outputs under `results_folder_csv_png_fits`, use `results_folder` for these examples instead.
 
 __Contents__
 
 - **Interferometer:** This script can easily be adapted to analyse the results of charge injection imaging model-fits.
 - **Database File:** The aggregator can also load results from a `.sqlite` database file.
-- **Model Fit:** Perform the model-fit using the search and analysis.
-- **Unique Tag:** One thing to note is that the `unique_tag` of the search is given the name of the dataset with an.
+- **Model Fit:** Run the shared quick-fit helper if results have not already been created.
 - **Workflow Paths:** The workflow examples are designed to take large libraries of results and distill them down to the.
 - **Aggregator:** Set up the aggregator as shown in `start_here.py`.
 - **Model Paths:** The paths are the tuples which define how model parameters are accessed from the model.
@@ -72,133 +71,27 @@ import autolens as al
 """
 __Model Fit__
 
-The code below performs a model-fit using nautilus. 
+These workflow examples reuse the shared ``_quick_fit.py`` helper instead of
+performing model-fits in every script. The helper creates two capped Nautilus
+fits, including the latent quantities used below, in ``output/results_folder/``.
 
-You should be familiar with modeling already, if not read the `modeling/start_here.py` script before reading this one!
-
-__Unique Tag__
-
-One thing to note is that the `unique_tag` of the search is given the name of the dataset with an index for the
-fit of 0 and 1. 
-
-This `unique_tag` names the fit in a descriptive and human-readable way, which we will exploit to make our .csv files
-more descriptive and easier to interpret.
+Older versions of these workflow examples used ``output/results_folder_csv_png_fits/``;
+use ``output/results_folder/`` for the centralized setup here.
 """
-for i in range(2):
-    dataset_name = "simple__no_lens_light"
-    dataset_path = Path("dataset") / "imaging" / dataset_name
+import subprocess
+import sys
 
-    """
-    __Dataset Auto-Simulation__
-
-    If the dataset does not already exist on your system, it will be created by running the corresponding
-    simulator script. This ensures that all example scripts can be run without manually simulating data first.
-    """
-    if not dataset_path.exists():
-        import subprocess
-        import sys
-
-        subprocess.run(
-            [sys.executable, "scripts/imaging/features/no_lens_light/simulator.py"],
-            check=True,
-        )
-
-    dataset = al.Imaging.from_fits(
-        data_path=dataset_path / "data.fits",
-        psf_path=dataset_path / "psf.fits",
-        noise_map_path=dataset_path / "noise_map.fits",
-        pixel_scales=0.1,
+results_path = Path("output") / "results_folder"
+if (
+    len(list(results_path.glob("**/image/dataset.fits"))) < 2
+    or len(list(results_path.glob("**/files/latent/latent_summary.json"))) < 2
+    or len(list(results_path.glob("**/image/fit.png"))) < 2
+    or len(list(results_path.glob("**/image/fit.fits"))) < 2
+):
+    subprocess.run(
+        [sys.executable, "scripts/guides/results/_quick_fit.py"],
+        check=True,
     )
-
-    mask_radius = 3.0
-
-    mask = al.Mask2D.circular(
-        shape_native=dataset.shape_native,
-        pixel_scales=dataset.pixel_scales,
-        radius=mask_radius,
-    )
-
-    dataset = dataset.apply_mask(mask=mask)
-
-    bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius,
-        total_gaussians=20,
-        gaussian_per_basis=1,
-        centre_prior_is_uniform=False,
-    )
-
-    model = af.Collection(
-        galaxies=af.Collection(
-            lens=af.Model(
-                al.Galaxy,
-                redshift=0.5,
-                mass=al.mp.Isothermal,
-                shear=al.mp.ExternalShear,
-            ),
-            source=af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=None),
-        ),
-    )
-
-    """
-    __N Like Max__
-
-    `n_like_max=300` caps the search at 300 likelihood evaluations so this workflow example runs in
-    seconds and produces the .csv files it demonstrates without waiting for a full Nautilus
-    convergence. Remove the cap (or raise it substantially) for a real model fit.
-    """
-    search = af.Nautilus(
-        path_prefix=Path("results_folder_csv_png_fits"),
-        name="results",
-        unique_tag=f"simple__no_lens_light_{i}",
-        n_live=100,
-        n_batch=50,  # GPU batching and VRAM use explained in `modeling` examples.
-        iterations_per_quick_update=10000,
-        n_like_max=300,  # samples capped for quick result generation
-    )
-
-    class LatentShear(al.Latent):
-        """
-        A custom latent catalogue (replacing the library defaults) reporting the
-        lens external-shear magnitude and angle. A latent variable is not a model
-        parameter but can be derived from the model; its value and errors aid
-        interpretation and are written to `latent.csv` (mirroring `samples.csv`).
-
-        Define a custom catalogue by subclassing `al.Latent` (the base class) and
-        overriding `keys` / `variables`, then declare it on the analysis via the
-        `Latent` class attribute. Subclass `al.LatentLens` instead if you want to
-        keep the library lensing latents alongside your custom ones.
-        """
-
-        @staticmethod
-        def keys(analysis):
-            return [
-                "galaxies.lens.shear.magnitude",
-                "galaxies.lens.shear.angle",
-            ]
-
-        @staticmethod
-        def variables(analysis, parameters, model):
-            # Called for every sample; `parameters` is mapped back to a model
-            # instance and the derived shear magnitude/angle are returned in a
-            # tuple positionally aligned with `keys`.
-            instance = model.instance_from_vector(vector=parameters)
-
-            import jax.numpy as jnp
-
-            magnitude, angle = al.convert.shear_magnitude_and_angle_from(
-                gamma_1=instance.galaxies.lens.shear.gamma_1,
-                gamma_2=instance.galaxies.lens.shear.gamma_2,
-                xp=jnp,
-            )
-
-            return (magnitude, angle)
-
-    class AnalysisLatent(al.AnalysisImaging):
-        Latent = LatentShear
-
-    analysis = AnalysisLatent(dataset=dataset)
-
-    result = search.fit(model=model, analysis=analysis)
 
 """
 __Workflow Paths__
@@ -208,7 +101,7 @@ required for your science, which are therefore placed in a single path for easy 
 
 The `workflow_path` specifies where these files are output, in this case the .csv files which summarise the results.
 """
-workflow_path = Path("output") / "results_folder_csv_png_fits" / "workflow_make_example"
+workflow_path = Path("output") / "results_folder" / "workflow_make_example"
 
 """
 __Aggregator__
@@ -218,7 +111,7 @@ Set up the aggregator as shown in `start_here.py`.
 from autofit.aggregator.aggregator import Aggregator
 
 agg = Aggregator.from_directory(
-    directory=Path("output") / "results_folder_csv_png_fits",
+    directory=Path("output") / "results_folder",
 )
 
 """
@@ -245,8 +138,7 @@ we call `add_variable` we add a new column to the .csv file.
 
 Note the API for the `centre`, which is a tuple parameter and therefore needs for `centre_0` to be specified.
 
-The `results_folder_csv_png_fits` contained two model-fits to two different datasets, meaning that each `add_variable` 
-call will add three rows, corresponding to the three model-fits.
+The `results_folder` contains two model-fits, meaning that each `add_variable` call adds two rows.
 
 This adds the median PDF value of the parameter to the .csv file, we show how to add other values later in this script.
 """
@@ -258,7 +150,7 @@ __Saving the CSV__
 
 We can now output the results of all our model-fits to the .csv file, using the `save` method.
 
-This will output in your current working directory (e.g. the `autolens_workspace/output.results_folder_csv_png_fits`) 
+This will output in your current working directory (e.g. the `autolens_workspace/output/results_folder`)
 as a .csv file containing the median PDF values of the parameters, have a quick look now to see the format of 
 the .csv file.
 """
@@ -336,7 +228,7 @@ A useful example is adding the name of every dataset to the .csv file in a colum
 which dataset each row corresponds to.
 
 To make this list, we use the `Aggregator` to loop over the `search` objects and extract their `unique_tag`'s, which 
-when we fitted the model above used the dataset names. This API can also be used to extract the `name` or `path_prefix`
+which the helper set from the dataset names. This API can also be used to extract the `name` or `path_prefix`
 of the search and build an informative list for the names of the subplots.
 
 We then pass the column `name` and this list to the `add_label_column` method, which will add a column to the .csv file.

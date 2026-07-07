@@ -1939,7 +1939,7 @@
     ],
     "notebook": "notebooks/guides/results/_quick_fit.ipynb",
     "path": "scripts/guides/results/_quick_fit.py",
-    "summary": "Internal helper invoked via subprocess from the tutorials in this folder (``start_here.py`` and everything under ``aggregator/``). Produces a fast, capped Nautilus fit at ``output/results_folder/`` so the aggregator examples have a populated results directory to read from.",
+    "summary": "Internal helper invoked via subprocess from the tutorials in this folder. Produces two fast, capped Nautilus fits at ``output/results_folder/`` so the aggregator and workflow examples have a populated results directory to read from.",
     "title": "Results: Quick Fit Helper"
   },
   {
@@ -2163,7 +2163,6 @@
       "Interferometer",
       "Database File",
       "Model Fit",
-      "Unique Tag",
       "Workflow Paths",
       "Aggregator",
       "Model Paths",
@@ -2177,8 +2176,8 @@
       "Computed Columns"
     ],
     "cross_refs": [
+      "_quick_fit.py",
       "fits_make.py",
-      "modeling/start_here.py",
       "png_make.py",
       "start_here.py"
     ],
@@ -2192,7 +2191,6 @@
       "Interferometer",
       "Database File",
       "Model Fit",
-      "Unique Tag",
       "Workflow Paths",
       "Aggregator",
       "Extract Images",
@@ -2205,7 +2203,7 @@
       "Path Navigation"
     ],
     "cross_refs": [
-      "modeling/start_here.py",
+      "_quick_fit.py",
       "png_make.py",
       "start_here.py"
     ],
@@ -2219,7 +2217,6 @@
       "Interferometer",
       "Database File",
       "Model Fit",
-      "Unique Tag",
       "Workflow Paths",
       "Aggregator",
       "Extract Images",
@@ -2231,8 +2228,8 @@
       "Path Navigation"
     ],
     "cross_refs": [
+      "_quick_fit.py",
       "fits_make.py",
-      "modeling/start_here.py",
       "start_here.py"
     ],
     "notebook": "notebooks/guides/results/workflow/png_make.ipynb",
