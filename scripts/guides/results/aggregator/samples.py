@@ -45,7 +45,6 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 from pathlib import Path
 
-from autoconf.test_mode import with_test_mode_segment
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
@@ -58,7 +57,7 @@ The helper writes a capped Nautilus fit to ``output/results_folder/`` so this tu
 in this folder) have results to work with. When that folder already exists the helper exits immediately,
 so re-running this tutorial is cheap.
 """
-results_path = with_test_mode_segment(Path("output")) / "results_folder"
+results_path = Path("output") / "results_folder"
 if not any(results_path.glob("**/image/dataset.fits")):
     import subprocess
     import sys
