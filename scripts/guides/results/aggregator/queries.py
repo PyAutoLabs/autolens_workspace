@@ -25,7 +25,6 @@ from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
 from pathlib import Path
 
-from autoconf.test_mode import with_test_mode_segment
 import autofit as af
 import autolens as al
 
@@ -37,7 +36,7 @@ First, set up the aggregator as shown in `start_here.py`.
 """
 from autofit.aggregator.aggregator import Aggregator
 
-results_path = with_test_mode_segment(Path("output")) / "results_folder"
+results_path = Path("output") / "results_folder"
 if not any(results_path.glob("**/image/dataset.fits")):
     import subprocess
     import sys

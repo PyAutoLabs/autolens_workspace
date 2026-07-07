@@ -22,8 +22,6 @@ import shutil
 import sys
 from pathlib import Path
 
-from autoconf.test_mode import with_test_mode_segment
-
 
 def has_workflow_results(results_path):
     return (
@@ -34,7 +32,7 @@ def has_workflow_results(results_path):
     )
 
 
-results_path = with_test_mode_segment(Path("output")) / "results_folder"
+results_path = Path("output") / "results_folder"
 if has_workflow_results(results_path):
     sys.exit(0)
 
@@ -44,12 +42,8 @@ if results_path.exists():
 import os
 
 # The aggregator tutorials that invoke this helper read image/dataset.fits via
-# fit.value("dataset"). Smoke-mode env vars (PYAUTO_TEST_MODE>=2,
-# PYAUTO_SKIP_VISUALIZATION) suppress the visualizer that writes that file, so
-# neutralize them here.
-mode = os.environ.get("PYAUTO_TEST_MODE", "0")
-if mode in ("2", "3"):
-    os.environ["PYAUTO_TEST_MODE"] = "1"
+# fit.value("dataset"). Visualization-skipping environment variables suppress
+# the visualizer that writes that file, so neutralize them here.
 os.environ.pop("PYAUTO_SKIP_VISUALIZATION", None)
 os.environ.pop("PYAUTO_SKIP_FIT_OUTPUT", None)
 os.environ.pop("PYAUTO_FAST_PLOTS", None)
