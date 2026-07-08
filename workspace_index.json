@@ -1398,7 +1398,9 @@
       "Pixelization"
     ],
     "cross_refs": [
-      "/guides/modeling/chaining/over_sampling.ipynb"
+      "/guides/modeling/chaining/over_sampling.ipynb",
+      "autolens_workspace_test/scripts/imaging/convolution_over_sampled.py",
+      "scripts/imaging/simulator.py"
     ],
     "notebook": "notebooks/guides/advanced/over_sampling.ipynb",
     "path": "scripts/guides/advanced/over_sampling.py",
