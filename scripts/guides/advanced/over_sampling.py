@@ -527,11 +527,22 @@ Fits then work across every model surface: standard light profiles, linear light
 profiles (which are added at image resolution unblurred, by definition) and pixelized source reconstructions.
 Simulation is supported too — see the `__Oversampled PSF__` section of `scripts/imaging/simulator.py`.
 
+__Adaptive Evaluation: the k x s Coupling__
+
+Adaptive over sampling composes with oversampled convolution: every `over_sample_size` entry must be
+*divisible* by `convolve_over_sample_size` (not equal to it). Each pixel is evaluated on its own adaptive
+sub-grid of size k * s, the values are partially binned to a uniform image at the convolution resolution s,
+convolved, and binned to image resolution — adaptive sampling does the integration accuracy, the uniform
+intermediate does the convolution. The adaptive radial schemes above therefore work unchanged with an
+oversampled PSF, provided their sizes are multiples of s (e.g. [32, 8, 2] with s=2). A non-divisible
+combination raises a clear error. This holds for pixelized sources too, where the coupling is exact by
+linearity of the mapping matrix.
+
 __Limitations__
 
 The following are not supported with an oversampled PSF and raise a clear error if combined with it:
 
- - Adaptive (non-uniform) over sampling, as above.
+ - Over sampling sizes not divisible by `convolve_over_sample_size` (e.g. 3 with s=2).
  - The sparse linear-algebra formalism (`apply_sparse_operator`), whose PSF products are precomputed at image
    resolution.
  - The fixed-linear-function preload (`data_linear_func_matrix`) used to accelerate some fixed-MGE fits.

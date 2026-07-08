@@ -404,8 +404,10 @@ resolution.
 
 Two requirements to be aware of:
 
- - The grid's `over_sample_size` must be uniform and equal to `convolve_over_sample_size` (adaptive over sampling
-   cannot be combined with oversampled convolution, and the code raises a clear error if you try).
+ - Every entry of the grid's `over_sample_size` must be divisible by `convolve_over_sample_size` (the k x s
+   coupling: adaptive evaluation is partially binned to the convolution resolution before blurring, so the
+   adaptive radial schemes above compose with an oversampled PSF; a non-divisible combination raises a clear
+   error).
  - When you later fit data simulated this way, pass the same fine-resolution PSF and the matching
    `convolve_over_sample_size_lp` / `convolve_over_sample_size_pixelization` to the `Imaging` object.
 
