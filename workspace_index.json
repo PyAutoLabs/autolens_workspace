@@ -2116,16 +2116,19 @@
     "contents": [
       "Lensing Latents in PyAutoLens: The eight library-shipped latents and what each one means physically.",
       "Toggling Latents: The workspace ``config/latent.yaml`` override.",
-      "Model Fit: A quick fit that produces real latent output for the loading section.",
-      "Loading Latent Results: Reading the latent samples via ``analysis.compute_latent_samples(result.samples)``.",
+      "Model Fit: Reuse the shared quick fit (``_quick_fit.py``) that produces real latent output.",
+      "Loading Latent Results: ``analysis.compute_latent_samples`` over a subset of PDF draws, and the two",
       "Extending with a Custom Latent: Subclass ``al.AnalysisImaging`` to add lens-mass derived quantities.",
       "Contributing Upstream: When your custom latent is general enough, promote it to the library."
     ],
     "cross_refs": [
       "../../../autofit_workspace/scripts/cookbooks/latent_variables.py",
+      "_quick_fit.py",
+      "aggregator/models.py",
       "autolens/analysis/latent.py",
       "euclid_strong_lens_modeling_pipeline/util.py",
       "scripts/guides/units/flux.py",
+      "start_here.py",
       "test_autolens/analysis/test_latent.py"
     ],
     "notebook": "notebooks/guides/results/latent_variables.ipynb",
