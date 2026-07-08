@@ -18,8 +18,9 @@ __Contents__
 
  - Lensing Latents in PyAutoLens: The eight library-shipped latents and what each one means physically.
  - Toggling Latents: The workspace ``config/latent.yaml`` override.
- - Model Fit: A quick fit that produces real latent output for the loading section.
- - Loading Latent Results: Reading the latent samples via ``analysis.compute_latent_samples(result.samples)``.
+ - Model Fit: Reuse the shared quick fit (``_quick_fit.py``) that produces real latent output.
+ - Loading Latent Results: ``analysis.compute_latent_samples`` over a subset of PDF draws, and the two
+   config surfaces (``latent.yaml`` / ``output.yaml``) that control which latents and how many draws.
  - Extending with a Custom Latent: Subclass ``al.AnalysisImaging`` to add lens-mass derived quantities.
  - Contributing Upstream: When your custom latent is general enough, promote it to the library.
 """
@@ -106,25 +107,37 @@ to incur the latent computation cost on every search update), flip it to ``false
 """
 __Model Fit__
 
-To make the loading and extending sections concrete, we run a quick lens model fit on the standard
-``simple__no_lens_light`` dataset. We use an Isothermal lens mass and an MGE source — fast enough to run in
-test mode while still producing a real posterior over the magnification and Einstein-radius latents.
+The loading and extending sections need a completed fit to read latents from. Rather than run a bespoke
+fit here, we reuse the shared quick fit that the other results guides use: ``_quick_fit.py`` writes an
+Isothermal-lens + MGE-source fit of the ``simple__no_lens_light`` dataset to ``output/results_folder/``.
+It is idempotent — it returns immediately if those results already exist — so across the whole guide
+suite the expensive non-linear search is paid once rather than repeated in every example.
 
-We pass ``magzero=25.0`` to ``al.AnalysisImaging`` so the three µJy latents populate with real values
-(without it they'd be NaN and the library would log a single warning per latent name per process). The raw-flux
-trio, Einstein-radius and magnification latents don't need ``magzero``.
+We then load that fit's samples via the aggregator, exactly as ``start_here.py`` and
+``aggregator/models.py`` do.
+"""
+import subprocess
+import sys
+
+subprocess.run(
+    [sys.executable, "scripts/guides/results/_quick_fit.py"],
+    check=True,
+)
+
+from autofit.aggregator.aggregator import Aggregator
+
+agg = Aggregator.from_directory(directory=Path("output") / "results_folder")
+samples = list(agg)[0].samples
+
+"""
+The samples carry the parameter posterior; the ``analysis`` carries the machinery that turns each
+posterior draw into latent values. We rebuild the dataset and an ``al.AnalysisImaging`` with
+``magzero=25.0`` so the three µJy latents populate with real values (without it they'd be NaN and the
+library would log a single warning per latent name per process). The raw-flux trio, Einstein-radius and
+magnification latents don't need ``magzero``.
 """
 dataset_name = "simple__no_lens_light"
 dataset_path = Path("dataset") / "imaging" / dataset_name
-
-if al.util.dataset.should_simulate(str(dataset_path)):
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [sys.executable, "scripts/imaging/features/no_lens_light/simulator.py"],
-        check=True,
-    )
 
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",
@@ -133,45 +146,42 @@ dataset = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
-mask_radius = 3.0
 mask = al.Mask2D.circular(
     shape_native=dataset.shape_native,
     pixel_scales=dataset.pixel_scales,
-    radius=mask_radius,
+    radius=3.0,
 )
 dataset = dataset.apply_mask(mask=mask)
 
-source_bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius,
-    total_gaussians=20,
-    gaussian_per_basis=1,
-    centre_prior_is_uniform=False,
-)
-model = af.Collection(
-    galaxies=af.Collection(
-        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge, disk=None),
-    ),
-)
-
 analysis = al.AnalysisImaging(dataset=dataset, use_jax=False, magzero=25.0)
-
-search = af.Nautilus(
-    name="cookbook_latent_variables",
-    n_live=50,
-    n_like_max=300,
-)
-
-result = search.fit(model=model, analysis=analysis)
 
 """
 __Loading Latent Results__
 
-``analysis.compute_latent_samples(result.samples)`` returns a ``Samples`` object whose API matches the parameter
+``analysis.compute_latent_samples(samples)`` returns a ``Samples`` object whose API matches the parameter
 ``Samples`` — ``median_pdf``, ``max_log_likelihood``, ``values_at_sigma_1``, etc. — but reports on the induced
 latent posterior.
+
+__Controlling the Cost via Config__
+
+Latents are computed by reconstructing a fit for every posterior sample, so the cost scales with the number
+of samples — and the two dimensionless lensing latents (``magnification``, ``effective_einstein_radius``) add
+a zero-contour critical-curve solve on top. Two workspace config files control this, and both are worth
+knowing:
+
+ - ``config/latent.yaml`` — controls *which* latents are computed (the eight toggles; this workspace enables
+   all of them). Disable the ones you don't need to save their per-sample cost.
+
+ - ``config/output.yaml`` — ``latent_draw_via_pdf`` / ``latent_draw_via_pdf_size`` control *how many* posterior
+   draws the latents are computed over when a live search updates. Drawing a representative subset from the PDF
+   gives faithful latent errors at a fraction of the every-sample cost.
+
+Here we mirror that draw-from-PDF behaviour explicitly with ``samples.samples_drawn_randomly_via_pdf_from``,
+computing the latents over 20 PDF draws so this guide runs quickly while still producing a real, representative
+latent posterior. For a publication-quality result, compute over all samples (or a larger number of draws).
 """
-latent_samples = analysis.compute_latent_samples(result.samples)
+latent_draws = samples.samples_drawn_randomly_via_pdf_from(total_draws=20)
+latent_samples = analysis.compute_latent_samples(latent_draws)
 
 median_instance = latent_samples.median_pdf()
 print(f"Median PDF magnification: {median_instance.magnification}")
