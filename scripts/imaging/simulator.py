@@ -386,3 +386,55 @@ See `scripts/guides/lens_calc.py` for the advanced "JIT-it-yourself"
 pattern that wraps individual library methods like `tracer.image_2d_from`
 directly.
 """
+
+"""
+__Oversampled PSF__
+
+The simulation above evaluates the lensed image on an over-sampled grid, but the PSF convolution itself is
+performed at the resolution of the image pixels. For most simulations this is accurate enough. However, when the
+PSF is undersampled by the detector (its width is comparable to the pixel scale, as for HST or Euclid VIS imaging)
+or when you want to model the blurring with maximum fidelity, the convolution itself can also be performed at a
+higher resolution.
+
+To do this, supply the PSF at a multiple of the image resolution and set `convolve_over_sample_size`. For example,
+with `convolve_over_sample_size=2` the PSF kernel below has pixels half the size of the image pixels (note the
+`pixel_scales` and the larger `shape_native` covering the same physical area). The simulator then evaluates the
+lensed image on the over-sampled grid, convolves at the fine resolution and bins the result back to the image
+resolution.
+
+Two requirements to be aware of:
+
+ - The grid's `over_sample_size` must be uniform and equal to `convolve_over_sample_size` (adaptive over sampling
+   cannot be combined with oversampled convolution, and the code raises a clear error if you try).
+ - When you later fit data simulated this way, pass the same fine-resolution PSF and the matching
+   `convolve_over_sample_size_lp` / `convolve_over_sample_size_pixelization` to the `Imaging` object.
+
+```python
+grid_fine = al.Grid2D.uniform(
+    shape_native=grid.shape_native,
+    pixel_scales=grid.pixel_scales,
+    over_sample_size=2,
+)
+
+psf_fine = al.Convolver.from_gaussian(
+    shape_native=(21, 21),  # twice the pixels of an 11x11 image-resolution kernel...
+    pixel_scales=grid.pixel_scales[0] / 2,  # ...at half the pixel scale, so the same physical extent.
+    sigma=0.1,
+    normalize=True,
+    convolve_over_sample_size=2,
+)
+
+simulator_fine = al.SimulatorImaging(
+    exposure_time=300.0,
+    psf=psf_fine,
+    background_sky_level=0.1,
+    add_poisson_noise_to_data=True,
+)
+
+dataset_fine = simulator_fine.via_tracer_from(tracer=tracer, grid=grid_fine)
+```
+
+The numerical test scripts in `autolens_workspace_test/scripts/imaging/convolution_over_sampled.py` verify this
+machinery against brute-force reference calculations for every supported model surface (standard, linear and
+operated light profiles and pixelized sources).
+"""

@@ -4050,6 +4050,7 @@
     ],
     "cross_refs": [
       "/guides/over_sampling.ipynb",
+      "autolens_workspace_test/scripts/imaging/convolution_over_sampled.py",
       "imaging/fit.py",
       "imaging/likelihood_function.py",
       "imaging/modeling.py",
