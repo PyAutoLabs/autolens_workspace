@@ -476,5 +476,72 @@ Here is an example of how to change the over sampling applied to a pixelization 
 dataset = dataset.apply_over_sampling(over_sample_size_pixelization=4)
 
 """
+__Oversampled PSF Convolution__
+
+Everything above concerns over sampling the *evaluation* of light profiles — computing the image on a sub-grid
+and binning it to pixel values before any instrument effect is applied. PSF convolution then blurs those
+pixel values at the resolution of the image.
+
+Convolution itself can also be over sampled. This matters when the PSF is undersampled by the detector (its
+width is comparable to the pixel scale, as for HST or Euclid VIS imaging): blurring the binned image with a
+pixel-scale PSF loses the sub-pixel structure of both the image and the PSF, and the two operations (bin then
+convolve, versus convolve finely then bin) do not commute.
+
+Supplying the PSF at a multiple of the image resolution and setting `convolve_over_sample_size` performs the
+convolution on the over-sampled grid and bins the result back to image resolution:
+"""
+psf_fine = al.Convolver.from_gaussian(
+    shape_native=(21, 21),  # twice the pixels of an 11x11 image-resolution kernel...
+    pixel_scales=0.1 / 2,  # ...at half the pixel scale, so the same physical extent.
+    sigma=0.05,
+    normalize=True,
+    convolve_over_sample_size=2,
+)
+
+dataset_fine = al.Imaging.from_fits(
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    pixel_scales=0.1,
+)
+
+"""
+For a dataset, the sizes are set per operation, mirroring the `lp` / `pixelization` split above. The matching
+evaluation `over_sample_size` must be a uniform integer equal to the convolution size — the values convolved at
+the fine resolution must first be evaluated at exactly that resolution, so adaptive over sampling cannot be
+combined with oversampled convolution (the code raises a clear error rather than silently degrading):
+
+```python
+dataset = al.Imaging(
+    data=data,
+    noise_map=noise_map,
+    psf=psf_fine,
+    over_sample_size_lp=2,
+    over_sample_size_pixelization=2,
+    convolve_over_sample_size_lp=2,
+    convolve_over_sample_size_pixelization=2,
+)
+```
+
+Fits then work across every model surface: standard light profiles, linear light profiles, operated light
+profiles (which are added at image resolution unblurred, by definition) and pixelized source reconstructions.
+Simulation is supported too — see the `__Oversampled PSF__` section of `scripts/imaging/simulator.py`.
+
+__Limitations__
+
+The following are not supported with an oversampled PSF and raise a clear error if combined with it:
+
+ - Adaptive (non-uniform) over sampling, as above.
+ - The sparse linear-algebra formalism (`apply_sparse_operator`), whose PSF products are precomputed at image
+   resolution.
+ - The fixed-linear-function preload (`data_linear_func_matrix`) used to accelerate some fixed-MGE fits.
+
+The padded / unmasked visualization images (`padded_image_2d_from`, `unmasked_blurred_image_2d_from`) remain at
+image resolution — visualization is unaffected by the convolution accuracy improvement.
+
+The numerical verification of all of the above lives in
+`autolens_workspace_test/scripts/imaging/convolution_over_sampled.py`, which pins the implementation to
+brute-force reference calculations.
+
 Finish.
 """
