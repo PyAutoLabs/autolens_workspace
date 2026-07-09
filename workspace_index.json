@@ -5804,6 +5804,30 @@
   },
   {
     "contents": [
+      "Dataset",
+      "Model",
+      "Search",
+      "Analysis",
+      "Run Times",
+      "Model-Fit",
+      "Output Folder Layout",
+      "Result"
+    ],
+    "cross_refs": [
+      "fit.py",
+      "scripts/imaging/modeling.py",
+      "scripts/weak/fit.py",
+      "scripts/weak/likelihood_function.py",
+      "scripts/weak/simulator.py",
+      "simulator.py"
+    ],
+    "notebook": null,
+    "path": "scripts/weak/modeling.py",
+    "summary": "This script fits a lens mass model to a weak gravitational lensing shear catalogue using a non-linear search. It is the weak-lensing analogue of `scripts/imaging/modeling.py`: where that script infers a lens model from a 2D image of a lensed source, this script infers one from the (gamma_2, gamma_1) shear measurements of background source galaxies \u2014 a `WeakDataset` produced by `scripts/weak/simulator.py`.",
+    "title": "Modeling: Weak Lensing"
+  },
+  {
+    "contents": [
       "Model",
       "Dataset Paths",
       "Ray Tracing",
