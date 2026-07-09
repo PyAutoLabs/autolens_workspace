@@ -103,13 +103,16 @@ __Load Data__
  - ``point_datasets.csv`` — the 60 multiple images of 21 sources (``arcs.dat``), with Lenstool's
    ``sigposArcsec`` as the position noise and per-system redshifts (spectroscopic where they
    exist, the model-optimized values of ``best.par`` otherwise).
- - ``halos.csv`` — the 5 individually-optimized dPIE halos of ``best.par``: the cluster-scale
-   halo (O1), the BCG (O2), two light-concentration clumps (O3 "dNW", O4 "ICL") and one galaxy
-   modelled outside the scaling relation (O5 "eCM").
- - ``members_best.csv`` — the 144 cluster members exactly as Lenstool derived them from the
-   scaling relation (the reconstruction uses these).
- - ``members.csv`` — the member *catalogue* (``galcat.cat``: positions, shapes, magnitudes; the
-   refit derives member masses from these + the shared scaling parameters, as ``potfile`` does).
+ - ``mass.csv`` — the complete optimized mass model in the **canonical named-galaxy CSV**
+   (the same ``al.galaxy_models_from_csv`` format every cluster script uses): 149 rows of
+   ``profile_class = dPIEMassLenstool``, one per ``potential`` section of ``best.par``, whose
+   columns are the ``.par`` keywords verbatim. The five individually-optimized halos are named
+   O1 (cluster-scale), O2 (BCG), O3 ("dNW"), O4 ("ICL"), O5 ("eCM"); the 144 scaling members
+   are ``member_<n>``.
+ - ``members.csv`` — the member *catalogue* (``galcat.cat``) in the ``al.galaxy_table_from_csv``
+   schema: centres + luminosities plus ``ellipticity`` / ``angle_pos`` / ``mag`` property
+   columns (the refit derives member masses from these + the shared scaling parameters, as
+   ``potfile`` does).
 """
 dataset_path = Path("dataset") / "cluster" / "smacs0723"
 
@@ -117,15 +120,13 @@ dataset_list = al.list_from_csv(file_path=dataset_path / "point_datasets.csv")
 print(f"{len(dataset_list)} point-source systems loaded.")
 
 
-def rows_from_csv(path):
-    lines = Path(path).read_text().strip().splitlines()
-    keys = lines[0].split(",")
-    return [dict(zip(keys, line.split(","))) for line in lines[1:]]
+mass_table = al.galaxy_models_from_csv(dataset_path / "mass.csv", family="mass")
+members_table = al.galaxy_table_from_csv(file_path=dataset_path / "members.csv")
 
-
-halo_rows = rows_from_csv(dataset_path / "halos.csv")
-member_best_rows = rows_from_csv(dataset_path / "members_best.csv")
-member_cat_rows = rows_from_csv(dataset_path / "members.csv")
+print(
+    f"mass.csv: {len(mass_table.rows)} dPIEMassLenstool rows | "
+    f"members.csv: {len(members_table.luminosities)} catalogue members"
+)
 
 """
 __The Published Model, Reconstructed__
@@ -145,29 +146,13 @@ Normalize to any other plane and every deflection is off by a constant D-ratio (
 to the same beta = D_LS/D_S ratios in the same cosmology.
 """
 Z_REF_SOURCE = max(float(dataset.redshift) for dataset in dataset_list)
-print(f"Profiles normalized to the tracer's final plane, z = {Z_REF_SOURCE:.3f}")
 
+# One call: every mass.csv row instantiates its dPIEMassLenstool with the .par values —
+# the redshift_source (final-plane) normalization and the run's H0/Om0 travel inside the
+# CSV columns, so nothing here needs to remember them.
+lens_galaxies = list(al.galaxies_from_csv_tables(mass_table).values())
 
-def dpie_from_row(row):
-    return al.mp.dPIEMass.from_lenstool(
-        centre=(float(row["y"]), float(row["x"])),
-        ellipticity=float(row["ellipticity"]),
-        angle_pos=float(row["angle_pos"]),
-        sigma=float(row["sigma"]),
-        r_core=float(row["r_core"]),
-        r_cut=float(row["r_cut"]),
-        redshift_object=float(row["z_lens"]),
-        redshift_source=Z_REF_SOURCE,
-        cosmology=cosmology,
-    )
-
-
-lens_galaxies = [
-    al.Galaxy(redshift=Z_LENS, mass=dpie_from_row(row))
-    for row in halo_rows + member_best_rows
-]
-
-print(f"Reconstructed {len(lens_galaxies)} dPIE mass components from best.par.")
+print(f"Reconstructed {len(lens_galaxies)} dPIE mass components from mass.csv.")
 
 source_galaxies = [
     al.Galaxy(
@@ -321,7 +306,7 @@ Lenstool units:
 
    (``vdslope 4`` and ``slope 4`` in ``input.par`` are these fixed exponents; the same
    reference-anchored convention is the default throughout the PyAutoLens cluster workflow.)
-   [2 free for all 146 members]
+   [2 free for all 146 catalogue members]
 
  - **Sources**: one ``al.ps.Point`` per system with a free centre initialised from the traced
    centroid of its observed images; redshifts fixed (spectroscopic or published model values).
@@ -338,26 +323,38 @@ r_cut_star_kpc = af.UniformPrior(lower_limit=1.0, upper_limit=100.0)
 R_CORE_MEMBER = 0.15 / kpc_per_arcsec  # potfile corekpc, converted once
 
 member_models = []
-for row in member_cat_rows:
-    luminosity = float(row["luminosity"])
+for centre, luminosity, ellipticity, angle_pos in zip(
+    members_table.centres,
+    members_table.luminosities,
+    members_table.properties["ellipticity"],
+    members_table.properties["angle_pos"],
+):
     mass = af.Model(al.mp.dPIEMassLenstool)
-    mass.centre = (float(row["y"]), float(row["x"]))
-    mass.ellipticity = float(row["ellipticity"])
-    mass.angle_pos = float(row["angle_pos"])
+    mass.centre = tuple(centre)
+    mass.ellipticity = ellipticity
+    mass.angle_pos = angle_pos
     mass.r_core = R_CORE_MEMBER
     mass.r_cut = (r_cut_star_kpc / float(kpc_per_arcsec)) * luminosity**0.5
     mass.sigma = sigma_star * luminosity**0.25
     mass.redshift_object = Z_LENS
     mass.redshift_source = Z_REF_SOURCE
+    mass.H0 = 70.0
+    mass.Om0 = 0.3
     member_models.append(af.Model(al.Galaxy, redshift=Z_LENS, mass=mass))
 
 
+# The named halos start as af.Models straight from mass.csv — the canonical
+# al.galaxy_af_models_from_csv_tables call gives every row's values as fixed
+# defaults, and we promote exactly the parameters input.par optimized to priors
+# (in Lenstool units). Redshifts and H0/Om0 ride in from the CSV already fixed.
+halo_af_models = al.galaxy_af_models_from_csv_tables(mass_table)
+
+
 def halo_model_from(label, limits):
-    row = next(r for r in halo_rows if r["label"] == label)
-    mass = af.Model(al.mp.dPIEMassLenstool)
-    mass.redshift_object = Z_LENS
-    mass.redshift_source = Z_REF_SOURCE
-    best_y, best_x = float(row["y"]), float(row["x"])
+    galaxy_model = halo_af_models[label]
+    mass = galaxy_model.mass
+    row = next(r for r in mass_table.rows if r.galaxy == label)
+    best_y, best_x = row.params["centre"]
 
     if "centre" in limits:
         half = limits["centre"]
@@ -367,15 +364,10 @@ def halo_model_from(label, limits):
         mass.centre_1 = af.UniformPrior(
             lower_limit=best_x - half, upper_limit=best_x + half
         )
-    else:
-        mass.centre = (best_y, best_x)
 
     if "ellipticity" in limits:
         mass.ellipticity = af.UniformPrior(0.0, limits["ellipticity"])
         mass.angle_pos = af.UniformPrior(-90.0, 90.0)
-    else:
-        mass.ellipticity = float(row["ellipticity"])
-        mass.angle_pos = float(row["angle_pos"])
 
     lo, hi = limits["r_core_kpc"]
     mass.r_core = af.UniformPrior(
@@ -387,12 +379,11 @@ def halo_model_from(label, limits):
         mass.r_cut = af.UniformPrior(
             lo / float(kpc_per_arcsec), hi / float(kpc_per_arcsec)
         )
-    else:
-        mass.r_cut = float(row["r_cut"])  # O1: fixed 1500 kpc, already in arcsec
+    # else: r_cut stays at its CSV value (O1: fixed 1500 kpc, already in arcsec).
 
     lo, hi = limits["sigma"]
     mass.sigma = af.UniformPrior(lo, hi)
-    return af.Model(al.Galaxy, redshift=Z_LENS, mass=mass)
+    return galaxy_model
 
 
 halo_models = [
