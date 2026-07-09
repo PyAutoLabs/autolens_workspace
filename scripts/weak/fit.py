@@ -18,6 +18,7 @@ __Contents__
 - **Model:** Build a lens-model `Tracer` whose mass profiles produce the model shear field.
 - **Fit:** Construct a `FitWeak` and inspect its derived quantities (residuals, chi-squared, log-likelihood).
 - **Visualization:** Plot the fit as a 2x2 mosaic of data, model, overlay, and chi-squared map.
+- **Shear Profile:** Bin the tangential/cross shear about the lens centre and compare data to model.
 - **Notes:** What a "good" fit looks like and how this script relates to the upcoming modeling tutorial.
 """
 
@@ -38,9 +39,21 @@ source-galaxy positions in a 3.0" half-extent square, each with a measured `(gam
 vector and per-galaxy noise standard deviation 0.3. The shear field carries the signature of the
 foreground lens's mass distribution.
 
-If `dataset.json` does not yet exist, run `scripts/weak/simulator.py` first.
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
 """
 dataset_path = Path("dataset") / "weak" / "simple"
+
+if al.util.dataset.should_simulate(str(dataset_path)):
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "scripts/weak/simulator.py"],
+        check=True,
+    )
 
 dataset = al.from_json(file_path=dataset_path / "dataset.json")
 
@@ -119,6 +132,28 @@ __Visualization__
 """
 aplt.subplot_fit_weak(
     fit=fit,
+    output_path=dataset_path,
+    output_format="png",
+)
+
+"""
+__Shear Profile__
+
+The panels above show the fit galaxy by galaxy; cluster weak-lensing results are usually shown instead as
+the azimuthally averaged *tangential shear profile* `gamma_t(r)` — the mean tangential stretching of
+background galaxies in radial bins about the lens centre, which traces the projected mass profile (this is
+the standard observable of analyses such as the Sloan Giant Arcs Survey and the Frontier Fields clusters).
+
+`aplt.plot_shear_profile` bins the catalogue about a chosen centre and, because we pass it the `FitWeak`,
+overlays the model shear's tangential profile as a line. The plot also shows the *cross* component
+`gamma_x` (the 45-degree rotated component): gravitational lensing produces none at leading order, so the
+cross points scattering around zero is the standard "B-mode" null test — a systematic contaminating the
+measurement would show up here.
+"""
+aplt.plot_shear_profile(
+    fit,
+    centre=(0.0, 0.0),
+    bins=8,
     output_path=dataset_path,
     output_format="png",
 )

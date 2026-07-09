@@ -5791,6 +5791,7 @@
       "Model",
       "Fit",
       "Visualization",
+      "Shear Profile",
       "Notes"
     ],
     "cross_refs": [
@@ -5836,7 +5837,9 @@
       "Output",
       "Visualize"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "scripts/weak/modeling.py"
+    ],
     "notebook": "notebooks/weak/simulator.ipynb",
     "path": "scripts/weak/simulator.py",
     "summary": "This script simulates a weak gravitational lensing shear catalogue. Unlike the imaging simulator (which produces a 2D image of the lensed source) the weak-lensing simulator produces a *catalogue* of (gamma_2, gamma_1) shear measurements at the (y, x) positions of a population of background source galaxies.",

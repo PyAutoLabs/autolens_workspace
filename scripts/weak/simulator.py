@@ -121,5 +121,27 @@ aplt.plot_shear_yx_2d(
     output_format="png",
 )
 
+"""
+__Convergence Map__
+
+The shear field can be inverted directly into a map of the convergence `kappa` (the dimensionless projected
+mass density) using the Kaiser-Squires (1993) technique: in Fourier space shear and convergence are related
+algebraically, so two FFTs turn the catalogue into a "dark matter map" with no mass model assumed. This is
+the classic visualization used for merging clusters (e.g. the Bullet cluster) and survey mass maps.
+
+`aplt.plot_convergence_map` bins the irregular catalogue onto a regular grid, applies a small Gaussian
+smoothing (raw per-cell shears are shape-noise dominated) and plots the E-mode reconstruction. For this
+Isothermal lens the map peaks at the lens centre at (0.0", 0.0"). Two caveats to remember: the mean of the
+map is unconstrained (the mass-sheet degeneracy) and FFT periodicity causes artefacts near the field edges —
+for quantitative masses, fit a mass model with `scripts/weak/modeling.py` instead.
+"""
+aplt.plot_convergence_map(
+    shear_yx=dataset.shear_yx,
+    shape_native=(30, 30),
+    smoothing_sigma_pixels=1.0,
+    output_path=dataset_path,
+    output_format="png",
+)
+
 print(dataset.info)
 print(f"Wrote dataset to {dataset_path}")
