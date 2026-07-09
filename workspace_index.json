@@ -162,7 +162,9 @@
       "autolens_workspace/scripts/group/features/scaling_relation/modeling.py",
       "autolens_workspace/start_here.py",
       "cluster/modeling.py",
+      "csv_api.py",
       "scripts/cluster/csv_api.py",
+      "scripts/cluster/modeling.py",
       "scripts/cluster/simulator.py",
       "scripts/group/features/scaling_relation/modeling_for_luminosities.py",
       "start_here_imaging.ipynb"
@@ -1062,7 +1064,7 @@
     ],
     "notebook": "notebooks/group/features/scaling_relation/likelihood_function.ipynb",
     "path": "scripts/group/features/scaling_relation/likelihood_function.py",
-    "summary": "This script describes the additional steps required to compute the `log_likelihood` for a group-scale strong lens whose foreground galaxy population is split across three tiers \u2014 main lens galaxies (modelled via the group `lens_dict` API), individually-modelled extras (each with its own free `einstein_radius`), and scaling-tier extras (whose Einstein radii are derived from a shared two-parameter relation `einstein_radius = scaling_factor * luminosity ** scaling_exponent`).",
+    "summary": "This script describes the additional steps required to compute the `log_likelihood` for a group-scale strong lens whose foreground galaxy population is split across three tiers \u2014 main lens galaxies (modelled via the group `lens_dict` API), individually-modelled extras (each with its own free `einstein_radius`), and scaling-tier extras (whose Einstein radii are derived from a shared reference-anchored relation `einstein_radius = einstein_radius_ref * (luminosity / luminosity_ref) ** 0.5`, the Lenstool convention).",
     "title": "__Log Likelihood Function: Group Scaling Relation__"
   },
   {
@@ -1084,6 +1086,7 @@
       "autolens_workspace/scripts/group/slam.py",
       "autolens_workspace/scripts/imaging/features/scaling_relation/modeling.py",
       "group/modeling.py",
+      "scripts/cluster/modeling.py",
       "scripts/group/features/pixelization/slam.py",
       "scripts/group/features/scaling_relation/modeling_for_luminosities.py",
       "scripts/group/features/scaling_relation/simulator.py",
