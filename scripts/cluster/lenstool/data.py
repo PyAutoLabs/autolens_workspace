@@ -17,9 +17,12 @@ from scratch.
 
 If you are a Lenstool user: each output CSV corresponds to one input you already maintain —
 
- - ``arcs.dat``   → ``point_datasets.csv``   (multiple-image positions + redshifts + noise)
- - ``galcat.cat`` → ``members.csv``          (cluster members: centres, shapes, magnitudes)
- - ``best.par``   → ``halos.csv`` + ``members_best.csv``  (every optimized ``potential`` section)
+ - ``arcs.dat``   → ``point_datasets.csv``  (multiple-image positions + redshifts + noise)
+ - ``galcat.cat`` → ``members.csv``         (member catalogue: centres + shape/mag properties,
+   the ``al.galaxy_table_from_csv`` schema)
+ - ``best.par``   → ``mass.csv``            (every optimized ``potential`` section as one
+   ``dPIEMassLenstool`` row of the canonical named-galaxy model CSV — **the .par file as a
+   table**, read back with ``al.galaxy_models_from_csv`` like every other cluster dataset)
 
 __Attribution__
 
@@ -75,6 +78,8 @@ import urllib.request
 from pathlib import Path
 
 import numpy as np
+
+import autolens as al
 
 """
 __Paths + URLs__
@@ -251,30 +256,53 @@ with open(DATASET_PATH / "point_datasets.csv", "w") as f:
     for system, y, x, redshift, _ in image_rows:
         f.write(f"point_{system},{y:.6f},{x:.6f},{SIGPOS_ARCSEC},{redshift}\n")
 
-with open(DATASET_PATH / "members.csv", "w") as f:
-    f.write("y,x,ellipticity,angle_pos,mag,luminosity\n")
-    for row in member_rows:
-        f.write(",".join(f"{v:.6f}" for v in row) + "\n")
+al.galaxy_table_to_csv(
+    centres=[(r[0], r[1]) for r in member_rows],
+    luminosities=[r[5] for r in member_rows],
+    file_path=DATASET_PATH / "members.csv",
+    properties={
+        "ellipticity": [r[2] for r in member_rows],
+        "angle_pos": [r[3] for r in member_rows],
+        "mag": [r[4] for r in member_rows],
+    },
+)
 
-with open(DATASET_PATH / "halos.csv", "w") as f:
-    f.write("label,y,x,ellipticity,angle_pos,r_core,r_cut,sigma,z_lens\n")
-    for h in named_halos:
-        f.write(
-            f"{h['label']},{h['y']:.6f},{h['x']:.6f},{h['ellipticity']:.6f},"
-            f"{h['angle_pos']:.6f},{h['r_core']:.6f},{h['r_cut']:.6f},"
-            f"{h['sigma']:.6f},{h['z_lens']}\n"
+# The whole optimized model — 5 named halos + 144 scaling members — becomes ONE canonical
+# ``mass.csv``: each ``potential`` section is a ``dPIEMassLenstool`` row whose columns are the
+# ``.par`` keywords verbatim (sigma, r_core, r_cut, ellipticity, angle_pos) plus the run's
+# redshifts and cosmology as flat values. ``modeling.py`` reads it back with the same
+# ``al.galaxy_models_from_csv`` call used throughout ``scripts/cluster/``.
+#
+# Every profile is normalized against the tracer's FINAL source plane (the multi-plane
+# convention modeling.py explains) using the run's own cosmology (H0=70, Om0=0.3).
+Z_FINAL_PLANE = max(z_by_system.values())
+
+profiles_by_galaxy = {}
+for h in halos:
+    name = h["label"] if h["label"].startswith("O") else f"member_{h['label']}"
+    profiles_by_galaxy[name] = {
+        "mass": al.mp.dPIEMassLenstool(
+            centre=(h["y"], h["x"]),
+            ellipticity=h["ellipticity"],
+            angle_pos=h["angle_pos"],
+            sigma=h["sigma"],
+            r_core=h["r_core"],
+            r_cut=h["r_cut"],
+            redshift_object=h["z_lens"],
+            redshift_source=Z_FINAL_PLANE,
+            H0=70.0,
+            Om0=0.3,
         )
+    }
 
-with open(DATASET_PATH / "members_best.csv", "w") as f:
-    f.write("label,y,x,ellipticity,angle_pos,r_core,r_cut,sigma,z_lens\n")
-    for h in member_halos:
-        f.write(
-            f"{h['label']},{h['y']:.6f},{h['x']:.6f},{h['ellipticity']:.6f},"
-            f"{h['angle_pos']:.6f},{h['r_core']:.6f},{h['r_cut']:.6f},"
-            f"{h['sigma']:.6f},{h['z_lens']}\n"
-        )
+al.galaxy_models_to_csv(
+    profiles_by_galaxy,
+    DATASET_PATH / "mass.csv",
+    family="mass",
+    redshifts={name: 0.39 for name in profiles_by_galaxy},
+)
 
-print("Wrote point_datasets.csv, members.csv, halos.csv, members_best.csv.")
+print("Wrote point_datasets.csv, members.csv, mass.csv (149 dPIEMassLenstool rows).")
 
 """
 __Image Cutout__
