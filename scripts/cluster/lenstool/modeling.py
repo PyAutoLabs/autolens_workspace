@@ -490,7 +490,7 @@ analysis_list = [
 
 import os
 
-if os.environ.get("PYAUTO_TEST_MODE") or os.environ.get("LENSTOOL_EXAMPLE_RUN_FIT"):
+if os.environ.get("LENSTOOL_EXAMPLE_RUN_FIT"):
     analysis_factor_list = [
         af.AnalysisFactor(prior_model=model, analysis=analysis)
         for analysis in analysis_list
@@ -502,8 +502,9 @@ if os.environ.get("PYAUTO_TEST_MODE") or os.environ.get("LENSTOOL_EXAMPLE_RUN_FI
     print("Refit complete — compare result_list max-likelihood values with Table 3.")
 else:
     print(
-        "Refit composition validated; set LENSTOOL_EXAMPLE_RUN_FIT=1 (or PYAUTO_TEST_MODE=2 for "
-        "a structural pass) to execute the search."
+        "Refit composition validated (the model.info above is the structural pass); set "
+        "LENSTOOL_EXAMPLE_RUN_FIT=1 to execute the production-scale search — a 72-parameter "
+        "factor-graph fit is never smoke-mode material."
     )
 
 """
