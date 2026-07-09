@@ -5918,6 +5918,22 @@
   },
   {
     "contents": [
+      "Catalogue Download",
+      "Catalogue Load & Projection",
+      "Quality Cuts",
+      "Weak Dataset",
+      "Mass Map",
+      "Model & Search",
+      "Result"
+    ],
+    "cross_refs": [],
+    "notebook": null,
+    "path": "scripts/weak/real_data/a2744.py",
+    "summary": "This script fits a dark-matter halo mass model to a **real weak-lensing shape catalogue** of the merging galaxy cluster Abell 2744 (\"Pandora's Cluster\", z = 0.308) \u2014 the first PyAutoLens weak-lensing analysis of real sky data, and the capstone of the weak-lensing example series.",
+    "title": "Real Data: Weak Lensing of Abell 2744"
+  },
+  {
+    "contents": [
       "Model",
       "Dataset Paths",
       "Ray Tracing",
