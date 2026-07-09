@@ -141,18 +141,23 @@ main_lens_galaxies = [galaxies_by_name["lens_0"], galaxies_by_name["lens_1"]]
 host_halo_galaxy = galaxies_by_name["host_halo"]
 source_galaxies = [galaxies_by_name["source_0"], galaxies_by_name["source_1"]]
 
-# Scaling tier: per-member dPIE built from the legacy CSV + shared scaling relation.
+# Scaling tier: per-member dPIE built from the legacy CSV + the reference-anchored
+# scaling relation (Lenstool convention; see modeling.py for the full rationale).
 scaling_galaxies = []
-SCALING_FACTOR_TRUTH = 0.3
-SCALING_EXPONENT_TRUTH = 1.0
+SCALING_B0_REF_TRUTH = 0.12
+SCALING_EXPONENT = 0.5
+SCALING_RS_REF = 10.0
+luminosity_ref = max(scaling_table.luminosities)
 for centre, luminosity in zip(
     scaling_table.centres.in_list, scaling_table.luminosities
 ):
-    b0 = SCALING_FACTOR_TRUTH * luminosity**SCALING_EXPONENT_TRUTH
+    luminosity_ratio = luminosity / luminosity_ref
+    b0 = SCALING_B0_REF_TRUTH * luminosity_ratio**SCALING_EXPONENT
+    rs = SCALING_RS_REF * luminosity_ratio**SCALING_EXPONENT
     scaling_galaxies.append(
         al.Galaxy(
             redshift=redshift_lens,
-            mass=al.mp.dPIEMassSph(centre=tuple(centre), ra=0.1, rs=10.0, b0=b0),
+            mass=al.mp.dPIEMassSph(centre=tuple(centre), ra=0.1, rs=rs, b0=b0),
         )
     )
 
@@ -162,8 +167,8 @@ __Tracer__
 The tracer carries:
 
  - 2 main lens galaxies (BCG + satellite) — individually-modelled dPIE mass profiles.
- - 10 scaling-tier member galaxies — dPIE mass profiles whose ``b0`` is derived from the shared
-   scaling relation ``b0 = scaling_factor × luminosity^scaling_exponent``.
+ - 10 scaling-tier member galaxies — dPIE mass profiles whose ``b0`` and ``rs`` derive from the
+   reference-anchored scaling relation ``b0 = b0_ref × (L/L_ref)^0.5`` (Lenstool convention).
  - 1 host dark matter halo — ``NFWMCRLudlowSph`` at the cluster centre.
  - 2 source galaxies — ``Point`` profiles at distinct redshifts (multi-plane).
 

@@ -12,9 +12,9 @@ treats differently:
    `einstein_radius`. Use this tier for the brighter / closer companions that contribute non-trivially to the
    lensing on their own.
  - **Scaling galaxies** (`scaling_galaxies_centres.json` + `scaling_galaxies.csv`): the long tail of fainter
-   companions whose Einstein radii are tied together via a shared two-parameter relation
-   `einstein_radius = scaling_factor * luminosity ** scaling_exponent`. Adding more galaxies to this tier does
-   not grow the model.
+   companions whose Einstein radii are tied together via a shared reference-anchored relation
+   `einstein_radius = einstein_radius_ref * (luminosity / luminosity_ref) ** 0.5` (exponent fixed at the
+   Faber-Jackson value; the Lenstool convention). Adding more galaxies to this tier does not grow the model.
 
 This script illustrates the API for performing a fit to a group-scale strong lens with all three tiers active,
 via the standard `Tracer` and `FitImaging` objects, without invoking a non-linear search.
@@ -41,7 +41,7 @@ This script focuses on the API specific to a group-scale three-tier extras popul
  - `autolens_workspace/scripts/group/start_here.py` — the group-scale `lens_dict` API, including how
    `main_lens_centres.json` is loaded.
  - `autolens_workspace/scripts/group/features/scaling_relation/modeling.py` — the search-based version of this
-   script, which composes the same model via `af.Model` with free `scaling_factor` and `scaling_exponent` priors.
+   script, which composes the same model via `af.Model` with a free `einstein_radius_ref` prior.
 
 The group simulator here has only ONE main lens galaxy, so the `lens_dict` has a single entry `lens_0`. The
 pattern generalises naturally to groups with multiple main lens galaxies.
@@ -233,13 +233,16 @@ for centre, truth in zip(extra_galaxies_centres, extra_truth):
         )
     )
 
-scaling_factor = 0.3
-scaling_exponent = 1.0
+einstein_radius_ref = 0.135
+scaling_exponent = 0.5
+luminosity_ref = max(scaling_galaxies_luminosities)
 
 scaling_extras = []
 scaling_extras_einstein_radii = []
 for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminosities):
-    einstein_radius = scaling_factor * luminosity**scaling_exponent
+    einstein_radius = (
+        einstein_radius_ref * (luminosity / luminosity_ref) ** scaling_exponent
+    )
     scaling_extras_einstein_radii.append(einstein_radius)
     scaling_extras.append(
         al.Galaxy(
@@ -310,7 +313,7 @@ for centre, luminosity, er in zip(
 ):
     print(
         f"    scaling galaxy @ {tuple(centre)}: "
-        f"einstein_radius = {scaling_factor:.2f} * {luminosity:.3f} ** {scaling_exponent:.1f} = {er:.4f}"
+        f"einstein_radius = {einstein_radius_ref:.3f} * ({luminosity:.3f} / {luminosity_ref:.3f}) ** {scaling_exponent:.1f} = {er:.4f}"
     )
 
 alpha_total_summed = alpha_main_total + alpha_individual_total + alpha_scaling_total
@@ -342,13 +345,13 @@ __Wrap Up__
 
 This script demonstrated the group-scale three-tier API and the per-tier deflection composition, without
 invoking a non-linear search. The scaling relation collapses what would otherwise be N free `einstein_radius`
-parameters into 2 shared parameters (`scaling_factor` and `scaling_exponent`), letting the model dimensionality
-stay constant as galaxy count grows.
+parameters into a single shared normalization (`einstein_radius_ref`, the brightest member's Einstein radius,
+with the exponent fixed at 0.5), letting the model dimensionality stay constant as galaxy count grows.
 
 In a real modeling workflow:
 
- - `modeling.py` runs the search-based version, where `scaling_factor` and `scaling_exponent` are free `af.Model`
-   parameters with `UniformPrior`s.
+ - `modeling.py` runs the search-based version, where `einstein_radius_ref` is a free `af.Model` parameter with
+   a `UniformPrior`.
  - `modeling_for_luminosities.py` is the standalone light-only fit that produces the luminosities consumed by
    the scaling relation. In production this stage is the `source_lp[0]` step of a SLaM pipeline.
  - `autolens_workspace/scripts/group/slam.py` is the full SLaM pipeline, which already implements scaling

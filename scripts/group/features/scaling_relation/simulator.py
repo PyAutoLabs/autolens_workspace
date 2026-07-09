@@ -131,10 +131,12 @@ extra_galaxies = [extra_galaxy_0, extra_galaxy_1]
 """
 __Scaling Galaxies__
 
-Two further-out, fainter companions whose true Einstein radii are consistent with the relation
-``einstein_radius = 0.3 * luminosity ** 1.0`` (luminosities ~0.45 -> Einstein radii ~0.135).  Modelling these
-individually would add 2 free parameters; on a scaling relation they add zero (the 2 relation parameters are shared
-across all scaling galaxies, so adding more does not grow the model).
+Two further-out, fainter companions whose true Einstein radii are consistent with the reference-anchored
+relation ``einstein_radius = einstein_radius_ref * (luminosity / luminosity_ref) ** 0.5`` with
+``einstein_radius_ref = 0.135`` anchored to the brightest scaling member (``luminosity_ref = 0.45``; both members
+share that luminosity here, so their radii are equal). Modelling these individually would add 2 free parameters;
+on a scaling relation they add zero (the single free normalization is shared across all scaling galaxies, so
+adding more does not grow the model).
 """
 scaling_galaxy_0 = al.Galaxy(
     redshift=0.5,
