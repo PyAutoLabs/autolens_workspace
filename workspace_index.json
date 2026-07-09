@@ -1885,6 +1885,18 @@
     "title": "Plots: Start Here"
   },
   {
+    "contents": [],
+    "cross_refs": [
+      "autolens_profiling/likelihood_breakdown/cluster/image_plane.py",
+      "likelihood_sanity.py",
+      "scripts/cluster/likelihood_function.py"
+    ],
+    "notebook": null,
+    "path": "scripts/guides/point_source_pairing.py",
+    "summary": "When fitting multiple-image positions \u2014 the bread and butter of group- and cluster-scale lens modeling \u2014 the model tracer will not, in general, predict exactly the images you observed. A wrong (or merely uncertain) mass model predicts *extra* images that were never detected, or fails to produce an observed image at all. What the likelihood does in those two situations decides which models a sampler rewards, and historically lensing codes have handled it with quiet conventions rather than explicit choices.",
+    "title": "Guide: Point-Source Pairing, Over-Prediction and Under-Prediction"
+  },
+  {
     "contents": [
       "Overview & Docs URL",
       "All Light Profiles (Survey)",
