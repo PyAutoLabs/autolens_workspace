@@ -285,7 +285,14 @@ toward West). The cutout exists purely for visualization — none of the modelin
 """
 cutout_path = DATASET_PATH / "data.fits"
 
-if not cutout_path.exists():
+import os
+
+if os.environ.get("PYAUTO_SMALL_DATASETS") == "1":
+    print(
+        "PYAUTO_SMALL_DATASETS=1: skipping the 96 MB RELICS mosaic download / cutout "
+        "(visualization-only product; the modeling data products above are complete)."
+    )
+elif not cutout_path.exists():
     from astropy.io import fits
     from astropy.wcs import WCS
 

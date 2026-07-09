@@ -124,16 +124,14 @@ We load the simulated cluster dataset. The dataset folder contains:
  - ``mass.csv`` / ``light.csv`` / ``point.csv`` — named-galaxy CSVs carrying the full truth model,
    including the centres of the main galaxies and host halo (see ``csv_api.py``).
 
-If the dataset is missing on disk, the corresponding simulator script runs automatically.
+If the dataset does not already exist on your system (per ``al.util.dataset.should_simulate``,
+which also handles the smoke-mode ``PYAUTO_SMALL_DATASETS`` regeneration case), it is created
+by running the corresponding simulator script.
 """
 dataset_name = "simple"
 dataset_path = Path("dataset") / "cluster" / dataset_name
 
-if (
-    not (dataset_path / "data.fits").exists()
-    or not (dataset_path / "scaling_galaxies.csv").exists()
-    or not (dataset_path / "mass.csv").exists()
-):
+if al.util.dataset.should_simulate(str(dataset_path)):
     subprocess.run(
         [sys.executable, "scripts/cluster/simulator.py"],
         check=True,
