@@ -69,7 +69,7 @@ example can be run without manually simulating data first.
 dataset_name = "simple"
 dataset_path = Path("dataset") / "weak" / dataset_name
 
-if not (dataset_path / "dataset.json").exists():
+if al.util.dataset.should_simulate(str(dataset_path)):
     import subprocess
     import sys
 
