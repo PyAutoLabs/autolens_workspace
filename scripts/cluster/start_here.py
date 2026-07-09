@@ -26,7 +26,7 @@ For galaxy-scale lenses (a single dominant lens and a single source), start with
 __Contents__
 
 - **JAX:** GPU/CPU acceleration; cluster fits take ~10 minutes on a GPU.
-- **Beta Feature:** Cluster modeling is a beta feature — what works and what doesn't.
+- **Capabilities:** What cluster modeling supports, and practical tips for using it.
 - **Google Colab Setup:** Bootstraps the environment when running on Colab.
 - **Imports:** The libraries we'll use.
 - **Dataset:** Load the CCD image and the per-source point datasets.
@@ -58,20 +58,17 @@ For the broader JAX principles, see the top-level
 shows the post-Phase-2 `PointSolver(use_jax=True)` +
 `autolens.jax.register_tracer_classes(tracer)` pattern in action.
 
-__Beta Feature__
+__Capabilities__
 
-Cluster modeling with **PyAutoLens** is in beta. Strengths:
+Cluster modeling with **PyAutoLens** offers:
 
- - JAX-accelerated image-plane chi-squared is over 50× faster than mainstream cluster modeling tools.
- - Multi-plane ray tracing of arbitrary complexity is supported natively.
- - Hand-editable CSV inputs (point datasets, scaling-galaxy catalogues) make iterating on a real cluster
-   straightforward.
+ - JAX-accelerated image-plane chi-squared, over 50× faster than mainstream cluster modeling tools.
+ - Multi-plane ray tracing of arbitrary complexity, supported natively.
+ - Hand-editable CSV inputs (point datasets, scaling-galaxy catalogues) that make iterating on a real
+   cluster straightforward.
 
-Known limitations:
-
- - Default ``aplt`` visualization is tuned for galaxy-scale lenses; cluster-specific plotters are in
-   active development.
- - Workspace documentation for cluster modeling is less comprehensive than for galaxy-scale features.
+Practical tip: the default ``aplt`` visualization is tuned for galaxy-scale lenses, so when inspecting
+cluster fits you may prefer to build custom figures of the multiple-image positions and source planes.
 
 __Google Colab Setup__
 

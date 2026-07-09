@@ -31,6 +31,16 @@ https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026
 Then checkout the [new user starting guide](https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html) to navigate the
 workspace for your science case.
 
+## Three Ways to Learn PyAutoLens
+
+There are three ways to learn how to use **PyAutoLens**, which you can freely mix and match:
+
+1. **Manual navigation** — read the workspace guides yourself, starting from `start_here.ipynb` and the [new user starting guide](https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html), which organise the examples by lens scale and dataset type.
+2. **AI chat assistant** — ask questions to a conversational AI assistant such as ChatGPT or Claude in the browser. Point it at the [autolens_assistant](https://github.com/PyAutoLabs/autolens_assistant) repository and ask a question like *"How do I model a galaxy-scale strong lens observed with Hubble imaging?"*.
+3. **Fully agentic AI** — drive **PyAutoLens** end-to-end with an agentic coding tool such as [Claude Code](https://claude.com/claude-code) or [Codex](https://developers.openai.com/codex) together with [autolens_assistant](https://github.com/PyAutoLabs/autolens_assistant). These can inspect your data, write and run scripts, and manage a lens-modeling project directly on your machine.
+
+See [autolens_assistant](https://github.com/PyAutoLabs/autolens_assistant) for more on the AI-assisted options (2 and 3).
+
 ## HowToLens
 
 If the workspace examples move too quickly, **HowToLens** is a separate four-chapter tutorial lecture series that walks
