@@ -437,6 +437,33 @@ modelling in PyAutoLens. Where they live in the workflow:
    ``simulator.py``; consumed by ``modeling.py`` and ``start_here.py``
    via ``al.galaxy_table_from_csv``.
 
+__Lenstool-Parameterized Rows__
+
+Because the ``profile_class`` column dispatches against the full ``al.mp`` namespace, a
+``mass.csv`` can carry rows in **Lenstool's native parameterization** via ``dPIEMassLenstool``
+— the columns become the ``.par``-file keywords verbatim::
+
+    galaxy,attr_name,profile_class,y,x,ellipticity,angle_pos,sigma,r_core,r_cut,redshift_object,redshift_source,H0,Om0,redshift
+    O1,mass,dPIEMassLenstool,1.479,-2.997,0.678,8.971,987.34,18.96,283.54,0.39,11.76,70.0,0.3,0.39
+
+``sigma`` is Lenstool's fiducial ``v_disp`` (sigma_LT), radii are in arcsec, and the run's own
+cosmology travels as the flat ``H0`` / ``Om0`` columns. ``scripts/cluster/lenstool/`` builds its
+entire 149-component published model this way — the ``.par`` file becomes one canonical CSV. Note
+the multi-plane convention: ``redshift_source`` must be the tracer's *final* (highest) source
+plane.
+
+Light-profile CSVs (``light.csv``) support the linear / operated variants with qualified class
+names (``linear.Sersic``, ``operated.Gaussian``); plain names resolve to the standard profiles.
+
+__Member Catalogues With Properties__
+
+``scaling_galaxies.csv`` / ``al.galaxy_table_from_csv`` accept any extra per-galaxy columns
+beyond ``y, x, luminosity[, redshift]`` — numeric columns (``ellipticity``, ``angle_pos``,
+``mag``) load as float lists in ``GalaxyTable.properties``, strings (names, notes) as string
+lists. Nothing is silently dropped, and two loud guards protect the model CSVs: a typo'd
+parameter column raises (instead of silently leaving the profile at its default), as does a
+duplicate ``(galaxy, attr_name)`` row pair.
+
 To start modelling your own cluster:
 
  1. Edit (or generate from a light-only fit) the model CSVs and
