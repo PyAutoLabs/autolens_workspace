@@ -390,8 +390,8 @@ keeps its narrow 3-column schema: ``y, x, luminosity, redshift?``. The
 scaling tier is implicitly one profile class per member, so naming each
 member and emitting an ``attr_name`` column would be more overhead than
 signal — every row uses the same ``dPIEMassSph`` mass profile with
-parameters derived from the shared ``scaling_factor`` and
-``scaling_exponent`` modelling parameters.
+parameters derived from the reference-anchored scaling relation's shared
+``b0_ref`` normalization (see ``modeling.py``).
 
 ``al.galaxy_table_to_csv`` and ``al.galaxy_table_from_csv`` are the
 schema-specific writers/readers. The simulator emits 10 scaling members

@@ -8,8 +8,8 @@ Cluster-scale strong lenses are made of:
    their own light and mass profiles.
  - **Tens to hundreds of lower-mass member galaxies**, whose collective mass perturbs the deflection
    field non-trivially but whose individual contributions are too weak to constrain on their own. These
-   are modelled jointly on a luminosity-mass scaling relation, so the entire population shares just two
-   free parameters regardless of how many members are in the catalogue.
+   are modelled jointly on a luminosity-mass scaling relation, so the entire population shares a single
+   free parameter regardless of how many members are in the catalogue.
  - **One or more cluster-scale dark matter halos** (``10^14 – 10^15`` M_sun), modelled with NFW-like
    profiles and not tied to any individual galaxy.
  - **Multiple background sources at different redshifts**, multiply imaged by the cluster — this makes
@@ -121,8 +121,8 @@ We load the simulated cluster dataset. The dataset folder contains:
  - ``point_datasets.csv`` — one row per observed multiple image, grouped by source ``name``, with a
    ``redshift`` column per source.
  - ``scaling_galaxies.csv`` — one row per scaling-tier member with columns ``y, x, luminosity``.
- - ``main_lens_centres.json`` — centres of the 2 individually-modelled main galaxies.
- - ``host_halo_centre.json`` — centre of the host halo.
+ - ``mass.csv`` / ``light.csv`` / ``point.csv`` — named-galaxy CSVs carrying the full truth model,
+   including the centres of the main galaxies and host halo (see ``csv_api.py``).
 
 If the dataset is missing on disk, the corresponding simulator script runs automatically.
 """
@@ -229,10 +229,13 @@ The model has four tiers, one per cluster component:
  - **Main lens galaxies (2):** individually-modelled ``dPIEMassSph`` profiles with centre fixed to the
    observed light centres and free ``ra``, ``rs``, ``b0``. **6 free parameters total.**
 
- - **Scaling-tier members (10):** ``dPIEMassSph`` profiles with centre fixed to the CSV centres,
-   ``ra`` and ``rs`` fixed at the simulator truth values (0.1" and 10.0"), and ``b0`` derived from the
-   *shared* relation ``b0 = scaling_factor * luminosity ** scaling_exponent`` plus the per-member
-   luminosity. **2 free parameters total for the whole tier — independent of the number of members.**
+ - **Scaling-tier members (10):** ``dPIEMassSph`` profiles with centre fixed to the CSV centres and
+   ``ra`` fixed (0.1"). ``b0`` and ``rs`` derive from the reference-anchored relation used by Lenstool
+   and standard in published cluster analyses: ``b0 = b0_ref * (L / L_ref) ** 0.5`` and
+   ``rs = rs_ref * (L / L_ref) ** 0.5``, where the reference is the *brightest* member. The exponent is
+   fixed at the Faber-Jackson value (b0 ∝ sigma² and sigma ∝ L^(1/4) give b0 ∝ L^(1/2)) — only the
+   normalization ``b0_ref``, the reference member's lens strength, is fitted.
+   **1 free parameter total for the whole tier — independent of the number of members.**
 
  - **Host dark matter halo:** a standalone ``Galaxy`` carrying an ``NFWMCRLudlowSph`` halo with
    centre fixed and a free ``mass_at_200``. **1 free parameter.**
@@ -241,8 +244,11 @@ The model has four tiers, one per cluster component:
    ``GaussianPrior`` centre priors initialised from the mean of each source's observed positions.
    **4 free parameters total.**
 
-**Total: N = 13 free parameters.** Adding more rows to ``scaling_galaxies.csv`` does not grow N — that's
-the defining feature of cluster-scale modeling on a scaling relation.
+**Total: N = 12 free parameters.** Adding more rows to ``scaling_galaxies.csv`` does not grow N — that's
+the defining feature of cluster-scale modeling on a scaling relation. See
+``scripts/cluster/modeling.py`` for the full prose on the scaling-relation convention (why the
+normalization anchors to a reference galaxy, why the exponent is fixed, and the kinematic calibrations
+that refine it).
 
 __Redshifts__
 
@@ -255,8 +261,8 @@ simulator convention.
 __Model__
 
 The model is composed below in four blocks: main-tier loop, host halo, source-tier loop, scaling-tier
-loop (defining shared ``scaling_factor`` / ``scaling_exponent`` once outside the loop). The four
-blocks are then bundled into a single ``af.Collection`` model that the analysis will receive.
+loop (defining the shared ``b0_ref`` normalization once outside the loop). The four blocks are then
+bundled into a single ``af.Collection`` model that the analysis will receive.
 """
 redshift_lens = 0.5
 source_redshifts = [dataset.redshift for dataset in dataset_list]
@@ -291,23 +297,28 @@ for i, dataset in enumerate(dataset_list):
         mean=float(np.mean(positions[:, 1])), sigma=3.0
     )
 
-# Scaling Tier (shared scaling_factor + scaling_exponent; per-member b0 derived).
+# Scaling Tier (reference-anchored: b0_ref is the single shared free parameter, the
+# lens strength of the brightest member; per-member b0 and rs derive from it with
+# the exponents fixed at the Faber-Jackson value 0.5 — the Lenstool convention).
 
-scaling_factor = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)
-scaling_exponent = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
+scaling_b0_ref = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)
+scaling_exponent = 0.5
 
+scaling_luminosity_ref = max(scaling_galaxies_luminosity_list)
 scaling_ra_fixed = 0.1
-scaling_rs_fixed = 10.0
+scaling_rs_ref_fixed = 10.0
 
 scaling_galaxies_list = []
 for centre, luminosity in zip(
     scaling_galaxies_centres, scaling_galaxies_luminosity_list
 ):
+    luminosity_ratio = luminosity / scaling_luminosity_ref
+
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = tuple(centre)
     mass.ra = scaling_ra_fixed
-    mass.rs = scaling_rs_fixed
-    mass.b0 = scaling_factor * luminosity**scaling_exponent
+    mass.rs = scaling_rs_ref_fixed * luminosity_ratio**scaling_exponent
+    mass.b0 = scaling_b0_ref * luminosity_ratio**scaling_exponent
 
     scaling_galaxies_list.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
@@ -439,7 +450,8 @@ Next steps:
 - ``data.fits`` / ``noise_map.fits`` / ``psf.fits`` — your imaging.
 - ``point_datasets.csv`` — your measured multiple-image positions, with per-source redshifts.
 - ``scaling_galaxies.csv`` — your scaling-tier members' centres and luminosities.
-- ``main_lens_centres.json`` / ``host_halo_centre.json`` — your individually-modelled centres.
+- ``mass.csv`` / ``point.csv`` — your individually-modelled galaxies (centres and profiles), in the
+  named-galaxy CSV schema (see ``csv_api.py``).
 
 Update ``dataset_name`` above to point at the new folder, and the rest of the script runs unchanged.
 """

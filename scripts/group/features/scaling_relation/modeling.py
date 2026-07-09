@@ -19,10 +19,12 @@ galaxies are split into three distinct populations:
  - **Scaling galaxies** (`scaling_galaxies_centres.json`): further-out, fainter companions whose Einstein radii are
    tied together via a shared scaling relation:
 
-       einstein_radius = scaling_factor * (luminosity ** scaling_exponent)
+       einstein_radius = einstein_radius_ref * (luminosity / luminosity_ref) ** 0.5
 
-   The free parameters are `scaling_factor` and `scaling_exponent` only — adding more scaling galaxies does not grow
-   the model. Use this tier for the long tail of fainter companions.
+   anchored to a *reference galaxy* (the brightest scaling-tier member), with the exponent fixed at the
+   Faber-Jackson value of 0.5 — the convention used by Lenstool and standard in published group- and
+   cluster-scale analyses. The only free parameter is `einstein_radius_ref` — adding more scaling galaxies
+   does not grow the model. Use this tier for the long tail of fainter companions.
 
 Splitting galaxies across these three tiers is the standard pattern in production group fits (see
 `z_projects/euclid_group/scripts/group.py`). It gives the lensing-significant galaxies the model flexibility they need
@@ -240,14 +242,26 @@ extra_galaxies = af.Collection(extra_galaxies_list)
 """
 __Scaling Galaxies__
 
-The scaling-relation tier. The two relation parameters are defined ONCE outside the loop — every scaling galaxy's
-mass is a function of these same two parameters plus its own (fixed) luminosity.
+The scaling-relation tier, in the reference-anchored convention used by Lenstool and essentially every published
+group- and cluster-scale analysis (Limousin et al. 2005; Eliasdottir et al. 2007; Bergamini et al. 2019). The
+normalization ``einstein_radius_ref`` is the Einstein radius of the *brightest* scaling member — a physically
+interpretable quantity with an easy-to-motivate prior range — and it is defined ONCE outside the loop: every
+scaling galaxy's mass derives from it via its luminosity ratio to the reference. The exponent is *fixed* at the
+Faber-Jackson value (einstein_radius ∝ sigma² and sigma ∝ L^(1/4) give einstein_radius ∝ L^(1/2)) rather than
+fitted, avoiding the normalization-slope degeneracy. Only luminosity ratios enter, so the luminosity units are
+irrelevant; magnitude catalogues convert via ``L / L_ref = 10 ** (0.4 * (m_ref - m))``.
+
+The dPIE-profile cluster-scale analogue — which also scales the truncation radius (``rs ∝ L^0.5``, mirroring
+Lenstool's r_cut scaling) — is ``scripts/cluster/modeling.py``. To free the exponent as a systematics test,
+replace the fixed value with e.g. ``af.UniformPrior(lower_limit=0.0, upper_limit=1.0)``.
 
 Adding more scaling galaxies (e.g. by lengthening the centres + luminosity lists) does not add any free parameters
 to the model.
 """
-scaling_factor = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
-scaling_exponent = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
+einstein_radius_ref = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+scaling_exponent = 0.5
+
+luminosity_ref = max(scaling_galaxies_luminosity_list)
 
 scaling_galaxies_list = []
 
@@ -262,7 +276,8 @@ for scaling_galaxy_centre, scaling_galaxy_luminosity in zip(
 
     mass = af.Model(al.mp.Isothermal)
     mass.centre = tuple(scaling_galaxy_centre)
-    mass.einstein_radius = scaling_factor * scaling_galaxy_luminosity**scaling_exponent
+    luminosity_ratio = scaling_galaxy_luminosity / luminosity_ref
+    mass.einstein_radius = einstein_radius_ref * luminosity_ratio**scaling_exponent
 
     scaling_galaxy = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
@@ -342,9 +357,8 @@ result = search.fit(model=model, analysis=analysis)
 """
 __Result__
 
-`result.info` shows all three tiers separately. The recovered `scaling_factor` and `scaling_exponent` should be
-close to the truth values used by the simulator (0.3 and 1.0, given the simulator's chosen luminosities and Einstein
-radii).
+`result.info` shows all three tiers separately. The recovered `einstein_radius_ref` should be close to the truth
+value used by the simulator (0.135, the Einstein radius of the brightest scaling member).
 """
 print(result.info)
 
