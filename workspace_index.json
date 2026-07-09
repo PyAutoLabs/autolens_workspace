@@ -5806,6 +5806,30 @@
   {
     "contents": [
       "Dataset",
+      "Lens Galaxy",
+      "Shear Field Evaluation",
+      "Residuals",
+      "Chi Squared",
+      "Noise Normalization Term",
+      "Calculate The Log Likelihood",
+      "Fit",
+      "Analysis",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "scripts/imaging/likelihood_function.py",
+      "scripts/weak/fit.py",
+      "scripts/weak/modeling.py",
+      "scripts/weak/simulator.py"
+    ],
+    "notebook": null,
+    "path": "scripts/weak/likelihood_function.py",
+    "summary": "This script provides a step-by-step guide of the **PyAutoLens** likelihood function for fitting a lens mass model to a weak gravitational lensing shear catalogue (a `WeakDataset`). It is the weak-lensing companion of the guides for the other dataset types (e.g. `scripts/imaging/likelihood_function.py`), following the same style and level of detail.",
+    "title": "__Log Likelihood Function: Weak Lensing__"
+  },
+  {
+    "contents": [
+      "Dataset",
       "Model",
       "Search",
       "Analysis",
