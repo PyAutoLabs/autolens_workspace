@@ -32,7 +32,7 @@
     "cross_refs": [
       "modeling.py"
     ],
-    "notebook": null,
+    "notebook": "notebooks/cluster/lenstool/data.ipynb",
     "path": "scripts/cluster/lenstool/data.py",
     "summary": "This script prepares everything needed to repeat a *published Lenstool cluster analysis* in **PyAutoLens**: the strong-lensing model of the first JWST cluster, SMACS J0723.3-7327, by Mahler et al. 2023 (ApJ 945, 49; arXiv:2207.07101).",
     "title": "Lenstool Users: Data Preparation (SMACS J0723)"
@@ -50,7 +50,7 @@
       "data.py",
       "scripts/cluster/modeling.py"
     ],
-    "notebook": null,
+    "notebook": "notebooks/cluster/lenstool/modeling.ipynb",
     "path": "scripts/cluster/lenstool/modeling.py",
     "summary": "**If you model galaxy clusters with Lenstool, this script is for you.** It repeats a published Lenstool analysis \u2014 Mahler et al. 2023's model of SMACS J0723, the first JWST cluster \u2014 in **PyAutoLens**, in three steps:",
     "title": "Lenstool Users: Cluster Modeling (SMACS J0723)"
@@ -177,7 +177,7 @@
   {
     "contents": [
       "JAX",
-      "Beta Feature",
+      "Capabilities",
       "Google Colab Setup",
       "Imports",
       "Dataset",
@@ -1891,7 +1891,7 @@
       "likelihood_sanity.py",
       "scripts/cluster/likelihood_function.py"
     ],
-    "notebook": null,
+    "notebook": "notebooks/guides/point_source_pairing.ipynb",
     "path": "scripts/guides/point_source_pairing.py",
     "summary": "When fitting multiple-image positions \u2014 the bread and butter of group- and cluster-scale lens modeling \u2014 the model tracer will not, in general, predict exactly the images you observed. A wrong (or merely uncertain) mass model predicts *extra* images that were never detected, or fails to produce an observed image at all. What the likelihood does in those two situations decides which models a sampler rewards, and historically lensing codes have handled it with quiet conventions rather than explicit choices.",
     "title": "Guide: Point-Source Pairing, Over-Prediction and Under-Prediction"
@@ -5811,7 +5811,7 @@
       "scripts/weak/fit.py",
       "simulator.py"
     ],
-    "notebook": null,
+    "notebook": "notebooks/weak/features/strong_lensing/fit.ipynb",
     "path": "scripts/weak/features/strong_lensing/fit.py",
     "summary": "This script fits the combined strong+weak dataset simulated by `simulator.py` in this folder with a single shared `Tracer`: the imaging data via `FitImaging` and the shear catalogue via `FitWeak`.",
     "title": "Fit: Combined Strong + Weak Lensing"
@@ -5829,7 +5829,7 @@
       "fit.py",
       "simulator.py"
     ],
-    "notebook": null,
+    "notebook": "notebooks/weak/features/strong_lensing/modeling.ipynb",
     "path": "scripts/weak/features/strong_lensing/modeling.py",
     "summary": "This script fits the combined dataset of `simulator.py` \u2014 an `Imaging` dataset of strongly lensed arcs and a `WeakDataset` of the surrounding shear field \u2014 with a **single lens mass model**, using PyAutoFit's factor-graph API to sample the joint likelihood with one non-linear search.",
     "title": "Modeling: Combined Strong + Weak Lensing"
@@ -5845,7 +5845,7 @@
     "cross_refs": [
       "scripts/imaging/simulator.py"
     ],
-    "notebook": null,
+    "notebook": "notebooks/weak/features/strong_lensing/simulator.ipynb",
     "path": "scripts/weak/features/strong_lensing/simulator.py",
     "summary": "This script simulates the two faces of the same gravitational lens: an `Imaging` dataset of its strongly lensed arcs, and a `WeakDataset` of the weak shear it imprints on background galaxies at larger radii. Both are generated from **one** `Tracer`, so the datasets share a single true mass distribution \u2014 the setup the fit and modeling examples in this folder use to demonstrate joint strong+weak constraints.",
     "title": "Simulator: Combined Strong + Weak Lensing"
@@ -5887,7 +5887,7 @@
       "scripts/weak/modeling.py",
       "scripts/weak/simulator.py"
     ],
-    "notebook": null,
+    "notebook": "notebooks/weak/likelihood_function.ipynb",
     "path": "scripts/weak/likelihood_function.py",
     "summary": "This script provides a step-by-step guide of the **PyAutoLens** likelihood function for fitting a lens mass model to a weak gravitational lensing shear catalogue (a `WeakDataset`). It is the weak-lensing companion of the guides for the other dataset types (e.g. `scripts/imaging/likelihood_function.py`), following the same style and level of detail.",
     "title": "__Log Likelihood Function: Weak Lensing__"
@@ -5911,7 +5911,7 @@
       "scripts/weak/simulator.py",
       "simulator.py"
     ],
-    "notebook": null,
+    "notebook": "notebooks/weak/modeling.ipynb",
     "path": "scripts/weak/modeling.py",
     "summary": "This script fits a lens mass model to a weak gravitational lensing shear catalogue using a non-linear search. It is the weak-lensing analogue of `scripts/imaging/modeling.py`: where that script infers a lens model from a 2D image of a lensed source, this script infers one from the (gamma_2, gamma_1) shear measurements of background source galaxies \u2014 a `WeakDataset` produced by `scripts/weak/simulator.py`.",
     "title": "Modeling: Weak Lensing"
@@ -5927,7 +5927,7 @@
       "Result"
     ],
     "cross_refs": [],
-    "notebook": null,
+    "notebook": "notebooks/weak/real_data/a2744.ipynb",
     "path": "scripts/weak/real_data/a2744.py",
     "summary": "This script fits a dark-matter halo mass model to a **real weak-lensing shape catalogue** of the merging galaxy cluster Abell 2744 (\"Pandora's Cluster\", z = 0.308) \u2014 the first PyAutoLens weak-lensing analysis of real sky data, and the capstone of the weak-lensing example series.",
     "title": "Real Data: Weak Lensing of Abell 2744"
