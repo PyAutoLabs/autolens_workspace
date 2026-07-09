@@ -67,8 +67,9 @@ __Main Lens vs Scaling Members vs Host Halo vs Source Galaxies__
   relation. Each member is individually weak compared to the main galaxies or the host halo, but the
   population together perturbs the deflection field non-trivially — exactly the regime in which the
   scaling-relation tier of the modeling API earns its keep. The number of free parameters does not grow
-  with the number of scaling members; the shared `scaling_factor` and `scaling_exponent` (2 parameters
-  total) determine every member's mass from its luminosity.
+  with the number of scaling members; a single shared normalization `b0_ref` (the lens strength of the
+  brightest member, with the relation's exponent fixed at the Faber-Jackson value) determines every
+  member's mass from its luminosity.
 
 - `host_halo_galaxy`: A standalone `Galaxy` holding the cluster's `NFWMCRLudlowSph` dark matter halo. It
   is not tied to any individual member galaxy — the halo is a separate mass component sitting "on top of"
@@ -78,8 +79,9 @@ __Main Lens vs Scaling Members vs Host Halo vs Source Galaxies__
   light profile (for visualization of the lensed arcs) and a `Point` model component (used during
   point-source modeling).
 
-Main lens, host halo, and source centres are saved to JSON files. Scaling-member centres and luminosities
-are saved to ``scaling_galaxies.csv`` (the canonical input for the scaling tier).
+Main lens, host halo, and source truth parameters (including centres) are saved to the named-galaxy CSVs
+(``mass.csv`` / ``light.csv`` / ``point.csv``). Scaling-member centres and luminosities are saved to
+``scaling_galaxies.csv`` (the canonical input for the scaling tier).
 
 __dPIE Mass Profile__
 
@@ -96,21 +98,36 @@ are derived from each member's luminosity via the relation described next.
 
 __Luminosity-Mass Scaling Relation__
 
-The 10 scaling members share a single one-parameter relation for the dPIE mass normalization:
+The 10 scaling members share a reference-anchored relation for the dPIE mass normalization — the
+convention used by Lenstool and essentially every published cluster strong-lensing analysis
+(Limousin et al. 2005; Eliasdottir et al. 2007; Bergamini et al. 2019):
 
-    b0 = scaling_factor * luminosity ** scaling_exponent
+    b0_i = b0_ref * (L_i / L_ref) ** 0.5
+    rs_i = rs_ref * (L_i / L_ref) ** 0.5
 
-Truth values used in this simulator are ``scaling_factor = 0.3`` arcsec / unit luminosity and
-``scaling_exponent = 1.0`` (i.e. linear in luminosity). The core radius ``ra`` and truncation radius
-``rs`` are held fixed across all scaling members at ``ra = 0.1"`` and ``rs = 10.0"``; only ``b0`` varies
-per member. Luminosities are log-spaced across roughly 0.05–0.40, so per-member ``b0`` values run from
-~0.015 to ~0.12 arcsec — each member is individually well below the BCG (``b0 = 3.0``) but the 10 of
-them sum to a few-tenths of an arcsec of effective mass, perturbing the deflection field by ~10–15%.
+where ``L_ref`` is the luminosity of the *brightest scaling member* (the reference galaxy) and
+``b0_ref`` is that member's lens strength. Anchoring to a reference galaxy makes the normalization
+physically interpretable — it is the Einstein-radius-like strength of a galaxy you can point at in the
+image — which is what makes a sensible prior range easy to define. The exponent is **fixed at 0.5**
+rather than fitted: for the dPIE, ``b0`` is proportional to the velocity dispersion squared, and the
+Faber-Jackson relation (L ∝ sigma^4, i.e. sigma ∝ L^(1/4)) then gives b0 ∝ L^(1/2). Lenstool applies
+the same fixed-exponent scaling to the truncation radius (r_cut ∝ L^(1/2)), which is why ``rs`` scales
+here too; the core radius ``ra`` is held fixed at a small value across the tier (0.1"), again following
+standard practice, since strong lensing barely constrains it.
 
-The modeling script promotes ``scaling_factor`` and ``scaling_exponent`` to free parameters; their truth
-values above are recovered when the model is fit to the simulated point datasets. Adding more scaling
-members in the future amounts to adding rows to ``scaling_galaxies.csv`` — the number of free parameters
-in the model stays at 2 for the entire tier.
+Truth values used in this simulator are ``b0_ref = 0.12`` arcsec and ``rs_ref = 10.0`` arcsec, anchored
+to the brightest member (``L_ref = 0.40``). Luminosities are log-spaced across roughly 0.05–0.40, so
+per-member ``b0`` values run from ~0.042 to 0.12 arcsec — each member is individually well below the
+BCG (``b0 = 3.0``) but the 10 of them together perturb the deflection field by ~10–15%.
+
+The modeling script promotes ``b0_ref`` to the tier's single free parameter and recovers the truth value
+when fit to the simulated point datasets. Adding more scaling members amounts to adding rows to
+``scaling_galaxies.csv`` — the tier's free-parameter count stays at 1. Note that only the luminosity
+*ratios* ``L_i / L_ref`` enter the relation, so the units of the luminosity column are irrelevant;
+observational catalogues quoting magnitudes convert via ``L_i / L_ref = 10 ** (0.4 * (m_ref - m_i))``.
+Kinematic calibrations of the exponent exist for when higher fidelity is needed — Bergamini et al. 2019
+measure sigma ∝ L^0.27-0.28 from MUSE member kinematics (b0 exponent ≈ 0.55) and derive the r_cut
+exponent from the fundamental plane — but 0.5 is the standard default.
 
 __NFWMCRLudlow Host Halo__
 
@@ -306,15 +323,16 @@ __Scaling Member Galaxies__
 
 The 10 cluster members modelled collectively via the luminosity-mass scaling relation (see the
 ``__Luminosity-Mass Scaling Relation__`` section of the module docstring). The simulator hardcodes the
-truth values of ``scaling_factor`` and ``scaling_exponent`` here and derives each member's `b0` from its
-luminosity. ``ra`` and ``rs`` are held fixed across all scaling members — only ``b0`` varies. Light
-profiles use the per-member luminosity as the central intensity so the rendered image visibly traces the
-scaling-tier population.
+truth value of ``b0_ref`` (the brightest member's lens strength) and derives each member's ``b0`` and
+``rs`` from its luminosity ratio to the reference, with both exponents fixed at the Faber-Jackson value
+of 0.5. ``ra`` is held fixed across all scaling members. Light profiles use the per-member luminosity
+as the central intensity so the rendered image visibly traces the scaling-tier population.
 """
-scaling_factor_truth = 0.3
-scaling_exponent_truth = 1.0
+scaling_b0_ref_truth = 0.12
+scaling_exponent = 0.5
+scaling_luminosity_ref = max(scaling_galaxies_luminosities)
 scaling_ra = 0.1
-scaling_rs = 10.0
+scaling_rs_ref = 10.0
 
 scaling_galaxies = []
 for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminosities):
@@ -324,8 +342,10 @@ for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminos
         effective_radius=0.8,
         sersic_index=3.0,
     )
-    b0 = scaling_factor_truth * luminosity**scaling_exponent_truth
-    mass = al.mp.dPIEMassSph(centre=centre, ra=scaling_ra, rs=scaling_rs, b0=b0)
+    luminosity_ratio = luminosity / scaling_luminosity_ref
+    b0 = scaling_b0_ref_truth * luminosity_ratio**scaling_exponent
+    rs = scaling_rs_ref * luminosity_ratio**scaling_exponent
+    mass = al.mp.dPIEMassSph(centre=centre, ra=scaling_ra, rs=rs, b0=b0)
     scaling_galaxies.append(al.Galaxy(redshift=redshift_lens, bulge=bulge, mass=mass))
 
 """
@@ -512,8 +532,9 @@ member carrying its centre and luminosity. ``al.galaxy_table_to_csv`` produces t
 
 Scaling up a real cluster to a larger member population is then a CSV-level edit: add a row per
 additional member, fill in its centre and luminosity, save. The modeling script picks up the new rows
-automatically and the number of free parameters in the scaling tier stays at 2 (`scaling_factor` and
-`scaling_exponent`).
+automatically and the scaling tier's free-parameter count stays at 1 (``b0_ref``, the reference
+member's lens strength; the relation's exponents stay fixed at 0.5). Only luminosity *ratios* enter the
+relation, so any consistent luminosity convention works — including converting from magnitudes.
 """
 al.galaxy_table_to_csv(
     centres=scaling_galaxies_centres,

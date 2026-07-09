@@ -3,26 +3,11 @@
     "class_path": "autolens.point.dataset.PointDataset",
     "arguments": {
         "time_delays": null,
-        "positions": {
-            "type": "instance",
-            "class_path": "autoarray.structures.grids.irregular_2d.Grid2DIrregular",
-            "arguments": {
-                "values": {
-                    "type": "ndarray",
-                    "array": [
-                        [
-                            1.0,
-                            0.0
-                        ],
-                        [
-                            0.0,
-                            1.0
-                        ]
-                    ],
-                    "dtype": "float64"
-                }
-            }
-        },
+        "fluxes_noise_map": null,
+        "fluxes": null,
+        "time_delays_noise_map": null,
+        "redshift": 2.0,
+        "name": "point_1",
         "positions_noise_map": {
             "type": "instance",
             "class_path": "autoarray.structures.arrays.irregular.ArrayIrregular",
@@ -31,16 +16,36 @@
                     "type": "ndarray",
                     "array": [
                         0.005,
+                        0.005,
                         0.005
                     ],
                     "dtype": "float64"
                 }
             }
         },
-        "time_delays_noise_map": null,
-        "fluxes": null,
-        "redshift": 2.0,
-        "name": "point_1",
-        "fluxes_noise_map": null
+        "positions": {
+            "type": "instance",
+            "class_path": "autoarray.structures.grids.irregular_2d.Grid2DIrregular",
+            "arguments": {
+                "values": {
+                    "type": "ndarray",
+                    "array": [
+                        [
+                            -15.96796875,
+                            19.00429600919258
+                        ],
+                        [
+                            0.68125,
+                            -0.5133004737014016
+                        ],
+                        [
+                            13.6921875,
+                            -14.30926557794663
+                        ]
+                    ],
+                    "dtype": "float64"
+                }
+            }
+        }
     }
 }
