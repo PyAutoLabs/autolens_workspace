@@ -5788,6 +5788,59 @@
   {
     "contents": [
       "Dataset",
+      "Tracer",
+      "Imaging Fit",
+      "Weak Fit",
+      "Joint Likelihood",
+      "Shear Profile"
+    ],
+    "cross_refs": [
+      "modeling.py",
+      "scripts/weak/fit.py",
+      "simulator.py"
+    ],
+    "notebook": null,
+    "path": "scripts/weak/features/strong_lensing/fit.py",
+    "summary": "This script fits the combined strong+weak dataset simulated by `simulator.py` in this folder with a single shared `Tracer`: the imaging data via `FitImaging` and the shear catalogue via `FitWeak`.",
+    "title": "Fit: Combined Strong + Weak Lensing"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Model",
+      "Analysis List",
+      "Analysis Factor & Factor Graph",
+      "Search & Model-Fit",
+      "Result"
+    ],
+    "cross_refs": [
+      "fit.py",
+      "simulator.py"
+    ],
+    "notebook": null,
+    "path": "scripts/weak/features/strong_lensing/modeling.py",
+    "summary": "This script fits the combined dataset of `simulator.py` \u2014 an `Imaging` dataset of strongly lensed arcs and a `WeakDataset` of the surrounding shear field \u2014 with a **single lens mass model**, using PyAutoFit's factor-graph API to sample the joint likelihood with one non-linear search.",
+    "title": "Modeling: Combined Strong + Weak Lensing"
+  },
+  {
+    "contents": [
+      "Dataset Paths",
+      "Ray Tracing",
+      "Imaging Simulation",
+      "Weak Simulation",
+      "Output"
+    ],
+    "cross_refs": [
+      "scripts/imaging/simulator.py"
+    ],
+    "notebook": null,
+    "path": "scripts/weak/features/strong_lensing/simulator.py",
+    "summary": "This script simulates the two faces of the same gravitational lens: an `Imaging` dataset of its strongly lensed arcs, and a `WeakDataset` of the weak shear it imprints on background galaxies at larger radii. Both are generated from **one** `Tracer`, so the datasets share a single true mass distribution \u2014 the setup the fit and modeling examples in this folder use to demonstrate joint strong+weak constraints.",
+    "title": "Simulator: Combined Strong + Weak Lensing"
+  },
+  {
+    "contents": [
+      "Dataset",
       "Model",
       "Fit",
       "Visualization",
