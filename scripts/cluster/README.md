@@ -1,12 +1,6 @@
 The `cluster` folder contains example scripts showing how to analyse cluster scale strong lenses,
 which are lenses where 10-100+ galaxies are responsible for the lensing of 3-50+ sources.
 
-# IN DEVELOPMENT
-
-Cluster strong lensing is an **IN DEVELOPMENT** feature with the examples in this folder incomplete and
-subject to change. They are here so that experienced users can begin to explore cluster lensing
-capabilities early, but new users and inexperience lens modelers may struggle to use them.
-
 # Start Here
 
 New users should read the `start_here` example, which gives an overview of all examples in the folder.
