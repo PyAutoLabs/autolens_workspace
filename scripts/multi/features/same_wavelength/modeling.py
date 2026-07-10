@@ -24,6 +24,7 @@ __Contents__
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
 - **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
 - **Model:** Compose the lens model fitted to the data.
+- **Shared Source Mesh (Pixelization):** Reconstruct the source of every exposure on one shared Delaunay mesh via `shared_preloads=True`.
 - **Search:** Configure the non-linear search used to fit the model.
 - **Result:** Overview of the results of the model-fit.
 
@@ -183,6 +184,45 @@ factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 The `info` of the model shows us there are two models each with linear light profiles.
 """
 print(factor_graph.global_prior_model.info)
+
+"""
+__Shared Source Mesh (Pixelization)__
+
+When the source is reconstructed on a pixelization (see `features/pixelization`), fitting each exposure as an
+independent factor has a subtle drawback: every exposure builds its own source-plane mesh (the image-mesh centres
+are ray-traced independently per dataset), so the per-exposure source reconstructions live on slightly different
+source-pixel grids and cannot be compared pixel-by-pixel.
+
+Because all exposures share one lens model, the source-plane mesh is exposure-invariant. Setting
+`shared_preloads=True` on every `AnalysisImaging` opts the factor graph into the shared-state mechanism: the lead
+factor ray-traces its image-mesh once per likelihood evaluation and every exposure maps its own image grid onto
+that identical shared Delaunay mesh:
+
+    analysis_list = [
+        al.AnalysisImaging(
+            dataset=dataset,
+            adapt_images=adapt_images,  # image-mesh pixelizations (e.g. `Overlay` + `Delaunay`) use adapt images
+            shared_preloads=True,
+        )
+        for dataset in dataset_list
+    ]
+
+Every exposure then reconstructs the source on the same source-pixel grid: the reconstructions are directly
+comparable (their differences diagnose registration errors and PSF quality), and the redundant per-exposure
+image-mesh construction and mesh ray-tracing are skipped. Each exposure still builds its own mapping matrix,
+PSF-blurred mapping matrix, curvature matrix and regularization matrix — these depend on the exposure's own PSF,
+pixel offsets and (for adaptive schemes) data, so they are never shared.
+
+If the exposures have known pixel offsets (e.g. undithered HST exposures), combine this with the per-dataset
+`DatasetModel` offsets shown in `features/dataset_offsets` — the shared mesh is defined in the lead exposure's
+frame and every other exposure's offset grid is traced onto it. Offsets from a data reduction (e.g. differences
+of each frame's `target_pixel` in PyAutoReduce frame products) are best applied as fixed, known offsets; for
+precision applications make the per-exposure (dy, dx) free parameters with Gaussian priors of width equal to the
+measured registration residuals (typically ~0.1-0.3 pixels for HST/JWST).
+
+Note that each exposure still receives its own reconstruction (solved against its own data). A single joint
+reconstruction solved against all exposures simultaneously is a separate, planned feature.
+"""
 
 """
 __Search__
