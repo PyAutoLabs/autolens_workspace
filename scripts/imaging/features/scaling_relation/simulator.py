@@ -125,7 +125,7 @@ individual_extras = [extra_galaxy_0, extra_galaxy_1]
 __Scaling-Relation Extras__
 
 Two further-out, fainter companions whose true Einstein radii are consistent with
-``einstein_radius = 0.3 * luminosity ** 1.0`` (luminosities ~0.45 -> Einstein radii ~0.135). In the modeling script
+``einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`` (luminosities ~0.45 -> Einstein radii ~0.135). In the modeling script
 they share two scaling-relation priors regardless of how many are added here.
 """
 scaling_galaxy_0 = al.Galaxy(

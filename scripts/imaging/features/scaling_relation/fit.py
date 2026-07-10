@@ -11,8 +11,8 @@ A common solution is to split foreground galaxies into two tiers:
  - **Individually-modelled extras** — the brighter, closer companions that contribute non-trivially to the lensing
    on their own. Each gets its own free Einstein radius.
  - **Scaling-relation extras** — the long tail of fainter companions whose Einstein radii are tied together via a
-   shared two-parameter relation
-     einstein_radius = scaling_factor * luminosity ** scaling_exponent
+   shared reference-anchored relation
+     einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5
    so adding more galaxies to this tier does not grow the model.
 
 This script illustrates the API for performing a fit to a strong lens with both tiers active, via the standard
@@ -29,7 +29,7 @@ __Contents__
 - **Galaxies:** Concrete composition — lens, individually-modelled extras, scaling-tier extras, source.
 - **Tracer:** Build the `Tracer` and fit the dataset.
 - **Scaling Relation Tour:** Per-galaxy deflections sum into the tracer's total deflection. The scaling-tier
-  galaxies' Einstein radii come from `scaling_factor * luminosity ** scaling_exponent`.
+  galaxies' Einstein radii come from `einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`.
 - **Intensities:** The solved-for linear light profile `intensity` values for each MGE Gaussian.
 - **Wrap Up:** Summary and next steps.
 
@@ -40,7 +40,7 @@ background on the underlying single-plane fit API and the MGE source parameteriz
 
  - `autolens_workspace/scripts/imaging/fit.py` — the standard single-plane fit.
  - `autolens_workspace/scripts/imaging/features/scaling_relation/modeling.py` — the search-based version of this
-   script, which composes the same model via `af.Model` with free `scaling_factor` and `scaling_exponent` priors.
+   script, which composes the same model via `af.Model` with a free `einstein_radius_ref` prior (exponent fixed at 0.5).
  - `autolens_workspace/scripts/imaging/features/multi_gaussian_expansion/fit.py` — the MGE source `Basis` API.
 
 All non-linear parameters below are set to the simulator's true values, so the fit visibly recovers the lens
@@ -188,8 +188,8 @@ We compose four populations:
  - `individual_extras` (z=0.5): two close companions, each modelled with its own `SersicSph` light +
    `IsothermalSph` mass. Simulator-true Einstein radii: 0.4" and 0.5".
  - `scaling_extras` (z=0.5): two further-out, fainter companions whose Einstein radii are derived from the
-   scaling relation. With `scaling_factor=0.3` and `scaling_exponent=1.0` and per-galaxy luminosity=0.45, each
-   acquires `einstein_radius = 0.3 * 0.45 ** 1.0 = 0.135` — matches the simulator.
+   scaling relation. With `einstein_radius_ref=0.2012` at `reference_luminosity=1.0` and per-galaxy luminosity=0.45, each
+   acquires `einstein_radius = 0.2012 * (0.45 / 1.0) ** 0.5 = 0.135` — matches the simulator.
  - `source` (z=1.0): the MGE basis above.
 """
 lens = al.Galaxy(
@@ -222,13 +222,19 @@ for centre, truth in zip(individual_extras_centres, individual_extras_truth):
         )
     )
 
-scaling_factor = 0.3
-scaling_exponent = 1.0
+# reference_luminosity is an explicit fixed constant (Lenstool's "mag0"), not the
+# sample max; einstein_radius_ref is the Einstein radius at that reference. Members
+# share luminosity 0.45, so einstein_radius_ref * (0.45)**0.5 = 0.135 (simulator truth).
+einstein_radius_ref = 0.2012
+scaling_exponent = 0.5
+reference_luminosity = 1.0
 
 scaling_extras = []
 scaling_extras_einstein_radii = []
 for centre, luminosity in zip(scaling_extras_centres, scaling_extras_luminosities):
-    einstein_radius = scaling_factor * luminosity**scaling_exponent
+    einstein_radius = (
+        einstein_radius_ref * (luminosity / reference_luminosity) ** scaling_exponent
+    )
     scaling_extras_einstein_radii.append(einstein_radius)
     scaling_extras.append(
         al.Galaxy(
@@ -269,15 +275,16 @@ aplt.subplot_fit_imaging(fit=fit)
 """
 __Scaling Relation Tour__
 
-The scaling-tier galaxies' Einstein radii are NOT free parameters in the model — they're computed from a shared
-two-parameter relation and per-galaxy luminosity. With `scaling_factor=0.3` and `scaling_exponent=1.0`, we have:
+The scaling-tier galaxies' Einstein radii are NOT free parameters in the model — they're computed from the shared
+reference-anchored relation and per-galaxy luminosity. With `einstein_radius_ref=0.2012` at
+`reference_luminosity=1.0` and the exponent fixed at 0.5, we have:
 """
 for centre, luminosity, er in zip(
     scaling_extras_centres, scaling_extras_luminosities, scaling_extras_einstein_radii
 ):
     print(
         f"  scaling galaxy @ {tuple(centre)}: luminosity = {luminosity:.3f}, "
-        f"einstein_radius = {scaling_factor:.3f} * {luminosity:.3f} ** {scaling_exponent:.1f} = {er:.4f}"
+        f"einstein_radius = {einstein_radius_ref:.3f} * ({luminosity:.3f} / {reference_luminosity:.3f}) ** {scaling_exponent:.1f} = {er:.4f}"
     )
 
 """
@@ -330,12 +337,12 @@ __Wrap Up__
 This script demonstrated the mixed-strategy API for handling many foreground galaxies — a small number of
 individually-modelled extras for the bright, close companions, and an arbitrary number of scaling-tier extras for
 the long tail of fainter ones. The scaling relation collapses what would otherwise be N free `einstein_radius`
-parameters into 2 shared parameters (`scaling_factor` and `scaling_exponent`), keeping the model dimensionality
+parameters into 1 shared parameter (`einstein_radius_ref`), keeping the model dimensionality
 manageable as galaxy count grows.
 
 In a real modeling workflow:
 
- - `modeling.py` runs the search-based version, where `scaling_factor` and `scaling_exponent` are free `af.Model`
+ - `modeling.py` runs the search-based version, where `einstein_radius_ref` is a free `af.Model`
    parameters with `UniformPrior`s. The luminosities still come from a prior light-only fit.
  - For group-scale lenses with multiple main lens galaxies, see
    `autolens_workspace/scripts/group/features/scaling_relation/` — the three-tier API generalises this script to
