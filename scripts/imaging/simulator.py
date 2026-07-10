@@ -14,6 +14,7 @@ __Contents__
 - **Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
 - **Grid:** Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated and.
 - **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **PSF Convolution:** Define the Point Spread Function (PSF) that blurs the simulated image.
 - **Ray Tracing:** We now define the lens galaxy's light (elliptical Sersic + Exponential), mass (SIE+Shear) and.
 - **Output:** Output the simulated dataset to the dataset path as .fits files.
 - **Visualize:** In the same folder as the .fits files, we also output subplots of the simulated dataset in .png.
@@ -124,20 +125,22 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
 grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
 
 """
+__PSF Convolution__
+
 All CCD imaging data (e.g. Hubble Space Telescope, Euclid) are blurred by the telescope optics when they are imaged.
 
 The Point Spread Function (PSF) describes the blurring of the image by the telescope optics, in the form of a
 two dimensional convolution kernel. The lens modeling scripts use this PSF when fitting the data, to account for
 this blurring of the image.
 
-In this example, use a simple 2D Gaussian PSF, which is convolved with the image of the lens and source galaxies 
+In this example, use a simple 2D Gaussian PSF, which is convolved with the image of the lens and source galaxies
 when simulating the dataset.
+
+PSF convolution runs at the image resolution (sub size 1), which is the fastest option and accurate for well-sampled
+PSFs. Supplying a PSF at a multiple of the image resolution and raising this value improves blurring fidelity for
+undersampled PSFs (e.g. HST / Euclid VIS) at extra compute cost — see `guides/advanced/over_sampling.py` and the
+simulator's `__Oversampled PSF__` section.
 """
-# PSF convolution runs at the image resolution (sub size 1), which is the fastest
-# option and accurate for well-sampled PSFs. Supplying a PSF at a multiple of the
-# image resolution and raising this value improves blurring fidelity for
-# undersampled PSFs (e.g. HST / Euclid VIS) at extra compute cost — see
-# `guides/advanced/over_sampling.py` and the simulator's `__Oversampled PSF__` section.
 psf_convolve_over_sample_size = 1
 
 psf = al.Convolver.from_gaussian(

@@ -93,6 +93,7 @@ grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
 Simulate a simple Gaussian PSF.
 """
 psf = al.Convolver.from_gaussian(
+    convolve_over_sample_size=1,
     shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
 )
 

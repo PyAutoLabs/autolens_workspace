@@ -103,6 +103,7 @@ sigma_list = [0.1, 0.2, 0.25]
 
 psf_list = [
     al.Convolver.from_gaussian(
+        convolve_over_sample_size=1,
         shape_native=(11, 11), sigma=sigma, pixel_scales=grid.pixel_scales
     )
     for grid, sigma in zip(grid_list, sigma_list)
