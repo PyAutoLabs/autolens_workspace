@@ -12,12 +12,13 @@ to constrain every galaxy individually.
 
 A common solution is to model the lensing contribution of these galaxies via a **scaling relation**. An easier-to-measure
 property of each galaxy (typically luminosity, but it could also be stellar mass or velocity dispersion) is related to
-its mass profile via a small number of shared free parameters:
+its mass profile via a shared, reference-anchored relation (the Lenstool convention):
 
-    einstein_radius = scaling_factor * (luminosity ** scaling_exponent)
+    einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5
 
-The free parameters are now `scaling_factor` and `scaling_exponent` only — two parameters total, regardless of how many
-galaxies sit on the relation. The luminosities act as priors on the masses, ensuring each galaxy's contribution stays
+The single free parameter is `einstein_radius_ref` — the Einstein radius of a galaxy at a fixed reference magnitude
+(Lenstool's `mag0`) — regardless of how many galaxies sit on the relation; the exponent is fixed at the Faber-Jackson
+value of 0.5. The luminosities act as priors on the masses, ensuring each galaxy's contribution stays
 physically reasonable.
 
 This example demonstrates the **mixed-strategy** pattern: a single `extra_galaxies` collection that contains BOTH
@@ -42,7 +43,7 @@ __Contents__
 - **Dataset & Mask:** Standard set up of the dataset and mask.
 - **Lens & Source:** MGE bulge + Isothermal mass + ExternalShear lens; MGE source.
 - **Individually-Modelled Extras:** Bounded `UniformPrior` on `einstein_radius` per galaxy.
-- **Scaling-Relation Extras:** Shared `scaling_factor` and `scaling_exponent` priors.
+- **Scaling-Relation Extras:** A single shared `einstein_radius_ref` prior (exponent fixed at 0.5).
 - **Model:** Compose the lens model fitted to the data.
 - **Over Sampling:** Adaptive over-sampling at every galaxy centre.
 - **Search and Analysis:** Configure the non-linear search and run the model-fit.
@@ -55,8 +56,8 @@ sit in the same `extra_galaxies = af.Collection([...])`. The distinction is pure
 is built:
 
   - For an individually-modelled galaxy: `mass.einstein_radius = af.UniformPrior(...)` — one free parameter per galaxy.
-  - For a scaling-relation galaxy: `mass.einstein_radius = scaling_factor * luminosity ** scaling_exponent` — zero new
-    free parameters per galaxy, because the relation parameters are shared across the whole tier.
+  - For a scaling-relation galaxy: `mass.einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`
+    — zero new free parameters per galaxy, because the single shared normalization is used across the whole tier.
 
 The two strategies coexist freely in the same collection. This script builds a Python list, pushes the individually-
 modelled galaxies onto it first, then the relational galaxies, and wraps the whole thing in a single `af.Collection`.
@@ -269,16 +270,25 @@ for centre in individual_extras_centres:
 """
 __Scaling-Relation Extras__
 
-The second tier inside `extra_galaxies`. The two relation priors are defined ONCE outside the loop, so every galaxy
-in this tier shares them. Adding more galaxies to this tier does not add free parameters.
+The second tier inside `extra_galaxies`, in the reference-anchored Lenstool convention. The relation is defined ONCE
+outside the loop, so every galaxy in this tier shares it. Adding more galaxies to this tier does not add free
+parameters.
+
+The single free parameter is `einstein_radius_ref` — the Einstein radius of a galaxy *at the reference magnitude*.
+Each member's Einstein radius derives from it via its luminosity ratio to a fixed `reference_luminosity` (Lenstool's
+`mag0`, an explicit constant — *not* the maximum luminosity of the sample; here a fiducial L* = 1.0), with the
+exponent *fixed* at the Faber-Jackson value of 0.5 (einstein_radius ∝ sigma² and sigma ∝ L^(1/4) give
+einstein_radius ∝ L^(1/2)). Fixing the exponent avoids the normalization-slope degeneracy; free it as a systematics
+test with `scaling_exponent = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)`.
 
 For each galaxy:
 
  - an MGE bulge with `centre_fixed`
- - an `Isothermal` mass with `einstein_radius = scaling_factor * luminosity ** scaling_exponent`
+ - an `Isothermal` mass with `einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`
 """
-scaling_factor = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
-scaling_exponent = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
+einstein_radius_ref = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+scaling_exponent = 0.5
+reference_luminosity = 1.0
 
 for relational_centre, relational_luminosity in zip(
     relational_extras_centres, relational_extras_luminosity_list
@@ -291,7 +301,8 @@ for relational_centre, relational_luminosity in zip(
 
     mass = af.Model(al.mp.Isothermal)
     mass.centre = tuple(relational_centre)
-    mass.einstein_radius = scaling_factor * relational_luminosity**scaling_exponent
+    luminosity_ratio = relational_luminosity / reference_luminosity
+    mass.einstein_radius = einstein_radius_ref * luminosity_ratio**scaling_exponent
 
     extra_galaxies_list.append(
         af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
@@ -313,7 +324,7 @@ model = af.Collection(
 
 """
 The `model.info` attribute prints the composed model. Notice that the first two extras have independent
-`einstein_radius` priors, while the last two share `scaling_factor` and `scaling_exponent` — the relation in action.
+`einstein_radius` priors, while the last two share `einstein_radius_ref` — the relation in action.
 """
 print(model.info)
 
@@ -356,7 +367,7 @@ analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 __Run Time__
 
 The mixed-strategy model adds a small per-galaxy likelihood overhead but keeps the parameter space compact: only 2
-extra parameters from the individually-modelled tier (one Einstein radius each) plus 2 shared parameters from the
+extra parameters from the individually-modelled tier (one Einstein radius each) plus 1 shared parameter from the
 scaling-relation tier, no matter how many galaxies sit on it.
 
 GPU log-likelihood evaluation is < 0.005 s per call; CPU is < 0.05 s. Expected end-to-end run time is ~15 minutes on

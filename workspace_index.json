@@ -1103,7 +1103,7 @@
     ],
     "notebook": "notebooks/group/features/scaling_relation/likelihood_function.ipynb",
     "path": "scripts/group/features/scaling_relation/likelihood_function.py",
-    "summary": "This script describes the additional steps required to compute the `log_likelihood` for a group-scale strong lens whose foreground galaxy population is split across three tiers \u2014 main lens galaxies (modelled via the group `lens_dict` API), individually-modelled extras (each with its own free `einstein_radius`), and scaling-tier extras (whose Einstein radii are derived from a shared reference-anchored relation `einstein_radius = einstein_radius_ref * (luminosity / luminosity_ref) ** 0.5`, the Lenstool convention).",
+    "summary": "This script describes the additional steps required to compute the `log_likelihood` for a group-scale strong lens whose foreground galaxy population is split across three tiers \u2014 main lens galaxies (modelled via the group `lens_dict` API), individually-modelled extras (each with its own free `einstein_radius`), and scaling-tier extras (whose Einstein radii are derived from a shared reference-anchored relation `einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`, the Lenstool convention).",
     "title": "__Log Likelihood Function: Group Scaling Relation__"
   },
   {
@@ -3922,7 +3922,7 @@
     ],
     "notebook": "notebooks/imaging/features/scaling_relation/likelihood_function.ipynb",
     "path": "scripts/imaging/features/scaling_relation/likelihood_function.py",
-    "summary": "This script describes the additional steps required to compute the `log_likelihood` for a strong lens whose foreground galaxy population is split between two tiers \u2014 individually-modelled extras (each with its own free `einstein_radius`) and scaling-tier extras (whose Einstein radii are derived from a shared two-parameter relation `einstein_radius = scaling_factor * luminosity ** scaling_exponent`).",
+    "summary": "This script describes the additional steps required to compute the `log_likelihood` for a strong lens whose foreground galaxy population is split between two tiers \u2014 individually-modelled extras (each with its own free `einstein_radius`) and scaling-tier extras (whose Einstein radii are derived from a shared reference-anchored relation `einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`).",
     "title": "__Log Likelihood Function: Scaling Relation__"
   },
   {
