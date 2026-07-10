@@ -224,12 +224,13 @@ The model has four tiers, one per cluster component:
  - **Main lens galaxies (2):** individually-modelled ``dPIEMassSph`` profiles with centre fixed to the
    observed light centres and free ``ra``, ``rs``, ``b0``. **6 free parameters total.**
 
- - **Scaling-tier members (10):** ``dPIEMassSph`` profiles with centre fixed to the CSV centres and
-   ``ra`` fixed (0.1"). ``b0`` and ``rs`` derive from the reference-anchored relation used by Lenstool
-   and standard in published cluster analyses: ``b0 = b0_ref * (L / L_ref) ** 0.5`` and
-   ``rs = rs_ref * (L / L_ref) ** 0.5``, where the reference is the *brightest* member. The exponent is
-   fixed at the Faber-Jackson value (b0 ∝ sigma² and sigma ∝ L^(1/4) give b0 ∝ L^(1/2)) — only the
-   normalization ``b0_ref``, the reference member's lens strength, is fitted.
+ - **Scaling-tier members (10):** ``dPIEMassSph`` profiles with centre fixed to the CSV centres. ``ra``,
+   ``rs`` and ``b0`` all derive from the reference-anchored relation used by Lenstool and standard in
+   published cluster analyses: ``ra = ra_ref * (L / L_ref) ** 0.5``, ``rs = rs_ref * (L / L_ref) ** 0.5``
+   and ``b0 = b0_ref * (L / L_ref) ** 0.5``, where ``L_ref`` is an explicit fixed reference luminosity
+   (Lenstool's ``mag0``), *not* the sample max. The exponent is fixed at the Faber-Jackson value
+   (b0 ∝ sigma² and sigma ∝ L^(1/4) give b0 ∝ L^(1/2)) — only the normalization ``b0_ref``, the lens
+   strength of a reference-magnitude galaxy, is fitted.
    **1 free parameter total for the whole tier — independent of the number of members.**
 
  - **Host dark matter halo:** a standalone ``Galaxy`` carrying an ``NFWMCRLudlowSph`` halo with
@@ -293,25 +294,28 @@ for i, dataset in enumerate(dataset_list):
     )
 
 # Scaling Tier (reference-anchored: b0_ref is the single shared free parameter, the
-# lens strength of the brightest member; per-member b0 and rs derive from it with
-# the exponents fixed at the Faber-Jackson value 0.5 — the Lenstool convention).
+# lens strength of a galaxy at the reference magnitude; per-member ra, rs and b0
+# derive from it with the exponent fixed at the Faber-Jackson value 0.5 — the
+# Lenstool convention. The reference luminosity is an EXPLICIT FIXED constant
+# (Lenstool's "mag0"), NOT the sample max; set it to the BCG magnitude in a real
+# analysis, here a fiducial L* = 1.0).
 
 scaling_b0_ref = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)
 scaling_exponent = 0.5
 
-scaling_luminosity_ref = max(scaling_galaxies_luminosity_list)
-scaling_ra_fixed = 0.1
-scaling_rs_ref_fixed = 10.0
+reference_luminosity = 1.0
+scaling_ra_ref_fixed = 0.158
+scaling_rs_ref_fixed = 15.8
 
 scaling_galaxies_list = []
 for centre, luminosity in zip(
     scaling_galaxies_centres, scaling_galaxies_luminosity_list
 ):
-    luminosity_ratio = luminosity / scaling_luminosity_ref
+    luminosity_ratio = luminosity / reference_luminosity
 
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = tuple(centre)
-    mass.ra = scaling_ra_fixed
+    mass.ra = scaling_ra_ref_fixed * luminosity_ratio**scaling_exponent
     mass.rs = scaling_rs_ref_fixed * luminosity_ratio**scaling_exponent
     mass.b0 = scaling_b0_ref * luminosity_ratio**scaling_exponent
 
