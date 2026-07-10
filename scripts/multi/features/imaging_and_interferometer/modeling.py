@@ -17,6 +17,7 @@ __Contents__
 - **Imaging Masking:** Define a 3.0" circular mask, which includes the emission of the lens and source galaxies.
 - **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
 - **Model:** Compose the lens model fitted to the data.
+- **Shared Source Mesh (Pixelization):** Reconstruct the source of both datasets on one shared Delaunay mesh via `shared_preloads=True`.
 - **Search:** Configure the non-linear search used to fit the model.
 - **Result:** Overview of the results of the model-fit.
 
@@ -212,6 +213,28 @@ The `info` of the model shows us there are two models, one for the imaging datas
 dataset. 
 """
 print(factor_graph.global_prior_model.info)
+
+"""
+__Shared Source Mesh (Pixelization)__
+
+When the source is reconstructed on a pixelization, the imaging and interferometer fits can share one
+source-plane Delaunay mesh by setting `shared_preloads=True` on both analyses (see
+`features/same_wavelength/modeling.py` for the full description):
+
+    analysis_list = [
+        al.AnalysisImaging(dataset=dataset_imaging, adapt_images=adapt_images, shared_preloads=True),
+        al.AnalysisInterferometer(dataset=dataset_interferometer, shared_preloads=True),
+    ]
+
+The shared mesh is source-plane geometry, so it is dataset-type-agnostic: the lead factor (the first analysis
+in the graph that opted in, of either type) ray-traces it once per likelihood evaluation and both datasets map
+their own grids onto it. Every fit consumes only the parts of the shared state that are valid for its dataset
+type — the mesh geometry crosses dataset types, while a curvature matrix or mapper shared between identical
+interferometer channels (the datacube case) never leaks into an imaging fit. Each dataset keeps its own
+reconstruction and its own linear algebra (the imaging fit blurs with its PSF; the interferometer fit works in
+the uv-plane), but the two source reconstructions live on the identical source-pixel grid and are directly
+comparable.
+"""
 
 """
 __Search__
