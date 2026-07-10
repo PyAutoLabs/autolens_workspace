@@ -221,6 +221,7 @@ Simulate a simple Gaussian PSF for the image.
 psf_sigma = 0.1
 
 psf = al.Convolver.from_gaussian(
+    convolve_over_sample_size=1,
     shape_native=(11, 11), sigma=psf_sigma, pixel_scales=grid.pixel_scales
 )
 

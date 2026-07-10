@@ -614,6 +614,7 @@ visually confirm the lens configuration. Although modeling here is point-source 
 imaging so the dataset looks like a realistic cluster observation.
 """
 psf = al.Convolver.from_gaussian(
+    convolve_over_sample_size=1,
     shape_native=(11, 11), sigma=0.1, pixel_scales=imaging_grid.pixel_scales
 )
 

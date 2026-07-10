@@ -91,6 +91,7 @@ if al.util.dataset.should_simulate(str(dataset_path)):
     Simulate a simple Gaussian PSF for the image.
     """
     psf = al.Convolver.from_gaussian(
+        convolve_over_sample_size=1,
         shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
     )
 
