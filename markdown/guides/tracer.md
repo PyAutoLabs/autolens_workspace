@@ -1,4 +1,7 @@
-"""
+> ✏️ **This page is auto-generated from [`scripts/guides/tracer.py`](../../scripts/guides/tracer.py) — do not edit it directly.**
+> It shows the example fully executed, with its real output images.
+> Run it yourself via the [Python script](../../scripts/guides/tracer.py) or the [Jupyter notebook](../../notebooks/guides/tracer.ipynb).
+
 Tracer
 ======
 
@@ -63,17 +66,22 @@ These are described in the dedicated example scripts `results/aggregator/linear.
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `results/start_here.ipynb` notebook.
-"""
+
+
+```python
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+from autoconf import setup_notebook; setup_notebook()
 
 import autolens as al
 import autoarray as aa
 import autolens.plot as aplt
+```
 
-"""
+    Working Directory has been set to `autolens_workspace`
+
+
 __Grids__
 
 To describe the deflection of light, **PyAutoLens** uses `Grid2D` data structures, which are two-dimensional
@@ -83,15 +91,23 @@ Below, we make and plot a uniform Cartesian grid in units of arcseconds.
 
 All quantities which are distance units (e.g. coordinate centre's radii) are in units of arc-seconds, as this is the
 most convenient unit to represent lensing quantities.
-"""
+
+
+```python
 grid = al.Grid2D.uniform(
     shape_native=(100, 100),
     pixel_scales=0.05,  # The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
 
 aplt.plot_grid(grid=grid, title="Cartesian (y,x) Grid of Coordinates")
+```
 
-"""
+
+    
+![png](tracer_files/tracer_3_0.png)
+    
+
+
 __Light Profiles__
 
 We will ray-trace this `Grid2D`'s coordinates to calculate how the lens galaxy's mass deflects the source 
@@ -99,7 +115,9 @@ galaxy's light. We therefore need analytic functions representing a galaxy's lig
 
 This requires analytic functions representing the light and mass distributions of galaxies, for example the 
 elliptical `Sersic` `LightProfile`:
-"""
+
+
+```python
 sersic_light_profile = al.lp.Sersic(
     centre=(0.0, 0.0),
     ell_comps=(0.2, 0.1),
@@ -107,24 +125,34 @@ sersic_light_profile = al.lp.Sersic(
     effective_radius=2.0,
     sersic_index=2.5,
 )
+```
 
-"""
 By passing this profile a `Grid2D`, we can evaluate the light at every (y,x) coordinate on the `Grid2D` and create an 
 image of the Sersic.
 
 All images in **PyAutoLens** are in units of electrons per second.
-"""
-image = sersic_light_profile.image_2d_from(grid=grid)
 
-"""
+
+```python
+image = sersic_light_profile.image_2d_from(grid=grid)
+```
+
 The **PyAutoLens** plot module provides methods for plotting objects and their properties, like light profile's image.
-"""
+
+
+```python
 aplt.plot_array(
     array=sersic_light_profile.image_2d_from(grid=grid),
     title="Image of Sersic Light Profile",
 )
+```
 
-"""
+
+    
+![png](tracer_files/tracer_9_0.png)
+    
+
+
 __Mass Profiles__
 
 **PyAutoLens** uses `MassProfile` objects to represent a galaxy's mass distribution and perform ray-tracing
@@ -132,32 +160,50 @@ calculations.
 
 Below we create an `Isothermal` mass profile and compute its deflection angles on our Cartesian grid, which describe
 how the source galaxy's light rays are deflected as they pass this mass distribution.
-"""
+
+
+```python
 isothermal_mass_profile = al.mp.Isothermal(
     centre=(0.0, 0.0), ell_comps=(0.1, 0.0), einstein_radius=1.6
 )
 deflections = isothermal_mass_profile.deflections_yx_2d_from(grid=grid)
+```
 
-"""
 Lets plot the isothermal mass profile's deflection angle map.
 
 The black curve on the figure is the tangential critical curve of the mass profile, if you do not know what this is
 don't worry about it for now!
-"""
+
+
+```python
 deflections = isothermal_mass_profile.deflections_yx_2d_from(grid=grid)
 deflections_y = aa.Array2D(values=deflections.slim[:, 0], mask=grid.mask)
 aplt.plot_array(array=deflections_y, title="Deflections Y")
 deflections = isothermal_mass_profile.deflections_yx_2d_from(grid=grid)
 deflections_x = aa.Array2D(values=deflections.slim[:, 1], mask=grid.mask)
 aplt.plot_array(array=deflections_x, title="Deflections X")
+```
 
-"""
+
+    
+![png](tracer_files/tracer_13_0.png)
+    
+
+
+
+    
+![png](tracer_files/tracer_13_1.png)
+    
+
+
 There are many other lensing quantities which can be plotted, for example the convergence and gravitational
 potential.
 
 If you are not familiar with gravitational lensing and therefore are unclear on what the convergence and potential 
 are, don't worry for now!
-"""
+
+
+```python
 aplt.plot_array(
     array=isothermal_mass_profile.convergence_2d_from(grid=grid),
     title="Isothermal Mass Convergence",
@@ -166,14 +212,28 @@ aplt.plot_array(
     array=isothermal_mass_profile.potential_2d_from(grid=grid),
     title="Isothermal Mass Potential",
 )
+```
 
-"""
+
+    
+![png](tracer_files/tracer_15_0.png)
+    
+
+
+
+    
+![png](tracer_files/tracer_15_1.png)
+    
+
+
 __Galaxies__
 
 A `Galaxy` object is a collection of `LightProfile` and `MassProfile` objects at a given redshift. 
 
 The code below creates two galaxies representing the lens and source galaxies shown in the strong lensing diagram above.
-"""
+
+
+```python
 lens_galaxy = al.Galaxy(
     redshift=0.5, bulge=sersic_light_profile, mass=isothermal_mass_profile
 )
@@ -183,17 +243,19 @@ source_light_profile = al.lp.ExponentialCore(
 )
 
 source_galaxy = al.Galaxy(redshift=1.0, bulge=source_light_profile)
+```
 
-"""
 The geometry of the strong lens system depends on the cosmological distances between the Earth, the lens galaxy and 
 the source galaxy. It there depends on the redshifts of the `Galaxy` objects. 
 
 By passing these `Galaxy` objects to a `Tracer` with a `Cosmology` object, **PyAutoLens** uses these galaxy redshifts 
 and a cosmological model to create the appropriate strong lens system.
-"""
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.Planck15())
 
-"""
+
+```python
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], cosmology=al.cosmo.Planck15())
+```
+
 __Ray Tracing__
 
 We can now create the image of the strong lens system! 
@@ -201,14 +263,22 @@ We can now create the image of the strong lens system!
 When calculating this image, the `Tracer` performs all ray-tracing for the strong lens system. This includes using the 
 lens galaxy's total mass distribution to deflect the light-rays that are traced to the source galaxy. As a result, 
 the source's appears as a multiply imaged and strongly lensed Einstein ring.
-"""
+
+
+```python
 image = tracer.image_2d_from(grid=grid)
 
 aplt.plot_array(
     array=tracer.image_2d_from(grid=grid), title="Image of Strong Lens System"
 )
+```
 
-"""
+
+    
+![png](tracer_files/tracer_21_0.png)
+    
+
+
 __Log10__
 
 The light and masss distributions of galaxies are closer to a log10 distribution than a linear one. 
@@ -218,21 +288,37 @@ logarithm of its values and plot it in log10 space.
 
 The `plot_array`/`subplot_\*` object has an input `use_log10`, which will do this automatically when we call the `plot_array` method.
 Below, we can see that the image plotted now appears more clearly, with the outskirts of the light profile more visible.
-"""
+
+
+```python
 aplt.plot_array(
     array=tracer.image_2d_from(grid=grid.mask.derive_grid.all_false), title="Image"
 )
+```
 
-"""
+
+    
+![png](tracer_files/tracer_23_0.png)
+    
+
+
 The `aplt.subplot_tracer` includes the mass quantities we plotted previously, which can be plotted as a subplot 
 that plots all these quantities simultaneously.
 
 The black and white lines in the source-plane image are the tangential and radial caustics of the mass, which again
 you do not need to worry about for now if you don't know what that is!
-"""
-aplt.subplot_tracer(tracer=tracer, grid=grid.mask.derive_grid.all_false)
 
-"""
+
+```python
+aplt.subplot_tracer(tracer=tracer, grid=grid.mask.derive_grid.all_false)
+```
+
+
+    
+![png](tracer_files/tracer_25_0.png)
+    
+
+
 The tracer is composed of planes. The system above has two planes, an image-plane (at redshift=0.5) and a 
 source-plane (at redshift=1.0). 
 
@@ -240,14 +326,28 @@ When creating an image via a Tracer, the mass profiles are used to ray-trace the
 to a source-plane grid, via the mass profile's deflection angles.
 
 We can use the tracer`s `traced_grid_2d_list_from` method to calculate and plot the image-plane and source-plane grids.
-"""
+
+
+```python
 traced_grid_list = tracer.traced_grid_2d_list_from(grid=grid)
 
 aplt.plot_grid(grid=traced_grid_list[0], title="Image Plane Grid")
 
 aplt.plot_grid(grid=traced_grid_list[1], title="Source Plane Grid")
+```
 
-"""
+
+    
+![png](tracer_files/tracer_27_0.png)
+    
+
+
+
+    
+![png](tracer_files/tracer_27_1.png)
+    
+
+
 __Extending Objects__
 
 The API has been designed such that all of the objects introduced above are extensible. `Galaxy` 
@@ -258,7 +358,9 @@ performing complex multi-plane ray-tracing calculations.
 
 To finish, lets create a `Tracer` with 3 galaxies at 3 different redshifts, forming a system with two distinct Einstein
 rings! The mass distribution of the first galaxy also has separate components for its stellar mass and dark matter.
-"""
+
+
+```python
 lens_galaxy_0 = al.Galaxy(
     redshift=0.5,
     bulge=al.lmp.Sersic(
@@ -304,18 +406,26 @@ source_galaxy = al.Galaxy(
 )
 
 tracer = al.Tracer(galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy])
+```
 
-"""
 This is what the lens looks like. 
 
 Note how crazy the critical curves are!
-"""
+
+
+```python
 aplt.plot_array(
     array=tracer.image_2d_from(grid=grid), title="Image of Complex Strong Lens"
 )
 
+```
 
-"""
+
+    
+![png](tracer_files/tracer_31_0.png)
+    
+
+
 __Attributes__
 
 Printing individual attributes of the max log likelihood tracer gives us access to the inferred parameters of the
@@ -326,10 +436,15 @@ access the same values in two ways, either indexing the galaxies list index or b
 
 It can be difficult to track which galaxy is which index in the list, so it is recommended to use the model
 composition to access the galaxies.
-"""
-print(f"Einstein Radius via list index = {tracer.galaxies[1].mass.einstein_radius}")
 
-"""
+
+```python
+print(f"Einstein Radius via list index = {tracer.galaxies[1].mass.einstein_radius}")
+```
+
+    Einstein Radius via list index = 0.3
+
+
 __Lensing Quantities__
 
 The maximum log likelihood tracer contains a lot of information about the inferred model.
@@ -338,10 +453,12 @@ For example, by passing it a 2D grid of (y,x) coordinates we can return a numpy 
 includes the lens light and lensed source images.
 
 Below, we use the grid of the `imaging` to computed the image on, which is the grid used to fit to the data.
-"""
-image = tracer.image_2d_from(grid=grid)
 
-"""
+
+```python
+image = tracer.image_2d_from(grid=grid)
+```
+
 __Data Structures Slim / Native__
 
 The image above is returned as a 1D numpy array. 
@@ -351,10 +468,16 @@ performing the calculation on a high resolution sub-grid which is then binned up
 
 This uses the data structure API, which is described in the `results/aggregator/data_structures.py` example. This 
 tutorial will avoid using this API, but if you need to manipulate results in more detail you should check it out.
-"""
-print(image.slim)
 
-"""
+
+```python
+print(image.slim)
+```
+
+    Array2D([0.27629334, 0.28298526, 0.28975447, ..., 0.28975447, 0.28298526,
+           0.27629334], shape=(10000,))
+
+
 __Grid Choices__
 
 We can input a different grid, which is not masked, to evaluate the image everywhere of interest. We can also change
@@ -362,14 +485,23 @@ the grid's resolution from that used in the model-fit.
 
 The examples uses a grid with `shape_native=(3,3)`. This is much lower resolution than one would typically use to 
 perform ray tracing, but is chosen here so that the `print()` statements display in a concise and readable format.
-"""
+
+
+```python
 grid = al.Grid2D.uniform(shape_native=(5, 5), pixel_scales=0.1)
 
 image = tracer.image_2d_from(grid=grid)
 
 print(image.slim)
+```
 
-"""
+    Array2D([ 5.11944131,  5.43812987,  5.61100121,  5.43959901,  5.12416573,
+            5.83034633,  6.95158264,  8.11270445,  6.93809192,  5.81964669,
+            6.25050942,  8.79900003, 18.03287395,  8.79900003,  6.25050942,
+            5.81964669,  6.93809192,  8.11270445,  6.95158264,  5.83034633,
+            5.12416573,  5.43959901,  5.61100121,  5.43812987,  5.11944131])
+
+
 __Sub Gridding__
 
 A grid can also have a sub-grid, defined via its `sub_size`, which defines how each pixel on the 2D grid is split 
@@ -378,7 +510,9 @@ into sub-pixels of size (`sub_size` x `sub_size`).
 The calculation below shows how to use a sub-grid and return an image which has already been binned up. 
 
 Full details of the API for this calculation are given in the `guides/over_sampling.py` example.
-"""
+
+
+```python
 grid = al.Grid2D.uniform(
     shape_native=grid.shape_native,
     pixel_scales=grid.pixel_scales,
@@ -390,8 +524,12 @@ grid_sub = al.Grid2D.uniform(shape_native=(3, 3), pixel_scales=0.1)
 image = tracer.image_2d_from(grid=grid_sub)
 
 print(image)
+```
 
-"""
+    Array2D([ 6.95158264,  8.11270445,  6.93809192,  8.79900003, 18.03287395,
+            8.79900003,  6.93809192,  8.11270445,  6.95158264])
+
+
 __Positions Grid__
 
 We may want the image at specific (y,x) coordinates.
@@ -401,21 +539,28 @@ We can use an irregular 2D (y,x) grid of coordinates for this. The grid below ev
 - y = 1.0, x = 1.0.
 - y = 1.0, x = 2.0.
 - y = 2.0, x = 2.0.
-"""
+
+
+```python
 grid_irregular = al.Grid2DIrregular(values=[[1.0, 1.0], [1.0, 2.0], [2.0, 2.0]])
 
 image = tracer.image_2d_from(grid=grid_irregular)
 
 print(image)
+```
 
-"""
+    ArrayIrregular([1.66132958, 2.06810054, 0.49239254])
+
+
 __Scalar Lensing Quantities__
 
 The tracer has many scalar lensing quantities, which are all returned using an `Array2D` and therefore use the same 
 interface as images, described above.
 
 For example, we can compute the `Tracer`'s convergence using all of the grids above.
-"""
+
+
+```python
 convergence_2d = tracer.convergence_2d_from(grid=grid)
 print(convergence_2d)
 
@@ -424,15 +569,27 @@ print(convergence_2d)
 
 convergence_2d = tracer.convergence_2d_from(grid=grid_irregular)
 print(convergence_2d)
+```
 
-"""
+    Array2D([ 2.38197705,  2.73412869,  2.94168436,  2.78225584,  2.43410796,
+            2.8421187 ,  3.906121  ,  5.07553565,  4.00757459,  2.89901336,
+            3.14733445,  5.43720096, 13.6851153 ,  5.43720096,  3.14733445,
+            2.89901336,  4.00757459,  5.07553565,  3.906121  ,  2.8421187 ,
+            2.43410796,  2.78225584,  2.94168436,  2.73412869,  2.38197705])
+    Array2D([ 3.92154713,  5.12015215,  4.02170376,  5.47150302, 14.70283121,
+            5.47150302,  4.02170376,  5.12015215,  3.92154713])
+    ArrayIrregular([0.88247772, 0.62410132, 0.48718503])
+
+
 This is the convergence of every galaxy in the tracer summed together. It may not be appropriate if your lens model 
 performs multi-plane ray-tracing (e.g. there are more than 2 redshifts containing galaxies). Later results tutorials
 provide tools that are more appropriate for multi-plane tracers.
 
 There are other scalar quantities accessible via the tracer (those not familiar with strong lensing mathematical 
 formalism may not recognise what these quantities are -- don't worry about it for now!):
-"""
+
+
+```python
 potential_2d = tracer.potential_2d_from(grid=grid)
 
 lens_calc = al.LensCalc.from_tracer(tracer)
@@ -440,18 +597,20 @@ lens_calc = al.LensCalc.from_tracer(tracer)
 tangential_eigen_value = lens_calc.tangential_eigen_value_from(grid=grid)
 radial_eigen_value = lens_calc.radial_eigen_value_from(grid=grid)
 
+```
 
-"""
 A 2D magnification map is available, which using only the ray-tracing and therefore mass model quantities how much
 light rays are focus at a given point in the image-plane.
 
 If you are studying a strongly lensed source galaxy and want to know how much the galaxy itself is magnified, the
 magnification below is not of too much use too you. In the result tutorial `galaxies.py` we explain how the 
 magnification of the source can be quantified.
-"""
-magnification_2d = lens_calc.magnification_2d_from(grid=grid)
 
-"""
+
+```python
+magnification_2d = lens_calc.magnification_2d_from(grid=grid)
+```
+
 __Vector Quantities__
 
 Many lensing quantities are vectors. That is, they are (y,x) coordinates that have 2 values representing their
@@ -464,29 +623,47 @@ The most obvious of these is the deflection angles, which are used throughout le
 from the image-plane to the source-plane via a lens galaxy mass model.
 
 To indicate that a quantities is a vector, **PyAutoLens** uses the label `_yx`
-"""
+
+
+```python
 deflections_yx_2d = tracer.deflections_yx_2d_from(grid=grid)
+```
 
-"""
 For vector quantities the has shape `2`, corresponding to the y and x vectors respectively.
-"""
-print(deflections_yx_2d[0, :])
 
-"""
+
+```python
+print(deflections_yx_2d[0, :])
+```
+
+    [ 0.34358348 -0.34599825]
+
+
 The `VectorYX2D` object has a built in method to return the magnitude of each vector, which is a scalar quantity
 and therefore returned using a 1D Numpy array.
-"""
+
+
+```python
 deflection_magnitudes_2d = deflections_yx_2d.magnitudes
 print(deflection_magnitudes_2d)
+```
 
-"""
+    Array2D([0.48761091, 0.43981123, 0.42470547, 0.44770039, 0.49771435,
+           0.42050553, 0.34332129, 0.30697374, 0.35334945, 0.42861047,
+           0.39497538, 0.28787812, 0.        , 0.28787812, 0.39497538,
+           0.42861047, 0.35334945, 0.30697374, 0.34332129, 0.42050553,
+           0.49771435, 0.44770039, 0.42470547, 0.43981123, 0.48761091])
+
+
 __Other Vector Lensing Quantities__
 
 The tracer has other vector lensing quantities, which use the same interface described above.
-"""
-shear_yx_2d = lens_calc.shear_yx_2d_via_hessian_from(grid=grid)
 
-"""
+
+```python
+shear_yx_2d = lens_calc.shear_yx_2d_via_hessian_from(grid=grid)
+```
+
 __Other Quantities__
 
 Many more quantities are shown below.
@@ -494,7 +671,9 @@ Many more quantities are shown below.
 A full description of each can be found in the docstring of the source code of each function:
 
    https://github.com/PyAutoLabs/PyAutoGalaxy/blob/main/autogalaxy/operate/deflections.py
-"""
+
+
+```python
 tangential_critical_curve = lens_calc.tangential_critical_curve_list_from(grid=grid)
 
 radial_critical_curve = lens_calc.radial_critical_curve_list_from(grid=grid)
@@ -518,8 +697,8 @@ time_delay = tracer.time_delays_from(grid=grid)
 # einstein_radius = tracer.einstein_radius_from(grid=grid)
 #
 # einstein_mass_angular = tracer.einstein_mass_angular_from(grid=grid)
+```
 
-"""
 __JAX__
 
 `Tracer` ray-tracing is the most JAX-friendly part of PyAutoLens — pure
@@ -591,8 +770,24 @@ identity considerations, closure-captured `self` vs traced-argument),
 see `scripts/guides/lens_calc.py`. `scripts/guides/galaxies.py` covers
 the pytree registration mechanics. `scripts/guides/data_structures.py`
 covers the `.array` host-transfer story.
-"""
 
-"""
+
+```python
+
+# %%
+'''
 Fin.
-"""
+'''
+```
+
+
+
+
+    '\nFin.\n'
+
+
+
+
+```python
+
+```

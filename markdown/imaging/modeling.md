@@ -1,4 +1,7 @@
-"""
+> ✏️ **This page is auto-generated from [`scripts/imaging/modeling.py`](../../scripts/imaging/modeling.py) — do not edit it directly.**
+> It shows the example fully executed, with its real output images.
+> Run it yourself via the [Python script](../../scripts/imaging/modeling.py) or the [Jupyter notebook](../../notebooks/imaging/modeling.ipynb).
+
 Imaging: Modeling
 =================
 
@@ -63,11 +66,13 @@ The `Imaging` dataset fitted in this example confirms to a number of standard th
 
 If you are intending to fit your own strong lens data, you will need to ensure it conforms to these standards, which are
 described in the script `autolens_workspace/*/imaging/data_preparation/start_here.ipynb`.
-"""
+
+
+```python
 
 from autoconf import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+from autoconf import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path
@@ -75,24 +80,31 @@ from pathlib import Path
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
+```
 
-"""
+    Working Directory has been set to `autolens_workspace`
+
+
 __Dataset__
 
 Load the strong lens dataset `simple` via .fits files, which is a data format used by astronomers to store images.
 
 The `pixel_scales` define the arc-second to pixel conversion factor of the image, which for the dataset we are using 
 is 0.1" / pixel.
-"""
+
+
+```python
 dataset_name = "simple"
 dataset_path = Path("dataset") / "imaging" / dataset_name
+```
 
-"""
 __Dataset Auto-Simulation__
 
 If the dataset does not already exist on your system, it will be created by running the corresponding
 simulator script. This ensures that all example scripts can be run without manually simulating data first.
-"""
+
+
+```python
 if al.util.dataset.should_simulate(str(dataset_path)):
     import subprocess
     import sys
@@ -117,18 +129,26 @@ dataset = al.Imaging.from_fits(
     noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
 )
+```
 
-"""
 Use an `aplt.subplot_imaging_dataset` the plot the data, including: 
 
  - `data`: The image of the strong lens.
  - `noise_map`: The noise-map of the image, which quantifies the noise in every pixel as their RMS values.
  - `psf`: The point spread function of the image, which describes the blurring of the image by the telescope optics.
  - `signal_to_noise_map`: Quantifies the signal-to-noise in every pixel.
-"""
-aplt.subplot_imaging_dataset(dataset=dataset)
 
-"""
+
+```python
+aplt.subplot_imaging_dataset(dataset=dataset)
+```
+
+
+    
+![png](modeling_files/modeling_7_0.png)
+    
+
+
 __Extra Galaxies Noise Scaling__
 
 Before masking, we must deal with any extra galaxies in the data: nearby galaxies (or foreground stars, or
@@ -164,7 +184,9 @@ the dataset (created by the simulator). If you are modeling your own data with a
 
 We then plot the dataset, where the extra galaxy's pixels now have their data scaled to zero and noise-map
 values increased, making their signal-to-noise effectively zero.
-"""
+
+
+```python
 mask_extra_galaxies = al.Mask2D.from_fits(
     file_path=dataset_path / "mask_extra_galaxies.fits",
     pixel_scales=dataset.pixel_scales,
@@ -174,14 +196,25 @@ mask_extra_galaxies = al.Mask2D.from_fits(
 dataset = dataset.apply_noise_scaling(mask=mask_extra_galaxies)
 
 aplt.subplot_imaging_dataset(dataset=dataset)
+```
 
-"""
+    2026-07-10 16:14:24,957 - autoarray.dataset.imaging.dataset - INFO - IMAGING - Data noise scaling applied, a total of 256 pixels were scaled to large noise values.
+
+
+
+    
+![png](modeling_files/modeling_9_1.png)
+    
+
+
 __Mask__
 
 The model-fit requires a 2D mask defining the regions of the image we fit the lens model to the data.
 
 We create a 3.0 arcsecond circular mask and apply it to the `Imaging` object that the lens model fits.
-"""
+
+
+```python
 mask_radius = 3.0
 
 mask = al.Mask2D.circular(
@@ -191,17 +224,28 @@ mask = al.Mask2D.circular(
 )
 
 dataset = dataset.apply_mask(mask=mask)
+```
 
-"""
+    2026-07-10 16:14:27,303 - autoarray.dataset.imaging.dataset - INFO - IMAGING - Data masked, contains a total of 2828 image-pixels
+
+
 If we plot the masked data, the mask removes the exterior regions of the image where there is no emission from the 
 lens and lensed source galaxies.
 
 The mask used to fit the data can be customized, as described in 
 the script `autolens_workspace/*/guides/modeling/customize`
-"""
-aplt.subplot_imaging_dataset(dataset=dataset)
 
-"""
+
+```python
+aplt.subplot_imaging_dataset(dataset=dataset)
+```
+
+
+    
+![png](modeling_files/modeling_13_0.png)
+    
+
+
 __Over Sampling__
 
 Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
@@ -219,7 +263,9 @@ For a new user, the details of over-sampling are not important, therefore just b
 
 Once you are more experienced, you should read up on over-sampling in more detail via 
 the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
-"""
+
+
+```python
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,
     sub_size_list=[4, 2, 1],
@@ -228,17 +274,25 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
 )
 
 dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
+```
 
-"""
 The imaging subplot updates the bottom two panels to reflect the update to over sampling, which now uses a higher
 values in the centre.
 
 Whilst you may not yet understand the details of over-sampling, you can at least track it visually in the plots
 and later learnt more about it in the `over_sampling.ipynb` guide.
-"""
-aplt.subplot_imaging_dataset(dataset=dataset)
 
-"""
+
+```python
+aplt.subplot_imaging_dataset(dataset=dataset)
+```
+
+
+    
+![png](modeling_files/modeling_17_0.png)
+    
+
+
 __Model__
 
 In this example we compose a lens model where:
@@ -271,7 +325,9 @@ If for your dataset the lens is not centred at (0.0", 0.0"), we recommend that y
 
  - Reduce your data so that the centre is (`autolens_workspace/*/data_preparation`). 
  - Manually override the lens model priors (`autolens_workspace/*/guides/modeling/customize`).
-"""
+
+
+```python
 # Lens:
 
 bulge = af.Model(al.lp.Sersic)
@@ -291,8 +347,8 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 # Overall Lens Model:
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+```
 
-"""
 The `info` attribute shows the model in a readable format.
 
 The `info` below may not display optimally on your computer screen, for example the whitespace between parameter
@@ -302,10 +358,44 @@ common issue in Jupyter notebooks.
 The`info_whitespace_length` parameter in the file `config/general.yaml` in the [output] section can be changed to 
 increase or decrease the amount of whitespace (The Jupyter notebook kernel will need to be reset for this change to 
 appear in a notebook).
-"""
-print(model.info)
 
-"""
+
+```python
+print(model.info)
+```
+
+    Total Free Parameters = 21
+    
+    model                                                                           Collection (N=21)
+        galaxies                                                                    Collection (N=21)
+            lens                                                                    Galaxy (N=14)
+                bulge                                                               Sersic (N=7)
+                mass                                                                Isothermal (N=5)
+                shear                                                               ExternalShear (N=2)
+            source                                                                  Galaxy (N=7)
+                bulge                                                               SersicCore (N=7)
+    ... [20 lines of output truncated] ...
+                    ell_comps_1                                                     TruncatedGaussianPrior [10], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
+                einstein_radius                                                     UniformPrior [11], lower_limit = 0.0, upper_limit = 8.0
+            shear
+                gamma_1                                                             UniformPrior [12], lower_limit = -0.3, upper_limit = 0.3
+                gamma_2                                                             UniformPrior [13], lower_limit = -0.3, upper_limit = 0.3
+        source
+            redshift                                                                1.0
+            bulge
+                centre
+                    centre_0                                                        GaussianPrior [14], mean = 0.0, sigma = 0.3
+                    centre_1                                                        GaussianPrior [15], mean = 0.0, sigma = 0.3
+                ell_comps
+                    ell_comps_0                                                     TruncatedGaussianPrior [16], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
+                    ell_comps_1                                                     TruncatedGaussianPrior [17], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
+                effective_radius                                                    UniformPrior [18], lower_limit = 0.0, upper_limit = 30.0
+                alpha - sersic_index                                                UniformPrior [19], lower_limit = 0.8, upper_limit = 5.0
+                radius_break                                                        0.025
+                intensity                                                           LogUniformPrior [20], lower_limit = 1e-05, upper_limit = 1000.0
+                gamma                                                               0.25
+
+
 __Improved Lens Model__
 
 The previous model used Sérsic light profiles for the lens and source galaxies. This makes the model API concise, 
@@ -353,7 +443,9 @@ below via a utility function `mge_model_from` which hides the API to make the co
 to read. We then use the PyAutoLens Model API to compose the over lens model.
 
 The full MGE composition API is given in the `features/multi_gaussian_expansion` package.
-"""
+
+
+```python
 # Lens:
 
 bulge = al.model_util.mge_model_from(
@@ -380,13 +472,47 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 # Overall Lens Model:
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+```
 
-"""
 Printing the model info confirms the model has Gaussians for both the lens and source galaxies.
-"""
-print(model.info)
 
-"""
+
+```python
+print(model.info)
+```
+
+    Total Free Parameters = 17
+    
+    model                                                                           Collection (N=17)
+        galaxies                                                                    Collection (N=17)
+            lens                                                                    Galaxy (N=13)
+                bulge                                                               Basis (N=6)
+                    profile_list                                                    Collection (N=6)
+                        20 - 39                                                     Gaussian (N=4)
+                mass                                                                Isothermal (N=5)
+                shear                                                               ExternalShear (N=2)
+    ... [148 lines of output truncated] ...
+                        sigma                                                       0.02271849760758516
+                    11
+                        sigma                                                       0.03908567068054686
+                    12
+                        sigma                                                       0.06724430809359952
+                    13
+                        sigma                                                       0.1156893790551599
+                    14
+                        sigma                                                       0.19903591553858827
+                    15
+                        sigma                                                       0.34242811222450853
+                    16
+                        sigma                                                       0.5891248909742991
+                    17
+                        sigma                                                       1.0135503621791702
+                    18
+                        sigma                                                       1.7437462792899407
+                    19
+                        sigma                                                       3.0
+
+
 __Search__
 
 The lens model is fitted to the data using a non-linear search. 
@@ -439,7 +565,9 @@ live display surface:
 
 The disk write (`fit.png`) always happens regardless of this flag. Set it to `False` (the default) if you just
 want the on-disk output, or if you are running in a headless environment (e.g. an HPC cluster).
-"""
+
+
+```python
 search = af.Nautilus(
     path_prefix=Path("imaging"),  # The path where results and output are stored.
     name="modeling",  # The name of the fit and folder results are output to.
@@ -449,8 +577,8 @@ search = af.Nautilus(
     iterations_per_quick_update=10000,  # Every N iterations the max likelihood model is visualized in the Jupter Notebook and output to hard-disk.
     live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
+```
 
-"""
 __Analysis__
 
 We next create an `AnalysisImaging` object, which can be given many inputs customizing how the lens model is 
@@ -470,13 +598,15 @@ support, your fits will run much faster (around 10 minutes instead of an hour). 
 JAX will still provide a speed up via multithreading, with fits taking around 20-30 minutes.
 
 If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
-"""
+
+
+```python
 analysis = al.AnalysisImaging(
     dataset=dataset,
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
+```
 
-"""
 __VRAM Use__
 
 When running with JAX on a GPU, the analysis must fit within the GPU’s available VRAM. If insufficient VRAM is 
@@ -500,10 +630,21 @@ it takes about 20-30 seconds to run so you may want to comment it out once you a
 
 For a MGE model with the low resolution dataset fitted in this example VRAM use is relatively low (~0.027GB) For other 
 models (e.g. pixelized sources) and higher resolution datasets it can be much higher (> 1GB going beyond 10GB).
-"""
-analysis.print_vram_use(model=model, batch_size=search.batch_size)
 
-"""
+
+```python
+analysis.print_vram_use(model=model, batch_size=search.batch_size)
+```
+
+    2026-07-10 16:14:45,108 - autofit.non_linear.fitness - INFO - JAX: Applying vmap and jit to likelihood function -- may take a few seconds.
+
+
+    2026-07-10 16:14:45,111 - autofit.non_linear.fitness - INFO - JAX: vmap and jit applied in 0.0025408267974853516 seconds.
+
+
+    VRAM USE = 0.375 GB
+
+
 __Run Times__
 
 Lens modeling can be a computationally expensive process. When fitting complex models to high resolution datasets 
@@ -532,7 +673,9 @@ Nautilus non-linear search in order to find which models fit the data with the h
 
 **Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce 
 an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
-"""
+
+
+```python
 print(
     """
     The non-linear search has begun running.
@@ -546,8 +689,36 @@ print(
 result = search.fit(model=model, analysis=analysis)
 
 print("The search has finished run - you may now continue the notebook.")
+```
 
-"""
+    
+        The non-linear search has begun running.
+    
+        This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
+    
+        On-the-fly updates every iterations_per_quick_update are printed to the notebook.
+        
+    2026-07-10 16:15:13,840 - autofit.non_linear.search.abstract_search - INFO - Starting non-linear search with JAX (CPU: cpu).
+
+
+    2026-07-10 16:15:14,018 - modeling - INFO - The output path of this fit is autolens_workspace/output/imaging/simple/modeling/9151c744354f643f81450f5ca36fb293
+
+
+    2026-07-10 16:15:14,620 - modeling - INFO - Fit Already Completed: skipping non-linear search.
+
+
+    2026-07-10 16:15:15,331 - modeling - INFO - Removing search internal folder.
+
+
+    2026-07-10 16:15:15,334 - modeling - INFO - Removing all files except for .zip file
+
+
+    2026-07-10 16:15:16,188 - modeling - INFO - Search complete, returning result
+
+
+    The search has finished run - you may now continue the notebook.
+
+
 __Output Folder Layout__
 
 Now the fit is running you should checkout the `autolens_workspace/output` folder. This is where results are
@@ -594,24 +765,75 @@ The search returns a result object, which whose `info` attribute shows the resul
 [Above, we discussed that the `info_whitespace_length` parameter in the config files could b changed to make 
 the `model.info` attribute display optimally on your computer. This attribute also controls the whitespace of the
 `result.info` attribute.]
-"""
-print(result.info)
 
-"""
+
+```python
+print(result.info)
+```
+
+    Bayesian Evidence                                                               1641.18753905
+    Maximum Log Likelihood                                                          1725.39484175
+    
+    model                                                                           Collection (N=17)
+        galaxies                                                                    Collection (N=17)
+            lens                                                                    Galaxy (N=13)
+                bulge                                                               Basis (N=6)
+                    profile_list                                                    Collection (N=6)
+                        20 - 39                                                     Gaussian (N=4)
+                mass                                                                Isothermal (N=5)
+    ... [243 lines of output truncated] ...
+                        sigma                                                       0.02271849760758516
+                    11
+                        sigma                                                       0.03908567068054686
+                    12
+                        sigma                                                       0.06724430809359952
+                    13
+                        sigma                                                       0.1156893790551599
+                    14
+                        sigma                                                       0.19903591553858827
+                    15
+                        sigma                                                       0.34242811222450853
+                    16
+                        sigma                                                       0.5891248909742991
+                    17
+                        sigma                                                       1.0135503621791702
+                    18
+                        sigma                                                       1.7437462792899407
+                    19
+                        sigma                                                       3.0
+
+
 The `Result` object also contains:
 
  - The model corresponding to the maximum log likelihood solution in parameter space.
  - The corresponding maximum log likelihood `Tracer` and `FitImaging` objects.
  
 Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
-"""
+
+
+```python
 print(result.max_log_likelihood_instance)
 
 aplt.subplot_tracer(tracer=result.max_log_likelihood_tracer, grid=result.grids.lp)
 
 aplt.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
+```
 
-"""
+    <autofit.mapper.model.ModelInstance object at 0x7ff04d787fb0>
+
+
+
+    
+![png](modeling_files/modeling_37_1.png)
+    
+
+
+
+    
+![png](modeling_files/modeling_37_2.png)
+    
+
+
 It also contains information on the posterior as estimated by the non-linear search (in this example `Nautilus`). 
 
 Below, we make a corner plot of the "Probability Density Function" of every parameter in the model-fit.
@@ -621,10 +843,19 @@ parameter `n`). These mappings ate specified in the `config/notation.yaml` file 
 
 The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
 mass its name `mass` defined when making the `Model` above is used).
-"""
-aplt.corner_anesthetic(samples=result.samples)
 
-"""
+
+```python
+aplt.corner_anesthetic(samples=result.samples)
+```
+
+    2026-07-10 16:16:03,438 - autofit.non_linear.plot.plot_util - INFO - Unable to produce corner_anesthetic visual: posterior estimate not yet sufficient. Should succeed in a later update.
+
+
+
+    <Figure size 6800x6800 with 0 Axes>
+
+
 __Loading From Output Folder__
 
 Everything the `Result` object contains has also been written to hard-disk, inside the fit's output folder. Each
@@ -632,7 +863,9 @@ file loads back into a full Python object with a single line — much faster and
 
 For example, the maximum log likelihood `Tracer` is saved as a `.json` file and the tracer image-plane images as
 a `.fits` file:
-"""
+
+
+```python
 from autoconf.dictable import from_json
 
 result_path = search.paths.output_path  # Points at the fit's unique output folder.
@@ -643,8 +876,8 @@ if (result_path / "files" / "tracer.json").exists():
     tracer_fits = al.Array2D.from_fits(
         file_path=result_path / "image" / "tracer.fits", hdu=0, pixel_scales=0.1
     )
+```
 
-"""
 The output folder also contains `model.json`, `samples.csv`, `dataset.fits`, `fit.fits` and more. A full walkthrough
 of loading results from the output folder — covering both single-fit (`from_json`) and multi-fit (aggregator)
 workflows — is given in:
@@ -716,4 +949,8 @@ The folders `autolens_workspace/*/guides/modeling/searches` gives an overview of
 other than Nautilus, that can be used to fit lens models. 
 
 They also provide details on how to customize the model-fit, for example the priors.
-"""
+
+
+```python
+
+```
