@@ -143,21 +143,25 @@ source_galaxies = [galaxies_by_name["source_0"], galaxies_by_name["source_1"]]
 
 # Scaling tier: per-member dPIE built from the legacy CSV + the reference-anchored
 # scaling relation (Lenstool convention; see modeling.py for the full rationale).
+# REFERENCE_LUMINOSITY is an explicit fixed constant (Lenstool's "mag0"), not the
+# sample max, and matches the simulator truth so members are reproduced exactly.
 scaling_galaxies = []
-SCALING_B0_REF_TRUTH = 0.12
+SCALING_B0_REF_TRUTH = 0.190
 SCALING_EXPONENT = 0.5
-SCALING_RS_REF = 10.0
-luminosity_ref = max(scaling_table.luminosities)
+SCALING_RA_REF = 0.158
+SCALING_RS_REF = 15.8
+REFERENCE_LUMINOSITY = 1.0
 for centre, luminosity in zip(
     scaling_table.centres.in_list, scaling_table.luminosities
 ):
-    luminosity_ratio = luminosity / luminosity_ref
+    luminosity_ratio = luminosity / REFERENCE_LUMINOSITY
+    ra = SCALING_RA_REF * luminosity_ratio**SCALING_EXPONENT
     b0 = SCALING_B0_REF_TRUTH * luminosity_ratio**SCALING_EXPONENT
     rs = SCALING_RS_REF * luminosity_ratio**SCALING_EXPONENT
     scaling_galaxies.append(
         al.Galaxy(
             redshift=redshift_lens,
-            mass=al.mp.dPIEMassSph(centre=tuple(centre), ra=0.1, rs=rs, b0=b0),
+            mass=al.mp.dPIEMassSph(centre=tuple(centre), ra=ra, rs=rs, b0=b0),
         )
     )
 
@@ -167,7 +171,7 @@ __Tracer__
 The tracer carries:
 
  - 2 main lens galaxies (BCG + satellite) — individually-modelled dPIE mass profiles.
- - 10 scaling-tier member galaxies — dPIE mass profiles whose ``b0`` and ``rs`` derive from the
+ - 10 scaling-tier member galaxies — dPIE mass profiles whose ``ra``, ``rs`` and ``b0`` derive from the
    reference-anchored scaling relation ``b0 = b0_ref × (L/L_ref)^0.5`` (Lenstool convention).
  - 1 host dark matter halo — ``NFWMCRLudlowSph`` at the cluster centre.
  - 2 source galaxies — ``Point`` profiles at distinct redshifts (multi-plane).

@@ -166,8 +166,10 @@
       "Visualize"
     ],
     "cross_refs": [
+      "modeling.py",
       "scripts/cluster/csv_api.py",
-      "scripts/point_source/simulator.py"
+      "scripts/point_source/simulator.py",
+      "start_here.py"
     ],
     "notebook": "notebooks/cluster/simulator.ipynb",
     "path": "scripts/cluster/simulator.py",
