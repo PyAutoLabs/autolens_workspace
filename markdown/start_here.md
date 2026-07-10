@@ -548,9 +548,9 @@ There are three ways to learn how to use **PyAutoLens**, which you are free to m
    starting point. This is the traditional route, and the rest of this guide supports it.
 
 2. **AI Chat Assistant**: Ask questions to a conversational AI assistant such as ChatGPT or Claude in the browser.
-   Point it at the autolens_assistant repository (https://github.com/PyAutoLabs/autolens_assistant) and ask questions
-   like "How do I model a galaxy-scale strong lens observed with Hubble imaging?". This is ideal for learning the API,
-   working out how to perform a calculation, and interpreting or debugging errors.
+   Go to the autolens_assistant repository (https://github.com/PyAutoLabs/autolens_assistant) and copy the ready-to-use
+   example prompt from its README into ChatGPT or Claude to get started. This is ideal for learning the API, working out
+   how to perform a calculation, creating end-to-end example Python scripts, and interpreting or debugging errors.
 
 3. **Fully Agentic AI**: Use an agentic coding tool such as Claude Code (https://claude.com/claude-code) or Codex
    (https://developers.openai.com/codex) together with autolens_assistant (https://github.com/PyAutoLabs/autolens_assistant).
