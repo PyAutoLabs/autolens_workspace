@@ -3,8 +3,8 @@ __Log Likelihood Function: Scaling Relation__
 
 This script describes the additional steps required to compute the `log_likelihood` for a strong lens whose
 foreground galaxy population is split between two tiers — individually-modelled extras (each with its own free
-`einstein_radius`) and scaling-tier extras (whose Einstein radii are derived from a shared two-parameter
-relation `einstein_radius = scaling_factor * luminosity ** scaling_exponent`).
+`einstein_radius`) and scaling-tier extras (whose Einstein radii are derived from a shared reference-anchored
+relation `einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`).
 
 This script does NOT repeat the steps shared with single-plane lensing (mask, image-plane grid, PSF convolution,
 chi-squared, noise normalization, linear-algebra solver for MGE source intensities). It documents only the part
@@ -49,7 +49,7 @@ For a lens with a population of individually-modelled extras, the lens-plane def
   alpha_lens(theta) = alpha_main(theta) + sum_i alpha_extra_individual_i(theta)
 
 For a lens with BOTH tiers active (this script), the deflection sum extends to the scaling-tier extras, but each
-scaling-tier galaxy's Einstein radius is NOT a free parameter — it is derived from a shared two-parameter
+scaling-tier galaxy's Einstein radius is NOT a free parameter — it is derived from a shared reference-anchored
 relation and the galaxy's own luminosity:
 
   alpha_lens(theta) = alpha_main(theta)
@@ -57,9 +57,9 @@ relation and the galaxy's own luminosity:
                     + sum_j alpha_extra_scaling_j(theta)
 
   where alpha_extra_scaling_j is the deflection of a mass profile whose
-    einstein_radius_j = scaling_factor * luminosity_j ** scaling_exponent.
+    einstein_radius_j = einstein_radius_ref * (luminosity_j / reference_luminosity) ** 0.5.
 
-The model gains exactly 2 free parameters (`scaling_factor`, `scaling_exponent`) regardless of how many galaxies
+The model gains exactly 1 free parameter (`einstein_radius_ref`) regardless of how many galaxies
 sit on the scaling-tier. Every other step of the likelihood (PSF convolution, chi-squared, noise normalization,
 MGE linear-algebra solver) is unchanged.
 """
@@ -135,7 +135,7 @@ The three populations that participate in the ray-tracing:
  - `lens` (z=0.5): `IsothermalSph` mass at the origin with `einstein_radius=1.6` (simulator truth).
  - `individual_extras` (z=0.5): two `IsothermalSph` masses with simulator-true Einstein radii 0.4 and 0.5.
  - `scaling_extras` (z=0.5): two `IsothermalSph` masses with Einstein radii derived from the scaling relation
-   `einstein_radius = 0.3 * luminosity ** 1.0` (simulator truth).
+   `einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5` (simulator truth).
  - `source` (z=1.0): an MGE light component (a simple basis of 10 linear Gaussians).
 """
 total_gaussians = 10
@@ -168,12 +168,18 @@ individual_extras = [
     for centre, er in zip(individual_extras_centres, individual_extras_einstein_radii)
 ]
 
-scaling_factor = 0.3
-scaling_exponent = 1.0
+# reference_luminosity is an explicit fixed constant (Lenstool's "mag0"), not the
+# sample max; einstein_radius_ref is the Einstein radius at that reference. Members
+# share luminosity 0.45, so einstein_radius_ref * (0.45)**0.5 = 0.135 (simulator truth).
+einstein_radius_ref = 0.2012
+scaling_exponent = 0.5
+reference_luminosity = 1.0
 
 scaling_extras = []
 for centre, luminosity in zip(scaling_extras_centres, scaling_extras_luminosities):
-    einstein_radius = scaling_factor * luminosity**scaling_exponent
+    einstein_radius = (
+        einstein_radius_ref * (luminosity / reference_luminosity) ** scaling_exponent
+    )
     scaling_extras.append(
         al.Galaxy(
             redshift=0.5,
@@ -218,10 +224,10 @@ print(f"alpha_total      (across all)    (first coord): {alpha_total[0]}")
 The scaling-tier contributions are computed from the scaling relation:
 """
 for centre, luminosity in zip(scaling_extras_centres, scaling_extras_luminosities):
-    er = scaling_factor * luminosity**scaling_exponent
+    er = einstein_radius_ref * (luminosity / reference_luminosity) ** scaling_exponent
     print(
         f"  scaling galaxy @ {tuple(centre)}: "
-        f"einstein_radius = {scaling_factor:.2f} * {luminosity:.3f} ** {scaling_exponent:.1f} = {er:.4f}"
+        f"einstein_radius = {einstein_radius_ref:.3f} * ({luminosity:.3f} / {reference_luminosity:.3f}) ** {scaling_exponent:.1f} = {er:.4f}"
     )
 
 """
@@ -258,13 +264,13 @@ What `image_2d_from` does internally for our two-tier extras population:
 
   1. Computes `alpha_lens(theta) = alpha_main + sum_i alpha_extra_individual_i + sum_j alpha_extra_scaling_j`,
      where each `alpha_extra_scaling_j` is the deflection of a profile whose `einstein_radius` was derived from
-     `scaling_factor * luminosity_j ** scaling_exponent`.
+     `einstein_radius_ref * (luminosity_j / reference_luminosity) ** 0.5`.
   2. Ray-traces the image-plane grid to obtain `grid_source = grid - alpha_lens`.
   3. Evaluates the source MGE at `grid_source`, producing its image-plane contribution.
 
 For a single-lens system there is just one mass-profile contributing to step 1; for our mixed-strategy lens
 there are `1 + len(individual_extras) + len(scaling_extras)` contributions, but the model only gains
-`len(individual_extras)` free `einstein_radius` parameters plus 2 shared scaling parameters.
+`len(individual_extras)` free `einstein_radius` parameters plus 1 shared scaling parameter.
 
 __Likelihood__
 
@@ -287,10 +293,10 @@ __Wrap Up__
 
 The scaling-relation `log_likelihood` differs from a population-of-individually-modelled-extras case in exactly
 one place: some galaxies' `einstein_radius` values are not free parameters — they're derived from a shared
-two-parameter relation plus a per-galaxy luminosity. Every other step (ray-tracing, source-plane evaluation, PSF
+reference-anchored relation plus a per-galaxy luminosity. Every other step (ray-tracing, source-plane evaluation, PSF
 convolution, chi-squared, noise normalization, linear algebra) is shared with the standard imaging likelihood
 and documented in the prerequisite scripts.
 
 This is what lets the model dimensionality stay tractable as foreground galaxy count grows: 100 scaling-tier
-galaxies cost the same 2 shared parameters as 2 do.
+galaxies cost the same 1 shared parameter as 2 do.
 """

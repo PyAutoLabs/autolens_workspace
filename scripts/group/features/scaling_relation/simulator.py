@@ -133,9 +133,10 @@ extra_galaxies = [extra_galaxy_0, extra_galaxy_1]
 __Scaling Galaxies__
 
 Two further-out, fainter companions whose true Einstein radii are consistent with the reference-anchored
-relation ``einstein_radius = einstein_radius_ref * (luminosity / luminosity_ref) ** 0.5`` with
-``einstein_radius_ref = 0.135`` anchored to the brightest scaling member (``luminosity_ref = 0.45``; both members
-share that luminosity here, so their radii are equal). Modelling these individually would add 2 free parameters;
+relation ``einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`` with
+``einstein_radius_ref = 0.2012`` at a fiducial reference luminosity ``reference_luminosity = 1.0`` (an explicit
+fixed constant — Lenstool's ``mag0`` — not the sample max; both members share luminosity 0.45, so their radii are
+equal at 0.135). Modelling these individually would add 2 free parameters;
 on a scaling relation they add zero (the single free normalization is shared across all scaling galaxies, so
 adding more does not grow the model).
 """

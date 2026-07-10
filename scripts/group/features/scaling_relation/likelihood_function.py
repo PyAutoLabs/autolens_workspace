@@ -5,7 +5,7 @@ This script describes the additional steps required to compute the `log_likeliho
 lens whose foreground galaxy population is split across three tiers — main lens galaxies (modelled via the
 group `lens_dict` API), individually-modelled extras (each with its own free `einstein_radius`), and
 scaling-tier extras (whose Einstein radii are derived from a shared reference-anchored relation
-`einstein_radius = einstein_radius_ref * (luminosity / luminosity_ref) ** 0.5`, the Lenstool convention).
+`einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`, the Lenstool convention).
 
 This script does NOT repeat the steps shared with single-plane lensing (mask, image-plane grid, PSF convolution,
 chi-squared, noise normalization, linear-algebra solver for MGE source intensities). It documents only the part
@@ -50,7 +50,7 @@ galaxy AND every extras / scaling-tier galaxy:
                     + sum_k alpha_extra_scaling_k(theta)
 
   where alpha_extra_scaling_k is the deflection of a mass profile whose
-    einstein_radius_k = einstein_radius_ref * (luminosity_k / luminosity_ref) ** 0.5.
+    einstein_radius_k = einstein_radius_ref * (luminosity_k / reference_luminosity) ** 0.5.
 
 The model gains exactly 1 free parameter (`einstein_radius_ref`) regardless of how many galaxies
 sit on the scaling tier. Every other step of the likelihood (PSF convolution, chi-squared, noise normalization,
@@ -162,14 +162,18 @@ individual_extras = [
     for centre, er in zip(extra_galaxies_centres, individual_extras_einstein_radii)
 ]
 
-einstein_radius_ref = 0.135
+# reference_luminosity is an explicit fixed constant (Lenstool's reference
+# magnitude "mag0"), not the sample max; einstein_radius_ref is the Einstein
+# radius of a galaxy at that reference. Here L_ref = 1.0 (fiducial); both members
+# share luminosity 0.45, so einstein_radius_ref * (0.45)**0.5 = 0.135 (simulator truth).
+einstein_radius_ref = 0.2012
 scaling_exponent = 0.5
-luminosity_ref = max(scaling_galaxies_luminosities)
+reference_luminosity = 1.0
 
 scaling_extras = []
 for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminosities):
     einstein_radius = (
-        einstein_radius_ref * (luminosity / luminosity_ref) ** scaling_exponent
+        einstein_radius_ref * (luminosity / reference_luminosity) ** scaling_exponent
     )
     scaling_extras.append(
         al.Galaxy(
@@ -220,10 +224,10 @@ print(f"alpha_scaling    (tier sum, first coord) : {alpha_scaling_total[0]}")
 print(f"alpha_total      (across all, first coord): {alpha_total[0]}")
 
 for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminosities):
-    er = einstein_radius_ref * (luminosity / luminosity_ref) ** scaling_exponent
+    er = einstein_radius_ref * (luminosity / reference_luminosity) ** scaling_exponent
     print(
         f"    scaling galaxy @ {tuple(centre)}: "
-        f"einstein_radius = {einstein_radius_ref:.3f} * ({luminosity:.3f} / {luminosity_ref:.3f}) ** {scaling_exponent:.1f} = {er:.4f}"
+        f"einstein_radius = {einstein_radius_ref:.3f} * ({luminosity:.3f} / {reference_luminosity:.3f}) ** {scaling_exponent:.1f} = {er:.4f}"
     )
 
 """
@@ -256,14 +260,14 @@ What `image_2d_from` does internally for our group-scale three-tier lens:
 
   1. Computes `alpha_lens(theta) = sum_i alpha_main_lens_i + sum_j alpha_extra_individual_j + sum_k alpha_extra_scaling_k`.
      Each `alpha_extra_scaling_k` is the deflection of a profile whose `einstein_radius` was derived from
-     `einstein_radius_ref * (luminosity_k / luminosity_ref) ** 0.5`.
+     `einstein_radius_ref * (luminosity_k / reference_luminosity) ** 0.5`.
   2. Ray-traces the image-plane grid to obtain `grid_source = grid - alpha_lens`.
   3. Evaluates the source MGE at `grid_source`, producing its image-plane contribution.
 
 For a single-galaxy lens there is just one profile contributing to step 1; for a group with M main lens
 galaxies, N individually-modelled extras, and K scaling-tier extras, there are `M + N + K` contributions. The
-model gains `M * (mass parameters per main lens) + N` free Einstein-radius parameters plus 2 shared scaling
-parameters — independent of K.
+model gains `M * (mass parameters per main lens) + N` free Einstein-radius parameters plus 1 shared scaling
+normalization (`einstein_radius_ref`) — independent of K.
 
 __Likelihood__
 

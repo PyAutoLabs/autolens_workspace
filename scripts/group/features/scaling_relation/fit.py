@@ -13,7 +13,7 @@ treats differently:
    lensing on their own.
  - **Scaling galaxies** (`scaling_galaxies_centres.json` + `scaling_galaxies.csv`): the long tail of fainter
    companions whose Einstein radii are tied together via a shared reference-anchored relation
-   `einstein_radius = einstein_radius_ref * (luminosity / luminosity_ref) ** 0.5` (exponent fixed at the
+   `einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5` (exponent fixed at the
    Faber-Jackson value; the Lenstool convention). Adding more galaxies to this tier does not grow the model.
 
 This script illustrates the API for performing a fit to a group-scale strong lens with all three tiers active,
@@ -189,7 +189,8 @@ Three-tier concrete composition:
  - `individual_extras` (z=0.5): two individually-modelled companions with simulator-true Einstein radii 0.8
    and 1.0.
  - `scaling_extras` (z=0.5): two scaling-tier companions whose Einstein radii are derived from
-   `einstein_radius = 0.3 * luminosity ** 1.0` (simulator truth: 0.135 each from luminosity 0.45).
+   `einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5` (simulator truth:
+   0.135 each from luminosity 0.45).
  - `source` (z=1.0): the MGE basis above.
 """
 main_lens_truth = [
@@ -233,15 +234,19 @@ for centre, truth in zip(extra_galaxies_centres, extra_truth):
         )
     )
 
-einstein_radius_ref = 0.135
+# reference_luminosity is an explicit fixed constant (Lenstool's reference
+# magnitude "mag0"), not the sample max; einstein_radius_ref is the Einstein
+# radius of a galaxy at that reference. Here L_ref = 1.0 (fiducial); both members
+# share luminosity 0.45, so einstein_radius_ref * (0.45)**0.5 = 0.135 (simulator truth).
+einstein_radius_ref = 0.2012
 scaling_exponent = 0.5
-luminosity_ref = max(scaling_galaxies_luminosities)
+reference_luminosity = 1.0
 
 scaling_extras = []
 scaling_extras_einstein_radii = []
 for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminosities):
     einstein_radius = (
-        einstein_radius_ref * (luminosity / luminosity_ref) ** scaling_exponent
+        einstein_radius_ref * (luminosity / reference_luminosity) ** scaling_exponent
     )
     scaling_extras_einstein_radii.append(einstein_radius)
     scaling_extras.append(
@@ -313,7 +318,7 @@ for centre, luminosity, er in zip(
 ):
     print(
         f"    scaling galaxy @ {tuple(centre)}: "
-        f"einstein_radius = {einstein_radius_ref:.3f} * ({luminosity:.3f} / {luminosity_ref:.3f}) ** {scaling_exponent:.1f} = {er:.4f}"
+        f"einstein_radius = {einstein_radius_ref:.3f} * ({luminosity:.3f} / {reference_luminosity:.3f}) ** {scaling_exponent:.1f} = {er:.4f}"
     )
 
 alpha_total_summed = alpha_main_total + alpha_individual_total + alpha_scaling_total
@@ -345,7 +350,7 @@ __Wrap Up__
 
 This script demonstrated the group-scale three-tier API and the per-tier deflection composition, without
 invoking a non-linear search. The scaling relation collapses what would otherwise be N free `einstein_radius`
-parameters into a single shared normalization (`einstein_radius_ref`, the brightest member's Einstein radius,
+parameters into a single shared normalization (`einstein_radius_ref`, the Einstein radius of a reference-magnitude galaxy,
 with the exponent fixed at 0.5), letting the model dimensionality stay constant as galaxy count grows.
 
 In a real modeling workflow:
