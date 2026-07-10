@@ -1,0 +1,541 @@
+> ✏️ **This page is auto-generated from [`scripts/imaging/simulator.py`](../../scripts/imaging/simulator.py) — do not edit it directly.**
+> It shows the example fully executed, with its real output images.
+> Run it yourself via the [Python script](../../scripts/imaging/simulator.py) or the [Jupyter notebook](../../notebooks/imaging/simulator.ipynb).
+
+Simulator: Start Here
+=====================
+
+This script is the starting point for simulating galaxy-galaxy strong lenses as CCD imaging data (E.g. Hubble Space
+Telescope, Euclid) and it provides an overview of the lens simulation API.
+
+After reading this script, the `examples` folder provide examples for simulating more complex lenses in different ways.
+
+__Contents__
+
+- **Model:** Compose the lens model fitted to the data.
+- **Plotters:** Overview of plotting tools used for visualization.
+- **Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
+- **Grid:** Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated and.
+- **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **PSF Convolution:** Define the Point Spread Function (PSF) that blurs the simulated image.
+- **Ray Tracing:** We now define the lens galaxy's light (elliptical Sersic + Exponential), mass (SIE+Shear) and.
+- **Output:** Output the simulated dataset to the dataset path as .fits files.
+- **Visualize:** In the same folder as the .fits files, we also output subplots of the simulated dataset in .png.
+- **Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
+- **Multiple Images:** Lens modeling can use a "positions likelihood penalty", whereby mass models which traces the (y,x).
+
+__Model__
+
+This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
+
+ - The lens galaxy's light profile is a `Sersic`.
+ - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The source galaxy's light is a `Sersic`.
+ - A faint extra galaxy is included offset from the lens, whose emission must be removed via noise scaling
+   (a `mask_extra_galaxies.fits` is written for this purpose).
+
+__Plotters__
+
+To output images of the simulated data, plotting function objects are used, which are high-level wrappers of matplotlib
+code which produce high quality visualization of strong lenses.
+
+The plotting function API is described in the `autolens_workspace/*/guides/plot` script.
+
+
+```python
+
+from autoconf import jax_wrapper  # Sets JAX environment before other imports
+
+from autoconf import setup_notebook; setup_notebook()
+
+from pathlib import Path
+import autolens as al
+import autolens.plot as aplt
+```
+
+    Working Directory has been set to `autolens_workspace`
+
+
+__Dataset Paths__
+
+The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a descriptive name. They define the folder the dataset is output to on your hard-disk:
+
+ - The image will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/image.fits`.
+ - The noise-map will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/noise_map.fits`.
+ - The psf will be output to `/autolens_workspace/dataset/dataset_type/dataset_name/psf.fits`.
+
+
+```python
+dataset_type = "imaging"
+dataset_name = "simple"
+```
+
+The path where the dataset will be output. 
+
+In this example, this is: `/autolens_workspace/dataset/imaging/simple`
+
+
+```python
+dataset_path = Path("dataset", dataset_type, dataset_name)
+```
+
+__Grid__
+
+Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated and therefore simulated 
+on, via the inputs:
+
+ - `shape_native`: The (y_pixels, x_pixels) 2D shape of the grid defining the shape of the data that is simulated.
+ - `pixel_scales`: The arc-second to pixel conversion factor of the grid and data.
+
+
+```python
+grid = al.Grid2D.uniform(
+    shape_native=(100, 100),
+    pixel_scales=0.1,
+)
+```
+
+__Extra Galaxy Centre__
+
+This `simple` dataset deliberately includes a faint extra galaxy offset from the main lens, so that the modeling
+examples can demonstrate the `__Extra Galaxies Noise Scaling__` step end-to-end. Its centre is defined here so it
+can be reused for over-sampling, the galaxy itself and the `mask_extra_galaxies.fits` written further down.
+
+It is placed inside the 3.0" modeling mask but clear of the lensed source arcs (Einstein radius ~1.6").
+
+
+```python
+extra_galaxy_centre = (2.2, 1.6)
+```
+
+__Over Sampling__
+
+Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
+on a higher resolution grid than the image data to ensure the calculation is accurate. 
+
+For lensing calculations, the high magnification regions of a lensed source galaxy require especially high levels of 
+over sampling to ensure the lensed images are evaluated accurately.
+
+Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated 
+on a higher resolution grid than the image data to ensure the calculation is accurate. 
+
+An adaptive oversampling scheme is implemented, evaluating the central regions at (0.0", 0.0") of the light profile at a 
+resolution of 32x32, transitioning to 8x8 in intermediate areas, and 2x2 in the outskirts. This ensures precise and 
+accurate image simulation while focusing computational resources on the bright regions that demand higher oversampling.
+
+An adaptive oversampling grid cannot be defined for the lensed source because its light appears in different regions of 
+the image plane for each dataset. For this reason, most workspace examples utilize cored light profiles for the 
+source galaxy. Cored light profiles change gradually in their central regions, allowing accurate evaluation without 
+requiring oversampling.
+
+Once you are more experienced, you should read up on over-sampling in more detail via 
+the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
+
+
+```python
+over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
+    grid=grid,
+    sub_size_list=[32, 8, 2],
+    radial_list=[0.3, 0.6],
+    centre_list=[(0.0, 0.0), extra_galaxy_centre],
+)
+
+grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
+```
+
+__PSF Convolution__
+
+All CCD imaging data (e.g. Hubble Space Telescope, Euclid) are blurred by the telescope optics when they are imaged.
+
+The Point Spread Function (PSF) describes the blurring of the image by the telescope optics, in the form of a
+two dimensional convolution kernel. The lens modeling scripts use this PSF when fitting the data, to account for
+this blurring of the image.
+
+In this example, use a simple 2D Gaussian PSF, which is convolved with the image of the lens and source galaxies
+when simulating the dataset.
+
+PSF convolution runs at the image resolution (sub size 1), which is the fastest option and accurate for well-sampled
+PSFs. Supplying a PSF at a multiple of the image resolution and raising this value improves blurring fidelity for
+undersampled PSFs (e.g. HST / Euclid VIS) at extra compute cost — see `guides/advanced/over_sampling.py` and the
+simulator's `__Oversampled PSF__` section.
+
+
+```python
+psf_convolve_over_sample_size = 1
+
+psf = al.Convolver.from_gaussian(
+    convolve_over_sample_size=psf_convolve_over_sample_size,
+    shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
+)
+```
+
+To simulate the `Imaging` dataset we first create a simulator, which includes:
+
+ - The exposure time of the simulated dataset, increasing this will increase the signal-to-noise of the simulated data.
+ - The PSF of the simulated dataset, which is convolved with the image of the lens and source galaxies.
+ - The background sky level of the simulated dataset, which is added to the image of the lens and source galaxies and
+  leads to a higher level of Poisson noise.
+ - Whether the simulated dataset includes Poisson noise.
+
+
+```python
+simulator = al.SimulatorImaging(
+    exposure_time=300.0,
+    psf=psf,
+    background_sky_level=0.1,
+    add_poisson_noise_to_data=True,
+)
+```
+
+__Ray Tracing__
+
+We now define the lens galaxy's light (elliptical Sersic + Exponential), mass (SIE+Shear) and source galaxy light
+(elliptical Sersic) for this simulated lens.
+
+The following should be noted about the parameters below:
+
+ - The native units of light and mass profiles distance parameters (e.g. centres, effective_radius) are arc-seconds. 
+ - The intensity of the light profiles is in units of electrons per second per arc-second squared.
+ - The ellipticity of light and mass profiles are defined using the `ell_comps` parameter, however we below use
+   the convert module to input the `axis-ratio` (semi-major axis / semi-minor axis = b/a) and positive 
+   angle (degrees defined counter clockwise from the positive x-axis).
+ - The external shear is defined using the (gamma_1, gamma_2) convention.
+ - The input redshifts are used to determine which galaxy is the lens (e.g. lower redshift) and which is the 
+   source (e.g. higher redshift).
+ - The source uses a cored Sersic with a radius half the pixel-scale, ensuring that over-sampling is not necessary.
+
+
+```python
+lens_galaxy = al.Galaxy(
+    redshift=0.5,
+    bulge=al.lp.Sersic(
+        centre=(0.0, 0.0),
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+        intensity=2.0,
+        effective_radius=0.6,
+        sersic_index=3.0,
+    ),
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.6,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+    ),
+    shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
+)
+
+source_galaxy = al.Galaxy(
+    redshift=1.0,
+    bulge=al.lp.SersicCore(
+        centre=(0.0, 0.0),
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
+        intensity=4.0,
+        effective_radius=0.1,
+        sersic_index=1.0,
+    ),
+)
+```
+
+__Extra Galaxy__
+
+We include a single faint extra galaxy offset from the main lens, representing a nearby object whose emission is not
+associated with the strong lens but blends into the field. Its light contaminates the model-fit and must be removed,
+which the modeling examples demonstrate via the `__Extra Galaxies Noise Scaling__` step (loading the
+`mask_extra_galaxies.fits` written below and calling `dataset.apply_noise_scaling`).
+
+We give the extra galaxy a light profile only (no mass), so the lensed source arcs are unchanged and the dataset
+remains a clean galaxy-scale lens for all other examples that load it.
+
+
+```python
+extra_galaxy = al.Galaxy(
+    redshift=0.5,
+    light=al.lp.ExponentialSph(
+        centre=extra_galaxy_centre, intensity=1.0, effective_radius=0.3
+    ),
+)
+```
+
+We now pass these galaxies to a `Tracer`, which performs the ray-tracing calculations they describe and returns
+the image of the strong lens system they produce.
+
+
+```python
+tracer = al.Tracer(galaxies=[lens_galaxy, extra_galaxy, source_galaxy])
+```
+
+We can plot the `Tracer``s image, which is the image we'll next simulate as CCD imaging data.
+
+
+```python
+aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
+```
+
+
+    
+![png](simulator_files/simulator_23_0.png)
+    
+
+
+By passing the `Tracer` and grid to the simulator, we create the simulated CCD imaging dataset.
+
+
+```python
+dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
+```
+
+    .../PyAutoArray/autoarray/operators/convolver.py:1415: UserWarning: No blurring_image provided. Only the direct image will be convolved. This may change the correctness of the PSF convolution.
+      warnings.warn(
+
+
+We now plot the simulated `Imaging` dataset before outputting it to fits.
+
+Note how unlike the `Tracer` image above, the simulated `Imaging` dataset includes the blurring effects of the 
+telescope's PSF and also has noise.
+
+
+```python
+aplt.subplot_imaging_dataset(dataset=dataset)
+```
+
+
+    
+![png](simulator_files/simulator_27_0.png)
+    
+
+
+__Output__
+
+Output the simulated dataset to the dataset path as .fits files.
+
+If you are unfamiliar with .fits files, this is the standard file format of astronomical data and you can open 
+them using the software ds9 (https://sites.google.com/cfa.harvard.edu/saoimageds9/home).
+
+
+```python
+aplt.fits_imaging(
+    dataset=dataset,
+    data_path=dataset_path / "data.fits",
+    psf_path=dataset_path / "psf.fits",
+    noise_map_path=dataset_path / "noise_map.fits",
+    overwrite=True,
+)
+```
+
+__Mask Extra Galaxies__
+
+Build and output a `mask_extra_galaxies.fits` covering the extra galaxy, so the modeling examples
+(`imaging/modeling.py`, `imaging/fit.py`, `imaging/likelihood_function.py`) can load it directly and apply
+noise scaling without a separate data-preparation step.
+
+The circle is sized to ~3x the galaxy's `effective_radius`, which comfortably covers its light extent. The
+geometry is derived from the same `extra_galaxy_centre` defined above, so it stays in sync with any future tweak.
+
+
+```python
+mask_extra_galaxies = al.Mask2D.circular(
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    centre=extra_galaxy_centre,
+    radius=3.0 * 0.3,
+    invert=True,  # `True` inside the circle, i.e. the region whose noise is scaled.
+)
+
+aplt.fits_array(
+    array=mask_extra_galaxies,
+    file_path=dataset_path / "mask_extra_galaxies.fits",
+    overwrite=True,
+)
+```
+
+__Visualize__
+
+In the same folder as the .fits files, we also output subplots of the simulated dataset in .png format, as well as 
+other images which summarise the dataset.
+
+Having .png files like this is useful, as they can be opened quickly and easily by the user to check the dataset.
+
+For a faster run time, this visualization uses a regular grid which does not perferm the iterative ray-tracing.
+
+
+```python
+aplt.subplot_imaging_dataset(dataset=dataset)
+aplt.plot_array(array=dataset.data, title="Data")
+
+aplt.subplot_tracer(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
+aplt.subplot_galaxies_images(
+    tracer=tracer, grid=grid, output_path=dataset_path, output_format="png"
+)
+```
+
+
+    
+![png](simulator_files/simulator_33_0.png)
+    
+
+
+
+    
+![png](simulator_files/simulator_33_1.png)
+    
+
+
+__Tracer json__
+
+Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass profiles and galaxies
+are safely stored and available to check how the dataset was simulated in the future. 
+
+This can be loaded via the method `tracer = al.from_json()`.
+
+
+```python
+al.output_to_json(
+    obj=tracer,
+    file_path=Path(dataset_path, "tracer.json"),
+)
+```
+
+__Multiple Images__
+
+Lens modeling can use a "positions likelihood penalty", whereby mass models which traces the (y,x) 
+coordinates of multiple images of a source galaxy to positions which are far apart from one another 
+in the source plane are penalized in the lens model's overall likelihood.
+
+This speeds up lens modeling, helps the non-linear search avoid local maxima and is vital for inferred 
+accurate solutions when using pixelized source reconstructions.
+
+For real data, the multiple image positions are determined by eye from the data, for example
+using a Graphical User Interface (GUI) to mark them with mouse clicks. For simulated data, we can save
+ourselves time by using the `PointSolver` to determine the multiple image positions automatically and
+output to a .json file.
+
+If you have not looked in the `point_source` package, the point solver is the core tool used to find
+multiple image positions for point source lens modeling (e.g. lensed quasars).
+
+
+```python
+solver = al.PointSolver.for_grid(
+    grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
+)
+
+positions = solver.solve(
+    tracer=tracer, source_plane_coordinate=source_galaxy.bulge.centre
+)
+
+al.output_to_json(
+    file_path=dataset_path / "positions.json",
+    obj=positions,
+)
+```
+
+The dataset can be viewed in the folder `autolens_workspace/imaging/simple`.
+
+__JAX Variant__
+
+For an order-of-magnitude speedup on large or repeated simulations
+(parameter sweeps, mock-data studies, batch figure generation), construct
+the simulator with `use_jax=True` and wrap your call in `@jax.jit`. The
+simulator handles pytree registration internally — you write nothing
+JAX-specific beyond the decorator.
+
+```python
+import jax
+
+simulator_jax = al.SimulatorImaging(
+    exposure_time=300.0,
+    psf=psf,
+    background_sky_level=0.1,
+    add_poisson_noise_to_data=True,
+    use_jax=True,
+)
+
+@jax.jit
+def simulate(tracer):
+    return simulator_jax.via_tracer_from(tracer=tracer, grid=grid)
+
+dataset_jax = simulate(tracer)   # Imaging with jax.Array data
+```
+
+The `dataset_jax.data.array` is a `jax.Array`; `aplt.fits_imaging` and the
+plotters call `numpy.asarray()` internally, so saving / plotting works
+without manual conversion.
+
+Note: eager `simulator_jax.via_tracer_from(tracer, grid)` (no `@jax.jit`)
+already runs on JAX and is sufficient for one-off simulations. The
+`@jax.jit` wrap is only beneficial when you call the function many times.
+
+See `scripts/guides/lens_calc.py` for the advanced "JIT-it-yourself"
+pattern that wraps individual library methods like `tracer.image_2d_from`
+directly.
+
+
+```python
+
+# %%
+'''
+__Oversampled PSF__
+
+The simulation above evaluates the lensed image on an over-sampled grid, but the PSF convolution itself is
+performed at the resolution of the image pixels. For most simulations this is accurate enough. However, when the
+PSF is undersampled by the detector (its width is comparable to the pixel scale, as for HST or Euclid VIS imaging)
+or when you want to model the blurring with maximum fidelity, the convolution itself can also be performed at a
+higher resolution.
+
+To do this, supply the PSF at a multiple of the image resolution and set `convolve_over_sample_size`. For example,
+with `convolve_over_sample_size=2` the PSF kernel below has pixels half the size of the image pixels (note the
+`pixel_scales` and the larger `shape_native` covering the same physical area). The simulator then evaluates the
+lensed image on the over-sampled grid, convolves at the fine resolution and bins the result back to the image
+resolution.
+
+Two requirements to be aware of:
+
+ - Every entry of the grid's `over_sample_size` must be divisible by `convolve_over_sample_size` (the k x s
+   coupling: adaptive evaluation is partially binned to the convolution resolution before blurring, so the
+   adaptive radial schemes above compose with an oversampled PSF; a non-divisible combination raises a clear
+   error).
+ - When you later fit data simulated this way, pass the same fine-resolution PSF and the matching
+   `convolve_over_sample_size_lp` / `convolve_over_sample_size_pixelization` to the `Imaging` object.
+
+```python
+grid_fine = al.Grid2D.uniform(
+    shape_native=grid.shape_native,
+    pixel_scales=grid.pixel_scales,
+    over_sample_size=2,
+)
+
+psf_fine = al.Convolver.from_gaussian(
+    shape_native=(21, 21),  # twice the pixels of an 11x11 image-resolution kernel...
+    pixel_scales=grid.pixel_scales[0] / 2,  # ...at half the pixel scale, so the same physical extent.
+    sigma=0.1,
+    normalize=True,
+    convolve_over_sample_size=2,
+)
+
+simulator_fine = al.SimulatorImaging(
+    exposure_time=300.0,
+    psf=psf_fine,
+    background_sky_level=0.1,
+    add_poisson_noise_to_data=True,
+)
+
+dataset_fine = simulator_fine.via_tracer_from(tracer=tracer, grid=grid_fine)
+```
+
+The numerical test scripts in `autolens_workspace_test/scripts/imaging/convolution_over_sampled.py` verify this
+machinery against brute-force reference calculations for every supported model surface (standard, linear and
+operated light profiles and pixelized sources).
+'''
+```
+
+
+
+
+    "\n__Oversampled PSF__\n\nThe simulation above evaluates the lensed image on an over-sampled grid, but the PSF convolution itself is\nperformed at the resolution of the image pixels. For most simulations this is accurate enough. However, when the\nPSF is undersampled by the detector (its width is comparable to the pixel scale, as for HST or Euclid VIS imaging)\nor when you want to model the blurring with maximum fidelity, the convolution itself can also be performed at a\nhigher resolution.\n\nTo do this, supply the PSF at a multiple of the image resolution and set `convolve_over_sample_size`. For example,\nwith `convolve_over_sample_size=2` the PSF kernel below has pixels half the size of the image pixels (note the\n`pixel_scales` and the larger `shape_native` covering the same physical area). The simulator then evaluates the\nlensed image on the over-sampled grid, convolves at the fine resolution and bins the result back to the image\nresolution.\n\nTwo requirements to be aware of:\n\n - Every entry of the grid's `over_sample_size` must be divisible by `convolve_over_sample_size` (the k x s\n   coupling: adaptive evaluation is partially binned to the convolution resolution before blurring, so the\n   adaptive radial schemes above compose with an oversampled PSF; a non-divisible combination raises a clear\n   error).\n - When you later fit data simulated this way, pass the same fine-resolution PSF and the matching\n   `convolve_over_sample_size_lp` / `convolve_over_sample_size_pixelization` to the `Imaging` object.\n\n```python\ngrid_fine = al.Grid2D.uniform(\n    shape_native=grid.shape_native,\n    pixel_scales=grid.pixel_scales,\n    over_sample_size=2,\n)\n\npsf_fine = al.Convolver.from_gaussian(\n    shape_native=(21, 21),  # twice the pixels of an 11x11 image-resolution kernel...\n    pixel_scales=grid.pixel_scales[0] / 2,  # ...at half the pixel scale, so the same physical extent.\n    sigma=0.1,\n    normalize=True,\n    convolve_over_sample_size=2,\n)\n\nsimulator_fine = al.SimulatorImaging(\n    exposure_time=300.0,\n    psf=psf_fine,\n    background_sky_level=0.1,\n    add_poisson_noise_to_data=True,\n)\n\ndataset_fine = simulator_fine.via_tracer_from(tracer=tracer, grid=grid_fine)\n```\n\nThe numerical test scripts in `autolens_workspace_test/scripts/imaging/convolution_over_sampled.py` verify this\nmachinery against brute-force reference calculations for every supported model surface (standard, linear and\noperated light profiles and pixelized sources).\n"
+
+
+
+
+```python
+
+```

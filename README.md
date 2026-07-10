@@ -5,6 +5,7 @@
 [Installation Guide](https://pyautolens.readthedocs.io/en/latest/installation/overview.html) |
 [readthedocs](https://pyautolens.readthedocs.io/en/latest/index.html) |
 [Introduction on Colab](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.7.9.1/notebooks/imaging/start_here.ipynb) |
+[Browse Examples With Images](markdown/README.md) |
 [HowToLens](https://github.com/PyAutoLabs/HowToLens)
 
 <img src="https://github.com/Jammy2211/PyAutoLogo/blob/main/gifs/pyautolens.gif?raw=true" width="900" />
@@ -30,6 +31,9 @@ https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026
 
 Then checkout the [new user starting guide](https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html) to navigate the
 workspace for your science case.
+
+You can also [browse a curated set of examples fully executed, with their output images](markdown/README.md),
+directly on GitHub — no installation required.
 
 ## Three Ways to Learn PyAutoLens
 
