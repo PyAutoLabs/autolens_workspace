@@ -19,9 +19,9 @@ galaxies are split into three distinct populations:
  - **Scaling galaxies** (`scaling_galaxies_centres.json`): further-out, fainter companions whose Einstein radii are
    tied together via a shared scaling relation:
 
-       einstein_radius = einstein_radius_ref * (luminosity / luminosity_ref) ** 0.5
+       einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5
 
-   anchored to a *reference galaxy* (the brightest scaling-tier member), with the exponent fixed at the
+   anchored to a fixed *reference magnitude* (Lenstool's ``mag0``, an explicit constant — not the sample max), with the exponent fixed at the
    Faber-Jackson value of 0.5 — the convention used by Lenstool and standard in published group- and
    cluster-scale analyses. The only free parameter is `einstein_radius_ref` — adding more scaling galaxies
    does not grow the model. Use this tier for the long tail of fainter companions.
@@ -244,16 +244,20 @@ __Scaling Galaxies__
 
 The scaling-relation tier, in the reference-anchored convention used by Lenstool and essentially every published
 group- and cluster-scale analysis (Limousin et al. 2005; Eliasdottir et al. 2007; Bergamini et al. 2019). The
-normalization ``einstein_radius_ref`` is the Einstein radius of the *brightest* scaling member — a physically
+normalization ``einstein_radius_ref`` is the Einstein radius of a galaxy *at the reference magnitude* — a physically
 interpretable quantity with an easy-to-motivate prior range — and it is defined ONCE outside the loop: every
-scaling galaxy's mass derives from it via its luminosity ratio to the reference. The exponent is *fixed* at the
-Faber-Jackson value (einstein_radius ∝ sigma² and sigma ∝ L^(1/4) give einstein_radius ∝ L^(1/2)) rather than
-fitted, avoiding the normalization-slope degeneracy. Only luminosity ratios enter, so the luminosity units are
-irrelevant; magnitude catalogues convert via ``L / L_ref = 10 ** (0.4 * (m_ref - m))``.
+scaling galaxy's mass derives from it via its luminosity ratio to the reference. The reference luminosity
+``reference_luminosity`` is an **explicit fixed constant** (Lenstool's reference magnitude ``mag0``), *not* the
+maximum luminosity of the sample — anchoring to a fixed reference keeps the normalization invariant to which
+galaxies are placed in the tier. In a real analysis set it to the BCG/BGG magnitude (or a characteristic L*); here
+we use a fiducial ``reference_luminosity = 1.0``. The exponent is *fixed* at the Faber-Jackson value
+(einstein_radius ∝ sigma² and sigma ∝ L^(1/4) give einstein_radius ∝ L^(1/2)) rather than fitted, avoiding the
+normalization-slope degeneracy. Only luminosity ratios enter, so the luminosity units are irrelevant; magnitude
+catalogues convert via ``L / L_ref = 10 ** (0.4 * (m_ref - m))``.
 
-The dPIE-profile cluster-scale analogue — which also scales the truncation radius (``rs ∝ L^0.5``, mirroring
-Lenstool's r_cut scaling) — is ``scripts/cluster/modeling.py``. To free the exponent as a systematics test,
-replace the fixed value with e.g. ``af.UniformPrior(lower_limit=0.0, upper_limit=1.0)``.
+The dPIE-profile cluster-scale analogue — which also scales the core and truncation radii (``ra, rs ∝ L^0.5``,
+mirroring Lenstool's r_core / r_cut scaling) — is ``scripts/cluster/modeling.py``. To free the exponent as a
+systematics test, replace the fixed value with e.g. ``af.UniformPrior(lower_limit=0.0, upper_limit=1.0)``.
 
 Adding more scaling galaxies (e.g. by lengthening the centres + luminosity lists) does not add any free parameters
 to the model.
@@ -261,7 +265,7 @@ to the model.
 einstein_radius_ref = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
 scaling_exponent = 0.5
 
-luminosity_ref = max(scaling_galaxies_luminosity_list)
+reference_luminosity = 1.0
 
 scaling_galaxies_list = []
 
@@ -276,7 +280,7 @@ for scaling_galaxy_centre, scaling_galaxy_luminosity in zip(
 
     mass = af.Model(al.mp.Isothermal)
     mass.centre = tuple(scaling_galaxy_centre)
-    luminosity_ratio = scaling_galaxy_luminosity / luminosity_ref
+    luminosity_ratio = scaling_galaxy_luminosity / reference_luminosity
     mass.einstein_radius = einstein_radius_ref * luminosity_ratio**scaling_exponent
 
     scaling_galaxy = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
@@ -358,7 +362,8 @@ result = search.fit(model=model, analysis=analysis)
 __Result__
 
 `result.info` shows all three tiers separately. The recovered `einstein_radius_ref` should be close to the truth
-value used by the simulator (0.135, the Einstein radius of the brightest scaling member).
+value used by the simulator (0.2012, the Einstein radius of a reference-magnitude galaxy at
+`reference_luminosity = 1.0`; each member, at luminosity 0.45, then has Einstein radius 0.135).
 """
 print(result.info)
 
