@@ -2339,7 +2339,7 @@
     "notebook": "notebooks/guides/tracer.ipynb",
     "path": "scripts/guides/tracer.py",
     "summary": "This tutorial inspects an inferred model using the `Tracer` object inferred by the non-linear search. This allows us to visualize and interpret its results.",
-    "title": "Fits"
+    "title": "Tracer"
   },
   {
     "contents": [
@@ -4089,7 +4089,7 @@
     "notebook": "notebooks/imaging/modeling.ipynb",
     "path": "scripts/imaging/modeling.py",
     "summary": "This script is the starting point for lens modeling of CCD imaging data (E.g. Hubble Space Telescope, Euclid) with **PyAutoLens** and it provides an overview of the lens modeling API.",
-    "title": "Iamging: Modeling"
+    "title": "Imaging: Modeling"
   },
   {
     "contents": [
@@ -5215,6 +5215,7 @@
       "Result"
     ],
     "cross_refs": [
+      "features/same_wavelength/modeling.py",
       "modeling/start_here.ipynb"
     ],
     "notebook": "notebooks/multi/features/dataset_offsets/modeling.ipynb",
@@ -5249,10 +5250,12 @@
       "Imaging Masking",
       "Analysis",
       "Model",
+      "Shared Source Mesh (Pixelization)",
       "Search",
       "Result"
     ],
     "cross_refs": [
+      "features/same_wavelength/modeling.py",
       "start.here.py"
     ],
     "notebook": "notebooks/multi/features/imaging_and_interferometer/modeling.ipynb",
@@ -5340,6 +5343,7 @@
       "Dataset & Mask",
       "Analysis",
       "Model",
+      "Shared Source Mesh (Pixelization)",
       "Search",
       "Result"
     ],
@@ -5416,10 +5420,12 @@
       "Dataset & Mask",
       "Analysis",
       "Model",
+      "Shared Source Mesh (Pixelization)",
       "Search",
       "Result"
     ],
     "cross_refs": [
+      "features/same_wavelength/modeling.py",
       "start.here.py"
     ],
     "notebook": "notebooks/multi/features/wavelength_dependence/modeling.ipynb",
