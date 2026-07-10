@@ -19,6 +19,7 @@ __Contents__
 - **Grid:** Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated and.
 - **Galaxy Centres:** Define the centres of the main lens galaxies and extra galaxies.
 - **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
+- **PSF Convolution:** Define the Point Spread Function (PSF) that blurs the simulated image.
 - **Main Lens Galaxies:** The main lens galaxy is at the origin (0.0, 0.0).
 - **Extra Galaxies:** The two extra galaxies are companion galaxies near the lens system.
 - **Source Galaxy:** The source galaxy whose lensed images we simulate.
@@ -129,9 +130,25 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
 grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
 
 """
-Simulate a simple Gaussian PSF for the image.
+__PSF Convolution__
+
+All CCD imaging data (e.g. Hubble Space Telescope, Euclid) are blurred by the telescope optics when they are imaged.
+
+The Point Spread Function (PSF) describes the blurring of the image by the telescope optics, in the form of a
+two dimensional convolution kernel. The lens modeling scripts use this PSF when fitting the data, to account for
+this blurring of the image.
+
+In this example, use a simple 2D Gaussian PSF, which is convolved with the image of the lens and source galaxies
+when simulating the dataset.
+
+PSF convolution runs at the image resolution (sub size 1), which is the fastest option and accurate for well-sampled
+PSFs. Supplying a PSF at a multiple of the image resolution and raising this value improves blurring fidelity for
+undersampled PSFs (e.g. HST / Euclid VIS) at extra compute cost — see `guides/advanced/over_sampling.py`.
 """
+psf_convolve_over_sample_size = 1
+
 psf = al.Convolver.from_gaussian(
+    convolve_over_sample_size=psf_convolve_over_sample_size,
     shape_native=(11, 11), sigma=0.1, pixel_scales=grid.pixel_scales
 )
 
