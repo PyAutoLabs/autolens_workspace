@@ -22,6 +22,10 @@ To apply the misalignment, the code subtracts the offset from the grids aligned 
 rotates them about the offset point before performing lensing calculations. The light and mass model centres
 do not change; only the coordinates of the image pixels input into these profiles are transformed.
 
+When the source is reconstructed on a pixelization, these per-dataset offsets pair naturally with the shared
+source-mesh feature (`shared_preloads=True`, see `features/same_wavelength/modeling.py`): the shared Delaunay
+mesh is defined in the reference dataset's frame and every offset dataset's grid is traced onto it.
+
 __Contents__
 
 - **Advantages & Disadvantages:** If one fits a lens model to one dataset and applies it to other datasets, it is common to see the.

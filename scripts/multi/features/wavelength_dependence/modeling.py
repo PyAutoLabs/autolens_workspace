@@ -22,6 +22,7 @@ __Contents__
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
 - **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
 - **Model:** Compose the lens model fitted to the data.
+- **Shared Source Mesh (Pixelization):** Reconstruct every band's source on one shared Delaunay mesh via `shared_preloads=True`.
 - **Search:** Configure the non-linear search used to fit the model.
 - **Result:** Overview of the results of the model-fit.
 
@@ -217,6 +218,25 @@ The factor graph is created and its info can be printed after the relational mod
 factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
 print(factor_graph.global_prior_model.info)
+
+"""
+__Shared Source Mesh (Pixelization)__
+
+When the source is reconstructed on a pixelization, every band can reconstruct its source on the identical
+shared Delaunay mesh by setting `shared_preloads=True` on each `AnalysisImaging` (see
+`features/same_wavelength/modeling.py` for the full description):
+
+    analysis_list = [
+        al.AnalysisImaging(dataset=dataset, adapt_images=adapt_images, shared_preloads=True)
+        for dataset in dataset_list
+    ]
+
+Because the lens model is shared, the source-plane mesh is band-invariant and is ray-traced once by the lead
+factor. Each band still solves for its own reconstruction against its own data — exactly what multi-wavelength
+modeling needs, since the source's appearance varies with wavelength (its colour). The shared mesh makes the
+per-band reconstructions directly comparable pixel-by-pixel, which is what turns them into a resolved colour
+map of the source.
+"""
 
 """
 __Search__
