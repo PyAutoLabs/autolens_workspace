@@ -21,3 +21,46 @@
   max_minutes: 45
 - script: scripts/guides/lens_calc.py
   max_minutes: 45
+# --- batch 2a: remaining dataset types (cluster excluded pending runtime call) ---
+- script: scripts/interferometer/start_here.py
+  max_minutes: 240
+- script: scripts/interferometer/simulator.py
+  max_minutes: 45
+- script: scripts/interferometer/likelihood_function.py
+  max_minutes: 45
+- script: scripts/interferometer/fit.py
+  max_minutes: 45
+- script: scripts/interferometer/modeling.py
+  max_minutes: 300
+- script: scripts/point_source/start_here.py
+  max_minutes: 120
+- script: scripts/point_source/simulator.py
+  max_minutes: 45
+- script: scripts/point_source/fit.py
+  max_minutes: 45
+- script: scripts/point_source/modeling.py
+  max_minutes: 120
+- script: scripts/multi/start_here.py
+  max_minutes: 120
+- script: scripts/multi/simulator.py
+  max_minutes: 45
+- script: scripts/multi/modeling.py
+  max_minutes: 240
+- script: scripts/group/start_here.py
+  max_minutes: 120
+- script: scripts/group/simulator.py
+  max_minutes: 45
+- script: scripts/group/likelihood_function.py
+  max_minutes: 45
+- script: scripts/group/fit.py
+  max_minutes: 45
+- script: scripts/group/modeling.py
+  max_minutes: 300
+- script: scripts/weak/simulator.py
+  max_minutes: 45
+- script: scripts/weak/likelihood_function.py
+  max_minutes: 45
+- script: scripts/weak/fit.py
+  max_minutes: 45
+- script: scripts/weak/modeling.py
+  max_minutes: 240
