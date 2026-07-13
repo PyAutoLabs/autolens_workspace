@@ -20,8 +20,6 @@ dataset/**
 !dataset/cluster/simple/**
 !dataset/interferometer/uv_wavelengths/**
 !dataset/interferometer/many_visibilities/**
-!dataset/imaging/los_halos/los_halo_list.npy
-!dataset/imaging/los_halos/los_sheet_values.npy
 notebooks/plot/
 test_report.md
 test_results/
