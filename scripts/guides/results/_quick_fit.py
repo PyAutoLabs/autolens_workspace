@@ -138,11 +138,23 @@ class AnalysisLatent(al.AnalysisImaging):
 
 analysis = AnalysisLatent(dataset=dataset, use_jax=True)
 
-for i in range(2):
+# Two fits are written to `results_folder/`:
+#
+#  - The first uses the bare `dataset_name` as its `unique_tag`. This is the
+#    canonical fit that the single-result tutorials (`start_here.py`,
+#    `aggregator/galaxies_fits.py`, `aggregator/samples.py`) resume: they build
+#    the *same* model and search below, so `search.fit(...)` returns this
+#    completed fit instead of redoing the search.
+#  - The second (`_1`) gives the aggregator tutorials a second result to iterate
+#    over, demonstrating how the `Aggregator` loads many fits from one folder.
+#
+# Both share the model, search and analysis, so both retain the full samples
+# (`samples_weight_threshold = None` above) needed for indexed sample access.
+for unique_tag in [dataset_name, f"{dataset_name}_1"]:
     search = af.Nautilus(
         path_prefix=Path("results_folder"),
         name="results",
-        unique_tag=f"{dataset_name}_{i}",
+        unique_tag=unique_tag,
         n_live=100,
         n_batch=50,
         iterations_per_quick_update=10000,
