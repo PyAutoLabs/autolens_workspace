@@ -1,0 +1,20 @@
+# Advisory-tier scripts for mode=release validation.
+#
+# These are known-slow REAL-SEARCH scripts that flake around the per-script timeout
+# cap under CI load. Unlike no_run.yaml, an ADVISORY entry does NOT skip the script —
+# it STILL RUNS and is reported — but a *timeout* on it is advisory (YELLOW), not a
+# release-blocking RED. A timeout on any script NOT listed here is still RED. Only
+# timeouts are de-gated; a genuine exception on an advisory script is still a failure.
+#
+# This is what lets mode=release gate on correctness instead of the perf-flake tail.
+# Growing this list never erodes coverage (the script keeps running), so it converges
+# where no_run SLOW-skips whack-a-mole. Durable speedups that let entries be removed
+# are the Profiling Agent's job. See PyAutoHeart docs/release_validation.md and #74.
+#
+# Format mirrors no_run.yaml: entries with '/' substring-match the file path
+# (include '.py' to anchor); marker `# ADVISORY <YYYY-MM-DD> - <reason>`.
+#
+# Seeded from the 2026-07-13 re-val #3/#4 flip-flop population.
+
+- group/features/pixelization/cpu_fast_modeling.py # ADVISORY 2026-07-14 - real-search group-pixelization CPU fast-modeling fit; near-cap flake re-val #4 (PyAutoHeart#74)
+- group/features/advanced/shapelets/modeling.py # ADVISORY 2026-07-14 - real-search group shapelets modeling fit; near-cap flake re-val #3 (PyAutoHeart#74)
