@@ -113,10 +113,22 @@ mask = al.Mask2D.circular(
 
 dataset = dataset.apply_mask(mask=mask)
 
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=1,
+    centre_prior_is_uniform=False,
+)
+
 model = af.Collection(
     galaxies=af.Collection(
-        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.Sersic),
+        lens=af.Model(
+            al.Galaxy,
+            redshift=0.5,
+            mass=al.mp.Isothermal,
+            shear=al.mp.ExternalShear,
+        ),
+        source=af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=None),
     ),
 )
 
@@ -517,19 +529,19 @@ print(samples.parameter_lists[0])
 samples = samples.with_paths(
     [
         ("galaxies", "lens", "mass", "einstein_radius"),
-        ("galaxies", "source", "bulge", "sersic_index"),
+        ("galaxies", "lens", "shear", "gamma_1"),
     ]
 )
 
 print(
     "All parameters of the very first sample (containing only the lens mass's einstein radius and "
-    "source bulge's sersic index)."
+    "the first component of the lens's external shear)."
 )
 print(samples.parameter_lists[0])
 
 print(
     "Maximum Log Likelihood Model Instances (containing only the lens mass's einstein radius and "
-    "source bulge's sersic index):\n"
+    "the first component of the lens's external shear):\n"
 )
 print(samples.max_log_likelihood(as_instance=False))
 
@@ -544,12 +556,12 @@ We can alternatively use the following API:
 samples = result.samples
 
 samples = samples.with_paths(
-    ["galaxies.lens.mass.einstein_radius", "galaxies.source.bulge.sersic_index"]
+    ["galaxies.lens.mass.einstein_radius", "galaxies.lens.shear.gamma_1"]
 )
 
 print(
     "All parameters of the very first sample (containing only the lens mass's einstein radius and "
-    "source bulge's sersic index)."
+    "the first component of the lens's external shear)."
 )
 
 """
