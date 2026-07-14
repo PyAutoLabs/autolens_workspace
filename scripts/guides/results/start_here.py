@@ -156,7 +156,12 @@ bulge = al.model_util.mge_model_from(
 
 model = af.Collection(
     galaxies=af.Collection(
-        lens=af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal),
+        lens=af.Model(
+            al.Galaxy,
+            redshift=0.5,
+            mass=al.mp.Isothermal,
+            shear=al.mp.ExternalShear,
+        ),
         source=af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=None),
     ),
 )
