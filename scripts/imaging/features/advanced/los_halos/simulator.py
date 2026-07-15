@@ -92,7 +92,9 @@ A Gaussian PSF models the telescope optics.
 """
 psf = al.Convolver.from_gaussian(
     convolve_over_sample_size=1,
-    shape_native=(13, 13), sigma=0.05, pixel_scales=grid.pixel_scales
+    shape_native=(13, 13),
+    sigma=0.05,
+    pixel_scales=grid.pixel_scales,
 )
 
 """

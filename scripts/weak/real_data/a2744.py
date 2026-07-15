@@ -164,7 +164,9 @@ dataset = al.WeakDataset.from_arrays(
 
 print(dataset.info)
 
-aplt.subplot_weak_dataset(dataset=dataset, output_path=dataset_path, output_format="png")
+aplt.subplot_weak_dataset(
+    dataset=dataset, output_path=dataset_path, output_format="png"
+)
 
 """
 __Mass Map__
