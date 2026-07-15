@@ -164,7 +164,9 @@ chi_squared_map = normalized_residual_map**2.0
 
 chi_squared = float(np.sum(chi_squared_map))
 
-print(f"chi_squared : {chi_squared:.4f}  (expected ~{2 * dataset.n_galaxies} for a good fit)")
+print(
+    f"chi_squared : {chi_squared:.4f}  (expected ~{2 * dataset.n_galaxies} for a good fit)"
+)
 
 """
 __Noise Normalization Term__
@@ -217,9 +219,7 @@ likelihood — so the number below is what Nautilus receives at every sampled po
 """
 import autofit as af
 
-model = af.Collection(
-    galaxies=af.Collection(lens=lens_galaxy, source=source_galaxy)
-)
+model = af.Collection(galaxies=af.Collection(lens=lens_galaxy, source=source_galaxy))
 
 analysis = al.AnalysisWeak(dataset=dataset)
 

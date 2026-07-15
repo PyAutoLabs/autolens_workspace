@@ -134,7 +134,9 @@ space whose likelihood is the sum of the two factors.
 (In the `multi` examples each factor gets a slightly different copy of the model, e.g. per-wavelength
 ellipticities; here total sharing is exactly what "one mass distribution, two datasets" means.)
 """
-analysis_factor_imaging = af.AnalysisFactor(prior_model=model, analysis=analysis_imaging)
+analysis_factor_imaging = af.AnalysisFactor(
+    prior_model=model, analysis=analysis_imaging
+)
 
 analysis_factor_weak = af.AnalysisFactor(prior_model=model, analysis=analysis_weak)
 
