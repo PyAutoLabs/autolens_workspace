@@ -34,10 +34,10 @@ import autolens.plot as aplt
 """
 __Dataset__
 
-We load the simulated `WeakDataset` produced by `scripts/weak/simulator.py`: 200 background
-source-galaxy positions in a 3.0" half-extent square, each with a measured `(gamma_2, gamma_1)` shear
-vector and per-galaxy noise standard deviation 0.3. The shear field carries the signature of the
-foreground lens's mass distribution.
+We load the simulated `WeakDataset` produced by `scripts/weak/simulator.py`: 1500 background
+source-galaxy positions in a 50"-200" annulus around a cluster-scale lens, each with a measured
+`(gamma_2, gamma_1)` shear vector and per-galaxy shape noise of 0.25. The shear field carries the
+signature of the foreground lens's mass distribution.
 
 __Dataset Auto-Simulation__
 
@@ -78,15 +78,15 @@ The model `Tracer` is built from the same primitives the simulator used: a foreg
 galaxy and a background source galaxy with no light profile (weak-lensing measurements are sensitive to
 the lens mass, not the source's appearance). In a real workflow the mass parameters would be inferred by a
 non-linear search (see the modeling tutorial in the next step of the weak-lensing series). Here we
-hand-pick parameters close to the simulator's truth — `einstein_radius=1.6`, `axis_ratio=0.9`,
-`angle=45.0`, `centre=(0.0, 0.0)` — so the fit shows what residuals consistent with shape noise look like.
+hand-pick the simulator's truth — `einstein_radius=25.0`, `axis_ratio=0.8`, `angle=45.0`,
+`centre=(0.0, 0.0)` — so the fit shows what residuals consistent with shape noise look like.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
     mass=al.mp.Isothermal(
         centre=(0.0, 0.0),
-        einstein_radius=1.6,
-        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+        einstein_radius=25.0,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=45.0),
     ),
 )
 
