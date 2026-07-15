@@ -43,9 +43,9 @@ import autolens as al
 """
 __Dataset__
 
-We load the simulated `WeakDataset` produced by `scripts/weak/simulator.py`: 200 background source-galaxy
-positions, each with a measured `(gamma_2, gamma_1)` shear vector and a per-galaxy noise standard deviation
-of 0.3 (a typical ground-based shape-noise value).
+We load the simulated `WeakDataset` produced by `scripts/weak/simulator.py`: 1500 background source-galaxy
+positions in a 50"-200" annulus around a cluster-scale lens, each with a measured `(gamma_2, gamma_1)` shear
+vector and a per-galaxy shape noise of 0.25 (a typical weak-lensing shape-noise value).
 
 __Dataset Auto-Simulation__
 
@@ -93,8 +93,8 @@ lens_galaxy = al.Galaxy(
     redshift=0.5,
     mass=al.mp.Isothermal(
         centre=(0.0, 0.0),
-        einstein_radius=1.6,
-        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+        einstein_radius=25.0,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=45.0),
     ),
 )
 
@@ -158,7 +158,7 @@ Step three: the chi-squared is the sum of squared normalized residuals over all 
 $\\chi^2 = \\sum_{i=1}^{N} \\sum_{k=1}^{2} \\left( \\frac{\\gamma^{\\rm data}_{i,k} - \\gamma^{\\rm model}_{i,k}}{\\sigma_i} \\right)^2$
 
 For a well-fitting model whose residuals are pure shape noise, the expected chi-squared is approximately the
-number of data points, `2N = 400` — a quick sanity check worth internalising for any weak-lensing fit.
+number of data points, `2N = 3000` — a quick sanity check worth internalising for any weak-lensing fit.
 """
 chi_squared_map = normalized_residual_map**2.0
 

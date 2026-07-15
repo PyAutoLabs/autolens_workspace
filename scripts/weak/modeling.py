@@ -36,7 +36,7 @@ __Contents__
 
 __Model__
 
-This script fits a `WeakDataset` of a 'galaxy-scale' lens with a model where:
+This script fits a `WeakDataset` of a 'cluster-scale' lens with a model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
 
@@ -59,9 +59,9 @@ import autolens.plot as aplt
 """
 __Dataset__
 
-We load the simulated `WeakDataset` produced by `scripts/weak/simulator.py`: 200 background source-galaxy
-positions in a 3.0" half-extent square, each with a measured `(gamma_2, gamma_1)` shear vector and per-galaxy
-noise standard deviation 0.3.
+We load the simulated `WeakDataset` produced by `scripts/weak/simulator.py`: 1500 background source-galaxy
+positions in a 50"-200" annulus around a cluster-scale lens, each with a measured `(gamma_2, gamma_1)` shear
+vector and per-galaxy shape noise of 0.25.
 
 If the dataset does not already exist on your system, it is created by running the simulator script, so this
 example can be run without manually simulating data first.
@@ -110,10 +110,21 @@ project **PyAutoFit** — the identical API used by every other modeling script 
 Note what is absent compared to `scripts/imaging/modeling.py`: no light profiles, no `ExternalShear` (the
 shear field *is* the data here — an external shear component would be degenerate with the signal at leading
 order for this single-lens dataset) and therefore a much smaller parameter space (N=5 versus N=21+).
+
+__Cluster-Scale Priors__
+
+The default `Isothermal` priors are tuned for galaxy-scale lenses: the Einstein radius is a `UniformPrior`
+over 0"-8" and the centre is a tight `GaussianPrior` of width 0.1". For this cluster the truth (25") lies
+outside that Einstein-radius prior entirely, so we widen both to the cluster scale — a wide Einstein-radius
+prior out to 60" and a 20"-wide centre prior about the field origin. Setting priors to the scale of the
+system being fitted is standard practice; the defaults are simply a galaxy-scale starting point.
 """
 # Lens:
 
 mass = af.Model(al.mp.Isothermal)
+mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=60.0)
+mass.centre.centre_0 = af.GaussianPrior(mean=0.0, sigma=20.0)
+mass.centre.centre_1 = af.GaussianPrior(mean=0.0, sigma=20.0)
 
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
@@ -179,8 +190,8 @@ analysis = al.AnalysisWeak(dataset=dataset)
 """
 __Run Times__
 
-A single log-likelihood evaluation — one shear-field evaluation at 200 galaxy positions plus a chi-squared
-sum — takes of order a millisecond. Nautilus needs roughly 10,000–30,000 evaluations for this 5-parameter
+A single log-likelihood evaluation — one shear-field evaluation at 1500 galaxy positions plus a chi-squared
+sum — takes of order a few milliseconds. Nautilus needs roughly 10,000–30,000 evaluations for this 5-parameter
 model, so the full fit completes in a few minutes on a single CPU.
 
 This is the key practical difference from imaging fits: the data volume of a shear catalogue is tiny (a few
