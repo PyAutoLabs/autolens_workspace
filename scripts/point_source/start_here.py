@@ -1,6 +1,6 @@
 """
-Start Here: Imaging
-===================
+Start Here: Point Source
+========================
 
 Strong gravitational lenses often have point sources (e.g. quasars) that are being lensed, appearing as two or
 four distinct point-like images. These lenses are particularly useful for measuring cosmological parameters
@@ -10,16 +10,21 @@ This script shows you how to model such a lens system using **PyAutoLens** with 
 as possible. In about 15 minutes you’ll be able to point the code at your own data and
 fit your first lens.
 
+We model **real data**: the quadruply imaged quasar **RXJ1131-1231**, one of the most famous
+lensed quasars in the sky. A background quasar at redshift z = 0.658 is lensed into four images by a
+foreground elliptical galaxy at z = 0.295. Its four image positions were measured to
+milli-arcsecond precision with HST imaging (Suyu et al. 2013), and its time delays were measured by
+the COSMOGRAIL monitoring campaign (Tewes et al. 2013), making it a cornerstone of time-delay
+cosmography — the technique that measures the Hubble constant from lensed quasars.
+
 We focus on a *galaxy-scale* lens (a single lens galaxy). If you have multiple lens galaxies,
 see the `start_here_group.ipynb` and `start_here_cluster.ipynb` examples.
 
 Point source modeling uses the positions of the lensed source in the image-plane, and optionally may also
-use their fluxes and time delays. However, it is common for lensed quasar overall to be observed by CCD
-imaging data, which is used to measure the positions of the point sources precisions and produes visuals
-of the strong lens which aid its interpretation.
-
-This script therefore also shows how to plot the CCD imaging of a point source lens, but does not use the
-imaging data to constrain the lens model itself.
+use their fluxes and time delays. Lensed quasars are also commonly observed with CCD imaging, which is
+used to measure the point-source positions precisely; the extended arcs of the quasar's host galaxy in
+such imaging can be modeled jointly with the point-source data, as shown in the
+`multi/features/imaging_and_point_source` example.
 
 __Contents__
 
@@ -102,17 +107,26 @@ import autolens.plot as aplt
 """
 __Dataset__
 
-We begin by Creating the point source dataset, which for now contains only: 
+We begin by creating the point source dataset, which for now contains only:
 
 1. The positions of the lensed images in the image-plane.
 2. Their RMS noise-map values, corresponding to the uncertainty on their position measurements.
-3. The PSF (Point Spread Function).
+
+The positions below are the four quasar images of **RXJ1131-1231**, measured from HST imaging by
+Suyu et al. (2013, ApJ 766, 70, Table 1). Following the PyAutoLens convention they are (y, x)
+offsets in arcseconds, here centred on the lens galaxy G, and their RMS uncertainty is the 0.005"
+astrometric precision quoted by that paper. The images are ordered A, B, C, D.
 
 We print and plot the dataset to show these properties but also see that the dataset has a name,
-this will be import later when we perform lens modeling.
+this will be important later when we perform lens modeling.
 """
 positions = al.Grid2DIrregular(
-    [(-1.039, -1.038), (0.442, 1.608), (1.609, 0.442), (1.179, 1.179)]
+    [
+        (-0.520, -2.037),  # Image A
+        (0.662, -2.076),  # Image B
+        (-1.632, -1.460),  # Image C
+        (0.356, 1.074),  # Image D
+    ]
 )
 noise_map = al.ArrayIrregular([0.005, 0.005, 0.005, 0.005])
 
@@ -126,25 +140,17 @@ print(dataset.info)
 aplt.subplot_point_dataset(dataset=dataset)
 
 """
-We can also load the dataset from the workspace `datasset` folder, which means the image we
-load below is also available.
+We save this dataset to the workspace `dataset` folder as .json files, so the rest of the script can
+demonstrate the same loading API you will use for your own data. The .json files shipped with the
+workspace are identical to the ones written here.
 """
-dataset_name = "simple"
+dataset_name = "rxj1131"
 dataset_path = Path("dataset") / "point_source" / dataset_name
 
-"""
-__Dataset Auto-Simulation__
-
-If the dataset does not already exist on your system, it will be created by running the corresponding
-simulator script. This ensures that all example scripts can be run without manually simulating data first.
-"""
-if not dataset_path.exists():
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [sys.executable, "scripts/point_source/simulator.py"],
-        check=True,
+if not (dataset_path / "point_dataset_positions_only.json").exists():
+    al.output_to_json(
+        obj=dataset,
+        file_path=dataset_path / "point_dataset_positions_only.json",
     )
 
 dataset = al.from_json(
@@ -152,24 +158,12 @@ dataset = al.from_json(
 )
 
 """
-We next load an image of the dataset. 
-
-Although we are performing point-source modeling and do not use this data in the actual modeling, it is useful to 
-load it for visualization, for example to see where the multiple images of the point source are located relative to the 
-lens galaxy.
-
-The image will also be passed to the analysis further down, meaning that visualization of the point-source model
-overlaid over the image will be output making interpretation of the results straight forward.
-
-Loading and inputting the image of the dataset in this way is entirely optional, and if you are only interested in
-performing point-source modeling you do not need to do this.
-
-We also plot the dataset's multiple image positions over the observed image, to ensure they overlap the
-lensed source's multiple images.
+When CCD imaging of the lens is available, it can be loaded alongside the point dataset for
+visualization — seeing where the multiple images sit relative to the lens galaxy makes results much
+easier to interpret, and an image passed to the analysis is overlaid in its output visuals. This is
+entirely optional, and for RXJ1131 the joint modeling of its CCD imaging and point-source data is
+covered in the `multi/features/imaging_and_point_source` example.
 """
-data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.05)
-
-aplt.plot_array(array=data, title="")
 
 """
 __Point Solver__
@@ -222,19 +216,24 @@ the lens model is fitted to its particular lensed images in the `PointDataset`.
 
 mass = af.Model(al.mp.Isothermal)
 
-lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
+lens = af.Model(al.Galaxy, redshift=0.295, mass=mass)
 
 # Source:
 
 point_0 = af.Model(al.ps.Point)
 
-source = af.Model(al.Galaxy, redshift=1.0, point_0=point_0)
+source = af.Model(al.Galaxy, redshift=0.658, point_0=point_0)
 
 # Overall Lens Model:
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
+The redshifts above are the measured values for RXJ1131-1231: the elliptical lens galaxy is at
+z = 0.295 and the quasar at z = 0.658. For position-only fitting the redshifts only set the order
+of the planes, but once time delays are included (below) they matter physically, because the time
+delay of each image depends on the angular diameter distances between us, the lens and the source.
+
 We can print the model to show the parameters that the model is composed of.
 """
 print(model.info)
@@ -275,7 +274,7 @@ want the on-disk output, or if you are running in a headless environment (e.g. a
 search = af.Nautilus(
     path_prefix=Path("point_source"),  # The path where results and output are stored.
     name="start_here",  # The name of the fit and folder results are output to.
-    unique_tag=dataset_name,  # A unique tag which also defines the folder.
+    unique_tag=dataset_name,  # A unique tag which also defines the folder ("rxj1131").
     n_live=75,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # GPU lens model fits are batched and run simultaneously, see modeling examples for details.
     iterations_per_quick_update=250000,  # Every N iterations the max likelihood model is visualized and written to output folder.
@@ -337,94 +336,81 @@ and simply writing your own `PointSourceDataset`, or loading one from .json if y
 
 A few things to note, with full details on data preparation provided in the main workspace documentation:
 
-- PyAutoLens uses (y,x) conventions, so the positions below are y = 1.0", y = 2.0", x = 0.0" and x = 0.0".
+- PyAutoLens uses (y,x) conventions for all positions.
 - Supply your own CCD image for the lensed quasar for visualization.
 - Ensure the lens galaxy is roughly centered in the image.
 - Double-check `pixel_scales` for your telescope/detector.
 - Start with the default model — it works very well for pretty much all galaxy scale lenses!
+
+__Time Delays__
+
+Because the light-travel time along each image's path differs, variability of the quasar appears in
+the four images at different times. These **time delays** were measured for RXJ1131 by the
+COSMOGRAIL monitoring campaign (Tewes et al. 2013, A&A 556, A22), which observed the lens for nine
+years: relative to image B, Δt_AB = 0.7 ± 1.4 days, Δt_CB = -0.4 ± 2.0 days and
+Δt_DB = 91.4 ± 1.5 days.
+
+Time delays can be included in the `PointDataset` and fitted by the lens model. Note that ordering
+is shared across quantities, so the first time delay corresponds to the first position (image A)
+and so on. PyAutoLens fits time delays *relative to the shortest delay*, so only the relative
+values matter — we enter the delays relative to image B and give B itself the smallest measured
+pairwise uncertainty (1.4 days), since it is the reference image.
 """
-positions = al.Grid2DIrregular(
-    [(-1.039, -1.038), (0.442, 1.608), (1.609, 0.442), (1.179, 1.179)]
-)
-noise_map = al.ArrayIrregular([0.005, 0.005, 0.005, 0.005])
-
-dataset = al.PointDataset(
-    name="point_0", positions=positions, positions_noise_map=noise_map
-)
-
-"""
-__Fluxes and Time Delays__
-
-If you have measured the fluxes and/or time delays of the lensed point sources, these can also be included in
-the `PointDataset` above and fitted by the lens model.
-
-We first add fluxes, time delays and their RMS noise-map values to the dataset. Note that ordering is used across
-quantities, so the first flux and time delay corresponds to the first position (1.0, 0.0) and so on.
-"""
-positions = al.Grid2DIrregular(
-    [(-1.039, -1.038), (0.442, 1.608), (1.609, 0.442), (1.179, 1.179)]
-)
-fluxes = al.ArrayIrregular(values=[6.82, 55.16, 53.63, 100.62])
-time_delays = al.ArrayIrregular(values=[-136.99, -176.85, -177.02, -176.74])
-
-# Position noise = 5 mas (PSF-centroiding precision on HST imaging).
-# Flux noise = 5% relative (microlensing-dominated regime).
-# Time delay noise = 5% relative magnitude (COSMOGRAIL/TDCOSMO regime).
-# See `simulator.py` for a full discussion of these values.
-positions_noise_map = al.ArrayIrregular([0.005, 0.005, 0.005, 0.005])
-fluxes_noise_map = al.ArrayIrregular(values=[0.34, 2.76, 2.68, 5.03])
-time_delays_noise_map = al.ArrayIrregular(values=[6.85, 8.84, 8.85, 8.84])
+time_delays = al.ArrayIrregular(values=[0.7, 0.0, -0.4, 91.4])
+time_delays_noise_map = al.ArrayIrregular(values=[1.4, 1.4, 2.0, 1.5])
 
 dataset = al.PointDataset(
     name="point_0",
     positions=positions,
-    positions_noise_map=positions_noise_map,
-    fluxes=fluxes,
-    fluxes_noise_map=fluxes_noise_map,
+    positions_noise_map=noise_map,
     time_delays=time_delays,
     time_delays_noise_map=time_delays_noise_map,
 )
 
+if not (dataset_path / "point_dataset_with_time_delays.json").exists():
+    al.output_to_json(
+        obj=dataset,
+        file_path=dataset_path / "point_dataset_with_time_delays.json",
+    )
+
 """
-__Model__
+__Fluxes__
 
-When we add fluxes to the point dataset, we also need to updatre our model such that our point source
-objects have their `flux` as a free parameter we fit for. The model API below does this, using the `PointFlux` 
-component instead of the `Point` component. 
+The fluxes of the four images have also been measured, and the `PointDataset` accepts `fluxes` and
+`fluxes_noise_map` inputs which are fitted using the model's magnification map (via the `PointFlux`
+model component instead of `Point`).
 
-Time delays do not need the model to be updated, as they are computed from the mass model and the 
-point source (y,x) position.
+You should think very carefully about whether including fluxes is sensible, even when you have the
+data. Real lensed-quasar fluxes are affected by microlensing from stars in the lens galaxy, dust
+extinction, and intrinsic source variability, all of which are difficult to model — RXJ1131 itself
+shows strong microlensing, which is why we fit only its positions and time delays here.
 
-You should think very carefully if including fluxes in your modeling is a sensible idea, even if you have
-the data available. For real lenses, they are often affected by microlensing, dust extinction, and
-intrinsic variability of the source, all of which are difficult to model. 
+__Model Fit__
+
+Time delays do not need the model to be updated, as they are computed from the mass model and the
+point source (y,x) position. The lens and source redshifts set the distances that convert the
+model's Fermat potential differences into delays in days.
 """
 # Lens:
 
 mass = af.Model(al.mp.Isothermal)
 
-lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
+lens = af.Model(al.Galaxy, redshift=0.295, mass=mass)
 
 # Source:
 
-point_0 = af.Model(al.ps.PointFlux)
+point_0 = af.Model(al.ps.Point)
 
-source = af.Model(al.Galaxy, redshift=1.0, point_0=point_0)
+source = af.Model(al.Galaxy, redshift=0.658, point_0=point_0)
 
 # Overall Lens Model:
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
-"""
-__Model Fit__
-
-We now fit the model to the data using Nautilus, as before, but including
-the fluxes and time delays in the `AnalysisPoint` object.
-"""
 search = af.Nautilus(
     path_prefix=Path("point_source"),  # The path where results and output are stored.
-    name="start_here_flux_time_delay",  # The name of the fit and folder results are output to.
-    unique_tag="example_point",  # A unique tag which also defines the folder.
+    name="start_here_time_delay",  # The name of the fit and folder results are output to.
+    unique_tag=dataset_name,  # A unique tag which also defines the folder ("rxj1131").
     n_live=75,  # The number of Nautilus "live" points, increase for more complex models.
     n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
     iterations_per_full_update=20000,  # Every N iterations the results are written to hard-disk for inspection.
