@@ -40,11 +40,12 @@ __Contents__
 
 __JAX__
 
-PyAutoLens runs weak-lensing model-fits on JAX. The `al.AnalysisWeak(dataset=dataset,
-use_jax=True)` line below enables it; the search driver wraps the likelihood in
-`jax.vmap(jax.jit(...))` so batches of parameter vectors evaluate in parallel on a GPU. A
-weak-lensing likelihood — a few hundred to a few hundred thousand shear residuals — is light
-compared to imaging, so fits complete in minutes even on CPU.
+PyAutoLens can run weak-lensing model-fits on JAX via `al.AnalysisWeak(dataset, use_jax=True)`,
+where the search driver wraps the likelihood in `jax.vmap(jax.jit(...))` so batches of parameter
+vectors evaluate in parallel on a GPU. This example keeps the default NumPy path: a weak-lensing
+likelihood — a few hundred to a few hundred thousand shear residuals — is light compared to
+imaging, so this fit completes in minutes even on CPU (and visualization of JAX-path weak fits is
+currently blocked by PyAutoLens#614).
 
 For the broader JAX principles (when you write `@jax.jit` yourself, the return-type contract, how
 to opt out for debugging), see the `__JAX__` section of the top-level
@@ -256,9 +257,13 @@ We now fit the data with the halo model using the non-linear fitting method and 
 algorithm Nautilus. The `AnalysisWeak` object defines the `log_likelihood_function` that compares
 the model's reduced shear at every galaxy position with the measured ellipticities.
 """
+# use_jax=False: this fit is small enough that NumPy completes in minutes, and
+# visualization of a JAX-path weak fit currently crashes (PyAutoLens#614). The
+# JOSS benchmark (autolens_jax_joss/benchmarks/weak.py) times the identical fit
+# on the JAX path with visualization disabled.
 analysis = al.AnalysisWeak(
     dataset=dataset,
-    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
+    use_jax=False,
 )
 
 search = af.Nautilus(
