@@ -14,6 +14,7 @@ and interpret the results a lens model fit. A full guide to result analysis is g
 
 - `dataset_offsets`: Datasets may have small offsets due to pointing errors, which can be accounted for in the model.
 - `imaging_and_interferometer`: Imaging and interferometer datasets are fitted simultaneously.
+- `imaging_and_point_source`: CCD imaging of a lensed quasar's extended arcs and its point-source observables (positions + time delays) are fitted simultaneously, on real HST data of RXJ1131-1231.
 - `one_by_one`: Multiple datasets are fitted one-by-one in a sequence.
 - `same_wavelength`: Multiple datasets that are observed at the same wavelength are fitted simultaneously (includes the shared source-mesh API, `shared_preloads=True`, for reconstructing every exposure on one Delaunay mesh).
 - `wavelength_dependence`: A model is fitted where parameters depend on wavelength following a functional form.
