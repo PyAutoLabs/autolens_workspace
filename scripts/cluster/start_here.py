@@ -15,10 +15,13 @@ Cluster-scale strong lenses are made of:
  - **Multiple background sources at different redshifts**, multiply imaged by the cluster — this makes
    cluster lensing a genuine multi-plane ray-tracing problem.
 
-This script gets you fitting a real cluster-scale lens system in roughly 15 minutes. The example dataset
-is a small multi-plane cluster (2 main galaxies + 10 scaling members + 1 host halo + 2 sources at
-``z = 1.0`` and ``z = 2.0``) and is fully simulated, so you can run end-to-end without supplying your
-own data.
+This script gets you fitting a real cluster-scale lens system in roughly 15 minutes. We model **real
+data**: **Abell 2744** ("Pandora's Cluster", z = 0.308), a Hubble Frontier Fields cluster and one of
+the most powerful gravitational lenses known. The multiple-image positions and spectroscopic
+redshifts, and the cluster-member catalogue, come from the published lens-model inputs of Bergamini
+et al. 2023 (A&A 670, A60): we fit the 7 "gold" source systems (25 multiple images, sources from
+``z = 1.7`` to ``z = 5.7`` — a genuinely multi-plane problem) with 2 individually-modelled BCGs,
+188 scaling-tier members, and an NFW host halo.
 
 For galaxy-scale lenses (a single dominant lens and a single source), start with
 ``start_here_imaging.ipynb`` instead.
@@ -112,31 +115,50 @@ import autolens.plot as aplt
 """
 __Dataset__
 
-We load the simulated cluster dataset. The dataset folder contains:
+We load the real Abell 2744 dataset. The dataset folder contains:
 
- - ``data.fits`` / ``noise_map.fits`` / ``psf.fits`` — CCD imaging of the cluster (used for visualization).
  - ``point_datasets.csv`` — one row per observed multiple image, grouped by source ``name``, with a
-   ``redshift`` column per source.
- - ``scaling_galaxies.csv`` — one row per scaling-tier member with columns ``y, x, luminosity``.
- - ``mass.csv`` / ``light.csv`` / ``point.csv`` — named-galaxy CSVs carrying the full truth model,
-   including the centres of the main galaxies and host halo (see ``csv_api.py``).
+   ``redshift`` column per source. These are the Bergamini et al. 2023 gold systems: 25 images with
+   spectroscopic redshifts, as (y, x) arc-second offsets about the projected cluster core (the same
+   centre used by the weak-lensing examples in ``scripts/weak/``, so strong- and weak-lensing
+   constraints on this cluster share a coordinate frame).
+ - ``scaling_galaxies.csv`` — one row per scaling-tier member with columns ``y, x, luminosity``:
+   188 cluster members from the same paper's catalogue, with luminosities relative to the BCG
+   (from their F160W magnitudes).
+ - ``mass.csv`` / ``point.csv`` — named-galaxy CSVs defining the individually-modelled galaxies:
+   the two brightest core members (the BCGs) as dPIE profiles, the NFW host halo centred on the
+   BCG, and one point source per system (see ``csv_api.py`` for the schema, and the dataset
+   folder's ``README.md`` + ``prep.py`` for full provenance).
 
-If the dataset does not already exist on your system (per ``al.util.dataset.should_simulate``,
-which also handles the smoke-mode ``PYAUTO_SMALL_DATASETS`` regeneration case), it is created
-by running the corresponding simulator script.
+For visualization we also download an HST H-band image cutout of the cluster from the CDS
+hips2fits service on the first run (~1.4 MB, cached). The image is only used for plotting — the
+model is fitted to the multiple-image positions.
 """
-dataset_name = "simple"
+dataset_name = "a2744"
 dataset_path = Path("dataset") / "cluster" / dataset_name
 
-if al.util.dataset.should_simulate(str(dataset_path)):
-    subprocess.run(
-        [sys.executable, "scripts/cluster/simulator.py"],
-        check=True,
-    )
+data_fits_path = dataset_path / "data.fits"
 
-data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.1)
+HIPS2FITS_URL = (
+    "https://alasky.cds.unistra.fr/hips-image-services/hips2fits"
+    "?hips=CDS%2FP%2FHST%2FH&ra=3.5875&dec=-30.3972"
+    "&width=600&height=600&fov=0.05&projection=TAN&format=fits"
+)
 
-aplt.plot_array(array=data, title="")
+if not data_fits_path.exists():
+    import urllib.request
+
+    print("Downloading HST H-band image of Abell 2744 for visualization (one-off, ~1.4 MB) ...")
+    try:
+        urllib.request.urlretrieve(HIPS2FITS_URL, data_fits_path)
+    except Exception as e:
+        print(f"Image download failed ({e}) — continuing without it (visualization only).")
+
+if data_fits_path.exists():
+    # hips2fits returns 0.3"/pixel for this 0.05 deg / 600 pixel cutout.
+    data = al.Array2D.from_fits(file_path=data_fits_path, pixel_scales=0.3)
+
+    aplt.plot_array(array=data, title="")
 
 """
 __Point Datasets__
@@ -210,7 +232,7 @@ until the requested precision is reached. We use the same configuration as the m
 ``cluster/modeling.py``: a 100x100 starting grid, 0.001" precision, and a magnification threshold of
 0.1 to discard heavily-demagnified central images.
 """
-grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=1.0)
+grid = al.Grid2D.uniform(shape_native=(120, 120), pixel_scales=1.0)
 
 solver = al.PointSolver.for_grid(
     grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
@@ -221,26 +243,30 @@ __Cluster Components__
 
 The model has four tiers, one per cluster component:
 
- - **Main lens galaxies (2):** individually-modelled ``dPIEMassSph`` profiles with centre fixed to the
-   observed light centres and free ``ra``, ``rs``, ``b0``. **6 free parameters total.**
+ - **Main lens galaxies (2):** the two brightest core members (the BCG region galaxies),
+   individually-modelled ``dPIEMassSph`` profiles with centre fixed to the observed light centres
+   and free ``ra``, ``rs``, ``b0``. **6 free parameters total.**
 
- - **Scaling-tier members (10):** ``dPIEMassSph`` profiles with centre fixed to the CSV centres. ``ra``,
+ - **Scaling-tier members (188):** ``dPIEMassSph`` profiles with centre fixed to the CSV centres. ``ra``,
    ``rs`` and ``b0`` all derive from the reference-anchored relation used by Lenstool and standard in
    published cluster analyses: ``ra = ra_ref * (L / L_ref) ** 0.5``, ``rs = rs_ref * (L / L_ref) ** 0.5``
    and ``b0 = b0_ref * (L / L_ref) ** 0.5``, where ``L_ref`` is an explicit fixed reference luminosity
    (Lenstool's ``mag0``), *not* the sample max. The exponent is fixed at the Faber-Jackson value
    (b0 ∝ sigma² and sigma ∝ L^(1/4) give b0 ∝ L^(1/2)) — only the normalization ``b0_ref``, the lens
-   strength of a reference-magnitude galaxy, is fitted.
+   strength of a reference-magnitude galaxy, is fitted. Our member luminosities are normalised to the
+   BCG's F160W flux, so ``L_ref = 1.0`` anchors the relation to the BCG itself.
    **1 free parameter total for the whole tier — independent of the number of members.**
 
  - **Host dark matter halo:** a standalone ``Galaxy`` carrying an ``NFWMCRLudlowSph`` halo with
-   centre fixed and a free ``mass_at_200``. **1 free parameter.**
+   centre fixed on the BCG and a free ``mass_at_200``. (Abell 2744 is a merging cluster — published
+   models use several halos; one halo is the deliberately simple starting point, and adding a second
+   is a CSV-level edit.) **1 free parameter.**
 
- - **Source galaxies (2):** ``Point`` models, redshift pinned to each source's per-dataset value, with
-   ``GaussianPrior`` centre priors initialised from the mean of each source's observed positions.
-   **4 free parameters total.**
+ - **Source galaxies (7):** ``Point`` models, redshift pinned to each source's per-dataset
+   spectroscopic value, with ``GaussianPrior`` centre priors initialised from the mean of each
+   source's observed positions. **14 free parameters total.**
 
-**Total: N = 12 free parameters.** Adding more rows to ``scaling_galaxies.csv`` does not grow N — that's
+**Total: N = 22 free parameters.** Adding more rows to ``scaling_galaxies.csv`` does not grow N — that's
 the defining feature of cluster-scale modeling on a scaling relation. See
 ``scripts/cluster/modeling.py`` for the full prose on the scaling-relation convention (why the
 normalization anchors to a reference galaxy, why the exponent is fixed, and the kinematic calibrations
@@ -248,11 +274,11 @@ that refine it).
 
 __Redshifts__
 
-The two sources sit at different redshifts (``z = 1.0`` and ``z = 2.0``); the ``Tracer`` automatically
-ray-traces through both source planes when solving the further source. Lens galaxies (main + scaling)
-and the host halo all sit at ``z = 0.5``. ``NFWMCRLudlowSph`` needs ``redshift_source`` to evaluate the
-Ludlow et al. (2016) concentration-mass relation — we anchor it to the *furthest* source, matching the
-simulator convention.
+The seven sources sit at different spectroscopic redshifts (``z = 1.688`` to ``z = 5.662``); the
+``Tracer`` automatically ray-traces through every source plane when solving the further sources.
+Lens galaxies (main + scaling) and the host halo all sit at the cluster redshift ``z = 0.308``.
+``NFWMCRLudlowSph`` needs ``redshift_source`` to evaluate the Ludlow et al. (2016)
+concentration-mass relation — we anchor it to the *furthest* source.
 
 __Model__
 
@@ -260,7 +286,7 @@ The model is composed below in four blocks: main-tier loop, host halo, source-ti
 loop (defining the shared ``b0_ref`` normalization once outside the loop). The four blocks are then
 bundled into a single ``af.Collection`` model that the analysis will receive.
 """
-redshift_lens = 0.5
+redshift_lens = 0.308
 source_redshifts = [dataset.redshift for dataset in dataset_list]
 
 # Build af.Model[Galaxy] instances directly from the family CSVs. Concrete CSV
@@ -297,8 +323,8 @@ for i, dataset in enumerate(dataset_list):
 # lens strength of a galaxy at the reference magnitude; per-member ra, rs and b0
 # derive from it with the exponent fixed at the Faber-Jackson value 0.5 — the
 # Lenstool convention. The reference luminosity is an EXPLICIT FIXED constant
-# (Lenstool's "mag0"), NOT the sample max; set it to the BCG magnitude in a real
-# analysis, here a fiducial L* = 1.0).
+# (Lenstool's "mag0"); our member luminosities are normalised to the BCG's F160W
+# flux, so L_ref = 1.0 anchors the relation to the BCG).
 
 scaling_b0_ref = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)
 scaling_exponent = 0.5
@@ -358,11 +384,11 @@ factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 """
 __Search__
 
-We use Nautilus, a robust nested-sampling algorithm. ``n_live=100`` is a sensible default for a 13-D
+We use Nautilus, a robust nested-sampling algorithm. ``n_live=150`` is a sensible default for a 22-D
 model — increase it for more complex clusters. ``n_batch=50`` batches the GPU log-likelihood
 evaluations for throughput.
 
-Results are written to ``autolens_workspace/output/cluster/simple/start_here/<unique_hash>/``. The
+Results are written to ``autolens_workspace/output/cluster/a2744/start_here/<unique_hash>/``. The
 ``unique_hash`` is generated from the model, search settings, and dataset — re-running with the same
 configuration resumes the existing fit.
 
@@ -383,7 +409,7 @@ search = af.Nautilus(
     path_prefix=Path("cluster"),
     name="start_here",
     unique_tag=dataset_name,
-    n_live=100,
+    n_live=150,
     n_batch=50,
     iterations_per_quick_update=2500,
     live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
@@ -431,7 +457,8 @@ aplt.corner_anesthetic(samples=result_list[0].samples)
 """
 __Wrap Up__
 
-You've now run an end-to-end cluster lens model on a 2-main + 10-scaling + 1-halo + 2-source system.
+You've now run an end-to-end cluster lens model on real data: Abell 2744 with 2 BCGs, 188
+scaling-tier members, an NFW host halo and 7 spectroscopically-confirmed source systems.
 
 Next steps:
 
