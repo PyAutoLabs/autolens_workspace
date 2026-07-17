@@ -1473,6 +1473,21 @@
   },
   {
     "contents": [
+      "Conventions",
+      "Lens Model",
+      "Export",
+      "Import",
+      "Round Trip",
+      "NFW Profiles"
+    ],
+    "cross_refs": [],
+    "notebook": "notebooks/guides/coolest_interop.ipynb",
+    "path": "scripts/guides/coolest_interop.py",
+    "summary": "COOLEST (COde-independent Organized LEns STandard, https://github.com/aymgal/COOLEST) is a standard for storing and exchanging strong lens models between different lens modeling software, for example lenstronomy, herculens and GLEE.",
+    "title": "COOLEST"
+  },
+  {
+    "contents": [
       "Units",
       "API",
       "Grids",
