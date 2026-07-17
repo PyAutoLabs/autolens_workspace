@@ -146,22 +146,28 @@ source_galaxies = [galaxies_by_name["source_0"], galaxies_by_name["source_1"]]
 # REFERENCE_LUMINOSITY is an explicit fixed constant (Lenstool's "mag0"), not the
 # sample max, and matches the simulator truth so members are reproduced exactly.
 scaling_galaxies = []
-SCALING_B0_REF_TRUTH = 0.190
-SCALING_EXPONENT = 0.5
-SCALING_RA_REF = 0.158
-SCALING_RS_REF = 15.8
+SCALING_SIGMA_REF_TRUTH = 85.0
+SCALING_SIGMA_EXPONENT = 0.25
+SCALING_RADIUS_EXPONENT = 0.5
+SCALING_R_CORE_REF = 0.158
+SCALING_R_CUT_REF = 15.8
 REFERENCE_LUMINOSITY = 1.0
 for centre, luminosity in zip(
     scaling_table.centres.in_list, scaling_table.luminosities
 ):
     luminosity_ratio = luminosity / REFERENCE_LUMINOSITY
-    ra = SCALING_RA_REF * luminosity_ratio**SCALING_EXPONENT
-    b0 = SCALING_B0_REF_TRUTH * luminosity_ratio**SCALING_EXPONENT
-    rs = SCALING_RS_REF * luminosity_ratio**SCALING_EXPONENT
     scaling_galaxies.append(
         al.Galaxy(
             redshift=redshift_lens,
-            mass=al.mp.dPIEMassSph(centre=tuple(centre), ra=ra, rs=rs, b0=b0),
+            mass=al.mp.dPIEMassSph(
+                centre=tuple(centre),
+                sigma=SCALING_SIGMA_REF_TRUTH
+                * luminosity_ratio**SCALING_SIGMA_EXPONENT,
+                r_core=SCALING_R_CORE_REF * luminosity_ratio**SCALING_RADIUS_EXPONENT,
+                r_cut=SCALING_R_CUT_REF * luminosity_ratio**SCALING_RADIUS_EXPONENT,
+                redshift_object=redshift_lens,
+                redshift_source=max(source_redshifts),
+            ),
         )
     )
 
@@ -171,8 +177,9 @@ __Tracer__
 The tracer carries:
 
  - 2 main lens galaxies (BCG + satellite) — individually-modelled dPIE mass profiles.
- - 10 scaling-tier member galaxies — dPIE mass profiles whose ``ra``, ``rs`` and ``b0`` derive from the
-   reference-anchored scaling relation ``b0 = b0_ref × (L/L_ref)^0.5`` (Lenstool convention).
+ - 10 scaling-tier member galaxies — dPIE mass profiles whose ``sigma``, ``r_core`` and ``r_cut`` derive
+   from the reference-anchored scaling relation ``sigma = sigma_ref × (L/L_ref)^0.25``,
+   ``radii ∝ (L/L_ref)^0.5`` (Lenstool convention).
  - 1 host dark matter halo — ``NFWMCRLudlowSph`` at the cluster centre.
  - 2 source galaxies — ``Point`` profiles at distinct redshifts (multi-plane).
 

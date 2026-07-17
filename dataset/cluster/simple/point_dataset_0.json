@@ -2,8 +2,35 @@
     "type": "instance",
     "class_path": "autolens.point.dataset.PointDataset",
     "arguments": {
+        "time_delays": null,
+        "fluxes_noise_map": null,
+        "positions": {
+            "type": "instance",
+            "class_path": "autoarray.structures.grids.irregular_2d.Grid2DIrregular",
+            "arguments": {
+                "values": {
+                    "type": "ndarray",
+                    "array": [
+                        [
+                            -9.15390625,
+                            -19.291166924196176
+                        ],
+                        [
+                            0.03671875,
+                            -0.07352194834211641
+                        ],
+                        [
+                            1.7234375000000002,
+                            23.35201416912914
+                        ]
+                    ],
+                    "dtype": "float64"
+                }
+            }
+        },
+        "name": "point_0",
+        "fluxes": null,
         "time_delays_noise_map": null,
-        "redshift": 1.0,
         "positions_noise_map": {
             "type": "instance",
             "class_path": "autoarray.structures.arrays.irregular.ArrayIrregular",
@@ -19,33 +46,6 @@
                 }
             }
         },
-        "fluxes_noise_map": null,
-        "fluxes": null,
-        "positions": {
-            "type": "instance",
-            "class_path": "autoarray.structures.grids.irregular_2d.Grid2DIrregular",
-            "arguments": {
-                "values": {
-                    "type": "ndarray",
-                    "array": [
-                        [
-                            -9.16875,
-                            -19.276282112568627
-                        ],
-                        [
-                            0.0359375,
-                            -0.0739730032399208
-                        ],
-                        [
-                            1.8125,
-                            23.341188851581837
-                        ]
-                    ],
-                    "dtype": "float64"
-                }
-            }
-        },
-        "time_delays": null,
-        "name": "point_0"
+        "redshift": 1.0
     }
 }

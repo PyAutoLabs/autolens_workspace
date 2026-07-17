@@ -43,7 +43,7 @@ The worked example is **SMACS J0723.3−7327**, the first JWST cluster, using th
   (median RMS 0.07″, all below 0.29″ — consistent with the published image-plane RMS of 0.32″
   through typical magnifications), and the optional Verification II forward-solve checks the
   image-plane RMS directly. One convention this exercise pinned down the honest way: PyAutoLens's
-  multi-plane tracer normalizes profile deflections to its **final** plane, so `from_lenstool`
+  multi-plane tracer normalizes profile deflections to its **final** plane, so `dPIEMass`
   must be given the highest source redshift in the system as `redshift_source`.
 
 ## What's different (and why you might care)

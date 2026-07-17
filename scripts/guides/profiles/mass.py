@@ -123,11 +123,16 @@ power_law_core_sph = al.mp.PowerLawCoreSph()
 power_law_broken = al.mp.PowerLawBroken()
 power_law_broken_sph = al.mp.PowerLawBrokenSph()
 
-# Pseudo-isothermal family (mass and potential parameterisations)
-# Note: dPIEMass with default ell_comps=(0,0) triggers a divide-by-zero in the complex-plane
-# formula; we use a small ellipticity here so the survey constructions succeed cleanly.
-dpie_mass = al.mp.dPIEMass(ell_comps=(0.05, 0.0))
+# Pseudo-isothermal family. The default dPIEMass / dPIEMassSph are parameterized in
+# Lenstool's native convention (ellipticity, angle_pos, sigma = fiducial v_disp in km/s,
+# r_core, r_cut, plus the redshifts entering the D_LS/D_S normalization) — the same numbers
+# that appear in published cluster papers' results tables. The internal (ra, rs, b0)
+# parameterization is the non-standard dPIEMassB0 / dPIEMassB0Sph.
+dpie_mass = al.mp.dPIEMass(ellipticity=0.1)
 dpie_mass_sph = al.mp.dPIEMassSph()
+dpie_mass_b0 = al.mp.dPIEMassB0(ell_comps=(0.05, 0.0))
+# Note: PIEMass with ell_comps=(0,0) triggers a divide-by-zero in the complex-plane
+# formula; we use a small ellipticity here so the survey constructions succeed cleanly.
 pie_mass = al.mp.PIEMass(ell_comps=(0.05, 0.0))
 dpie_potential = al.mp.dPIEPotential()
 dpie_potential_sph = al.mp.dPIEPotentialSph()
@@ -562,9 +567,11 @@ aplt.plot_array(
 aplt.plot_array(
     array=al.mp.dPIEMass(
         centre=(0.0, 0.0),
-        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
-        ra=0.1,
-        b0=0.5,
+        ellipticity=0.1,
+        angle_pos=45.0,
+        sigma=200.0,
+        r_core=0.1,
+        r_cut=20.0,
     ).convergence_2d_from(grid=grid),
     title="dPIEMass Convergence",
 )

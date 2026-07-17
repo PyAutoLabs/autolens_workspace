@@ -43,8 +43,8 @@ This script fits a ``PointDataset`` of a small multi-plane cluster where:
 
  - There are 2 main lens galaxies with ``dPIEMassSph`` total mass distributions, each with their centre
    fixed to the values written out by the simulator [6 parameters].
- - There are 10 scaling-tier member galaxies. Each carries a ``dPIEMassSph`` mass with centre fixed,
-   ``ra`` fixed, and ``b0`` / ``rs`` derived from the shared reference-anchored scaling relation and the
+ - There are 10 scaling-tier member galaxies. Each carries a ``dPIEMassSph`` mass with centre fixed and
+   ``sigma`` / ``r_core`` / ``r_cut`` derived from the shared reference-anchored scaling relation and the
    per-member luminosity [1 parameter total for the entire tier].
  - There is 1 standalone ``NFWMCRLudlowSph`` host dark matter halo with its centre fixed and a free
    ``mass_at_200`` [1 parameter].
@@ -53,11 +53,16 @@ This script fits a ``PointDataset`` of a small multi-plane cluster where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=12.
 
+The ``dPIEMassSph`` profile is parameterized in Lenstool's native convention — free parameters
+``sigma`` (fiducial velocity dispersion ``v_disp`` in km/s), ``r_core`` and ``r_cut`` (arcsec) — so the
+fitted posterior reads like a Lenstool results table (see ``cluster/simulator.py`` __dPIE Mass Profile__
+for the conventions, and ``cluster/lenstool/`` for a published-model worked example).
+
 The defining feature of cluster modeling is the scaling tier: 10 lower-mass members are fit jointly
-with a *single free parameter* (``b0_ref``, the lens strength of a galaxy at the reference magnitude;
-the relation's exponent is fixed at the Faber-Jackson value of 0.5, following the Lenstool convention).
-Adding more members to ``scaling_galaxies.csv`` in the future does not grow the dimensionality of
-parameter space.
+with a *single free parameter* (``sigma_ref``, the fiducial velocity dispersion of a galaxy at the
+reference magnitude; the relation's exponents are fixed at the Faber-Jackson values, following the
+Lenstool convention). Adding more members to ``scaling_galaxies.csv`` in the future does not grow the
+dimensionality of parameter space.
 
 __Simulation__
 
@@ -245,10 +250,10 @@ We organise the lensing objects into four distinct categories that map directly 
    with a ``dPIEMassSph`` total mass profile whose centre is fixed to ``main_lens_centres[i]``.
 
  - ``scaling_galaxies``: The 10 scaling-tier cluster members. Each carries a ``dPIEMassSph`` mass with
-   centre fixed (from the CSV), ``ra`` fixed, and ``b0`` / ``rs`` derived from the shared
-   reference-anchored scaling relation (single free normalization ``b0_ref``, exponents fixed at 0.5)
-   plus the per-member luminosity. The whole tier contributes 1 free parameter to the model regardless
-   of how many members are in the CSV.
+   centre fixed (from the CSV) and ``sigma`` / ``r_core`` / ``r_cut`` derived from the shared
+   reference-anchored scaling relation (single free normalization ``sigma_ref``; exponents fixed at
+   0.25 for sigma and 0.5 for the radii) plus the per-member luminosity. The whole tier contributes
+   1 free parameter to the model regardless of how many members are in the CSV.
 
  - ``host_halo``: A single standalone ``Galaxy`` carrying the cluster's ``NFWMCRLudlowSph`` dark matter
    halo. The halo is *not* tied to any individual member — it sits "on top of" the members and
@@ -282,12 +287,12 @@ __Model__
 We compose a lens model where:
 
  - The 2 main lens galaxies each have a ``dPIEMassSph`` mass profile with centre fixed and free
-   ``ra``, ``rs``, ``b0`` — 3 free parameters per galaxy [6 parameters].
- - The 10 scaling-tier members share a single free parameter: ``b0_ref``, the lens strength of a
-   galaxy at the reference magnitude. Each member's ``ra``, ``rs`` and ``b0`` are computed as
-   ``ra_ref * (L / L_ref) ** 0.5``, ``rs_ref * (L / L_ref) ** 0.5`` and ``b0_ref * (L / L_ref) ** 0.5``
-   with the exponent fixed; ``ra_ref`` (0.158") and ``rs_ref`` (15.8") are held fixed at the simulator
-   truth values [1 parameter].
+   ``sigma``, ``r_core``, ``r_cut`` — 3 free parameters per galaxy [6 parameters].
+ - The 10 scaling-tier members share a single free parameter: ``sigma_ref``, the fiducial velocity
+   dispersion of a galaxy at the reference magnitude. Each member's parameters are computed as
+   ``sigma_ref * (L / L_ref) ** 0.25``, ``r_core_ref * (L / L_ref) ** 0.5`` and
+   ``r_cut_ref * (L / L_ref) ** 0.5`` with the exponents fixed; ``r_core_ref`` (0.158") and
+   ``r_cut_ref`` (15.8") are held fixed at the simulator truth values [1 parameter].
  - The host halo has an ``NFWMCRLudlowSph`` mass profile with centre fixed and a free ``mass_at_200``
    [1 parameter].
  - Each source has a ``Point`` model with free ``centre_0`` / ``centre_1`` priors initialised from the
@@ -301,30 +306,31 @@ The scaling relation is reference-anchored, the convention used by Lenstool and 
 published cluster strong-lensing analysis (Limousin et al. 2005; Eliasdottir et al. 2007; Bergamini et
 al. 2019):
 
-    ra_i = ra_ref * (L_i / L_ref) ** 0.5
-    rs_i = rs_ref * (L_i / L_ref) ** 0.5
-    b0_i = b0_ref * (L_i / L_ref) ** 0.5
+    sigma_i  = sigma_ref  * (L_i / L_ref) ** 0.25
+    r_core_i = r_core_ref * (L_i / L_ref) ** 0.5
+    r_cut_i  = r_cut_ref  * (L_i / L_ref) ** 0.5
 
 The reference luminosity ``L_ref`` is an **explicit fixed constant** (Lenstool's reference magnitude
 ``mag0``), *not* the maximum luminosity of the current sample. Anchoring to a fixed reference makes the
 normalization invariant to which galaxies are placed in the scaling tier, and gives the single free
-parameter ``b0_ref`` a stable, interpretable meaning: the lens strength (roughly the Einstein radius) of
+parameter ``sigma_ref`` a stable, interpretable meaning: the fiducial velocity dispersion (in km/s) of
 a galaxy *at the reference magnitude*, for which a prior range is easy to motivate — unlike an abstract
 multiplicative factor whose units depend on the (arbitrary) luminosity normalization. In a real analysis
 set ``L_ref`` to the BCG magnitude (or a characteristic L*); here we use a fiducial ``L_ref = 1.0``. Only
 luminosity *ratios* enter, so the CSV's luminosity units are irrelevant; magnitude catalogues convert via
 ``L_i / L_ref = 10 ** (0.4 * (m_ref - m_i))``.
 
-The exponent is *fixed* at 0.5 rather than fitted: b0 ∝ sigma² for the dPIE, and Faber-Jackson
-(sigma ∝ L^(1/4)) gives b0 ∝ L^(1/2). The core radius ``ra`` and truncation radius ``rs`` scale with the
-same fixed exponent, mirroring Lenstool's r_core ∝ L^(1/2) and r_cut ∝ L^(1/2). Freeing the exponent (or
-``rs_ref`` / ``ra_ref``) is a one-line change shown in the code comment below — useful as a systematics
-test, at the cost of the degeneracy between normalization and slope that the fixed-exponent convention
-exists to avoid. When member velocity dispersions are available, the standard refinement is to calibrate
-the exponents kinematically (Bergamini et al. 2019: sigma ∝ L^0.27-0.28 from MUSE member kinematics, i.e.
-a b0 exponent ≈ 0.55, with the r_cut exponent from the fundamental plane).
+The exponents are *fixed* rather than fitted: Faber-Jackson (L ∝ sigma^4) gives sigma ∝ L^(1/4), and
+constant mass-to-light (M ∝ sigma^2 * r_cut ∝ L) gives r_cut ∝ L^(1/2) — exactly Lenstool's ``potfile``
+scalings (``vdslope 4``, ``slope 4``), applied to the core radius too. Since the dPIE lens strength obeys
+b0 ∝ sigma^2, this is equivalent to the b0 ∝ L^(1/2) scaling of the internal parameterization. Freeing an
+exponent (or ``r_cut_ref`` / ``r_core_ref``) is a one-line change shown in the code comment below —
+useful as a systematics test, at the cost of the degeneracy between normalization and slope that the
+fixed-exponent convention exists to avoid. When member velocity dispersions are available, the standard
+refinement is to calibrate the exponents kinematically (Bergamini et al. 2019: sigma ∝ L^0.27-0.28 from
+MUSE member kinematics, with the r_cut exponent from the fundamental plane).
 
-The simulator's truth value is ``b0_ref = 0.190`` arcsec (at ``L_ref = 1.0``). The prior below is much
+The simulator's truth value is ``sigma_ref = 85.0`` km/s (at ``L_ref = 1.0``). The prior below is much
 wider than the truth to give the search room.
 """
 redshift_lens = 0.5
@@ -337,11 +343,16 @@ source_redshifts = [dataset.redshift for dataset in dataset_list]
 
 galaxy_models = al.galaxy_af_models_from_csv_tables(mass_table, point_table)
 
-# Main Lens Galaxies: free dPIE ra / rs / b0 on each; centre stays fixed at the CSV value.
+# Main Lens Galaxies: free dPIE sigma / r_core / r_cut on each; centre and redshifts
+# stay fixed at the CSV values, and the cosmology constants H0 / Om0 are pinned (they
+# are model *constants*, not parameters to sample — if left unset they would inherit
+# the config's default priors and float).
 for name in ("lens_0", "lens_1"):
-    galaxy_models[name].mass.ra = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
-    galaxy_models[name].mass.rs = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
-    galaxy_models[name].mass.b0 = af.UniformPrior(lower_limit=0.1, upper_limit=10.0)
+    galaxy_models[name].mass.sigma = af.UniformPrior(lower_limit=50.0, upper_limit=600.0)
+    galaxy_models[name].mass.r_core = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
+    galaxy_models[name].mass.r_cut = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
+    galaxy_models[name].mass.H0 = 67.66
+    galaxy_models[name].mass.Om0 = 0.30966
 
 # Host Halo: free mass_at_200; centre + redshift_object + redshift_source stay fixed.
 galaxy_models["host_halo"].dark.mass_at_200 = af.LogUniformPrior(
@@ -363,7 +374,7 @@ for i, dataset in enumerate(dataset_list):
         mean=float(np.mean(positions[:, 1])), sigma=3.0
     )
 
-# Scaling Tier Members (dPIEMassSph; ra, rs and b0 all derived from the
+# Scaling Tier Members (dPIEMassSph; sigma, r_core and r_cut all derived from the
 # reference-anchored scaling relation).
 #
 # The reference luminosity is an EXPLICIT FIXED constant (Lenstool's reference
@@ -372,23 +383,25 @@ for i, dataset in enumerate(dataset_list):
 # magnitude in a real analysis; here it is a fiducial L* = 1.0.
 reference_luminosity = 1.0
 
-# b0_ref is defined ONCE outside the loop — the tier's only free parameter, the
-# lens strength of a reference-magnitude galaxy. Every member's ra, rs and b0 are
-# derived by scaling the fixed reference values (ra_ref, rs_ref) or the free b0_ref
-# by its luminosity ratio, with the exponent fixed at the Faber-Jackson value 0.5.
-# The entire tier therefore contributes 1 free parameter regardless of how many
+# sigma_ref is defined ONCE outside the loop — the tier's only free parameter, the
+# fiducial velocity dispersion of a reference-magnitude galaxy (km/s, so the prior
+# range below is physically interpretable). Every member's sigma, r_core and r_cut
+# are derived by scaling the free sigma_ref or the fixed reference radii by its
+# luminosity ratio, with the exponents fixed at the Faber-Jackson values
+# (sigma ∝ L^0.25, radii ∝ L^0.5 — Lenstool's potfile vdslope/slope = 4). The
+# entire tier therefore contributes 1 free parameter regardless of how many
 # members are in scaling_galaxies.csv.
 #
-# To free the exponent as a systematics test, replace the fixed value with e.g.
-# `scaling_exponent = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)` — every
-# member's b0 then derives from two shared parameters, as in older versions of
-# this example.
+# To free an exponent as a systematics test, replace the fixed value with e.g.
+# `scaling_sigma_exponent = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)` —
+# every member's sigma then derives from two shared parameters.
 
-scaling_b0_ref = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)
-scaling_exponent = 0.5
+scaling_sigma_ref = af.UniformPrior(lower_limit=0.0, upper_limit=200.0)
+scaling_sigma_exponent = 0.25
+scaling_radius_exponent = 0.5
 
-scaling_ra_ref_fixed = 0.158
-scaling_rs_ref_fixed = 15.8
+scaling_r_core_ref_fixed = 0.158
+scaling_r_cut_ref_fixed = 15.8
 
 scaling_galaxies_list = []
 for centre, luminosity in zip(
@@ -398,9 +411,13 @@ for centre, luminosity in zip(
 
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = tuple(centre)
-    mass.ra = scaling_ra_ref_fixed * luminosity_ratio**scaling_exponent
-    mass.rs = scaling_rs_ref_fixed * luminosity_ratio**scaling_exponent
-    mass.b0 = scaling_b0_ref * luminosity_ratio**scaling_exponent
+    mass.sigma = scaling_sigma_ref * luminosity_ratio**scaling_sigma_exponent
+    mass.r_core = scaling_r_core_ref_fixed * luminosity_ratio**scaling_radius_exponent
+    mass.r_cut = scaling_r_cut_ref_fixed * luminosity_ratio**scaling_radius_exponent
+    mass.redshift_object = redshift_lens
+    mass.redshift_source = max(source_redshifts)
+    mass.H0 = 67.66
+    mass.Om0 = 0.30966
 
     scaling_galaxies_list.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 

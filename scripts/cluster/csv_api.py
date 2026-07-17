@@ -193,8 +193,26 @@ source_redshifts = [1.0, 2.0]
 # family carries the 2 source-galaxy Point components.
 
 mass_profiles = {
-    "lens_0": {"mass": al.mp.dPIEMassSph(centre=(0.0, 0.0), ra=8.0, rs=20.0, b0=3.0)},
-    "lens_1": {"mass": al.mp.dPIEMassSph(centre=(10.0, 8.0), ra=5.0, rs=12.0, b0=1.2)},
+    "lens_0": {
+        "mass": al.mp.dPIEMassSph(
+            centre=(0.0, 0.0),
+            sigma=330.0,
+            r_core=8.0,
+            r_cut=20.0,
+            redshift_object=redshift_lens,
+            redshift_source=max(source_redshifts),
+        )
+    },
+    "lens_1": {
+        "mass": al.mp.dPIEMassSph(
+            centre=(10.0, 8.0),
+            sigma=210.0,
+            r_core=5.0,
+            r_cut=12.0,
+            redshift_object=redshift_lens,
+            redshift_source=max(source_redshifts),
+        )
+    },
     "host_halo": {
         "dark": al.mp.NFWMCRLudlowSph(
             centre=(0.0, 0.0),
@@ -348,9 +366,9 @@ values as fixed defaults. To free a parameter for the non-linear search,
 mutate the returned model:
 
 ```python
-galaxy_models["lens_0"].mass.ra = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
-galaxy_models["lens_0"].mass.rs = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
-galaxy_models["lens_0"].mass.b0 = af.UniformPrior(lower_limit=0.1, upper_limit=10.0)
+galaxy_models["lens_0"].mass.sigma = af.UniformPrior(lower_limit=50.0, upper_limit=600.0)
+galaxy_models["lens_0"].mass.r_core = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
+galaxy_models["lens_0"].mass.r_cut = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
 ```
 
 This is the same composition pattern as ``af.Model(al.Galaxy, mass=...)``
@@ -363,11 +381,12 @@ galaxy_models = al.galaxy_af_models_from_csv_tables(
     point_table,
 )
 
-# Mutate selected params on the main-lens mass profiles into priors.
+# Mutate selected params on the main-lens mass profiles into priors (sigma is
+# Lenstool's fiducial v_disp in km/s; radii in arcsec).
 for name in ("lens_0", "lens_1"):
-    galaxy_models[name].mass.ra = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
-    galaxy_models[name].mass.rs = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
-    galaxy_models[name].mass.b0 = af.UniformPrior(lower_limit=0.1, upper_limit=10.0)
+    galaxy_models[name].mass.sigma = af.UniformPrior(lower_limit=50.0, upper_limit=600.0)
+    galaxy_models[name].mass.r_core = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
+    galaxy_models[name].mass.r_cut = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
 
 # Host halo: free mass_at_200, keep centre + redshifts fixed.
 galaxy_models["host_halo"].dark.mass_at_200 = af.LogUniformPrior(
@@ -391,7 +410,7 @@ scaling tier is implicitly one profile class per member, so naming each
 member and emitting an ``attr_name`` column would be more overhead than
 signal — every row uses the same ``dPIEMassSph`` mass profile with
 parameters derived from the reference-anchored scaling relation's shared
-``b0_ref`` normalization (see ``modeling.py``).
+``sigma_ref`` normalization (see ``modeling.py``).
 
 ``al.galaxy_table_to_csv`` and ``al.galaxy_table_from_csv`` are the
 schema-specific writers/readers. The simulator emits 10 scaling members
@@ -439,18 +458,18 @@ modelling in PyAutoLens. Where they live in the workflow:
 
 __Lenstool-Parameterized Rows__
 
-Because the ``profile_class`` column dispatches against the full ``al.mp`` namespace, a
-``mass.csv`` can carry rows in **Lenstool's native parameterization** via ``dPIEMassLenstool``
-— the columns become the ``.par``-file keywords verbatim::
+The default dPIE classes ARE Lenstool's native parameterization, so an elliptical ``dPIEMass``
+row's columns are the ``.par``-file keywords verbatim::
 
     galaxy,attr_name,profile_class,y,x,ellipticity,angle_pos,sigma,r_core,r_cut,redshift_object,redshift_source,H0,Om0,redshift
-    O1,mass,dPIEMassLenstool,1.479,-2.997,0.678,8.971,987.34,18.96,283.54,0.39,11.76,70.0,0.3,0.39
+    O1,mass,dPIEMass,1.479,-2.997,0.678,8.971,987.34,18.96,283.54,0.39,11.76,70.0,0.3,0.39
 
 ``sigma`` is Lenstool's fiducial ``v_disp`` (sigma_LT), radii are in arcsec, and the run's own
 cosmology travels as the flat ``H0`` / ``Om0`` columns. ``scripts/cluster/lenstool/`` builds its
 entire 149-component published model this way — the ``.par`` file becomes one canonical CSV. Note
 the multi-plane convention: ``redshift_source`` must be the tracer's *final* (highest) source
-plane.
+plane. (The internal ``(ra, rs, b0)`` parameterization remains available for CSV rows via the
+non-standard ``dPIEMassB0`` / ``dPIEMassB0Sph`` classes.)
 
 Light-profile CSVs (``light.csv``) support the linear / operated variants with qualified class
 names (``linear.Sersic``, ``operated.Gaussian``); plain names resolve to the standard profiles.
