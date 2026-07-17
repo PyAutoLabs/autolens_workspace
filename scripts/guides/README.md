@@ -10,6 +10,7 @@ most calculations.
 - `data_structures`: How the NumPy arrays containing results are structured and the API for using them.
 - `tracer` Performing ray-tracing and lensing calculations.
 - `galaxies` Creating and using galaxies and their mass and light profiles.
+- `coolest_interop` Exporting / importing lens models via the COOLEST standard for exchange with other lens modeling codes.
 
 # Folders
 
