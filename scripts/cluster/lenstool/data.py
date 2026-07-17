@@ -21,7 +21,7 @@ If you are a Lenstool user: each output CSV corresponds to one input you already
  - ``galcat.cat`` → ``members.csv``         (member catalogue: centres + shape/mag properties,
    the ``al.galaxy_table_from_csv`` schema)
  - ``best.par``   → ``mass.csv``            (every optimized ``potential`` section as one
-   ``dPIEMassLenstool`` row of the canonical named-galaxy model CSV — **the .par file as a
+   ``dPIEMass`` row of the canonical named-galaxy model CSV — **the .par file as a
    table**, read back with ``al.galaxy_models_from_csv`` like every other cluster dataset)
 
 __Attribution__
@@ -145,7 +145,7 @@ cluster-scale halo, the BCG, two light-concentration clumps and one galaxy model
 scaling relation) and 144 cluster members whose parameters Lenstool derived from the scaling
 relation. Every section carries the *same five numbers you would type into PyAutoLens*:
 
-    Lenstool ``potential``            →  ``dPIEMass.from_lenstool`` argument
+    Lenstool ``potential``            →  ``dPIEMass`` constructor argument
     ---------------------------------------------------------------------
     x_centre / y_centre  [arcsec]     →  centre=(y, x)
     ellipticity  (a²-b²)/(a²+b²)      →  ellipticity
@@ -268,7 +268,7 @@ al.galaxy_table_to_csv(
 )
 
 # The whole optimized model — 5 named halos + 144 scaling members — becomes ONE canonical
-# ``mass.csv``: each ``potential`` section is a ``dPIEMassLenstool`` row whose columns are the
+# ``mass.csv``: each ``potential`` section is a ``dPIEMass`` row whose columns are the
 # ``.par`` keywords verbatim (sigma, r_core, r_cut, ellipticity, angle_pos) plus the run's
 # redshifts and cosmology as flat values. ``modeling.py`` reads it back with the same
 # ``al.galaxy_models_from_csv`` call used throughout ``scripts/cluster/``.
@@ -281,7 +281,7 @@ profiles_by_galaxy = {}
 for h in halos:
     name = h["label"] if h["label"].startswith("O") else f"member_{h['label']}"
     profiles_by_galaxy[name] = {
-        "mass": al.mp.dPIEMassLenstool(
+        "mass": al.mp.dPIEMass(
             centre=(h["y"], h["x"]),
             ellipticity=h["ellipticity"],
             angle_pos=h["angle_pos"],
@@ -302,7 +302,7 @@ al.galaxy_models_to_csv(
     redshifts={name: 0.39 for name in profiles_by_galaxy},
 )
 
-print("Wrote point_datasets.csv, members.csv, mass.csv (149 dPIEMassLenstool rows).")
+print("Wrote point_datasets.csv, members.csv, mass.csv (149 dPIEMass rows).")
 
 """
 __Image Cutout__

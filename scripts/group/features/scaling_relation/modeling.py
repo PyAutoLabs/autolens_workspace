@@ -255,9 +255,10 @@ we use a fiducial ``reference_luminosity = 1.0``. The exponent is *fixed* at the
 normalization-slope degeneracy. Only luminosity ratios enter, so the luminosity units are irrelevant; magnitude
 catalogues convert via ``L / L_ref = 10 ** (0.4 * (m_ref - m))``.
 
-The dPIE-profile cluster-scale analogue — which also scales the core and truncation radii (``ra, rs ∝ L^0.5``,
-mirroring Lenstool's r_core / r_cut scaling) — is ``scripts/cluster/modeling.py``. To free the exponent as a
-systematics test, replace the fixed value with e.g. ``af.UniformPrior(lower_limit=0.0, upper_limit=1.0)``.
+The dPIE-profile cluster-scale analogue — expressed directly in Lenstool's native parameters
+(``sigma ∝ L^0.25``, ``r_core, r_cut ∝ L^0.5``, matching Lenstool's potfile scalings; equivalent to
+einstein_radius ∝ L^0.5 since the lens strength goes as sigma²) — is ``scripts/cluster/modeling.py``. To free the
+exponent as a systematics test, replace the fixed value with e.g. ``af.UniformPrior(lower_limit=0.0, upper_limit=1.0)``.
 
 Adding more scaling galaxies (e.g. by lengthening the centres + luminosity lists) does not add any free parameters
 to the model.

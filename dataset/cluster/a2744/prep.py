@@ -104,13 +104,16 @@ with open(OUT / "scaling_galaxies.csv", "w", newline="") as f:
 with open(OUT / "mass.csv", "w", newline="") as f:
     writer = csv.writer(f)
     writer.writerow(
-        ["galaxy", "attr_name", "profile_class", "y", "x", "ra", "rs", "b0",
+        ["galaxy", "attr_name", "profile_class", "y", "x", "sigma", "r_core", "r_cut",
          "mass_at_200", "redshift_object", "redshift_source", "redshift"]
     )
+    # sigma is Lenstool's fiducial v_disp (km/s); 290 km/s corresponds to a lens
+    # strength b0 ~ 3.0" at (z_l = 0.308, z_s = 5.662). These are initialization
+    # placeholders — the modeling script promotes sigma/r_core/r_cut to priors.
     for i, bcg in enumerate((bcg_1, bcg_2)):
         writer.writerow(
             [f"lens_{i}", "mass", "dPIEMassSph", f"{bcg[1]:.4f}", f"{bcg[2]:.4f}",
-             8.0, 20.0, 3.0, "", "", "", 0.308]
+             290.0, 8.0, 20.0, "", 0.308, redshift_source_max, 0.308]
         )
     writer.writerow(
         ["host_halo", "dark", "NFWMCRLudlowSph", f"{bcg_1[1]:.4f}", f"{bcg_1[2]:.4f}",

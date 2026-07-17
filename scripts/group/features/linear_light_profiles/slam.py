@@ -257,9 +257,21 @@ def source_lp_1(
 
     extra_galaxies = af.Collection(extra_mass_models) if extra_mass_models else None
 
-    # --- scaling lens galaxy models (light fixed, shared luminosity scaling relation) ---
-    scaling_factor = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
-    scaling_relation = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
+    # --- scaling lens galaxy models (light fixed, reference-anchored scaling relation) ---
+    # Lenstool convention: einstein_radius = einstein_radius_ref * (L / L_ref)^0.5, exponent
+    # FIXED at the Faber-Jackson value; the single free parameter einstein_radius_ref is the
+    # Einstein radius of a galaxy as bright as the reference. The reference luminosity is the
+    # brightest MAIN lens galaxy (the BGG) — only its luminosity anchors the relation, its
+    # (free) mass is NOT coupled to the tier. See scripts/group/slam.py for the full rationale.
+    main_luminosity_list = [
+        abs(tracer.galaxies[i].bulge.luminosity_within_circle_from(radius=10.0))
+        / pixel_scale**2
+        for i in range(n_main)
+    ]
+    reference_luminosity = max(main_luminosity_list)
+
+    einstein_radius_ref = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
+    scaling_exponent = 0.5
 
     scaling_mass_models = []
     for i in range(n_scaling):
@@ -273,7 +285,10 @@ def source_lp_1(
             abs(galaxy_with_intensity.bulge.luminosity_within_circle_from(radius=10.0))
             / pixel_scale**2
         )
-        mass.einstein_radius = scaling_factor * total_luminosity**scaling_relation
+        mass.einstein_radius = (
+            einstein_radius_ref
+            * (total_luminosity / reference_luminosity) ** scaling_exponent
+        )
 
         scaling_mass_models.append(
             af.Model(
@@ -720,9 +735,18 @@ def mass_total(
 
     extra_galaxies = af.Collection(extra_mass_models) if extra_mass_models else None
 
-    # --- scaling galaxies: fixed light, free shared scaling relation ---
-    scaling_factor = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
-    scaling_relation = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
+    # --- scaling galaxies: fixed light, reference-anchored scaling relation ---
+    # Same Lenstool convention as source_lp_1: free einstein_radius_ref, exponent fixed
+    # at 0.5, reference luminosity = the brightest main lens (BGG).
+    main_luminosity_list = [
+        abs(tracer.galaxies[i].bulge.luminosity_within_circle_from(radius=10.0))
+        / pixel_scale**2
+        for i in range(n_lenses)
+    ]
+    reference_luminosity = max(main_luminosity_list)
+
+    einstein_radius_ref = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
+    scaling_exponent = 0.5
 
     scaling_mass_models = []
     for i in range(n_scaling):
@@ -736,7 +760,10 @@ def mass_total(
             abs(galaxy_with_intensity.bulge.luminosity_within_circle_from(radius=10.0))
             / pixel_scale**2
         )
-        mass.einstein_radius = scaling_factor * total_luminosity**scaling_relation
+        mass.einstein_radius = (
+            einstein_radius_ref
+            * (total_luminosity / reference_luminosity) ** scaling_exponent
+        )
 
         scaling_mass_models.append(
             af.Model(
