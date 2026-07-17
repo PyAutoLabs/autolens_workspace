@@ -202,6 +202,7 @@
       "autolens_workspace/start_here.py",
       "cluster/modeling.py",
       "csv_api.py",
+      "prep.py",
       "scripts/cluster/csv_api.py",
       "scripts/cluster/modeling.py",
       "scripts/cluster/simulator.py",
@@ -1470,6 +1471,21 @@
     "path": "scripts/guides/advanced/over_sampling_chaining.py",
     "summary": "Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated on a higher resolution grid than the image data to ensure the calculation is accurate.",
     "title": "Chaining: Over Sample"
+  },
+  {
+    "contents": [
+      "Simulate",
+      "Smooth Model Fit",
+      "Joint Fit",
+      "Dkappa Map",
+      "Iterative Fit",
+      "Evidence Sampling"
+    ],
+    "cross_refs": [],
+    "notebook": "notebooks/guides/advanced/potential_correction.ipynb",
+    "path": "scripts/guides/advanced/potential_correction.py",
+    "summary": "Parametric lens mass models (e.g. the `PowerLaw` used throughout the workspace) are smooth: their convergence and deflection angles vary gradually across the image plane. Real lens galaxies are not perfectly smooth. They contain substructure \u2014 dark matter subhaloes, globular clusters, satellite galaxies \u2014 and their large-scale mass distributions can depart from ellipsoidal symmetry in ways no simple parametric profile captures.",
+    "title": "Potential Corrections (Gravitational Imaging)"
   },
   {
     "contents": [
@@ -3897,6 +3913,40 @@
   },
   {
     "contents": [
+      "Simplifications",
+      "Prerequisites",
+      "Dataset",
+      "Arc Mask",
+      "Smooth Starting Model",
+      "Dpsi Mesh",
+      "Dpsi Gradient Operator",
+      "Source Gradients",
+      "PSF Blur Matrix",
+      "Dpsi Mapping Matrix",
+      "Source Inversion Blocks",
+      "Joint System",
+      "Solve",
+      "Dkappa Map",
+      "Evidence Terms",
+      "Verification",
+      "JAX / xp",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "autolens_workspace_test/scripts/jax_likelihood_functions/imaging/potential_correction.py",
+      "features/pixelization/likelihood_function.py",
+      "guides/advanced/potential_correction.ipynb",
+      "guides/advanced/potential_correction.py",
+      "imaging/features/pixelization/likelihood_function.ipynb",
+      "imaging/likelihood_function.ipynb"
+    ],
+    "notebook": "notebooks/imaging/features/potential_correction/likelihood_function.ipynb",
+    "path": "scripts/imaging/features/potential_correction/likelihood_function.py",
+    "summary": "This script provides a step-by-step guide of the **PyAutoLens** potential-correction `log_likelihood_function` (the Bayesian evidence of `al.pc.FitDpsiSrcImaging`), which jointly inverts `Imaging` data for a pixelized source and pixelized corrections $\\delta\\psi$ to the lensing potential.",
+    "title": "__Log Likelihood Function: Potential Correction (Gravitational Imaging)__"
+  },
+  {
+    "contents": [
       "Prerequisites",
       "Dataset & Mask",
       "Over Sampling",
@@ -5019,6 +5069,49 @@
   },
   {
     "contents": [
+      "Simplifications",
+      "Prerequisites",
+      "Dataset",
+      "Source Inversion Blocks",
+      "Dpsi Mesh",
+      "Correction Response",
+      "Joint Response",
+      "Dense Route",
+      "Sparse (w-tilde) Route",
+      "Solve",
+      "Dkappa Map",
+      "Evidence Terms",
+      "Verification",
+      "JAX / xp",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "autolens_workspace_test/scripts/jax_likelihood_functions/interferometer/potential_correction.py",
+      "imaging/features/potential_correction/likelihood_function.ipynb",
+      "interferometer/features/pixelization/likelihood_function.ipynb",
+      "interferometer/features/pixelization/likelihood_function.py",
+      "interferometer/features/potential_correction/start_here.ipynb",
+      "start_here.py"
+    ],
+    "notebook": "notebooks/interferometer/features/potential_correction/likelihood_function.ipynb",
+    "path": "scripts/interferometer/features/potential_correction/likelihood_function.py",
+    "summary": "This script provides a step-by-step guide of the **PyAutoLens** visibility-space potential-correction `log_likelihood_function` (the Bayesian evidence of `al.pc.FitDpsiSrcInterferometer`), which jointly inverts `Interferometer` data for a pixelized source and pixelized corrections $\\delta\\psi$ to the lensing potential.",
+    "title": "__Log Likelihood Function: Potential Correction (Interferometer)__"
+  },
+  {
+    "contents": [],
+    "cross_refs": [
+      "guides/advanced/potential_correction.ipynb",
+      "interferometer/start_here.ipynb",
+      "interferometer/start_here.py"
+    ],
+    "notebook": "notebooks/interferometer/features/potential_correction/start_here.ipynb",
+    "path": "scripts/interferometer/features/potential_correction/start_here.py",
+    "summary": "This example performs gravitational imaging on interferometer data: pixelized corrections $\\delta\\psi$ to the lensing potential are reconstructed jointly with the pixelized source, revealing mass structure (e.g. dark subhaloes) the smooth lens model omits, as a convergence-correction map $\\delta\\kappa = \\frac{1}{2}\\nabla^2\\delta\\psi$.",
+    "title": "Feature: Potential Correction (Gravitational Imaging)"
+  },
+  {
+    "contents": [
       "SLaM Pipelines",
       "Grid Search",
       "Pixelized Source",
@@ -5298,6 +5391,24 @@
     "path": "scripts/multi/features/imaging_and_interferometer/simulator.py",
     "summary": "This script simulates `Interferometer` data of a 'galaxy-scale' strong lens where:",
     "title": "Simulator: Mutli Interferometer"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Quasar Image Masking",
+      "Model",
+      "Analysis Factor & Factor Graph",
+      "Search & Model-Fit",
+      "Result"
+    ],
+    "cross_refs": [
+      "point_source/features/deblending.py",
+      "point_source/start_here.py"
+    ],
+    "notebook": "notebooks/multi/features/imaging_and_point_source/modeling.ipynb",
+    "path": "scripts/multi/features/imaging_and_point_source/modeling.py",
+    "summary": "This script jointly fits CCD imaging of a lensed quasar's **extended arcs** and its **point-source observables** (image positions and time delays) with a **single lens mass model**, using PyAutoFit's factor-graph API to sample the joint likelihood with one non-linear search.",
+    "title": "Modeling: Combined Imaging + Point Source"
   },
   {
     "contents": [
@@ -5824,7 +5935,27 @@
     "notebook": "notebooks/point_source/start_here.ipynb",
     "path": "scripts/point_source/start_here.py",
     "summary": "Strong gravitational lenses often have point sources (e.g. quasars) that are being lensed, appearing as two or four distinct point-like images. These lenses are particularly useful for measuring cosmological parameters like the Hubble constant, and for studying the small-scale properties of dark matter.",
-    "title": "Start Here: Imaging"
+    "title": "Start Here: Point Source"
+  },
+  {
+    "contents": [
+      "Dataset (Strong)",
+      "Dataset (Weak)",
+      "Model",
+      "Analysis Factors & Factor Graph",
+      "Search & Model-Fit",
+      "Result"
+    ],
+    "cross_refs": [
+      "cluster/start_here.py",
+      "modeling.py",
+      "weak/features/strong_lensing/modeling.py",
+      "weak/start_here.py"
+    ],
+    "notebook": "notebooks/weak/features/strong_lensing/a2744.ipynb",
+    "path": "scripts/weak/features/strong_lensing/a2744.py",
+    "summary": "This script constrains a **single cluster-scale mass model** of **Abell 2744** (\"Pandora's Cluster\", z = 0.308) using both its **strong-lensing** multiple images and its **weak-lensing** shear catalogue \u2014 real data on both sides, fitted jointly with one non-linear search via PyAutoFit's factor-graph API.",
+    "title": "Real Data: Combined Strong + Weak Lensing of Abell 2744"
   },
   {
     "contents": [
@@ -5978,5 +6109,34 @@
     "path": "scripts/weak/simulator.py",
     "summary": "This script simulates a weak gravitational lensing shear catalogue. Unlike the imaging simulator (which produces a 2D image of the lensed source) the weak-lensing simulator produces a *catalogue* of (gamma_2, gamma_1) shear measurements at the (y, x) positions of a population of background source galaxies.",
     "title": "Simulator: Weak Lensing"
+  },
+  {
+    "contents": [
+      "JAX",
+      "Google Colab Setup",
+      "Imports",
+      "Catalogue Download",
+      "Catalogue Load & Projection",
+      "Quality Cuts",
+      "Weak Dataset",
+      "Mass Map",
+      "Model",
+      "Model Fit",
+      "Result",
+      "Model Your Own Catalogue",
+      "Simulator",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "/weak/likelihood_function.py",
+      "/weak/modeling.py",
+      "/weak/real_data/a2744.py",
+      "autolens_workspace/start_here.py",
+      "scripts/weak/simulator.py"
+    ],
+    "notebook": "notebooks/weak/start_here.ipynb",
+    "path": "scripts/weak/start_here.py",
+    "summary": "Gravitational lensing does not stop at the spectacular arcs and multiple images of strong lensing. Every galaxy behind a massive structure is slightly sheared by its gravity \u2014 a percent-level distortion invisible in any single galaxy but measurable statistically across thousands. This is **weak lensing**, and it traces mass on scales far beyond the strong-lensing core.",
+    "title": "Start Here: Weak Lensing"
   }
 ]
