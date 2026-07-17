@@ -1,4 +1,4 @@
-galaxy,attr_name,profile_class,y,x,ra,rs,b0,mass_at_200,redshift_object,redshift_source,redshift
-lens_0,mass,dPIEMassSph,-30.7476,14.0880,8.0,20.0,3.0,,,,0.308
-lens_1,mass,dPIEMassSph,-10.6992,-3.8597,8.0,20.0,3.0,,,,0.308
+galaxy,attr_name,profile_class,y,x,sigma,r_core,r_cut,mass_at_200,redshift_object,redshift_source,redshift
+lens_0,mass,dPIEMassSph,-30.7476,14.0880,290.0,8.0,20.0,,0.308,5.662,0.308
+lens_1,mass,dPIEMassSph,-10.6992,-3.8597,290.0,8.0,20.0,,0.308,5.662,0.308
 host_halo,dark,NFWMCRLudlowSph,-30.7476,14.0880,,,,2000000000000000.0,0.308,5.662,0.308

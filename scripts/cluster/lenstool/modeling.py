@@ -39,7 +39,7 @@ __Three traps to know about__
 
  - **sigma is the fiducial velocity dispersion sigma_LT**, not the physical central velocity
    dispersion: sigma_0 = sqrt(3/2) * sigma_LT (Eliasdottir et al. 2007, App. A). PyAutoLens's
-   ``from_lenstool`` / ``dPIEMassLenstool`` take sigma_LT — quote ``v_disp`` values unchanged.
+   ``dPIEMass`` takes sigma_LT — quote ``v_disp`` values unchanged.
    Feeding a *measured* stellar velocity dispersion here overestimates the mass by 50%.
  - **The x axis points West** in Lenstool's relative frame (data.py verifies this against the
    data). All coordinates in this script live in that frame, so numbers compare directly to the
@@ -57,7 +57,7 @@ D_LS/D_S and hence every mass normalization at the percent level.
 __Contents__
 
 - **Load Data:** the CSVs written by ``data.py``.
-- **The Published Model, Reconstructed:** 149 ``from_lenstool`` profiles + 21 point sources.
+- **The Published Model, Reconstructed:** 149 Lenstool-native ``dPIEMass`` profiles + 21 point sources.
 - **Verification I — source-plane compactness:** observed images trace to tight source groups.
 - **Verification II — image-plane RMS (optional):** forward-solve vs the published 0.32".
 - **Critical Curves (optional):** the per-source-plane critical curves over the HST image.
@@ -105,7 +105,7 @@ __Load Data__
    exist, the model-optimized values of ``best.par`` otherwise).
  - ``mass.csv`` — the complete optimized mass model in the **canonical named-galaxy CSV**
    (the same ``al.galaxy_models_from_csv`` format every cluster script uses): 149 rows of
-   ``profile_class = dPIEMassLenstool``, one per ``potential`` section of ``best.par``, whose
+   ``profile_class = dPIEMass``, one per ``potential`` section of ``best.par``, whose
    columns are the ``.par`` keywords verbatim. The five individually-optimized halos are named
    O1 (cluster-scale), O2 (BCG), O3 ("dNW"), O4 ("ICL"), O5 ("eCM"); the 144 scaling members
    are ``member_<n>``.
@@ -124,14 +124,15 @@ mass_table = al.galaxy_models_from_csv(dataset_path / "mass.csv", family="mass")
 members_table = al.galaxy_table_from_csv(file_path=dataset_path / "members.csv")
 
 print(
-    f"mass.csv: {len(mass_table.rows)} dPIEMassLenstool rows | "
+    f"mass.csv: {len(mass_table.rows)} dPIEMass rows | "
     f"members.csv: {len(members_table.luminosities)} catalogue members"
 )
 
 """
 __The Published Model, Reconstructed__
 
-Every ``potential`` section of ``best.par`` becomes one ``al.mp.dPIEMass`` via ``from_lenstool``
+Every ``potential`` section of ``best.par`` becomes one ``al.mp.dPIEMass`` — the default dPIE is
+Lenstool's native parameterization, so the ``.par`` keywords are the constructor arguments
 — the arguments are the ``.par`` keywords, verbatim. This is the whole point of the Lenstool-native
 API: nothing is transcribed by hand, and the sqrt(3/2) sigma convention, the ellipticity
 conversion and the D_LS/D_S normalization are handled (and unit-tested) inside PyAutoLens.
@@ -147,7 +148,7 @@ to the same beta = D_LS/D_S ratios in the same cosmology.
 """
 Z_REF_SOURCE = max(float(dataset.redshift) for dataset in dataset_list)
 
-# One call: every mass.csv row instantiates its dPIEMassLenstool with the .par values —
+# One call: every mass.csv row instantiates its dPIEMass with the .par values —
 # the redshift_source (final-plane) normalization and the run's H0/Om0 travel inside the
 # CSV columns, so nothing here needs to remember them.
 lens_galaxies = list(al.galaxies_from_csv_tables(mass_table).values())
@@ -283,7 +284,7 @@ __The Refit__
 
 Everything above used the published answer. A real analysis *fits*: the model below reproduces the
 composition Lenstool optimized (``input.par``), using the Lenstool-parameterized profile
-``al.mp.dPIEMassLenstool`` so every free parameter, prior bound and posterior number is in
+``al.mp.dPIEMass`` so every free parameter, prior bound and posterior number is in
 Lenstool units:
 
  - **O1, cluster halo**: centre U(-5,5)" (both axes), ellipticity U(0,0.8), angle U(-90,90),
@@ -296,7 +297,7 @@ Lenstool units:
    r_cut U(50,1000) kpc, sigma U(0,700). [7 free]
  - **O5 "eCM"**: centre fixed; ellipticity U(0,0.6), angle U(-90,90), r_core U(0,10) kpc,
    r_cut U(10,200) kpc, sigma U(0.1,300). [5 free]
- - **potfile members**: every catalogue member gets a ``dPIEMassLenstool`` with centre, shape and
+ - **potfile members**: every catalogue member gets a ``dPIEMass`` with centre, shape and
    angle *fixed to the light* (``galcat.cat``) and its sigma / r_cut derived from two shared free
    parameters exactly as ``potfile`` defines —
 
@@ -329,7 +330,7 @@ for centre, luminosity, ellipticity, angle_pos in zip(
     members_table.properties["ellipticity"],
     members_table.properties["angle_pos"],
 ):
-    mass = af.Model(al.mp.dPIEMassLenstool)
+    mass = af.Model(al.mp.dPIEMass)
     mass.centre = tuple(centre)
     mass.ellipticity = ellipticity
     mass.angle_pos = angle_pos

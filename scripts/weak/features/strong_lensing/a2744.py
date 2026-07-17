@@ -150,9 +150,9 @@ redshift_lens = 0.308
 galaxy_models = al.galaxy_af_models_from_csv_tables(mass_table, point_table)
 
 for name in ("lens_0", "lens_1"):
-    galaxy_models[name].mass.ra = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
-    galaxy_models[name].mass.rs = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
-    galaxy_models[name].mass.b0 = af.UniformPrior(lower_limit=0.1, upper_limit=10.0)
+    galaxy_models[name].mass.sigma = af.UniformPrior(lower_limit=50.0, upper_limit=600.0)
+    galaxy_models[name].mass.r_core = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
+    galaxy_models[name].mass.r_cut = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
 
 galaxy_models["host_halo"].dark.mass_at_200 = af.LogUniformPrior(
     lower_limit=10**14.5, upper_limit=10**16.0
@@ -168,11 +168,13 @@ for i, dataset in enumerate(dataset_list):
         mean=float(np.mean(positions[:, 1])), sigma=3.0
     )
 
-scaling_b0_ref = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)
-scaling_exponent = 0.5
+scaling_sigma_ref = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+scaling_sigma_exponent = 0.25
+scaling_radius_exponent = 0.5
 reference_luminosity = 1.0
-scaling_ra_ref_fixed = 0.158
-scaling_rs_ref_fixed = 15.8
+scaling_r_core_ref_fixed = 0.158
+scaling_r_cut_ref_fixed = 15.8
+source_redshift_max = max(float(d.redshift) for d in dataset_list)
 
 scaling_galaxies_list = []
 for centre, luminosity in zip(
@@ -182,9 +184,13 @@ for centre, luminosity in zip(
 
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = tuple(centre)
-    mass.ra = scaling_ra_ref_fixed * luminosity_ratio**scaling_exponent
-    mass.rs = scaling_rs_ref_fixed * luminosity_ratio**scaling_exponent
-    mass.b0 = scaling_b0_ref * luminosity_ratio**scaling_exponent
+    mass.sigma = scaling_sigma_ref * luminosity_ratio**scaling_sigma_exponent
+    mass.r_core = scaling_r_core_ref_fixed * luminosity_ratio**scaling_radius_exponent
+    mass.r_cut = scaling_r_cut_ref_fixed * luminosity_ratio**scaling_radius_exponent
+    mass.redshift_object = redshift_lens
+    mass.redshift_source = source_redshift_max
+    mass.H0 = 67.66
+    mass.Om0 = 0.30966
 
     scaling_galaxies_list.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
