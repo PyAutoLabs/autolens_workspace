@@ -23,6 +23,7 @@ dataset/cluster/a2744/data.fits
 !dataset/cluster/simple/**
 !dataset/interferometer/uv_wavelengths/**
 !dataset/interferometer/many_visibilities/**
+!dataset/interferometer/sdp81/**
 notebooks/plot/
 test_report.md
 test_results/

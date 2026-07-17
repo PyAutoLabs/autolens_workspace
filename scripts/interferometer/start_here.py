@@ -16,7 +16,7 @@ __Contents__
 
 - **JAX:** JAX acceleration for fast GPU/CPU model-fitting.
 - **NUFFT (nufftax):** A JAX-native Non-Uniform FFT, used for the image to uv-plane transform of light profiles.
-- **Number of Visibilities:** This example fits a low-resolution interferometric dataset, but the same workflow scales to millions of visibilities.
+- **Number of Visibilities:** This example fits real ALMA data (SDP.81, ~108k visibilities); the same workflow scales to hundreds of millions.
 - **Google Colab Setup:** The introduction `start_here` examples are available on Google Colab, which allows you to run them.
 - **Imports:** Import the required Python libraries.
 - **Dataset:** Load and plot the strong lens dataset.
@@ -64,14 +64,14 @@ transformer (`TransformerNUFFTPyNUFFT`) is also available as a non-JAX fallback.
 
 __Number of Visibilities__
 
-This example fits a **low-resolution interferometric dataset** with a small number of visibilities (273). The
-dataset is intentionally minimal so that the example runs quickly and allows you to become familiar with the API
-and modeling workflow.
+This example fits **real ALMA data**: the long-baseline Science Verification observations of SDP.81,
+continuum-averaged to ~108,000 visibilities (~5 MB). Averaging keeps the long baselines, so the data
+retains its ~25-30 mas resolution — hence the fine 0.025"/pixel real-space mask above.
 
-The same modeling workflow — light profiles + `TransformerNUFFT` (nufftax) — scales to high-resolution
-datasets with **millions to hundreds of millions of visibilities** (e.g. ALMA), with no special handling
-beyond switching the transformer choice. Both computational time and VRAM use stay manageable on a GPU
-because `nufftax` runs the NUFFT inside the JAX jit/vmap pipeline.
+The same modeling workflow — light profiles + `TransformerNUFFT` (nufftax) — scales to the full
+**millions to hundreds of millions of visibilities** of the un-averaged ALMA measurement sets, with no
+special handling beyond the transformer choice. Both computational time and VRAM use stay manageable on
+a GPU because `nufftax` runs the NUFFT inside the JAX jit/vmap pipeline.
 
 Pixelized source reconstructions (see `features/pixelization`) remain the right tool when the source has
 complex, irregular morphology that simple light profiles cannot capture. They are no longer required
@@ -135,8 +135,8 @@ pixel scale in real space.
 mask_radius = 3.5
 
 real_space_mask = al.Mask2D.circular(
-    shape_native=(256, 256),
-    pixel_scales=0.1,
+    shape_native=(300, 300),
+    pixel_scales=0.025,
     radius=mask_radius,
 )
 
@@ -157,26 +157,29 @@ We must also choose a transformer for mapping the real-space image to visibiliti
   for verification and for the pixelized source reconstruction's sparse-operator workflow (see
   `features/pixelization`).
 
-We load a low resolution Square Mile Array (SMA) dataset for this example, which has just 273 visibilities.
-We use `TransformerNUFFT` so that this example reflects the recommended workflow at any visibility count;
-for 273 visibilities `TransformerDFT` would also work and produce a near-identical result.
+We load the ALMA long-baseline Science Verification observations of **SDP.81** — the famous
+z = 3.042 dusty star-forming galaxy lensed into an Einstein ring by a z = 0.299 foreground
+galaxy. This is a real, continuum-averaged dataset of ~108,000 visibilities (~5 MB), exported
+from the public ALMA measurement sets (see `scripts/interferometer/casa_reduction.py`).
+
+We use `TransformerNUFFT` (nufftax) so that the image-to-uv transform runs at full GPU speed —
+the recommended workflow at any visibility count, from a handful up to the hundreds of millions
+typical of ALMA.
 """
-dataset_name = "simple"
+dataset_name = "sdp81"
 dataset_path = Path("dataset") / "interferometer" / dataset_name
 
 """
-__Dataset Auto-Simulation__
+__Dataset Availability__
 
-If the dataset does not already exist on your system, it will be created by running the corresponding
-simulator script. This ensures that all example scripts can be run without manually simulating data first.
+The SDP.81 visibilities ship with the workspace (a ~5 MB continuum export of the public ALMA
+Science Verification measurement sets). If the folder is missing, the CASA export recipe that
+produces these FITS files is described in `scripts/interferometer/casa_reduction.py`.
 """
 if not dataset_path.exists():
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [sys.executable, "scripts/interferometer/simulator.py"],
-        check=True,
+    raise FileNotFoundError(
+        f"SDP.81 dataset not found at {dataset_path}. It ships with the workspace; if missing, "
+        "export it via the CASA recipe in scripts/interferometer/casa_reduction.py."
     )
 
 dataset = al.Interferometer.from_fits(
@@ -192,12 +195,13 @@ aplt.subplot_interferometer_dirty_images(dataset=dataset)
 """
 __Model__
 
-To perform lens modeling we must define a lens model, describing the light profiles of 
-the source galaxy, and the mass profile of the lens galaxy.
+To perform lens modeling we must define a lens model, describing the light profile of
+the source galaxy and the mass profile of the lens galaxy. At ALMA wavelengths SDP.81's
+foreground lens galaxy emits negligibly, so we model only its mass (no lens light).
 
-A brilliant lens model to start with is one which uses a Multi Gaussian Expansion (MGE) 
-to model the lens and source light, and a Singular Isothermal Ellipsoid (SIE) plus 
-shear to model the lens mass. 
+A brilliant lens model to start with is one which uses a Multi Gaussian Expansion (MGE)
+to model the source light, and a Singular Isothermal Ellipsoid (SIE) plus
+shear to model the lens mass.
 
 Full details of why this models is so good are provided in the main workspace docs, 
 but in a nutshell it  provides an excellent balance of being fast to fit, flexible 
@@ -213,13 +217,13 @@ use the PyAutoLens Model API to compose the over lens model.
 
 mass = af.Model(al.mp.Isothermal)
 shear = af.Model(al.mp.ExternalShear)
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.299, mass=mass, shear=shear)
 
 # Source galaxy
 source_bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius, total_gaussians=5, centre_prior_is_uniform=False
 )
-source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
+source = af.Model(al.Galaxy, redshift=3.042, bulge=source_bulge)
 
 # Compose model
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
