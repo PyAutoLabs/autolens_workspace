@@ -343,12 +343,16 @@ source_redshifts = [dataset.redshift for dataset in dataset_list]
 
 galaxy_models = al.galaxy_af_models_from_csv_tables(mass_table, point_table)
 
-# Main Lens Galaxies: free dPIE sigma / r_core / r_cut on each; centre, redshifts
-# and cosmology (H0, Om0) stay fixed at the CSV values.
+# Main Lens Galaxies: free dPIE sigma / r_core / r_cut on each; centre and redshifts
+# stay fixed at the CSV values, and the cosmology constants H0 / Om0 are pinned (they
+# are model *constants*, not parameters to sample — if left unset they would inherit
+# the config's default priors and float).
 for name in ("lens_0", "lens_1"):
     galaxy_models[name].mass.sigma = af.UniformPrior(lower_limit=50.0, upper_limit=600.0)
     galaxy_models[name].mass.r_core = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
     galaxy_models[name].mass.r_cut = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
+    galaxy_models[name].mass.H0 = 67.66
+    galaxy_models[name].mass.Om0 = 0.30966
 
 # Host Halo: free mass_at_200; centre + redshift_object + redshift_source stay fixed.
 galaxy_models["host_halo"].dark.mass_at_200 = af.LogUniformPrior(

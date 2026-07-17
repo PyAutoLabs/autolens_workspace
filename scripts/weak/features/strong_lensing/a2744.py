@@ -153,6 +153,8 @@ for name in ("lens_0", "lens_1"):
     galaxy_models[name].mass.sigma = af.UniformPrior(lower_limit=50.0, upper_limit=600.0)
     galaxy_models[name].mass.r_core = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
     galaxy_models[name].mass.r_cut = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
+    galaxy_models[name].mass.H0 = 67.66
+    galaxy_models[name].mass.Om0 = 0.30966
 
 galaxy_models["host_halo"].dark.mass_at_200 = af.LogUniformPrior(
     lower_limit=10**14.5, upper_limit=10**16.0
