@@ -277,6 +277,48 @@ sampled with a non-linear search, using the inversion's Bayesian evidence as the
 This recovers both localised subhaloes and extended perturbations (e.g. Gaussian-random-field departures — see
 `ag.mp.GaussianRandomField` for simulating them) with the regularization set objectively by the data.
 
+__Interferometer__
+
+Gravitational imaging's benchmark detections are radio/VLBI (the B1938+666 results above), and `al.pc` supports
+`Interferometer` datasets in visibility space through the **sparse-operator (w-tilde) route**, whose cost scales
+with real-space mask pixels independent of the visibility count. The certified recipe (validated on realistic
+earth-rotation-synthesis coverage at ~10^4 visibilities, where both engines recover a simulated
+$10^{10} M_\odot$ subhalo at ~9$\sigma$ with the dkappa peak 0.34" from the truth) is:
+
+    # the real-space mask stays a filled circle (it defines the FFT extent);
+    # the corrections are restricted to an arc-tracing sub-mask
+    dataset = dataset.apply_sparse_operator()   # precompute the w-tilde operator (cache it to disk!)
+
+    fit = al.pc.FitDpsiSrcInterferometer(
+        dataset=dataset,
+        lens_start=lens_smooth,
+        source_start=source_start,
+        dpsi_pixelization=dpsi_pixelization,
+        src_pixelization=src_pixelization,
+        dpsi_mask=arc_dpsi_mask,
+    )
+    evidence = fit.log_evidence            # one-shot joint inversion (sparse route)
+
+    iter_fit = al.pc.IterFitDpsiSrcInterferometer(
+        dataset=dataset,
+        lens_start=lens_smooth,
+        dpsi_pixelization=dpsi_pixelization,
+        src_pixelization=src_pixelization,
+        dpsi_mask=arc_dpsi_mask,
+        gauge_constraints=True,
+        reg_optimize_every=1,              # evidence-control the regularizations each step
+    )
+    s_opt, dpsi_opt = iter_fit.solve_joint_optimization(
+        x0=fit.src_dpsi_slim,              # warm-start from the one-shot solution
+    )
+
+Two practices matter, both mirroring the published pipelines: **warm-start the iterative engine from the
+one-shot solution** (it then refines inside the right basin instead of searching from zero), and let the
+**evidence control the regularization strengths** (`reg_optimize_every`) rather than fixing them — the Bayesian
+evidence consistently ranks over-fit or degenerate solutions below the recovering ones, so evidence-driven
+selection self-protects. Always check first that your smooth-model source fit reaches chi-squared per degree of
+freedom near ~1-3: outside that regime the corrections absorb source-model error rather than real structure.
+
 __Wrap Up__
 
 Gravitational imaging turns the residuals of a smooth lens model into a map of the missing mass. The `al.pc`
