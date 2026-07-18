@@ -52,9 +52,9 @@ a recipe here — that script is kept current with the API.
 ## Testing
 
 On CI, every PR is gated by three workflows on Python **3.12 and 3.13**: `smoke_tests.yml` (the
-smoke runner below — the definition of green), `navigator_check.yml` (PyAutoBuild's reusable
+smoke runner below — the definition of green), `navigator_check.yml` (PyAutoHands's reusable
 navigator-catalogue check; see *Notebooks vs Scripts*), and `url_check.yml` (link checking). The
-smoke and navigator jobs check out **PyAutoBuild** as a sibling and run the PyAuto* libraries from
+smoke and navigator jobs check out **PyAutoHands** as a sibling and run the PyAuto* libraries from
 the **same-named branch** of each source repo, so a workspace PR is validated against matching
 library branches.
 
@@ -100,13 +100,13 @@ and markdown cells.
 
 ### Generating notebooks
 
-After updating scripts, regenerate the notebooks using the PyAutoBuild tool (run from the
+After updating scripts, regenerate the notebooks using the PyAutoHands tool (run from the
 workspace root):
 
 ```bash
 pip install ipynb-py-convert
-git clone https://github.com/PyAutoLabs/PyAutoBuild.git ../PyAutoBuild
-PYTHONPATH=../PyAutoBuild/autobuild python3 ../PyAutoBuild/autobuild/generate.py autolens
+git clone https://github.com/PyAutoLabs/PyAutoHands.git ../PyAutoHands
+PYTHONPATH=../PyAutoHands/autobuild python3 ../PyAutoHands/autobuild/generate.py autolens
 ```
 
 Commit the regenerated notebooks alongside the script changes.
@@ -152,14 +152,14 @@ The PyAutoLens stack (all on the `PyAutoLabs` GitHub org):
 - https://github.com/PyAutoLabs/PyAutoFit — model composition + non-linear search
 - https://github.com/PyAutoLabs/PyAutoGalaxy — light/mass profiles, galaxies
 - https://github.com/PyAutoLabs/PyAutoLens — tracer, ray-tracing, lensing fits
-- https://github.com/PyAutoLabs/PyAutoBuild — notebook generation + CI
+- https://github.com/PyAutoLabs/PyAutoHands — notebook generation + CI
 - https://github.com/PyAutoLabs/HowToLens — tutorial lecture series that teaches strong lensing
   from first principles; the starting point for beginners new to lensing
 - https://github.com/PyAutoLabs/autolens_assistant — science-assistant workspace (literature
   wiki; see Scientific Context above)
 
 For local development, these are typically cloned as siblings of this repo (`../PyAutoLens`,
-`../PyAutoGalaxy`, `../PyAutoBuild`, etc.).
+`../PyAutoGalaxy`, `../PyAutoHands`, etc.).
 
 ## Task Workflows
 
