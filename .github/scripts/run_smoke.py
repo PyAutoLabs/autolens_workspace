@@ -9,7 +9,7 @@ through failures and exits non-zero if any entry failed.
 
 Notebook execution uses `jupyter nbconvert --to notebook --execute`.
 On failure the runner regenerates the single failing notebook from its
-source `.py` script via PyAutoBuild's `py_to_notebook` and retries
+source `.py` script via PyAutoHands's `py_to_notebook` and retries
 once — this catches stale notebooks where the script has moved on but
 the on-disk `.ipynb` wasn't refreshed by `/pre_build`'s
 `generate.py`. Whole-workspace regeneration stays the responsibility
@@ -131,7 +131,7 @@ def regenerate_notebook(nb_rel: str) -> Path:
     The regenerated copy lives in /tmp; the on-disk `notebooks/` tree is
     never modified, so a smoke run leaves the worktree clean.
     """
-    from build_util import py_to_notebook  # PyAutoBuild/autobuild on PYTHONPATH
+    from build_util import py_to_notebook  # PyAutoHands/autobuild on PYTHONPATH
 
     script_path = SCRIPTS_DIR / Path(nb_rel).with_suffix(".py")
     if not script_path.exists():

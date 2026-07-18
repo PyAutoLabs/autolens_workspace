@@ -19,14 +19,14 @@ Build notebooks for the autolens_workspace, then open and merge a PR into `main`
 
    Run from the workspace root:
    ```bash
-   PYTHONPATH=../PyAutoBuild/autobuild python3 ../PyAutoBuild/autobuild/generate.py autolens
+   PYTHONPATH=../PyAutoHands/autobuild python3 ../PyAutoHands/autobuild/generate.py autolens
    ```
    This regenerates all notebooks in `notebooks/` from `scripts/`. It may take a few minutes.
 
    In the **same pass** it also regenerates the LLM-facing workspace catalogue from the script
    docstrings — `llms-full.txt` (the expanded companion to the curated `llms.txt`) and
    `workspace_index.json` (the machine-readable index). These come from
-   [PyAutoBuild](https://github.com/PyAutoLabs/PyAutoBuild)'s `navigator.py` and cannot drift out
+   [PyAutoHands](https://github.com/PyAutoLabs/PyAutoHands)'s `navigator.py` and cannot drift out
    of sync with the scripts, since they regenerate alongside the notebooks. Do **not** hand-edit
    either file, and never touch the curated `llms.txt` here.
 
