@@ -50,7 +50,7 @@ os.environ.pop("PYAUTO_FAST_PLOTS", None)
 
 import autofit as af
 import autolens as al
-from autoconf import conf
+from autolens import conf
 
 # This deliberately shallow helper must retain its exploratory samples because
 # the results tutorials demonstrate indexed sample access.

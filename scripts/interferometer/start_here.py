@@ -112,9 +112,9 @@ Lets first import autolens, its plotting module and the other libraries we'll ne
 
 You'll see these imports in the majority of workspace examples.
 """
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import numpy as np

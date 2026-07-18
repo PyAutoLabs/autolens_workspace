@@ -52,9 +52,9 @@ single-channel fits because the per-channel inversion cost multiplies by the num
 If you don't have a GPU locally, consider Google Colab, which provides free GPUs.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import subprocess
 import sys

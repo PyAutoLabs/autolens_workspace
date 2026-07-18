@@ -31,9 +31,9 @@ Quantities specific to an interfometer, for example its uv-wavelengths real spac
 (e.g. `values("dataset.uv_wavelengths")` and `.values{"dataset.real_space_mask")).
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import os
 from pathlib import Path

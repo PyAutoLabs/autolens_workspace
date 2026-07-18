@@ -44,9 +44,9 @@ This is an advanced script and assumes previous knowledge of the core **PyAutoLe
 certain parts of code are not documented to ensure the script is concise.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autolens as al

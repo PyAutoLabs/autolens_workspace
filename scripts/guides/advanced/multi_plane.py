@@ -35,9 +35,9 @@ We'll make things simple and assume 3 galaxies at redshifts 0.5, 1.0 and 2.0. We
 for each galaxy's mass profile.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from typing import List, Optional, Union
 

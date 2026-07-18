@@ -116,9 +116,9 @@ For the CCD-imaging version of this script, which also fits a linear `Sersic` fo
 `autolens_workspace/*/imaging/features/linear_light_profiles/modeling.py`.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autofit as af

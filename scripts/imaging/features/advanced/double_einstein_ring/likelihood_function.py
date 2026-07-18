@@ -56,9 +56,9 @@ The model image is then the sum of the two source-plane reconstructions projecte
 PSF-convolved, and compared to the data exactly as in the single-plane case.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path

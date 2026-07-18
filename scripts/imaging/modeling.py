@@ -65,9 +65,9 @@ If you are intending to fit your own strong lens data, you will need to ensure i
 described in the script `autolens_workspace/*/imaging/data_preparation/start_here.ipynb`.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path
@@ -633,7 +633,7 @@ file loads back into a full Python object with a single line — much faster and
 For example, the maximum log likelihood `Tracer` is saved as a `.json` file and the tracer image-plane images as
 a `.fits` file:
 """
-from autoconf.dictable import from_json
+from autolens import from_json
 
 result_path = search.paths.output_path  # Points at the fit's unique output folder.
 

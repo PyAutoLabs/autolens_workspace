@@ -105,7 +105,7 @@ config_path = Path(home_path, "hpc", "config")
 """
 Set the config and output paths using autoconf, as you would for a laptop run.
 """
-from autoconf import conf
+from autolens import conf
 
 conf.instance.push(new_path=config_path, output_path=hpc_output_path)
 

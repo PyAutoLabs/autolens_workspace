@@ -69,7 +69,7 @@ reference page — refer to the source under
 `autogalaxy/profiles/light_and_mass_profiles.py` for the full list.
 """
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import autofit as af
 import autolens as al

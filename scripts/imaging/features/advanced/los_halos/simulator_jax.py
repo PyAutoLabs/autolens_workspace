@@ -52,9 +52,9 @@ This script simulates ``Imaging`` of a galaxy-scale strong lens where:
  - Each redshift plane includes a ``MassSheet`` with negative kappa.
 """
 
-from autoconf import jax_wrapper
+from autolens import jax_wrapper
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 import jax

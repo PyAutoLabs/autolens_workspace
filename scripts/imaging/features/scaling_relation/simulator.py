@@ -18,9 +18,9 @@ This dataset is consumed by `scripts/imaging/features/scaling_relation/modeling.
 `scripts/imaging/features/scaling_relation/modeling_for_luminosities.py` (if added in a future task).
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autolens as al
