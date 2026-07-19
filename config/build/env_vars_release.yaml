@@ -67,3 +67,13 @@ overrides:
     set: { PYAUTO_FAST_PLOTS: "0" }
   - pattern: png_make
     set: { PYAUTO_FAST_PLOTS: "0" }
+  # The datacube Delaunay fit runs a reduced-but-real sampler over a 4-channel
+  # Delaunay + per-channel NUFFT FactorGraph. Its per-likelihood cost is far
+  # higher than the rectangular sibling (interferometer/features/datacube/
+  # modeling.py, which passes under the reduced sampler), so the reduced-sampler
+  # run overruns the 1800s per-script cap on CI CPU. Bypass the sampler here so
+  # it still validates the full Delaunay pipeline (compose + one likelihood
+  # eval) within budget; the reduced-sampler datacube path stays covered by the
+  # rectangular sibling.
+  - pattern: "interferometer/features/datacube/delaunay"
+    set: { PYAUTO_TEST_MODE: "2" }
