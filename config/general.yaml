@@ -64,5 +64,4 @@ version:
   # starts needing new API — never per release. Must always name an
   # INSTALLABLE (non-yanked) release.
   minimum_library_version: 2026.7.9.1
-  workspace_version: 2026.7.9.1
   workspace_version_check: True     # If False, bypass the workspace/library version check. Set to False on `main`-branch clones — `main` updates faster than releases, so mismatches are expected and not actionable.
