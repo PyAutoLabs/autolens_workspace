@@ -28,9 +28,9 @@ __Start Here Notebook__
 If any code in this script is unclear, refer to `plot/start_here.ipynb`.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import matplotlib.pyplot as plt
 from pathlib import Path
@@ -117,7 +117,7 @@ __Multi Fits__
 We can also output a list of figures to a single `.fits` file, where each image goes in
 each HDU extension.
 """
-from autoconf.fitsable import hdu_list_for_output_from
+from autolens import hdu_list_for_output_from
 
 dataset = dataset_list[-1]
 

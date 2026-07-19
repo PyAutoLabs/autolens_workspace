@@ -57,9 +57,9 @@ PyAutoLens handles this summation automatically inside `Tracer.traced_grid_2d_li
 required — but it is the conceptual difference relative to a single-lens-galaxy double Einstein ring.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path

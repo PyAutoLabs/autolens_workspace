@@ -63,7 +63,7 @@ documented there under the `Standard [ag.lp]` autosummary, and so on for `al.lp_
 labels because the classes are defined in PyAutoGalaxy and re-exported here.
 """
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import autofit as af
 import autolens as al

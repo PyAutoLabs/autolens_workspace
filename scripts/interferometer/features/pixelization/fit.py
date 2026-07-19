@@ -94,9 +94,9 @@ can be observed from the measurement process. All interferometer examples theref
 but you may want to consider if using the positive-only solver is appropriate for your dataset.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path

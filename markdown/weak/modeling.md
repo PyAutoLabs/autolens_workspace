@@ -51,9 +51,9 @@ The number of free parameters and therefore the dimensionality of non-linear par
 
 ```python
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-from autoconf import setup_notebook; setup_notebook()
+from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 

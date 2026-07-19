@@ -80,10 +80,10 @@ __Contents__
 **Pixelization:** Pixelized source reconstructions on a Voronoi mesh.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
-from autoconf.dictable import from_json
+from autolens import jax_wrapper  # Sets JAX environment before other imports
+from autolens import from_json
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import os
 from pathlib import Path

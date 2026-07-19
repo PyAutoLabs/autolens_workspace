@@ -69,7 +69,7 @@ __Contents__
 - **Wrap Up:** Pointers to ``modeling.py``, ``csv_api.py``, and the test-workspace sanity diagnostic.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
 import subprocess
 import sys

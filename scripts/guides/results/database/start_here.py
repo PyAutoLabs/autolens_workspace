@@ -38,9 +38,9 @@ The search fits each lens with:
  - An `Sersic` `LightProfile` for the source galaxy's light.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import json
 from pathlib import Path

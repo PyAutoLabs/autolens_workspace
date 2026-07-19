@@ -41,11 +41,11 @@ channel (by emailing me https://github.com/Jammy2211), where we will be able to 
 
 
 def fit():
-    from autoconf import (
+    from autolens import (
         jax_wrapper,
     )  # Ensures JAX environment variables are set before other imports
 
-    # from autoconf import setup_notebook; setup_notebook()
+    # from autolens import setup_notebook; setup_notebook()
 
     from pathlib import Path
     import autofit as af
