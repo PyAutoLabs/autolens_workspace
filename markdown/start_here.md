@@ -35,12 +35,12 @@ try:
     import google.colab
 
     subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "autoconf", "--no-deps"]
+        [sys.executable, "-m", "pip", "install", "autonerves", "--no-deps"]
     )
 except ImportError:
     pass
 
-from autoconf import setup_colab
+from autonerves import setup_colab
 
 setup_colab.for_autolens(
     raise_error_if_not_gpu=False  # Switch to False for CPU Google Colab
