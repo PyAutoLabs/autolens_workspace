@@ -43,9 +43,9 @@ Centres for each category are saved to separate JSON files (`main_lens_centres.j
 `extra_galaxies_centres.json`) so that the modeling scripts can load them directly.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path

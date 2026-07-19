@@ -61,9 +61,9 @@ In this example we have one main galaxy, two extras, and two scaling galaxies, b
 many more on each tier — the JSON centre files and the per-galaxy loops are the only things that grow.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autofit as af

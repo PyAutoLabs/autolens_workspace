@@ -52,9 +52,9 @@ After the fit, the tracer's galaxies appear in the order:
 Use this ordering when indexing `tracer.galaxies` to compute per-galaxy luminosities.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path

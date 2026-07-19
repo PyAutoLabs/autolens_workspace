@@ -53,9 +53,9 @@ For a quadruply imaged point source (8 data points) there is insufficient inform
 an `Isothermal` and `ExternalShear` (9 parameters).
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autofit as af

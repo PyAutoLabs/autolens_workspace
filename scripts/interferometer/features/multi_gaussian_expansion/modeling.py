@@ -115,9 +115,9 @@ For the CCD-imaging version of this script (MGE on the lens galaxy, not the sour
 `autolens_workspace/*/imaging/features/multi_gaussian_expansion/modeling.py`.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path

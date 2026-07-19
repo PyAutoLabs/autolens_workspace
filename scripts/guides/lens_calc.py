@@ -58,9 +58,9 @@ unmasked data points.
 These are documented fully in the ``autolens_workspace/*/guides/data_structures.ipynb`` guide.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 import autolens as al

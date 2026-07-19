@@ -26,9 +26,9 @@ __Contents__
 - **Visualize:** Plot the shear field and the dataset subplot mosaic via `aplt`.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 

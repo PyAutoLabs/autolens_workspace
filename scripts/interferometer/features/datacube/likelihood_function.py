@@ -86,9 +86,9 @@ __Contents__
 - **Wrap Up:** pointers to modeling scripts and the planned JIT-correctness regression tests.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import matplotlib.pyplot as plt
 import numpy as np

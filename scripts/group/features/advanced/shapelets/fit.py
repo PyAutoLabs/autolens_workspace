@@ -32,9 +32,9 @@ If any code in this script is unclear, refer to the ``group/fit`` and
 ``imaging/features/advanced/shapelets/fit`` notebooks.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path

@@ -39,9 +39,9 @@ code which produce high quality visualization of strong lenses.
 The plotting function API is described in the `autolens_workspace/*/guides/plot` script.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autolens as al

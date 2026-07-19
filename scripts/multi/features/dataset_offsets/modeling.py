@@ -65,9 +65,9 @@ __Start Here Notebook__
 If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autofit as af
