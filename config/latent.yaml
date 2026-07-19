@@ -46,7 +46,7 @@ magnification: true
 # magzero is not required.
 effective_einstein_radius: true
 
-# autogalaxy library default (loaded by autoconf into the same `latent`
+# autogalaxy library default (loaded by autonerves into the same `latent`
 # conf node) — explicitly disabled here to silence the cross-library
 # "unknown latent" warning that would otherwise fire on every fit.
 total_galaxy_0_flux: false

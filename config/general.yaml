@@ -57,10 +57,10 @@ test:
   lh_timeout_seconds:               # If a float is input, the log_likelihood_function call is timed out after this many seconds, to diagnose infinite loops. Default is None, meaning no timeout.
   disable_positions_lh_inversion_check: true
 version:
-  python_version_check: True        # If False, bypass the PyAutoConf Python 3.12+ recommendation (3.9/3.10/3.11 technically work but are not officially supported).
+  python_version_check: True        # If False, bypass the PyAutoNerves Python 3.12+ recommendation (3.9/3.10/3.11 technically work but are not officially supported).
   # The compatibility FLOOR: the oldest library release whose API this
   # workspace's scripts require. Preferred over workspace_version
-  # (autoconf/workspace.py). Bump DELIBERATELY — only when a script
+  # (autonerves/workspace.py). Bump DELIBERATELY — only when a script
   # starts needing new API — never per release. Must always name an
   # INSTALLABLE (non-yanked) release.
   minimum_library_version: 2026.7.9.1

@@ -147,7 +147,7 @@ pipeline phase.
 
 The PyAutoLens stack (all on the `PyAutoLabs` GitHub org):
 
-- https://github.com/PyAutoLabs/PyAutoConf — configuration handling
+- https://github.com/PyAutoLabs/PyAutoNerves — configuration handling
 - https://github.com/PyAutoLabs/PyAutoArray — arrays, grids, masks
 - https://github.com/PyAutoLabs/PyAutoFit — model composition + non-linear search
 - https://github.com/PyAutoLabs/PyAutoGalaxy — light/mass profiles, galaxies

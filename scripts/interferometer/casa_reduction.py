@@ -398,7 +398,7 @@ what `al.Interferometer.from_fits` expects.
 __Building the Interferometer Object__
 
 Write the three concatenated arrays to FITS (using `astropy.io.fits.writeto`
-or `autoconf.fitsable.output_to_fits`) and load them via the canonical
+or `autonerves.fitsable.output_to_fits`) and load them via the canonical
 workspace pattern used in `start_here.py`:
 
     import autolens as al
