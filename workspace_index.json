@@ -121,6 +121,29 @@
   },
   {
     "contents": [
+      "Model 1 \u2014 The Standard Lenstool Model",
+      "Model 2 \u2014 The Angular (b0) Parameterization",
+      "Model 3 \u2014 Mass Anchoring",
+      "Model 4 \u2014 The Two-Parameter Relation"
+    ],
+    "cross_refs": [],
+    "notebook": "notebooks/cluster/mass_parameterizations.ipynb",
+    "path": "scripts/cluster/mass_parameterizations.py",
+    "summary": "**A plain-language tour of the ways to parameterize and couple the masses in a Lenstool-style cluster model \u2014 the cluster-scale halo, the BCG and other individually-freed galaxies, and the member (\"scaling\") population.**",
+    "title": "Cluster & Group Mass Parameterizations"
+  },
+  {
+    "contents": [],
+    "cross_refs": [
+      "cluster/mass_parameterizations.py"
+    ],
+    "notebook": "notebooks/cluster/mass_parameterizations_pyautolens.ipynb",
+    "path": "scripts/cluster/mass_parameterizations_pyautolens.py",
+    "summary": "**For Lenstool users: how and why PyAutoLens re-expresses the standard Lenstool cluster / group model in its native parameterization for multi-galaxy lenses (MGLs), and how to keep the dPIE's truncation on the outskirts if you want it.**",
+    "title": "Mass Parameterizations II \u2014 Mapping Lenstool onto PyAutoLens"
+  },
+  {
+    "contents": [
       "Example",
       "Simulation",
       "Dataset",
