@@ -61,7 +61,8 @@
       "autolens_workspace_test/scripts/cluster/lenstool_parity.py",
       "cluster/modeling.py",
       "cluster/simulator.py",
-      "cluster/start_here.py"
+      "cluster/start_here.py",
+      "group/slam.py"
     ],
     "notebook": "notebooks/cluster/lenstool/parameterization_mapping.ipynb",
     "path": "scripts/cluster/lenstool/parameterization_mapping.py",
