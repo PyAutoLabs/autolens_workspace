@@ -56,6 +56,19 @@
     "title": "Lenstool Users: Cluster Modeling (SMACS J0723)"
   },
   {
+    "contents": [],
+    "cross_refs": [
+      "autolens_workspace_test/scripts/cluster/lenstool_parity.py",
+      "cluster/modeling.py",
+      "cluster/simulator.py",
+      "cluster/start_here.py"
+    ],
+    "notebook": "notebooks/cluster/lenstool/parameterization_mapping.ipynb",
+    "path": "scripts/cluster/lenstool/parameterization_mapping.py",
+    "summary": "**If you want to fit cluster member (scaling) galaxies without knowing the source or lens redshift, this script shows you how \u2014 and proves it recovers the standard Lenstool model exactly once the redshifts become known.**",
+    "title": "Lenstool Users: dPIE Parameterization Mapping (Scaling Galaxies)"
+  },
+  {
     "contents": [
       "Dataset",
       "Truth Model",
