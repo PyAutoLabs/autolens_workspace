@@ -46,6 +46,14 @@ This script demonstrates, with deflection angles as the test:
     single free ``b0_ref``, once the redshifts are known, converts to the *exact*
     ``af.Model(dPIEMassSph)`` tier that ``cluster/modeling.py`` fits directly — member for member,
     to machine precision.
+ 4. **The Faber-Jackson exponent chain** — ``b0 ~ sigma^2`` exactly, so the ``b0 ~ L^0.5`` normalization
+    *is* the Faber-Jackson relation ``sigma ~ L^0.25``; the radii scale as ``L^0.5`` from constant
+    mass-to-light. One self-consistent system, not three independent choices.
+ 5. **Robustness** — the mapping is exact for *any* ``b0_ref`` across the prior and for *any* reference
+    luminosity (fiducial or BCG-anchored), member by member.
+ 6. **Anchoring to the BCG** — the two physically distinct meanings of "linking the relation to the
+    BCG" (anchor its *luminosity* vs anchor its *mass*), and why the second maps cleanly yet is the
+    coupling to be wary of for galaxy/group-scale lenses.
 
 Only the scaling tier is covered here (main lenses are modelled directly in Lenstool parameters in
 the other cluster scripts).
@@ -271,7 +279,163 @@ print(f"   per-member deflection agreement (b0-tier vs Lenstool-tier):  max diff
 assert max_member_diff < 1e-12
 
 """
-__4. Why This is Safe__
+__4. The Faber-Jackson Exponent Chain__
+
+The three exponents (``sigma ~ L^0.25``, ``b0 ~ L^0.5``, ``r_core, r_cut ~ L^0.5``) are not three
+independent choices — they are one self-consistent system resting on a single physical fact: for the
+dPIE the lens strength is **exactly** proportional to the velocity dispersion squared,
+
+    b0 = K * (sigma / c)^2     =>     b0  is proportional to  sigma^2 .
+
+From there:
+
+ - Faber-Jackson (Faber & Jackson 1976), ``L ~ sigma^4``, gives ``sigma ~ L^0.25``. Squaring,
+   ``b0 ~ sigma^2 ~ L^0.5`` — the ``b0``-space normalization *is* the Faber-Jackson relation, not an
+   approximation of it. This is why the exponent halves when you move from ``b0`` to ``sigma``.
+ - Constant mass-to-light (``M ~ sigma^2 * r_cut ~ L``) with ``sigma ~ L^0.25`` forces
+   ``r_cut ~ L^0.5``; the core radius follows the same scaling (Lenstool's ``potfile`` applies it to
+   both). These are angular, so they are identical in the two parameterizations.
+
+We confirm ``b0 ~ sigma^2`` directly (``b0 / sigma^2`` is constant), then that a member's ``b0`` built
+from its Faber-Jackson ``sigma`` equals its ``b0`` from the direct ``L^0.5`` relation.
+"""
+b0_over_sigma_sq = []
+for sigma_test in [100.0, 200.0, 300.0]:
+    mass_test = al.mp.dPIEMassSph(
+        sigma=sigma_test,
+        r_core=0.5,
+        r_cut=20.0,
+        redshift_object=redshift_lens,
+        redshift_source=redshift_source,
+    )
+    b0_over_sigma_sq.append(mass_test.b0 / sigma_test**2)
+print(f"\n4. Faber-Jackson chain:  b0 / sigma^2 = {b0_over_sigma_sq[0]:.6e}  (constant => b0 ~ sigma^2)")
+assert np.allclose(b0_over_sigma_sq, b0_over_sigma_sq[0], rtol=1e-12)
+
+ratio_check = 0.16
+b0_via_faber_jackson = K * (sigma_ref * ratio_check**0.25 / C_KM_S) ** 2  # b0 built from the FJ sigma
+b0_via_b0_relation = b0_ref * ratio_check**0.5  # b0-space relation directly
+print(
+    f"   member (L/L_ref={ratio_check}):  b0 via Faber-Jackson sigma = {b0_via_faber_jackson:.6f}"
+    f"  vs  b0 via L^0.5 = {b0_via_b0_relation:.6f}"
+)
+assert np.isclose(b0_via_faber_jackson, b0_via_b0_relation, rtol=1e-9)
+
+"""
+__5. Robustness: All Members, Full Prior Range, Either Reference__
+
+Section 3 checked a single ``b0_ref``. The mapping is exact for *any* ``b0_ref`` (the conversion
+``sigma = c * sqrt(b0 / K)`` is exact for all ``b0``) and for *any* reference luminosity — the
+``(L / L_ref)`` ratios are dimensionless and cancel identically in both parameterizations, so the
+choice of anchor cannot change the *relative* member masses.
+
+We sweep several ``b0_ref`` across the prior under both the fiducial (``L_ref = 1``) and the
+BCG-anchored (``L_ref =`` brightest member) conventions, checking every member stays in parity. This
+is the "over all galaxies, comparable everywhere" guarantee, not just parity at one point.
+"""
+worst_robustness = 0.0
+reference_cases = [(1.0, "fiducial L_ref=1"), (max(member_luminosities), "L_ref=brightest member")]
+for reference_case, reference_tag in reference_cases:
+    for b0_ref_case in [0.05, 0.20, 0.50, 0.90]:
+        sigma_ref_case = sigma_from_b0(b0_ref_case)
+        for centre, luminosity in zip(member_centres, member_luminosities):
+            ratio = luminosity / reference_case
+            mass_b0_case = al.mp.dPIEMassB0Sph(
+                centre=centre,
+                ra=r_core_ref * ratio**0.5,
+                rs=r_cut_ref * ratio**0.5,
+                b0=b0_ref_case * ratio**0.5,
+            )
+            mass_ls_case = al.mp.dPIEMassSph(
+                centre=centre,
+                sigma=sigma_ref_case * ratio**0.25,
+                r_core=r_core_ref * ratio**0.5,
+                r_cut=r_cut_ref * ratio**0.5,
+                redshift_object=redshift_lens,
+                redshift_source=redshift_source,
+            )
+            diff = np.max(
+                np.abs(
+                    np.asarray(mass_b0_case.deflections_yx_2d_from(grid=grid))
+                    - np.asarray(mass_ls_case.deflections_yx_2d_from(grid=grid))
+                )
+            )
+            worst_robustness = max(worst_robustness, diff)
+print(
+    f"\n5. Robustness (2 references x 4 b0_ref x all members):  worst deflection diff = {worst_robustness:.2e}"
+)
+assert worst_robustness < 1e-12
+
+"""
+__6. Anchoring the Reference to the BCG (main lens galaxy)__
+
+"Linking the scaling relation to the BCG" can mean two physically different things, and the
+distinction matters more than the mathematics:
+
+ (a) **Anchor the reference LUMINOSITY to the BCG** (``L_ref = L_BCG``). The normalization
+     (``sigma_ref`` / ``b0_ref``) stays a *free* parameter; the BCG's own fitted mass is independent
+     of the tier. The mapping is unaffected (Section 5 tested exactly this via ``L_ref = brightest
+     member``). **This is the workspace convention** — ``group/slam.py`` anchors ``L_ref`` to the
+     brightest main galaxy while keeping its mass free and uncoupled from the tier.
+
+ (b) **Anchor the reference NORMALIZATION to the BCG's MASS** — the strict Lenstool / referee
+     convention ``alpha = theta_E,BCG / L_BCG^0.5``, ``beta = 0.5``, with *zero* free parameters: the
+     fitted BCG mass drives every satellite. The ``b0 <-> sigma`` mapping is *still exact* here,
+     because the BCG shares the lens plane and the source plane (same ``K``). But it couples every
+     satellite's mass to the BCG's — a strong assumption, often unphysical for galaxy- and
+     group-scale lenses where the BCG is modelled as its own free profile. The mapping being exact
+     does not make that modelling choice safe; they are separate questions.
+
+We demonstrate that case (b) maps exactly: a BCG modelled as its own dPIE (``sigma_BCG``), with the
+tier anchored to it, agrees member-for-member in both parameterizations.
+"""
+sigma_bcg = 320.0
+b0_bcg = K * (sigma_bcg / C_KM_S) ** 2  # the BCG's own lens strength; L_BCG = 1.0 is the reference
+print(f"\n6. BCG-anchored:  sigma_BCG = {sigma_bcg} km/s  <->  b0_BCG = {b0_bcg:.5f} arcsec")
+
+worst_bcg = 0.0
+for centre, luminosity in zip(member_centres, member_luminosities):
+    ratio = luminosity / 1.0  # the BCG (L_BCG = 1.0) is the reference
+    mass_b0_bcg = al.mp.dPIEMassB0Sph(
+        centre=centre,
+        ra=r_core_ref * ratio**0.5,
+        rs=r_cut_ref * ratio**0.5,
+        b0=b0_bcg * ratio**0.5,
+    )
+    mass_ls_bcg = al.mp.dPIEMassSph(
+        centre=centre,
+        sigma=sigma_bcg * ratio**0.25,
+        r_core=r_core_ref * ratio**0.5,
+        r_cut=r_cut_ref * ratio**0.5,
+        redshift_object=redshift_lens,
+        redshift_source=redshift_source,
+    )
+    worst_bcg = max(
+        worst_bcg,
+        np.max(
+            np.abs(
+                np.asarray(mass_b0_bcg.deflections_yx_2d_from(grid=grid))
+                - np.asarray(mass_ls_bcg.deflections_yx_2d_from(grid=grid))
+            )
+        ),
+    )
+print(f"   tier anchored to BCG mass:  all-member b0-vs-sigma max defl diff = {worst_bcg:.2e}")
+assert worst_bcg < 1e-12
+
+"""
+__Caveat: dPIE b0 is the Einstein radius only in the SIS limit__
+
+The referee's convention anchors to the BCG *Einstein radius* ``theta_E``. For a dPIE, ``b0`` equals
+``theta_E`` only in the SIS limit (``r_core -> 0``, ``r_cut -> infinity``, ``q -> 1``); with finite
+core/cut ``b0`` is the lens strength but *not* exactly ``theta_E``. If the BCG is modelled as a
+distinct isothermal (SIE) — as is common for galaxy- and group-scale lenses — its ``einstein_radius``
+is well defined, but mapping it onto a dPIE member's ``b0`` is only approximate unless the member's
+core/cut are negligible. Anchor via a checked conversion, not a straight ``b0 = einstein_radius``
+assignment.
+"""
+
+"""
+__7. Why This is Safe__
 
 The mapping is lossless and invertible, and it does not perturb anything the data constrained:
 
