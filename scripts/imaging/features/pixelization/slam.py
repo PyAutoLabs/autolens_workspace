@@ -13,15 +13,18 @@ that documentation, and `slam_start_here` should be read first.
 
 The differences from `slam_start_here` are:
 
- - The SOURCE PIX PIPELINE 2 uses `AdaptSplit` regularization instead of `Adapt`.
  - The LIGHT LP PIPELINE and MASS TOTAL PIPELINE use `use_jax=True` in their analyses.
+
+(Note: `AdaptSplit` / `ConstantSplit` regularization is only valid on irregular meshes such as `Delaunay` or
+`Voronoi`, where the split-cross scheme is defined — see `features/pixelization/delaunay.py`. This example uses
+a `RectangularAdaptImage` mesh, so it uses `Adapt` regularization, matching `slam_start_here.py`.)
 
 __Contents__
 
 - **Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
 - **SOURCE LP PIPELINE:** Identical to `slam_start_here.py`.
 - **SOURCE PIX PIPELINE 1:** Identical to `slam_start_here.py`.
-- **SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`, except `AdaptSplit` regularization is used instead of `Adapt`.
+- **SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`.
 - **LIGHT LP PIPELINE:** Identical to `slam_start_here.py`.
 - **MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`.
 - **Dataset:** Load and plot the strong lens dataset.
@@ -181,10 +184,11 @@ def source_pix_1(
 """
 __SOURCE PIX PIPELINE 2__
 
-Identical to `slam_start_here.py`, except `AdaptSplit` regularization is used instead of `Adapt`.
+Identical to `slam_start_here.py`. It uses a `RectangularAdaptImage` mesh with `Adapt` regularization.
 
-`AdaptSplit` splits the regularization into two components: one for the source and one for the image, enabling
-more flexible regularization that better adapts to the pixelization mesh.
+`AdaptSplit` regularization (which splits every source pixel into a cross of four regularization points) is
+reserved for irregular meshes such as `Delaunay` or `Voronoi`, where that split-cross scheme is defined; see
+`features/pixelization/delaunay.py` for an `AdaptSplit` example. Rectangular meshes use `Adapt`.
 """
 
 
@@ -480,7 +484,7 @@ source_pix_result_2 = source_pix_2(
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
     mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
-    regularization=al.reg.AdaptSplit,
+    regularization=al.reg.Adapt,
 )
 
 light_result = light_lp(

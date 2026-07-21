@@ -363,8 +363,10 @@ Each main lens galaxy's mass is fixed from `source_pix_result_1_source_0`.
 
 Two `PositionsLH` are attached — one per source plane — to prevent unphysical reconstructions.
 
-Adapt images are stitched: per-lens adapt images come from the LP pipeline result 2; `source_0`'s adapt image
-comes from the pixelized search above.
+Adapt images are stitched: per-lens and `source_1` adapt images come from the LP pipeline result 2 (this is
+`source_1`'s first pixelized fit, so its adapt image is seeded from its light-profile model image in the LP
+result); `source_0`'s adapt image comes from the pixelized search above. All are required because
+`regularization_init` is adaptive (`al.reg.Adapt`) — every pixelized galaxy needs an adapt image.
 """
 
 
@@ -396,6 +398,9 @@ def source_pix_1_source_1(
         galaxy_name_image_dict[key] = lp2_dict[key]
     galaxy_name_image_dict["('galaxies', 'source_0')"] = pix0_dict[
         "('galaxies', 'source_0')"
+    ]
+    galaxy_name_image_dict["('galaxies', 'source_1')"] = lp2_dict[
+        "('galaxies', 'source_1')"
     ]
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_name_image_dict)
