@@ -42,4 +42,3 @@
 - point_source/features/multiple_sources/modeling # Blocked by PyAutoLens #480: same root cause as simulator above
 - interferometer/casa_reduction # Requires CASA MeasurementSet output, not runnable standalone
 - dataset/imaging/slacs1430+4105 # Dataset folder contains data.py helper, not a runnable script
-- group/slam # NEEDS_FIX 2026-04-10 - PriorException: upper limit must be greater than lower limit in group SLaM pipeline
