@@ -43,6 +43,5 @@
 - interferometer/casa_reduction # Requires CASA MeasurementSet output, not runnable standalone
 - dataset/imaging/slacs1430+4105 # Dataset folder contains data.py helper, not a runnable script
 - group/slam # NEEDS_FIX 2026-04-10 - PriorException: upper limit must be greater than lower limit in group SLaM pipeline
-- imaging/data_preparation/manual/mask_irregular # NEEDS_FIX 2026-04-10 - silent failure, needs investigation
 - interferometer/features/pixelization/delaunay # NEEDS_FIX 2026-07-21 - autofit.exc.FitException raised in interferometer log_likelihood_function (analysis.py:182); old (2,2)v(1032,1032) broadcast gone but a non-PD-family FitException remains under PYAUTO_DISABLE_JAX=1 test-mode bypass (separate from the imaging pixelization cluster fixed in #300)
 - multi/features/wavelength_dependence/modeling # NEEDS_FIX 2026-04-10 - autofit.exc.FitException in multi-wavelength modeling
