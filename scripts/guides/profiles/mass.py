@@ -67,7 +67,7 @@ Note that the reference uses the `ag.mp` namespace label because the classes are
 PyAutoGalaxy and re-exported here as `al.mp`.
 """
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 

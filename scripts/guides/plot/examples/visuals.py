@@ -27,9 +27,9 @@ __Contents__
 - **Combined Overlays:** `lines=` and `positions=` can be used together on the same plot.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 

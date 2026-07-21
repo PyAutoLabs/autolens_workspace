@@ -32,9 +32,9 @@ You should be familiar with dark matter subhalo detection, by reading the exampl
 You should also be familiar with the database, by reading the example `imaging/advanced/database/start_here.ipynb`.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import json
 import os

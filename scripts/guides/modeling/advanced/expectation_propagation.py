@@ -39,9 +39,9 @@ This data is not automatically provided with the autogalaxy workspace, and must 
 script `autolens_workspace/scripts/advanced/graphical/simulator/samples/simple__no_lens_light.py`.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import autolens as al
 import autofit as af

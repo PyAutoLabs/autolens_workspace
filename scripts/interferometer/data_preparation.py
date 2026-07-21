@@ -45,7 +45,7 @@ It is absolutely vital you use a sufficently small pixel scale that all structur
 Fourier transform. If the pixel scale is too large, the Fourier transform will smear out the data and the lens model.
 """
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autolens as al

@@ -121,7 +121,10 @@ for name in MAHLER_FILES:
     path = LENSTOOL_PATH / name
     if not path.exists():
         print(f"Downloading {name} from the Mahler et al. repository...")
-        urllib.request.urlretrieve(f"{MAHLER_BASE}/{name}", path)
+        # Explicit timeout so a stalled server fails fast instead of hanging
+        # indefinitely (`urlretrieve` has no timeout).
+        with urllib.request.urlopen(f"{MAHLER_BASE}/{name}", timeout=30) as response:
+            path.write_bytes(response.read())
 
 """
 __Coordinate Convention__ (see module docstring)
@@ -327,7 +330,11 @@ elif not cutout_path.exists():
     mosaic_path = DATASET_PATH / "f814w_mosaic.fits"
     if not mosaic_path.exists():
         print("Downloading the RELICS F814W mosaic (96 MB, one-off)...")
-        urllib.request.urlretrieve(RELICS_F814W_URL, mosaic_path)
+        # Explicit timeout so a stalled server fails fast instead of hanging
+        # indefinitely (`urlretrieve` has no timeout). The timeout is per socket
+        # read, so a large-but-progressing download is unaffected.
+        with urllib.request.urlopen(RELICS_F814W_URL, timeout=60) as response:
+            mosaic_path.write_bytes(response.read())
 
     with fits.open(mosaic_path) as hdul:
         data = hdul[0].data

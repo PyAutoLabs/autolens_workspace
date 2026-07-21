@@ -47,9 +47,9 @@ The galaxy redshifts (`lenses=0.5`, `source=1.0`) and per-galaxy mass parameters
 simulator.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path

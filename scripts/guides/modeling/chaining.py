@@ -50,9 +50,9 @@ to pass information between searches as well as tools for customizing prior pass
 There are examples throughout the workspace where search chaining improves and helps automate lens modeling.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autofit as af

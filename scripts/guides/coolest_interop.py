@@ -43,9 +43,9 @@ Einstein radius (e.g. the effective radius of the area within the tangential cri
 Euclid DR1 catalogue), which depends on all profiles in the model including external shear.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from os import path
 

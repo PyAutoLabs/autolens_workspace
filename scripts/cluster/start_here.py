@@ -87,12 +87,12 @@ try:
     import google.colab
 
     subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "autoconf", "--no-deps"]
+        [sys.executable, "-m", "pip", "install", "autonerves", "--no-deps"]
     )
 except ImportError:
     pass
 
-from autoconf import setup_colab
+from autonerves import setup_colab
 
 setup_colab.for_autolens(
     raise_error_if_not_gpu=False  # Switch to True to require GPU on Colab.
@@ -101,9 +101,9 @@ setup_colab.for_autolens(
 """
 __Imports__
 """
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path
@@ -150,7 +150,12 @@ if not data_fits_path.exists():
 
     print("Downloading HST H-band image of Abell 2744 for visualization (one-off, ~1.4 MB) ...")
     try:
-        urllib.request.urlretrieve(HIPS2FITS_URL, data_fits_path)
+        # An explicit timeout is essential: `urlretrieve` has none, so a slow or
+        # stalled hips2fits response hangs the script indefinitely (in CI this
+        # blocked until the build-script timeout). On any failure we continue —
+        # the image is used for visualization only.
+        with urllib.request.urlopen(HIPS2FITS_URL, timeout=30) as response:
+            data_fits_path.write_bytes(response.read())
     except Exception as e:
         print(f"Image download failed ({e}) — continuing without it (visualization only).")
 

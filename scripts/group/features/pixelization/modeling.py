@@ -34,9 +34,9 @@ This script fits an `Imaging` dataset of a 'group-scale' strong lens where:
  - The source galaxy's light is reconstructed using a `Delaunay` mesh with `ConstantSplit` regularization.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autofit as af

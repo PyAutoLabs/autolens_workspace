@@ -46,9 +46,9 @@ This script fits a `WeakDataset` of a 'cluster-scale' lens with a model where:
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=5.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 

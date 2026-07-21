@@ -1,6 +1,6 @@
 # Curated examples rendered to executed markdown pages (markdown/) with their
 # real output images, so they can be read on GitHub. Built manually by
-# PyAutoBuild's generate_markdown.py — see that module's docstring for the
+# PyAutoHands's generate_markdown.py — see that module's docstring for the
 # rules (never TEST_MODE; features/ scripts never rendered; list order is
 # execution order and index order).
 - script: start_here.py

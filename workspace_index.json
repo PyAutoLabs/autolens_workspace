@@ -56,6 +56,20 @@
     "title": "Lenstool Users: Cluster Modeling (SMACS J0723)"
   },
   {
+    "contents": [],
+    "cross_refs": [
+      "autolens_workspace_test/scripts/cluster/lenstool_parity.py",
+      "cluster/modeling.py",
+      "cluster/simulator.py",
+      "cluster/start_here.py",
+      "group/slam.py"
+    ],
+    "notebook": "notebooks/cluster/lenstool/parameterization_mapping.ipynb",
+    "path": "scripts/cluster/lenstool/parameterization_mapping.py",
+    "summary": "**If you want to fit cluster member (scaling) galaxies without knowing the source or lens redshift, this script shows you how \u2014 and proves it recovers the standard Lenstool model exactly once the redshifts become known.**",
+    "title": "Lenstool Users: dPIE Parameterization Mapping (Scaling Galaxies)"
+  },
+  {
     "contents": [
       "Dataset",
       "Truth Model",
@@ -104,6 +118,29 @@
     "path": "scripts/cluster/likelihood_function.py",
     "summary": "This script provides a step-by-step guide of the cluster point-source ``log_likelihood_function``, the figure-of-merit Nautilus optimises when fitting a cluster lens model to ``point_datasets.csv``.",
     "title": "Log Likelihood Function: Cluster Point Source"
+  },
+  {
+    "contents": [
+      "Model 1 \u2014 The Standard Lenstool Model",
+      "Model 2 \u2014 The Angular (b0) Parameterization",
+      "Model 3 \u2014 Mass Anchoring",
+      "Model 4 \u2014 The Two-Parameter Relation"
+    ],
+    "cross_refs": [],
+    "notebook": "notebooks/cluster/mass_parameterizations.ipynb",
+    "path": "scripts/cluster/mass_parameterizations.py",
+    "summary": "**A plain-language tour of the ways to parameterize and couple the masses in a Lenstool-style cluster model \u2014 the cluster-scale halo, the BCG and other individually-freed galaxies, and the member (\"scaling\") population.**",
+    "title": "Cluster & Group Mass Parameterizations"
+  },
+  {
+    "contents": [],
+    "cross_refs": [
+      "cluster/mass_parameterizations.py"
+    ],
+    "notebook": "notebooks/cluster/mass_parameterizations_pyautolens.ipynb",
+    "path": "scripts/cluster/mass_parameterizations_pyautolens.py",
+    "summary": "**For Lenstool users: how and why PyAutoLens re-expresses the standard Lenstool cluster / group model in its native parameterization for multi-galaxy lenses (MGLs), and how to keep the dPIE's truncation on the outskirts if you want it.**",
+    "title": "Mass Parameterizations II \u2014 Mapping Lenstool onto PyAutoLens"
   },
   {
     "contents": [

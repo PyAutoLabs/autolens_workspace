@@ -7,11 +7,15 @@
 set -e
 
 if [ "$PYTHON_VERSION" = "3.12" ]; then
-  pip install ./PyAutoConf ./PyAutoFit ./PyAutoArray ./PyAutoGalaxy ./PyAutoLens
+  pip install ./PyAutoNerves ./PyAutoFit ./PyAutoArray ./PyAutoGalaxy ./PyAutoLens
   pip install "./PyAutoArray[optional]" "./PyAutoGalaxy[optional]" "./PyAutoLens[optional]"
 else
-  pip install ./PyAutoConf ./PyAutoFit ./PyAutoArray ./PyAutoGalaxy ./PyAutoLens
+  pip install ./PyAutoNerves ./PyAutoFit ./PyAutoArray ./PyAutoGalaxy ./PyAutoLens
   pip install numba nufftax
 fi
-pip install tensorflow-probability==0.25.0
+# NOTE: do NOT `pip install tensorflow-probability==0.25.0` here. The stable
+# release crashes at import under the resolved modern JAX
+# (`jax.interpreters.xla.pytype_aval_mappings` was removed), which broke the
+# JAX Matern-kernel (delaunay_mge) likelihood path. The working modified-Bessel
+# dependency is `tfp-nightly`, pinned by `PyAutoArray[optional]` above.
 pip install jupyter nbconvert ipynb-py-convert

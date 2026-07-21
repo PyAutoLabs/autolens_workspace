@@ -47,9 +47,9 @@ You can still run the script without fully understanding these guides, but revie
 make the structure and choices of the SLaM workflow clearer.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autofit as af

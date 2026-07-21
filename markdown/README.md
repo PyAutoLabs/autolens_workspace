@@ -33,4 +33,4 @@ Every page below is the corresponding example script **fully executed**, rendere
 - [Fit: Weak Lensing](weak/fit.md) — from `scripts/weak/fit.py`
 - [Modeling: Weak Lensing](weak/modeling.md) — from `scripts/weak/modeling.py`
 
-These pages are regenerated manually by PyAutoBuild's `generate_markdown.py` when a curated script changes.
+These pages are regenerated manually by PyAutoHands's `generate_markdown.py` when a curated script changes.

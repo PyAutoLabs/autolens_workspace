@@ -70,9 +70,9 @@ described in the script `autolens_workspace/*/imaging/data_preparation/start_her
 
 ```python
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-from autoconf import setup_notebook; setup_notebook()
+from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path
@@ -866,7 +866,7 @@ a `.fits` file:
 
 
 ```python
-from autoconf.dictable import from_json
+from autolens import from_json
 
 result_path = search.paths.output_path  # Points at the fit's unique output folder.
 

@@ -80,9 +80,9 @@ That simulator writes:
  - ``tracer.json`` — true ``Tracer`` (used by visualization, not modeling).
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path

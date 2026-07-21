@@ -40,9 +40,9 @@ fit API and the MGE source parameterization, you should read first:
 The redshifts (`lens=0.5`, `source_0=1.0`, `source_1=2.0`) match those used by the simulator and modeling examples.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path

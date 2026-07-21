@@ -43,9 +43,9 @@ The galaxy redshifts (`lens=0.5`, `source=1.0`), the lens `lmp.Sersic` mass-to-l
 `NFWSph` parameters (`kappa_s=0.1`, `scale_radius=20.0`) match those used by the simulator and modeling examples.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
 from pathlib import Path

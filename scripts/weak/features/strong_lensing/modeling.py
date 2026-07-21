@@ -32,9 +32,9 @@ __Contents__
 - **Result:** The joint constraints, and how to read the strong/weak complementarity in them.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 

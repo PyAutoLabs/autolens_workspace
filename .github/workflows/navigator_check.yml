@@ -1,9 +1,9 @@
 name: Navigator Check
 
-# Thin caller for PyAutoBuild's reusable navigator-catalogue check. The check
+# Thin caller for PyAutoHands's reusable navigator-catalogue check. The check
 # logic (path/banner lint + catalogue staleness) and its entrypoints live in
-# PyAutoBuild/autobuild; this workspace only declares which generator project to
-# run. See PyAutoLabs/PyAutoBuild/.github/workflows/navigator_check.yml.
+# PyAutoHands/autobuild; this workspace only declares which generator project to
+# run. See PyAutoLabs/PyAutoHands/.github/workflows/navigator_check.yml.
 
 on: [push, pull_request]
 
@@ -12,6 +12,6 @@ permissions:
 
 jobs:
   navigator:
-    uses: PyAutoLabs/PyAutoBuild/.github/workflows/navigator_check.yml@main
+    uses: PyAutoLabs/PyAutoHands/.github/workflows/navigator_check.yml@main
     with:
       project: autolens

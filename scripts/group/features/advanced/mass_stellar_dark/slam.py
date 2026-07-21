@@ -40,9 +40,9 @@ fits an `Imaging` dataset where in the final model:
  - The source galaxy's light is a `Pixelization`.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autofit as af

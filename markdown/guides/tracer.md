@@ -70,9 +70,9 @@ If any code in this script is unclear, refer to the `results/start_here.ipynb` n
 
 ```python
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-from autoconf import setup_notebook; setup_notebook()
+from autolens import setup_notebook; setup_notebook()
 
 import autolens as al
 import autoarray as aa

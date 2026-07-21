@@ -168,9 +168,9 @@ sources — turning what was ~5 minutes of Python-loop overhead into a few secon
 execution.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 import jax
 import jax.numpy as jnp

@@ -9,7 +9,7 @@ through failures and exits non-zero if any entry failed.
 
 Notebook execution uses `jupyter nbconvert --to notebook --execute`.
 On failure the runner regenerates the single failing notebook from its
-source `.py` script via PyAutoBuild's `py_to_notebook` and retries
+source `.py` script via PyAutoHands's `py_to_notebook` and retries
 once — this catches stale notebooks where the script has moved on but
 the on-disk `.ipynb` wasn't refreshed by `/pre_build`'s
 `generate.py`. Whole-workspace regeneration stays the responsibility
@@ -101,6 +101,13 @@ def execute_notebook(nb_path: Path, env: dict) -> tuple[int, str]:
     # Write the executed copy to a throwaway path so the on-disk notebook
     # under notebooks/ is never modified — checked-in notebooks stay clean.
     tmp_dir = Path(tempfile.mkdtemp(prefix="smoke_nb_"))
+    # `jupyter nbconvert --execute` runs the kernel in the *notebook's own
+    # directory*, but the workspace convention (and the script smoke, which runs
+    # with cwd=WORKSPACE) is that relative `dataset/` paths resolve from the repo
+    # root. Stage a temporary copy of the notebook at the workspace root so the
+    # kernel's working directory is the root and root-relative paths resolve.
+    staged = WORKSPACE / f".smoke_run_{os.getpid()}_{nb_path.name}"
+    shutil.copyfile(nb_path, staged)
     try:
         result = subprocess.run(
             [
@@ -113,7 +120,7 @@ def execute_notebook(nb_path: Path, env: dict) -> tuple[int, str]:
                 str(tmp_dir),
                 "--output",
                 nb_path.name,
-                str(nb_path),
+                str(staged),
             ],
             cwd=str(WORKSPACE),
             env=env,
@@ -121,6 +128,7 @@ def execute_notebook(nb_path: Path, env: dict) -> tuple[int, str]:
             text=True,
         )
     finally:
+        staged.unlink(missing_ok=True)
         shutil.rmtree(tmp_dir, ignore_errors=True)
     return result.returncode, result.stdout + result.stderr
 
@@ -131,7 +139,7 @@ def regenerate_notebook(nb_rel: str) -> Path:
     The regenerated copy lives in /tmp; the on-disk `notebooks/` tree is
     never modified, so a smoke run leaves the worktree clean.
     """
-    from build_util import py_to_notebook  # PyAutoBuild/autobuild on PYTHONPATH
+    from build_util import py_to_notebook  # PyAutoHands/autobuild on PYTHONPATH
 
     script_path = SCRIPTS_DIR / Path(nb_rel).with_suffix(".py")
     if not script_path.exists():

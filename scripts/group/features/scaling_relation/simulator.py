@@ -15,9 +15,9 @@ Each population's centres are saved to a separate JSON file (`main_lens_centres.
 This dataset is independent of `dataset/group/simple` so the existing group examples are unaffected.
 """
 
-from autoconf import jax_wrapper  # Sets JAX environment before other imports
+from autolens import jax_wrapper  # Sets JAX environment before other imports
 
-# from autoconf import setup_notebook; setup_notebook()
+# from autolens import setup_notebook; setup_notebook()
 
 from pathlib import Path
 import autolens as al
