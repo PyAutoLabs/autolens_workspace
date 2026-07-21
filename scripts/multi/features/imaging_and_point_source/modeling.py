@@ -88,6 +88,14 @@ data = al.Array2D.no_mask(
     values=np.nan_to_num(np.asarray(data.native)), pixel_scales=pixel_scales
 )
 
+# Under PYAUTO_SMALL_DATASETS=1 (smoke/CI), centre-crop the downloaded 200x200
+# cutout to the 16x16 cap so it stays shape-consistent with the masks and grids
+# built below (which honour the same env var) — a no-op in normal runs. Returns
+# the updated pixel_scales too, so everything downstream stays consistent.
+data, pixel_scales = al.util.dataset.cap_array_2d_for_small_datasets(
+    data, pixel_scales
+)
+
 """
 __Noise Map & PSF__
 
