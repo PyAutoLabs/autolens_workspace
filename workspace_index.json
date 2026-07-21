@@ -5343,6 +5343,7 @@
     ],
     "cross_refs": [
       "autolens_workspace/start_here.py",
+      "scripts/interferometer/casa_reduction.py",
       "scripts/interferometer/simulator.py",
       "start_here_cluster.ipynb",
       "start_here_group.ipynb"
