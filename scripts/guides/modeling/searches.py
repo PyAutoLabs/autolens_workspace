@@ -27,7 +27,7 @@ __Contents__
 - **Emcee:** Emcee (https://github.com/dfm/emcee) is an ensemble MCMC sampler that is commonly used in Astronomy.
 - **Zeus:** Zeus (https://zeus-mcmc.readthedocs.io/en/latest/) is an ensemble MCMC slice sampler.
 - **LBFGS:** LBFGS is a quasi-Newton optimization algorithm from scipy.
-- **MultiStartAdam:** A JAX multi-start gradient maximum a posteriori (MAP) optimizer that works on complex lens parameter spaces.
+- **MultiStartProdigy:** The recommended JAX multi-start gradient maximum a posteriori (MAP) optimizer (learning-rate free), with `MultiStartAdam` and `MultiStartADABelief` as alternatives. Works for parametric sources (e.g. MGE, Sersic), but not yet pixelized sources.
 - **Start Point:** For maximum likelihood estimator (MLE) and Markov Chain Monte Carlo (MCMC) non-linear searches.
 - **Search Cookbook:** There are a number of other searches supported by **PyAutoFit** and therefore which can be used.
 
@@ -188,30 +188,51 @@ search = af.LBFGS(
 )
 
 """
-__MultiStartAdam__
+__MultiStartProdigy (JAX multi-start gradient optimizers)__
 
-`MultiStartAdam` is a JAX / `optax` multi-start first-order gradient optimizer, and a maximum a posteriori (MAP)
+`MultiStartProdigy` is the recommended JAX / `optax` multi-start gradient optimizer, a maximum a posteriori (MAP)
 estimator. It directly addresses the weakness of a single-start optimizer like `LBFGS` noted above: instead of
 descending from a single starting point (which, for the complex parameter spaces of lens models, frequently gets
 stuck in a local maximum), it launches `n_starts` independent optimizations from broad starting points in parallel
-via `jax.vmap` and returns the best one. This wide population of starts reliably finds the global maximum-likelihood
-basin, making it a robust and fast optimizer even for lens models where single-start optimizers fail.
+via `jax.vmap` and returns the best one.
 
-Because it is gradient-based, it requires a JAX-traceable analysis (created via `use_jax=True`). It also manages its
-own broad starting points, so unlike `LBFGS` it does not use the start-point API described below.
+This "multi-start" approach was introduced for strong-lens modeling by GIGA-Lens (Gu, Huang et al. 2022,
+arXiv:2202.07663; GIGA-Lens 2.0, arXiv:2606.30633): a wide population of parallel starts reliably finds the global
+maximum-likelihood basin where single-start optimizers fail, which is what makes a gradient optimizer robust on the
+multi-modal lens likelihood.
 
-`MultiStartADABelief` and `MultiStartLion` are drop-in alternatives that use a different `optax` update rule (`Lion`
-is sign-based and therefore prefers a ~10x smaller `learning_rate`).
+Prodigy is a *learning-rate free* update rule (Mishchenko & Defazio 2024, arXiv:2306.06101): it estimates its own
+step size as it runs, so unlike `MultiStartAdam` it takes no `learning_rate` and there is nothing to tune. On
+lens-modeling likelihoods it reaches the same maximum as a carefully hand-tuned `MultiStartAdam`, which is why it is
+the recommended default of the family.
 
-Like all optimizers it returns a single best-fit lens model, not a posterior with errors, so `Nautilus` remains the
+Three JAX multi-start optimizers are available (they share the same multi-start machinery, differing only in the
+`optax` update rule each start uses):
+
+- `MultiStartProdigy` — learning-rate free (recommended); no `learning_rate` to set.
+- `MultiStartAdam` — the GIGA-Lens original; robust, but you must choose a `learning_rate`.
+- `MultiStartADABelief` — an Adam variant; a drop-in alternative at the same `learning_rate`.
+
+(`MultiStartLion` is a further sign-based alternative that prefers a ~10x smaller `learning_rate`.)
+
+__Parametric sources only (for now)__
+
+Because these are gradient-based, they require a JAX-traceable analysis (created via `use_jax=True`). They are
+currently validated and recommended for **parametric sources** (e.g. an MGE or Sersic source). For **pixelized
+sources** (a `Pixelization` / reconstructed source) they do **not** yet reliably work: the pixelized likelihood has
+regions where the gradient becomes non-finite, so a gradient optimizer stalls short of the best fit, and nested
+sampling (`Nautilus`) remains both more reliable and, on these models, faster. Making the JAX multi-start optimizers
+work on pixelized sources is ongoing work.
+
+Because it manages its own broad starting points, this search does not use the start-point API described below. Like
+all optimizers it returns a single best-fit lens model, not a posterior with errors, so `Nautilus` remains the
 default recommendation when parameter uncertainties are required.
 """
-search = af.MultiStartAdam(
+search = af.MultiStartProdigy(
     path_prefix=Path("imaging", "searches"),
-    name="MultiStartAdam",
+    name="MultiStartProdigy",
     n_starts=50,
     n_steps=500,
-    learning_rate=0.01,
 )
 
 """
