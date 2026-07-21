@@ -278,8 +278,10 @@ the second source plane constrains the lensing by the first source. The lens mas
 
 Two `PositionsLH` are attached — one per source plane — to prevent unphysical reconstructions.
 
-Adapt images are stitched: the lens adapt image comes from the LP pipeline result 2; `source_0`'s adapt image
-comes from the pixelized search above.
+Adapt images are stitched: the lens and `source_1` adapt images come from the LP pipeline result 2 (this is
+`source_1`'s first pixelized fit, so its adapt image is seeded from its light-profile model image in the LP
+result); `source_0`'s adapt image comes from the pixelized search above. All three are required because
+`regularization_init` is adaptive (`al.reg.Adapt`) — every pixelized galaxy needs an adapt image.
 """
 
 
@@ -300,6 +302,7 @@ def source_pix_1_source_1(
     galaxy_name_image_dict = {
         "('galaxies', 'lens')": lp2_dict["('galaxies', 'lens')"],
         "('galaxies', 'source_0')": pix_dict["('galaxies', 'source_0')"],
+        "('galaxies', 'source_1')": lp2_dict["('galaxies', 'source_1')"],
     }
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_name_image_dict)
 
