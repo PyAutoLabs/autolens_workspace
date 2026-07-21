@@ -3923,6 +3923,7 @@
       "SLaM Pipeline"
     ],
     "cross_refs": [
+      "features/pixelization/delaunay.py",
       "slam_start_here.py"
     ],
     "notebook": "notebooks/imaging/features/pixelization/slam.ipynb",
