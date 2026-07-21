@@ -12,3 +12,7 @@ multi/modeling.py
 guides/galaxies.py
 # guides/results/start_here.py  # disabled: depends on prior search output in output/ dir (not generated during smoke tests)
 guides/modeling/cookbook.py
+# imaging Delaunay pixelization: the 2026-04-10 parked FitException is fixed; guard against
+# regression. Its inline likelihood-guide section exercises a real Delaunay inversion.
+# (interferometer Delaunay stays parked in no_run.yaml — intermittent qhull NaN, flaky on CI.)
+imaging/features/pixelization/delaunay.py
