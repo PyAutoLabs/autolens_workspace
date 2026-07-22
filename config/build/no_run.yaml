@@ -6,7 +6,8 @@
 #
 # SLOW-skip convention:
 #   Entries tagged `# SLOW <YYYY-MM-DD> - <reason>` mark scripts that are
-#   skipped because they exceed the 60s per-script timeout cap. These are
+#   skipped because they exceed the per-script timeout cap (300s by
+#   default; 1800s for mode=release runs). These are
 #   NOT permanent skips — every mega-run surfaces them with a loud warning
 #   banner. Fix the performance issue and remove the SLOW marker.
 #
