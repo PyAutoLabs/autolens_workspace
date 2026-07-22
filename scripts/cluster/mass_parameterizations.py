@@ -135,12 +135,23 @@ Total: 9 free parameters (halo 4 + 2 individual galaxies x 2 + members 1).
 
 # --- Cluster-scale dark-matter halo: elliptical dPIE, fully free, not tied to light ---
 halo_mass = af.Model(al.mp.dPIEMass)
-halo_mass.centre = (0.0, 0.0)  # [FIXED] often freed near the BCG (set centre_0 / centre_1 to priors)
+halo_mass.centre = (
+    0.0,
+    0.0,
+)  # [FIXED] often freed near the BCG (set centre_0 / centre_1 to priors)
 halo_mass.ellipticity = af.UniformPrior(lower_limit=0.0, upper_limit=0.7)  # [FREE]
-halo_mass.angle_pos = af.UniformPrior(lower_limit=0.0, upper_limit=180.0)  # [FREE] degrees
-halo_mass.sigma = af.UniformPrior(lower_limit=500.0, upper_limit=1500.0)  # [FREE] cluster-scale dispersion (km/s)
-halo_mass.r_core = af.UniformPrior(lower_limit=20.0, upper_limit=150.0)  # [FREE] large halo core (arcsec)
-halo_mass.r_cut = 1000.0  # [FIXED] truncation unconstrained within the field; fixed large
+halo_mass.angle_pos = af.UniformPrior(
+    lower_limit=0.0, upper_limit=180.0
+)  # [FREE] degrees
+halo_mass.sigma = af.UniformPrior(
+    lower_limit=500.0, upper_limit=1500.0
+)  # [FREE] cluster-scale dispersion (km/s)
+halo_mass.r_core = af.UniformPrior(
+    lower_limit=20.0, upper_limit=150.0
+)  # [FREE] large halo core (arcsec)
+halo_mass.r_cut = (
+    1000.0  # [FIXED] truncation unconstrained within the field; fixed large
+)
 halo_mass.redshift_object = redshift_lens
 halo_mass.redshift_source = redshift_source
 halo_mass.H0 = H0
@@ -148,8 +159,14 @@ halo_mass.Om0 = Om0
 cluster_halo = af.Model(al.Galaxy, redshift=redshift_lens, mass=halo_mass)
 
 # --- Individually-modelled galaxies: the BCG (first) + any freed member, each its own free dPIE ---
-individual_sigma_priors = [(200.0, 600.0), (150.0, 450.0)]  # per-galaxy free sigma range (km/s)
-individual_rcut_priors = [(20.0, 200.0), (20.0, 150.0)]  # per-galaxy free r_cut range (arcsec)
+individual_sigma_priors = [
+    (200.0, 600.0),
+    (150.0, 450.0),
+]  # per-galaxy free sigma range (km/s)
+individual_rcut_priors = [
+    (20.0, 200.0),
+    (20.0, 150.0),
+]  # per-galaxy free r_cut range (arcsec)
 
 individual_galaxies = []
 for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
@@ -157,9 +174,13 @@ for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
 ):
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = centre  # [FIXED] observed position
-    mass.sigma = af.UniformPrior(lower_limit=sigma_lo, upper_limit=sigma_hi)  # [FREE] this galaxy's own dispersion
+    mass.sigma = af.UniformPrior(
+        lower_limit=sigma_lo, upper_limit=sigma_hi
+    )  # [FREE] this galaxy's own dispersion
     mass.r_core = 0.3  # [FIXED] arcsec
-    mass.r_cut = af.UniformPrior(lower_limit=rcut_lo, upper_limit=rcut_hi)  # [FREE] this galaxy's own truncation
+    mass.r_cut = af.UniformPrior(
+        lower_limit=rcut_lo, upper_limit=rcut_hi
+    )  # [FREE] this galaxy's own truncation
     mass.redshift_object = redshift_lens
     mass.redshift_source = redshift_source
     mass.H0 = H0
@@ -167,8 +188,12 @@ for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
     individual_galaxies.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
 # --- Members: one free sigma_ref, Faber-Jackson exponent 0.25 ---
-sigma_ref = af.UniformPrior(lower_limit=100.0, upper_limit=400.0)  # [FREE] km/s (dispersion at mag0)
-mag0 = individual_magnitudes[0]  # [FIXED] reference magnitude (Lenstool's mag0) = the BCG's brightness
+sigma_ref = af.UniformPrior(
+    lower_limit=100.0, upper_limit=400.0
+)  # [FREE] km/s (dispersion at mag0)
+mag0 = individual_magnitudes[
+    0
+]  # [FIXED] reference magnitude (Lenstool's mag0) = the BCG's brightness
 sigma_exponent = 0.25  # [FIXED] Faber-Jackson (make this an af.UniformPrior to free it — a one-line change)
 radius_exponent = 0.5  # [FIXED] constant mass-to-light: r_core, r_cut ~ L^0.5
 r_core_ref = 0.15  # [FIXED] arcsec
@@ -180,7 +205,9 @@ for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
 
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = centre  # [FIXED]
-    mass.sigma = sigma_ref * luminosity_ratio**sigma_exponent  # tied to the one free sigma_ref
+    mass.sigma = (
+        sigma_ref * luminosity_ratio**sigma_exponent
+    )  # tied to the one free sigma_ref
     mass.r_core = r_core_ref * luminosity_ratio**radius_exponent
     mass.r_cut = r_cut_ref * luminosity_ratio**radius_exponent
     mass.redshift_object = redshift_lens
@@ -198,7 +225,9 @@ model_1 = af.Collection(
 print("=" * 80)
 print("Model 1 — The Standard Lenstool Model")
 print("=" * 80)
-print(f"Total free parameters: {model_1.prior_count}  (halo 4 + 2 individual x 2 + members 1 = 9)")
+print(
+    f"Total free parameters: {model_1.prior_count}  (halo 4 + 2 individual x 2 + members 1 = 9)"
+)
 assert model_1.prior_count == 9
 print(model_1.info)
 
@@ -232,16 +261,30 @@ individual galaxies free ``b0`` + ``rs``; members one free ``b0_ref``.
 # --- Halo: elliptical dPIEMassB0 (ellipticity via ell_comps) ---
 halo_mass = af.Model(al.mp.dPIEMassB0)
 halo_mass.centre = (0.0, 0.0)  # [FIXED]
-halo_mass.ell_comps.ell_comps_0 = af.UniformPrior(lower_limit=-0.5, upper_limit=0.5)  # [FREE]
-halo_mass.ell_comps.ell_comps_1 = af.UniformPrior(lower_limit=-0.5, upper_limit=0.5)  # [FREE]
-halo_mass.ra = af.UniformPrior(lower_limit=20.0, upper_limit=150.0)  # [FREE] core (arcsec)
+halo_mass.ell_comps.ell_comps_0 = af.UniformPrior(
+    lower_limit=-0.5, upper_limit=0.5
+)  # [FREE]
+halo_mass.ell_comps.ell_comps_1 = af.UniformPrior(
+    lower_limit=-0.5, upper_limit=0.5
+)  # [FREE]
+halo_mass.ra = af.UniformPrior(
+    lower_limit=20.0, upper_limit=150.0
+)  # [FREE] core (arcsec)
 halo_mass.rs = 1000.0  # [FIXED] truncation, fixed large
-halo_mass.b0 = af.UniformPrior(lower_limit=5.0, upper_limit=50.0)  # [FREE] cluster-scale lens strength (arcsec)
+halo_mass.b0 = af.UniformPrior(
+    lower_limit=5.0, upper_limit=50.0
+)  # [FREE] cluster-scale lens strength (arcsec)
 cluster_halo = af.Model(al.Galaxy, redshift=redshift_lens, mass=halo_mass)
 
 # --- Individually-modelled galaxies: free b0 + free rs (angular, redshift-free) ---
-individual_b0_priors = [(0.0, 5.0), (0.0, 3.0)]  # arcsec, angular lens-strength range per galaxy
-individual_rs_priors = [(20.0, 200.0), (20.0, 150.0)]  # arcsec, truncation range per galaxy
+individual_b0_priors = [
+    (0.0, 5.0),
+    (0.0, 3.0),
+]  # arcsec, angular lens-strength range per galaxy
+individual_rs_priors = [
+    (20.0, 200.0),
+    (20.0, 150.0),
+]  # arcsec, truncation range per galaxy
 
 individual_galaxies_b0 = []
 for centre, (b0_lo, b0_hi), (rs_lo, rs_hi) in zip(
@@ -249,13 +292,21 @@ for centre, (b0_lo, b0_hi), (rs_lo, rs_hi) in zip(
 ):
     mass = af.Model(al.mp.dPIEMassB0Sph)
     mass.centre = centre  # [FIXED]
-    mass.b0 = af.UniformPrior(lower_limit=b0_lo, upper_limit=b0_hi)  # [FREE] angular lens strength (arcsec)
+    mass.b0 = af.UniformPrior(
+        lower_limit=b0_lo, upper_limit=b0_hi
+    )  # [FREE] angular lens strength (arcsec)
     mass.ra = 0.3  # [FIXED] = Model 1's r_core
-    mass.rs = af.UniformPrior(lower_limit=rs_lo, upper_limit=rs_hi)  # [FREE] truncation (arcsec)
-    individual_galaxies_b0.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
+    mass.rs = af.UniformPrior(
+        lower_limit=rs_lo, upper_limit=rs_hi
+    )  # [FREE] truncation (arcsec)
+    individual_galaxies_b0.append(
+        af.Model(al.Galaxy, redshift=redshift_lens, mass=mass)
+    )
 
 # --- Members: one free b0_ref, exponent 0.5 (b0 ~ L^0.5) ---
-b0_ref = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)  # [FREE] arcsec (lens strength at mag0)
+b0_ref = af.UniformPrior(
+    lower_limit=0.0, upper_limit=1.0
+)  # [FREE] arcsec (lens strength at mag0)
 b0_exponent = 0.5  # [FIXED] b0 ~ L^0.5 (Model 1 used sigma ~ L^0.25; b0 ~ sigma^2 doubles the exponent)
 mag0 = individual_magnitudes[0]  # [FIXED]
 ra_ref = 0.15  # [FIXED] = Model 1's r_core_ref
@@ -297,7 +348,9 @@ comparison, never inside the b0 model), and check three things:
  (c) a fitted ``b0_ref`` converts back to the Model 1 ``sigma_ref`` exactly.
 """
 C_KM_S = 299792.458
-cosmology = ag.cosmo.FlatLambdaCDM(H0=H0, Om0=Om0)  # matches dPIEMass's internal cosmology
+cosmology = ag.cosmo.FlatLambdaCDM(
+    H0=H0, Om0=Om0
+)  # matches dPIEMass's internal cosmology
 d_s = cosmology.angular_diameter_distance_to_earth_in_kpc_from(redshift=redshift_source)
 d_ls = cosmology.angular_diameter_distance_between_redshifts_in_kpc_from(
     redshift_0=redshift_lens, redshift_1=redshift_source
@@ -316,9 +369,14 @@ for magnitude in scaling_magnitudes:
     ratio = 10.0 ** (0.4 * (mag0 - magnitude))
     worst_relation = max(
         worst_relation,
-        abs(b0_ref_value * ratio**0.5 - K * (sigma_ref_value * ratio**0.25 / C_KM_S) ** 2),
+        abs(
+            b0_ref_value * ratio**0.5
+            - K * (sigma_ref_value * ratio**0.25 / C_KM_S) ** 2
+        ),
     )
-print(f"(a) member b0  [b0-relation vs sigma-relation]:  max diff = {worst_relation:.2e}")
+print(
+    f"(a) member b0  [b0-relation vs sigma-relation]:  max diff = {worst_relation:.2e}"
+)
 assert worst_relation < 1e-12
 
 # (b) Deflections identical: dPIEMassB0Sph(b0) == dPIEMassSph(sigma) for each member.
@@ -326,7 +384,10 @@ worst_defl = 0.0
 for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
     ratio = 10.0 ** (0.4 * (mag0 - magnitude))
     mass_b0 = al.mp.dPIEMassB0Sph(
-        centre=centre, ra=ra_ref * ratio**0.5, rs=rs_ref * ratio**0.5, b0=b0_ref_value * ratio**0.5
+        centre=centre,
+        ra=ra_ref * ratio**0.5,
+        rs=rs_ref * ratio**0.5,
+        b0=b0_ref_value * ratio**0.5,
     )
     mass_sigma = al.mp.dPIEMassSph(
         centre=centre,
@@ -352,7 +413,9 @@ assert worst_defl < 1e-12
 
 # (c) Round-trip.
 sigma_ref_recovered = C_KM_S * (b0_ref_value / K) ** 0.5
-print(f"(c) b0_ref = {b0_ref_value:.5f} arcsec  ->  sigma_ref = {sigma_ref_recovered:.2f} km/s  (input {sigma_ref_value})")
+print(
+    f"(c) b0_ref = {b0_ref_value:.5f} arcsec  ->  sigma_ref = {sigma_ref_recovered:.2f} km/s  (input {sigma_ref_value})"
+)
 assert np.isclose(sigma_ref_recovered, sigma_ref_value, rtol=1e-9)
 print("Model 2 checks passed.")
 
@@ -401,9 +464,13 @@ cluster_halo = af.Model(al.Galaxy, redshift=redshift_lens, mass=halo_mass)
 # --- The BCG: the ANCHOR. Its free sigma sets its own mass AND normalizes every member. ---
 bcg_mass = af.Model(al.mp.dPIEMassSph)
 bcg_mass.centre = individual_centres[0]  # [FIXED]
-bcg_mass.sigma = af.UniformPrior(lower_limit=200.0, upper_limit=600.0)  # [FREE] BCG mass + member anchor
+bcg_mass.sigma = af.UniformPrior(
+    lower_limit=200.0, upper_limit=600.0
+)  # [FREE] BCG mass + member anchor
 bcg_mass.r_core = 0.3  # [FIXED]
-bcg_mass.r_cut = af.UniformPrior(lower_limit=20.0, upper_limit=200.0)  # [FREE] BCG's own truncation
+bcg_mass.r_cut = af.UniformPrior(
+    lower_limit=20.0, upper_limit=200.0
+)  # [FREE] BCG's own truncation
 bcg_mass.redshift_object = redshift_lens
 bcg_mass.redshift_source = redshift_source
 bcg_mass.H0 = H0
@@ -420,14 +487,18 @@ for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
 ):
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = centre
-    mass.sigma = af.UniformPrior(lower_limit=sigma_lo, upper_limit=sigma_hi)  # [FREE] independent of the BCG
+    mass.sigma = af.UniformPrior(
+        lower_limit=sigma_lo, upper_limit=sigma_hi
+    )  # [FREE] independent of the BCG
     mass.r_core = 0.3
     mass.r_cut = af.UniformPrior(lower_limit=rcut_lo, upper_limit=rcut_hi)  # [FREE]
     mass.redshift_object = redshift_lens
     mass.redshift_source = redshift_source
     mass.H0 = H0
     mass.Om0 = Om0
-    other_individual_galaxies.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
+    other_individual_galaxies.append(
+        af.Model(al.Galaxy, redshift=redshift_lens, mass=mass)
+    )
 
 # --- Members: normalized to the BCG's OWN sigma. ZERO new free parameters. ---
 mag0 = individual_magnitudes[0]  # [FIXED] = BCG magnitude
@@ -440,7 +511,9 @@ for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
 
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = centre
-    mass.sigma = bcg_mass.sigma * luminosity_ratio**0.25  # tied to the BCG's free sigma -> NO new parameter
+    mass.sigma = (
+        bcg_mass.sigma * luminosity_ratio**0.25
+    )  # tied to the BCG's free sigma -> NO new parameter
     mass.r_core = r_core_ref * luminosity_ratio**0.5
     mass.r_cut = r_cut_ref * luminosity_ratio**0.5
     mass.redshift_object = redshift_lens
@@ -458,7 +531,9 @@ model_3 = af.Collection(
 print("\n" + "=" * 80)
 print("Model 3 — Mass Anchoring (members normalized to the BCG)")
 print("=" * 80)
-print(f"Total free parameters: {model_3.prior_count}   (Model 1 was 9; the member tier now adds 0)")
+print(
+    f"Total free parameters: {model_3.prior_count}   (Model 1 was 9; the member tier now adds 0)"
+)
 assert model_3.prior_count == 8
 
 """
@@ -474,20 +549,26 @@ without_members = af.Collection(
     individual_galaxies=af.Collection([bcg] + other_individual_galaxies),
 )
 added = model_3.prior_count - without_members.prior_count
-print(f"(a) free params:  without members = {without_members.prior_count},  with members = {model_3.prior_count}  (members added {added})")
+print(
+    f"(a) free params:  without members = {without_members.prior_count},  with members = {model_3.prior_count}  (members added {added})"
+)
 assert added == 0
 
 # (b) The members are driven by the BCG's sigma.
 instance = model_3.instance_from_prior_medians()
 sigma_bcg_instance = instance.individual_galaxies[0].mass.sigma
-print(f"(b) instance BCG sigma = {sigma_bcg_instance:.2f} km/s;  members = sigma_BCG * (L/L_BCG)^0.25:")
+print(
+    f"(b) instance BCG sigma = {sigma_bcg_instance:.2f} km/s;  members = sigma_BCG * (L/L_BCG)^0.25:"
+)
 worst_coupling = 0.0
 for i, magnitude in enumerate(scaling_magnitudes):
     ratio = 10.0 ** (0.4 * (mag0 - magnitude))
     expected = sigma_bcg_instance * ratio**0.25
     actual = instance.scaling_galaxies[i].mass.sigma
     worst_coupling = max(worst_coupling, abs(actual - expected))
-    print(f"    member {i} (mag {magnitude}):  sigma = {actual:6.2f} km/s  = {ratio**0.25:.3f} x sigma_BCG")
+    print(
+        f"    member {i} (mag {magnitude}):  sigma = {actual:6.2f} km/s  = {ratio**0.25:.3f} x sigma_BCG"
+    )
 assert worst_coupling < 1e-9
 print("Model 3 checks passed.")
 
@@ -550,7 +631,9 @@ for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
 
 # --- Members: TWO free normalizations, sigma_ref and r_cut_ref ---
 sigma_ref = af.UniformPrior(lower_limit=100.0, upper_limit=400.0)  # [FREE] km/s
-r_cut_ref = af.UniformPrior(lower_limit=5.0, upper_limit=50.0)  # [FREE] arcsec  <-- now a prior, not a constant
+r_cut_ref = af.UniformPrior(
+    lower_limit=5.0, upper_limit=50.0
+)  # [FREE] arcsec  <-- now a prior, not a constant
 mag0 = individual_magnitudes[0]  # [FIXED]
 sigma_exponent = 0.25  # [FIXED]
 radius_exponent = 0.5  # [FIXED]
@@ -580,7 +663,9 @@ model_4 = af.Collection(
 print("\n" + "=" * 80)
 print("Model 4 — The Two-Parameter Relation")
 print("=" * 80)
-print(f"Total free parameters: {model_4.prior_count}   (Model 1 was 9; the member tier is now 2, not 1)")
+print(
+    f"Total free parameters: {model_4.prior_count}   (Model 1 was 9; the member tier is now 2, not 1)"
+)
 assert model_4.prior_count == 10
 
 # The member tier now contributes 2 free parameters (sigma_ref + r_cut_ref) instead of 1.

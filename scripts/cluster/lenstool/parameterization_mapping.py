@@ -95,7 +95,9 @@ d_ls = cosmology.angular_diameter_distance_between_redshifts_in_kpc_from(
     redshift_0=redshift_lens, redshift_1=redshift_source
 )
 
-K = 6.0 * 648000.0 * (d_ls / d_s)  # b0 = K * (sigma / c)^2  <=>  sigma = c * sqrt(b0 / K)
+K = (
+    6.0 * 648000.0 * (d_ls / d_s)
+)  # b0 = K * (sigma / c)^2  <=>  sigma = c * sqrt(b0 / K)
 
 print(f"Distance factor K = {K:.4f}  (b0 [arcsec] = K * (sigma/c)^2)")
 
@@ -143,7 +145,9 @@ deflections_lenstool = np.asarray(mass_lenstool.deflections_yx_2d_from(grid=grid
 deflections_b0 = np.asarray(mass_b0.deflections_yx_2d_from(grid=grid))
 
 max_diff = np.max(np.abs(deflections_lenstool - deflections_b0))
-print(f"\n1. Single-profile parity (elliptical):  max deflection difference = {max_diff:.2e}")
+print(
+    f"\n1. Single-profile parity (elliptical):  max deflection difference = {max_diff:.2e}"
+)
 assert max_diff < 1e-12
 
 # And the inverse direction we will actually use: b0 -> sigma reconstructs the Lenstool profile.
@@ -178,7 +182,9 @@ radii scale as ``L^0.5`` in both, and carry across as ``r_core = ra``, ``r_cut =
 
 We verify the exponent-halving numerically for a spread of member luminosities.
 """
-reference_luminosity = 1.0  # Lenstool "mag0" — an explicit fixed anchor, not the sample max
+reference_luminosity = (
+    1.0  # Lenstool "mag0" — an explicit fixed anchor, not the sample max
+)
 member_luminosities = [0.40, 0.25, 0.16, 0.10, 0.06]
 
 r_core_ref = 0.158  # arcsec, fixed
@@ -191,7 +197,9 @@ sigma_ref_target = 85.0
 b0_ref = K * (sigma_ref_target / C_KM_S) ** 2
 
 sigma_ref = sigma_from_b0(b0_ref)
-print(f"\n2. Scaling relation mapping:  b0_ref = {b0_ref:.5f} arcsec  ->  sigma_ref = {sigma_ref:.4f} km/s")
+print(
+    f"\n2. Scaling relation mapping:  b0_ref = {b0_ref:.5f} arcsec  ->  sigma_ref = {sigma_ref:.4f} km/s"
+)
 assert np.isclose(sigma_ref, sigma_ref_target, rtol=1e-10)
 
 max_relation_diff = 0.0
@@ -201,7 +209,9 @@ for luminosity in member_luminosities:
     sigma_i_direct = sigma_from_b0(b0_i)  # convert the member's own b0
     sigma_i_relation = sigma_ref * ratio**0.25  # Faber-Jackson in sigma-space
     max_relation_diff = max(max_relation_diff, abs(sigma_i_direct - sigma_i_relation))
-print(f"   sigma_i(from b0_i)  vs  sigma_ref * (L/L_ref)^0.25:  max diff = {max_relation_diff:.2e}")
+print(
+    f"   sigma_i(from b0_i)  vs  sigma_ref * (L/L_ref)^0.25:  max diff = {max_relation_diff:.2e}"
+)
 assert max_relation_diff < 1e-9
 
 """
@@ -235,7 +245,9 @@ for centre, luminosity in zip(member_centres, member_luminosities):
     b0_member_models.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
 tier_b0 = af.Collection(b0_member_models)
-print(f"\n3. Fit-time tier (b0-space) free parameters:  {tier_b0.prior_count}  (expect 1: b0_ref)")
+print(
+    f"\n3. Fit-time tier (b0-space) free parameters:  {tier_b0.prior_count}  (expect 1: b0_ref)"
+)
 assert tier_b0.prior_count == 1
 
 # Simulate the fit returning b0_ref (UniformPrior(0, 1) -> unit value == b0_ref).
@@ -259,10 +271,14 @@ for centre, luminosity in zip(member_centres, member_luminosities):
     mass.redshift_source = redshift_source
     mass.H0 = 67.66
     mass.Om0 = 0.30966
-    lenstool_member_models.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
+    lenstool_member_models.append(
+        af.Model(al.Galaxy, redshift=redshift_lens, mass=mass)
+    )
 
 tier_lenstool = af.Collection(lenstool_member_models)
-print(f"   Lenstool tier (sigma-space) free parameters:  {tier_lenstool.prior_count}  (expect 1: sigma_ref)")
+print(
+    f"   Lenstool tier (sigma-space) free parameters:  {tier_lenstool.prior_count}  (expect 1: sigma_ref)"
+)
 assert tier_lenstool.prior_count == 1
 
 instance_lenstool = tier_lenstool.instance_from_unit_vector([sigma_ref_fit / 300.0])
@@ -275,7 +291,9 @@ for galaxy_b0, galaxy_lenstool in zip(instance_b0, instance_lenstool):
     d_b0 = np.asarray(galaxy_b0.mass.deflections_yx_2d_from(grid=grid))
     d_lenstool = np.asarray(galaxy_lenstool.mass.deflections_yx_2d_from(grid=grid))
     max_member_diff = max(max_member_diff, np.max(np.abs(d_b0 - d_lenstool)))
-print(f"   per-member deflection agreement (b0-tier vs Lenstool-tier):  max diff = {max_member_diff:.2e}")
+print(
+    f"   per-member deflection agreement (b0-tier vs Lenstool-tier):  max diff = {max_member_diff:.2e}"
+)
 assert max_member_diff < 1e-12
 
 """
@@ -309,11 +327,15 @@ for sigma_test in [100.0, 200.0, 300.0]:
         redshift_source=redshift_source,
     )
     b0_over_sigma_sq.append(mass_test.b0 / sigma_test**2)
-print(f"\n4. Faber-Jackson chain:  b0 / sigma^2 = {b0_over_sigma_sq[0]:.6e}  (constant => b0 ~ sigma^2)")
+print(
+    f"\n4. Faber-Jackson chain:  b0 / sigma^2 = {b0_over_sigma_sq[0]:.6e}  (constant => b0 ~ sigma^2)"
+)
 assert np.allclose(b0_over_sigma_sq, b0_over_sigma_sq[0], rtol=1e-12)
 
 ratio_check = 0.16
-b0_via_faber_jackson = K * (sigma_ref * ratio_check**0.25 / C_KM_S) ** 2  # b0 built from the FJ sigma
+b0_via_faber_jackson = (
+    K * (sigma_ref * ratio_check**0.25 / C_KM_S) ** 2
+)  # b0 built from the FJ sigma
 b0_via_b0_relation = b0_ref * ratio_check**0.5  # b0-space relation directly
 print(
     f"   member (L/L_ref={ratio_check}):  b0 via Faber-Jackson sigma = {b0_via_faber_jackson:.6f}"
@@ -334,7 +356,10 @@ BCG-anchored (``L_ref =`` brightest member) conventions, checking every member s
 is the "over all galaxies, comparable everywhere" guarantee, not just parity at one point.
 """
 worst_robustness = 0.0
-reference_cases = [(1.0, "fiducial L_ref=1"), (max(member_luminosities), "L_ref=brightest member")]
+reference_cases = [
+    (1.0, "fiducial L_ref=1"),
+    (max(member_luminosities), "L_ref=brightest member"),
+]
 for reference_case, reference_tag in reference_cases:
     for b0_ref_case in [0.05, 0.20, 0.50, 0.90]:
         sigma_ref_case = sigma_from_b0(b0_ref_case)
@@ -390,8 +415,12 @@ We demonstrate that case (b) maps exactly: a BCG modelled as its own dPIE (``sig
 tier anchored to it, agrees member-for-member in both parameterizations.
 """
 sigma_bcg = 320.0
-b0_bcg = K * (sigma_bcg / C_KM_S) ** 2  # the BCG's own lens strength; L_BCG = 1.0 is the reference
-print(f"\n6. BCG-anchored:  sigma_BCG = {sigma_bcg} km/s  <->  b0_BCG = {b0_bcg:.5f} arcsec")
+b0_bcg = (
+    K * (sigma_bcg / C_KM_S) ** 2
+)  # the BCG's own lens strength; L_BCG = 1.0 is the reference
+print(
+    f"\n6. BCG-anchored:  sigma_BCG = {sigma_bcg} km/s  <->  b0_BCG = {b0_bcg:.5f} arcsec"
+)
 
 worst_bcg = 0.0
 for centre, luminosity in zip(member_centres, member_luminosities):
@@ -419,7 +448,9 @@ for centre, luminosity in zip(member_centres, member_luminosities):
             )
         ),
     )
-print(f"   tier anchored to BCG mass:  all-member b0-vs-sigma max defl diff = {worst_bcg:.2e}")
+print(
+    f"   tier anchored to BCG mass:  all-member b0-vs-sigma max defl diff = {worst_bcg:.2e}"
+)
 assert worst_bcg < 1e-12
 
 """

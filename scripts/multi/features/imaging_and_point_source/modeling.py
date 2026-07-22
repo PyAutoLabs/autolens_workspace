@@ -92,9 +92,7 @@ data = al.Array2D.no_mask(
 # cutout to the 16x16 cap so it stays shape-consistent with the masks and grids
 # built below (which honour the same env var) — a no-op in normal runs. Returns
 # the updated pixel_scales too, so everything downstream stays consistent.
-data, pixel_scales = al.util.dataset.cap_array_2d_for_small_datasets(
-    data, pixel_scales
-)
+data, pixel_scales = al.util.dataset.cap_array_2d_for_small_datasets(data, pixel_scales)
 
 """
 __Noise Map & PSF__
@@ -108,7 +106,12 @@ hips2fits does not provide a noise-map or PSF, so we construct demonstration-gra
 data_np = np.nan_to_num(np.asarray(data.native))
 
 border = np.concatenate(
-    [data_np[:20, :].ravel(), data_np[-20:, :].ravel(), data_np[:, :20].ravel(), data_np[:, -20:].ravel()]
+    [
+        data_np[:20, :].ravel(),
+        data_np[-20:, :].ravel(),
+        data_np[:, :20].ravel(),
+        data_np[:, -20:].ravel(),
+    ]
 )
 clipped = border[np.abs(border - np.median(border)) < 3.0 * np.std(border)]
 background_rms = float(np.std(clipped))
@@ -198,7 +201,9 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     centre_list=[(0.0, 0.0)],
 )
 
-dataset_imaging = dataset_imaging.apply_over_sampling(over_sample_size_lp=over_sample_size)
+dataset_imaging = dataset_imaging.apply_over_sampling(
+    over_sample_size_lp=over_sample_size
+)
 
 aplt.subplot_imaging_dataset(dataset=dataset_imaging)
 
@@ -258,7 +263,9 @@ model_imaging = af.Collection(
 lens_point = af.Model(al.Galaxy, redshift=0.295, mass=mass, shear=shear)
 source_point = af.Model(al.Galaxy, redshift=0.658, point_0=af.Model(al.ps.Point))
 
-model_point = af.Collection(galaxies=af.Collection(lens=lens_point, source=source_point))
+model_point = af.Collection(
+    galaxies=af.Collection(lens=lens_point, source=source_point)
+)
 
 """
 __Analysis Factor & Factor Graph__
