@@ -83,7 +83,9 @@ inside the sparse operator.
 rng = np.random.default_rng(1)
 uv_wavelengths = rng.uniform(-3.0e5, 3.0e5, size=(1000, 2))
 
-real_space_mask = al.Mask2D.circular(shape_native=(64, 64), pixel_scales=0.1, radius=2.6)
+real_space_mask = al.Mask2D.circular(
+    shape_native=(64, 64), pixel_scales=0.1, radius=2.6
+)
 grid = al.Grid2D.from_mask(mask=real_space_mask)
 
 simulator = al.SimulatorInterferometer(
@@ -132,7 +134,9 @@ dataset = al.Interferometer(
 dataset = dataset.apply_sparse_operator()
 
 n_full = int(np.count_nonzero(~np.asarray(real_space_mask)))
-print(f"visibilities: {uv_wavelengths.shape[0]}, real-space mask pixels: n_full = {n_full}")
+print(
+    f"visibilities: {uv_wavelengths.shape[0]}, real-space mask pixels: n_full = {n_full}"
+)
 
 """
 __Smooth Starting Model__
@@ -376,10 +380,13 @@ reg_norm_term = 0.5 * (
 reg_penalty_term = -0.5 * float(solution @ regularization_matrix @ solution)
 
 model_image = aa.Array2D(values=A @ solution, mask=real_space_mask)
-model_visibilities = np.asarray(dataset.transformer.visibilities_from(image=model_image))
+model_visibilities = np.asarray(
+    dataset.transformer.visibilities_from(image=model_image)
+)
 residual = data - model_visibilities
 chi_squared_term = -0.5 * float(
-    np.sum((residual.real / noise.real) ** 2) + np.sum((residual.imag / noise.imag) ** 2)
+    np.sum((residual.real / noise.real) ** 2)
+    + np.sum((residual.imag / noise.imag) ** 2)
 )
 
 log_evidence = (

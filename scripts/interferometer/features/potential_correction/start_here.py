@@ -69,10 +69,9 @@ def synthesis_uv_from(n_ant, n_times, max_baseline_wavelengths, seed=0):
     uv_list = []
     for ha in hour_angles:
         u = baselines[:, 0] * np.cos(ha) - baselines[:, 1] * np.sin(ha)
-        v = (
-            baselines[:, 0] * np.sin(ha) * np.sin(declination)
-            + baselines[:, 1] * np.cos(ha) * np.sin(declination)
-        )
+        v = baselines[:, 0] * np.sin(ha) * np.sin(declination) + baselines[
+            :, 1
+        ] * np.cos(ha) * np.sin(declination)
         uv_list.append(np.stack([u, v], axis=1))
     return np.concatenate(uv_list, axis=0)
 
@@ -254,7 +253,7 @@ def dkappa_metrics(pair_obj, dkappa_rec, tag):
     significance = float(dkappa_rec.max() / dkappa_rec[r > 1.5].std())
     print(
         f"{tag}: corr(dkappa_rec, dkappa_true) = {corr:.3f}; "
-        f"peak offset = {dist:.2f}\"; significance = {significance:.1f} sigma"
+        f'peak offset = {dist:.2f}"; significance = {significance:.1f} sigma'
     )
     return corr, dist
 
@@ -286,7 +285,9 @@ iter_fit = al.pc.IterFitDpsiSrcInterferometer(
     reg_optimize_every=1,
 )
 s_opt, dpsi_opt = iter_fit.solve_joint_optimization(x0=np.asarray(fit.src_dpsi_slim))
-print(f"iterative Laplace log evidence = {iter_fit.log_evidence(s=s_opt, dpsi=dpsi_opt):.4e}")
+print(
+    f"iterative Laplace log evidence = {iter_fit.log_evidence(s=s_opt, dpsi=dpsi_opt):.4e}"
+)
 
 dkappa_iter = np.asarray(iter_fit.pair_dpsi_data_obj.hamiltonian_dpsi @ dpsi_opt)
 dkappa_metrics(iter_fit.pair_dpsi_data_obj, dkappa_iter, "iterative")

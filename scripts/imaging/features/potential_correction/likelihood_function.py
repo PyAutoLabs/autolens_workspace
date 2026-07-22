@@ -112,7 +112,10 @@ arc-tracing region: `al.pc.util.arc_mask_from` thresholds the signal-to-noise ma
 the result and cleans it so every unmasked pixel supports the finite-difference operators built below.
 """
 mask_array = al.pc.util.arc_mask_from(
-    np.asarray(dataset.signal_to_noise_map.native), threshold=3.0, ignore_size=10, ext_size=3
+    np.asarray(dataset.signal_to_noise_map.native),
+    threshold=3.0,
+    ignore_size=10,
+    ext_size=3,
 )
 mask = al.Mask2D(mask=mask_array, pixel_scales=dataset.pixel_scales)
 masked_imaging = dataset.apply_mask(mask=mask)
@@ -152,7 +155,9 @@ pair = al.pc.PairRegularDpsiMesh(
 
 n_dpsi = int(np.count_nonzero(~pair.mask_dpsi))
 print(f"unmasked dpsi mesh pixels: n_dpsi = {n_dpsi}")
-print(f"itp_mat shape = {pair.itp_mat.shape}, row sums all 1: {np.allclose(pair.itp_mat.sum(axis=1), 1.0)}")
+print(
+    f"itp_mat shape = {pair.itp_mat.shape}, row sums all 1: {np.allclose(pair.itp_mat.sum(axis=1), 1.0)}"
+)
 
 """
 __Dpsi Gradient Operator__
@@ -211,7 +216,9 @@ $\delta d = - B \, D_s \, D_\psi \, \delta\psi$
 
 The minus sign: a positive potential bump deflects rays outward, sampling the source closer to its centre.
 """
-dpsi_mapping_matrix = np.asarray(-1.0 * psf_matrix @ source_gradient_matrix @ dpsi_gradient_matrix)
+dpsi_mapping_matrix = np.asarray(
+    -1.0 * psf_matrix @ source_gradient_matrix @ dpsi_gradient_matrix
+)
 print(f"dpsi mapping matrix shape = {dpsi_mapping_matrix.shape}")
 
 """

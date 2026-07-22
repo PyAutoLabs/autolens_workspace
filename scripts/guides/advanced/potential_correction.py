@@ -123,7 +123,10 @@ through the source gradients, which vanish off the arcs. We therefore mask the d
 result and cleans it so every unmasked pixel supports the finite-difference derivative operators.
 """
 mask_array = al.pc.util.arc_mask_from(
-    np.asarray(dataset.signal_to_noise_map.native), threshold=3.0, ignore_size=25, ext_size=5
+    np.asarray(dataset.signal_to_noise_map.native),
+    threshold=3.0,
+    ignore_size=25,
+    ext_size=5,
 )
 mask = al.Mask2D(mask=mask_array, pixel_scales=dataset.pixel_scales)
 masked_imaging = dataset.apply_mask(mask=mask)
@@ -208,7 +211,9 @@ print(
     f"{fit.pair_dpsi_data_obj.xgrid_dpsi_1d[peak]:.2f}) — true subhalo at (1.41, 0.00)"
 )
 
-al.pc.visualize.show_fit_dpsi_src(fit, output=path.join("output", "potential_correction_joint_fit.png"))
+al.pc.visualize.show_fit_dpsi_src(
+    fit, output=path.join("output", "potential_correction_joint_fit.png")
+)
 
 """
 __Iterative Fit__

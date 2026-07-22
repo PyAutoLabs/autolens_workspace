@@ -384,7 +384,9 @@ galaxy_models = al.galaxy_af_models_from_csv_tables(
 # Mutate selected params on the main-lens mass profiles into priors (sigma is
 # Lenstool's fiducial v_disp in km/s; radii in arcsec).
 for name in ("lens_0", "lens_1"):
-    galaxy_models[name].mass.sigma = af.UniformPrior(lower_limit=50.0, upper_limit=600.0)
+    galaxy_models[name].mass.sigma = af.UniformPrior(
+        lower_limit=50.0, upper_limit=600.0
+    )
     galaxy_models[name].mass.r_core = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
     galaxy_models[name].mass.r_cut = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
 

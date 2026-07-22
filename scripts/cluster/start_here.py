@@ -148,7 +148,9 @@ HIPS2FITS_URL = (
 if not data_fits_path.exists():
     import urllib.request
 
-    print("Downloading HST H-band image of Abell 2744 for visualization (one-off, ~1.4 MB) ...")
+    print(
+        "Downloading HST H-band image of Abell 2744 for visualization (one-off, ~1.4 MB) ..."
+    )
     try:
         # An explicit timeout is essential: `urlretrieve` has none, so a slow or
         # stalled hips2fits response hangs the script indefinitely (in CI this
@@ -157,7 +159,9 @@ if not data_fits_path.exists():
         with urllib.request.urlopen(HIPS2FITS_URL, timeout=30) as response:
             data_fits_path.write_bytes(response.read())
     except Exception as e:
-        print(f"Image download failed ({e}) — continuing without it (visualization only).")
+        print(
+            f"Image download failed ({e}) — continuing without it (visualization only)."
+        )
 
 if data_fits_path.exists():
     # hips2fits returns 0.3"/pixel for this 0.05 deg / 600 pixel cutout.
@@ -307,7 +311,9 @@ galaxy_models = al.galaxy_af_models_from_csv_tables(mass_table, point_table)
 # model *constants*, not parameters to sample — if left unset they would inherit the
 # config's default priors and float).
 for name in ("lens_0", "lens_1"):
-    galaxy_models[name].mass.sigma = af.UniformPrior(lower_limit=50.0, upper_limit=600.0)
+    galaxy_models[name].mass.sigma = af.UniformPrior(
+        lower_limit=50.0, upper_limit=600.0
+    )
     galaxy_models[name].mass.r_core = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
     galaxy_models[name].mass.r_cut = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
     galaxy_models[name].mass.H0 = 67.66
