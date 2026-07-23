@@ -332,9 +332,7 @@ The **PyAutoFit** search cookbook documents all searches that are available, inc
 and provides the code you can easily copy and paste to use these methods.
 
 https://pyautofit.readthedocs.io/en/latest/cookbooks/search.html
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

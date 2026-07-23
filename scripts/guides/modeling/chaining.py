@@ -383,9 +383,7 @@ If the prior config file had specified that we use an relative value of 0.8, the
 mean=4.0 and sigma = 4.0 * 0.8 = 3.2.
 
 And with that, we're done. Chaining priors is a bit of an art form, but one that works really well. 
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

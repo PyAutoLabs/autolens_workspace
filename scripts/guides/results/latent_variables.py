@@ -289,9 +289,7 @@ Pipeline-specific latents that need non-standard kwargs (PSF-relative aperture f
 photometric quantities, multi-band colour terms) belong in your pipeline's local Analysis subclass. The Euclid
 pipeline (``euclid_strong_lens_modeling_pipeline/util.py``) demonstrates this — its FWHM aperture-flux latents
 stay pipeline-local and the rest inherit from the library.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

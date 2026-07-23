@@ -600,10 +600,7 @@ I will extend this guide to include the following in the next few days:
  - Add methods which output model-specific results to hard-disk in the files folder (e.g. as .json files) to aid in 
  the interpretation of results.
  - How to output results to hard-disk in a format that can be loaded into the **PyAutoLens** database.
- 
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

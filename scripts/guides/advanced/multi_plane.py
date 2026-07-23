@@ -699,9 +699,7 @@ time, we use a sample of five cluster strong lenses to measure the values of cos
 with those from classical probes. In order to assess the degeneracies and the effectiveness of strong-lensing 
 cosmography in constraining the background geometry of the Universe, we adopt four cosmological scenarios. We find 
 good constraining power on the total matter density of the Universe ($Ω_{\rm m}$) and the equation of state of the dark e… Show more
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

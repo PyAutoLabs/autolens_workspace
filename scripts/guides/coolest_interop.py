@@ -137,9 +137,7 @@ Light: `Sersic` / `SersicSph`. Mass: `Isothermal` / `IsothermalSph` (SIE), `Powe
 an error naming the profile.
 
 Fin.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.
