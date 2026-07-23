@@ -16,6 +16,14 @@ the on-disk `.ipynb` wasn't refreshed by `/pre_build`'s
 of `generate.py`; smoke only regenerates the single notebook in front
 of it so the recovery is cheap.
 
+The env resolution itself is NOT implemented here: it is PyAutoHands's
+`autohands/env_config.py`, imported below. This file used to carry a copy, and
+the copy had already drifted (its `load_env_config` hardcoded
+`config/build/profile_smoke.yaml`, so the PR gate was structurally unable to read
+the release profile — the seed incident's failure mode 4/7). One resolver
+means the PR gate and the release runner cannot disagree about what a script's
+environment is. See PyAutoHands docs/env_profile_redesign.md §5 (#161 step 2).
+
 Mirrors the logic of the `/smoke-test` skill so CI and local runs stay
 in sync.
 """
@@ -30,8 +38,6 @@ import tempfile
 import time
 from pathlib import Path
 
-import yaml
-
 
 WORKSPACE = Path(__file__).resolve().parents[2]
 SMOKE_FILE = WORKSPACE / "smoke_tests.txt"
@@ -39,6 +45,15 @@ NOTEBOOK_FILE = WORKSPACE / "smoke_notebooks.txt"
 ENV_VARS_FILE = WORKSPACE / "config" / "build" / "profile_smoke.yaml"
 SCRIPTS_DIR = WORKSPACE / "scripts"
 NOTEBOOKS_DIR = WORKSPACE / "notebooks"
+
+# CI puts PyAutoHands/autohands on PYTHONPATH (PyAutoHeart's reusable
+# smoke-tests.yml clones it alongside the dependency chain); for local runs,
+# fall back to the sibling checkout.
+try:
+    from env_config import build_env_for_script, load_env_config
+except ImportError:  # pragma: no cover - local-run fallback
+    sys.path.insert(0, str(WORKSPACE.parent / "PyAutoHands" / "autohands"))
+    from env_config import build_env_for_script, load_env_config
 
 
 def load_lines(path: Path) -> list[str]:
@@ -53,33 +68,20 @@ def load_lines(path: Path) -> list[str]:
     return out
 
 
-def load_env_config() -> dict:
+def load_cfg() -> dict | None:
+    """Parsed env profile, or None when the workspace has none.
+
+    None flows through build_env_for_script -> None -> subprocess inherits the
+    parent environment, which is what the old local copy's empty-config path
+    did by hand.
+    """
     if not ENV_VARS_FILE.exists():
-        return {"defaults": {}, "overrides": []}
-    return yaml.safe_load(ENV_VARS_FILE.read_text()) or {}
+        return None
+    return load_env_config(ENV_VARS_FILE)
 
 
-def pattern_matches(pattern: str, rel_path: str) -> bool:
-    if "/" in pattern:
-        return pattern in rel_path
-    return Path(rel_path).stem == pattern
-
-
-def build_env(rel_path: str, cfg: dict) -> dict:
-    env = os.environ.copy()
-    defaults = cfg.get("defaults") or {}
-    env.update({k: str(v) for k, v in defaults.items()})
-    for override in cfg.get("overrides") or []:
-        if pattern_matches(override["pattern"], rel_path):
-            for key in override.get("unset", []):
-                env.pop(key, None)
-            for key, val in (override.get("set") or {}).items():
-                env[key] = str(val)
-    return env
-
-
-def run_script(script_rel: str, cfg: dict) -> tuple[str, int, float, str]:
-    env = build_env(script_rel, cfg)
+def run_script(script_rel: str, cfg: dict | None) -> tuple[str, int, float, str]:
+    env = build_env_for_script(Path(script_rel), cfg)
     script_path = SCRIPTS_DIR / script_rel
     t0 = time.time()
     result = subprocess.run(
@@ -156,8 +158,8 @@ def regenerate_notebook(nb_rel: str) -> Path:
     return generated
 
 
-def run_notebook(nb_rel: str, cfg: dict) -> tuple[str, int, float, str]:
-    env = build_env(nb_rel, cfg)
+def run_notebook(nb_rel: str, cfg: dict | None) -> tuple[str, int, float, str]:
+    env = build_env_for_script(Path(nb_rel), cfg)
     nb_path = NOTEBOOKS_DIR / nb_rel
     t0 = time.time()
 
@@ -181,7 +183,7 @@ def run_notebook(nb_rel: str, cfg: dict) -> tuple[str, int, float, str]:
 
 
 def main() -> int:
-    cfg = load_env_config()
+    cfg = load_cfg()
     scripts = load_lines(SMOKE_FILE)
     notebooks = load_lines(NOTEBOOK_FILE)
 
