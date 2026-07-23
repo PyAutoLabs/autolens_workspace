@@ -32,6 +32,9 @@ __Setup__
 To illustrate plotting, we require standard objects like a dataset and model which we will perform quick model-fits to
 for illustration.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 

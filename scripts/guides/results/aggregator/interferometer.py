@@ -2,6 +2,11 @@
 This script still needs writing, I have kept some notes on questions asked by users which may help you...
 
 """
+# ENV: full_datasets real_search
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
+# Results guides must produce real (reduced) samples so downstream
+# aggregator reads (data_fitting, queries, ...) are non-empty.
 
 """
  > For interferometric data, which units PyAutoLens uses for brightness? I think they are in Jy/arcsec^2 (?) since 

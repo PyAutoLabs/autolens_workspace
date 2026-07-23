@@ -42,6 +42,9 @@ The exported `theta_E` is the mass profile's parameter in the COOLEST convention
 Einstein radius (e.g. the effective radius of the area within the tangential critical curve, used by the
 Euclid DR1 catalogue), which depends on all profiles in the model including external shear.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 

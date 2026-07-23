@@ -68,6 +68,9 @@ combined profiles in `al.lmp.*` and `al.lmp_linear.*` are not yet documented on 
 reference page — refer to the source under
 `autogalaxy/profiles/light_and_mass_profiles.py` for the full list.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 # from autolens import setup_notebook; setup_notebook()
 
