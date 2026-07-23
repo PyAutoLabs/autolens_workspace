@@ -36,11 +36,7 @@ import yaml
 WORKSPACE = Path(__file__).resolve().parents[2]
 SMOKE_FILE = WORKSPACE / "smoke_tests.txt"
 NOTEBOOK_FILE = WORKSPACE / "smoke_notebooks.txt"
-# Prefer the canonical profile name; the legacy env_vars.yaml fallback is
-# retired at the stage-3 cleanup (PyAutoHands#161).
 ENV_VARS_FILE = WORKSPACE / "config" / "build" / "profile_smoke.yaml"
-if not ENV_VARS_FILE.exists():
-    ENV_VARS_FILE = WORKSPACE / "config" / "build" / "env_vars.yaml"
 SCRIPTS_DIR = WORKSPACE / "scripts"
 NOTEBOOKS_DIR = WORKSPACE / "notebooks"
 
