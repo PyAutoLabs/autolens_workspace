@@ -233,9 +233,7 @@ for tracer_gen in tracer_list_gen:
 
 """
 Finish.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

@@ -620,9 +620,7 @@ The example script `autolens_workspace/*/features/pixelization.py` describes usi
 
 Therefore if your results contain a pixelization, checkout the example script above for a detailed description
 of how to use their results.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

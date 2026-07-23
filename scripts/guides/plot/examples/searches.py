@@ -854,9 +854,7 @@ plt.close()
 Note that the models do not need to be the same to make the plots above.
 
 GetDist will clever use the `names` of the parameters to combine the parameters into customizeable PDF plots.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

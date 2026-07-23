@@ -555,9 +555,7 @@ The numerical verification of all of the above lives in
 brute-force reference calculations.
 
 Finish.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

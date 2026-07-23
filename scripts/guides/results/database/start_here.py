@@ -348,9 +348,7 @@ This example illustrates how to use the database.
 
 The API above can be combined with the `results/aggregator` scripts in order to use the database to load results and
 perform analysis on them.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

@@ -291,9 +291,7 @@ which they can then extract and make together.
 __Path Navigation__
 
 Example combinig `fit.fits` from `source_lp[1]` and `mass_total[0]`.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

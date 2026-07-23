@@ -315,9 +315,7 @@ us to fit graphs with hundreds of components and tens of thousands of parameters
 optimizations.
 
 This makes hierarchical graphical modeling **scalable to the largest datasets and most complex models.**
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.
