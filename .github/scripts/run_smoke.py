@@ -3,7 +3,7 @@ Run the workspace smoke test suite.
 
 Reads `smoke_tests.txt` (Python scripts) and `smoke_notebooks.txt`
 (Jupyter notebooks) from the workspace root, plus
-`config/build/env_vars.yaml` for per-entry env var overrides, then
+`config/build/profile_smoke.yaml` for per-entry env var overrides, then
 runs each listed entry with the appropriate environment. Continues
 through failures and exits non-zero if any entry failed.
 
@@ -36,7 +36,11 @@ import yaml
 WORKSPACE = Path(__file__).resolve().parents[2]
 SMOKE_FILE = WORKSPACE / "smoke_tests.txt"
 NOTEBOOK_FILE = WORKSPACE / "smoke_notebooks.txt"
-ENV_VARS_FILE = WORKSPACE / "config" / "build" / "env_vars.yaml"
+# Prefer the canonical profile name; the legacy env_vars.yaml fallback is
+# retired at the stage-3 cleanup (PyAutoHands#161).
+ENV_VARS_FILE = WORKSPACE / "config" / "build" / "profile_smoke.yaml"
+if not ENV_VARS_FILE.exists():
+    ENV_VARS_FILE = WORKSPACE / "config" / "build" / "env_vars.yaml"
 SCRIPTS_DIR = WORKSPACE / "scripts"
 NOTEBOOKS_DIR = WORKSPACE / "notebooks"
 
