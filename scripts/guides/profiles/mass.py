@@ -66,9 +66,6 @@ The autosummary on that page is the authoritative list of every public mass-prof
 Note that the reference uses the `ag.mp` namespace label because the classes are defined in
 PyAutoGalaxy and re-exported here as `al.mp`.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 # from autolens import setup_notebook; setup_notebook()
 
@@ -628,4 +625,18 @@ profiles in an actual lens fit, the next step is `scripts/imaging/modeling/start
 which sets up an `AnalysisImaging` and runs a non-linear search end-to-end on a strong-lens
 dataset.  For a deeper walk-through of how mass profiles combine with light profiles in the
 `Tracer` to produce lensed images, see `scripts/guides/tracer.py`.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """

@@ -57,9 +57,6 @@ unmasked data points.
 
 These are documented fully in the ``autolens_workspace/*/guides/data_structures.ipynb`` guide.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -616,4 +613,18 @@ For further reading:
 - ``guides/data_structures.py`` — the ``Array2D``, ``Grid2D`` and ``VectorYX2D`` data structures.
 
 The `LensCalc` class is also available via `al.LensCalc` — it lives in ``PyAutoGalaxy/autogalaxy/operate/lens_calc.py``.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """

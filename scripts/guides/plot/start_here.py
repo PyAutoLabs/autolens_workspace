@@ -20,9 +20,6 @@ __Contents__
 - **Config Defaults:** All default plotting values are configured via config files in.
 - **Overlays:** Overlays are added to plots using the `lines=` and `positions=` keyword arguments.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -218,4 +215,18 @@ aplt.subplot_fit_imaging(fit=fit)
 """
 The search plotting functions (`aplt.corner_anesthetic`, `aplt.corner_cornerpy`, etc.) provide
 visualization of non-linear search results -- see `scripts/guides/plot/examples/searches.py`.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """

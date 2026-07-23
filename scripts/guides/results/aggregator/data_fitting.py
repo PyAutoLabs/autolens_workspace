@@ -30,11 +30,6 @@ The only entries that needs changing are:
 Quantities specific to an interfometer, for example its uv-wavelengths real space mask, are accessed using the same API
 (e.g. `values("dataset.uv_wavelengths")` and `.values{"dataset.real_space_mask")).
 """
-# ENV: full_datasets real_search
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
-# Results guides must produce real (reduced) samples so downstream
-# aggregator reads (data_fitting, queries, ...) are non-empty.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -207,4 +202,20 @@ for fit_list_gen in fit_gen:  # 1 Dataset so just one fit
 
 """
 Finished.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape. Results guides must produce real
+(reduced) samples so downstream aggregator reads (data_fitting, queries,
+...) are non-empty.
+
+ENV: full_datasets real_search
 """

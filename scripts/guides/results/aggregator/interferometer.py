@@ -2,11 +2,6 @@
 This script still needs writing, I have kept some notes on questions asked by users which may help you...
 
 """
-# ENV: full_datasets real_search
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
-# Results guides must produce real (reduced) samples so downstream
-# aggregator reads (data_fitting, queries, ...) are non-empty.
 
 """
  > For interferometric data, which units PyAutoLens uses for brightness? I think they are in Jy/arcsec^2 (?) since 
@@ -37,4 +32,20 @@ harm either.
 One caveat may be magnifications. It could be that as you make the shape of the interpolation grid bigger, the
 magnification changes. I'm not sure on this but would advise you experiment to see if the magnifications 
 seem "stable" (assuming you are estimate a magnification at some point).
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape. Results guides must produce real
+(reduced) samples so downstream aggregator reads (data_fitting, queries,
+...) are non-empty.
+
+ENV: full_datasets real_search
 """

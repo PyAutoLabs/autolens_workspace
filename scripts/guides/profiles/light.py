@@ -62,9 +62,6 @@ documented there under the `Standard [ag.lp]` autosummary, and so on for `al.lp_
 `al.lp_operated`, `al.lp_basis`.  Note that the API reference uses the `ag.*` namespace
 labels because the classes are defined in PyAutoGalaxy and re-exported here.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 # from autolens import setup_notebook; setup_notebook()
 
@@ -648,4 +645,18 @@ subpackages handle the family-specific workflows referenced throughout this guid
 For the mass-profile counterpart of this guide, see `scripts/guides/profiles/mass.py`
 (when available).  For a full walk-through of how light and mass profiles are combined in
 the `Tracer` to produce lensed images, see `scripts/guides/tracer.py`.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """

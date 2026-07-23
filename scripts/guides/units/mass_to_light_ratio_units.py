@@ -1,6 +1,3 @@
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 import numpy as np
 import autolens as al
 import autogalaxy as ag
@@ -124,3 +121,17 @@ if __name__ == "__main__":
     print(mass.mass_to_light_ratio)
     print("The total mass of this galaxy should be ~ 2.47 * 10^8")
     print(f"While the result of the light-trace-mass profile is {total_mass:.4e}")
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
+"""

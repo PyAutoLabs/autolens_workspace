@@ -17,11 +17,6 @@ search is hard-capped at ``n_like_max=300`` likelihood evaluations rather
 than running to convergence. This produces a shallow but valid posterior
 fast enough to fit inside the per-script CI timeout.
 """
-# ENV: full_datasets real_search
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
-# Results guides must produce real (reduced) samples so downstream
-# aggregator reads (data_fitting, queries, ...) are non-empty.
 
 import shutil
 import sys
@@ -167,3 +162,19 @@ for unique_tag in [dataset_name, f"{dataset_name}_1"]:
     )
 
     search.fit(model=model, analysis=analysis)
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape. Results guides must produce real
+(reduced) samples so downstream aggregator reads (data_fitting, queries,
+...) are non-empty.
+
+ENV: full_datasets real_search
+"""

@@ -68,9 +68,6 @@ combined profiles in `al.lmp.*` and `al.lmp_linear.*` are not yet documented on 
 reference page — refer to the source under
 `autogalaxy/profiles/light_and_mass_profiles.py` for the full list.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 # from autolens import setup_notebook; setup_notebook()
 
@@ -753,4 +750,18 @@ For the next step into actual lens modelling, see `scripts/imaging/modeling/star
 (strong-lens fit end-to-end) and the topic-specific feature packages under
 `scripts/imaging/features/`.  The SLaM pipeline guide (`scripts/guides/modeling/slam_start_here.py`)
 shows the production decomposed-lens workflow built on these profiles.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """

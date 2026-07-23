@@ -109,9 +109,6 @@ __Demonstration__
 The code below builds a toy under- and over-predicting fit so the policies are visible in numbers,
 using a mock solver so it runs in seconds.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 import numpy as np
 
@@ -184,4 +181,18 @@ print(f"  chi_squared = {float(fit.chi_squared):.4f}")
 """
 Finished. For the production-scale picture — real solver, multi-plane cluster tracer, timings —
 see ``scripts/cluster/likelihood_function.py`` and the profiling breakdowns referenced above.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """
