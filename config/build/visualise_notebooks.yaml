@@ -4,7 +4,7 @@
 # Format: flat list of notebook stems (no extension, no path).
 # An empty list means no notebooks need re-visualisation in this workspace.
 #
-# This file overrides PyAutoHands/autobuild/config/visualise_notebooks.yaml
+# This file overrides PyAutoHands/autohands/config/visualise_notebooks.yaml
 # for this workspace. Add or remove entries here, not there.
 
 - start_here

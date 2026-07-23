@@ -19,7 +19,7 @@ Build notebooks for the autolens_workspace, then open and merge a PR into `main`
 
    Run from the workspace root:
    ```bash
-   PYTHONPATH=../PyAutoHands/autobuild python3 ../PyAutoHands/autobuild/generate.py autolens
+   PYTHONPATH=../PyAutoHands/autohands python3 ../PyAutoHands/autohands/generate.py autolens
    ```
    This regenerates all notebooks in `notebooks/` from `scripts/`. It may take a few minutes.
 

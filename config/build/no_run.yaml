@@ -8,7 +8,7 @@
 # repo), and do not copy entries out. Tutorial stems such as `tutorial_searches`
 # belong to HowToLens and can never match a file here; a pattern that matches
 # nothing is silently inert, not a skip. Every entry below must match a file in
-# THIS repo — verify with `should_skip` in PyAutoHands/autobuild/build_util.py
+# THIS repo — verify with `should_skip` in PyAutoHands/autohands/build_util.py
 # before adding one, and re-check the pattern whenever a script is moved.
 #
 # SLOW-skip convention:
