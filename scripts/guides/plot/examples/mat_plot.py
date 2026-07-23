@@ -31,9 +31,6 @@ __Contents__
 - **Log10:** Many lensing quantities (images, convergence, potential) span many orders of magnitude and are.
 - **Config Defaults:** All default values (colormaps, tick sizes, label fonts, etc.) are configured via the config files.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -156,4 +153,18 @@ This allows project-wide defaults to be set without changing code.
 
 """
 Finish.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """

@@ -49,9 +49,6 @@ to pass information between searches as well as tools for customizing prior pass
 
 There are examples throughout the workspace where search chaining improves and helps automate lens modeling.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -386,4 +383,18 @@ If the prior config file had specified that we use an relative value of 0.8, the
 mean=4.0 and sigma = 4.0 * 0.8 = 3.2.
 
 And with that, we're done. Chaining priors is a bit of an art form, but one that works really well. 
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """

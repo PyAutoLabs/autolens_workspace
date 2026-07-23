@@ -61,9 +61,6 @@ the **PyAutoLens** source code.
 
 We still recommend you take a look to see how things are structured!
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -604,4 +601,18 @@ I will extend this guide to include the following in the next few days:
  the interpretation of results.
  - How to output results to hard-disk in a format that can be loaded into the **PyAutoLens** database.
  
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """

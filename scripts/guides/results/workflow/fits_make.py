@@ -69,13 +69,6 @@ because it is optimized for fast querying of results.
 See the package `results/database` for a full description of how to set up the database and the benefits it provides,
 especially if loading results from hard-disk is slow.
 """
-# ENV: full_datasets real_search real_plots
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
-# Results guides must produce real (reduced) samples so downstream
-# aggregator reads (data_fitting, queries, ...) are non-empty.
-# Produces real .fits outputs; FAST_PLOTS would close figures
-# without saving via the subplot_save short-circuit.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -298,4 +291,21 @@ which they can then extract and make together.
 __Path Navigation__
 
 Example combinig `fit.fits` from `source_lp[1]` and `mass_total[0]`.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape. Results guides must produce real
+(reduced) samples so downstream aggregator reads (data_fitting, queries,
+...) are non-empty. Produces real .fits outputs; FAST_PLOTS would close
+figures without saving via the subplot_save short-circuit.
+
+ENV: full_datasets real_search real_plots
 """

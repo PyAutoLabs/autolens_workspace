@@ -58,11 +58,6 @@ because it is optimized for fast querying of results.
 See the package `results/database` for a full description of how to set up the database and the benefits it provides,
 especially if loading results from hard-disk is slow.
 """
-# ENV: full_datasets real_search
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
-# Results guides must produce real (reduced) samples so downstream
-# aggregator reads (data_fitting, queries, ...) are non-empty.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -297,3 +292,19 @@ agg_csv.add_computed_column(
 )
 
 agg_csv.save(path=workflow_path / "csv_computed_columns.csv")
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape. Results guides must produce real
+(reduced) samples so downstream aggregator reads (data_fitting, queries,
+...) are non-empty.
+
+ENV: full_datasets real_search
+"""

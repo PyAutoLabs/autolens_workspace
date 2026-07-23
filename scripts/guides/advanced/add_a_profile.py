@@ -38,9 +38,6 @@ custom profile without needing to dive deeply into the **PyAutoLens** codebase.
 That said, we still recommend exploring the source code to better understand how
 everything fits together.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -671,4 +668,18 @@ Show how to wrap existing profiles with physical units?
 __Light Profiles__
 
 Pretty much the same but need to add text.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """
