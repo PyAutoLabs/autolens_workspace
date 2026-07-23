@@ -31,6 +31,9 @@ __Contents__
 - **Log10:** Many lensing quantities (images, convergence, potential) span many orders of magnitude and are.
 - **Config Defaults:** All default values (colormaps, tick sizes, label fonts, etc.) are configured via the config files.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 

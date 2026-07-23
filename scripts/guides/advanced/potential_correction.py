@@ -45,6 +45,9 @@ __Contents__
 - **Iterative Fit:** Refine the corrections with the iterative Levenberg-Marquardt engine `IterFitDpsiSrcImaging`.
 - **Evidence Sampling:** Sample the regularization hyper-parameters with a non-linear search via `DpsiSrcInvAnalysis`.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 # %matplotlib inline
 # from pyprojroot import here

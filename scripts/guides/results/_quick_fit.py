@@ -17,6 +17,11 @@ search is hard-capped at ``n_like_max=300`` likelihood evaluations rather
 than running to convergence. This produces a shallow but valid posterior
 fast enough to fit inside the per-script CI timeout.
 """
+# ENV: full_datasets real_search
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
+# Results guides must produce real (reduced) samples so downstream
+# aggregator reads (data_fitting, queries, ...) are non-empty.
 
 import shutil
 import sys

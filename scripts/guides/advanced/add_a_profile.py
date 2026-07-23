@@ -38,6 +38,9 @@ custom profile without needing to dive deeply into the **PyAutoLens** codebase.
 That said, we still recommend exploring the source code to better understand how
 everything fits together.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 

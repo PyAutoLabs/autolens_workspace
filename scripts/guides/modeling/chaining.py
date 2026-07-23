@@ -49,6 +49,9 @@ to pass information between searches as well as tools for customizing prior pass
 
 There are examples throughout the workspace where search chaining improves and helps automate lens modeling.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 

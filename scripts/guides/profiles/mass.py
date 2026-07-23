@@ -66,6 +66,9 @@ The autosummary on that page is the authoritative list of every public mass-prof
 Note that the reference uses the `ag.mp` namespace label because the classes are defined in
 PyAutoGalaxy and re-exported here as `al.mp`.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 # from autolens import setup_notebook; setup_notebook()
 
