@@ -202,9 +202,7 @@ for fit_list_gen in fit_gen:  # 1 Dataset so just one fit
 
 """
 Finished.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

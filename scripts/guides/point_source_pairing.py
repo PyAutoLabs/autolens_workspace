@@ -181,9 +181,7 @@ print(f"  chi_squared = {float(fit.chi_squared):.4f}")
 """
 Finished. For the production-scale picture — real solver, multi-plane cluster tracer, timings —
 see ``scripts/cluster/likelihood_function.py`` and the profiling breakdowns referenced above.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

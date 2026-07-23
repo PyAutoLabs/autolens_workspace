@@ -750,9 +750,7 @@ For the next step into actual lens modelling, see `scripts/imaging/modeling/star
 (strong-lens fit end-to-end) and the topic-specific feature packages under
 `scripts/imaging/features/`.  The SLaM pipeline guide (`scripts/guides/modeling/slam_start_here.py`)
 shows the production decomposed-lens workflow built on these profiles.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

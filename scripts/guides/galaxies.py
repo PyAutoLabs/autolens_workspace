@@ -272,9 +272,7 @@ The full deep-dive on the bound-method vs traced-argument trade-off,
 cache-identity footguns, and the `@jax.jit + xp=jnp` pairing rule lives
 in `scripts/guides/lens_calc.py`. The `.array` host-transfer mechanics
 live in `scripts/guides/data_structures.py`.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

@@ -332,9 +332,7 @@ hyper-parameters — with all linear algebra available under numpy or JAX throug
 
 If you use this functionality, please cite Cao et al. 2025
 (https://github.com/caoxiaoyue/potential_correction_paper) alongside PyAutoLens.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

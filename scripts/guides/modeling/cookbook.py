@@ -431,9 +431,7 @@ https://pyautofit.readthedocs.io/en/latest/cookbooks/multi_level_model.html
 __Wrap Up__
 
 This cookbook shows how to compose simple lens models using the `af.Model()` and `af.Collection()` objects.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

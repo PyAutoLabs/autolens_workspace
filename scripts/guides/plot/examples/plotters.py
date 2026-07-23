@@ -391,9 +391,7 @@ aplt.subplot_fit_point(fit=fit)
 
 """
 Finish.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

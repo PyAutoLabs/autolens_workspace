@@ -613,9 +613,7 @@ For further reading:
 - ``guides/data_structures.py`` — the ``Array2D``, ``Grid2D`` and ``VectorYX2D`` data structures.
 
 The `LensCalc` class is also available via `al.LensCalc` — it lives in ``PyAutoGalaxy/autogalaxy/operate/lens_calc.py``.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.
