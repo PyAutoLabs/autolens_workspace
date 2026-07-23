@@ -56,6 +56,9 @@ The code below sets up your environment if you are using Google Colab, including
 files required to run the notebook. If you are running this script not in Colab (e.g. locally on your own computer),
 running the code will still check correctly that your environment is set up and ready to go.
 """
+# ENV: full_datasets
+# start_here loads real full-resolution FITS data; SMALL_DATASETS would
+# break the committed data/mask shapes.
 
 import subprocess
 import sys

@@ -46,6 +46,11 @@ A fraction of this example repeats the API for manipulating samples given in the
 This is done so users can directly copy and paste Python code which loads results from the database and manipulates
 the samples.
 """
+# ENV: full_datasets real_search
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
+# Results guides must produce real (reduced) samples so downstream
+# aggregator reads (data_fitting, queries, ...) are non-empty.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 

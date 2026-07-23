@@ -62,6 +62,9 @@ documented there under the `Standard [ag.lp]` autosummary, and so on for `al.lp_
 `al.lp_operated`, `al.lp_basis`.  Note that the API reference uses the `ag.*` namespace
 labels because the classes are defined in PyAutoGalaxy and re-exported here.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 # from autolens import setup_notebook; setup_notebook()
 

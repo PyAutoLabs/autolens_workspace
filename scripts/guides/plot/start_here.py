@@ -20,6 +20,9 @@ __Contents__
 - **Config Defaults:** All default plotting values are configured via config files in.
 - **Overlays:** Overlays are added to plots using the `lines=` and `positions=` keyword arguments.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 

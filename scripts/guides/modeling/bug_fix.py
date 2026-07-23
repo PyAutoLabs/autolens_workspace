@@ -38,6 +38,9 @@ __Trouble Shooting__
 If you still cannot get parallelization to work, please ask to be added to the SLACK
 channel (by emailing me https://github.com/Jammy2211), where we will be able to provide support.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 
 def fit():

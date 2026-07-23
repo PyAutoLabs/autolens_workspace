@@ -109,6 +109,9 @@ __Demonstration__
 The code below builds a toy under- and over-predicting fit so the policies are visible in numbers,
 using a mock solver so it runs in seconds.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 import numpy as np
 
