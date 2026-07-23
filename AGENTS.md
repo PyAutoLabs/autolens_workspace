@@ -65,13 +65,13 @@ python .github/scripts/run_smoke.py
 ```
 
 Run it from the repo root. It is driven by `smoke_tests.txt` (scripts) and `smoke_notebooks.txt`
-(notebooks) in the workspace root, with per-entry environment from `config/build/env_vars.yaml`.
+(notebooks) in the workspace root, with per-entry environment from `config/build/profile_smoke.yaml`.
 The runner continues through failures, prints a `[PASS]` / `[FAIL (exit N)]` line per entry with
 its captured stdout+stderr, ends with a `=== Smoke test summary: P/T passed ===` line listing each
 failure, and exits non-zero if any entry failed. (There is no `run_all_scripts.sh` and no
 `failed/` directory — those do not exist.)
 
-`env_vars.yaml` applies fast-mode defaults to every entry, notably:
+`profile_smoke.yaml` applies fast-mode defaults to every entry, notably:
 
 - `PYAUTO_TEST_MODE=2` — skips the non-linear search's sampling, turning a run into a fast
   structural / integration check that the model composes correctly and the script/pipeline runs
