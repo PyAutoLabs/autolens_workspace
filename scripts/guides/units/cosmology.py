@@ -22,9 +22,6 @@ __Errors__
 To produce errors on unit converted quantities, you`ll may need to perform marginalization over samples of these
 converted quantities (see `results/aggregator/samples.ipynb`).
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -278,3 +275,17 @@ The total mass of the convergence map is the sum of all these masses.
 print(
     f"Total mass in convergence map: {np.sum(convergence * critical_surface_density * pixel_area_kpc)} MSun"
 )
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
+"""

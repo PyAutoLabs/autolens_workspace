@@ -34,9 +34,6 @@ arc seconds, luminosities in electrons per second and mass quantities (e.g. conv
 The guide `units_and_cosmology.ipynb` illustrates how to convert these quantities to physical units like
 kiloparsecs, magnitudes and solar masses.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -506,4 +503,18 @@ Plotting and `.fits` writers handle the conversion transparently.
 
 """
 Finish.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """
