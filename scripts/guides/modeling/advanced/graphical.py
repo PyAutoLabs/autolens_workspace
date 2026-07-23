@@ -44,6 +44,9 @@ __Contents__
 - **Wrap Up:** Summary of the script and next steps.
 
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 

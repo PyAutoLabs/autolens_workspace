@@ -25,6 +25,9 @@ __Contents__
 - **Pixelized Source Reconstruction:** Now set up a double Einstein ring fit using pixelized source reconstructions.
 - **Inversion:** The inversion is computed directly from a `Tracer` using `TracerToInversion`.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 

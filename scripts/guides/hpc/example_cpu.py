@@ -37,6 +37,9 @@ __Contents__
 - **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
 
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 # %%
 """

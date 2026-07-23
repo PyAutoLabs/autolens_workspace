@@ -21,33 +21,21 @@ defaults:
   MPLCONFIGDIR: "/tmp/matplotlib"           # Writable config dir for matplotlib
 
 overrides:
-  # start_here scripts load real FITS data that breaks with small datasets
-  - pattern: "imaging/start_here"
-    unset: [PYAUTO_SMALL_DATASETS]
-  - pattern: "interferometer/start_here"
-    unset: [PYAUTO_SMALL_DATASETS]
-  - pattern: "group/start_here"
-    unset: [PYAUTO_SMALL_DATASETS]
-  - pattern: "multi/start_here"
-    unset: [PYAUTO_SMALL_DATASETS]
-  # Non-simulator scripts that load committed FITS data need full-size
-  # datasets to avoid shape mismatch with pre-existing 100x100 data.
-  # Simulators run first and regenerate data at the capped size, but
-  # scripts using the old `if not dataset_path.exists()` pattern skip
-  # re-simulation when data already exists.
-  - pattern: "guides/"
-    unset: [PYAUTO_SMALL_DATASETS]
+  # The */start_here and guides/ PYAUTO_SMALL_DATASETS unsets migrated to
+  # in-file `# ENV: full_datasets` declarations on each matched script, and
+  # the PYAUTO_TEST_MODE / PYAUTO_FAST_PLOTS unsets below to `# ENV:
+  # real_search` / `# ENV: real_plots` — #187 Stage 2. The non-declarable
+  # PYAUTO_SKIP_* vars remain here.
   # guides/results/start_here.py must produce real samples so the example
   # scripts that read from `output/results_folder` afterwards
   # (data_fitting, queries, models, samples_via_aggregator) find a
   # non-empty aggregator. Covers all scripts under guides/results/.
+  # (PYAUTO_TEST_MODE moved to `# ENV: real_search`.)
   - pattern: "guides/results/"
-    unset: [PYAUTO_TEST_MODE, PYAUTO_SKIP_FIT_OUTPUT]
+    unset: [PYAUTO_SKIP_FIT_OUTPUT]
   # fits_make / png_make produce .fits / .png outputs from real fits, so they need
-  # visualization turned on AND PYAUTO_FAST_PLOTS turned off (the latter would
-  # close every figure without saving via the subplot_save / save_figure short-circuit
-  # in autoarray/plot/utils.py).
+  # visualization turned on. (PYAUTO_FAST_PLOTS moved to `# ENV: real_plots`.)
   - pattern: fits_make
-    unset: [PYAUTO_SKIP_VISUALIZATION, PYAUTO_FAST_PLOTS]
+    unset: [PYAUTO_SKIP_VISUALIZATION]
   - pattern: png_make
-    unset: [PYAUTO_SKIP_VISUALIZATION, PYAUTO_FAST_PLOTS]
+    unset: [PYAUTO_SKIP_VISUALIZATION]

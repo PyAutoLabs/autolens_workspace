@@ -62,10 +62,9 @@ overrides:
   # re-simulation when data already exists.
   - pattern: "guides/"
     set: { PYAUTO_SMALL_DATASETS: "0" }
-  # Results guides require the samples promised by their explicit n_like_max
-  # caps and read them back from the normal output tree.
-  - pattern: "guides/results/"
-    unset: [PYAUTO_TEST_MODE]
+  # (guides/results/ formerly unset PYAUTO_TEST_MODE here; that intent now
+  # lives in-file as '# ENV: real_search' declarations on the scripts, which
+  # apply in every profile — the override became redundant.)
   #
   # fits_make / png_make produce .fits / .png outputs from real fits, so they
   # need PYAUTO_FAST_PLOTS forced off (it would otherwise close every figure

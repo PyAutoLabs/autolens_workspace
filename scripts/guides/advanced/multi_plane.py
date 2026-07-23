@@ -34,6 +34,9 @@ To illustrate multi-plane ray-tracing, we first set up a simple lens system, usi
 We'll make things simple and assume 3 galaxies at redshifts 0.5, 1.0 and 2.0. We'll use a singular isothermal sphere
 for each galaxy's mass profile.
 """
+# ENV: full_datasets
+# Guides load committed full-resolution FITS; SMALL_DATASETS would
+# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
