@@ -86,9 +86,6 @@ The code below sets up your environment if you are using Google Colab, including
 files required to run the notebook. If you are running this script not in Colab (e.g. locally on your own computer),
 running the code will still check correctly that your environment is set up and ready to go.
 """
-# ENV: full_datasets
-# start_here loads real full-resolution FITS data; SMALL_DATASETS would
-# break the committed data/mask shapes.
 
 import subprocess
 import sys
@@ -498,4 +495,18 @@ The following locations of the workspace are good places to checkout next:
 - `autolens_workspace/guides/results`: How to load and analyze the results of your lens model fits, including tools for large samples.
 - `autolens_workspace/guides`: A complete description of the API and information on lensing calculations and units.
 - `autolens_workspace/interferometer/features`: A description of advanced features for lens modeling, for example pixelized source reconstructions, read this once you're confident with the basics!
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+start_here loads real full-resolution FITS data; SMALL_DATASETS would break
+the committed data/mask shapes.
+
+ENV: full_datasets
 """

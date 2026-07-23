@@ -119,9 +119,6 @@ Each SLaM pipeline is implemented as a Python function below (e.g. `source_lp`, 
 documentation string above each function describing the pipeline in detail. The full pipeline is run at the
 bottom of the script.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -640,4 +637,18 @@ mass_result = mass_total(
 
 """
 Finish.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """

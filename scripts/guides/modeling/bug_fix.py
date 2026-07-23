@@ -38,9 +38,6 @@ __Trouble Shooting__
 If you still cannot get parallelization to work, please ask to be added to the SLACK
 channel (by emailing me https://github.com/Jammy2211), where we will be able to provide support.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 
 def fit():
@@ -186,3 +183,17 @@ This small change in how the code is run fixes parallelization issues.
 """
 if __name__ == "__main__":
     fit()
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
+"""

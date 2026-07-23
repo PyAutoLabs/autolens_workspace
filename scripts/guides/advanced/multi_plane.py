@@ -34,9 +34,6 @@ To illustrate multi-plane ray-tracing, we first set up a simple lens system, usi
 We'll make things simple and assume 3 galaxies at redshifts 0.5, 1.0 and 2.0. We'll use a singular isothermal sphere
 for each galaxy's mass profile.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -702,4 +699,18 @@ time, we use a sample of five cluster strong lenses to measure the values of cos
 with those from classical probes. In order to assess the degeneracies and the effectiveness of strong-lensing 
 cosmography in constraining the background geometry of the Universe, we adopt four cosmological scenarios. We find 
 good constraining power on the total matter density of the Universe ($Ω_{\rm m}$) and the equation of state of the dark e… Show more
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """

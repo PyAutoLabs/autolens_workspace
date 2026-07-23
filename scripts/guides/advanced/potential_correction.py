@@ -45,9 +45,6 @@ __Contents__
 - **Iterative Fit:** Refine the corrections with the iterative Levenberg-Marquardt engine `IterFitDpsiSrcImaging`.
 - **Evidence Sampling:** Sample the regularization hyper-parameters with a non-linear search via `DpsiSrcInvAnalysis`.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 # %matplotlib inline
 # from pyprojroot import here
@@ -335,4 +332,18 @@ hyper-parameters — with all linear algebra available under numpy or JAX throug
 
 If you use this functionality, please cite Cao et al. 2025
 (https://github.com/caoxiaoyue/potential_correction_paper) alongside PyAutoLens.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """

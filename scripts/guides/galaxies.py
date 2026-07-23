@@ -45,9 +45,6 @@ __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `results/start_here.ipynb` notebook.
 """
-# ENV: full_datasets
-# Guides load committed full-resolution FITS; SMALL_DATASETS would
-# mismatch the pre-existing 100x100 data shape.
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
@@ -275,4 +272,18 @@ The full deep-dive on the bound-method vs traced-argument trade-off,
 cache-identity footguns, and the `@jax.jit + xp=jnp` pairing rule lives
 in `scripts/guides/lens_calc.py`. The `.array` host-transfer mechanics
 live in `scripts/guides/data_structures.py`.
+"""
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
+the pre-existing 100x100 data shape.
+
+ENV: full_datasets
 """
