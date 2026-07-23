@@ -1,6 +1,6 @@
 # Per-script environment variable configuration for the RELEASE-FIDELITY
 # validation run (Heart's workspace-validation.yml, mode=release — the M3
-# wheel-based release-fidelity path). Distinct from env_vars.yaml, which is the
+# wheel-based release-fidelity path). Distinct from profile_smoke.yaml, which is the
 # `smoke` profile used by the per-PR CI gate.
 #
 # The `release` profile trades speed for fidelity: it is run once per release
