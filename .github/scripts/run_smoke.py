@@ -139,7 +139,7 @@ def regenerate_notebook(nb_rel: str) -> Path:
     The regenerated copy lives in /tmp; the on-disk `notebooks/` tree is
     never modified, so a smoke run leaves the worktree clean.
     """
-    from build_util import py_to_notebook  # PyAutoHands/autobuild on PYTHONPATH
+    from build_util import py_to_notebook  # PyAutoHands/autohands on PYTHONPATH
 
     script_path = SCRIPTS_DIR / Path(nb_rel).with_suffix(".py")
     if not script_path.exists():
