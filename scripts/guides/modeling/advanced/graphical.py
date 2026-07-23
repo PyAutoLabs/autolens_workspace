@@ -271,9 +271,7 @@ inference.
 This example used a simple shared parameter (the Hubble constant) across multiple lenses. The same framework can be
 extended to far more complex models, with many shared or linked parameters, enabling powerful hierarchical and
 population-level inference for large lens samples.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

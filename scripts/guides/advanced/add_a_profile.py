@@ -668,9 +668,7 @@ Show how to wrap existing profiles with physical units?
 __Light Profiles__
 
 Pretty much the same but need to add text.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

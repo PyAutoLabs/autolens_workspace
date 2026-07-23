@@ -625,9 +625,7 @@ profiles in an actual lens fit, the next step is `scripts/imaging/modeling/start
 which sets up an `AnalysisImaging` and runs a non-linear search end-to-end on a strong-lens
 dataset.  For a deeper walk-through of how mass profiles combine with light profiles in the
 `Tracer` to produce lensed images, see `scripts/guides/tracer.py`.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

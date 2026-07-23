@@ -645,9 +645,7 @@ subpackages handle the family-specific workflows referenced throughout this guid
 For the mass-profile counterpart of this guide, see `scripts/guides/profiles/mass.py`
 (when available).  For a full walk-through of how light and mass profiles are combined in
 the `Tracer` to produce lensed images, see `scripts/guides/tracer.py`.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

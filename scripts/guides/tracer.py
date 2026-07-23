@@ -595,9 +595,7 @@ covers the `.array` host-transfer story.
 
 """
 Fin.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

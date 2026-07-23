@@ -32,9 +32,7 @@ harm either.
 One caveat may be magnifications. It could be that as you make the shape of the interpolation grid bigger, the
 magnification changes. I'm not sure on this but would advise you experiment to see if the magnifications 
 seem "stable" (assuming you are estimate a magnification at some point).
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

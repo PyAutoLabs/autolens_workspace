@@ -405,9 +405,7 @@ The following locations of the workspace are good places to checkout next:
 - `autolens_workspace/guides/results`: How to load and analyze the results of your lens model fits, including tools for large samples.
 - `autolens_workspace/guides`: A complete description of the API and information on lensing calculations and units.
 - `autolens_workspace/group/features`: A description of advanced features for lens modeling, for example pixelized source reconstructions, read this once you're confident with the basics!
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

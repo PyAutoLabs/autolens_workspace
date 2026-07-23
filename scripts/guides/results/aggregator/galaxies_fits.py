@@ -253,9 +253,7 @@ __Wrap Up__
 
 We have learnt how to extract individual planes, galaxies, light and mass profiles from the tracer that results from
 a model-fit and use these objects to compute specific quantities of each component.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

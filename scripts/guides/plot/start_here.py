@@ -215,9 +215,7 @@ aplt.subplot_fit_imaging(fit=fit)
 """
 The search plotting functions (`aplt.corner_anesthetic`, `aplt.corner_cornerpy`, etc.) provide
 visualization of non-linear search results -- see `scripts/guides/plot/examples/searches.py`.
-"""
 
-"""
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.
