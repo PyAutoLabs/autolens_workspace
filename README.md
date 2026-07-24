@@ -14,6 +14,10 @@ Welcome to the **PyAutoLens** Workspace!
 
 ## Getting Started
 
+The [**PyAutoLens AI Assistant**](https://github.com/PyAutoLabs/autolens_assistant) supports conversation agents such as ChatGPT and coding agents such as Claude Code and Codex. You can get started simply by asking it a question about gravitational lensing or describing the task you would like to perform with **PyAutoLens**. See the assistant for its full scope and instructions.
+
+The following human-readable documentation and examples are also useful for new starters:
+
 You can get set up on your personal computer by following the installation guide on
 our [readthedocs](https://pyautolens.readthedocs.io/).
 
@@ -34,16 +38,6 @@ workspace for your science case.
 
 You can also [browse a curated set of examples fully executed, with their output images](markdown/README.md),
 directly on GitHub — no installation required.
-
-## Three Ways to Learn PyAutoLens
-
-There are three ways to learn how to use **PyAutoLens**, which you can freely mix and match:
-
-1. **Manual navigation** — read the workspace guides yourself, starting from `start_here.ipynb` and the [new user starting guide](https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html), which organise the examples by lens scale and dataset type.
-2. **AI chat assistant** — ask questions to a conversational AI assistant such as ChatGPT or Claude in the browser. Go to the [autolens_assistant](https://github.com/PyAutoLabs/autolens_assistant) repository and copy the ready-to-use example prompt from its README into ChatGPT or Claude to get started. This is ideal for learning the API, working out how to perform a calculation, and creating end-to-end example Python scripts.
-3. **Fully agentic AI** — drive **PyAutoLens** end-to-end with an agentic coding tool such as [Claude Code](https://claude.com/claude-code) or [Codex](https://developers.openai.com/codex) together with [autolens_assistant](https://github.com/PyAutoLabs/autolens_assistant). These can inspect your data, write and run scripts, and manage a lens-modeling project directly on your machine.
-
-See [autolens_assistant](https://github.com/PyAutoLabs/autolens_assistant) for more on the AI-assisted options (2 and 3).
 
 ## HowToLens
 
