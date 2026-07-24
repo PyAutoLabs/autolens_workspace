@@ -339,9 +339,7 @@ function of redshift.
 
 Redshifts should be made free when modeling three or more planes, as the mulit-plane ray-tracing calculations have an
 obvious dependence on the redshifts of the galaxies which could be inferred by the model-fit.
-"""
 
-"""
 __Available Model Components__
 
 The light profiles, mass profiles and other components that can be used for lens modeling are given at the following
@@ -350,9 +348,7 @@ API documentation pages:
  - https://pyautolens.readthedocs.io/en/latest/api/light.html
  - https://pyautolens.readthedocs.io/en/latest/api/mass.html
  - https://pyautolens.readthedocs.io/en/latest/api/pixelization.html
-"""
 
-"""
 __JSon Outputs__
 
 After a model is composed, it can easily be output to a .json file on hard-disk in a readable structure:

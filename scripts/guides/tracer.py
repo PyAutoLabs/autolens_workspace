@@ -591,9 +591,7 @@ identity considerations, closure-captured `self` vs traced-argument),
 see `scripts/guides/lens_calc.py`. `scripts/guides/galaxies.py` covers
 the pytree registration mechanics. `scripts/guides/data_structures.py`
 covers the `.array` host-transfer story.
-"""
 
-"""
 Fin.
 
 __Env__ (Developer Only)

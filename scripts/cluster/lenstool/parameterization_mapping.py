@@ -463,9 +463,7 @@ distinct isothermal (SIE) â€” as is common for galaxy- and group-scale lenses â€
 is well defined, but mapping it onto a dPIE member's ``b0`` is only approximate unless the member's
 core/cut are negligible. Anchor via a checked conversion, not a straight ``b0 = einstein_radius``
 assignment.
-"""
 
-"""
 __7. Why This is Safe__
 
 The mapping is lossless and invertible, and it does not perturb anything the data constrained:

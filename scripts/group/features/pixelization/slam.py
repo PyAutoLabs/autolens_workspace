@@ -718,9 +718,7 @@ __Positions__
 
 Positions are computed from the SOURCE LP result and used in subsequent pixelization searches
 to prevent demagnified source solutions.
-"""
 
-"""
 __SLaM Pipeline__
 
 The full SLaM pipeline is executed below. Each stage is documented with its pixelization-specific choices.

@@ -552,9 +552,7 @@ them when the observation provides those measurements, leave them blank otherwis
 To build a cluster dataset by hand, simulate or manually collect one set of images per source, then edit
 the CSV directly: add or remove rows, adjust positions or noises, and save. Reload the dataset in a
 modeling script with ``al.list_from_csv(file_path=dataset_path / "point_datasets.csv")``.
-"""
 
-"""
 __Scaling Galaxies CSV__
 
 The scaling-tier members are written to a separate CSV — ``scaling_galaxies.csv`` — with one row per

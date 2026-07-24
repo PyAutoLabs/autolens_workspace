@@ -107,9 +107,7 @@ Visibility data is in uv space, making it hard to interpret by eye.
 
 The dirty images of the interferometer dataset can plotted, which use the transformer of the interferometer 
 to map the visibilities, noise-map or other quantity to a real-space image.
-"""
 
-"""
 __Fitting__
 
 Following the previous overview example, we can make a tracer from a collection of light profiles, mass profiles
@@ -185,9 +183,7 @@ The fit does a lot more than just Fourier transform the tracer's image it also c
 
 For a good lens model where the model and tracer are representative of the strong lens system the
 residuals, normalized residuals and chi-squareds are minimized:
-"""
 
-"""
 A subplot can be plotted which contains all of the above quantities, as well as other information contained in the
 tracer such as the source-plane image, a zoom in of the source-plane and a normalized residual map where the colorbar
 goes from 1.0 sigma to -1.0 sigma, to highlight regions where the fit is poor.

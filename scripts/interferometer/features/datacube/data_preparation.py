@@ -148,9 +148,7 @@ After polarisation collapse, every loader below assumes the canonical post-prepr
 
 If your reduction stores `noise_map` as channel-invariant `(n_vis, 2)`, the loader broadcasts the
 same way.
-"""
 
-"""
 __Shared vs Per-Channel `uv_wavelengths` / `noise_map`__
 
 For most ALMA narrow-line cubes both `uv_wavelengths` and `noise_map` change very little
@@ -160,9 +158,7 @@ actually shared, so there's some real performance reason to use the shared form 
 
 The loader below supports both: if the input `noise_map` or `uv_wavelengths` array is 2D, it gets
 broadcast to all `n_chan` channels; if it's 3D, each channel gets its own slice.
-"""
 
-"""
 __3D-FITS Loader__
 
 Self-contained loader function. Copy this into your own script if you have a 3D cube on disk.

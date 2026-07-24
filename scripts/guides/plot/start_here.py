@@ -143,9 +143,7 @@ All default plotting values are configured via config files in:
 
 When no explicit keyword is passed to a plotting function the config value is used, allowing
 the default appearance to be controlled project-wide without changing code.
-"""
 
-"""
 __Overlays__
 
 Overlays are added to plots using the `lines=` and `positions=` keyword arguments:

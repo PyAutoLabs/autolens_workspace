@@ -290,9 +290,7 @@ The key steps are:
 
 For group-scale lenses, the larger mask means more image pixels, making the mapping matrix larger
 and the inversion more computationally expensive.
-"""
 
-"""
 __Likelihood Function__
 
 The log likelihood for a pixelized source has additional terms compared to a parametric source:
@@ -308,9 +306,7 @@ Where:
 
 These extra terms implement Bayesian regularization: simpler (smoother) source reconstructions are
 preferred unless the data demands more complexity.
-"""
 
-"""
 __Fit__
 
 The `FitImaging` object performs all of the above steps automatically. We verify that it produces the

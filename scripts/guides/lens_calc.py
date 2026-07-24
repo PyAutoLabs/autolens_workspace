@@ -589,9 +589,7 @@ The "JIT-it-yourself" path is bounded by three rules:
 For the standard `Analysis` / `Simulator` paths — where you do none
 of this and JAX runs implicitly — see the top-level
 `autolens_workspace/start_here.py` `__JAX__` section.
-"""
 
-"""
 __Wrap Up__
 
 This guide introduced the `LensCalc` class and the key lensing quantities it computes:

@@ -148,8 +148,7 @@ we:
  
 There are other `_kwargs` inputs we pass as None, you should check out the Dynesty docs if you need to customize your
 figure.
-"""
-"""
+
 The `corner_anesthetic` function produces a triangle of 1D and 2D PDF's of every parameter using the library `anesthetic`.
 """
 aplt.corner_anesthetic(samples=result.samples)
@@ -408,9 +407,7 @@ The emcee readthedocs describes fully all of the methods used below
 
 In all the examples below, we use the `kwargs` of this function to pass in any of the input parameters that are
 described in the API docs.
-"""
 
-"""
 The `corner_cornerpy` function produces a triangle of 1D and 2D PDF's of every parameter in the model fit.
 """
 aplt.corner_cornerpy(
@@ -532,9 +529,7 @@ The zeus readthedocs describes fully all of the methods used below
 
 In all the examples below, we use the `kwargs` of this function to pass in any of the input parameters that are
 described in the API docs.
-"""
 
-"""
 The `corner_cornerpy` function produces a triangle of 1D and 2D PDF's of every parameter in the model fit.
 """
 aplt.corner_cornerpy(

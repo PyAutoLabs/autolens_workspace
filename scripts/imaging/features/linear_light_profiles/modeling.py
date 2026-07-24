@@ -353,9 +353,7 @@ inversion = result.max_log_likelihood_fit.inversion
 
 """
 This `Inversion` can be used to plot the reconstructed image of specifically all linear light profiles.
-"""
 
-"""
 __Linear Objects (Internal Source Code)__
 
 An `Inversion` contains all of the linear objects used to reconstruct the data in its `linear_obj_list`.

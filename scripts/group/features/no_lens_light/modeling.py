@@ -211,9 +211,7 @@ higher-resolution grid. Since no galaxy has a light profile in this model, this 
 
 The source galaxy uses a cored light profile (`SersicCore`) which changes gradually in its central regions,
 so it does not require over-sampling either.
-"""
 
-"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus.

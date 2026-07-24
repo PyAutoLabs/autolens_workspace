@@ -290,9 +290,7 @@ tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 """
 The `Imaging` simulation now uses the normal API for simulating images.
-"""
 
-"""
 Pass the simulator a tracer, which creates the image which is simulated as an imaging dataset.
 """
 dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)

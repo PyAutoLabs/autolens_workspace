@@ -222,9 +222,7 @@ measured registration residuals (typically ~0.1-0.3 pixels for HST/JWST).
 
 Note that each exposure still receives its own reconstruction (solved against its own data). A single joint
 reconstruction solved against all exposures simultaneously is a separate, planned feature.
-"""
 
-"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
