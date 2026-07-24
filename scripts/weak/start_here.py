@@ -61,21 +61,21 @@ files required to run the notebook. If you are running this script not in Colab 
 running the code will still check correctly that your environment is set up and ready to go.
 """
 
-import subprocess
-import sys
-
 try:
     import google.colab
+except ImportError:
+    from autolens import setup_colab as _setup_colab
+else:
+    import importlib
+    import subprocess
+    import sys
 
     subprocess.check_call(
         [sys.executable, "-m", "pip", "install", "autonerves", "--no-deps"]
     )
-except ImportError:
-    pass
+    _setup_colab = importlib.import_module("autonerves.setup_colab")
 
-from autonerves import setup_colab
-
-setup_colab.for_autolens(
+_setup_colab.for_autolens(
     raise_error_if_not_gpu=False  # Switch to False for CPU Google Colab
 )
 
