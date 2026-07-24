@@ -2451,6 +2451,31 @@
   },
   {
     "contents": [
+      "Auto-Enabled Modeling",
+      "Disabling JAX",
+      "Writing @jax.jit Yourself",
+      "JIT-ing Library Methods",
+      "Return-Type Contract"
+    ],
+    "cross_refs": [
+      "data_structures.py",
+      "lens_calc.py",
+      "likelihood_function.py",
+      "scripts/guides/data_structures.py",
+      "scripts/guides/lens_calc.py",
+      "scripts/imaging/simulator.py",
+      "scripts/interferometer/simulator.py",
+      "scripts/point_source/simulator.py",
+      "simulator.py",
+      "start_here.py"
+    ],
+    "notebook": "notebooks/guides/using_jax.ipynb",
+    "path": "scripts/guides/using_jax.py",
+    "summary": "**PyAutoLens** runs on either **NumPy** (the default) or **JAX** (Google's array library with GPU support and just-in-time compilation). JAX makes lens modeling 10-100x faster on large grids \u2014 sometimes more on GPU \u2014 so the library is built to use it automatically wherever it helps.",
+    "title": "Using JAX"
+  },
+  {
+    "contents": [
       "Pixel Scale",
       "Loading Data From Individual Fits Files",
       "Converting Data To Electrons Per Second",
