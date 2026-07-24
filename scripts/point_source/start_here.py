@@ -163,9 +163,7 @@ visualization — seeing where the multiple images sit relative to the lens gala
 easier to interpret, and an image passed to the analysis is overlaid in its output visuals. This is
 entirely optional, and for RXJ1131 the joint modeling of its CCD imaging and point-source data is
 covered in the `multi/features/imaging_and_point_source` example.
-"""
 
-"""
 __Point Solver__
 
 For point-source modeling we require a `PointSolver`, which determines the multiple-images of the mass model for a 

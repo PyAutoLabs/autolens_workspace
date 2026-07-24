@@ -234,9 +234,7 @@ interferometer channels (the datacube case) never leaks into an imaging fit. Eac
 reconstruction and its own linear algebra (the imaging fit blurs with its PSF; the interferometer fit works in
 the uv-plane), but the two source reconstructions live on the identical source-pixel grid and are directly
 comparable.
-"""
 
-"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 

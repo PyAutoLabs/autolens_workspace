@@ -549,9 +549,7 @@ complexity can be reliably fitted.
 
 These pipelines are built around the use of adaptive features -- for example the Source pipeline comes first so that
 these features are set up robustly before more complex lens light and mass models are fitted.
-"""
 
-"""
 __SOURCE LP PIPELINE__
 
 Identical to `slam_start_here.py`.

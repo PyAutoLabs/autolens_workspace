@@ -260,8 +260,7 @@ to the model-fit above.
 
 Note that the first pipeline, SOURCE LP, uses JAX acceleration as in previous examples and therefore does not 
 pass `use_jax=False` or a `number_of_cores` parameter.
-"""
-"""
+
 __SLaM Pipeline Functions__
 """
 

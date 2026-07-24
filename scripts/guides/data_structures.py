@@ -499,9 +499,7 @@ __Summary__
 
 `.array` is the safe accessor for the raw backing in all cases.
 Plotting and `.fits` writers handle the conversion transparently.
-"""
 
-"""
 Finish.
 
 __Env__ (Developer Only)

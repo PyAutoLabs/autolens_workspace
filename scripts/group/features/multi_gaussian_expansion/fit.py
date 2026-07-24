@@ -264,8 +264,6 @@ This fit object contains the same quantities demonstrated above, but with MGE li
 a more accurate representation of each galaxy's light.
 
 See the `modeling.py` example in this folder for the full MGE modeling workflow.
-"""
 
-"""
 Fin.
 """

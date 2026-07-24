@@ -249,9 +249,7 @@ factor. Each band still solves for its own reconstruction against its own data â
 modeling needs, since the source's appearance varies with wavelength (its colour). The shared mesh makes the
 per-band reconstructions directly comparable pixel-by-pixel, which is what turns them into a resolved colour
 map of the source.
-"""
 
-"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
