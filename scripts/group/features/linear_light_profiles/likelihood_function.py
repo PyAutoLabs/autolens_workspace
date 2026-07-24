@@ -219,9 +219,7 @@ to get the model image. With linear light profiles, the process is different:
 
 The ``FitImaging`` object handles all of this automatically. When it detects linear light profiles in the
 tracer, it sets up and solves the linear system.
-"""
 
-"""
 __Fit__
 
 The ``FitImaging`` object performs the full likelihood evaluation, including the linear inversion. We can

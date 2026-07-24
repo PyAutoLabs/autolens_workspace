@@ -235,9 +235,7 @@ The Delaunay mesh is particularly well-suited for group-scale lensing because:
 
  4. **Source complexity**: The lensed sources in group systems are often complex (e.g. merging galaxies,
     star-forming clumps) and benefit from the adaptive triangle sizes of the Delaunay mesh.
-"""
 
-"""
 __Model__
 
 We compose a group lens model with a Delaunay source for full modeling.

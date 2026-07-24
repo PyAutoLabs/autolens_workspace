@@ -206,9 +206,7 @@ understanding the advanced lens modeling feature search chaining.
 
 An example of how to use search chaining to over sample sources efficient is provided in 
 the `autolens_workspace/*/guides/modeling/chaining/over_sampling.ipynb` example.
-"""
 
-"""
 __Positions__
 
 Before fitting a strong lens, we can manually specify a grid of image-plane coordinates corresponding to the multiple
