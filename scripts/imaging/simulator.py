@@ -401,9 +401,7 @@ for one-off simulations. The `@jax.jit` wrap is only beneficial when you call th
 
 See `scripts/guides/lens_calc.py` for the advanced "JIT-it-yourself" pattern that wraps individual library
 methods like `tracer.image_2d_from` directly.
-"""
 
-"""
 __Oversampled PSF (Advanced)__
 
 The simulation above evaluates the lensed image on an over-sampled grid, but the PSF convolution itself is
