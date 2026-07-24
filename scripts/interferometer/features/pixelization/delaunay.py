@@ -464,8 +464,7 @@ complexity can be reliably fitted.
 
 These pipelines are built around the use of adaptive features -- for example the Source pipeline comes first so that
 these features are set up robustly before more complex lens light and mass models are fitted.
-"""
-"""
+
 __SOURCE LP PIPELINE__
 
 Identical to `slam_start_here.py`, using an MGE for the lens and source light profiles.
@@ -961,9 +960,7 @@ adapt_images = al.AdaptImages(
 
 """
 Plotting this grid shows a sparse grid of (y,x) coordinates within the mask, which will form our source pixel centres.
-"""
 
-"""
 __Ray Tracing__
 """
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])

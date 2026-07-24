@@ -1,18 +1,13 @@
 """
 This script still needs writing, I have kept some notes on questions asked by users which may help you...
 
-"""
 
-"""
  > For interferometric data, which units PyAutoLens uses for brightness? I think they are in Jy/arcsec^2 (?) since 
    I have computed the magnification from from my original image in Jy/beam I just wanted to be sure that the conversions 
    I have assumed are fine.
 
 This is correct, the units of brightness are Jy/arcsec^2
-"""
 
-
-"""
 >  -When converting the reconstructed source image to a .fits file, what is the best image shape to assume in the 
     interpolation ? By now I am using the same shape as the native one used when defining the real space mask at the 
     beginning, should it be fine? And also, what are the brightness units here?

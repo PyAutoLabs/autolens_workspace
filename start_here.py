@@ -229,9 +229,7 @@ That is all a new user needs to know: install the extra, and lens modeling
 is fast. Everything else — disabling JAX, writing `@jax.jit` code yourself
 and how JAX changes the arrays inside results — is covered in the
 `scripts/guides/using_jax.py` guide.
-"""
 
-"""
 __Units__
 
 The units used throughout the strong lensing literature vary, therefore lets quickly describe the units used in

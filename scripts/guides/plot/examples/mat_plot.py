@@ -149,9 +149,7 @@ Key config files and entries:
 
 When no explicit keyword is passed to a plotting function, the config value is used.
 This allows project-wide defaults to be set without changing code.
-"""
 
-"""
 Finish.
 
 __Env__ (Developer Only)

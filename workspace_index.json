@@ -2117,7 +2117,7 @@
     "cross_refs": [],
     "notebook": "notebooks/guides/results/aggregator/interferometer.ipynb",
     "path": "scripts/guides/results/aggregator/interferometer.py",
-    "summary": "(no summary in script docstring)",
+    "summary": "> For interferometric data, which units PyAutoLens uses for brightness? I think they are in Jy/arcsec^2 (?) since I have computed the magnification from from my original image in Jy/beam I just wanted to be sure that the conversions I have assumed are fine.",
     "title": "This script still needs writing, I have kept some notes on questions asked by users which may help you..."
   },
   {

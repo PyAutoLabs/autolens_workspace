@@ -86,9 +86,7 @@ Dimensionless lensing latents — no instrument inputs, no µJy variant.
 The raw-flux latents default to ``true`` in the library yaml — they cost essentially nothing and produce a
 universally useful column. The µJy variants and the two dimensionless latents default to ``false`` so existing
 fits and instrument-naive workflows stay unchanged on upgrade.
-"""
 
-"""
 __Toggling Latents__
 
 The library defaults the three raw-flux latents to ``true`` and everything else to ``false`` for the
@@ -102,9 +100,7 @@ Workspace ``config/`` values shadow the library defaults — PyAutoFit's ``conf.
 the library install. To disable a specific latent for a particular fit (e.g. you're profiling and don't want
 to incur the latent computation cost on every search update), flip it to ``false`` in
 ``autolens_workspace/config/latent.yaml`` or override locally with ``conf.instance.push(...)``.
-"""
 
-"""
 __Model Fit__
 
 The loading and extending sections need a completed fit to read latents from. Rather than run a bespoke
@@ -201,9 +197,7 @@ The ``effective_einstein_radius`` latent can produce noisy 1D posteriors when th
 to slightly different critical-curve estimates across samples. If you see step-like artefacts in a corner plot,
 that's the discrete contour-finding cadence interacting with the continuous parameter posterior — the median
 and 1σ intervals remain reliable, but use caution when reading the tails.
-"""
 
-"""
 __Extending with a Custom Latent__
 
 The library catalogue is intentionally narrow. If you want a different derived quantity — the lens mass's
@@ -268,9 +262,7 @@ class AnalysisImagingWithMassAxisRatio(al.AnalysisImaging):
 A fit that uses ``AnalysisImagingWithMassAxisRatio`` produces a ``latent.csv`` with one extra column
 (``mass_axis_ratio``) on top of the eight library defaults (raw-flux + µJy + dimensionless lensing). We don't
 run a second fit here — the pattern above is the full recipe.
-"""
 
-"""
 __Contributing Upstream__
 
 If your custom latent is general enough that other PyAutoLens users would benefit (a SLACS-style external-
