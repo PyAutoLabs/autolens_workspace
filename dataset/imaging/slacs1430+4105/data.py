@@ -9,7 +9,6 @@ In this script, we fit `Imaging` with a strong lens model where:
  - The source galaxy's light is a parametric `Sersic`.
 """
 
-# %matplotlib inline
 import numpy as np
 import autofit as af
 import autolens as al
