@@ -76,7 +76,7 @@ if not dataset_path.exists():
 # option and accurate for well-sampled PSFs. Supplying a PSF at a multiple of the
 # image resolution and raising this value improves blurring fidelity for
 # undersampled PSFs (e.g. HST / Euclid VIS) at extra compute cost — see
-# `guides/advanced/over_sampling.py` and the simulator's `__Oversampled PSF__` section.
+# `guides/advanced/over_sampling.py` and the simulator's `__Oversampled PSF (Advanced)__` section.
 psf_convolve_over_sample_size = 1
 
 dataset = al.Imaging.from_fits(

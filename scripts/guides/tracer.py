@@ -573,7 +573,7 @@ The recursive multi-plane lens equation in
 data-dependent control flow, so it JITs cleanly. For multi-plane point-
 source solving (forward-solving multiple-image positions through several
 planes), use the higher-level `al.PointSolver(use_jax=True)` — see
-`scripts/point_source/simulator.py` `__JAX Variant__`.
+`scripts/point_source/simulator.py` `__JAX Variant (Advanced)__`.
 
 __Performance expectations__
 

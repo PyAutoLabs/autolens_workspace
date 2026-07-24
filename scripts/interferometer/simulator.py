@@ -18,6 +18,7 @@ __Contents__
 - **Multiple Images:** Lens modeling can use a "positions likelihood penalty", whereby mass models which traces the (y,x).
 - **Many Visibilities:** Simulating interferometer datasets with many visibilities using the JAX-native `TransformerNUFFT`.
 - **High Resolution Dataset:** A high-resolution `uv_wavelengths` file for ALMA is available in a separate repository that hosts.
+- **JAX Variant (Advanced):** Speed up repeated simulations by constructing the simulator with `use_jax=True`.
 
 """
 
@@ -332,42 +333,45 @@ al.output_to_json(
 """
 Finish.
 
-__JAX Variant__
+__JAX Variant (Advanced)__
 
-For fast repeated interferometer simulations, instantiate the simulator
-with `use_jax=True` and wrap the call in `@jax.jit`. The simulator handles
-pytree registration internally.
-
-```python
+For fast repeated interferometer simulations, instantiate the simulator with `use_jax=True` and wrap the call
+in `@jax.jit`. The simulator handles pytree registration internally.
+"""
 import jax
 import jax.numpy as jnp
 
 simulator_jax = al.SimulatorInterferometer(
     uv_wavelengths=uv_wavelengths,
     exposure_time=300.0,
-    noise_sigma=0.1,
-    transformer_class=al.TransformerDFT,  # NUFFT (pynufft) is not JAX-traceable
+    noise_sigma=1000.0,
+    transformer_class=al.TransformerNUFFT,  # JAX-native NUFFT (nufftax), works inside @jax.jit
     use_jax=True,
 )
 
+
 @jax.jit
 def simulate(tracer):
-    image = tracer.image_2d_from(grid=real_space_grid, xp=jnp)
+    image = tracer.image_2d_from(grid=grid, xp=jnp)
     return simulator_jax.via_image_from(image=image)
 
-dataset_jax = simulate(tracer)   # Interferometer with jax.Array visibilities
-```
 
+"""
+The simulation call below is commented out to avoid adding excessive run time to this script and overwriting the
+dataset output above. Uncomment it to run the JAX simulation, which returns an `Interferometer` dataset with
+`jax.Array` visibilities.
+"""
+# dataset_jax = simulate(tracer)
+
+"""
 Two notes specific to interferometer:
 
-- Use `TransformerDFT` (the default) under JAX. `TransformerNUFFT` (pynufft)
-  is faster on large UV sets but is not JAX-traceable. The `nufftax`
-  research path is tracking a JAX-native NUFFT replacement; see
-  `autolens_workspace_test/scripts/interferometer/nufft.py` for the
-  parity work.
-- Eager `simulator_jax.via_image_from(image)` already runs on JAX without
-  the `@jax.jit` wrap; the JIT only matters for repeated calls.
+- `TransformerNUFFT` is backed by the JAX-native `nufftax` library (see `__Many Visibilities__` above), so it
+  supports `jax.jit` and scales to large UV sets. The legacy pynufft-backed `TransformerNUFFTPyNUFFT` is not
+  JAX-traceable; see `autolens_workspace_test/scripts/interferometer/nufft.py` for the parity work. For small
+  visibility counts `TransformerDFT` (the simulator default) is also JAX-traceable.
+- Eager `simulator_jax.via_image_from(image)` already runs on JAX without the `@jax.jit` wrap; the JIT only
+  matters for repeated calls.
 
-See `scripts/guides/lens_calc.py` for the "JIT-it-yourself" pattern
-applied to individual library methods.
+See `scripts/guides/lens_calc.py` for the "JIT-it-yourself" pattern applied to individual library methods.
 """

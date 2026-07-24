@@ -4235,7 +4235,9 @@
       "Output",
       "Visualize",
       "Tracer json",
-      "Multiple Images"
+      "Multiple Images",
+      "JAX Variant (Advanced)",
+      "Oversampled PSF (Advanced)"
     ],
     "cross_refs": [
       "/guides/over_sampling.ipynb",
@@ -5323,7 +5325,8 @@
       "Tracer json",
       "Multiple Images",
       "Many Visibilities",
-      "High Resolution Dataset"
+      "High Resolution Dataset",
+      "JAX Variant (Advanced)"
     ],
     "cross_refs": [
       "autolens_workspace_test/scripts/interferometer/nufft.py",
@@ -5943,7 +5946,8 @@
       "Imaging",
       "Fluxes",
       "Point Dataset",
-      "Time Delays"
+      "Time Delays",
+      "JAX Variant (Advanced)"
     ],
     "cross_refs": [
       "imaging/simulator.py",
