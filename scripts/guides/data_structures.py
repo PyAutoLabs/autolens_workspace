@@ -431,7 +431,7 @@ Three situations switch the backing to `jax.Array`:
    fit — e.g. `fit.residual_map.array`, `fit.model_image.array` are
    JAX-backed when the analysis ran with `use_jax=True` (the default).
 2. The structure comes back from a `Simulator(use_jax=True)` simulation
-   (see `scripts/imaging/simulator.py` `__JAX Variant__`).
+   (see `scripts/imaging/simulator.py` `__JAX Variant (Advanced)__`).
 3. You constructed it inside a JAX-traced function and the upstream grid
    was `jnp`-backed (e.g. `tracer.image_2d_from(grid=jnp_grid, xp=jnp)`).
 

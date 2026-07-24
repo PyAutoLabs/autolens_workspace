@@ -525,7 +525,7 @@ dataset = al.Imaging(
 
 Fits then work across every model surface: standard light profiles, linear light profiles, operated light
 profiles (which are added at image resolution unblurred, by definition) and pixelized source reconstructions.
-Simulation is supported too — see the `__Oversampled PSF__` section of `scripts/imaging/simulator.py`.
+Simulation is supported too — see the `__Oversampled PSF (Advanced)__` section of `scripts/imaging/simulator.py`.
 
 __Adaptive Evaluation: the k x s Coupling__
 

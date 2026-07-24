@@ -20,6 +20,8 @@ __Contents__
 - **Visualize:** In the same folder as the .fits files, we also output subplots of the simulated dataset in .png.
 - **Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
 - **Multiple Images:** Lens modeling can use a "positions likelihood penalty", whereby mass models which traces the (y,x).
+- **JAX Variant (Advanced):** Speed up large or repeated simulations by constructing the simulator with `use_jax=True`.
+- **Oversampled PSF (Advanced):** Perform the PSF convolution itself at a higher resolution than the image pixels.
 
 __Model__
 
@@ -139,7 +141,7 @@ when simulating the dataset.
 PSF convolution runs at the image resolution (sub size 1), which is the fastest option and accurate for well-sampled
 PSFs. Supplying a PSF at a multiple of the image resolution and raising this value improves blurring fidelity for
 undersampled PSFs (e.g. HST / Euclid VIS) at extra compute cost — see `guides/advanced/over_sampling.py` and the
-simulator's `__Oversampled PSF__` section.
+simulator's `__Oversampled PSF (Advanced)__` section.
 """
 psf_convolve_over_sample_size = 1
 
@@ -361,15 +363,12 @@ al.output_to_json(
 """
 The dataset can be viewed in the folder `autolens_workspace/imaging/simple`.
 
-__JAX Variant__
+__JAX Variant (Advanced)__
 
-For an order-of-magnitude speedup on large or repeated simulations
-(parameter sweeps, mock-data studies, batch figure generation), construct
-the simulator with `use_jax=True` and wrap your call in `@jax.jit`. The
-simulator handles pytree registration internally — you write nothing
-JAX-specific beyond the decorator.
-
-```python
+For an order-of-magnitude speedup on large or repeated simulations (parameter sweeps, mock-data studies, batch
+figure generation), construct the simulator with `use_jax=True` and wrap your call in `@jax.jit`. The simulator
+handles pytree registration internally — you write nothing JAX-specific beyond the decorator.
+"""
 import jax
 
 simulator_jax = al.SimulatorImaging(
@@ -380,28 +379,32 @@ simulator_jax = al.SimulatorImaging(
     use_jax=True,
 )
 
+
 @jax.jit
 def simulate(tracer):
     return simulator_jax.via_tracer_from(tracer=tracer, grid=grid)
 
-dataset_jax = simulate(tracer)   # Imaging with jax.Array data
-```
 
-The `dataset_jax.data.array` is a `jax.Array`; `aplt.fits_imaging` and the
-plotters call `numpy.asarray()` internally, so saving / plotting works
-without manual conversion.
+"""
+The simulation call below is commented out to avoid adding excessive run time to this script and overwriting the
+dataset output above. Uncomment it to run the JAX simulation, which returns an `Imaging` dataset with `jax.Array`
+data.
+"""
+# dataset_jax = simulate(tracer)
 
-Note: eager `simulator_jax.via_tracer_from(tracer, grid)` (no `@jax.jit`)
-already runs on JAX and is sufficient for one-off simulations. The
-`@jax.jit` wrap is only beneficial when you call the function many times.
+"""
+The `dataset_jax.data.array` is a `jax.Array`; `aplt.fits_imaging` and the plotters call `numpy.asarray()`
+internally, so saving / plotting works without manual conversion.
 
-See `scripts/guides/lens_calc.py` for the advanced "JIT-it-yourself"
-pattern that wraps individual library methods like `tracer.image_2d_from`
-directly.
+Note: eager `simulator_jax.via_tracer_from(tracer, grid)` (no `@jax.jit`) already runs on JAX and is sufficient
+for one-off simulations. The `@jax.jit` wrap is only beneficial when you call the function many times.
+
+See `scripts/guides/lens_calc.py` for the advanced "JIT-it-yourself" pattern that wraps individual library
+methods like `tracer.image_2d_from` directly.
 """
 
 """
-__Oversampled PSF__
+__Oversampled PSF (Advanced)__
 
 The simulation above evaluates the lensed image on an over-sampled grid, but the PSF convolution itself is
 performed at the resolution of the image pixels. For most simulations this is accurate enough. However, when the
@@ -423,8 +426,7 @@ Two requirements to be aware of:
    error).
  - When you later fit data simulated this way, pass the same fine-resolution PSF and the matching
    `convolve_over_sample_size_lp` / `convolve_over_sample_size_pixelization` to the `Imaging` object.
-
-```python
+"""
 grid_fine = al.Grid2D.uniform(
     shape_native=grid.shape_native,
     pixel_scales=grid.pixel_scales,
@@ -446,9 +448,13 @@ simulator_fine = al.SimulatorImaging(
     add_poisson_noise_to_data=True,
 )
 
-dataset_fine = simulator_fine.via_tracer_from(tracer=tracer, grid=grid_fine)
-```
+"""
+The simulation call below is commented out to avoid adding excessive run time to this script and overwriting the
+dataset output above. Uncomment it to simulate with the oversampled PSF.
+"""
+# dataset_fine = simulator_fine.via_tracer_from(tracer=tracer, grid=grid_fine)
 
+"""
 The numerical test scripts in `autolens_workspace_test/scripts/imaging/convolution_over_sampled.py` verify this
 machinery against brute-force reference calculations for every supported model surface (standard, linear and
 operated light profiles and pixelized sources).
