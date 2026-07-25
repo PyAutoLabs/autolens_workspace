@@ -5,7 +5,7 @@ Tracer
 This tutorial inspects an inferred model using the `Tracer` object inferred by the non-linear search.
 This allows us to visualize and interpret its results.
 
-The first half of this tutorial repeats the over example `overview/overview_1_lensing.py` and contains the
+The first half of this tutorial repeats the over example `start_here.ipynb` and contains the
 following:
 
 This tutorial focuses on explaining how to use the inferred tracer to compute results as numpy arrays and only
@@ -38,7 +38,7 @@ __Units__
 In this example, all quantities use the source code's internal unit coordinates, with spatial coordinates in
 arc seconds, luminosities in electrons per second and mass quantities (e.g. convergence) are dimensionless.
 
-The guide `guides/units_and_cosmology.ipynb` illustrates how to convert these quantities to physical units like
+The guide `guides/units/cosmology.ipynb` illustrates how to convert these quantities to physical units like
 kiloparsecs, magnitudes and solar masses.
 
 __Data Structures__
@@ -58,7 +58,7 @@ __Other Models__
 This tutorial does not use a pixelized source reconstruction or linear light profiles, which have their own dediciated
 functionality that interfacts with the `FitImaging` object.
 
-These are described in the dedicated example scripts `results/aggregator/linear.py` and `results/aggregator/pixelizaiton.py`.
+These are described in the dedicated example scripts `imaging/features/linear_light_profiles/fit.py` and `imaging/features/pixelization/fit.py`.
 
 __Start Here Notebook__
 
@@ -349,7 +349,7 @@ The image above is returned as a 1D numpy array.
 **PyAutoLens** includes dedicated functionality for manipulating this array, for example mapping it to 2D or
 performing the calculation on a high resolution sub-grid which is then binned up. 
 
-This uses the data structure API, which is described in the `results/aggregator/data_structures.py` example. This 
+This uses the data structure API, which is described in the `guides/data_structures.py` example. This 
 tutorial will avoid using this API, but if you need to manipulate results in more detail you should check it out.
 """
 print(image.slim)
@@ -377,7 +377,7 @@ into sub-pixels of size (`sub_size` x `sub_size`).
 
 The calculation below shows how to use a sub-grid and return an image which has already been binned up. 
 
-Full details of the API for this calculation are given in the `guides/over_sampling.py` example.
+Full details of the API for this calculation are given in the `guides/advanced/over_sampling.py` example.
 """
 grid = al.Grid2D.uniform(
     shape_native=grid.shape_native,
@@ -458,7 +458,7 @@ Many lensing quantities are vectors. That is, they are (y,x) coordinates that ha
 magnitudes in both the y and x directions.
 
 These quantities also have a dedicated data structure which is described fully in 
-the `results/aggregator/data_structure.py` example.
+the `guides/data_structures.py` example.
 
 The most obvious of these is the deflection angles, which are used throughout lens modeling to ray-trace grids
 from the image-plane to the source-plane via a lens galaxy mass model.

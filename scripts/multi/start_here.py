@@ -5,7 +5,7 @@ Start Here: Multi Wavelength
 Strong gravitational lenses are often observed with CCD imaging, for example using HST, JWST,
 or ground-based telescopes.
 
-The examples `start_here_imaging.ipynb` illustrates how to perform lens modeling of CCD imaging
+The examples `imaging/start_here.ipynb` illustrates how to perform lens modeling of CCD imaging
 of single lenses, it is recommend you read that example before reading this one.
 
 This script shows you how to model multiple images of a strong lens, taken at different wavelengths,
@@ -17,7 +17,7 @@ Multi-wavelength lens modeling is an advanced feature and it is recommend you be
 should make it quick and easy to at least have a go doing multi-wavelength modeling of your own data.
 
 We focus on a *galaxy-scale* lens (a single lens galaxy). If you have multiple lens galaxies,
-see the `start_here_group.ipynb` and `start_here_cluster.ipynb` examples.
+see the `group/start_here.ipynb` and `cluster/start_here.ipynb` examples.
 
 __Contents__
 
@@ -33,7 +33,7 @@ __Contents__
 - **Live Visual Update:** Push the quick-update image to a live display surface.
 - **Result:** Overview of the results of the model-fit.
 - **Model Your Own Lens:** If you have your own strong lens imaging data, you are now ready to model it yourself by adapting.
-- **Simulator:** In the example `start_here_imaging.ipynb`, we showed how to simulate CCD imaging of a strong lens.
+- **Simulator:** In the example `imaging/start_here.ipynb`, we showed how to simulate CCD imaging of a strong lens.
 - **Wrap Up:** Summary of the script and next steps.
 
 __JAX__
@@ -446,7 +446,7 @@ A few things to note, with full details on data preparation provided in the main
 
 __Simulator__
 
-In the example `start_here_imaging.ipynb`, we showed how to simulate CCD imaging of a strong lens.
+In the example `imaging/start_here.ipynb`, we showed how to simulate CCD imaging of a strong lens.
 
 We do not give a full description of the simulation API for multi wavelength lens imaging here,
 but it is fully described in the main workspace documentation.

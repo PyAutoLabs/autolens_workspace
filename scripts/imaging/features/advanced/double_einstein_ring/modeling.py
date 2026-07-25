@@ -54,7 +54,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a dou
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/start_here.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -127,7 +127,7 @@ aplt.subplot_imaging_dataset(dataset=dataset)
 __Over Sampling__
 
 Apply adaptive over sampling to ensure the lens galaxy light calculation is accurate, you can read up on over-sampling 
-in more detail via the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
+in more detail via the `autolens_workspace/*/guides/advanced/over_sampling.ipynb` notebook.
 """
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,
@@ -204,7 +204,7 @@ For real data, we obviously do not know the true parameters and therefore cannot
 checkout the **PyAutoLens**'s advanced feature `chaining`, which chains together multiple non-linear searches. 
 
 This feature is described in HowToLens chapter 3 and specific examples for a double Einstein ring are given in
-the script `guides/modeling/chaining/double_einstein_ring.py`.
+the script `imaging/features/advanced/double_einstein_ring/chaining.py`.
 """
 lens.mass.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.1)
 lens.mass.centre_1 = af.GaussianPrior(mean=0.0, sigma=0.1)
@@ -347,12 +347,12 @@ degree of lens modeling expertise to make a success.
 If you have not already, I recommend you familiarize yourself with and use all of the following **PyAutoLens features
 to model a real double Einstein ring:
 
- - Basis based light profiles (e.g. ``shapelets.ipynb` / `multi_gaussian_expansion.ipynb`): these allow one to fit
+ - Basis based light profiles (e.g. `features/advanced/shapelets/modeling.ipynb` / `features/multi_gaussian_expansion/modeling.ipynb`): these allow one to fit
    complex lens and source morphologies whilst keeping the dimensionality of the problem low.
 
  - Search chaining (e.g. `guides/modeling/chaining` and HowToLens chapter 3): by breaking the model-fit into a series
    of Nautilus searches models of gradually increasing complexity can be fitted.
 
- - pixelizations (e.g. `pixelization.ipynb` and HowToLens chapter 4): to infer the cosmological parameters reliably
+ - pixelizations (e.g. `features/pixelization/modeling.ipynb` and HowToLens chapter 4): to infer the cosmological parameters reliably
    the source must be reconstructed on an adaptive mesh to capture a irregular morphological features.
 """

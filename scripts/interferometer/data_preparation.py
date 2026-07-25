@@ -83,7 +83,7 @@ aplt.plot_grid(grid=visibilities.in_grid, title="")
 These visibilities conforms to **PyAutoLens** standards, because they come from a standard CASA data reduction
 procedure.
 
-More details of this procedure are given in the `examples/casa_reduction.ipynb` notebook.
+More details of this procedure are given in the `interferometer/casa_reduction.ipynb` notebook.
 
 __Noise-Map__
 
@@ -120,7 +120,7 @@ aplt.plot_grid(grid=uv_wavelengths, title="")
 These uv wavelengths conform to **PyAutoLens** standards, because they come from a standard CASA data reduction
 procedure.
 
-More details of this procedure are given in the `examples/casa_reduction.ipynb` notebook.
+More details of this procedure are given in the `interferometer/casa_reduction.ipynb` notebook.
 
 __Real Space Mask__
 
@@ -228,7 +228,7 @@ and speeding up the analysis. It is still a choice whether their mass is include
 
 - `data_preparation/gui/extra_galaxies_centres.ipynb`: use a Graphical User Interface (GUI) to mark the extra galaxy centres.
 
-- `features/extra_galaxies.py` how to use extra galaxies in a model-fit, including loading the extra galaxy centres.
+- `features/extra_galaxies/modeling.py` how to use extra galaxies in a model-fit, including loading the extra galaxy centres.
 
 
 __Mask Extra Galaxies (Optional)__
@@ -256,9 +256,9 @@ may be a better approach.
 
 - `data_preparation/examples/optional/mask_extra_galaxies.py`: create the extra galaxies mask manually via a Python script.
 
-- `data_preparation/gui/extra_galaxies_mask.ipynb` use a Graphical User Interface (GUI) to create the extra galaxies mask.
+- `data_preparation/gui/mask_extra_galaxies.ipynb` use a Graphical User Interface (GUI) to create the extra galaxies mask.
 
-- `features/extra_galaxies.py` how to use the extra galaxies mask in a model-fit.
+- `features/extra_galaxies/modeling.py` how to use the extra galaxies mask in a model-fit.
 
 __Info (Optional)__
 

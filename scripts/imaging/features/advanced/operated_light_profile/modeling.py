@@ -50,12 +50,12 @@ For operated light profiles, there is no `fit.py` example found for standard lig
 and other examples.
 
 This is done purely to keep the number of examples in the workspace manageable. to perform a fit with operated light
-profiles, simply follow one of the other `modeling/imaging/fit.py` examples and replace the light profiles
+profiles, simply follow one of the other `imaging/fit.py` examples and replace the light profiles
 with operated light profiles using the API described below.
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/start_here.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -123,7 +123,7 @@ aplt.subplot_imaging_dataset(dataset=dataset)
 __Over Sampling__
 
 Apply adaptive over sampling to ensure the lens galaxy light calculation is accurate, you can read up on over-sampling 
-in more detail via the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
+in more detail via the `autolens_workspace/*/guides/advanced/over_sampling.ipynb` notebook.
 """
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,

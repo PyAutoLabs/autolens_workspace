@@ -13,7 +13,7 @@ The old `Visuals2D` and `MatPlot2D` objects that configured overlays have been r
 
 __Start Here Notebook__
 
-Refer to `plots/start_here.ipynb` for a general introduction to the new plotting API.
+Refer to `guides/plot/start_here.ipynb` for a general introduction to the new plotting API.
 
 __Contents__
 

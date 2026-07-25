@@ -100,7 +100,7 @@ __Point Solver__
 We set up the `PointSolver`, which is used to compute the multiple images of the point source in the image-plane.
 
 There are no special settings or inputs for the fitting of time_delays, therefore the `PointSolver` is set up in the same way
-as in the `modeling/start_here.ipynb` notebook.
+as in the `imaging/start_here.ipynb` notebook.
 """
 grid = al.Grid2D.uniform(
     shape_native=(100, 100),

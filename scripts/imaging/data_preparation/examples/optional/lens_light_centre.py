@@ -88,7 +88,7 @@ al.output_to_json(
 
 """
 The workspace also includes a GUI for drawing lens light centres, which can be found at
-`autolens_workspace/*/imaging/data_preparation/gui/light_centres.py`.
+`autolens_workspace/*/imaging/data_preparation/gui/lens_light_centre.py`.
 
 This tools allows you `click` on the image where the lens light centres are, and it uses the brightest
 pixel within a 5x5 box of pixels to select the coordinate.

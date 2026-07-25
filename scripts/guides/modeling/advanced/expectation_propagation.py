@@ -36,7 +36,7 @@ __Sample Simulation__
 The dataset fitted in this example script is simulated imaging data of a sample of 3 galaxies.
 
 This data is not automatically provided with the autogalaxy workspace, and must be first simulated by running the
-script `autolens_workspace/scripts/advanced/graphical/simulator/samples/simple__no_lens_light.py`.
+script `autolens_workspace/scripts/imaging/simulator_sample.py`.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -55,7 +55,7 @@ __Dataset__
 The following steps repeat all the initial steps performed in tutorial 2 and 3:
 
 This data is not automatically provided with the autogalaxy workspace, and must be first simulated by running the 
-script `autolens_workspace/scripts/advanced/graphical/simulator/samples/simple__no_lens_light.py`. 
+script `autolens_workspace/scripts/imaging/simulator_sample.py`. 
 """
 dataset_label = "samples"
 dataset_type = "imaging"

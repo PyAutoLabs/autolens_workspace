@@ -73,7 +73,7 @@ __Contents__
 - **Redshifts:** The redshifts of the lens and source galaxies.
 - **SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
 - **Prerequisites:** The likelihood function of pixelizations is the most complicated likelihood function.
-- **Likelihood Function:** The example `interferometer/pixelization/likelihood_function.py` provides a step-by-step.
+- **Likelihood Function:** The example `interferometer/features/pixelization/likelihood_function.py` provides a step-by-step.
 - **Mask:** Define the 2D mask applied to the dataset for the model-fit.
 - **Dataset:** Load and plot the strong lens dataset.
 - **Source Galaxy Pixelization and Regularization:** We combine the pixelization into a single `Galaxy` object.
@@ -253,7 +253,7 @@ We now perform lens modeling using the Delaunay pixelization with the Overlay im
 The code below is a simple adaptive modeling example using the Delaunay mesh, which mirrors the
 API used in other pixelization modeling examples.
 
-The example `interferometer/features/pixelization/adaptive.py` illustrates how to use adaptive features to
+The example `imaging/features/pixelization/adaptive.py` illustrates how to use adaptive features to
 adapt the rectangular mesh and its regularization to the source's surface brightness. In particular, an image
 of the lensed source is passed to the modeling via the `AdaptImages` object, in order to adapt
 the mesh and regularization during the model-fit.
@@ -854,8 +854,8 @@ The likelihood function of pixelizations is the most complicated likelihood func
 It is advised you read through the following two simpler likelihood functions first, which break down a number of the
 concepts used in this script:
 
- - `interferometer/light_profile/log_likelihood_function.py` the likelihood function for a light profile.
- - `interferometer/linear_light_profile/log_likelihood_function.py` the likelihood function for a linear light profile, which
+ - `interferometer/likelihood_function.py` the likelihood function for a light profile.
+ - `interferometer/features/linear_light_profiles/likelihood_function.py` the likelihood function for a linear light profile, which
  introduces the linear algebra used for a pixelization but with a simpler use case.
 
 This script repeats all text and code examples in the above likelihood function examples. It therefore can be used to
@@ -863,7 +863,7 @@ learn about the linear light profile likelihood function without reading other l
 
 __Likelihood Function__
 
-The example `interferometer/pixelization/likelihood_function.py` provides a step-by-step description of how
+The example `interferometer/features/pixelization/likelihood_function.py` provides a step-by-step description of how
 a likelihood evaluation is performed for interferometer data using a pixelized source reconstruction with a rectangular
 mesh.
 

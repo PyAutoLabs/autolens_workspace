@@ -6,7 +6,7 @@ This script simulations a `Point` dataset of a galaxy-scale strong lens which is
 simulated in the `start_here.ipynb` example, but where an image of the multiply imaged lensed point source (e.g.
 the quasar) and its lens galaxy are included.
 
-It is used in `autolens_workspace/notebooks/point_source/modeling/features/deblending.ipynb` to illustrate how to
+It is used in `autolens_workspace/notebooks/point_source/features/deblending/modeling.ipynb` to illustrate how to
 perform deblending of a point source dataset, in order to measure the image-plane multiple image positions, fluxes
 and lens galaxy light.
 
@@ -35,7 +35,7 @@ This script simulates `Imaging` and `PointDataset` data of a strong lens where:
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `point_source/simulator.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -244,7 +244,7 @@ The `positions` and `fluxes` above represent the location and brightnesses of th
 
 To include these multiple images in the imaging simulation, we add each multiple image individually in the image-plane. 
 These multiple images are assumed to have already been convolved with the PSF, which is why they use the `lp_operated` 
-profile (see `autolens_workspace/*/notebooks/modeling/features/advanced/operated_light_profiles.py`).
+profile (see `autolens_workspace/*/imaging/features/advanced/operated_light_profile/modeling.py`).
 
 The `Imaging` simulation procedure therefore does not place a point-source in the source-plane, and use ray-tracing
 to determine its image-plane multiple images. It is effectively doing this, because it uses the `positions` and
@@ -253,7 +253,7 @@ this ray-tracing calculation.
 
 The reason we choose this approach is because it is closer to how we model the multiple images of actual lensed point 
 sources, where each multiple image is modeled in the image-plane as a separate light 
-profile (see `point_source/modeling/features/debeleing.ipynb` for a description of why).
+profile (see `point_source/features/deblending/modeling.ipynb` for a description of why).
 """
 point_image_kwargs = {
     f"point_image_{i}": al.lp_operated.Gaussian(

@@ -101,9 +101,9 @@
     ],
     "cross_refs": [
       "autolens/point/fit/positions/source/separations.py",
-      "autolens_workspace/scripts/guides/lensing/lens_calc.py",
-      "autolens_workspace/scripts/guides/lensing/multi_plane.py",
-      "autolens_workspace/scripts/guides/point_source/triangle_solver.py",
+      "autolens_workspace/scripts/guides/advanced/multi_plane.py",
+      "autolens_workspace/scripts/guides/lens_calc.py",
+      "autolens_workspace/scripts/guides/point_source_pairing.py",
       "autolens_workspace_test/scripts/cluster/likelihood_sanity.py",
       "csv_api.py",
       "modeling.py",
@@ -166,7 +166,7 @@
     ],
     "cross_refs": [
       "/cluster/simulator.py",
-      "autolens_workspace_test/scripts/imaging/visualization_cluster.py",
+      "autolens_workspace_test/scripts/cluster/visualization.py",
       "cluster/simulator.py",
       "point_source/start_here.py",
       "scripts/cluster/csv_api.py",
@@ -239,12 +239,12 @@
       "autolens_workspace/start_here.py",
       "cluster/modeling.py",
       "csv_api.py",
+      "imaging/start_here.ipynb",
       "prep.py",
       "scripts/cluster/csv_api.py",
       "scripts/cluster/modeling.py",
       "scripts/cluster/simulator.py",
-      "scripts/group/features/scaling_relation/modeling_for_luminosities.py",
-      "start_here_imaging.ipynb"
+      "scripts/group/features/scaling_relation/modeling_for_luminosities.py"
     ],
     "notebook": "notebooks/cluster/start_here.ipynb",
     "path": "scripts/cluster/start_here.py",
@@ -260,21 +260,21 @@
       "Data Processing Complete"
     ],
     "cross_refs": [
-      "data_preparation/examples/gui/mask.ipynb",
       "data_preparation/examples/optional/info.py",
       "data_preparation/examples/optional/mask.ipynb",
       "data_preparation/examples/optional/mask_extra_galaxies.py",
       "data_preparation/examples/optional/positions.ipynb",
       "data_preparation/gui/extra_galaxies_centres.py",
-      "data_preparation/gui/extra_galaxies_mask.ipynb",
-      "data_preparation/gui/main_lens_centres.py",
+      "data_preparation/gui/mask.ipynb",
+      "data_preparation/gui/mask_extra_galaxies.ipynb",
       "data_preparation/gui/positions.ipynb",
-      "data_preparation/gui/scaling_galaxies_centres.py",
       "extra_galaxies_centres.py",
-      "features/extra_galaxies.py",
+      "features/extra_galaxies/modeling.py",
       "imaging/data_preparation/examples/data.ipynb",
       "imaging/data_preparation/examples/noise_map.ipynb",
       "imaging/data_preparation/examples/psf.ipynb",
+      "imaging/data_preparation/gui/extra_galaxies_centres.py",
+      "imaging/data_preparation/gui/lens_light_centre.py",
       "mask_extra_galaxies.py"
     ],
     "notebook": "notebooks/group/data_preparation/start_here.ipynb",
@@ -1255,7 +1255,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/guides/over_sampling.py",
+      "/guides/advanced/over_sampling.py",
       "scripts/imaging/likelihood_function.py"
     ],
     "notebook": "notebooks/group/likelihood_function.ipynb",
@@ -1293,11 +1293,11 @@
       "Modeling Customization"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
+      "/guides/advanced/over_sampling.ipynb",
       "/imaging/data_preparation/start_here.ipynb",
       "/imaging/simulator.py",
-      "data_preparation/point_source/gui/extra_galaxies_centres.py",
-      "features/scaling_relation.ipynb",
+      "features/scaling_relation/modeling.ipynb",
+      "imaging/data_preparation/gui/extra_galaxies_centres.py",
       "over_sampling.ipynb",
       "start_here.py"
     ],
@@ -1324,7 +1324,7 @@
       "Centre JSON Files"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
+      "/guides/advanced/over_sampling.ipynb",
       "guides/advanced/over_sampling.py",
       "scripts/imaging/simulator.py"
     ],
@@ -1394,9 +1394,9 @@
     ],
     "cross_refs": [
       "autolens_workspace/start_here.py",
-      "scripts/imaging/start_here.py",
-      "start_here_cluster.ipynb",
-      "start_here_imaging.ipynb"
+      "cluster/start_here.ipynb",
+      "imaging/start_here.ipynb",
+      "scripts/imaging/start_here.py"
     ],
     "notebook": "notebooks/group/start_here.ipynb",
     "path": "scripts/group/start_here.py",
@@ -1480,7 +1480,7 @@
       "Pixelization"
     ],
     "cross_refs": [
-      "/guides/modeling/chaining/over_sampling.ipynb",
+      "/guides/advanced/over_sampling_chaining.ipynb",
       "autolens_workspace_test/scripts/imaging/convolution_over_sampled.py",
       "scripts/imaging/simulator.py"
     ],
@@ -1501,7 +1501,7 @@
       "Over Sampling (Search 2)"
     ],
     "cross_refs": [
-      "/guides/over_sampling.py",
+      "/guides/advanced/over_sampling.py",
       "guides/modeling/chaining.ipynb"
     ],
     "notebook": "notebooks/guides/advanced/over_sampling_chaining.ipynb",
@@ -1553,9 +1553,9 @@
       "Vector Quantities"
     ],
     "cross_refs": [
+      "guides/units/cosmology.ipynb",
       "scripts/guides/lens_calc.py",
-      "scripts/imaging/simulator.py",
-      "units_and_cosmology.ipynb"
+      "scripts/imaging/simulator.py"
     ],
     "notebook": "notebooks/guides/data_structures.ipynb",
     "path": "scripts/guides/data_structures.py",
@@ -1573,7 +1573,7 @@
     ],
     "cross_refs": [
       "/guides/data_structures.ipynb",
-      "guides/units_and_cosmology.ipynb",
+      "guides/units/cosmology.ipynb",
       "results/start_here.ipynb",
       "scripts/guides/data_structures.py",
       "scripts/guides/lens_calc.py",
@@ -1657,7 +1657,7 @@
       "Results"
     ],
     "cross_refs": [
-      "autolens_workspace/scripts/advanced/graphical/simulator/samples/simple__no_lens_light.py"
+      "autolens_workspace/scripts/imaging/simulator_sample.py"
     ],
     "notebook": "notebooks/guides/modeling/advanced/expectation_propagation.ipynb",
     "path": "scripts/guides/modeling/advanced/expectation_propagation.py",
@@ -1677,7 +1677,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "modeling/start_here.ipynb"
+      "imaging/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/modeling/advanced/graphical.ipynb",
     "path": "scripts/guides/modeling/advanced/graphical.py",
@@ -1698,7 +1698,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "autolens_workspace/scripts/advanced/graphical/simulator/samples/advanced/mass_power_law.py"
+      "autolens_workspace/scripts/imaging/simulator_sample.py"
     ],
     "notebook": "notebooks/guides/modeling/advanced/hierarchical.ipynb",
     "path": "scripts/guides/modeling/advanced/hierarchical.py",
@@ -1757,7 +1757,7 @@
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/modeling/features/shapelets.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi/features/wavelength_dependence/modeling.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi/start_here.ipynb",
-      "modeling/start_here.ipynb"
+      "imaging/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/modeling/cookbook.ipynb",
     "path": "scripts/guides/modeling/cookbook.py",
@@ -1772,10 +1772,10 @@
     ],
     "cross_refs": [
       "/guides/advanced/over_sampling.ipynb",
-      "/guides/modeling/chaining/over_sampling.ipynb",
+      "/guides/advanced/over_sampling_chaining.ipynb",
       "/imaging/data_preparation/gui/mask.py",
       "/imaging/data_preparation/gui/positions.py",
-      "modeling/start_here.ipynb"
+      "imaging/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/modeling/customize.ipynb",
     "path": "scripts/guides/modeling/customize.py",
@@ -1793,7 +1793,7 @@
       "Search Cookbook"
     ],
     "cross_refs": [
-      "modeling/start_here.ipynb"
+      "imaging/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/modeling/searches.ipynb",
     "path": "scripts/guides/modeling/searches.py",
@@ -1834,7 +1834,7 @@
       "Inversion"
     ],
     "cross_refs": [
-      "plots/start_here.ipynb"
+      "guides/plot/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/plot/advanced/plotters_double_einstein_ring.ipynb",
     "path": "scripts/guides/plot/advanced/plotters_double_einstein_ring.py",
@@ -1851,7 +1851,7 @@
       "Fit Interferometer"
     ],
     "cross_refs": [
-      "plots/start_here.ipynb"
+      "guides/plot/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/plot/advanced/plotters_pixelization.ipynb",
     "path": "scripts/guides/plot/advanced/plotters_pixelization.py",
@@ -1868,7 +1868,7 @@
       "Config Defaults"
     ],
     "cross_refs": [
-      "plots/start_here.ipynb"
+      "guides/plot/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/plot/examples/mat_plot.ipynb",
     "path": "scripts/guides/plot/examples/mat_plot.py",
@@ -1889,7 +1889,7 @@
       "Interferometer"
     ],
     "cross_refs": [
-      "plots/start_here.ipynb"
+      "guides/plot/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/plot/examples/plotters.ipynb",
     "path": "scripts/guides/plot/examples/plotters.py",
@@ -1916,7 +1916,7 @@
     ],
     "cross_refs": [
       "corner.py",
-      "plots/start_here.ipynb"
+      "guides/plot/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/plot/examples/searches.ipynb",
     "path": "scripts/guides/plot/examples/searches.py",
@@ -1935,7 +1935,7 @@
       "Combined Overlays"
     ],
     "cross_refs": [
-      "plots/start_here.ipynb"
+      "guides/plot/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/plot/examples/visuals.ipynb",
     "path": "scripts/guides/plot/examples/visuals.py",
@@ -1960,7 +1960,7 @@
   {
     "contents": [],
     "cross_refs": [
-      "autolens_profiling/likelihood_breakdown/cluster/image_plane.py",
+      "autolens_profiling/scripts/cluster/likelihood_breakdown/image_plane.py",
       "likelihood_sanity.py",
       "scripts/cluster/likelihood_function.py"
     ],
@@ -1985,13 +1985,13 @@
     "cross_refs": [
       "fit.py",
       "guides/data_structures.py",
-      "guides/units_and_cosmology.ipynb",
+      "guides/units/cosmology.ipynb",
       "likelihood_function.py",
       "modeling.py",
       "scripts/guides/profiles/mass.py",
       "scripts/guides/results/start_here.py",
       "scripts/guides/tracer.py",
-      "scripts/imaging/modeling/start_here.py",
+      "scripts/imaging/start_here.py",
       "simulator.py",
       "tracer.py"
     ],
@@ -2016,7 +2016,7 @@
     ],
     "cross_refs": [
       "autogalaxy/profiles/light_and_mass_profiles.py",
-      "guides/units_and_cosmology.ipynb",
+      "guides/units/cosmology.ipynb",
       "light.py",
       "mass.py",
       "scripts/guides/modeling/slam_start_here.py",
@@ -2024,7 +2024,7 @@
       "scripts/guides/profiles/light_and_mass_profiles.py",
       "scripts/guides/profiles/mass.py",
       "scripts/guides/results/start_here.py",
-      "scripts/imaging/modeling/start_here.py"
+      "scripts/imaging/start_here.py"
     ],
     "notebook": "notebooks/guides/profiles/light_and_mass_profiles.ipynb",
     "path": "scripts/guides/profiles/light_and_mass_profiles.py",
@@ -2045,14 +2045,14 @@
       "Follow-Up"
     ],
     "cross_refs": [
-      "guides/units_and_cosmology.ipynb",
+      "guides/units/cosmology.ipynb",
       "light.py",
       "light_and_mass_profiles.py",
       "scripts/guides/profiles/light.py",
       "scripts/guides/profiles/light_and_mass_profiles.py",
       "scripts/guides/results/start_here.py",
       "scripts/guides/tracer.py",
-      "scripts/imaging/modeling/start_here.py"
+      "scripts/imaging/start_here.py"
     ],
     "notebook": "notebooks/guides/profiles/mass.ipynb",
     "path": "scripts/guides/profiles/mass.py",
@@ -2078,7 +2078,7 @@
       "Visualization Customization"
     ],
     "cross_refs": [
-      "examples/models.py",
+      "aggregator/models.py",
       "start_here.py"
     ],
     "notebook": "notebooks/guides/results/aggregator/data_fitting.ipynb",
@@ -2099,12 +2099,12 @@
     ],
     "cross_refs": [
       "/guides/data_structures.ipynb",
-      "/guides/fit.ipynb",
       "/guides/galaxies.ipynb",
       "/guides/tracer.ipynb",
+      "/imaging/fit.ipynb",
       "_quick_fit.py",
-      "guides/units_and_cosmology.ipynb",
-      "modeling/start_here.py",
+      "guides/units/cosmology.ipynb",
+      "imaging/start_here.py",
       "results/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/results/aggregator/galaxies_fits.ipynb",
@@ -2172,8 +2172,8 @@
       "GetDist.py",
       "_quick_fit.py",
       "fit.py",
-      "guides/units_and_cosmology.ipynb",
-      "modeling/start_here.py",
+      "guides/units/cosmology.ipynb",
+      "imaging/start_here.py",
       "results/start_here.ipynb",
       "tracer.py"
     ],
@@ -2269,14 +2269,14 @@
       "Info"
     ],
     "cross_refs": [
-      "/features/linear_light_profiles.py",
-      "/features/pixelization.py",
-      "/guides/fits.py",
-      "/guides/results/aggregator/galaxies_fit.py",
       "/guides/results/aggregator/galaxies_fits.py",
       "/guides/results/aggregator/samples.py",
       "/guides/tracer.py",
-      "/guides/units_and_cosmology.py",
+      "/guides/units/cosmology.py",
+      "/imaging/features/linear_light_profiles/fit.py",
+      "/imaging/features/pixelization/fit.py",
+      "/imaging/fit.py",
+      "/imaging/start_here.ipynb",
       "_quick_fit.py",
       "aggregator/samples.py",
       "csv_maker.py",
@@ -2393,19 +2393,18 @@
       "//github.com/PyAutoLabs/PyAutoGalaxy/blob/main/autogalaxy/operate/deflections.py",
       "/guides/data_structures.ipynb",
       "galaxies.py",
-      "guides/over_sampling.py",
-      "guides/units_and_cosmology.ipynb",
+      "guides/advanced/over_sampling.py",
+      "guides/data_structures.py",
+      "guides/units/cosmology.ipynb",
+      "imaging/features/linear_light_profiles/fit.py",
+      "imaging/features/pixelization/fit.py",
       "lens_calc.py",
-      "overview/overview_1_lensing.py",
-      "results/aggregator/data_structure.py",
-      "results/aggregator/data_structures.py",
-      "results/aggregator/linear.py",
-      "results/aggregator/pixelizaiton.py",
       "results/start_here.ipynb",
       "scripts/guides/data_structures.py",
       "scripts/guides/galaxies.py",
       "scripts/guides/lens_calc.py",
-      "scripts/point_source/simulator.py"
+      "scripts/point_source/simulator.py",
+      "start_here.ipynb"
     ],
     "notebook": "notebooks/guides/tracer.ipynb",
     "path": "scripts/guides/tracer.py",
@@ -2484,7 +2483,7 @@
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/dataset/preprocess.py",
-      "/data_preparation/noise_map.py",
+      "/imaging/data_preparation/examples/noise_map.py",
       "data_preparation/start_here.ipynb"
     ],
     "notebook": "notebooks/imaging/data_preparation/examples/data.ipynb",
@@ -2501,8 +2500,8 @@
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/dataset/preprocess.py",
-      "data_preparation/start_here.ipynb",
-      "data_prepatation/examples/image.ipynb"
+      "data_preparation/examples/data.ipynb",
+      "data_preparation/start_here.ipynb"
     ],
     "notebook": "notebooks/imaging/data_preparation/examples/noise_map.ipynb",
     "path": "scripts/imaging/data_preparation/examples/noise_map.py",
@@ -2538,7 +2537,7 @@
   {
     "contents": [],
     "cross_refs": [
-      "/imaging/data_preparation/gui/light_centres.py",
+      "/imaging/data_preparation/gui/lens_light_centre.py",
       "data_preparation/gui/lens_light_centre.ipynb",
       "data_preparation/start_here.ipynb"
     ],
@@ -2551,9 +2550,9 @@
     "contents": [],
     "cross_refs": [
       "/imaging/data_preparation/gui/mask.py",
+      "data_preparation/examples/optional/mask.ipynb",
       "data_preparation/gui/mask.ipynb",
-      "data_preparation/start_here.ipynb",
-      "examples/mask.ipynb"
+      "data_preparation/start_here.ipynb"
     ],
     "notebook": "notebooks/imaging/data_preparation/examples/optional/mask.ipynb",
     "path": "scripts/imaging/data_preparation/examples/optional/mask.py",
@@ -2566,7 +2565,7 @@
     ],
     "cross_refs": [
       "/imaging/data_preparation/gui/mask_extra_galaxies.py",
-      "data_preparation/gui/extra_galaxies_mask.ipynb",
+      "data_preparation/gui/mask_extra_galaxies.ipynb",
       "data_preparation/start_here.ipynb",
       "scripts/imaging/features/extra_galaxies/simulator.py"
     ],
@@ -2611,7 +2610,7 @@
     ],
     "cross_refs": [
       "clicker.py",
-      "imaging/data_preparation/example/optional/extra_galaxies_centres.py"
+      "imaging/data_preparation/examples/optional/extra_galaxies_centres.py"
     ],
     "notebook": "notebooks/imaging/data_preparation/gui/extra_galaxies_centres.ipynb",
     "path": "scripts/imaging/data_preparation/gui/extra_galaxies_centres.py",
@@ -2652,7 +2651,7 @@
       "Output"
     ],
     "cross_refs": [
-      "imaging/data_preparation/example/optional/extra_galaxies_mask.py"
+      "imaging/data_preparation/examples/optional/mask_extra_galaxies.py"
     ],
     "notebook": "notebooks/imaging/data_preparation/gui/mask_extra_galaxies.ipynb",
     "path": "scripts/imaging/data_preparation/gui/mask_extra_galaxies.py",
@@ -2691,7 +2690,6 @@
       "Data Processing Complete"
     ],
     "cross_refs": [
-      "data_preparation/examples/gui/mask.ipynb",
       "data_preparation/examples/optional/extra_galaxies_centres.py",
       "data_preparation/examples/optional/info.py",
       "data_preparation/examples/optional/lens_light_centre.py",
@@ -2699,11 +2697,12 @@
       "data_preparation/examples/optional/mask_extra_galaxies.py",
       "data_preparation/examples/optional/positions.ipynb",
       "data_preparation/gui/extra_galaxies_centres.ipynb",
-      "data_preparation/gui/extra_galaxies_mask.ipynb",
       "data_preparation/gui/lens_light_centre.ipynb",
+      "data_preparation/gui/mask.ipynb",
+      "data_preparation/gui/mask_extra_galaxies.ipynb",
       "data_preparation/gui/positions.ipynb",
       "extra_galaxies_centres.py",
-      "features/extra_galaxies.py",
+      "features/extra_galaxies/modeling.py",
       "imaging/data_preparation/examples/data.ipynb",
       "imaging/data_preparation/examples/noise_map.ipynb",
       "imaging/data_preparation/examples/psf.ipynb",
@@ -2731,7 +2730,7 @@
     ],
     "cross_refs": [
       "guides/modeling/chaining.ipynb",
-      "notebooks/imaging/chaining/double_einstein_ring.ipynb"
+      "notebooks/imaging/features/advanced/double_einstein_ring/chaining.ipynb"
     ],
     "notebook": "notebooks/imaging/features/advanced/double_einstein_ring/chaining.ipynb",
     "path": "scripts/imaging/features/advanced/double_einstein_ring/chaining.py",
@@ -2803,14 +2802,14 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
+      "/guides/advanced/over_sampling.ipynb",
       "autolens_workspace/scripts/imaging/features/advanced/double_einstein_ring/chaining.py",
       "chaining.py",
-      "guides/modeling/chaining/double_einstein_ring.py",
-      "modeling/start_here.ipynb",
-      "multi_gaussian_expansion.ipynb",
-      "pixelization.ipynb",
-      "shapelets.ipynb",
+      "features/advanced/shapelets/modeling.ipynb",
+      "features/multi_gaussian_expansion/modeling.ipynb",
+      "features/pixelization/modeling.ipynb",
+      "imaging/features/advanced/double_einstein_ring/chaining.py",
+      "imaging/start_here.ipynb",
       "slam.py",
       "start.here.py",
       "start_here.ipynb"
@@ -2831,8 +2830,8 @@
       "Tracer json"
     ],
     "cross_refs": [
-      "modeling/features/double_einstein_ring.py",
-      "simulators/start_here.ipynb"
+      "imaging/features/advanced/double_einstein_ring/modeling.py",
+      "imaging/simulator.ipynb"
     ],
     "notebook": "notebooks/imaging/features/advanced/double_einstein_ring/simulator.ipynb",
     "path": "scripts/imaging/features/advanced/double_einstein_ring/simulator.py",
@@ -2976,10 +2975,10 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
+      "/guides/advanced/over_sampling.ipynb",
       "autolens_workspace/scripts/imaging/features/advanced/mass_stellar_dark/chaining.py",
       "chaining.py",
-      "modeling/start_here.ipynb",
+      "imaging/start_here.ipynb",
       "slam.py",
       "start.here.py",
       "start_here.ipynb"
@@ -3000,8 +2999,8 @@
       "Tracer json"
     ],
     "cross_refs": [
-      "autolens_workspace/scripts/modeling/features/mass_stellar_dark.py",
-      "simulators/start_here.ipynb"
+      "autolens_workspace/scripts/imaging/features/advanced/mass_stellar_dark/modeling.py",
+      "imaging/simulator.ipynb"
     ],
     "notebook": "notebooks/imaging/features/advanced/mass_stellar_dark/simulator.ipynb",
     "path": "scripts/imaging/features/advanced/mass_stellar_dark/simulator.py",
@@ -3045,11 +3044,11 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
+      "/guides/advanced/over_sampling.ipynb",
       "fit.py",
+      "imaging/fit.py",
+      "imaging/start_here.ipynb",
       "linear_light_profiles.py",
-      "modeling/imaging/fit.py",
-      "modeling/start_here.ipynb",
       "start.here.py",
       "start_here.ipynb"
     ],
@@ -3069,8 +3068,8 @@
       "Tracer json"
     ],
     "cross_refs": [
-      "modeling/features/operated_light_profiles.py",
-      "simulators/start_here.ipynb"
+      "imaging/features/advanced/operated_light_profile/modeling.py",
+      "imaging/simulator.ipynb"
     ],
     "notebook": "notebooks/imaging/features/advanced/operated_light_profile/simulator.ipynb",
     "path": "scripts/imaging/features/advanced/operated_light_profile/simulator.py",
@@ -3093,10 +3092,10 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
-      "linear_light_profiles.py",
-      "modeling/features/multi_gaussian_expansion.py",
-      "modeling/start_here.ipynb"
+      "/guides/advanced/over_sampling.ipynb",
+      "imaging/features/multi_gaussian_expansion/modeling.py",
+      "imaging/start_here.ipynb",
+      "linear_light_profiles.py"
     ],
     "notebook": "notebooks/imaging/features/advanced/shapelets/fit.ipynb",
     "path": "scripts/imaging/features/advanced/shapelets/fit.py",
@@ -3126,11 +3125,11 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
+      "/guides/advanced/over_sampling.ipynb",
       "/imaging/data_preparation/gui/positions.py",
       "autolens_workspace_developer/basis_regularization/shapelets_lens.py",
+      "imaging/start_here.ipynb",
       "linear_light_profiles.py",
-      "modeling/start_here.ipynb",
       "start_here.ipynb",
       "start_here.py"
     ],
@@ -3148,7 +3147,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb"
+      "/guides/advanced/over_sampling.ipynb"
     ],
     "notebook": "notebooks/imaging/features/advanced/sky_background/fit.ipynb",
     "path": "scripts/imaging/features/advanced/sky_background/fit.py",
@@ -3168,8 +3167,8 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
-      "modeling/start_here.ipynb",
+      "/guides/advanced/over_sampling.ipynb",
+      "imaging/start_here.ipynb",
       "start.here.py",
       "start_here.ipynb"
     ],
@@ -3189,8 +3188,8 @@
       "Tracer json"
     ],
     "cross_refs": [
-      "/modeling/features/sky_background.py",
-      "simulators/start_here.ipynb"
+      "/imaging/features/advanced/sky_background/modeling.py",
+      "imaging/simulator.ipynb"
     ],
     "notebook": "notebooks/imaging/features/advanced/sky_background/simulator.ipynb",
     "path": "scripts/imaging/features/advanced/sky_background/simulator.py",
@@ -3206,7 +3205,7 @@
       "Best Fit"
     ],
     "cross_refs": [
-      "imaging/advanced/database/start_here.ipynb",
+      "guides/results/database/start_here.ipynb",
       "start_here.ipynb",
       "subhalo/detect/start_here.ipynb"
     ],
@@ -3256,7 +3255,7 @@
       "SLaM Pipeline"
     ],
     "cross_refs": [
-      "slam/subhalo/sensitivity_imaging.py",
+      "imaging/features/advanced/subhalo/sensitivity/start_here.py",
       "slam_start_here.py",
       "subhalo/detect/start_here.ipynb"
     ],
@@ -3282,7 +3281,7 @@
       "SLaM Pipeline"
     ],
     "cross_refs": [
-      "slam/subhalo/sensitivity_imaging.py",
+      "imaging/features/advanced/subhalo/sensitivity/start_here.py",
       "slam_start_here.py",
       "subhalo/detect/start_here.ipynb"
     ],
@@ -3308,7 +3307,7 @@
       "Results"
     ],
     "cross_refs": [
-      "subhalo/sensitivity/examples/source_pixelized.ipynb"
+      "subhalo/sensitivity/slam_source_pixelized.ipynb"
     ],
     "notebook": "notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb",
     "path": "scripts/imaging/features/advanced/subhalo/sensitivity/start_here.py",
@@ -3328,7 +3327,7 @@
       "No Lens Light"
     ],
     "cross_refs": [
-      "simulators/start_here.ipynb"
+      "imaging/simulator.ipynb"
     ],
     "notebook": "notebooks/imaging/features/advanced/subhalo/simulator.ipynb",
     "path": "scripts/imaging/features/advanced/subhalo/simulator.py",
@@ -3353,11 +3352,10 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
+      "/guides/advanced/over_sampling.ipynb",
       "/imaging/data_preparation/examples/optional/extra_galaxies_centres.py",
-      "/imaging/data_preparation/optional/extra_galaxies_centres.py",
-      "/imaging/data_preparation/optional/mask_extra_galaxies.py",
-      "modeling/start_here.ipynb"
+      "/imaging/data_preparation/examples/optional/mask_extra_galaxies.py",
+      "imaging/start_here.ipynb"
     ],
     "notebook": "notebooks/imaging/features/extra_galaxies/modeling.ipynb",
     "path": "scripts/imaging/features/extra_galaxies/modeling.py",
@@ -3380,11 +3378,11 @@
     ],
     "cross_refs": [
       "/imaging/data_preparation/examples/optional/extra_galaxies_centres.ipynb",
-      "/imaging/data_preparation/examples/optional/scaled_dataset.ipynb",
-      "/modeling/features/extra_galaxies.ipynb",
+      "/imaging/data_preparation/examples/optional/mask_extra_galaxies.ipynb",
+      "/imaging/features/extra_galaxies/modeling.ipynb",
       "imaging/features/extra_galaxies/modeling.py",
       "imaging/features/pixelization/modeling.py",
-      "simulators/start_here.ipynb"
+      "imaging/simulator.ipynb"
     ],
     "notebook": "notebooks/imaging/features/extra_galaxies/simulator.ipynb",
     "path": "scripts/imaging/features/extra_galaxies/simulator.py",
@@ -3409,7 +3407,7 @@
       "SLaM Pipeline"
     ],
     "cross_refs": [
-      "features/extra_galaxies.ipynb",
+      "features/extra_galaxies/modeling.ipynb",
       "guides/modeling/slam_start_here.ipynb",
       "scripts/group/slam.py",
       "slam_start_here.py"
@@ -3433,9 +3431,9 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
-      "modeling/start_here.ipynb",
-      "modeling/start_here.py"
+      "/guides/advanced/over_sampling.ipynb",
+      "imaging/start_here.ipynb",
+      "imaging/start_here.py"
     ],
     "notebook": "notebooks/imaging/features/linear_light_profiles/fit.ipynb",
     "path": "scripts/imaging/features/linear_light_profiles/fit.py",
@@ -3462,8 +3460,8 @@
     ],
     "cross_refs": [
       "contributor_guide.py",
-      "light_profile/likelihood_function.ipynb",
-      "light_profile/log_likelihood_function.py"
+      "imaging/likelihood_function.ipynb",
+      "imaging/likelihood_function.py"
     ],
     "notebook": "notebooks/imaging/features/linear_light_profiles/likelihood_function.ipynb",
     "path": "scripts/imaging/features/linear_light_profiles/likelihood_function.py",
@@ -3490,9 +3488,9 @@
       "Max Likelihood Inversion"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
-      "modeling/start_here.ipynb",
-      "modeling/start_here.py",
+      "/guides/advanced/over_sampling.ipynb",
+      "imaging/start_here.ipynb",
+      "imaging/start_here.py",
       "start_here.ipynb",
       "start_here.py"
     ],
@@ -3539,10 +3537,10 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
-      "autolens_workspace/modeling/features/pixelization.py",
-      "linear_light_profiles.py",
-      "modeling/start_here.ipynb"
+      "/guides/advanced/over_sampling.ipynb",
+      "autolens_workspace/scripts/imaging/features/pixelization/modeling.py",
+      "imaging/start_here.ipynb",
+      "linear_light_profiles.py"
     ],
     "notebook": "notebooks/imaging/features/multi_gaussian_expansion/fit.ipynb",
     "path": "scripts/imaging/features/multi_gaussian_expansion/fit.py",
@@ -3571,11 +3569,10 @@
     ],
     "cross_refs": [
       "contributor_guide.py",
-      "light_profile/likelihood_function.ipynb",
-      "light_profile/log_likelihood_function.py",
-      "linear_light_profile/likelihood_function.ipynb",
-      "linear_light_profile/log_likelihood_function.py",
-      "log_likelihood_function/imaging/linear_light_profile/likelihood_function.ipynb"
+      "imaging/features/linear_light_profiles/likelihood_function.ipynb",
+      "imaging/features/linear_light_profiles/likelihood_function.py",
+      "imaging/likelihood_function.ipynb",
+      "imaging/likelihood_function.py"
     ],
     "notebook": "notebooks/imaging/features/multi_gaussian_expansion/likelihood_function.ipynb",
     "path": "scripts/imaging/features/multi_gaussian_expansion/likelihood_function.py",
@@ -3602,12 +3599,12 @@
       "Description"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
-      "autolens_workspace/modeling/features/pixelization.py",
+      "/guides/advanced/over_sampling.ipynb",
+      "autolens_workspace/scripts/imaging/features/pixelization/modeling.py",
       "autolens_workspace_developer/basis_regularization/mge_lens.py",
+      "imaging/start_here.ipynb",
       "linear.py",
       "linear_light_profiles.py",
-      "modeling/start_here.ipynb",
       "start_here.ipynb",
       "start_here.py"
     ],
@@ -3627,8 +3624,8 @@
       "Tracer json"
     ],
     "cross_refs": [
-      "modeling/features/multi_gaussian_expansion.py",
-      "simulators/start_here.ipynb"
+      "imaging/features/multi_gaussian_expansion/modeling.py",
+      "imaging/simulator.ipynb"
     ],
     "notebook": "notebooks/imaging/features/multi_gaussian_expansion/simulator.ipynb",
     "path": "scripts/imaging/features/multi_gaussian_expansion/simulator.py",
@@ -3668,7 +3665,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/imaging/features/source_science.py"
+      "/imaging/source_science.py"
     ],
     "notebook": "notebooks/imaging/features/multi_gaussian_expansion/source_science.ipynb",
     "path": "scripts/imaging/features/multi_gaussian_expansion/source_science.py",
@@ -3691,7 +3688,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "modeling/start_here.ipynb",
+      "imaging/start_here.ipynb",
       "start.here.py",
       "start_here.ipynb",
       "start_here.py"
@@ -3713,11 +3710,11 @@
       "Tracer json"
     ],
     "cross_refs": [
-      "autolens_workspace/notebooks/modeling/features/no_lens_light.ipynb",
+      "autolens_workspace/notebooks/imaging/features/no_lens_light/modeling.ipynb",
       "imaging/features/pixelization/fit.py",
       "imaging/features/pixelization/modeling.py",
       "imaging/fit.py",
-      "simulators/start_here.ipynb",
+      "imaging/simulator.ipynb",
       "start_here.py"
     ],
     "notebook": "notebooks/imaging/features/no_lens_light/simulator.ipynb",
@@ -3889,9 +3886,9 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/guides/over_sampling.py",
-      "imaging/likelihood_function.ipynb",
-      "imaging/linear_light_profile/likelihood_function.ipynb"
+      "/guides/advanced/over_sampling.py",
+      "imaging/features/linear_light_profiles/likelihood_function.ipynb",
+      "imaging/likelihood_function.ipynb"
     ],
     "notebook": "notebooks/imaging/features/pixelization/likelihood_function.ipynb",
     "path": "scripts/imaging/features/pixelization/likelihood_function.py",
@@ -3923,7 +3920,7 @@
     ],
     "cross_refs": [
       "/imaging/data_preparation/gui/positions.py",
-      "modeling/start_here.ipynb",
+      "imaging/start_here.ipynb",
       "pixelization/fit.py",
       "start.here.py",
       "start_here.ipynb"
@@ -3996,7 +3993,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "autolens_workspace_test/scripts/jax_likelihood_functions/imaging/potential_correction.py",
+      "autolens_workspace_test/scripts/imaging/jax_likelihood/potential_correction.py",
       "features/pixelization/likelihood_function.py",
       "guides/advanced/potential_correction.ipynb",
       "guides/advanced/potential_correction.py",
@@ -4077,7 +4074,7 @@
       "autolens_workspace/scripts/group/features/scaling_relation/modeling.py",
       "autolens_workspace/scripts/group/features/scaling_relation/modeling_for_luminosities.py",
       "autolens_workspace/scripts/group/slam.py",
-      "modeling/start_here.ipynb",
+      "imaging/start_here.ipynb",
       "modeling_for_luminosities.py",
       "scripts/group/features/pixelization/slam.py",
       "scripts/group/features/scaling_relation/modeling_for_luminosities.py",
@@ -4094,8 +4091,9 @@
     "contents": [],
     "cross_refs": [
       "autogalaxy/galaxy/galaxy_table.py",
-      "scripts/imaging/features/scaling_relation/modeling.py",
-      "scripts/imaging/features/scaling_relation/modeling_for_luminosities.py"
+      "fit.py",
+      "likelihood_function.py",
+      "scripts/imaging/features/scaling_relation/modeling.py"
     ],
     "notebook": "notebooks/imaging/features/scaling_relation/simulator.ipynb",
     "path": "scripts/imaging/features/scaling_relation/simulator.py",
@@ -4113,7 +4111,7 @@
       "Tracer json"
     ],
     "cross_refs": [
-      "simulators/start_here.ipynb"
+      "imaging/simulator.ipynb"
     ],
     "notebook": "notebooks/imaging/features/simulator_manual_signal_to_noise_ratio.ipynb",
     "path": "scripts/imaging/features/simulator_manual_signal_to_noise_ratio.py",
@@ -4167,7 +4165,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "/guides/over_sampling.py",
+      "/guides/advanced/over_sampling.py",
       "/imaging/data_preparation/gui/mask_extra_galaxies.py",
       "contributor_guide.py",
       "data_preparation/examples/optional/mask_extra_galaxies.py",
@@ -4209,7 +4207,7 @@
       "Modeling Customization"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
+      "/guides/advanced/over_sampling.ipynb",
       "/guides/results/start_here.py",
       "/imaging/data_preparation/examples/optional/mask_extra_galaxies.py",
       "/imaging/data_preparation/gui/mask_extra_galaxies.py",
@@ -4240,7 +4238,7 @@
       "Oversampled PSF (Advanced)"
     ],
     "cross_refs": [
-      "/guides/over_sampling.ipynb",
+      "/guides/advanced/over_sampling.ipynb",
       "autolens_workspace_test/scripts/imaging/convolution_over_sampled.py",
       "guides/advanced/over_sampling.py",
       "imaging/fit.py",
@@ -4262,8 +4260,8 @@
       "Sample Instances"
     ],
     "cross_refs": [
-      "imaging/features/simulator_/manual_signal_to_noise_ratio.ipynb",
-      "simulators/start_here.ipynb"
+      "imaging/features/simulator_manual_signal_to_noise_ratio.ipynb",
+      "imaging/simulator.ipynb"
     ],
     "notebook": "notebooks/imaging/simulator_sample.ipynb",
     "path": "scripts/imaging/simulator_sample.py",
@@ -4307,9 +4305,9 @@
     ],
     "cross_refs": [
       "autolens_workspace/start_here.py",
-      "scripts/imaging/simulator.py",
-      "start_here_cluster.ipynb",
-      "start_here_group.ipynb"
+      "cluster/start_here.ipynb",
+      "group/start_here.ipynb",
+      "scripts/imaging/simulator.py"
     ],
     "notebook": "notebooks/imaging/start_here.ipynb",
     "path": "scripts/imaging/start_here.py",
@@ -4365,12 +4363,12 @@
       "data_preparation/examples/optional/mask_extra_galaxies.py",
       "data_preparation/examples/optional/positions.ipynb",
       "data_preparation/gui/extra_galaxies_centres.ipynb",
-      "data_preparation/gui/extra_galaxies_mask.ipynb",
       "data_preparation/gui/lens_light_centre.ipynb",
+      "data_preparation/gui/mask_extra_galaxies.ipynb",
       "data_preparation/gui/positions.ipynb",
-      "examples/casa_reduction.ipynb",
       "extra_galaxies_centres.py",
-      "features/extra_galaxies.py",
+      "features/extra_galaxies/modeling.py",
+      "interferometer/casa_reduction.ipynb",
       "mask_extra_galaxies.py"
     ],
     "notebook": "notebooks/interferometer/data_preparation.ipynb",
@@ -4466,7 +4464,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "autolens_workspace_developer/datacube/likelihood_function.py",
+      "likelihood_function.py",
       "modeling.py",
       "modeling_parametric.py",
       "simulator.py",
@@ -4499,7 +4497,7 @@
       "datacube/modeling.py",
       "delaunay.py",
       "interferometer/features/pixelization/likelihood_function.py",
-      "interferometer/light_profile/log_likelihood_function.py",
+      "interferometer/likelihood_function.py",
       "modeling.py",
       "modeling_parametric.py",
       "pixelization/likelihood_function.py",
@@ -4528,8 +4526,8 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "autolens_workspace_developer/datacube/likelihood_function.py",
-      "autolens_workspace_test/scripts/jax_likelihood_functions/datacube/shared_preloads.py",
+      "autolens_workspace_test/scripts/interferometer/datacube/shared_preloads.py",
+      "likelihood_function.py",
       "pixelization/many_visibilities_preparation.py",
       "simulator.py",
       "start_here.py"
@@ -4556,7 +4554,7 @@
     ],
     "cross_refs": [
       "autolens_workspace/scripts/multi/modeling.py",
-      "autolens_workspace_developer/datacube/likelihood_function.py",
+      "likelihood_function.py",
       "modeling.py",
       "simulator.py",
       "start_here.py"
@@ -4612,8 +4610,8 @@
     ],
     "cross_refs": [
       "autolens_workspace/scripts/multi/modeling.py",
-      "autolens_workspace_developer/datacube/likelihood_function.py",
       "interferometer/start_here.py",
+      "likelihood_function.py",
       "modeling.py",
       "pixelization/many_visibilities_preparation.py",
       "simulator.py"
@@ -4640,8 +4638,7 @@
     ],
     "cross_refs": [
       "/imaging/data_preparation/examples/optional/extra_galaxies_centres.py",
-      "/imaging/data_preparation/optional/extra_galaxies_centres.py",
-      "modeling/start_here.ipynb"
+      "interferometer/start_here.ipynb"
     ],
     "notebook": "notebooks/interferometer/features/extra_galaxies/modeling.ipynb",
     "path": "scripts/interferometer/features/extra_galaxies/modeling.py",
@@ -4662,7 +4659,7 @@
       "Multiple Images"
     ],
     "cross_refs": [
-      "simulators/start_here.ipynb"
+      "interferometer/simulator.ipynb"
     ],
     "notebook": "notebooks/interferometer/features/extra_galaxies/simulator.ipynb",
     "path": "scripts/interferometer/features/extra_galaxies/simulator.py",
@@ -4690,7 +4687,7 @@
       "Output"
     ],
     "cross_refs": [
-      "features/extra_galaxies.ipynb",
+      "features/extra_galaxies/modeling.ipynb",
       "guides/modeling/slam_start_here.ipynb",
       "slam_start_here.py",
       "start_here.ipynb"
@@ -4749,7 +4746,7 @@
     "cross_refs": [
       "imaging/features/linear_light_profiles/likelihood_function.ipynb",
       "imaging/features/linear_light_profiles/likelihood_function.py",
-      "interferometer/log_likelihood_function.ipynb"
+      "interferometer/likelihood_function.ipynb"
     ],
     "notebook": "notebooks/interferometer/features/linear_light_profiles/likelihood_function.ipynb",
     "path": "scripts/interferometer/features/linear_light_profiles/likelihood_function.py",
@@ -4862,7 +4859,7 @@
       "features/linear_light_profiles/likelihood_function.py",
       "interferometer/features/linear_light_profiles/likelihood_function.ipynb",
       "interferometer/features/linear_light_profiles/likelihood_function.py",
-      "interferometer/log_likelihood_function.ipynb"
+      "interferometer/likelihood_function.ipynb"
     ],
     "notebook": "notebooks/interferometer/features/multi_gaussian_expansion/likelihood_function.ipynb",
     "path": "scripts/interferometer/features/multi_gaussian_expansion/likelihood_function.py",
@@ -4955,11 +4952,10 @@
     "cross_refs": [
       "contributor_guide.py",
       "imaging/features/pixelization/adaptive.py",
-      "interferometer/features/pixelization/adaptive.py",
+      "interferometer/features/linear_light_profiles/likelihood_function.py",
       "interferometer/features/pixelization/fit.py",
-      "interferometer/light_profile/log_likelihood_function.py",
-      "interferometer/linear_light_profile/log_likelihood_function.py",
-      "interferometer/pixelization/likelihood_function.py",
+      "interferometer/features/pixelization/likelihood_function.py",
+      "interferometer/likelihood_function.py",
       "slam_start_here.py"
     ],
     "notebook": "notebooks/interferometer/features/pixelization/delaunay.ipynb",
@@ -5027,8 +5023,8 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "imaging/linear_light_profile/log_likelihood_function.py",
-      "interferometer/light_profile/log_likelihood_function.py"
+      "imaging/features/linear_light_profiles/likelihood_function.py",
+      "interferometer/likelihood_function.py"
     ],
     "notebook": "notebooks/interferometer/features/pixelization/likelihood_function.ipynb",
     "path": "scripts/interferometer/features/pixelization/likelihood_function.py",
@@ -5078,7 +5074,7 @@
     "cross_refs": [
       "/imaging/data_preparation/gui/positions.py",
       "fit.py",
-      "modeling/start_here.ipynb",
+      "interferometer/start_here.ipynb",
       "pixelization/fit.py",
       "pixelization/many_visibilities_preparation.py",
       "start.here.py",
@@ -5151,7 +5147,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "autolens_workspace_test/scripts/jax_likelihood_functions/interferometer/potential_correction.py",
+      "autolens_workspace_test/scripts/interferometer/jax_likelihood/potential_correction.py",
       "imaging/features/potential_correction/likelihood_function.ipynb",
       "interferometer/features/pixelization/likelihood_function.ipynb",
       "interferometer/features/pixelization/likelihood_function.py",
@@ -5219,7 +5215,7 @@
       "Tracer json"
     ],
     "cross_refs": [
-      "simulators/start_here.ipynb"
+      "interferometer/simulator.ipynb"
     ],
     "notebook": "notebooks/interferometer/features/subhalo/simulator.ipynb",
     "path": "scripts/interferometer/features/subhalo/simulator.py",
@@ -5307,7 +5303,7 @@
       "Modeling Customization"
     ],
     "cross_refs": [
-      "/interferometer/data_preparation/start_here.ipynb",
+      "/interferometer/data_preparation.ipynb",
       "start_here.py"
     ],
     "notebook": "notebooks/interferometer/modeling.ipynb",
@@ -5372,10 +5368,10 @@
     ],
     "cross_refs": [
       "autolens_workspace/start_here.py",
+      "cluster/start_here.ipynb",
+      "group/start_here.ipynb",
       "scripts/interferometer/casa_reduction.py",
-      "scripts/interferometer/simulator.py",
-      "start_here_cluster.ipynb",
-      "start_here_group.ipynb"
+      "scripts/interferometer/simulator.py"
     ],
     "notebook": "notebooks/interferometer/start_here.ipynb",
     "path": "scripts/interferometer/start_here.py",
@@ -5395,7 +5391,7 @@
     ],
     "cross_refs": [
       "features/same_wavelength/modeling.py",
-      "modeling/start_here.ipynb"
+      "multi/start_here.ipynb"
     ],
     "notebook": "notebooks/multi/features/dataset_offsets/modeling.ipynb",
     "path": "scripts/multi/features/dataset_offsets/modeling.py",
@@ -5451,8 +5447,7 @@
       "Tracer json"
     ],
     "cross_refs": [
-      "multi/simulators/lens_sersic.py",
-      "multi/simulators/simple__no_lens_light.py"
+      "multi/simulator.py"
     ],
     "notebook": "notebooks/multi/features/imaging_and_interferometer/simulator.ipynb",
     "path": "scripts/multi/features/imaging_and_interferometer/simulator.py",
@@ -5469,7 +5464,7 @@
       "Result"
     ],
     "cross_refs": [
-      "point_source/features/deblending.py",
+      "point_source/features/deblending/modeling.py",
       "point_source/start_here.py"
     ],
     "notebook": "notebooks/multi/features/imaging_and_point_source/modeling.ipynb",
@@ -5490,7 +5485,7 @@
       "Second Dataset Offset"
     ],
     "cross_refs": [
-      "modeling/start_here.ipynb"
+      "multi/start_here.ipynb"
     ],
     "notebook": "notebooks/multi/features/one_by_one/modeling.ipynb",
     "path": "scripts/multi/features/one_by_one/modeling.py",
@@ -5582,7 +5577,7 @@
     ],
     "cross_refs": [
       "guides/modeling/slam_start_here.ipynb",
-      "one_by_one.ipynb",
+      "multi/features/one_by_one/modeling.ipynb",
       "start_here.py"
     ],
     "notebook": "notebooks/multi/features/slam/independent.ipynb",
@@ -5726,10 +5721,10 @@
     ],
     "cross_refs": [
       "autolens_workspace/start_here.py",
-      "scripts/imaging/simulator.py",
-      "start_here_cluster.ipynb",
-      "start_here_group.ipynb",
-      "start_here_imaging.ipynb"
+      "cluster/start_here.ipynb",
+      "group/start_here.ipynb",
+      "imaging/start_here.ipynb",
+      "scripts/imaging/simulator.py"
     ],
     "notebook": "notebooks/multi/start_here.ipynb",
     "path": "scripts/multi/start_here.py",
@@ -5751,17 +5746,16 @@
       "Point Source"
     ],
     "cross_refs": [
-      "advanced/operated_light_profiles.py",
+      "imaging/features/advanced/operated_light_profile/modeling.py",
       "linear_light_profiles.py",
-      "modeling/start_here.ipynb",
-      "point_source/modeling/start_here.ipynb",
+      "point_source/start_here.ipynb",
       "start.here.py",
       "start_here.ipynb",
       "start_here.py"
     ],
     "notebook": "notebooks/point_source/features/deblending/modeling.ipynb",
     "path": "scripts/point_source/features/deblending/modeling.py",
-    "summary": "The image-plane multiple-image positions of a lensed point source (e.g. a quasar or supernova) are used as the dataset in point-source modeling. For example, simulated values were input into the `PointDataset` object in the `point_source/modeling/start_here.ipynb` example.",
+    "summary": "The image-plane multiple-image positions of a lensed point source (e.g. a quasar or supernova) are used as the dataset in point-source modeling. For example, simulated values were input into the `PointDataset` object in the `point_source/start_here.ipynb` example.",
     "title": "Modeling Features: Deblending"
   },
   {
@@ -5774,11 +5768,11 @@
       "Tracer json"
     ],
     "cross_refs": [
-      "/notebooks/modeling/features/advanced/operated_light_profiles.py",
-      "autolens_workspace/notebooks/point_source/modeling/features/deblending.ipynb",
-      "point_source/modeling/features/debeleing.ipynb",
+      "/imaging/features/advanced/operated_light_profile/modeling.py",
+      "autolens_workspace/notebooks/point_source/features/deblending/modeling.ipynb",
+      "point_source/features/deblending/modeling.ipynb",
+      "point_source/simulator.ipynb",
       "scripts/point_source/simulator.py",
-      "simulators/start_here.ipynb",
       "start_here.ipynb"
     ],
     "notebook": "notebooks/point_source/features/deblending/simulator.ipynb",
@@ -5797,7 +5791,7 @@
       "Result"
     ],
     "cross_refs": [
-      "modeling/start_here.ipynb",
+      "point_source/start_here.ipynb",
       "start.here.py",
       "start_here.ipynb",
       "start_here.py"
@@ -5844,8 +5838,8 @@
     ],
     "cross_refs": [
       "modeling.py",
-      "scripts/point_source/simulator.py",
-      "simulators/start_here.ipynb"
+      "point_source/simulator.ipynb",
+      "scripts/point_source/simulator.py"
     ],
     "notebook": "notebooks/point_source/features/multiple_sources/simulator.ipynb",
     "path": "scripts/point_source/features/multiple_sources/simulator.py",
@@ -5864,7 +5858,7 @@
       "Cosmology"
     ],
     "cross_refs": [
-      "modeling/start_here.ipynb",
+      "point_source/start_here.ipynb",
       "start.here.py",
       "start_here.ipynb"
     ],
@@ -5927,7 +5921,7 @@
       "Modeling Customization"
     ],
     "cross_refs": [
-      "/overview/overview_8_point_sources.py"
+      "/point_source/start_here.py"
     ],
     "notebook": "notebooks/point_source/modeling.ipynb",
     "path": "scripts/point_source/modeling.py",
@@ -5968,7 +5962,7 @@
       "Sample Instances"
     ],
     "cross_refs": [
-      "simulators/start_here.ipynb"
+      "point_source/simulator.ipynb"
     ],
     "notebook": "notebooks/point_source/simulator_sample.ipynb",
     "path": "scripts/point_source/simulator_sample.py",
@@ -5995,10 +5989,10 @@
     ],
     "cross_refs": [
       "autolens_workspace/start_here.py",
+      "cluster/start_here.ipynb",
+      "group/start_here.ipynb",
       "scripts/point_source/simulator.py",
-      "simulator.py",
-      "start_here_cluster.ipynb",
-      "start_here_group.ipynb"
+      "simulator.py"
     ],
     "notebook": "notebooks/point_source/start_here.ipynb",
     "path": "scripts/point_source/start_here.py",

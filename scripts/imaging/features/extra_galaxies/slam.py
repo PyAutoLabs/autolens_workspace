@@ -30,7 +30,7 @@ __Prerequisites__
 Before using this SLaM pipeline, you should be familiar with:
 
 - **SLaM Start Here** (`guides/modeling/slam_start_here`)
-- **Extra Galaxies** (`features/extra_galaxies.ipynb`)
+- **Extra Galaxies** (`features/extra_galaxies/modeling.ipynb`)
 
 __Group SLaM__
 

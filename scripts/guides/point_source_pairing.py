@@ -81,7 +81,7 @@ rather than physical reasons. Rules of thumb at cluster scale:
   perturbations produce image pairs separated by ~1", so grids much coarser than that will merge
   or miss them.
 - ``pixel_scale_precision`` sets the refinement floor; the cluster profiling scripts
-  (``autolens_profiling/likelihood_breakdown/cluster/image_plane.py``) time the cost of tightening
+  (``autolens_profiling/scripts/cluster/likelihood_breakdown/image_plane.py``) time the cost of tightening
   it (solve ~0.3 s/call at a 200x200 @ 0.7" grid and 0.01" precision, with a ~10 s one-off JAX
   compile per source plane).
 - If a fit reports under-prediction, re-solve the max-likelihood model at double resolution

@@ -55,7 +55,7 @@ which each have different Sersic indexes which are drawn from a parent Gaussian 
 of 2.0 and sigma of 0.5.
 
 This data is not automatically provided with the autolens workspace, and must be first simulated by running the 
-script `autolens_workspace/scripts/advanced/graphical/simulator/samples/advanced/mass_power_law.py`. 
+script `autolens_workspace/scripts/imaging/simulator_sample.py`. 
 """
 dataset_label = "samples"
 dataset_type = "imaging"

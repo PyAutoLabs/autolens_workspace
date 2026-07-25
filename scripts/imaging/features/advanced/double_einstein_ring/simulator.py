@@ -6,7 +6,7 @@ A double Einstein ring lens is a strong lens system where there are two source g
 behind the lens galaxy. They appear as two distinct Einstein rings in the image-plane, and can constrain
 Cosmological parameters in a way single Einstein ring lenses cannot.
 
-This script simulates a double Einstein ring lens, which is used in `modeling/features/double_einstein_ring.py`
+This script simulates a double Einstein ring lens, which is used in `imaging/features/advanced/double_einstein_ring/modeling.py`
 and other script to illustrate how to model these systems correctly.
 
 __Contents__
@@ -31,7 +31,7 @@ redshifts, creating a double einstein ring. Specifically:
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/simulator.ipynb` notebook.
 """
 
 from pathlib import Path

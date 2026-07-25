@@ -560,7 +560,7 @@ sounds useful, but for most users you can get by without using these forms of cu
 __Data Preparation__
 
 If you are looking to fit your own interferometer data of a strong lens, checkout  
-the `autolens_workspace/*/interferometer/data_preparation/start_here.ipynb` script for an overview of how data should be 
+the `autolens_workspace/*/interferometer/data_preparation.ipynb` script for an overview of how data should be 
 prepared before being modeled.
 
 __HowToLens__

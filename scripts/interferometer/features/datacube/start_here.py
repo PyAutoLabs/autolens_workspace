@@ -316,7 +316,7 @@ This script walks through the full datacube modeling pipeline. For deeper dives:
 
  - `modeling.py` — the focused FactorGraph + Nautilus example, ready to copy and adapt for your own cube.
  - `simulator.py` — how the reference cube is generated.
- - `autolens_workspace_developer/datacube/likelihood_function.py` — a step-by-step JAX walkthrough of how the
+ - `likelihood_function.py` — a step-by-step JAX walkthrough of how the
    per-channel log-evidences are built and summed inside the FactorGraph, with an explicit eager-vs-JIT
    correctness check.
 

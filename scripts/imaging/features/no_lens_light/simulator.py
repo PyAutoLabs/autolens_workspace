@@ -5,7 +5,7 @@ Simulator: No Lens Light
 This script simulates `Imaging` of a 'galaxy-scale' which is identical to the `simple` simulated in the `start_here.py`
 script, but where the lens galaxy's light is omitted.
 
-It is used in `autolens_workspace/notebooks/modeling/features/no_lens_light.ipynb` to illustrate how to fit a
+It is used in `autolens_workspace/notebooks/imaging/features/no_lens_light/modeling.ipynb` to illustrate how to fit a
 lens model to data where the lens galaxy's light is not present (e.g. because it is too faint to be detected).
 
 __Contents__
@@ -30,7 +30,7 @@ This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/simulator.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
