@@ -126,7 +126,9 @@
       "Model 3 \u2014 Mass Anchoring",
       "Model 4 \u2014 The Two-Parameter Relation"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "mass_parameterizations_pyautolens.py"
+    ],
     "notebook": "notebooks/cluster/mass_parameterizations.ipynb",
     "path": "scripts/cluster/mass_parameterizations.py",
     "summary": "**A plain-language tour of the ways to parameterize and couple the masses in a Lenstool-style cluster model \u2014 the cluster-scale halo, the BCG and other individually-freed galaxies, and the member (\"scaling\") population.**",

@@ -111,7 +111,7 @@ def dpie_galaxy(centre, sigma_lo, sigma_hi, rcut_lo, rcut_hi):
     mass.sigma = af.UniformPrior(
         lower_limit=sigma_lo, upper_limit=sigma_hi
     )  # [FREE] km/s
-    mass.r_core = 0.3
+    mass.r_core = 0.0  # [FIXED] vanishing core (dPIE handles r_core = 0 analytically)
     mass.r_cut = af.UniformPrior(
         lower_limit=rcut_lo, upper_limit=rcut_hi
     )  # [FREE] arcsec
@@ -136,20 +136,23 @@ halo_mass.H0 = H0
 halo_mass.Om0 = Om0
 cluster_halo_lt = af.Model(al.Galaxy, redshift=redshift_lens, mass=halo_mass)
 
-main_galaxies_lt = [dpie_galaxy(c, 100.0, 600.0, 20.0, 200.0) for c in main_centres]
-extra_galaxies_lt = [dpie_galaxy(c, 100.0, 450.0, 20.0, 150.0) for c in extra_centres]
+main_galaxies_lt = [dpie_galaxy(c, 100.0, 600.0, 2.0, 200.0) for c in main_centres]
+extra_galaxies_lt = [dpie_galaxy(c, 100.0, 450.0, 2.0, 150.0) for c in extra_centres]
 
 # Scaling galaxies — Faber-Jackson on a FREE normalization sigma_ref (independent of the BGC).
+# Modern (Bergamini+19) convention: r_cut exponent tied via beta_cut = 1 + gamma - 2*alpha = 0.7
+# (alpha = 0.25, gamma = 0.2); vanishing cores, never scaled; r_cut_ref ~ 5" (lensing-typical).
 sigma_ref = af.UniformPrior(lower_limit=100.0, upper_limit=400.0)  # [FREE] km/s
-r_core_ref, r_cut_ref = 0.15, 20.0  # [FIXED] arcsec
+r_core_ref, r_cut_ref = 0.0, 5.0  # [FIXED] arcsec
+rcut_exponent = 0.7  # [TIED] = 1 + gamma - 2*alpha
 scaling_galaxies_lt = []
 for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
     ratio = luminosity_ratio(magnitude)
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = centre  # [FIXED]
     mass.sigma = sigma_ref * ratio**0.25  # tied to the one free sigma_ref
-    mass.r_core = r_core_ref * ratio**0.5
-    mass.r_cut = r_cut_ref * ratio**0.5
+    mass.r_core = r_core_ref  # [FIXED] not scaled with luminosity
+    mass.r_cut = r_cut_ref * ratio**rcut_exponent
     mass.redshift_object = redshift_lens
     mass.redshift_source = redshift_source
     mass.H0 = H0
@@ -353,7 +356,7 @@ the mass parameter. The main and extra galaxies stay Isothermal.
 galaxy's ``b0`` anchors *directly* to the SIE BGC's ``einstein_radius`` with the identical relation — no
 conversion:
 
-    b0_i = einstein_radius_BGC * (L / L_BGC) ** 0.5,     rs_i = rs_ref * (L / L_BGC) ** 0.5
+    b0_i = einstein_radius_BGC * (L / L_BGC) ** 0.5,     rs_i = rs_ref * (L / L_BGC) ** 0.7
 
 The truncation ``rs`` is a *separate* parameter (the outer fall-off); it does not enter the anchoring.
 Caveat: with finite ``rs`` the actual central deflection is a few percent below ``b0`` (truncation
@@ -396,19 +399,18 @@ for centre, magnitude in zip(extra_centres, extra_magnitudes):
     extra_galaxies_trunc.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
 # Scaling galaxies -> dPIE (truncated), b0 anchored to the SIE BGC's einstein_radius.
-rs_ref = (
-    30.0  # [FIXED] reference truncation (arcsec); scales ~ L^0.5 like Lenstool's r_cut
-)
+rs_ref = 5.0  # [FIXED] reference truncation (arcsec); lensing-typical ~5"
+rs_exponent = 0.7  # [TIED] = 1 + gamma - 2*alpha, like Lenstool's r_cut relation
 scaling_galaxies_trunc = []
 for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
     ratio = luminosity_ratio(magnitude)
     mass = af.Model(al.mp.dPIEMassB0Sph)
     mass.centre = centre  # [FIXED]
-    mass.ra = 0.01  # [FIXED] ~0: a pure truncated isothermal (no core)
+    mass.ra = 0.0  # [FIXED] vanishing core: a pure truncated isothermal (analytic at 0)
     mass.b0 = (
         einstein_radius_bgc * ratio**0.5
     )  # SIE einstein_radius drives dPIE b0 -> NO new parameter
-    mass.rs = rs_ref * ratio**0.5  # [FIXED] truncation, scaled with L^0.5
+    mass.rs = rs_ref * ratio**rs_exponent  # [FIXED] truncation, scaled with L^0.7
     scaling_galaxies_trunc.append(
         af.Model(al.Galaxy, redshift=redshift_lens, mass=mass)
     )
