@@ -180,6 +180,14 @@ free normalization ``sigma_ref`` — no extra parameters, no distortion of the *
 masses (the ``(L_i/L_ref)`` factors are dimensionless and redshift-free). The core and truncation
 radii scale as ``L^0.5`` in both, and carry across as ``r_core = ra``, ``r_cut = rs`` identities.
 
+Note the radii values and scaling used on this page (``r_core_ref = 0.158``, ``r_cut_ref = 15.8``,
+radii ``~ L^0.5``) are Lenstool's **classic** ``potfile`` convention (``slope 4``, scaled cores) —
+documented here deliberately, because this page's job is mapping Lenstool's native parameterization.
+``scripts/cluster/`` itself now defaults to the modern convention: the tied truncation exponent
+``beta_cut = 1 + gamma - 2*alpha = 0.7`` (``gamma = 0.2``), vanishing unscaled cores and
+``r_cut_ref ~ 5"`` — see ``cluster/mass_parameterizations.py``. The exponent-halving identity above
+is unaffected (it applies to whatever radii scaling you choose).
+
 We verify the exponent-halving numerically for a spread of member luminosities.
 """
 reference_luminosity = (

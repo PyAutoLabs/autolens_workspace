@@ -149,12 +149,13 @@ redshift_lens = 0.308
 
 galaxy_models = al.galaxy_af_models_from_csv_tables(mass_table, point_table)
 
+# Main lens galaxies: free sigma / r_cut; r_core stays fixed at the CSV's 0.0 —
+# the vanishing-core standard for BCGs and members alike.
 for name in ("lens_0", "lens_1"):
     galaxy_models[name].mass.sigma = af.UniformPrior(
         lower_limit=50.0, upper_limit=600.0
     )
-    galaxy_models[name].mass.r_core = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
-    galaxy_models[name].mass.r_cut = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
+    galaxy_models[name].mass.r_cut = af.UniformPrior(lower_limit=2.0, upper_limit=40.0)
     galaxy_models[name].mass.H0 = 67.66
     galaxy_models[name].mass.Om0 = 0.30966
 
@@ -172,12 +173,15 @@ for i, dataset in enumerate(dataset_list):
         mean=float(np.mean(positions[:, 1])), sigma=3.0
     )
 
+# Scaling tier: the modern (Bergamini+19) tied-exponent convention — sigma ~ L^0.25,
+# r_cut ~ L^(1 + gamma - 2*alpha) = L^0.7 with gamma = 0.2, vanishing unscaled cores.
 scaling_sigma_ref = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
-scaling_sigma_exponent = 0.25
-scaling_radius_exponent = 0.5
+scaling_sigma_exponent = 0.25  # alpha
+scaling_gamma = 0.2
+scaling_rcut_exponent = 1.0 + scaling_gamma - 2.0 * scaling_sigma_exponent  # 0.7
 reference_luminosity = 1.0
-scaling_r_core_ref_fixed = 0.158
-scaling_r_cut_ref_fixed = 15.8
+scaling_r_core_fixed = 0.0
+scaling_r_cut_ref_fixed = 5.0
 source_redshift_max = max(float(d.redshift) for d in dataset_list)
 
 scaling_galaxies_list = []
@@ -189,8 +193,8 @@ for centre, luminosity in zip(
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = tuple(centre)
     mass.sigma = scaling_sigma_ref * luminosity_ratio**scaling_sigma_exponent
-    mass.r_core = scaling_r_core_ref_fixed * luminosity_ratio**scaling_radius_exponent
-    mass.r_cut = scaling_r_cut_ref_fixed * luminosity_ratio**scaling_radius_exponent
+    mass.r_core = scaling_r_core_fixed
+    mass.r_cut = scaling_r_cut_ref_fixed * luminosity_ratio**scaling_rcut_exponent
     mass.redshift_object = redshift_lens
     mass.redshift_source = source_redshift_max
     mass.H0 = 67.66
