@@ -10,7 +10,8 @@ gravitational lens modeling. These are the canonical, agent-agnostic instruction
   - `interferometer/` — ALMA / JVLA uv-plane lens modeling
   - `multi/` — Multi-wavelength simultaneous modeling
   - `point_source/` — Point-source (e.g. lensed quasar) modeling
-  - `group/` — Group-scale lenses (multiple lens galaxies)
+  - `multi_galaxy/` — Multi-galaxy lenses (2+ co-dominant deflectors, no host halo)
+  - `group/` — Group-scale lenses (multiple lens galaxies, optional group halo)
   - `cluster/` — Cluster-scale lenses
   - `weak/` — Weak lensing
   - `guides/` — API guides: `modeling/`, `results/`, `plot/`, `profiles/`, `units/`, `hpc/`,

@@ -197,7 +197,7 @@ mass_profiles = {
         "mass": al.mp.dPIEMassSph(
             centre=(0.0, 0.0),
             sigma=330.0,
-            r_core=8.0,
+            r_core=0.0,
             r_cut=20.0,
             redshift_object=redshift_lens,
             redshift_source=max(source_redshifts),
@@ -207,7 +207,7 @@ mass_profiles = {
         "mass": al.mp.dPIEMassSph(
             centre=(10.0, 8.0),
             sigma=210.0,
-            r_core=5.0,
+            r_core=0.0,
             r_cut=12.0,
             redshift_object=redshift_lens,
             redshift_source=max(source_redshifts),
@@ -367,8 +367,8 @@ mutate the returned model:
 
 ```python
 galaxy_models["lens_0"].mass.sigma = af.UniformPrior(lower_limit=50.0, upper_limit=600.0)
-galaxy_models["lens_0"].mass.r_core = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
-galaxy_models["lens_0"].mass.r_cut = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
+galaxy_models["lens_0"].mass.r_cut = af.UniformPrior(lower_limit=2.0, upper_limit=40.0)
+# r_core stays fixed at the CSV value (0.0 — the vanishing-core convention).
 ```
 
 This is the same composition pattern as ``af.Model(al.Galaxy, mass=...)``
@@ -387,8 +387,8 @@ for name in ("lens_0", "lens_1"):
     galaxy_models[name].mass.sigma = af.UniformPrior(
         lower_limit=50.0, upper_limit=600.0
     )
-    galaxy_models[name].mass.r_core = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
-    galaxy_models[name].mass.r_cut = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
+    galaxy_models[name].mass.r_cut = af.UniformPrior(lower_limit=2.0, upper_limit=40.0)
+    # r_core stays fixed at the CSV value (0.0 — the vanishing-core convention).
 
 # Host halo: free mass_at_200, keep centre + redshifts fixed.
 galaxy_models["host_halo"].dark.mass_at_200 = af.LogUniformPrior(

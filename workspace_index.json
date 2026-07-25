@@ -126,7 +126,9 @@
       "Model 3 \u2014 Mass Anchoring",
       "Model 4 \u2014 The Two-Parameter Relation"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "mass_parameterizations_pyautolens.py"
+    ],
     "notebook": "notebooks/cluster/mass_parameterizations.ipynb",
     "path": "scripts/cluster/mass_parameterizations.py",
     "summary": "**A plain-language tour of the ways to parameterize and couple the masses in a Lenstool-style cluster model \u2014 the cluster-scale halo, the BCG and other individually-freed galaxies, and the member (\"scaling\") population.**",
@@ -239,7 +241,9 @@
       "autolens_workspace/start_here.py",
       "cluster/modeling.py",
       "csv_api.py",
+      "group/start_here.ipynb",
       "imaging/start_here.ipynb",
+      "multi_galaxy/start_here.ipynb",
       "prep.py",
       "scripts/cluster/csv_api.py",
       "scripts/cluster/modeling.py",
@@ -700,6 +704,47 @@
     "path": "scripts/group/features/advanced/subhalo/simulator.py",
     "summary": "If a low mass dark matter halo overlaps the lensed source emission, it perturbs it in a unique and observable way.",
     "title": "Simulator: Subhalo (Group)"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Model A",
+      "Model B",
+      "Fits",
+      "Model Comparison",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "cluster/mass_parameterizations.py",
+      "cluster/start_here.py",
+      "group/modeling.py",
+      "simulator.py"
+    ],
+    "notebook": "notebooks/group/features/group_halo/modeling.ipynb",
+    "path": "scripts/group/features/group_halo/modeling.py",
+    "summary": "**Whether a group-scale lens model includes a separate dark-matter halo for the group is a modelling choice, not an assumption.** Some groups genuinely require one; others are adequately described by their member galaxies alone. This tutorial \u2014 the signature example of the group regime \u2014 fits the SAME dataset with both compositions and walks through how to decide between them:",
+    "title": "Modeling Features (Group): The Group Halo \u2014 An Explicit Choice"
+  },
+  {
+    "contents": [
+      "Dataset Paths",
+      "Simulation Switch",
+      "Grid / PSF / Simulator",
+      "Group Halo",
+      "BGG + Members",
+      "Source Galaxy / Ray Tracing / Dataset",
+      "Tracer json + Centres"
+    ],
+    "cross_refs": [
+      "cluster/mass_parameterizations.py",
+      "group/modeling.py",
+      "group/start_here.py",
+      "modeling.py"
+    ],
+    "notebook": "notebooks/group/features/group_halo/simulator.ipynb",
+    "path": "scripts/group/features/group_halo/simulator.py",
+    "summary": "This script simulates the `Imaging` dataset fitted by the `group_halo` feature tutorial: a group-scale lens with a genuine **group-scale dark matter halo**, a brightest group galaxy (BGG) and two tidally truncated member galaxies, lensing a single extended background source.",
+    "title": "Simulator: Group Halo"
   },
   {
     "contents": [
@@ -1396,6 +1441,7 @@
       "autolens_workspace/start_here.py",
       "cluster/start_here.ipynb",
       "imaging/start_here.ipynb",
+      "multi_galaxy/start_here.ipynb",
       "scripts/imaging/start_here.py"
     ],
     "notebook": "notebooks/group/start_here.ipynb",
@@ -5730,6 +5776,82 @@
     "path": "scripts/multi/start_here.py",
     "summary": "Strong gravitational lenses are often observed with CCD imaging, for example using HST, JWST, or ground-based telescopes.",
     "title": "Start Here: Multi Wavelength"
+  },
+  {
+    "contents": [
+      "Example",
+      "Simulation",
+      "Dataset & Mask",
+      "Main Lens Galaxies",
+      "Redshifts",
+      "Model",
+      "Search + Analysis",
+      "Run Times",
+      "Result",
+      "Mass/Light Offsets",
+      "Features"
+    ],
+    "cross_refs": [
+      "/imaging/data_preparation/start_here.ipynb",
+      "/multi_galaxy/simulator.py",
+      "group/start_here.ipynb"
+    ],
+    "notebook": "notebooks/multi_galaxy/modeling.ipynb",
+    "path": "scripts/multi_galaxy/modeling.py",
+    "summary": "This script models an example strong lens on the 'multi galaxy' scale, where two (or more) galaxies of comparable mass both contribute significantly to the lensing of a single background source.",
+    "title": "Multi Galaxy: Modeling"
+  },
+  {
+    "contents": [
+      "Dataset Paths",
+      "Grid",
+      "Galaxy Centres",
+      "Over Sampling",
+      "PSF Convolution",
+      "Main Lens Galaxies",
+      "Source Galaxy",
+      "Ray Tracing",
+      "Dataset",
+      "Visualize",
+      "Tracer json",
+      "Centre JSON Files",
+      "Positions",
+      "JAX Variant"
+    ],
+    "cross_refs": [
+      "/guides/advanced/over_sampling.ipynb",
+      "scripts/imaging/simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/simulator.ipynb",
+    "path": "scripts/multi_galaxy/simulator.py",
+    "summary": "This script simulates an example strong lens on the 'multi galaxy' scale, where two (or more) galaxies of comparable mass both contribute significantly to the lensing of a single background source. Neither galaxy is a minor perturber: they are **co-dominant deflectors**, and every one of them is modeled individually with its own free light and mass profiles.",
+    "title": "Simulator: Multi Galaxy"
+  },
+  {
+    "contents": [
+      "JAX",
+      "Google Colab Setup",
+      "Imports",
+      "Dataset",
+      "Main Lens Galaxies",
+      "Masking",
+      "Model",
+      "Model Fit",
+      "Result",
+      "Model Your Own Lens",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "autolens_workspace/start_here.py",
+      "cluster/start_here.ipynb",
+      "group/start_here.ipynb",
+      "imaging/start_here.ipynb",
+      "multi_galaxy/simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/start_here.ipynb",
+    "path": "scripts/multi_galaxy/start_here.py",
+    "summary": "Multi-galaxy strong lenses have **two or more galaxies of comparable mass which both contribute significantly to the lensing** of a single background source. Neither galaxy is a minor perturber \u2014 they are co-dominant deflectors, and every one of them gets its own free light and mass model.",
+    "title": "Start Here: Multi Galaxy"
   },
   {
     "contents": [
