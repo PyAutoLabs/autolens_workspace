@@ -255,19 +255,22 @@ __Cluster Components__
 The model has four tiers, one per cluster component:
 
  - **Main lens galaxies (2):** the two brightest core members (the BCG region galaxies),
-   individually-modelled ``dPIEMassSph`` profiles with centre fixed to the observed light centres
-   and free ``sigma``, ``r_core``, ``r_cut`` — Lenstool's native dPIE parameters, so the posterior
-   reads like a Lenstool results table. **6 free parameters total.**
+   individually-modelled ``dPIEMassSph`` profiles with centre fixed to the observed light centres,
+   free ``sigma`` and ``r_cut``, and a vanishing core (``r_core`` fixed at 0 — the standard convention
+   for BCGs and members alike; PyAutoLens's dPIE is analytic at ``r_core = 0``). These are Lenstool's
+   native dPIE parameters, so the posterior reads like a Lenstool results table.
+   **4 free parameters total.**
 
  - **Scaling-tier members (188):** ``dPIEMassSph`` profiles with centre fixed to the CSV centres.
-   ``sigma``, ``r_core`` and ``r_cut`` all derive from the reference-anchored relation used by Lenstool
-   and standard in published cluster analyses: ``sigma = sigma_ref * (L / L_ref) ** 0.25``,
-   ``r_core = r_core_ref * (L / L_ref) ** 0.5`` and ``r_cut = r_cut_ref * (L / L_ref) ** 0.5``, where
-   ``L_ref`` is an explicit fixed reference luminosity (Lenstool's ``mag0``), *not* the sample max. The
-   exponents are fixed at the Faber-Jackson values (L ∝ sigma^4 gives sigma ∝ L^(1/4); constant M/L gives
-   r_cut ∝ L^(1/2)) — only the normalization ``sigma_ref``, the fiducial velocity dispersion of a
-   reference-magnitude galaxy, is fitted. Our member luminosities are normalised to the BCG's F160W flux,
-   so ``L_ref = 1.0`` anchors the relation to the BCG itself.
+   ``sigma`` and ``r_cut`` derive from the reference-anchored relation used by Lenstool and standard in
+   published cluster analyses, in its modern (Bergamini et al. 2019) form:
+   ``sigma = sigma_ref * (L / L_ref) ** alpha`` with ``alpha = 0.25`` (Faber-Jackson) and
+   ``r_cut = r_cut_ref * (L / L_ref) ** beta_cut`` with ``beta_cut = 1 + gamma - 2*alpha = 0.7``
+   (``gamma = 0.2``, the universally fixed mass-to-light tilt M/L ∝ L^gamma); every member's ``r_core``
+   is fixed at 0 and never scaled. ``L_ref`` is an explicit fixed reference luminosity (Lenstool's
+   ``mag0``), *not* the sample max — only the normalization ``sigma_ref``, the fiducial velocity
+   dispersion of a reference-magnitude galaxy, is fitted. Our member luminosities are normalised to the
+   BCG's F160W flux, so ``L_ref = 1.0`` anchors the relation to the BCG itself.
    **1 free parameter total for the whole tier — independent of the number of members.**
 
  - **Host dark matter halo:** a standalone ``Galaxy`` carrying an ``NFWMCRLudlowSph`` halo with
@@ -279,7 +282,7 @@ The model has four tiers, one per cluster component:
    spectroscopic value, with ``GaussianPrior`` centre priors initialised from the mean of each
    source's observed positions. **14 free parameters total.**
 
-**Total: N = 22 free parameters.** Adding more rows to ``scaling_galaxies.csv`` does not grow N — that's
+**Total: N = 20 free parameters.** Adding more rows to ``scaling_galaxies.csv`` does not grow N — that's
 the defining feature of cluster-scale modeling on a scaling relation. See
 ``scripts/cluster/modeling.py`` for the full prose on the scaling-relation convention (why the
 normalization anchors to a reference galaxy, why the exponent is fixed, and the kinematic calibrations
@@ -308,16 +311,17 @@ source_redshifts = [dataset.redshift for dataset in dataset_list]
 
 galaxy_models = al.galaxy_af_models_from_csv_tables(mass_table, point_table)
 
-# Main Lens Galaxies: free dPIE sigma / r_core / r_cut; centre and redshifts stay
-# fixed at the CSV values, and the cosmology constants H0 / Om0 are pinned (they are
-# model *constants*, not parameters to sample — if left unset they would inherit the
-# config's default priors and float).
+# Main Lens Galaxies: free dPIE sigma / r_cut; centre and redshifts stay fixed at
+# the CSV values, and r_core stays fixed at the CSV's 0.0 — the vanishing core
+# standard for BCGs and members alike (the dPIE is analytic at r_core = 0). The
+# cosmology constants H0 / Om0 are pinned (they are model *constants*, not
+# parameters to sample — if left unset they would inherit the config's default
+# priors and float).
 for name in ("lens_0", "lens_1"):
     galaxy_models[name].mass.sigma = af.UniformPrior(
         lower_limit=50.0, upper_limit=600.0
     )
-    galaxy_models[name].mass.r_core = af.UniformPrior(lower_limit=1.0, upper_limit=15.0)
-    galaxy_models[name].mass.r_cut = af.UniformPrior(lower_limit=5.0, upper_limit=40.0)
+    galaxy_models[name].mass.r_cut = af.UniformPrior(lower_limit=2.0, upper_limit=40.0)
     galaxy_models[name].mass.H0 = 67.66
     galaxy_models[name].mass.Om0 = 0.30966
 
@@ -341,19 +345,21 @@ for i, dataset in enumerate(dataset_list):
 
 # Scaling Tier (reference-anchored: sigma_ref is the single shared free parameter,
 # the fiducial velocity dispersion of a galaxy at the reference magnitude, in km/s;
-# per-member sigma, r_core and r_cut derive from it with the exponents fixed at the
-# Faber-Jackson values (sigma ∝ L^0.25, radii ∝ L^0.5) — the Lenstool potfile
-# convention. The reference luminosity is an EXPLICIT FIXED constant (Lenstool's
-# "mag0"); our member luminosities are normalised to the BCG's F160W flux, so
-# L_ref = 1.0 anchors the relation to the BCG).
+# per-member sigma and r_cut derive from it with the exponents fixed and tied at
+# the Bergamini+19 values (sigma ∝ L^0.25; r_cut ∝ L^(1 + gamma - 2*alpha) = L^0.7
+# with gamma = 0.2); r_core is fixed at 0 (vanishing core, never scaled). The
+# reference luminosity is an EXPLICIT FIXED constant (Lenstool's "mag0"); our
+# member luminosities are normalised to the BCG's F160W flux, so L_ref = 1.0
+# anchors the relation to the BCG).
 
 scaling_sigma_ref = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
-scaling_sigma_exponent = 0.25
-scaling_radius_exponent = 0.5
+scaling_sigma_exponent = 0.25  # alpha
+scaling_gamma = 0.2
+scaling_rcut_exponent = 1.0 + scaling_gamma - 2.0 * scaling_sigma_exponent  # 0.7
 
 reference_luminosity = 1.0
-scaling_r_core_ref_fixed = 0.158
-scaling_r_cut_ref_fixed = 15.8
+scaling_r_core_fixed = 0.0
+scaling_r_cut_ref_fixed = 5.0
 
 scaling_galaxies_list = []
 for centre, luminosity in zip(
@@ -364,8 +370,8 @@ for centre, luminosity in zip(
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = tuple(centre)
     mass.sigma = scaling_sigma_ref * luminosity_ratio**scaling_sigma_exponent
-    mass.r_core = scaling_r_core_ref_fixed * luminosity_ratio**scaling_radius_exponent
-    mass.r_cut = scaling_r_cut_ref_fixed * luminosity_ratio**scaling_radius_exponent
+    mass.r_core = scaling_r_core_fixed
+    mass.r_cut = scaling_r_cut_ref_fixed * luminosity_ratio**scaling_rcut_exponent
     mass.redshift_object = redshift_lens
     mass.redshift_source = max(source_redshifts)
     mass.H0 = 67.66
