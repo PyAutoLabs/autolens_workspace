@@ -55,6 +55,8 @@ except ImportError:  # pragma: no cover - local-run fallback
     sys.path.insert(0, str(WORKSPACE.parent / "PyAutoHands" / "autohands"))
     from env_config import build_env_for_script, load_env_config
 
+from build_util import is_clean_skip_exit  # PyAutoHands/autohands on PYTHONPATH
+
 
 def load_lines(path: Path) -> list[str]:
     if not path.exists():
@@ -167,6 +169,10 @@ def run_notebook(nb_rel: str, cfg: dict | None) -> tuple[str, int, float, str]:
         return nb_rel, 1, 0.0, f"Notebook not found: {nb_path}\n"
 
     rc, output = execute_notebook(nb_path, env)
+    if rc != 0 and is_clean_skip_exit(output):
+        # Optional-dependency skip guard (`sys.exit(0)`): a clean exit 0 as a
+        # `.py` script, so the notebook form is a PASS too (PyAutoHands#198).
+        rc = 0
     if rc == 0:
         return nb_rel, 0, time.time() - t0, output
 
