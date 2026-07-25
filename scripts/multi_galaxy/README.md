@@ -1,6 +1,6 @@
 The `multi_galaxy` folder contains example scripts showing how to analyse multi-galaxy strong lenses:
-galaxy-scale systems where **two or more galaxies of comparable mass both contribute significantly to the
-lensing** of a single background source, with no dominant group- or cluster-scale dark matter halo.
+systems of individually galaxy-scale deflectors where **two or more galaxies of comparable mass both
+contribute significantly to the lensing** of a single background source, with no dominant group- or cluster-scale dark matter halo.
 
 # The Three Regimes Above Galaxy Scale
 
@@ -11,7 +11,7 @@ the entire analysis strategy:
 | Regime | Mass model | Source(s) | Analysis | Lens light |
 |---|---|---|---|---|
 | `multi_galaxy` | One free SIE/EPL per co-dominant deflector (+ shear); **no host halo, untruncated profiles** | One extended source, pixel-level reconstruction | `AnalysisImaging` (CCD pixels) | Modeled (MGE) |
-| `group` | Main + extra + scaling tiers (truncated dPIE members); host halo an **explicit choice** | One extended source, pixel-level reconstruction | `AnalysisImaging` (CCD pixels) | Modeled (MGE) |
+| `group` | Main + extra + scaling tiers; host halo an **explicit choice** (truncated dPIE members in the Lenstool-style `group_halo` workflow) | One extended source, pixel-level reconstruction | `AnalysisImaging` (CCD pixels) | Modeled (MGE) |
 | `cluster` | Host halo(s) + many truncated members on scaling relations | **Many** point sources at many redshifts, multi-plane | `AnalysisPoint` + factor graph (image positions) | Not modeled |
 
 The multi-galaxy regime is the base rung: the only new concept relative to `imaging/` is "more than one main

@@ -179,8 +179,9 @@ We compose the lens model, with one entry per co-dominant deflector:
    few free parameters — important here, where the two galaxies' light blends together.
  - Each main lens galaxy's mass is an `Isothermal` (SIE), the standard galaxy-scale profile. Note these are
    **untruncated** profiles: truncation of a galaxy's mass encodes tidal stripping by a host halo's potential,
-   and the multi-galaxy regime by definition has no host halo. Truncated (dPIE) profiles enter at group and
-   cluster scale.
+   and the multi-galaxy regime by definition has no host halo. Truncated (dPIE) profiles enter with the
+   group regime's Lenstool-style workflow (`group/features/group_halo`) and are the default at cluster
+   scale.
  - The first lens galaxy (`lens_0`) carries the system's single `ExternalShear`.
  - The source galaxy's light is an MGE.
 
@@ -313,7 +314,8 @@ The examples in `autolens_workspace/*/multi_galaxy/features` extend this model:
  - **Extra galaxies**: more distant perturbers added with restricted freedom (fixed centres) — the tier below
    co-dominance.
  - **Scaling galaxies**: a population of faint galaxies far from the lens tied to a luminosity relation, using
-   **untruncated** isothermal profiles (no host halo means no tidal truncation).
+   **untruncated** isothermal profiles (no host halo means no tidal truncation; the truncated dPIE
+   variant belongs to the group/cluster Lenstool-style workflows).
  - **Pixelized sources**: swap the MGE source for a Delaunay / adaptive mesh reconstruction, exactly as at
    galaxy scale.
 

@@ -121,7 +121,9 @@ first the mass model, then the entire analysis strategy:
 
 - A **group-scale** lens (`group`) adds a dominant group-scale dark-matter halo (~10^13-10^14 solar masses) as
   an *explicit modelling choice*, with member galaxies organised into tiers (main / extra / scaling galaxies,
-  the latter tidally truncated and tied to a luminosity scaling relation). The source modelling is unchanged:
+  the latter tied to a luminosity scaling relation — tidally truncated dPIE members in the Lenstool-convention
+  workflow of `group/features/group_halo`, untruncated isothermals in the PyAutoLens-native default of
+  `group/features/scaling_relation`). The source modelling is unchanged:
   one dominant extended source, fitted at pixel level.
 
 - A **cluster-scale** lens (`cluster`) shares the group's mass framework (host halo(s) + many truncated members

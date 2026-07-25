@@ -22,8 +22,9 @@ analysis strategy:
    from `imaging/`.
 
  - **Group** (`group/start_here.ipynb`): a dominant group-scale halo (~10^13-10^14 M_sun) enters as an *explicit
-   modelling choice*, and the galaxies split into tiers (main / extra / scaling galaxies, the latter tidally
-   truncated and tied to a luminosity scaling relation). Still one extended source, still the same
+   modelling choice*, and the galaxies split into tiers (main / extra / scaling galaxies, the latter tied to a
+   luminosity scaling relation — with tidally truncated dPIE members in the Lenstool-convention workflow of
+   `group/features/group_halo`). Still one extended source, still the same
    pixel-level `AnalysisImaging` workflow — the sophistication moves into the mass model.
 
  - **Cluster** (`cluster/start_here.ipynb`): the mass framework is the same as a group's (host halo(s) + many
@@ -188,7 +189,8 @@ brilliantly for the vast majority of lenses:
    light of a close pair without adding many free parameters.
  - Each main lens galaxy's mass is a Singular Isothermal Ellipsoid (SIE). These are **untruncated** profiles:
    truncation encodes tidal stripping by a host halo, and a multi-galaxy lens by definition has none. (Truncated
-   dPIE members appear when you climb to the group and cluster regimes.)
+   dPIE members appear as you climb the ladder — in the group regime's Lenstool-style `group_halo` workflow and
+   by default at cluster scale.)
  - The first lens galaxy carries the system's single `ExternalShear`.
  - The source galaxy's light is an MGE.
 

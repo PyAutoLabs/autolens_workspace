@@ -142,15 +142,18 @@ host_halo_galaxy = galaxies_by_name["host_halo"]
 source_galaxies = [galaxies_by_name["source_0"], galaxies_by_name["source_1"]]
 
 # Scaling tier: per-member dPIE built from the legacy CSV + the reference-anchored
-# scaling relation (Lenstool convention; see modeling.py for the full rationale).
-# REFERENCE_LUMINOSITY is an explicit fixed constant (Lenstool's "mag0"), not the
-# sample max, and matches the simulator truth so members are reproduced exactly.
+# scaling relation in its modern (Bergamini+19) form — sigma ∝ L^0.25 and
+# r_cut ∝ L^(1 + gamma - 2*alpha) = L^0.7 with gamma = 0.2, vanishing unscaled cores
+# (see modeling.py for the full rationale). REFERENCE_LUMINOSITY is an explicit
+# fixed constant (Lenstool's "mag0"), not the sample max, and the constants below
+# match the simulator truth so members are reproduced exactly.
 scaling_galaxies = []
 SCALING_SIGMA_REF_TRUTH = 85.0
-SCALING_SIGMA_EXPONENT = 0.25
-SCALING_RADIUS_EXPONENT = 0.5
-SCALING_R_CORE_REF = 0.158
-SCALING_R_CUT_REF = 15.8
+SCALING_SIGMA_EXPONENT = 0.25  # alpha
+SCALING_GAMMA = 0.2
+SCALING_RCUT_EXPONENT = 1.0 + SCALING_GAMMA - 2.0 * SCALING_SIGMA_EXPONENT  # 0.7
+SCALING_R_CORE = 0.0  # vanishing core — fixed, never scaled
+SCALING_R_CUT_REF = 5.0
 REFERENCE_LUMINOSITY = 1.0
 for centre, luminosity in zip(
     scaling_table.centres.in_list, scaling_table.luminosities
@@ -163,8 +166,8 @@ for centre, luminosity in zip(
                 centre=tuple(centre),
                 sigma=SCALING_SIGMA_REF_TRUTH
                 * luminosity_ratio**SCALING_SIGMA_EXPONENT,
-                r_core=SCALING_R_CORE_REF * luminosity_ratio**SCALING_RADIUS_EXPONENT,
-                r_cut=SCALING_R_CUT_REF * luminosity_ratio**SCALING_RADIUS_EXPONENT,
+                r_core=SCALING_R_CORE,
+                r_cut=SCALING_R_CUT_REF * luminosity_ratio**SCALING_RCUT_EXPONENT,
                 redshift_object=redshift_lens,
                 redshift_source=max(source_redshifts),
             ),
@@ -177,9 +180,9 @@ __Tracer__
 The tracer carries:
 
  - 2 main lens galaxies (BCG + satellite) — individually-modelled dPIE mass profiles.
- - 10 scaling-tier member galaxies — dPIE mass profiles whose ``sigma``, ``r_core`` and ``r_cut`` derive
-   from the reference-anchored scaling relation ``sigma = sigma_ref × (L/L_ref)^0.25``,
-   ``radii ∝ (L/L_ref)^0.5`` (Lenstool convention).
+ - 10 scaling-tier member galaxies — dPIE mass profiles whose ``sigma`` and ``r_cut`` derive from the
+   reference-anchored scaling relation ``sigma = sigma_ref × (L/L_ref)^0.25``,
+   ``r_cut ∝ (L/L_ref)^0.7`` (the Bergamini+19 tied-exponent convention), with vanishing cores.
  - 1 host dark matter halo — ``NFWMCRLudlowSph`` at the cluster centre.
  - 2 source galaxies — ``Point`` profiles at distinct redshifts (multi-plane).
 

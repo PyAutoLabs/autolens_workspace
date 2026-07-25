@@ -23,7 +23,7 @@ The worked example is **SMACS J0723.3−7327**, the first JWST cluster, using th
 | `angle_pos` | `angle_pos` | Degrees, counter-clockwise. |
 | `core_radius`, `cut_radius` | `r_core`, `r_cut` | Arcsec. For the `_kpc` variants divide by `cosmology.kpc_per_arcsec_from(redshift=z_lens)`. |
 | `v_disp` | `sigma` | **The fiducial σ_LT, not the physical central dispersion** — σ₀ = √(3/2)·σ_LT (Elíasdóttir et al. 2007, App. A). Quote `.par` values unchanged; never feed a measured stellar dispersion here. |
-| `potfile` (`mag0`, `sigma`, `cutkpc`, `vdslope 4`, `slope 4`) | shared priors + derived parameters | σᵢ = σ\*·(L/L₀)^0.25, r_cut,ᵢ = r_cut\*·(L/L₀)^0.5, L/L₀ = 10^(0.4(mag0−m)) — the reference-anchored scaling relation, which is also the default in `scripts/cluster/` and `scripts/group/`. |
+| `potfile` (`mag0`, `sigma`, `cutkpc`, `vdslope 4`, `slope 4`) | shared priors + derived parameters | σᵢ = σ\*·(L/L₀)^0.25, r_cut,ᵢ = r_cut\*·(L/L₀)^β, L/L₀ = 10^(0.4(mag0−m)) — the reference-anchored scaling relation. Lenstool's classic `slope 4` gives β = 0.5; `scripts/cluster/` now defaults to the modern tied exponent β = 1 + γ − 2α = 0.7 (γ = 0.2, Bergamini et al. 2019). |
 | `arcs.dat` | `point_datasets.csv` → `al.list_from_csv` | One `PointDataset` per system; redshifts per system. |
 | `sigposArcsec` | `positions_noise` column | Identical positional chi-squared definition. |
 | source-plane optimization | `al.FitPositionsSource` | Lenstool's default likelihood. |
