@@ -21,6 +21,7 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
                                 "intensity": 1.5,
+                                "sersic_index": 4.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -28,18 +29,13 @@
                                         0.0
                                     ]
                                 },
-                                "effective_radius": 3.0,
-                                "sersic_index": 4.0
+                                "effective_radius": 3.0
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.dual_pseudo_isothermal_mass.dPIEMassSph",
                             "arguments": {
-                                "r_cut": 20.0,
-                                "sigma": 330.0,
-                                "H0": 67.66,
-                                "Om0": 0.30966,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -48,8 +44,12 @@
                                     ]
                                 },
                                 "redshift_object": 0.5,
-                                "r_core": 8.0,
-                                "redshift_source": 2.0
+                                "redshift_source": 2.0,
+                                "H0": 67.66,
+                                "r_core": 0.0,
+                                "sigma": 330.0,
+                                "r_cut": 20.0,
+                                "Om0": 0.30966
                             }
                         }
                     }
@@ -65,6 +65,7 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
                                 "intensity": 0.8,
+                                "sersic_index": 3.5,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -72,18 +73,13 @@
                                         8.0
                                     ]
                                 },
-                                "effective_radius": 1.5,
-                                "sersic_index": 3.5
+                                "effective_radius": 1.5
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.dual_pseudo_isothermal_mass.dPIEMassSph",
                             "arguments": {
-                                "r_cut": 12.0,
-                                "sigma": 210.0,
-                                "H0": 67.66,
-                                "Om0": 0.30966,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -92,8 +88,12 @@
                                     ]
                                 },
                                 "redshift_object": 0.5,
-                                "r_core": 5.0,
-                                "redshift_source": 2.0
+                                "redshift_source": 2.0,
+                                "H0": 67.66,
+                                "r_core": 0.0,
+                                "sigma": 210.0,
+                                "r_cut": 12.0,
+                                "Om0": 0.30966
                             }
                         }
                     }
@@ -109,6 +109,7 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
                                 "intensity": 0.4,
+                                "sersic_index": 3.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -116,18 +117,13 @@
                                         -6.5
                                     ]
                                 },
-                                "effective_radius": 0.8,
-                                "sersic_index": 3.0
+                                "effective_radius": 0.8
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.dual_pseudo_isothermal_mass.dPIEMassSph",
                             "arguments": {
-                                "r_cut": 9.992797406132079,
-                                "sigma": 67.5980119451993,
-                                "H0": 67.66,
-                                "Om0": 0.30966,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -136,8 +132,12 @@
                                     ]
                                 },
                                 "redshift_object": 0.5,
-                                "r_core": 0.09992797406132078,
-                                "redshift_source": 2.0
+                                "redshift_source": 2.0,
+                                "H0": 67.66,
+                                "r_core": 0.0,
+                                "sigma": 67.5980119451993,
+                                "r_cut": 2.632764408668475,
+                                "Om0": 0.30966
                             }
                         }
                     }
@@ -153,6 +153,7 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
                                 "intensity": 0.32,
+                                "sersic_index": 3.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -160,18 +161,13 @@
                                         3.0
                                     ]
                                 },
-                                "effective_radius": 0.8,
-                                "sersic_index": 3.0
+                                "effective_radius": 0.8
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.dual_pseudo_isothermal_mass.dPIEMassSph",
                             "arguments": {
-                                "r_cut": 8.937829714197962,
-                                "sigma": 63.9302525824687,
-                                "H0": 67.66,
-                                "Om0": 0.30966,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -180,8 +176,12 @@
                                     ]
                                 },
                                 "redshift_object": 0.5,
-                                "r_core": 0.0893782971419796,
-                                "redshift_source": 2.0
+                                "redshift_source": 2.0,
+                                "H0": 67.66,
+                                "r_core": 0.0,
+                                "sigma": 63.9302525824687,
+                                "r_cut": 2.2520342394989386,
+                                "Om0": 0.30966
                             }
                         }
                     }
@@ -197,6 +197,7 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
                                 "intensity": 0.25,
+                                "sersic_index": 3.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -204,18 +205,13 @@
                                         -5.0
                                     ]
                                 },
-                                "effective_radius": 0.8,
-                                "sersic_index": 3.0
+                                "effective_radius": 0.8
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.dual_pseudo_isothermal_mass.dPIEMassSph",
                             "arguments": {
-                                "r_cut": 7.9,
-                                "sigma": 60.10407640085654,
-                                "H0": 67.66,
-                                "Om0": 0.30966,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -224,8 +220,12 @@
                                     ]
                                 },
                                 "redshift_object": 0.5,
-                                "r_core": 0.079,
-                                "redshift_source": 2.0
+                                "redshift_source": 2.0,
+                                "H0": 67.66,
+                                "r_core": 0.0,
+                                "sigma": 60.10407640085654,
+                                "r_cut": 1.8946457081379977,
+                                "Om0": 0.30966
                             }
                         }
                     }
@@ -241,6 +241,7 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
                                 "intensity": 0.2,
+                                "sersic_index": 3.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -248,18 +249,13 @@
                                         -9.0
                                     ]
                                 },
-                                "effective_radius": 0.8,
-                                "sersic_index": 3.0
+                                "effective_radius": 0.8
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.dual_pseudo_isothermal_mass.dPIEMassSph",
                             "arguments": {
-                                "r_cut": 7.065974808899336,
-                                "sigma": 56.84292592299587,
-                                "H0": 67.66,
-                                "Om0": 0.30966,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -268,8 +264,12 @@
                                     ]
                                 },
                                 "redshift_object": 0.5,
-                                "r_core": 0.07065974808899335,
-                                "redshift_source": 2.0
+                                "redshift_source": 2.0,
+                                "H0": 67.66,
+                                "r_core": 0.0,
+                                "sigma": 56.84292592299587,
+                                "r_cut": 1.6206565966927626,
+                                "Om0": 0.30966
                             }
                         }
                     }
@@ -285,6 +285,7 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
                                 "intensity": 0.16,
+                                "sersic_index": 3.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -292,18 +293,13 @@
                                         13.0
                                     ]
                                 },
-                                "effective_radius": 0.8,
-                                "sersic_index": 3.0
+                                "effective_radius": 0.8
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.dual_pseudo_isothermal_mass.dPIEMassSph",
                             "arguments": {
-                                "r_cut": 6.32,
-                                "sigma": 53.75872022286245,
-                                "H0": 67.66,
-                                "Om0": 0.30966,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -312,8 +308,12 @@
                                     ]
                                 },
                                 "redshift_object": 0.5,
-                                "r_core": 0.0632,
-                                "redshift_source": 2.0
+                                "redshift_source": 2.0,
+                                "H0": 67.66,
+                                "r_core": 0.0,
+                                "sigma": 53.75872022286245,
+                                "r_cut": 1.3862896863102931,
+                                "Om0": 0.30966
                             }
                         }
                     }
@@ -329,6 +329,7 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
                                 "intensity": 0.13,
+                                "sersic_index": 3.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -336,18 +337,13 @@
                                         4.0
                                     ]
                                 },
-                                "effective_radius": 0.8,
-                                "sersic_index": 3.0
+                                "effective_radius": 0.8
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.dual_pseudo_isothermal_mass.dPIEMassSph",
                             "arguments": {
-                                "r_cut": 5.696771015233104,
-                                "sigma": 51.03930638755519,
-                                "H0": 67.66,
-                                "Om0": 0.30966,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -356,8 +352,12 @@
                                     ]
                                 },
                                 "redshift_object": 0.5,
-                                "r_core": 0.056967710152331034,
-                                "redshift_source": 2.0
+                                "redshift_source": 2.0,
+                                "H0": 67.66,
+                                "r_core": 0.0,
+                                "sigma": 51.03930638755519,
+                                "r_cut": 1.1987547773279585,
+                                "Om0": 0.30966
                             }
                         }
                     }
@@ -373,6 +373,7 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
                                 "intensity": 0.1,
+                                "sersic_index": 3.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -380,18 +381,13 @@
                                         9.0
                                     ]
                                 },
-                                "effective_radius": 0.8,
-                                "sersic_index": 3.0
+                                "effective_radius": 0.8
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.dual_pseudo_isothermal_mass.dPIEMassSph",
                             "arguments": {
-                                "r_cut": 4.996398703066039,
-                                "sigma": 47.79901264117967,
-                                "H0": 67.66,
-                                "Om0": 0.30966,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -400,8 +396,12 @@
                                     ]
                                 },
                                 "redshift_object": 0.5,
-                                "r_core": 0.04996398703066039,
-                                "redshift_source": 2.0
+                                "redshift_source": 2.0,
+                                "H0": 67.66,
+                                "r_core": 0.0,
+                                "sigma": 47.79901264117967,
+                                "r_cut": 0.99763115748444,
+                                "Om0": 0.30966
                             }
                         }
                     }
@@ -417,6 +417,7 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
                                 "intensity": 0.08,
+                                "sersic_index": 3.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -424,18 +425,13 @@
                                         -12.0
                                     ]
                                 },
-                                "effective_radius": 0.8,
-                                "sersic_index": 3.0
+                                "effective_radius": 0.8
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.dual_pseudo_isothermal_mass.dPIEMassSph",
                             "arguments": {
-                                "r_cut": 4.468914857098981,
-                                "sigma": 45.20551512403241,
-                                "H0": 67.66,
-                                "Om0": 0.30966,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -444,8 +440,12 @@
                                     ]
                                 },
                                 "redshift_object": 0.5,
-                                "r_core": 0.0446891485709898,
-                                "redshift_source": 2.0
+                                "redshift_source": 2.0,
+                                "H0": 67.66,
+                                "r_core": 0.0,
+                                "sigma": 45.20551512403241,
+                                "r_cut": 0.8533614012892967,
+                                "Om0": 0.30966
                             }
                         }
                     }
@@ -461,6 +461,7 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
                                 "intensity": 0.06,
+                                "sersic_index": 3.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -468,18 +469,13 @@
                                         5.5
                                     ]
                                 },
-                                "effective_radius": 0.8,
-                                "sersic_index": 3.0
+                                "effective_radius": 0.8
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.dual_pseudo_isothermal_mass.dPIEMassSph",
                             "arguments": {
-                                "r_cut": 3.8701937935974215,
-                                "sigma": 42.068472032638006,
-                                "H0": 67.66,
-                                "Om0": 0.30966,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -488,8 +484,12 @@
                                     ]
                                 },
                                 "redshift_object": 0.5,
-                                "r_core": 0.038701937935974214,
-                                "redshift_source": 2.0
+                                "redshift_source": 2.0,
+                                "H0": 67.66,
+                                "r_core": 0.0,
+                                "sigma": 42.068472032638006,
+                                "r_cut": 0.6977114973109454,
+                                "Om0": 0.30966
                             }
                         }
                     }
@@ -505,6 +505,7 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic.SersicSph",
                             "arguments": {
                                 "intensity": 0.05,
+                                "sersic_index": 3.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -512,18 +513,13 @@
                                         11.0
                                     ]
                                 },
-                                "effective_radius": 0.8,
-                                "sersic_index": 3.0
+                                "effective_radius": 0.8
                             }
                         },
                         "mass": {
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.total.dual_pseudo_isothermal_mass.dPIEMassSph",
                             "arguments": {
-                                "r_cut": 3.532987404449668,
-                                "sigma": 40.19401838263497,
-                                "H0": 67.66,
-                                "Om0": 0.30966,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -532,8 +528,12 @@
                                     ]
                                 },
                                 "redshift_object": 0.5,
-                                "r_core": 0.035329874044496674,
-                                "redshift_source": 2.0
+                                "redshift_source": 2.0,
+                                "H0": 67.66,
+                                "r_core": 0.0,
+                                "sigma": 40.19401838263497,
+                                "r_cut": 0.6141140130578953,
+                                "Om0": 0.30966
                             }
                         }
                     }
@@ -548,8 +548,7 @@
                             "type": "instance",
                             "class_path": "autogalaxy.profiles.mass.dark.nfw_mcr.NFWMCRLudlowSph",
                             "arguments": {
-                                "redshift_source": 2.0,
-                                "mass_at_200": 1995262314968882.8,
+                                "redshift_object": 0.5,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -557,7 +556,8 @@
                                         0.0
                                     ]
                                 },
-                                "redshift_object": 0.5
+                                "mass_at_200": 1995262314968882.8,
+                                "redshift_source": 2.0
                             }
                         }
                     }
@@ -573,14 +573,6 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic_core.SersicCore",
                             "arguments": {
                                 "intensity": 2.0,
-                                "ell_comps": {
-                                    "type": "tuple",
-                                    "values": [
-                                        0.0962250448649376,
-                                        -0.05555555555555551
-                                    ]
-                                },
-                                "alpha": 3.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -588,10 +580,18 @@
                                         0.5
                                     ]
                                 },
-                                "gamma": 0.25,
                                 "radius_break": 0.025,
+                                "gamma": 0.25,
                                 "sersic_index": 1.0,
-                                "effective_radius": 0.3
+                                "effective_radius": 0.3,
+                                "alpha": 3.0,
+                                "ell_comps": {
+                                    "type": "tuple",
+                                    "values": [
+                                        0.0962250448649376,
+                                        -0.05555555555555551
+                                    ]
+                                }
                             }
                         }
                     }
@@ -607,14 +607,6 @@
                             "class_path": "autogalaxy.profiles.light.standard.sersic_core.SersicCore",
                             "arguments": {
                                 "intensity": 2.0,
-                                "ell_comps": {
-                                    "type": "tuple",
-                                    "values": [
-                                        1.360718665719281e-17,
-                                        -0.11111111111111108
-                                    ]
-                                },
-                                "alpha": 3.0,
                                 "centre": {
                                     "type": "tuple",
                                     "values": [
@@ -622,10 +614,18 @@
                                         1.2
                                     ]
                                 },
-                                "gamma": 0.25,
                                 "radius_break": 0.025,
+                                "gamma": 0.25,
                                 "sersic_index": 1.0,
-                                "effective_radius": 0.3
+                                "effective_radius": 0.3,
+                                "alpha": 3.0,
+                                "ell_comps": {
+                                    "type": "tuple",
+                                    "values": [
+                                        1.360718665719281e-17,
+                                        -0.11111111111111108
+                                    ]
+                                }
                             }
                         }
                     }

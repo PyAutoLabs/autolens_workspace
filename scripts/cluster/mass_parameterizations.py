@@ -45,8 +45,9 @@ these onto PyAutoLens-native profiles (isothermals, etc.) is a separate guide.
  - **Model 4 — The Two-Parameter Relation** — free the truncation normalization ``r_cut_ref`` too.
 
 Freeing the Faber-Jackson *exponent* is a one-line change (make ``sigma_exponent`` a prior instead of
-``0.25``) and is noted inline rather than given its own model. How Lenstool handles *unknown source
-redshifts* (``z_m_limit``) is about the source, not the mass, and is out of scope here.
+``0.25``; the truncation exponent then follows automatically from the ``2*alpha + beta = 1 + gamma``
+tie — see Model 1) and is noted inline rather than given its own model. How Lenstool handles *unknown
+source redshifts* (``z_m_limit``) is about the source, not the mass, and is out of scope here.
 
 __Reading model.info__
 
@@ -108,15 +109,45 @@ model, and this script builds all three:
 dPIE profiles throughout, composed directly in ``sigma`` (km/s), ``r_core`` and ``r_cut`` (arcsec) —
 exactly the numbers a Lenstool results table quotes. No ``b0`` appears.
 
+**A note on the halo profile.** A dPIE for the *cluster-scale* halo is the Lenstool-literature
+convention and is what this guide follows — but physically it is an odd choice for a dark-matter halo,
+and cosmological simulations motivate an NFW or generalized NFW (gNFW) instead. Swapping the halo for
+``al.mp.NFW`` / a gNFW while keeping the dPIE members is a supported, arguably preferable model; the
+mapping guide (``mass_parameterizations_pyautolens.py``) shows how Lenstool-style components translate
+to PyAutoLens-native profiles.
+
 **The reference magnitude ``mag0``.** The relation is anchored to a reference magnitude (the ``potfile``
 keyword ``mag0``); ``sigma_ref`` is the velocity dispersion of a galaxy *at that magnitude*. A member of
 magnitude ``m`` enters through its brightness *relative* to the reference,
-``L/L_ref = 10 ** (0.4 * (mag0 - m))``, which folds into Faber-Jackson (``sigma ~ L^0.25``) to give a
-clean magnitude form:
+``L/L_ref = 10 ** (0.4 * (mag0 - m))``, giving clean magnitude forms:
 
-    sigma_i  = sigma_ref  * 10 ** (0.1 * (mag0 - m_i))      # 0.25 * 0.4 = 0.1
-    r_cut_i  = r_cut_ref  * 10 ** (0.2 * (mag0 - m_i))      # 0.5  * 0.4 = 0.2   (constant M/L)
-    r_core_i = r_core_ref * 10 ** (0.2 * (mag0 - m_i))
+    sigma_i  = sigma_ref  * 10 ** (0.4 * alpha    * (mag0 - m_i))     # alpha    = 0.25 -> 0.1
+    r_cut_i  = r_cut_ref  * 10 ** (0.4 * beta_cut * (mag0 - m_i))     # beta_cut = 0.70 -> 0.28
+    r_core_i = 0                                                      # vanishing core, NOT scaled
+
+**The modern scaling-relation convention (Bergamini et al. 2019).** The dispersion exponent ``alpha``
+(Faber-Jackson, ``sigma ~ L^alpha``) and the truncation exponent ``beta_cut`` (``r_cut ~ L^beta_cut``)
+are not independent: the member's total mass scales as ``M ~ sigma^2 r_cut``, so demanding a
+mass-to-light tilt ``M/L ~ L^gamma`` enforces
+
+    2 * alpha + beta_cut = 1 + gamma        (valid for r_core << r_cut, which the vanishing core ensures)
+
+with ``gamma = 0.2`` universally fixed in the modern literature. With ``alpha = 0.25`` this gives
+``beta_cut = 0.7`` — NOT the ``0.5`` ("constant M/L", ``gamma = 0``) slope of the original Lenstool-era
+papers, which is dated. In detailed modelling ``alpha`` itself can be freed (Bergamini et al. 2019
+measure ~0.27 from MUSE member kinematics); ``beta_cut`` then follows from the tie automatically.
+
+**Member cores vanish and are never scaled.** The standard convention assigns members (and the BCG) a
+vanishing core: ``r_core`` is fixed to zero (or a negligibly small value) and is NOT scaled with
+luminosity. PyAutoLens's dPIE handles ``r_core = 0`` analytically — the deflection prefactor is
+``b0 * r_cut / (r_cut - r_core)``, with no division by ``r_core`` anywhere — so, unlike some Lenstool /
+lenstronomy code paths where a zero core divides by zero, ``r_core = 0`` is numerically safe here.
+
+**The reference truncation is small.** ``r_cut_ref = 5.0`` arcsec — lensing-constrained member
+truncations are typically ~5", not the tens of arcseconds sometimes seen in older examples. Freeing and
+constraining ``r_cut_ref`` (Model 4) is scientifically interesting in its own right: it is directly
+related to the galaxy-galaxy strong-lensing excess in clusters reported by Meneghetti et al. (2020,
+Science).
 
 We set ``mag0`` to the BCG's magnitude — a natural anchor. Note this uses only the BCG's *brightness*;
 the BCG's *mass* is one of the individually-modelled galaxies and is never coupled to the members.
@@ -164,9 +195,9 @@ individual_sigma_priors = [
     (150.0, 450.0),
 ]  # per-galaxy free sigma range (km/s)
 individual_rcut_priors = [
-    (20.0, 200.0),
-    (20.0, 150.0),
-]  # per-galaxy free r_cut range (arcsec)
+    (2.0, 200.0),
+    (2.0, 150.0),
+]  # per-galaxy free r_cut range (arcsec; lower bound admits the ~5" typical of members)
 
 individual_galaxies = []
 for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
@@ -177,7 +208,7 @@ for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
     mass.sigma = af.UniformPrior(
         lower_limit=sigma_lo, upper_limit=sigma_hi
     )  # [FREE] this galaxy's own dispersion
-    mass.r_core = 0.3  # [FIXED] arcsec
+    mass.r_core = 0.0  # [FIXED] vanishing core (handled analytically — see intro)
     mass.r_cut = af.UniformPrior(
         lower_limit=rcut_lo, upper_limit=rcut_hi
     )  # [FREE] this galaxy's own truncation
@@ -187,17 +218,20 @@ for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
     mass.Om0 = Om0
     individual_galaxies.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
-# --- Members: one free sigma_ref, Faber-Jackson exponent 0.25 ---
+# --- Members: one free sigma_ref; Bergamini+19 tied exponents (2*alpha + beta_cut = 1 + gamma) ---
 sigma_ref = af.UniformPrior(
     lower_limit=100.0, upper_limit=400.0
 )  # [FREE] km/s (dispersion at mag0)
 mag0 = individual_magnitudes[
     0
 ]  # [FIXED] reference magnitude (Lenstool's mag0) = the BCG's brightness
-sigma_exponent = 0.25  # [FIXED] Faber-Jackson (make this an af.UniformPrior to free it — a one-line change)
-radius_exponent = 0.5  # [FIXED] constant mass-to-light: r_core, r_cut ~ L^0.5
-r_core_ref = 0.15  # [FIXED] arcsec
-r_cut_ref = 20.0  # [FIXED] arcsec
+sigma_exponent = 0.25  # [FIXED] Faber-Jackson alpha (free it via af.UniformPrior — one line; beta_cut then follows)
+gamma = 0.2  # [FIXED] mass-to-light tilt M/L ~ L^gamma — universally fixed at 0.2
+rcut_exponent = (
+    1.0 + gamma - 2.0 * sigma_exponent
+)  # [TIED] beta_cut = 0.7 — enforces M ~ sigma^2 r_cut ~ L^(1+gamma) (Bergamini+19)
+r_core_ref = 0.0  # [FIXED] vanishing core — never scaled with luminosity
+r_cut_ref = 5.0  # [FIXED] arcsec — typical lensing-constrained member truncation
 
 scaling_galaxies = []
 for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
@@ -208,8 +242,8 @@ for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
     mass.sigma = (
         sigma_ref * luminosity_ratio**sigma_exponent
     )  # tied to the one free sigma_ref
-    mass.r_core = r_core_ref * luminosity_ratio**radius_exponent
-    mass.r_cut = r_cut_ref * luminosity_ratio**radius_exponent
+    mass.r_core = r_core_ref  # [FIXED] not scaled with luminosity
+    mass.r_cut = r_cut_ref * luminosity_ratio**rcut_exponent
     mass.redshift_object = redshift_lens
     mass.redshift_source = redshift_source
     mass.H0 = H0
@@ -254,6 +288,19 @@ directly fits the quantity the data determines, in arcsec you can reason about. 
 redshifts are measured: ``sigma = c * sqrt(b0 / K)``, ``K = 6*648000*(D_LS/D_S)``. The ``B0`` mass
 carries no redshift; the galaxy ``redshift`` is only a ray-tracing plane label.
 
+**A convention warning: sigma is sigma_LT, not the central dispersion.** The ``6`` in the prefactor is
+Lenstool's *fiducial* velocity-dispersion convention: ``sigma`` here is Lenstool's ``v_disp``
+(``sigma_LT``), related to the physical central dispersion by ``sigma_0 = sqrt(3/2) * sigma_LT`` — the
+same ``b0`` written in ``sigma_0`` is ``b0 = 4*648000*(sigma_0/c)^2*(D_LS/D_S)``. The ``sqrt(3/2)`` is
+not a physical definition from Elíasdóttir et al. (2007): it is bookkeeping that arises because Lenstool
+pairs an E07-style ``b0`` coefficient with the Kassiola & Kovner (1993) / Limousin et al. (2005)
+deflection amplitude (a historical mismatch between the two parameterizations; see the contributed
+derivation note "On the definitions of b0 and velocity dispersion in Lenstool / dPIE", H. Ding 2026).
+PyAutoLens keeps ``sigma_LT`` as the ``dPIEMass`` parameter so fitted posteriors read like Lenstool
+results tables — but for physical interpretation (comparison with measured stellar kinematics) convert
+to ``sigma_0 = sqrt(3/2) * sigma``; quoting a measured dispersion directly as ``sigma`` overestimates
+the mass by 50%.
+
 **Free vs fixed.** Identical structure to Model 1 (9 free): halo free ``ell_comps`` (2) + ``ra`` + ``b0``;
 individual galaxies free ``b0`` + ``rs``; members one free ``b0_ref``.
 """
@@ -282,8 +329,8 @@ individual_b0_priors = [
     (0.0, 3.0),
 ]  # arcsec, angular lens-strength range per galaxy
 individual_rs_priors = [
-    (20.0, 200.0),
-    (20.0, 150.0),
+    (2.0, 200.0),
+    (2.0, 150.0),
 ]  # arcsec, truncation range per galaxy
 
 individual_galaxies_b0 = []
@@ -295,7 +342,7 @@ for centre, (b0_lo, b0_hi), (rs_lo, rs_hi) in zip(
     mass.b0 = af.UniformPrior(
         lower_limit=b0_lo, upper_limit=b0_hi
     )  # [FREE] angular lens strength (arcsec)
-    mass.ra = 0.3  # [FIXED] = Model 1's r_core
+    mass.ra = 0.0  # [FIXED] = Model 1's vanishing core
     mass.rs = af.UniformPrior(
         lower_limit=rs_lo, upper_limit=rs_hi
     )  # [FREE] truncation (arcsec)
@@ -303,14 +350,15 @@ for centre, (b0_lo, b0_hi), (rs_lo, rs_hi) in zip(
         af.Model(al.Galaxy, redshift=redshift_lens, mass=mass)
     )
 
-# --- Members: one free b0_ref, exponent 0.5 (b0 ~ L^0.5) ---
+# --- Members: one free b0_ref; exponents follow Model 1's tied relation ---
 b0_ref = af.UniformPrior(
     lower_limit=0.0, upper_limit=1.0
 )  # [FREE] arcsec (lens strength at mag0)
-b0_exponent = 0.5  # [FIXED] b0 ~ L^0.5 (Model 1 used sigma ~ L^0.25; b0 ~ sigma^2 doubles the exponent)
+b0_exponent = 0.5  # [FIXED] b0 ~ L^(2*alpha) = L^0.5 (b0 ~ sigma^2 doubles Model 1's alpha = 0.25)
+rs_exponent = 0.7  # [FIXED] = Model 1's beta_cut = 1 + gamma - 2*alpha (gamma = 0.2)
 mag0 = individual_magnitudes[0]  # [FIXED]
-ra_ref = 0.15  # [FIXED] = Model 1's r_core_ref
-rs_ref = 20.0  # [FIXED] = Model 1's r_cut_ref
+ra_ref = 0.0  # [FIXED] = Model 1's vanishing core — never scaled
+rs_ref = 5.0  # [FIXED] = Model 1's r_cut_ref
 
 scaling_galaxies_b0 = []
 for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
@@ -319,8 +367,8 @@ for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
     mass = af.Model(al.mp.dPIEMassB0Sph)
     mass.centre = centre  # [FIXED]
     mass.b0 = b0_ref * luminosity_ratio**b0_exponent  # tied to the one free b0_ref
-    mass.ra = ra_ref * luminosity_ratio**0.5
-    mass.rs = rs_ref * luminosity_ratio**0.5
+    mass.ra = ra_ref  # [FIXED] not scaled with luminosity
+    mass.rs = rs_ref * luminosity_ratio**rs_exponent
     scaling_galaxies_b0.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
 model_2 = af.Collection(
@@ -370,7 +418,7 @@ for magnitude in scaling_magnitudes:
     worst_relation = max(
         worst_relation,
         abs(
-            b0_ref_value * ratio**0.5
+            b0_ref_value * ratio**b0_exponent
             - K * (sigma_ref_value * ratio**0.25 / C_KM_S) ** 2
         ),
     )
@@ -385,15 +433,15 @@ for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
     ratio = 10.0 ** (0.4 * (mag0 - magnitude))
     mass_b0 = al.mp.dPIEMassB0Sph(
         centre=centre,
-        ra=ra_ref * ratio**0.5,
-        rs=rs_ref * ratio**0.5,
-        b0=b0_ref_value * ratio**0.5,
+        ra=ra_ref,
+        rs=rs_ref * ratio**rs_exponent,
+        b0=b0_ref_value * ratio**b0_exponent,
     )
     mass_sigma = al.mp.dPIEMassSph(
         centre=centre,
         sigma=sigma_ref_value * ratio**0.25,
-        r_core=ra_ref * ratio**0.5,
-        r_cut=rs_ref * ratio**0.5,
+        r_core=ra_ref,
+        r_cut=rs_ref * ratio**rs_exponent,
         redshift_object=redshift_lens,
         redshift_source=redshift_source,
         H0=H0,
@@ -467,9 +515,9 @@ bcg_mass.centre = individual_centres[0]  # [FIXED]
 bcg_mass.sigma = af.UniformPrior(
     lower_limit=200.0, upper_limit=600.0
 )  # [FREE] BCG mass + member anchor
-bcg_mass.r_core = 0.3  # [FIXED]
+bcg_mass.r_core = 0.0  # [FIXED] vanishing core
 bcg_mass.r_cut = af.UniformPrior(
-    lower_limit=20.0, upper_limit=200.0
+    lower_limit=2.0, upper_limit=200.0
 )  # [FREE] BCG's own truncation
 bcg_mass.redshift_object = redshift_lens
 bcg_mass.redshift_source = redshift_source
@@ -479,7 +527,7 @@ bcg = af.Model(al.Galaxy, redshift=redshift_lens, mass=bcg_mass)
 
 # --- Other individually-freed galaxies (still independent — e.g. a member on an arc) ---
 individual_sigma_priors = [(200.0, 600.0), (150.0, 450.0)]
-individual_rcut_priors = [(20.0, 200.0), (20.0, 150.0)]
+individual_rcut_priors = [(2.0, 200.0), (2.0, 150.0)]
 
 other_individual_galaxies = []
 for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
@@ -490,7 +538,7 @@ for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
     mass.sigma = af.UniformPrior(
         lower_limit=sigma_lo, upper_limit=sigma_hi
     )  # [FREE] independent of the BCG
-    mass.r_core = 0.3
+    mass.r_core = 0.0  # [FIXED] vanishing core
     mass.r_cut = af.UniformPrior(lower_limit=rcut_lo, upper_limit=rcut_hi)  # [FREE]
     mass.redshift_object = redshift_lens
     mass.redshift_source = redshift_source
@@ -502,8 +550,9 @@ for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
 
 # --- Members: normalized to the BCG's OWN sigma. ZERO new free parameters. ---
 mag0 = individual_magnitudes[0]  # [FIXED] = BCG magnitude
-r_core_ref = 0.15  # [FIXED]
-r_cut_ref = 20.0  # [FIXED]
+r_core_ref = 0.0  # [FIXED] vanishing core — never scaled
+r_cut_ref = 5.0  # [FIXED]
+rcut_exponent = 0.7  # [TIED] = 1 + gamma - 2*alpha (alpha = 0.25, gamma = 0.2)
 
 mass_anchored_members = []
 for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
@@ -514,8 +563,8 @@ for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
     mass.sigma = (
         bcg_mass.sigma * luminosity_ratio**0.25
     )  # tied to the BCG's free sigma -> NO new parameter
-    mass.r_core = r_core_ref * luminosity_ratio**0.5
-    mass.r_cut = r_cut_ref * luminosity_ratio**0.5
+    mass.r_core = r_core_ref  # [FIXED] not scaled with luminosity
+    mass.r_cut = r_cut_ref * luminosity_ratio**rcut_exponent
     mass.redshift_object = redshift_lens
     mass.redshift_source = redshift_source
     mass.H0 = H0
@@ -581,7 +630,7 @@ free ``r_cut_ref`` as well, so the member population has **two** shared free par
 normalization and a truncation normalization:
 
     sigma_i = sigma_ref * (L/L_ref)^0.25       # sigma_ref FREE  (as Model 1)
-    r_cut_i = r_cut_ref * (L/L_ref)^0.5        # r_cut_ref now FREE too
+    r_cut_i = r_cut_ref * (L/L_ref)^0.7        # r_cut_ref now FREE too (beta_cut = 1 + gamma - 2*alpha)
 
 Every member's truncation now scales from a *free* reference instead of a fixed one. It is a one-symbol
 change (``r_cut_ref`` becomes a prior) — but it is a real modelling decision, so it earns a section.
@@ -590,7 +639,12 @@ change (``r_cut_ref`` becomes a prior) — but it is a real modelling decision, 
 carries at large radius, and the data can constrain it. Lenstool's ``potfile`` routinely optimizes both
 ``sigma*`` and ``r_cut*``. You free it when the members contribute enough lensing that their outer mass
 matters; you fix it (Model 1) when they do not, to save a parameter and avoid a weakly-constrained
-direction.
+direction. Constraining ``r_cut_ref`` from lensing is also scientifically interesting in its own right:
+the compactness of cluster members' truncated subhalos is directly related to the galaxy-galaxy
+strong-lensing excess in clusters reported by Meneghetti et al. (2020, Science) — observed members are
+substantially more efficient galaxy-galaxy lenses than their LCDM-simulation counterparts, and the
+fitted ``r_cut_ref`` is the model-side handle on that tension. Lensing-constrained values are typically
+~5".
 
 **Free vs fixed.** As Model 1, but the member tier now has 2 free parameters (``sigma_ref`` +
 ``r_cut_ref``) instead of 1. Total: 10.
@@ -612,7 +666,7 @@ cluster_halo = af.Model(al.Galaxy, redshift=redshift_lens, mass=halo_mass)
 
 # --- Individually-modelled galaxies: as Model 1 ---
 individual_sigma_priors = [(200.0, 600.0), (150.0, 450.0)]
-individual_rcut_priors = [(20.0, 200.0), (20.0, 150.0)]
+individual_rcut_priors = [(2.0, 200.0), (2.0, 150.0)]
 
 individual_galaxies = []
 for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
@@ -621,7 +675,7 @@ for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = centre
     mass.sigma = af.UniformPrior(lower_limit=sigma_lo, upper_limit=sigma_hi)  # [FREE]
-    mass.r_core = 0.3
+    mass.r_core = 0.0  # [FIXED] vanishing core
     mass.r_cut = af.UniformPrior(lower_limit=rcut_lo, upper_limit=rcut_hi)  # [FREE]
     mass.redshift_object = redshift_lens
     mass.redshift_source = redshift_source
@@ -632,12 +686,13 @@ for centre, (sigma_lo, sigma_hi), (rcut_lo, rcut_hi) in zip(
 # --- Members: TWO free normalizations, sigma_ref and r_cut_ref ---
 sigma_ref = af.UniformPrior(lower_limit=100.0, upper_limit=400.0)  # [FREE] km/s
 r_cut_ref = af.UniformPrior(
-    lower_limit=5.0, upper_limit=50.0
-)  # [FREE] arcsec  <-- now a prior, not a constant
+    lower_limit=1.0, upper_limit=20.0
+)  # [FREE] arcsec  <-- now a prior, not a constant; lensing-constrained values are typically ~5"
 mag0 = individual_magnitudes[0]  # [FIXED]
-sigma_exponent = 0.25  # [FIXED]
-radius_exponent = 0.5  # [FIXED]
-r_core_ref = 0.15  # [FIXED] (the core reference is usually kept fixed even in the 2-parameter relation)
+sigma_exponent = 0.25  # [FIXED] alpha
+gamma = 0.2  # [FIXED]
+rcut_exponent = 1.0 + gamma - 2.0 * sigma_exponent  # [TIED] beta_cut = 0.7
+r_core_ref = 0.0  # [FIXED] vanishing core — never scaled with luminosity
 
 scaling_galaxies = []
 for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
@@ -646,8 +701,8 @@ for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
     mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = centre
     mass.sigma = sigma_ref * luminosity_ratio**sigma_exponent  # tied to free sigma_ref
-    mass.r_core = r_core_ref * luminosity_ratio**radius_exponent  # fixed reference
-    mass.r_cut = r_cut_ref * luminosity_ratio**radius_exponent  # tied to free r_cut_ref
+    mass.r_core = r_core_ref  # [FIXED] not scaled with luminosity
+    mass.r_cut = r_cut_ref * luminosity_ratio**rcut_exponent  # tied to free r_cut_ref
     mass.redshift_object = redshift_lens
     mass.redshift_source = redshift_source
     mass.H0 = H0

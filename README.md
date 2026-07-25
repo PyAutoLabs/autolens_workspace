@@ -64,6 +64,7 @@ The examples in the `notebooks` and `scripts` folders are structured as follows:
 - `imaging`: Examples for galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, Euclid).
 - `interferometer`: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA).
 - `point_source`: Examples for strong lens point source datasets.
+- `multi_galaxy`: Examples for multi-galaxy strong lenses (two or more co-dominant lens galaxies, no host halo).
 - `group`: Examples for group scale strong lenses.
 - `cluster`: Examples for cluster scale strong lenses.
 
@@ -102,23 +103,34 @@ For installation issues, bug reports, or feature requests, please raise an issue
 To make changes in the tutorial notebooks, please make changes in the corresponding python files(.py) present in the
 `scripts` folder of each chapter. Please note that  marker `# %%` alternates between code cells and markdown cells.
 
-## Galaxy-Scale vs Group Scale Lenses
+## The Lensing Regime Ladder: Galaxy, Multi-Galaxy, Group and Cluster
 
-The `imaging`, `interferometer` and `point_source` packages provides scripts for modeling galaxy-scale lenses,
-whereas the `group` package provides scripts for modeling group-scale lenses.
+The `imaging`, `interferometer` and `point_source` packages provide scripts for modeling galaxy-scale lenses.
+Above the single-galaxy scale, **PyAutoLens** organises lenses into a ladder of three regimes, each with its own
+package. Every group and cluster is a multi-galaxy system, but not vice versa — what changes as you climb is
+first the mass model, then the entire analysis strategy:
 
-But what are the defitions of a galaxy scale and group scale lens? The line between the two is blurry, but is defined
-roughly as follows:
+- A **galaxy-scale** lens (`imaging`, `interferometer`, `point_source`) can be modeled to high accuracy using a
+  single mass distribution for the main lens galaxy. Nearby galaxies may be added as minor perturbers via the
+  extra-galaxies API, but for many science cases this is not strictly necessary.
 
-- A galaxy-scale lens is a system which can be modeled to a high level of accuracy using a single mass distribution
-  for the main lens galaxy. There are examples which include additional galaxies in the model to make small improvements
-  on the overall lens model, but for many science cases this is not stricly necessary.
+- A **multi-galaxy** lens (`multi_galaxy`) has two or more galaxies of comparable mass which all contribute
+  significantly to the lensing — the notion of a single 'main' lens galaxy is ill-posed, and every co-dominant
+  deflector gets its own free light and mass model. There is no shared dark-matter halo. The analysis workflow
+  is unchanged from galaxy scale: one extended source, reconstructed at pixel level from the imaging.
 
-- A group scale lens is a system which cannot be modeled to a high level of accuracy using a single mass distribution.
-  The notion of a 'main' lens galaxy is illposed and two or more main lens galaxies are required to fit an accurate model.
+- A **group-scale** lens (`group`) adds a dominant group-scale dark-matter halo (~10^13-10^14 solar masses) as
+  an *explicit modelling choice*, with member galaxies organised into tiers (main / extra / scaling galaxies,
+  the latter tied to a luminosity scaling relation — tidally truncated dPIE members in the Lenstool-convention
+  workflow of `group/features/group_halo`, untruncated isothermals in the PyAutoLens-native default of
+  `group/features/scaling_relation`). The source modelling is unchanged:
+  one dominant extended source, fitted at pixel level.
 
-If you have data which requires the lens model to include additional galaxies, whether it be a galaxy or group
-scale system, keep an eye out for **PyAutoLens**'s '**extra galaxies API**' which is designed to facilitate this.
+- A **cluster-scale** lens (`cluster`) shares the group's mass framework (host halo(s) + many truncated members
+  on scaling relations) but is distinguished by its **analysis strategy**: dozens of sources at different
+  redshifts are fitted as point-source multiple-image positions with multi-plane ray tracing, and the lens
+  galaxies' light is not modeled. Extended source reconstruction becomes a specialised follow-up of individual
+  systems, not the default workflow.
 
 ## Build Configuration
 
