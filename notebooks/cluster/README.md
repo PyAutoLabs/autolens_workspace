@@ -1,6 +1,14 @@
 The `cluster` folder contains example scripts showing how to analyse cluster scale strong lenses,
 which are lenses where 10-100+ galaxies are responsible for the lensing of 3-50+ sources.
 
+Clusters are the top rung of the regime ladder (`multi_galaxy` -> `group` -> `cluster`; every cluster is a
+multi-galaxy system, but not vice versa). A cluster's mass framework is the same as a group's — host halo(s)
+plus many tidally truncated members on luminosity scaling relations. What distinguishes the cluster regime is
+the **analysis strategy**: with many sources spanning a wide redshift range, the default workflow fits
+point-source multiple-image positions (multi-plane, per-source redshifts) rather than reconstructing extended
+sources at pixel level, and the lens galaxies' light is not modeled. Extended-source reconstruction of
+individual systems is a specialised follow-up analysis.
+
 # Start Here
 
 New users should read the `start_here` example, which gives an overview of all examples in the folder.
