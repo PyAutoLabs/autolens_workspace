@@ -7,6 +7,7 @@ interferometer/modeling.py
 # point_source/start_here.py  # disabled: bypass mode tuple-path KeyError on point source models (rhayes777/PyAutoFit#1179)
 # group/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1
 group/modeling.py
+group/features/group_halo/modeling.py
 multi_galaxy/start_here.py
 multi_galaxy/modeling.py
 # multi/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1

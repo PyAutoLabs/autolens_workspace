@@ -11,6 +11,8 @@ with all models, descriptions, and API usage specific to the group-scale case.
 
 Core features:
 
+- `group_halo`: The group regime's signature tutorial — the group dark-matter halo as an explicit
+  modelling choice, fitting the same data with and without it (truncated dPIE members in both).
 - `linear_light_profiles`: All galaxy light profiles use linear algebra to solve for intensity.
 - `multi_gaussian_expansion`: Galaxy light modeled as ~10-30 Gaussian basis functions (MGE).
 - `no_lens_light`: All group galaxies have no visible light — mass-only models.
