@@ -170,7 +170,7 @@ data_eps = al.preprocess.array_adus_to_eps(
 aplt.plot_array(array=data_eps, title="")
 
 """
-In `autolens_workspace/*/data_preparation/noise_map.py` we show that a noise-map must also be in units of
+In `autolens_workspace/*/imaging/data_preparation/examples/noise_map.py` we show that a noise-map must also be in units of
 electrons per second, and that the same functions as above can be used to do this.
 
 __Resizing Data__

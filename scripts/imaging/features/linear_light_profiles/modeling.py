@@ -15,7 +15,7 @@ __Contents__
 - **Advantages & Disadvantages:** Each light profile's `intensity` parameter is therefore not a free parameter in the model-fit.
 - **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
 - **Model:** Compose the lens model fitted to the data.
-- **Notes:** This script is identical to `modeling/start_here.py` except that the light profiles are switched to.
+- **Notes:** This script is identical to `imaging/start_here.py` except that the light profiles are switched to.
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
 - **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
 - **Model Cookbook:** A full description of model composition is provided by the model cookbook.
@@ -71,11 +71,11 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/start_here.ipynb` notebook.
 
 __Notes__
 
-This script is identical to `modeling/start_here.py` except that the light profiles are switched to linear light
+This script is identical to `imaging/start_here.py` except that the light profiles are switched to linear light
 profiles.
 """
 
@@ -141,7 +141,7 @@ aplt.subplot_imaging_dataset(dataset=dataset)
 __Over Sampling__
 
 Apply adaptive over sampling to ensure the lens galaxy light calculation is accurate, you can read up on over-sampling 
-in more detail via the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
+in more detail via the `autolens_workspace/*/guides/advanced/over_sampling.ipynb` notebook.
 """
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,

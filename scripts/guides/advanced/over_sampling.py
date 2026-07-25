@@ -415,7 +415,7 @@ There is a way to set up an adaptive over sampling grid for a lensed source, how
 understanding the advanced lens modeling feature search chaining.
 
 An example of how to use search chaining to over sample sources efficient is provided in 
-the `autolens_workspace/*/guides/modeling/chaining/over_sampling.ipynb` example.
+the `autolens_workspace/*/guides/advanced/over_sampling_chaining.ipynb` example.
 
 __Dataset & Modeling__
 

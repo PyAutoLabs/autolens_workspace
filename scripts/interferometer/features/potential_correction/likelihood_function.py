@@ -447,7 +447,7 @@ The iterative refinement engine (`al.pc.IterFitDpsiSrcInterferometer`, which re-
 lens and re-solves) runs its Levenberg-Marquardt kernels through the PyAuto `xp` convention: written once with
 `xp=np` (what we just did by hand), and runnable under `xp=jax.numpy` for jit-compiled, accelerator-ready
 execution. The sparse operator's FFT machinery is JAX-accelerated in all cases — see
-`autolens_workspace_test/scripts/jax_likelihood_functions/interferometer/potential_correction.py` for the
+`autolens_workspace_test/scripts/interferometer/jax_likelihood/potential_correction.py` for the
 numerical agreement checks.
 
 __Wrap Up__

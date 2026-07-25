@@ -7,7 +7,7 @@ This script simulates `Interferometer` data of a 'galaxy-scale' strong lens wher
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The source galaxy's light is a Sersic.
 
-This dataset is paired with the script `multi/simulators/lens_sersic.py` and therefore
+This dataset is paired with the script `multi/simulator.py` and therefore
 provides interferometer observations of the same strong lens.
 
 It is used to demonstrate the combination of imaging and interferometer datasets.
@@ -85,7 +85,7 @@ __Ray Tracing__
 
 Setup the lens galaxy's mass (SIE+Shear) and source galaxy light (elliptical Sersic) for this simulated lens.
 
-The lens galaxy's mass model is identical to that of the script `multi/simulators/simple__no_lens_light.py`, because
+The lens galaxy's mass model is identical to that of the script `multi/simulator.py`, because
 we will use this dataset to demonstrate the combination of imaging and interferometer datasets.
 
 the source galaxy morphology is very different to that script, because the sub-milimeter observations observe 

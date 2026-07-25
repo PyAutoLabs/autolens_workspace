@@ -18,7 +18,7 @@ the COSMOGRAIL monitoring campaign (Tewes et al. 2013), making it a cornerstone 
 cosmography — the technique that measures the Hubble constant from lensed quasars.
 
 We focus on a *galaxy-scale* lens (a single lens galaxy). If you have multiple lens galaxies,
-see the `start_here_group.ipynb` and `start_here_cluster.ipynb` examples.
+see the `group/start_here.ipynb` and `cluster/start_here.ipynb` examples.
 
 Point source modeling uses the positions of the lensed source in the image-plane, and optionally may also
 use their fluxes and time delays. Lensed quasars are also commonly observed with CCD imaging, which is

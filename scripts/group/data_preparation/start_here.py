@@ -186,7 +186,7 @@ and centres are all free parameters in the model-fit (or initialized from these 
 
 The centres can be determined using one of the following methods:
 
- - The GUI tool provided in `data_preparation/gui/main_lens_centres.py`, which allows you to click on the image
+ - The GUI tool provided in `imaging/data_preparation/gui/lens_light_centre.py`, which allows you to click on the image
    to mark the centres interactively.
 
  - Image processing software (e.g. ds9, IRAF) to identify the galaxy centres from the image.
@@ -195,7 +195,7 @@ The centres can be determined using one of the following methods:
 
 **Links / Resources:**
 
-- `data_preparation/gui/main_lens_centres.py`: use a Graphical User Interface (GUI) to mark the main lens galaxy centres.
+- `imaging/data_preparation/gui/lens_light_centre.py`: use a Graphical User Interface (GUI) to mark the main lens galaxy centres.
 
 __Extra Galaxies Centres (Optional)__
 
@@ -227,7 +227,7 @@ and speeding up the analysis. It is still a choice whether their mass is include
 **Links / Resources:**
 
 - `data_preparation/gui/extra_galaxies_centres.py`: use a Graphical User Interface (GUI) to mark the extra galaxy centres.
-- `features/extra_galaxies.py` how to use extra galaxies in a model-fit, including loading the extra galaxy centres.
+- `features/extra_galaxies/modeling.py` how to use extra galaxies in a model-fit, including loading the extra galaxy centres.
 
 __Scaling Galaxies Centres (Optional)__
 
@@ -252,7 +252,7 @@ In practice, a group-scale lens model may include both extra galaxies and scalin
 
 **Links / Resources:**
 
-- `data_preparation/gui/scaling_galaxies_centres.py`: use a Graphical User Interface (GUI) to mark the scaling galaxy centres.
+- `imaging/data_preparation/gui/extra_galaxies_centres.py`: use a Graphical User Interface (GUI) to mark the scaling galaxy centres.
 
 __Mask (Optional)__
 
@@ -275,7 +275,7 @@ script and omit this data preparation tutorial.
 **Links / Resources:**
 
 - `data_preparation/examples/optional/mask.ipynb`: tools to create a bespoke mask for your dataset.
-- `data_preparation/examples/gui/mask.ipynb`: use a Graphical User Interface (GUI) to create a bespoke mask.
+- `data_preparation/gui/mask.ipynb`: use a Graphical User Interface (GUI) to create a bespoke mask.
 
 __Positions (Optional)__
 
@@ -329,8 +329,8 @@ may be a better approach.
 **Links / Resources:**
 
 - `data_preparation/examples/optional/mask_extra_galaxies.py`: create the extra galaxies mask manually via a Python script.
-- `data_preparation/gui/extra_galaxies_mask.ipynb` use a Graphical User Interface (GUI) to create the extra galaxies mask.
-- `features/extra_galaxies.py` how to use the extra galaxies mask in a model-fit.
+- `data_preparation/gui/mask_extra_galaxies.ipynb` use a Graphical User Interface (GUI) to create the extra galaxies mask.
+- `features/extra_galaxies/modeling.py` how to use the extra galaxies mask in a model-fit.
 
 __Info (Optional)__
 

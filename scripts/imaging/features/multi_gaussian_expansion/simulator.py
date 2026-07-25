@@ -9,7 +9,7 @@ This script uses a basis of 14 elliptical Gaussians to simulate the light of a m
 these irregular and asymmetric features. The parameters of the Gaussian basis are derived from a Multi-Gaussian
 fit to a real strong lens.
 
-This dataset is used in the `modeling/features/multi_gaussian_expansion.py` script to illustrate how to fit these
+This dataset is used in the `imaging/features/multi_gaussian_expansion/modeling.py` script to illustrate how to fit these
 features using a Multi-Gaussian Expansion (MGE).
 
 __Contents__
@@ -37,7 +37,7 @@ emission.
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/simulator.ipynb` notebook.
 """
 
 from pathlib import Path

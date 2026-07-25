@@ -16,7 +16,7 @@ It is used in `autolens_workspace/notebooks/advanced/graphical` to illustrate ho
 be fitted to a large sample of strong lenses in order to infer the glboal properties of the lens sample.
 
 This script uses the signal-to-noise based light profiles described in the
-script `imaging/features/simulator_/manual_signal_to_noise_ratio.ipynb`, to make it straight forward to ensure the lens
+script `imaging/features/simulator_manual_signal_to_noise_ratio.ipynb`, to make it straight forward to ensure the lens
 and source galaxies are visible in each image.
 
 __Contents__
@@ -37,7 +37,7 @@ This script simulates a sample of `Imaging` data of 'galaxy-scale' strong lenses
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/simulator.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

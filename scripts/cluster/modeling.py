@@ -149,7 +149,7 @@ for dataset in dataset_list:
 We can plot the cluster image with each source's positions overlaid.
 
 Cluster-scale visualization (per-source colouring, per-image-group zoom panels, kpc scale bars) is
-prototyped in ``autolens_workspace_test/scripts/imaging/visualization_cluster.py``; the default
+prototyped in ``autolens_workspace_test/scripts/cluster/visualization.py``; the default
 ``aplt`` helpers below are sufficient for this script.
 """
 aplt.plot_array(array=data, title="")

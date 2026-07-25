@@ -10,8 +10,8 @@ as possible. In about 15 minutes you'll be able to point the code at your own FI
 fit your first group-scale lens.
 
 We focus on a *group-scale* lens (multiple lens galaxies nearby). If you have a single
-lens galaxy, see the `start_here_imaging.ipynb` example, if your system has many lens and sources galaxies
-see `start_here_cluster.ipynb` example.
+lens galaxy, see the `imaging/start_here.ipynb` example, if your system has many lens and sources galaxies
+see `cluster/start_here.ipynb` example.
 
 This example uses Euclid CCD imaging data, but the workflow for interferometer data on group scale lenses is similar.
 The lens has 2 main lens galaxies, so the model is not too complex, meaning this example runs in about 10 minutes on a

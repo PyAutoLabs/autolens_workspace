@@ -81,7 +81,7 @@ The second example in this script therefore uses an MGE source. We strongly reco
 MGE lens light models and source models, instead of the elliptical Sersic profiles, as soon as possible!
 
 To capture the irregular and asymmetric features of the source's morphology, or reconstruct multiple source galaxies,
-we recommend using a pixelized source reconstruction (see `autolens_workspace/modeling/features/pixelization.py`).
+we recommend using a pixelized source reconstruction (see `autolens_workspace/scripts/imaging/features/pixelization/modeling.py`).
 Combining this with an MGE for the len's light can be a very powerful way to model strong lenses!
 
 __Model__
@@ -94,7 +94,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/start_here.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -164,7 +164,7 @@ aplt.subplot_imaging_dataset(dataset=dataset)
 __Over Sampling__
 
 Apply adaptive over sampling to ensure the lens galaxy light calculation is accurate, you can read up on over-sampling 
-in more detail via the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
+in more detail via the `autolens_workspace/*/guides/advanced/over_sampling.ipynb` notebook.
 """
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,

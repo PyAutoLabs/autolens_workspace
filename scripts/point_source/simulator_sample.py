@@ -37,7 +37,7 @@ This script simulates a sample of `PointDataset` data of 'galaxy-scale' strong l
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `point_source/simulator.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

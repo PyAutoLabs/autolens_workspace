@@ -39,7 +39,7 @@ has a (y,x) `centre` (y,x), but does not have other parameters like elliptical c
 
 This changes how the ray-tracing calculations that go into point source modeling are performed. They are briefly
 touched on in this example, but for a more detailed explanation checkout the
-`autolens_workspace/*/overview/overview_8_point_sources.py` example.
+`autolens_workspace/*/point_source/start_here.py` example.
 
 __Model__
 

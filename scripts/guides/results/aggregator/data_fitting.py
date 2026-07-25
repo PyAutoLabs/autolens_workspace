@@ -179,7 +179,7 @@ for fit_list in fit_gen:
 """
 __Errors (Random draws from PDF)__
 
-In the `examples/models.py` example we showed how `Tracer objects could be randomly drawn form the Probability 
+In the `aggregator/models.py` example we showed how `Tracer objects could be randomly drawn form the Probability 
 Distribution Function, in order to quantity things such as errors.
 
 The same approach can be used with `FitImaging` objects, to investigate how the properties of the fit vary within

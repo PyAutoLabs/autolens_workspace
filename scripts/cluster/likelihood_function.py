@@ -256,7 +256,7 @@ plane_j=<source's plane index>)``. The function walks the planes from ``plane_i`
 in redshift order, applying the per-plane :math:`\\alpha_{i}(\\theta_{i})` sums and the scaling
 factors :math:`\\beta_{ij}` automatically. The full derivation of the recursive equation, the
 sign conventions, and the cosmological scaling factors live in the multi-plane guide at
-``autolens_workspace/scripts/guides/lensing/multi_plane.py``.
+``autolens_workspace/scripts/guides/advanced/multi_plane.py``.
 
 In practice the easiest entry point isn't ``deflections_between_planes_from`` (which returns the
 *differences* between plane positions and requires you to apply the lens equation manually) but
@@ -360,7 +360,7 @@ The conceptual chain is **deflection field → Hessian via finite-difference →
 (convergence κ and shear γ) → magnification :math:`\\mu = 1 / |(1-\\kappa)^2 - \\gamma^2|`**.
 
 Full derivation and the eigenvalue / critical-curve discussion live in the lens-calc guide at
-``autolens_workspace/scripts/guides/lensing/lens_calc.py``.
+``autolens_workspace/scripts/guides/lens_calc.py``.
 
 For multi-plane lenses the function uses the full multi-plane deflection in the Hessian, so the
 magnification correctly reflects the cumulative distortion through every intervening plane. The
@@ -547,9 +547,9 @@ unobservable central image of a strong-lens configuration) are discarded so the 
 unphysical demagnified solutions to the observed multi-image set.
 
 A standalone walkthrough of the triangle-refinement algorithm (sub-grid traversal, magnification
-filtering, multi-plane handling, JAX-compatibility) lives in
-``autolens_workspace/scripts/guides/point_source/triangle_solver.py`` — TODO, currently not yet
-written.
+filtering, multi-plane handling, JAX-compatibility) has not yet been written. The closest reference
+is ``autolens_workspace/scripts/guides/point_source_pairing.py``, which documents the pairing
+schemes and solver settings the refinement feeds.
 
 In code, the solver is constructed once and reused per evaluation:
 """
@@ -807,9 +807,9 @@ Next steps:
   here, with priors and ``AnalysisPoint`` configuration.
 - ``autolens_workspace_test/scripts/cluster/likelihood_sanity.py`` — perturbation sweep that
   surfaces the ``PointSolver`` precision-floor pathology described in the source-plane section.
-- ``autolens_workspace/scripts/guides/lensing/multi_plane.py`` — full derivation of the recursive
+- ``autolens_workspace/scripts/guides/advanced/multi_plane.py`` — full derivation of the recursive
   lens equation.
-- ``autolens_workspace/scripts/guides/lensing/lens_calc.py`` — Hessian / magnification /
+- ``autolens_workspace/scripts/guides/lens_calc.py`` — Hessian / magnification /
   critical-curve mechanics.
 
 For a deeper understanding of cluster lens modelling and point-source likelihoods, the

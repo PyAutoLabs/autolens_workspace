@@ -61,7 +61,7 @@ through the following first:
  - `interferometer/features/pixelization/likelihood_function.py` — full step-by-step walkthrough of the
    single-channel pixelization likelihood. This script is essentially a per-channel restatement of that one
    plus a sum, so the entire body below uses cross-references to its sections.
- - `interferometer/light_profile/log_likelihood_function.py` — the simpler light-profile likelihood, which
+ - `interferometer/likelihood_function.py` — the simpler light-profile likelihood, which
    introduces visibility-space inner products and the NUFFT without the pixelization linear algebra.
 
 __Contents__
@@ -656,7 +656,7 @@ For deeper dives:
  - `data_preparation.py` — how to bridge from CASA's 4D `(n_pol, n_chan, n_vis, 2)` output to the per-channel
    `Interferometer` objects this walkthrough loads.
 
-A planned `autolens_workspace_test/scripts/jax_likelihood_functions/datacube/` folder will hold end-to-end
+The `autolens_workspace_test/scripts/interferometer/datacube/` folder holds the end-to-end
 JAX-JIT correctness tests for the cube likelihood. The JIT-vs-eager `rtol=1e-4` regression that previously
-lived in this file moves there once those test scripts land.
+lived in this file now lives there.
 """

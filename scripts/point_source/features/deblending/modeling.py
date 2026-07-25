@@ -4,7 +4,7 @@ Modeling Features: Deblending
 
 The image-plane multiple-image positions of a lensed point source (e.g. a quasar or supernova) are used as the
 dataset in point-source modeling. For example, simulated values were input into the `PointDataset` object in the
-`point_source/modeling/start_here.ipynb` example.
+`point_source/start_here.ipynb` example.
 
 These positions must first be measured from imaging data of the lensed point-source. A simple way to do this is
 to locate the brightest 2 or 4 pixels of the lensed point-source (e.g. via a GUI or ds9) and use these values
@@ -77,7 +77,7 @@ It also uses the following features described in the `modeling/features` workspa
 - `linear_light_profiles.py`: The model includes light profiles which use linear algebra to solve for their
    intensity, reducing model complexity.
 
-- `advanced/operated_light_profiles.py`: There are light profiles which are assumed to already be convolved with
+- `imaging/features/advanced/operated_light_profile/modeling.py`: There are light profiles which are assumed to already be convolved with
   the instrumental PSF (e.g. point sources), commonly used for modeling bright AGN in the centre of a galaxy.
 
 It is recommended you are familiar with imaging modeling and these features before reading this example.
@@ -93,7 +93,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' point-source strong le
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `point_source/start_here.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -361,5 +361,5 @@ The lensed source image-plane positions, inferred to sub-pixel precision, are pr
 `PointDataset` object and .json file.
 
 They can be used as input positions in a point-source model-fit, using an identical API to 
-the `point_source/modeling/start_here.ipynb` example, to perform mass modeling of the point source dataset.
+the `point_source/start_here.ipynb` example, to perform mass modeling of the point source dataset.
 """

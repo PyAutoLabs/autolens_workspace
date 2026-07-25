@@ -10,7 +10,7 @@ as possible. In about 15 minutes you’ll be able to point the code at your own 
 fit your first lens.
 
 We focus on a *galaxy-scale* lens (a single lens galaxy). If you have multiple lens galaxies,
-see the `start_here_group.ipynb` and `start_here_cluster.ipynb` examples.
+see the `group/start_here.ipynb` and `cluster/start_here.ipynb` examples.
 
 __Contents__
 

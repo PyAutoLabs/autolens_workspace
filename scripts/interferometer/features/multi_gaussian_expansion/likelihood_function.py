@@ -24,7 +24,7 @@ __Prerequisites__
 
 The MGE likelihood function builds on:
 
- - `interferometer/log_likelihood_function.ipynb` — the standard interferometer parametric likelihood
+ - `interferometer/likelihood_function.ipynb` — the standard interferometer parametric likelihood
    function (NUFFT of a real-space image, visibility-plane $\\chi^2$).
  - `interferometer/features/linear_light_profiles/likelihood_function.ipynb` — the single-component
    visibility-plane linear inversion (data vector, curvature matrix, positive-only solver). The MGE is
