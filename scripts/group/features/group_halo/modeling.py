@@ -117,7 +117,8 @@ redshift_source = 1.0
 H0 = 67.66
 Om0 = 0.30966
 
-# Illustrative member luminosity ratios relative to the BGG (from photometry in a real analysis).
+# Member luminosity ratios relative to the BGG — matching the simulator truth here
+# (in a real analysis these come from photometry).
 member_luminosity_ratios = [1.0, 0.25, 0.15]
 
 alpha = 0.25  # Faber-Jackson dispersion exponent

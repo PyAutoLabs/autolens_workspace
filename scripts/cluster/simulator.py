@@ -94,7 +94,7 @@ appear in a Lenstool ``.par`` file or a published cluster paper's results table:
    physical central dispersion — sigma_0 = sqrt(3/2) * sigma_LT (Eliasdottir et al. 2007, App. A) — so
    quote ``.par``/table values unchanged and never feed a measured stellar dispersion here.
  - `r_core` (arcsec): the core radius, below which the density profile flattens.
- - `r_cut` (arcsec): the truncation radius, above which the density falls as R^-4 (~10–30" for cluster members).
+ - `r_cut` (arcsec): the truncation radius, above which the density falls as R^-4 (typically ~5" for cluster members).
  - `redshift_object` / `redshift_source`: the redshifts entering the D_LS / D_S normalization of the
    internal lens strength ``b0 = 6 * 648000 * (sigma / c)^2 * (D_LS / D_S)`` arcsec. In this multi-plane
    cluster, ``redshift_source`` is anchored to the *furthest* source (``z = 2.0``) — the same convention
@@ -147,7 +147,7 @@ value when fit to the simulated point datasets. Adding more scaling members amou
 observational catalogues quoting magnitudes convert via ``L_i / L_ref = 10 ** (0.4 * (m_ref - m_i))``.
 Kinematic calibrations of the exponent exist for when higher fidelity is needed — Bergamini et al. 2019
 measure sigma ∝ L^0.27-0.28 from MUSE member kinematics and derive the r_cut exponent from the
-fundamental plane (beta_cut = gamma - 2*alpha + 1) — but 0.25 / 0.5 are the standard defaults.
+fundamental plane (beta_cut = gamma - 2*alpha + 1) — but 0.25 / 0.7 are the standard defaults.
 
 __NFWMCRLudlow Host Halo__
 
@@ -312,8 +312,9 @@ __Main Lens Galaxies__
 The 2 cluster member galaxies. Each is given a `SersicSph` light profile (used only for visualization —
 the imaging data is not used in point-source modeling) and a `dPIEMassSph` mass profile with hand-tuned
 parameters representative of cluster members: a larger central BCG and one smaller satellite galaxy.
-Both have vanishing cores (r_core = 0) — the standard convention for BCGs and members alike, with only
-the cluster-scale halo retaining a core.
+Both have vanishing cores (r_core = 0) — the standard convention for BCGs and members alike (cores are a
+host-halo feature of dPIE-host models; this example's host is an NFW, which parameterizes its centre
+differently and has no core parameter).
 """
 main_lens_dpie_params = [
     # (r_core, r_cut, sigma)  per galaxy — arcsec, arcsec, km/s

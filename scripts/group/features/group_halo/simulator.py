@@ -24,6 +24,16 @@ __The mass components (and the truncation convention)__
 
 Lens light is deliberately omitted so the `modeling.py` tutorial isolates the mass question; the standard
 group light handling (MGE per galaxy) is covered by `group/start_here.py` and `group/modeling.py`.
+
+__Contents__
+
+- **Dataset Paths:** Where the dataset is written.
+- **Simulation Switch:** The `include_group_halo` flag that flips the tutorial's verdict.
+- **Grid / PSF / Simulator:** Standard imaging simulation setup.
+- **Group Halo:** The group-scale dPIE dark-matter halo.
+- **BGG + Members:** Truncated members placed exactly on the tied scaling relation.
+- **Source Galaxy / Ray Tracing / Dataset:** Simulate and write the dataset.
+- **Tracer json + Centres:** Truth records for the modeling script.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -122,26 +132,33 @@ halo = al.Galaxy(
 __BGG + Members__
 
 The BGG and two members: dPIE profiles with vanishing cores (r_core = 0; the dPIE is analytic there) and
-finite truncations — tidally stripped subhalos inside the group potential. Truncations follow the modern
-scaling convention (r_cut smaller for fainter members).
+finite truncations — tidally stripped subhalos inside the group potential.
+
+The member truths are placed EXACTLY on the modern tied scaling relation the `modeling.py` tutorial
+fits — sigma_i = sigma_BGG * (L_i/L_BGG)^alpha and r_cut_i = r_cut_BGG * (L_i/L_BGG)^beta_cut with
+alpha = 0.25 and beta_cut = 1 + gamma - 2*alpha = 0.7 (gamma = 0.2) — so the tied model can recover the
+truth and the halo-vs-no-halo comparison is not contaminated by member mis-specification. The luminosity
+ratios below are the same ones `modeling.py` uses.
 """
-member_dpie_params = [
-    # (sigma, r_cut) — km/s, arcsec
-    (280.0, 8.0),  # BGG
-    (150.0, 4.0),
-    (120.0, 3.0),
-]
+member_luminosity_ratios = [1.0, 0.25, 0.15]  # relative to the BGG
+
+alpha = 0.25
+gamma = 0.2
+beta_cut = 1.0 + gamma - 2.0 * alpha  # 0.7
+
+bgg_sigma = 280.0  # km/s
+bgg_r_cut = 8.0  # arcsec
 
 members = []
-for centre, (sigma, r_cut) in zip(member_centres, member_dpie_params):
+for centre, luminosity_ratio in zip(member_centres, member_luminosity_ratios):
     members.append(
         al.Galaxy(
             redshift=redshift_lens,
             mass=al.mp.dPIEMassSph(
                 centre=centre,
-                sigma=sigma,
+                sigma=bgg_sigma * luminosity_ratio**alpha,
                 r_core=0.0,
-                r_cut=r_cut,
+                r_cut=bgg_r_cut * luminosity_ratio**beta_cut,
                 redshift_object=redshift_lens,
                 redshift_source=redshift_source,
                 H0=H0,

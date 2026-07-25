@@ -726,7 +726,15 @@
     "title": "Modeling Features (Group): The Group Halo \u2014 An Explicit Choice"
   },
   {
-    "contents": [],
+    "contents": [
+      "Dataset Paths",
+      "Simulation Switch",
+      "Grid / PSF / Simulator",
+      "Group Halo",
+      "BGG + Members",
+      "Source Galaxy / Ray Tracing / Dataset",
+      "Tracer json + Centres"
+    ],
     "cross_refs": [
       "cluster/mass_parameterizations.py",
       "group/modeling.py",
@@ -5795,7 +5803,6 @@
   },
   {
     "contents": [
-      "Main Lens Galaxies",
       "Dataset Paths",
       "Grid",
       "Galaxy Centres",
@@ -5808,7 +5815,8 @@
       "Visualize",
       "Tracer json",
       "Centre JSON Files",
-      "Positions"
+      "Positions",
+      "JAX Variant"
     ],
     "cross_refs": [
       "/guides/advanced/over_sampling.ipynb",

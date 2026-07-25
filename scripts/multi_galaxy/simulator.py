@@ -29,7 +29,6 @@ This script simulates `Imaging` of a 'multi-galaxy' strong lens where:
 
 __Contents__
 
-- **Main Lens Galaxies:** In the multi-galaxy regime every deflector is a main lens galaxy.
 - **Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a name.
 - **Grid:** Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated on.
 - **Galaxy Centres:** Define the centres of the two main lens galaxies.
@@ -43,8 +42,13 @@ __Contents__
 - **Tracer json:** Save the `Tracer` in the dataset folder as a .json file.
 - **Centre JSON Files:** Save the centres of the main lens galaxies as a JSON file.
 - **Positions:** Solve for and save the lensed positions of the source.
+- **JAX Variant:** Pointer to the JAX-jitted simulator pattern.
 
 __Main Lens Galaxies__
+
+Note on redshifts: this example uses the workspace-standard z_lens = 0.5 / z_source = 1.0 rather than the
+real system's z = 0.331 / 2.701 — the pair separation and Einstein radius are chosen so the lensing
+CONFIGURATION mirrors SDSS J1011+0143, not its exact distances (0.86" is ~5.3 kpc at z = 0.5).
 
 In the group and cluster regimes, galaxies are split into tiers (main galaxies, extra galaxies, scaling galaxies)
 because there are too many of them to model each one freely. The multi-galaxy regime needs no tiers: there are only
