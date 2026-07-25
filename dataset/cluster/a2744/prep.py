@@ -67,7 +67,7 @@ for k in gold:
 selected = [chosen[f] for f in sorted(chosen, key=float)]
 
 with open(OUT / "point_datasets.csv", "w", newline="") as f:
-    writer = csv.writer(f)
+    writer = csv.writer(f, lineterminator="\n")
     writer.writerow(["name", "y", "x", "positions_noise", "redshift"])
     for i, s in enumerate(selected):
         for image_id, ra, dec, z, qf in sorted(gold[s]):
@@ -92,7 +92,7 @@ bcg_1, bcg_2 = core[0], core[1]
 mag_ref = bcg_1[3]
 
 with open(OUT / "scaling_galaxies.csv", "w", newline="") as f:
-    writer = csv.writer(f)
+    writer = csv.writer(f, lineterminator="\n")
     writer.writerow(["y", "x", "luminosity"])
     for member_id, y, x, mag, radius in sorted(members, key=lambda m: m[3]):
         if member_id in (bcg_1[0], bcg_2[0]) or radius > MEMBER_RADIUS_MAX:
@@ -102,7 +102,7 @@ with open(OUT / "scaling_galaxies.csv", "w", newline="") as f:
 # --- Named-galaxy model CSVs ---
 
 with open(OUT / "mass.csv", "w", newline="") as f:
-    writer = csv.writer(f)
+    writer = csv.writer(f, lineterminator="\n")
     writer.writerow(
         ["galaxy", "attr_name", "profile_class", "y", "x", "sigma", "r_core", "r_cut",
          "mass_at_200", "redshift_object", "redshift_source", "H0", "Om0", "redshift"]
@@ -125,7 +125,7 @@ with open(OUT / "mass.csv", "w", newline="") as f:
     )
 
 with open(OUT / "point.csv", "w", newline="") as f:
-    writer = csv.writer(f)
+    writer = csv.writer(f, lineterminator="\n")
     writer.writerow(["galaxy", "attr_name", "profile_class", "y", "x", "redshift"])
     for i, s in enumerate(selected):
         positions = np.array([project(ra, dec) for _, ra, dec, _, _ in gold[s]])
