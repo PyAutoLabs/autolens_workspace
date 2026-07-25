@@ -12,6 +12,7 @@ you should go into next if you are unsure.
 - `imaging`: Examples for galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, Euclid).
 - `interferometer`: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA).
 - `point_source`: Examples for strong lens point source datasets.
+- `multi_galaxy`: Examples for multi-galaxy strong lenses (2+ co-dominant lens galaxies, no host halo).
 - `group`: Examples for group scale strong lenses.
 - `cluster`: Examples for cluster scale strong lenses.
 - `multi`: Examples for multiple datasets simultaneously (E.g. multi-wavelength imaging, imaging and interferometry).
