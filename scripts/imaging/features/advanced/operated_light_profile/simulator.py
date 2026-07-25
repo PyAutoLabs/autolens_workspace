@@ -13,7 +13,7 @@ This script simulate an `Imaging` dataset of a 'galaxy-scale' strong lens which 
 its centre. This emission uses an operated `Gaussian` light profile, which therefore is already convolved with the
 PSF.
 
-This dataset is used in `modeling/features/operated_light_profiles.py` to demonstrate how to fit this point-source
+This dataset is used in `imaging/features/advanced/operated_light_profile/modeling.py` to demonstrate how to fit this point-source
 emission using an operated light profile.
 
 __Contents__
@@ -37,7 +37,7 @@ This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/simulator.ipynb` notebook.
 """
 
 from pathlib import Path

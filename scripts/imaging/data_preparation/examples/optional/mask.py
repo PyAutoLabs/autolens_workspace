@@ -17,7 +17,7 @@ script and omit this data preparation tutorial.
 
 Links / Resources:
 
-The `examples/mask.ipynb` scripts shows how to create customize masked (e.g. annular, ellipses)
+The `data_preparation/examples/optional/mask.ipynb` scripts shows how to create customize masked (e.g. annular, ellipses)
 which are tailored to match the lens or lensed source emission of your data.
 
 The script `data_preparation/gui/mask.ipynb` shows how to use a Graphical User Interface (GUI) to create an even

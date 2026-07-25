@@ -6,7 +6,7 @@ This example illustrates the API for plotting the results of different non-linea
 
 __Start Here Notebook__
 
-You should refer to the `plots/start_here.ipynb` notebook first for a description of how visuals work and the default
+You should refer to the `guides/plot/start_here.ipynb` notebook first for a description of how visuals work and the default
 behaviour of plotting visuals.
 
 __Contents__

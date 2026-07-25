@@ -43,7 +43,7 @@ __Other Scripts__
 
 This dataset is used in the following scripts:
 
- `autolens_workspace/*/imaging/data_preparation/examples/optional/scaled_dataset.ipynb`
+ `autolens_workspace/*/imaging/data_preparation/examples/optional/mask_extra_galaxies.ipynb`
 
 To illustrate how to subtract and remove the light of extra galaxies in real strong lensing data, so that it does
 not impact the lens model.
@@ -52,13 +52,13 @@ not impact the lens model.
 
 To illustrate how mark extra galaxy centres on a dataset so they can be used in the lens model.
 
- `autolens_workspace/*/modeling/features/extra_galaxies.ipynb`
+ `autolens_workspace/*/imaging/features/extra_galaxies/modeling.ipynb`
 
 To illustrate how compose and fit a lens model which includes the extra galaxies as light and mass profiles.
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/simulator.ipynb` notebook.
 """
 
 from pathlib import Path

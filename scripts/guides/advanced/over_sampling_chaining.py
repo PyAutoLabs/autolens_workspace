@@ -6,7 +6,7 @@ Over sampling is a numerical technique where the images of light profiles and ga
 on a higher resolution grid than the image data to ensure the calculation is accurate.
 
 If you are reading this example, you should be familiar with over sampling already. If this is not the case,
-checkout the over sampling guide at `autolens_workspace/*/guides/over_sampling.py`.
+checkout the over sampling guide at `autolens_workspace/*/guides/advanced/over_sampling.py`.
 
 The guide illustrated adaptive over sampling, where the over sampling sub grid used high resolution pixels in the
 centre of a light profile and lower resolution pixels further out. This reached high levels of numerical accuracy

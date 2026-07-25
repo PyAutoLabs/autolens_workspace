@@ -59,7 +59,7 @@ galaxies are related to their light via a observationally motivated scaling rela
 galaxies are included in the lens model, the dimensionality of the model does not increase. Furthermore, their
 luminosities act as priors on their masses, which helps ensure the model is well constrained.
 
-Lens modeling using scaling relations is fully support and described in the `features/scaling_relation.ipynb` example.
+Lens modeling using scaling relations is fully support and described in the `features/scaling_relation/modeling.ipynb` example.
 If your group has many extra galaxies (e.g. more than 5) you probably want to read this example once you are confident
 with this one.
 
@@ -200,7 +200,7 @@ centres of light of the galaxies.
 
 In a real analysis, one must determine the centres of the galaxies before modeling them, which can be done as follows:
 
- - Use the GUI tool in the `data_preparation/point_source/gui/extra_galaxies_centres.py` script to determine the centres
+ - Use the GUI tool in the `imaging/data_preparation/gui/extra_galaxies_centres.py` script to determine the centres
    of the extra galaxies.
 
  - Use image processing software like Source Extractor (https://sextractor.readthedocs.io/en/latest/).
@@ -471,7 +471,7 @@ Over sampling at each galaxy centre (both main lens galaxies and extra galaxies)
 calculations are accurate across the full field of the group.
 
 Once you are more experienced, you should read up on over-sampling in more detail via
-the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
+the `autolens_workspace/*/guides/advanced/over_sampling.ipynb` notebook.
 """
 all_centres = list(main_lens_centres) + list(extra_galaxies_centres)
 

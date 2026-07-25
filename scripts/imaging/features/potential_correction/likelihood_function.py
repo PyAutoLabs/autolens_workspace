@@ -387,7 +387,7 @@ __JAX / xp__
 Every dense step above is also available through `al.pc.dense_util`, whose kernels follow the PyAuto `xp`
 convention: written once with `xp=np` (what we just did by hand), and runnable under `xp=jax.numpy` for
 jit-compiled, accelerator-ready execution — see
-`autolens_workspace_test/scripts/jax_likelihood_functions/imaging/potential_correction.py` for the numerical
+`autolens_workspace_test/scripts/imaging/jax_likelihood/potential_correction.py` for the numerical
 agreement checks.
 
     from autolens.potential_correction import dense_util

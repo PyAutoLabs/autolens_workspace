@@ -8,7 +8,7 @@ dark matter and other components combined). This typically uses an `Isothermal` 
 This script simulates a strong lens where the lens mass model decomposes the lens galaxy's mass into its stars and
 dark matter.
 
-This dataset is modeled in the example script `autolens_workspace/scripts/modeling/features/mass_stellar_dark.py`,
+This dataset is modeled in the example script `autolens_workspace/scripts/imaging/features/advanced/mass_stellar_dark/modeling.py`,
 where a discussion of the advantages and disadvantages of fitting decomposed mass models is also given.
 
 __Contents__
@@ -31,7 +31,7 @@ This script simulates `Imaging` of a 'galaxy-scale' strong lens using decomposed
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/simulator.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

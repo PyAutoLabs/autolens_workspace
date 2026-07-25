@@ -41,7 +41,7 @@ In this guide, all quantities use the internal unit coordinates of **PyAutoLens*
 coordinates in arc-seconds, luminosities in electrons per second, and mass quantities (e.g.
 convergence) are dimensionless.
 
-The `guides/units_and_cosmology.ipynb` guide illustrates how to convert these to physical
+The `guides/units/cosmology.ipynb` guide illustrates how to convert these to physical
 quantities (kiloparsecs, magnitudes, solar masses).
 
 __Data Structures__
@@ -244,7 +244,7 @@ and `al.lp_operated.Sersic`.
 
 The full workflow (simulating with operated profiles, modeling with them) is documented in:
 
-    scripts/imaging/features/operated_light_profile/
+    scripts/imaging/features/advanced/operated_light_profile/
 
 That folder contains `simulator.py` and `modeling.py`.
 
@@ -322,7 +322,7 @@ Shapelet decompositions follow the same `Basis` pattern, using `al.lp.ShapeletPo
 `al.lp.ShapeletCartesian` / `al.lp.ShapeletExponential` (and their linear counterparts).
 The full shapelets workflow is documented in:
 
-    scripts/imaging/features/shapelets/
+    scripts/imaging/features/advanced/shapelets/
 
 __Light Profile in a Model__
 
@@ -373,7 +373,7 @@ for `al.lp.SersicMultipole`, `al.lp_linear.Gaussian`, `al.lp_basis.Basis`, etc.,
 rest of the snippet is unchanged.  Multipole comps and Basis constituent lists are wired
 into the prior machinery automatically.
 
-Full lens-modelling end-to-end examples live in `scripts/imaging/modeling/start_here.py`
+Full lens-modelling end-to-end examples live in `scripts/imaging/start_here.py`
 and the topic-specific guides under `scripts/imaging/features/`.
 
 __Model Instance from Light Profile__
@@ -633,7 +633,7 @@ aplt.plot_array(
 """
 And that completes the tour.  If you arrived here from the API reference and now want to use
 any of these profiles in an actual lens fit, the next step is
-`scripts/imaging/modeling/start_here.py`, which sets up an `AnalysisImaging` and runs a
+`scripts/imaging/start_here.py`, which sets up an `AnalysisImaging` and runs a
 non-linear search end-to-end on a strong-lens dataset.  The `scripts/imaging/features/`
 subpackages handle the family-specific workflows referenced throughout this guide:
 

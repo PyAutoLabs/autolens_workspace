@@ -29,7 +29,7 @@ __Start Here Notebooks__
 
 You should be familiar with dark matter subhalo detection, by reading the example `subhalo/detect/start_here.ipynb`.
 
-You should also be familiar with the database, by reading the example `imaging/advanced/database/start_here.ipynb`.
+You should also be familiar with the database, by reading the example `guides/results/database/start_here.ipynb`.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

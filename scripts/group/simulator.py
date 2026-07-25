@@ -118,7 +118,7 @@ source galaxy. Cored light profiles change gradually in their central regions, a
 requiring oversampling.
 
 Once you are more experienced, you should read up on over-sampling in more detail via
-the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
+the `autolens_workspace/*/guides/advanced/over_sampling.ipynb` notebook.
 """
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=grid,
