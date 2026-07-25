@@ -42,7 +42,7 @@ __Prerequisites__
 The likelihood function of a linear light profile builds on that used for standard light profiles,
 therefore you must read the following notebooks before this script:
 
-- `light_profile/likelihood_function.ipynb`.
+- `imaging/likelihood_function.ipynb`.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -59,7 +59,7 @@ import autolens.plot as aplt
 """
 __Dataset__
 
-Following the `light_profile/log_likelihood_function.py` script, we load and mask an `Imaging` dataset and
+Following the `imaging/likelihood_function.py` script, we load and mask an `Imaging` dataset and
 set oversampling to 1.
 """
 dataset_path = Path("dataset", "imaging", "simple")
@@ -91,7 +91,7 @@ __Masked Image Grid__
 To perform galaxy calculations we used a 2D image-plane grid of (y,x) coordinates, which evaluated the
 emission of galaxy light profiles created as `LightProfile` objects.
 
-The code below repeats that used in `light_profile/log_likelihood_function.py` to show how this was done.
+The code below repeats that used in `imaging/likelihood_function.py` to show how this was done.
 """
 bulge = al.lp.Sersic(
     centre=(0.0, 0.0),

@@ -52,7 +52,7 @@ Before using this SLaM pipeline, you should be familiar with:
   and how they integrate into strong-lens modeling.
 
 - **Multi**: The `autolens_workspace/*/advanced/multi` package describes many different ways that multiple datasets
-  can be modeled in a single analysis, including the example script `one_by_one.ipynb` which fits a primary dataset
+  can be modeled in a single analysis, including the example script `multi/features/one_by_one/modeling.ipynb` which fits a primary dataset
   and then follows it up with fits to lower resolution datasets.
 
 __This Script__

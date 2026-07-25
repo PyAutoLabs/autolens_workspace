@@ -26,7 +26,7 @@ way is appropriate for the model being fitted.
 
 __Links / Resources__
 
-The script `data_preparation/gui/extra_galaxies_mask.ipynb` shows how to use a Graphical User Interface (GUI) to create
+The script `data_preparation/gui/mask_extra_galaxies.ipynb` shows how to use a Graphical User Interface (GUI) to create
 the extra galaxies mask.
 
 __Contents__

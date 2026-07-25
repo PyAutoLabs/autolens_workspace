@@ -243,5 +243,5 @@ intensity. The recovered per-channel intensities should trace the input emission
 For the pixelized variant of this fit (free-form per-channel source reconstruction), see `modeling.py`. For
 the narrative walkthrough, see `start_here.py`. For a step-by-step JAX likelihood walkthrough of how the
 per-channel log-evidences are summed inside the FactorGraph, see
-`autolens_workspace_developer/datacube/likelihood_function.py`.
+`likelihood_function.py`.
 """

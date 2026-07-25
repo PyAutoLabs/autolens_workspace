@@ -32,7 +32,7 @@ __Prerequisites__
 The likelihood function of a linear light profile builds on the standard parametric likelihood function and on
 the interferometer-specific NUFFT step, so you must read the following notebooks before this script:
 
- - `interferometer/log_likelihood_function.ipynb` — the standard interferometer parametric likelihood
+ - `interferometer/likelihood_function.ipynb` — the standard interferometer parametric likelihood
    function (NUFFT of a real-space image, visibility-plane $\\chi^2$).
  - `imaging/features/linear_light_profiles/likelihood_function.ipynb` — the linear-inversion linear algebra
    (data vector, curvature matrix, positive-only solver) for CCD imaging.

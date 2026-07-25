@@ -14,8 +14,8 @@ Both populations are dumped to separate JSON centre files (`extra_galaxies_centr
 `scaling_galaxies_centres.json`) so the modeling script can load each independently and apply the appropriate
 strategy. They both still live under the umbrella of "extra galaxies" in imaging-context terminology.
 
-This dataset is consumed by `scripts/imaging/features/scaling_relation/modeling.py` and
-`scripts/imaging/features/scaling_relation/modeling_for_luminosities.py` (if added in a future task).
+This dataset is consumed by `scripts/imaging/features/scaling_relation/modeling.py` and its
+sibling `fit.py` and `likelihood_function.py` scripts.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

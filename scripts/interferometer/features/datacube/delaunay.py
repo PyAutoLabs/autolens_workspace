@@ -258,5 +258,5 @@ __Wrap Up__
 
 For the rectangular variant, see `modeling.py`. For the parametric variant, see `modeling_parametric.py`. For
 the narrative walkthrough, see `start_here.py`. For a step-by-step JAX likelihood walkthrough, see
-`autolens_workspace_developer/datacube/likelihood_function.py`.
+`likelihood_function.py`.
 """

@@ -15,7 +15,7 @@ Inversion and mapper quantities are accessed via `fit.inversion` and plotted wit
 
 __Start Here Notebook__
 
-Refer to `plots/start_here.ipynb` for an introduction to the new plotting API.
+Refer to `guides/plot/start_here.ipynb` for an introduction to the new plotting API.
 
 __Contents__
 

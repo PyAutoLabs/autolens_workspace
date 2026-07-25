@@ -92,7 +92,7 @@ reconstruction of the source's light than fits using light profiles.
 Therefore, the corresponding sensitivity mapping should also be performed using pixelized sources. This example
 sticks to light profile sources, to provide faster run times illustrative purposes.
 
-The example `subhalo/sensitivity/examples/source_pixelized.ipynb` extends the SLaM pipelines with pixelized sources
+The example `subhalo/sensitivity/slam_source_pixelized.ipynb` extends the SLaM pipelines with pixelized sources
 and therefore shows how to perform sensitivity mapping using pixelized sources.
 
 Note that the simulation procedure for a pixelized source is different to the one shown here. In this example, the

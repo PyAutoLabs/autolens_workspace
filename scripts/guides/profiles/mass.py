@@ -46,7 +46,7 @@ __Units__
 
 Spatial coordinates are in arc-seconds, mass quantities are dimensionless (convergence) or
 in their natural lensing units (potential, deflection angles in arc-seconds).  The
-`guides/units_and_cosmology.ipynb` guide covers conversion to physical units.
+`guides/units/cosmology.ipynb` guide covers conversion to physical units.
 
 __Data Structures__
 
@@ -408,7 +408,7 @@ The model API is the same for **every** mass profile in this guide — swap
 `al.mp.Isothermal` for `al.mp.PowerLaw`, `al.mp.dPIEMass`, `al.mp.PowerLawMultipole`, etc.,
 and the rest of the snippet is unchanged.
 
-Full lens-modelling end-to-end examples live in `scripts/imaging/modeling/start_here.py`
+Full lens-modelling end-to-end examples live in `scripts/imaging/start_here.py`
 and the topic-specific guides under `scripts/imaging/features/`.
 
 __Model Instance from Mass Profile__
@@ -621,7 +621,7 @@ mass-to-light ratio, and how those compositions feed into the standard model / i
 Tracer flow shown here.
 
 If you arrived at this guide from the API reference and now want to use any of these mass
-profiles in an actual lens fit, the next step is `scripts/imaging/modeling/start_here.py`,
+profiles in an actual lens fit, the next step is `scripts/imaging/start_here.py`,
 which sets up an `AnalysisImaging` and runs a non-linear search end-to-end on a strong-lens
 dataset.  For a deeper walk-through of how mass profiles combine with light profiles in the
 `Tracer` to produce lensed images, see `scripts/guides/tracer.py`.

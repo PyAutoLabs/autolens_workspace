@@ -38,7 +38,7 @@ an `Isothermal` and `ExternalShear` (9 parameters).
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `point_source/start_here.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -96,7 +96,7 @@ aplt.subplot_point_dataset(dataset=dataset)
 
 """
 We next load an image of the dataset and plot the point source data over it, because as described in 
-the `modeling/start_here.ipynb` notebook, it is useful for visualizing the point source dataset.
+the `point_source/start_here.ipynb` notebook, it is useful for visualizing the point source dataset.
 """
 data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.05)
 
@@ -109,7 +109,7 @@ __Point Solver__
 We set up the `PointSolver`, which is used to compute the multiple images of the point source in the image-plane.
 
 There are no special settings or inputs for the fitting of time_delays, therefore the `PointSolver` is set up in the same way
-as in the `modeling/start_here.ipynb` notebook.
+as in the `point_source/start_here.ipynb` notebook.
 """
 grid = al.Grid2D.uniform(
     shape_native=(100, 100),

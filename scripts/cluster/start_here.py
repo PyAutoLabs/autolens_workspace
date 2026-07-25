@@ -24,7 +24,7 @@ et al. 2023 (A&A 670, A60): we fit the 7 "gold" source systems (25 multiple imag
 188 scaling-tier members, and an NFW host halo.
 
 For galaxy-scale lenses (a single dominant lens and a single source), start with
-``start_here_imaging.ipynb`` instead.
+``imaging/start_here.ipynb`` instead.
 
 __Contents__
 

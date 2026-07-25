@@ -962,7 +962,7 @@ __SUBHALO PIPELINE (sensitivity mapping)__
 
 The SUBHALO PIPELINE (sensitivity mapping) performs sensitivity mapping of the data using the lens model
 fitted above, so as to determine where subhalos of what mass could be detected in the data. A full description of
-Sensitivity mapping if given in the SLaM pipeline script `slam/subhalo/sensitivity_imaging.py`.
+Sensitivity mapping if given in the SLaM pipeline script `imaging/features/advanced/subhalo/sensitivity/start_here.py`.
 """
 subhalo_mass = af.Model(al.mp.NFWMCRLudlowSph)
 grid_dimension_arcsec = 3.0

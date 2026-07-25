@@ -310,7 +310,7 @@ the source flux and magnification as shown above.
 __Wrap Up__
 
 In this example, the MGE Source gave very similar results for the source flux and magnification as did the Sersic
-example illustrated in the `autolens_workspace/*/imaging/features/source_science.py` example.
+example illustrated in the `autolens_workspace/*/imaging/source_science.py` example.
 
 In real lenses, this is not always the case, and if you are really interested in precise source science calculations
 which estimate systematic uncertainties, you should explore how different source models impact these calculations.

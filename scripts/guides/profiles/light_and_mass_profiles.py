@@ -48,7 +48,7 @@ __Units__
 
 Spatial coordinates are in arc-seconds; convergence is dimensionless; intensity is in
 electrons per second; `mass_to_light_ratio` is dimensionless (in the units of the workspace
-config).  The `guides/units_and_cosmology.ipynb` guide covers physical-unit conversion.
+config).  The `guides/units/cosmology.ipynb` guide covers physical-unit conversion.
 
 __Data Structures__
 
@@ -746,7 +746,7 @@ This guide completes the three-guide tour of the `scripts/guides/profiles/` fold
 - `scripts/guides/profiles/light_and_mass_profiles.py` — this guide; stellar / dark / lmp /
   lmp_linear matter decomposition.
 
-For the next step into actual lens modelling, see `scripts/imaging/modeling/start_here.py`
+For the next step into actual lens modelling, see `scripts/imaging/start_here.py`
 (strong-lens fit end-to-end) and the topic-specific feature packages under
 `scripts/imaging/features/`.  The SLaM pipeline guide (`scripts/guides/modeling/slam_start_here.py`)
 shows the production decomposed-lens workflow built on these profiles.

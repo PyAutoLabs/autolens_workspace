@@ -13,7 +13,7 @@ __Contents__
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/start_here.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -205,7 +205,7 @@ There is a way to set up an adaptive over sampling grid for a lensed source, how
 understanding the advanced lens modeling feature search chaining.
 
 An example of how to use search chaining to over sample sources efficient is provided in 
-the `autolens_workspace/*/guides/modeling/chaining/over_sampling.ipynb` example.
+the `autolens_workspace/*/guides/advanced/over_sampling_chaining.ipynb` example.
 
 __Positions__
 

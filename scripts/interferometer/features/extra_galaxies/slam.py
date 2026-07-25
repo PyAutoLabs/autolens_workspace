@@ -20,7 +20,7 @@ __Contents__
 - **SOURCE PIX PIPELINE 1:** Initializes a pixelized source using the adapt image from the SOURCE LP result.
 - **SOURCE PIX PIPELINE 2:** Improves the pixelized source using adapt images from `source_pix_result_1`.
 - **MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`, except no lens light model is included as interferometer data.
-- **Extra Galaxies Centres:** This is the same API as described in the `features/extra_galaxies.ipynb` example, where the centres.
+- **Extra Galaxies Centres:** This is the same API as described in the `features/extra_galaxies/modeling.ipynb` example, where the centres.
 - **Two Datasets:** Build one Interferometer with `TransformerNUFFT` (source_lp) and one with `TransformerNUFFT` + sparse operator (source_pix onwards).
 - **Sparse Operators:** The `pixelization/modeling` example describes how the sparse operator formalism speeds up.
 - **Settings:** Disable the default position only linear algebra solver so the source reconstruction can have.
@@ -39,7 +39,7 @@ Before using this SLaM pipeline, you should be familiar with:
   An introduction to the goals, structure, and design philosophy behind SLaM pipelines
   and how they integrate into strong-lens modeling.
 
-- **Extra Galaxies** (`features/extra_galaxies.ipynb`):
+- **Extra Galaxies** (`features/extra_galaxies/modeling.ipynb`):
     How we include extra galaxies in the lens model, by using the centres of the galaxies
     which have been determined beforehand.
 
@@ -444,7 +444,7 @@ dataset_sparse = al.Interferometer.from_fits(
 """
 __Extra Galaxies Centres__
 
-This is the same API as described in the `features/extra_galaxies.ipynb` example, where the centres of the extra
+This is the same API as described in the `features/extra_galaxies/modeling.ipynb` example, where the centres of the extra
 galaxies are loaded from a `.json` file.
 """
 extra_galaxies_centres = al.Grid2DIrregular(

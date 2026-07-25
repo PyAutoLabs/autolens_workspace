@@ -154,7 +154,7 @@ __Quasar Image Masking__
 
 The four quasar images are far brighter than the arcs and would dominate the imaging chi-squared;
 modeling them in the image plane requires PSF deblending (see
-`point_source/features/deblending.py`). The standard shortcut is to remove them from the imaging
+`point_source/features/deblending/modeling.py`). The standard shortcut is to remove them from the imaging
 fit: we scale the noise to very large values in a small circle around each observed image position,
 so the imaging likelihood is driven by the arcs and lens light. Their information is not lost — the
 point-source dataset carries it, at higher precision than the pixels could.
@@ -333,7 +333,7 @@ delays in a single differentiable lens model — the analysis pattern behind tim
 Next steps:
 
 - `point_source/start_here.py`: the same lens with point-source observables alone.
-- `point_source/features/deblending.py`: modeling the quasar images in the pixels instead of
+- `point_source/features/deblending/modeling.py`: modeling the quasar images in the pixels instead of
   masking them.
 - `multi/features/imaging_and_interferometer`: the same joint-fit pattern combining imaging and
   interferometer visibilities.

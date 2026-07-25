@@ -100,7 +100,7 @@ convert it to standards.
 
 __1) Tools Illustrated In Image__
 
-The script `data_prepatation/examples/image.ipynb` illustrates the following preparation steps:
+The script `data_preparation/examples/data.ipynb` illustrates the following preparation steps:
 
 1) Converted it from counts / ADUs / other units to electrons per second.
 2) Trimmed / padded the image.

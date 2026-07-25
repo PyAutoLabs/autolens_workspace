@@ -289,7 +289,7 @@ Anything reached via `from_json(...)` in the simple-loading section above can al
 aggregator below — both APIs return the same PyAutoFit / PyAutoLens objects. After reading this section,
 the sibling files in `aggregator/` provide deeper examples for samples, fits, queries and database use.
 
-If you are not familiar with the lens modeling API, see `autolens_workspace/*/examples/modeling/` first.
+If you are not familiar with the lens modeling API, see `autolens_workspace/*/imaging/start_here.ipynb` first.
 
 __Loading From Hard-disk__
 
@@ -502,7 +502,7 @@ The guide `autolens_workspace/*/guides/tracer.py` provides a detailed descriptio
  - Inspecting mass model components like the convergence, potential and deflection angles.
  - Other lensing quantities like the critical curve and caustics.
 
-The examples script `autolens_workspace/*/guides/results/aggregator/galaxies_fit.py` show how to use
+The examples script `autolens_workspace/*/guides/results/aggregator/galaxies_fits.py` show how to use
 model-fitting results specific functionality of galaxies, including:
 
  - Drawing tracers from the samples and plotting their images.
@@ -520,7 +520,7 @@ __Fits__
 The result's maximum likelihood `FitImaging` object contains everything necessary to inspect the lens model fit to the
 data.
 
-The guide `autolens_workspace/*/guides/fits.py` provides a detailed description of this object, including:
+The guide `autolens_workspace/*/imaging/fit.py` provides a detailed description of this object, including:
 
  - Performing a fit to data with galaxies.
  - Inspecting the model data, residual-map, chi-squared, noise-map of the fit.
@@ -545,7 +545,7 @@ __Galaxies__
 The result's maximum likelihood `Galaxy` objects contained within the `Tracer` contain everything necessary to
 inspect the individual properties of the lens and source galaxies.
 
-The guide `autolens_workspace/*/guides/fits.py` provides a detailed description of this, including:
+The guide `autolens_workspace/*/imaging/fit.py` provides a detailed description of this, including:
 
  - Extracting the lens and source galaixes from a tracer.
  - Extracting the individual light and mass profiles of the galaxies.
@@ -566,7 +566,7 @@ __Units and Cosmological Quantities__
 
 The maximum likelihood model includes cosmological quantities, which can be computed via the result.
 
-The examples script `autolens_workspace/*/guides/units_and_cosmology.py` provides a detailed
+The examples script `autolens_workspace/*/guides/units/cosmology.py` provides a detailed
 description of this object, including:
 
  - Calculating the Einstein radius of the lens galaxy.
@@ -597,7 +597,7 @@ This includes Basis objects such as a Multi-Gaussian expansion of Shapelets.
 These objects mostly behave identically to ordinary light profiles, but due to the linear algebra have their own
 specific functionality.
 
-The example script `autolens_workspace/*/features/linear_light_profiles.py` provides a detailed description of
+The example script `autolens_workspace/*/imaging/features/linear_light_profiles/fit.py` provides a detailed description of
 using linear light profile results including:
 
  - Extracting individual quantities from the linear light profile, such as the coefficients of the basis functions.
@@ -611,7 +611,7 @@ __Pixelization__
 
 The lens model can reconstruct the source galaxy using a pixelization, for example on a Voronoi mesh.
 
-The example script `autolens_workspace/*/features/pixelization.py` describes using pixelization results including:
+The example script `autolens_workspace/*/imaging/features/pixelization/fit.py` describes using pixelization results including:
 
  - Producing source reconstructions using the Voronoi mesh, RectangularAdaptDensity triangulation or whichever mesh is used.
  - Inspecting the evidence terms of the fit, which quantify how well the pixelization reconstructs fits the data whilst

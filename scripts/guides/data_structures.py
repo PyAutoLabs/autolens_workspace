@@ -31,7 +31,7 @@ __Units__
 In this example, all quantities use the source code's internal unit coordinates, with spatial coordinates in
 arc seconds, luminosities in electrons per second and mass quantities (e.g. convergence) are dimensionless.
 
-The guide `units_and_cosmology.ipynb` illustrates how to convert these quantities to physical units like
+The guide `guides/units/cosmology.ipynb` illustrates how to convert these quantities to physical units like
 kiloparsecs, magnitudes and solar masses.
 """
 

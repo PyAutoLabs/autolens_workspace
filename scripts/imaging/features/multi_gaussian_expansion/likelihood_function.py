@@ -5,7 +5,7 @@ This script provides a step-by-step guide of the `log_likelihood_function` which
 a multi-Gaussian expansion (MGE), which is a superposition of multiple 2D Gaussian linear light profiles.
 
 You should be familiar with the `log_likelihood_function` of a linear light profile before reading this script,
-which is described in the `log_likelihood_function/imaging/linear_light_profile/likelihood_function.ipynb` notebook.
+which is described in the `imaging/features/linear_light_profiles/likelihood_function.ipynb` notebook.
 
 This script has the following aims:
 
@@ -24,9 +24,9 @@ __Contents__
 - **Masked Image Grid:** To perform galaxy calculations we used a 2D image-plane grid of (y,x) coordinates, which evaluated.
 - **Multiple Gaussians & Linear Light Profiles:** To use a linear light profile, whose `intensity` is computed via linear algebra, we simply use the.
 - **Basis:** For a multi-Gaussian expansion (and other mdoels where the light profile is a superposition of.
-- **Comparison To Linear Light Profiles Example:** The text below is nearly identical to the `linear_light_profile/likelihood_function.ipynb` example.
+- **Comparison To Linear Light Profiles Example:** The text below is nearly identical to the `imaging/features/linear_light_profiles/likelihood_function.ipynb` example.
 - **LightProfileLinearObjFuncList:** For standard light profiles, we combined our linear light profiles into a single `Galaxies` object.
-- **Combining Matrices:** In the `linear_light_profile/log_likelihood_function.py` example, we used two.
+- **Combining Matrices:** In the `imaging/features/linear_light_profiles/likelihood_function.py` example, we used two.
 - **Mapping Matrix:** The `mapping_matrix` is a matrix where each column is an image of each Gaussian linear light.
 - **Image Reconstruction:** Using the reconstructed `intensity` values we can map the reconstruction back to the image plane.
 - **Likelihood Function:** We now quantify the goodness-of-fit of our galaxy model.
@@ -42,8 +42,8 @@ __Prerequisites__
 The likelihood function of a multi Gaussian expansion builds on that used for standard light profiles and
 linear light profiles, therefore you must read the following notebooks before this script:
 
-- `light_profile/likelihood_function.ipynb`.
-- `linear_light_profile/likelihood_function.ipynb`.
+- `imaging/likelihood_function.ipynb`.
+- `imaging/features/linear_light_profiles/likelihood_function.ipynb`.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -62,7 +62,7 @@ from autogalaxy.profiles.plot.basis_plots import subplot_image as subplot_basis_
 """
 __Dataset__
 
-Following the `linear_light_profile/log_likelihood_function.py` script, we load and mask an `Imaging` dataset and
+Following the `imaging/features/linear_light_profiles/likelihood_function.py` script, we load and mask an `Imaging` dataset and
 set oversampling to 1.
 
 This example fits a simulated galaxy where galaxy has an asymmetric light distribution, which cannot be accurately 
@@ -116,7 +116,7 @@ __Masked Image Grid__
 To perform galaxy calculations we used a 2D image-plane grid of (y,x) coordinates, which evaluated the
 emission of galaxy light profiles created as `LightProfile` objects.
 
-The code below repeats that used in `light_profile/log_likelihood_function.py` to show how this was done.
+The code below repeats that used in `imaging/likelihood_function.py` to show how this was done.
 """
 bulge = al.lp.Sersic(
     centre=(0.0, 0.0),
@@ -289,7 +289,7 @@ tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 """
 __Comparison To Linear Light Profiles Example__
 
-The text below is nearly identical to the `linear_light_profile/likelihood_function.ipynb` example, because the 
+The text below is nearly identical to the `imaging/features/linear_light_profiles/likelihood_function.ipynb` example, because the 
 linear algebra and likelihood function of a multi-Gaussian expansion is essentially identical to that of a single 
 linear light profile.
 
@@ -349,7 +349,7 @@ print(lp_linear_func_lens.params)
 """
 __Combining Matrices__
 
-In the `linear_light_profile/log_likelihood_function.py` example, we used two `LightProfileLinearObjFuncList` to set
+In the `imaging/features/linear_light_profiles/likelihood_function.py` example, we used two `LightProfileLinearObjFuncList` to set
 up the linear algebra for the different planes of the `Tracer`, which we do again below.
 
 In this example the source is a single Sersic linear light profile, but it could easily be an MGE itself.

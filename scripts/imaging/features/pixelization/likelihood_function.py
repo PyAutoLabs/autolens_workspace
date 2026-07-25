@@ -58,7 +58,7 @@ The likelihood function of a pixelization builds on that used for standard light
 linear light profiles, therefore you must read the following notebooks before this script:
 
 - `imaging/likelihood_function.ipynb`.
-- `imaging/linear_light_profile/likelihood_function.ipynb`.
+- `imaging/features/linear_light_profiles/likelihood_function.ipynb`.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -141,7 +141,7 @@ Over sampling evaluates a light profile using multiple samples of its intensity 
 
 For simplicity, we disable over sampling in this guide by setting `sub_size=1`. 
 
-a full description of over sampling and how to use it is given in `autolens_workspace/*/guides/over_sampling.py`.
+a full description of over sampling and how to use it is given in `autolens_workspace/*/guides/advanced/over_sampling.py`.
 
 This example will explain how sub-gridding changes the linear algebra at the relevent section.
 """

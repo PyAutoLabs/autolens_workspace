@@ -59,8 +59,8 @@ The likelihood function of pixelizations is the most complicated likelihood func
 It is advised you read through the following two simpler likelihood functions first, which break down a number of the
 concepts used in this script:
 
- - `interferometer/light_profile/log_likelihood_function.py` the likelihood function for a light profile.
- - `imaging/linear_light_profile/log_likelihood_function.py` the likelihood function for a linear light profile, which
+ - `interferometer/likelihood_function.py` the likelihood function for a light profile.
+ - `imaging/features/linear_light_profiles/likelihood_function.py` the likelihood function for a linear light profile, which
  introduces the linear algebra used for a pixelization but with a simpler use case.
 
 This script repeats all text and code examples in the above likelihood function examples. It therefore can be used to

@@ -29,7 +29,7 @@ __Contents__
 - **Search:** Configure the `Nautilus` non-linear search.
 - **Model Fit:** Run the fit. Per-channel inversion cost dominates runtime — see notes inline.
 - **Wrap Up:** Summary of the script and pointers to the JAX likelihood walkthrough in
-  ``autolens_workspace_developer/datacube/likelihood_function.py``.
+  ``likelihood_function.py``.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -205,7 +205,7 @@ depends on them through `W̃`). The datacube simulated in `simulator.py` is buil
 `uv`/noise that differ significantly, leave `shared_preloads=False` (the default) so each channel computes its
 own inversion — preloading an invalid quantity would silently corrupt the likelihood. The shared and unshared
 paths are asserted to give identical likelihoods in
-`autolens_workspace_test/scripts/jax_likelihood_functions/datacube/shared_preloads.py`.
+`autolens_workspace_test/scripts/interferometer/datacube/shared_preloads.py`.
 """
 analysis_list = [
     al.AnalysisInterferometer(
@@ -286,5 +286,5 @@ own `FitInterferometer` against the maximum-likelihood lens model. Use them to i
 reconstructions, dirty images, and residuals.
 
 For a step-by-step look at how the per-channel likelihood is summed (and at the JAX JIT pattern that drives
-this fit), see ``autolens_workspace_developer/datacube/likelihood_function.py``.
+this fit), see ``likelihood_function.py``.
 """

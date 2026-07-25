@@ -68,7 +68,7 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/start_here.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -135,7 +135,7 @@ aplt.subplot_imaging_dataset(dataset=dataset)
 __Over Sampling__
 
 Apply adaptive over sampling to ensure the lens galaxy light calculation is accurate, you can read up on over-sampling 
-in more detail via the `autogalaxy_workspace/*/guides/over_sampling.ipynb` notebook.
+in more detail via the `autolens_workspace/*/guides/advanced/over_sampling.ipynb` notebook.
 """
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,
@@ -160,7 +160,7 @@ Below, we make a `Basis` out of 20 elliptical polar shapelet light profiles whic
    functions.
 
 Note that any light profile can be used to compose a Basis. This includes Gaussians, which are often used to 
-represent the light of elliptical galaxies (see `modeling/features/multi_gaussian_expansion.py`).
+represent the light of elliptical galaxies (see `imaging/features/multi_gaussian_expansion/modeling.py`).
 """
 total_n = 5
 total_m = sum(range(2, total_n + 1)) + 1

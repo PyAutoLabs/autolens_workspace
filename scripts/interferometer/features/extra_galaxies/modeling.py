@@ -35,14 +35,14 @@ To perform modeling which accounts for extra galaxies, a list of the centre of e
 the model-fit. For the example dataset used here, these tasks have already been performed and the
 metadata (`mask_extra_galaxies.fits` and `extra_galaxies_centres.json` are already included in results folder.
 
-The tutorial `autolens_workspace/*/imaging/data_preparation/optional/extra_galaxies_centres.py`
+The tutorial `autolens_workspace/*/imaging/data_preparation/examples/optional/extra_galaxies_centres.py`
 describes how to create these centres and output them to a `.json` file. You will need to use imaging data
 to do not, as interferometer data rarely detects the light of these extra galaxies. If this data is not available,
 you probably dont have any evidence of there being multiple galaxies in the system!
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `modeling/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `interferometer/start_here.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

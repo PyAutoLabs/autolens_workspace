@@ -350,7 +350,7 @@ The three searches break down as follows:
  `Isothermal`.
 
 The approach used in this pipeline and benefits of using chaining searching to fit double einstein ring systems are
-described in the script `notebooks/imaging/chaining/double_einstein_ring.ipynb`.
+described in the script `notebooks/imaging/features/advanced/double_einstein_ring/chaining.ipynb`.
 
 __Start Here Notebook__
 

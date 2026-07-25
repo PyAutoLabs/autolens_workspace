@@ -6,7 +6,7 @@ This script simulates `Imaging` of a strong lens where the sky background is not
 appears in the dataset.
 
 It is used to demonstrate sky background modeling in
-the `autolens_workspace/*/modeling/features/sky_background.py` example.
+the `autolens_workspace/*/imaging/features/advanced/sky_background/modeling.py` example.
 
 __Contents__
 
@@ -28,7 +28,7 @@ This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `imaging/simulator.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

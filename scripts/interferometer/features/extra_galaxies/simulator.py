@@ -47,7 +47,7 @@ To illustrate how compose and fit a lens model which includes the extra galaxies
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `simulators/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `interferometer/simulator.ipynb` notebook.
 """
 
 from pathlib import Path
