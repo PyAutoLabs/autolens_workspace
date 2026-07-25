@@ -110,30 +110,35 @@ are derived from each member's luminosity via the relation described next.
 __Luminosity-Mass Scaling Relation__
 
 The 10 scaling members share a reference-anchored relation — the convention used by Lenstool and
-essentially every published cluster strong-lensing analysis (Limousin et al. 2005; Eliasdottir et al.
-2007; Bergamini et al. 2019):
+essentially every published cluster strong-lensing analysis, in its modern (Bergamini et al. 2019)
+form:
 
-    sigma_i  = sigma_ref  * (L_i / L_ref) ** 0.25
-    r_core_i = r_core_ref * (L_i / L_ref) ** 0.5
-    r_cut_i  = r_cut_ref  * (L_i / L_ref) ** 0.5
+    sigma_i  = sigma_ref * (L_i / L_ref) ** alpha       # alpha    = 0.25 (Faber-Jackson)
+    r_cut_i  = r_cut_ref * (L_i / L_ref) ** beta_cut    # beta_cut = 1 + gamma - 2*alpha = 0.7
+    r_core_i = 0                                        # vanishing core, NOT scaled
 
 where ``L_ref`` is an **explicit fixed reference luminosity** (Lenstool's reference magnitude ``mag0``),
 *not* the maximum luminosity of the sample, and ``sigma_ref`` is the fiducial velocity dispersion of a
 galaxy *at that reference magnitude*. Anchoring to a fixed reference makes the normalization physically
 interpretable — the velocity dispersion of a reference-magnitude galaxy, in km/s — and invariant to which
-galaxies are placed in the tier, which is what makes a sensible prior range easy to define. The exponents
-are **fixed** rather than fitted: the Faber-Jackson relation (L ∝ sigma^4) gives sigma ∝ L^(1/4), and
-constant mass-to-light (M ∝ sigma^2 * r_cut ∝ L) then gives r_cut ∝ L^(1/2) — Lenstool's ``potfile``
-applies exactly these scalings (``vdslope 4``, ``slope 4``), including to the core radius. Because the
-lens strength b0 is proportional to sigma^2, this is equivalent to the b0 ∝ L^(1/2) scaling of the
-internal parameterization.
+galaxies are placed in the tier, which is what makes a sensible prior range easy to define.
 
-Truth values used in this simulator are ``sigma_ref = 85.0`` km/s, ``r_cut_ref = 15.8`` arcsec and
-``r_core_ref = 0.158`` arcsec at a fiducial reference luminosity ``L_ref = 1.0`` (the model in
-``modeling.py`` / ``start_here.py`` uses the SAME reference, so members stay consistent by construction).
-Luminosities are log-spaced across roughly 0.05–0.40, so per-member dispersions run from ~40 to ~68 km/s
-— each member is individually well below the BCG (``sigma = 330`` km/s) but the 10 of them together
-perturb the deflection field by ~10–15%.
+The exponents are **fixed and tied** rather than fitted: Faber-Jackson gives ``sigma ∝ L^0.25``, and
+demanding a mass-to-light tilt ``M/L ∝ L^gamma`` for the member's total mass ``M ∝ sigma^2 r_cut``
+enforces ``2*alpha + beta_cut = 1 + gamma``, with ``gamma = 0.2`` universally fixed in the modern
+literature — so ``beta_cut = 0.7``. (The older constant-M/L convention, ``gamma = 0`` with radii
+``∝ L^0.5`` scaled cores included, matches the original Lenstool-era papers but is dated.) Member cores
+vanish: ``r_core`` is fixed to zero — PyAutoLens's dPIE is analytic at ``r_core = 0`` — and is never
+scaled with luminosity. Because the lens strength b0 is proportional to sigma^2, the sigma relation is
+equivalent to a b0 ∝ L^(2*alpha) = L^0.5 scaling of the internal parameterization.
+
+Truth values used in this simulator are ``sigma_ref = 85.0`` km/s and ``r_cut_ref = 5.0`` arcsec
+(lensing-constrained member truncations are typically ~5") at a fiducial reference luminosity
+``L_ref = 1.0`` (the model in ``modeling.py`` / ``start_here.py`` uses the SAME reference, so members
+stay consistent by construction). Luminosities are log-spaced across roughly 0.05–0.40, so per-member
+dispersions run from ~40 to ~68 km/s — each member is individually well below the BCG
+(``sigma = 330`` km/s) but the 10 of them together perturb the deflection field at the several-percent
+level.
 
 The modeling script promotes ``sigma_ref`` to the tier's single free parameter and recovers the truth
 value when fit to the simulated point datasets. Adding more scaling members amounts to adding rows to
@@ -307,11 +312,13 @@ __Main Lens Galaxies__
 The 2 cluster member galaxies. Each is given a `SersicSph` light profile (used only for visualization —
 the imaging data is not used in point-source modeling) and a `dPIEMassSph` mass profile with hand-tuned
 parameters representative of cluster members: a larger central BCG and one smaller satellite galaxy.
+Both have vanishing cores (r_core = 0) — the standard convention for BCGs and members alike, with only
+the cluster-scale halo retaining a core.
 """
 main_lens_dpie_params = [
     # (r_core, r_cut, sigma)  per galaxy — arcsec, arcsec, km/s
-    (8.0, 20.0, 330.0),  # BCG — strongest
-    (5.0, 12.0, 210.0),  # satellite
+    (0.0, 20.0, 330.0),  # BCG — strongest
+    (0.0, 12.0, 210.0),  # satellite
 ]
 
 main_lens_sersic_params = [
@@ -346,19 +353,22 @@ __Scaling Member Galaxies__
 The 10 cluster members modelled collectively via the luminosity-mass scaling relation (see the
 ``__Luminosity-Mass Scaling Relation__`` section of the module docstring). The simulator hardcodes the
 truth value of ``sigma_ref`` (the fiducial velocity dispersion of a galaxy at the reference magnitude)
-and derives each member's ``sigma``, ``r_core`` and ``r_cut`` from its luminosity ratio to the reference,
-with the exponents fixed at the Faber-Jackson values (sigma ∝ L^0.25; radii ∝ L^0.5). The reference
-luminosity is an EXPLICIT FIXED constant (Lenstool's ``mag0``), NOT the sample max — here a fiducial
-``L_ref = 1.0``; the model in ``modeling.py`` / ``start_here.py`` uses the SAME reference so members stay
-consistent by construction. Light profiles use the per-member luminosity as the central intensity so the
-rendered image visibly traces the scaling-tier population.
+and derives each member's ``sigma`` and ``r_cut`` from its luminosity ratio to the reference, with the
+exponents fixed and tied at the Bergamini et al. (2019) values (sigma ∝ L^0.25;
+r_cut ∝ L^(1 + gamma - 2*alpha) = L^0.7 with gamma = 0.2); each member's ``r_core`` is fixed to zero
+(vanishing core, never scaled). The reference luminosity is an EXPLICIT FIXED constant (Lenstool's
+``mag0``), NOT the sample max — here a fiducial ``L_ref = 1.0``; the model in ``modeling.py`` /
+``start_here.py`` uses the SAME reference so members stay consistent by construction. Light profiles use
+the per-member luminosity as the central intensity so the rendered image visibly traces the scaling-tier
+population.
 """
 scaling_sigma_ref_truth = 85.0
-scaling_sigma_exponent = 0.25
-scaling_radius_exponent = 0.5
+scaling_sigma_exponent = 0.25  # alpha
+scaling_gamma = 0.2  # M/L tilt, universally fixed
+scaling_rcut_exponent = 1.0 + scaling_gamma - 2.0 * scaling_sigma_exponent  # 0.7
 reference_luminosity = 1.0
-scaling_r_core_ref = 0.158
-scaling_r_cut_ref = 15.8
+scaling_r_core = 0.0  # vanishing core — fixed, never scaled
+scaling_r_cut_ref = 5.0
 
 scaling_galaxies = []
 for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminosities):
@@ -372,8 +382,8 @@ for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminos
     mass = al.mp.dPIEMassSph(
         centre=centre,
         sigma=scaling_sigma_ref_truth * luminosity_ratio**scaling_sigma_exponent,
-        r_core=scaling_r_core_ref * luminosity_ratio**scaling_radius_exponent,
-        r_cut=scaling_r_cut_ref * luminosity_ratio**scaling_radius_exponent,
+        r_core=scaling_r_core,
+        r_cut=scaling_r_cut_ref * luminosity_ratio**scaling_rcut_exponent,
         redshift_object=redshift_lens,
         redshift_source=max(source_redshifts),
     )
