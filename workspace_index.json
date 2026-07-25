@@ -59,6 +59,7 @@
     "contents": [],
     "cross_refs": [
       "autolens_workspace_test/scripts/cluster/lenstool_parity.py",
+      "cluster/mass_parameterizations.py",
       "cluster/modeling.py",
       "cluster/simulator.py",
       "cluster/start_here.py",
