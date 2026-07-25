@@ -707,6 +707,39 @@
   },
   {
     "contents": [
+      "Dataset",
+      "Model A",
+      "Model B",
+      "Fits",
+      "Model Comparison",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "cluster/mass_parameterizations.py",
+      "cluster/start_here.py",
+      "group/modeling.py",
+      "simulator.py"
+    ],
+    "notebook": "notebooks/group/features/group_halo/modeling.ipynb",
+    "path": "scripts/group/features/group_halo/modeling.py",
+    "summary": "**Whether a group-scale lens model includes a separate dark-matter halo for the group is a modelling choice, not an assumption.** Some groups genuinely require one; others are adequately described by their member galaxies alone. This tutorial \u2014 the signature example of the group regime \u2014 fits the SAME dataset with both compositions and walks through how to decide between them:",
+    "title": "Modeling Features (Group): The Group Halo \u2014 An Explicit Choice"
+  },
+  {
+    "contents": [],
+    "cross_refs": [
+      "cluster/mass_parameterizations.py",
+      "group/modeling.py",
+      "group/start_here.py",
+      "modeling.py"
+    ],
+    "notebook": "notebooks/group/features/group_halo/simulator.ipynb",
+    "path": "scripts/group/features/group_halo/simulator.py",
+    "summary": "This script simulates the `Imaging` dataset fitted by the `group_halo` feature tutorial: a group-scale lens with a genuine **group-scale dark matter halo**, a brightest group galaxy (BGG) and two tidally truncated member galaxies, lensing a single extended background source.",
+    "title": "Simulator: Group Halo"
+  },
+  {
+    "contents": [
       "Dataset & Mask",
       "Galaxy Centres",
       "Over Sampling",
