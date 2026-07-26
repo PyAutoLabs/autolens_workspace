@@ -1312,6 +1312,7 @@
   {
     "contents": [
       "Scaling Relations",
+      "Group Halo",
       "Example",
       "Simulation",
       "Data Preparation",
@@ -1355,6 +1356,7 @@
   {
     "contents": [
       "Main Lens Galaxies vs Extra Galaxies",
+      "No Group Halo",
       "Dataset Paths",
       "Grid",
       "Galaxy Centres",

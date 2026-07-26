@@ -22,6 +22,7 @@ than being hardcoded, so the same script works for different datasets without co
 __Contents__
 
 - **Scaling Relations:** This example models the mass of each galaxy individually, which means the number of dimensions of.
+- **Group Halo:** The model contains no group-scale dark-matter halo — an explicit modelling choice.
 - **Example:** This script fits an `Imaging` dataset of a 'group-scale' strong lens where.
 - **Simulation:** Overview of how the simulated dataset was generated.
 - **Data Preparation:** Data standards required for fitting with PyAutoLens.
@@ -62,6 +63,20 @@ luminosities act as priors on their masses, which helps ensure the model is well
 Lens modeling using scaling relations is fully support and described in the `features/scaling_relation/modeling.ipynb` example.
 If your group has many extra galaxies (e.g. more than 5) you probably want to read this example once you are confident
 with this one.
+
+__Group Halo__
+
+The model in this example contains **no group-scale dark-matter halo**: all of the mass is in the galaxies. For
+the simulated dataset fitted here that is the true model. For a real group, whether to add a shared halo is an
+**explicit modelling choice** — some groups are well described by their galaxies alone, others (with larger
+Einstein radii or image configurations no galaxy-mass model reproduces) need a dominant halo component.
+
+The `features/group_halo` example teaches that decision: it fits the same data with and without a halo and
+compares them via the lensing-mass radius, Bayesian evidence and external information. In that Lenstool-style
+workflow the halo also changes the member galaxies — they become tidally truncated dPIE profiles (truncation
+encodes stripping by the host halo's tidal field), tied by luminosity scaling relations. A published real-data
+example of group modeling with **PyAutoLens** is CSWA 19 (Ding et al. 2025), whose model combines a group halo
+with scaling-relation members.
 
 __Example__
 
@@ -762,6 +777,8 @@ scientific topic of study).
 We recommend you now checkout the following features:
 
 - ``scaling_relation``: This feature allows you to model the light and mass of the extra galaxies using a scaling relation.
+- ``group_halo``: Fit the same data with and without a group-scale dark-matter halo (with truncated dPIE members),
+  teaching whether your group needs one.
 - ``linear_light_profiles``: The model light profiles use linear algebra to solve for their intensity, reducing model complexity.
 - ``multi_gaussian_expansion``: The lens (or source) light is modeled as ~25-100 Gaussian basis functions
 - ``pixelization``: The source is reconstructed using an adaptive rectangular or Delaunay mesh
