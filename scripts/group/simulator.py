@@ -15,6 +15,7 @@ This script simulates `Imaging` of a 'group-scale' strong lens where:
 __Contents__
 
 - **Main Lens Galaxies vs Extra Galaxies:** For group-scale lens modeling, galaxies are organized into two categories.
+- **No Group Halo:** This simulation deliberately contains no group-scale dark-matter halo.
 - **Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
 - **Grid:** Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated and.
 - **Galaxy Centres:** Define the centres of the main lens galaxies and extra galaxies.
@@ -41,6 +42,19 @@ For group-scale lens modeling, galaxies are organized into two categories:
 
 Centres for each category are saved to separate JSON files (`main_lens_centres.json` and
 `extra_galaxies_centres.json`) so that the modeling scripts can load them directly.
+
+__No Group Halo__
+
+This simulation deliberately contains **no group-scale dark-matter halo**: all of the mass is in the galaxies
+themselves, as untruncated isothermal profiles. Whether a real group needs a shared halo in its mass model is an
+**explicit modelling choice**, not an automatic ingredient — and because this dataset has none, the default
+group model (which also has none) is the right model for it.
+
+The `group/features/group_halo` simulator is the counterpart that DOES include one (via its
+`include_group_halo` switch), pairing the halo with tidally truncated dPIE member galaxies — truncation encodes
+the stripping of a member's outer dark matter by the host halo's tidal field, so the two ingredients enter the
+model together. Its modeling example fits both simulations with and without the halo, teaching the decision
+framework for your own data.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
