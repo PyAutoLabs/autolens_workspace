@@ -14,10 +14,21 @@ lens galaxy, see the `imaging/start_here.ipynb` example. If your lens has 2+ co-
 dominant group dark-matter halo, see the `multi_galaxy/start_here.ipynb` example. If your system has many lens
 and source galaxies, see the `cluster/start_here.ipynb` example.
 
-This example uses Euclid CCD imaging data, but the workflow for interferometer data on group scale lenses is similar.
-The lens has 2 main lens galaxies, so the model is not too complex, meaning this example runs in about 10 minutes on a
-good GPU. More complex groups with more galaxies will take longer to fit, but the workflow is identical and
-PyAutoLens can efficiently scale to these more complex systems.
+This example uses Euclid CCD imaging data. The model uses the group regime's **three-tier galaxy API** — the
+signature composition of group- and cluster-scale modeling:
+
+ - **Main lens galaxies** (here: 2 — the central galaxy and a bright companion just 0.4" away): the dominant
+   lenses, each with a free MGE light model, `Isothermal` mass and (on `lens_0`) an `ExternalShear`.
+ - **Extra galaxies** (here: 1): a nearby companion inside the mask, with its own MGE light model and a
+   bounded free `IsothermalSph` mass at its observed centre.
+ - **Scaling galaxies** (here: 5): further-out galaxies whose light sits outside the mask; mass-only
+   `IsothermalSph` profiles tied to their catalogue luminosities through one shared free normalization —
+   the whole tier adds a single parameter, however many galaxies it holds.
+
+This runs in roughly 10-20 minutes on a good GPU; more complex groups with more galaxies fit with the identical
+workflow. A fourth, optional mass component — the group-scale dark-matter halo — is deliberately NOT in this
+default model: whether a group needs one is an explicit modelling choice, and `group/features/group_halo`
+is the tutorial that teaches how to make it (fitting the same data with and without the halo).
 
 __Contents__
 
@@ -136,6 +147,31 @@ your own data, if they are not already known.
 main_lens_centres = al.from_json(file_path=dataset_path / "main_lens_centres.json")
 
 """
+__Extra Galaxies + Scaling Galaxies__
+
+The other two tiers load from the dataset folder alongside the main centres:
+
+ - `extra_galaxies_centres.json` — the companion ~3" from the main pair, clicked with the same GUI as the
+   main centres. (The brighter companion just 0.4" from the central galaxy is in the *main* tier: it is a
+   distinct, bright deflector, so it gets full model freedom rather than an extra galaxy's restricted one.)
+ - `scaling_galaxies.csv` — the `y, x, luminosity` catalogue of the five further-out galaxies (the same
+   three-column schema used at cluster scale). For this example the catalogue was derived from this image
+   with simple peak detection and 1"-aperture photometry; for your own group, use your survey's photometry
+   catalogue — only luminosity *ratios* relative to the fixed reference below enter the model, so any
+   consistent units work.
+"""
+extra_galaxies_centres = al.from_json(
+    file_path=dataset_path / "extra_galaxies_centres.json"
+)
+
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
+
+scaling_centres = scaling_table.centres.in_list
+scaling_luminosities = scaling_table.luminosities
+
+"""
 __Masking__
 
 Lens modeling does not need to fit the entire image, only the region containing lens and
@@ -164,7 +200,7 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,
     sub_size_list=[4, 2, 1],
     radial_list=[0.3, 0.6],
-    centre_list=list(main_lens_centres),
+    centre_list=list(main_lens_centres) + list(extra_galaxies_centres),
 )
 
 dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
@@ -192,6 +228,13 @@ over the main lens galaxy centres, and stored in a dictionary as `lens_0`, `lens
 to groups with any number of main lens galaxies.
 
 Only the first lens galaxy (`lens_0`) carries an `ExternalShear`, as the group system has one overall external shear.
+
+The extra galaxies are composed the same way (`extra_0`, `extra_1`, ...), each with a small MGE for its light and a
+bounded free `IsothermalSph` mass fixed at its observed centre. The scaling galaxies sit outside the mask so their
+light is not modeled; each carries a mass-only `IsothermalSph` whose einstein radius is tied to its catalogue
+luminosity via `einstein_radius_ref * (L / L_ref) ** 0.5` — one shared free parameter for the whole tier.
+(These are **untruncated** profiles, the PyAutoLens-native parameterization; the tidally truncated dPIE variant —
+physically motivated once a group halo enters the model — is taught in `group/features/group_halo`.)
 
 The MGE model composition API is quite long and technical, so we simply load the MGE models for the lens and source
 below via a utility function `mge_model_from` which hides the API to make the code in this introduction example ready
@@ -221,6 +264,40 @@ for i, centre in enumerate(main_lens_centres):
         shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
 
+# Extra Galaxies:
+
+for i, centre in enumerate(extra_galaxies_centres):
+
+    bulge = al.model_util.mge_model_from(
+        mask_radius=1.0,
+        total_gaussians=10,
+        centre_prior_is_uniform=True,
+        centre=(centre[0], centre[1]),
+    )
+
+    mass = af.Model(al.mp.IsothermalSph)
+    mass.centre = (centre[0], centre[1])
+    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+
+    lens_dict[f"extra_{i}"] = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+
+# Scaling Galaxies (mass-only; one shared free normalization for the whole tier):
+
+einstein_radius_ref = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)
+
+# A fixed fiducial reference luminosity (the analogue of Lenstool's mag0) — an explicit constant, NOT the
+# sample maximum, so the normalization is invariant to which galaxies are placed in the tier.
+reference_luminosity = 1.0
+
+for i, (centre, luminosity) in enumerate(zip(scaling_centres, scaling_luminosities)):
+    luminosity_ratio = float(luminosity) / reference_luminosity
+
+    mass = af.Model(al.mp.IsothermalSph)
+    mass.centre = tuple(centre)
+    mass.einstein_radius = einstein_radius_ref * luminosity_ratio**0.5
+
+    lens_dict[f"scaling_{i}"] = af.Model(al.Galaxy, redshift=0.5, mass=mass)
+
 # Source:
 
 bulge = al.model_util.mge_model_from(
@@ -240,7 +317,8 @@ model = af.Collection(galaxies=af.Collection(**lens_dict, source=source))
 We can print the model to show the parameters that the model is composed of, which shows many of the MGE's fixed
 parameter values the API above hided the composition of.
 
-Note how each lens galaxy is listed as `lens_0`, `lens_1`, etc., reflecting the list-based API.
+Note how the model lists all three tiers — `lens_0` (main), `extra_0`/`extra_1` (bounded companions) and
+`scaling_0`...`scaling_4` (every einstein radius tied to the single shared `einstein_radius_ref`).
 """
 print(model.info)
 
@@ -386,13 +464,18 @@ A few things to note, with full details on data preparation provided in the main
 - Ensure the primary lens galaxy is roughly centered in the image.
 - Double-check `pixel_scales` for your telescope/detector.
 - Adjust the mask radius to include all relevant light.
-- Provide the centres of all main lens galaxies in the group in a `main_lens_centres.json` file.
+- Provide the centres of all main lens galaxies in a `main_lens_centres.json` file and of nearby
+  companions in `extra_galaxies_centres.json` (the GUI below writes `main_lens_centres.json`; re-run it
+  with the output `file_path` changed to write the extras file).
+- Provide further-out galaxies in a `scaling_galaxies.csv` catalogue (`y, x, luminosity` — any consistent
+  luminosity units; only ratios enter the model).
 - Start with the default model -- it works very well for pretty much all groups!
 
 __Wrap Up__
 
-This script has shown how to model CCD imaging data of group-scale strong lenses, using the list-based model
-composition API where each main lens galaxy is created in a loop and stored as `lens_0`, `lens_1`, etc.
+This script has shown how to model CCD imaging data of group-scale strong lenses with the three-tier
+galaxy API — free main galaxies, bounded extra galaxies, and a scaling tier whose parameter count does
+not grow with the number of galaxies.
 
 Details of the **PyAutoLens** API and how lens modeling works were omitted for simplicity, but everything you need to
 know is described throughout the main workspace documentation. You should check it out, but maybe you want to try and
@@ -405,6 +488,8 @@ The following locations of the workspace are good places to checkout next:
 - `autolens_workspace/*/group/data_preparation`: How to load and prepare your own imaging data for lens modeling.
 - `autolens_workspace/guides/results`: How to load and analyze the results of your lens model fits, including tools for large samples.
 - `autolens_workspace/guides`: A complete description of the API and information on lensing calculations and units.
+- `autolens_workspace/*/group/features/group_halo`: THE group-regime tutorial — whether to add a group-scale
+  dark-matter halo to this model is an explicit choice; learn to make it by fitting with and without one.
 - `autolens_workspace/group/features`: A description of advanced features for lens modeling, for example pixelized source reconstructions, read this once you're confident with the basics!
 
 __Env__ (Developer Only)
