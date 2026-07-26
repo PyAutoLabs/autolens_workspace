@@ -5780,6 +5780,55 @@
   },
   {
     "contents": [
+      "Dataset & Mask",
+      "Scaling Catalogue",
+      "Model",
+      "Search + Analysis / Fit / Result."
+    ],
+    "cross_refs": [
+      "group/features/scaling_relation/modeling.py",
+      "multi_galaxy/modeling.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/scaling_galaxies/modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/scaling_galaxies/modeling.py",
+    "summary": "Extends the multi-galaxy model with a **scaling-galaxies tier**: faint galaxies far from the co-dominant pair whose masses are tied to their luminosities through a shared relation, so the tier adds ONE free parameter regardless of how many galaxies it holds.",
+    "title": "Modeling Features (Multi Galaxy): Scaling Galaxies"
+  },
+  {
+    "contents": [
+      "Dataset Paths / Grid / PSF / Simulator",
+      "Main Lens Galaxies",
+      "Scaling Galaxies",
+      "Source / Dataset / Records"
+    ],
+    "cross_refs": [
+      "multi_galaxy/simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/scaling_galaxies/simulator.ipynb",
+    "path": "scripts/multi_galaxy/features/scaling_galaxies/simulator.py",
+    "summary": "Simulates the dataset for the `multi_galaxy/features/scaling_galaxies` feature: the co-dominant pair of `multi_galaxy/simulator.py`, plus five faint galaxies scattered FAR from the lens whose masses follow a luminosity scaling relation.",
+    "title": "Simulator: Multi Galaxy Scaling Galaxies"
+  },
+  {
+    "contents": [
+      "Dataset & Mask",
+      "Galaxies",
+      "Per-Galaxy Deflections",
+      "Tracer + Fit",
+      "Wrap Up."
+    ],
+    "cross_refs": [
+      "imaging/fit.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/fit.ipynb",
+    "path": "scripts/multi_galaxy/fit.py",
+    "summary": "An anatomy of how a multi-galaxy lens fit works: compose the two co-dominant galaxies and the source by hand, build the `Tracer`, and fit the imaging data with `FitImaging` \u2014 inspecting how each deflector contributes to the lensing.",
+    "title": "Fits: Multi Galaxy"
+  },
+  {
+    "contents": [
       "Example",
       "Simulation",
       "Dataset & Mask",
