@@ -54,7 +54,7 @@ dataset_path = Path("dataset") / "group" / dataset_name
 """
 __Dataset Auto-Simulation__
 """
-if not dataset_path.exists():
+if al.util.dataset.should_simulate(str(dataset_path)):
     import subprocess
     import sys
 
