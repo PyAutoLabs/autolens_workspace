@@ -68,7 +68,7 @@ dataset_label = "datacube"
 dataset_name = "sim_simple"
 dataset_path = Path("dataset") / "interferometer" / dataset_label / dataset_name
 
-if not dataset_path.exists():
+if al.util.dataset.should_simulate(str(dataset_path)):
     import subprocess
     import sys
 
