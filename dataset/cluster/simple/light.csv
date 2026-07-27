@@ -1,5 +1,0 @@
-galaxy,attr_name,profile_class,y,x,intensity,effective_radius,sersic_index,ell_comps_0,ell_comps_1,radius_break,gamma,alpha,redshift
-lens_0,bulge,SersicSph,0.0,0.0,1.5,3.0,4.0,,,,,,0.5
-lens_1,bulge,SersicSph,10.0,8.0,0.8,1.5,3.5,,,,,,0.5
-source_0,bulge,SersicCore,0.3,0.5,2.0,0.3,1.0,0.0962250448649376,-0.05555555555555551,0.025,0.25,3.0,1.0
-source_1,bulge,SersicCore,-0.8,1.2,2.0,0.3,1.0,1.360718665719281e-17,-0.11111111111111108,0.025,0.25,3.0,2.0

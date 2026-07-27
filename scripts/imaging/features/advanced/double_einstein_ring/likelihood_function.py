@@ -74,7 +74,7 @@ Load the double Einstein ring dataset. The auto-simulation block mirrors the oth
 dataset_name = "double_einstein_ring"
 dataset_path = Path("dataset") / "imaging" / dataset_name
 
-if not dataset_path.exists():
+if al.util.dataset.should_simulate(str(dataset_path)):
     import subprocess
     import sys
 
