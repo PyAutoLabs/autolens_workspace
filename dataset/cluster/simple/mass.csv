@@ -1,4 +1,0 @@
-galaxy,attr_name,profile_class,y,x,sigma,r_core,r_cut,redshift_object,redshift_source,H0,Om0,mass_at_200,redshift
-lens_0,mass,dPIEMassSph,0.0,0.0,330.0,0.0,20.0,0.5,2.0,67.66,0.30966,,0.5
-lens_1,mass,dPIEMassSph,10.0,8.0,210.0,0.0,12.0,0.5,2.0,67.66,0.30966,,0.5
-host_halo,dark,NFWMCRLudlowSph,0.0,0.0,,,,0.5,2.0,,,1995262314968882.8,0.5
