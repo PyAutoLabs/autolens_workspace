@@ -17,7 +17,6 @@ dataset/cluster/a2744/data.fits
 # uv_wavelengths/sma.fits is REAL SMA uv baseline coverage — a read-only input to the
 # interferometer simulators, with no writer anywhere. It is NOT regenerable; never purge it.
 !dataset/interferometer/uv_wavelengths/**
-!dataset/interferometer/many_visibilities/**
 !dataset/interferometer/sdp81/**
 notebooks/plot/
 test_report.md
