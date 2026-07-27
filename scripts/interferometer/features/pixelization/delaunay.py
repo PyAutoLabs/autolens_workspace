@@ -99,6 +99,28 @@ import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
+"""
+__NUFFT Backend Check__
+
+Interferometer analysis uses the default `TransformerNUFFT`, backed by the
+`nufftax` NUFFT library. It ships with the `[optional]` extras and requires
+Python >= 3.12. When it is not installed (e.g. the NumPy-only CI matrix), skip
+this example gracefully rather than erroring on the data-simulation step.
+"""
+import importlib.util
+import sys
+
+if importlib.util.find_spec("nufftax") is None:
+    print(
+        "Skipping interferometer example: the `nufftax` NUFFT backend is not "
+        "installed (install with `pip install autolens[optional]`; requires "
+        "Python >= 3.12)."
+    )
+    sys.exit(0)
+
+"""
+__Mask (Real Space)__
+"""
 mask_radius = 3.5
 
 real_space_mask = al.Mask2D.circular(
