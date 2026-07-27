@@ -53,7 +53,7 @@ Load the group double Einstein ring dataset.
 dataset_name = "double_einstein_ring"
 dataset_path = Path("dataset") / "group" / dataset_name
 
-if not dataset_path.exists():
+if al.util.dataset.should_simulate(str(dataset_path)):
     import subprocess
     import sys
 
