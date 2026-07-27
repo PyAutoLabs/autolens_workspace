@@ -143,7 +143,7 @@ __Dataset Auto-Simulation__
 
 If the cube isn't on disk yet, run the simulator. This makes the script runnable on a fresh checkout.
 """
-if not dataset_path.exists():
+if al.util.dataset.should_simulate(str(dataset_path)):
     import subprocess
     import sys
 

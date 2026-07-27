@@ -82,7 +82,7 @@ Load the extra_and_scaling_galaxies dataset.
 dataset_name = "extra_and_scaling_galaxies"
 dataset_path = Path("dataset") / "imaging" / dataset_name
 
-if not dataset_path.exists():
+if al.util.dataset.should_simulate(str(dataset_path)):
     import subprocess
     import sys
 
