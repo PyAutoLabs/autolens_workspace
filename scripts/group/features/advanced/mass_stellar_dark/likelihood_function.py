@@ -82,7 +82,7 @@ Load the group mass_stellar_dark dataset.
 dataset_name = "mass_stellar_dark"
 dataset_path = Path("dataset") / "group" / dataset_name
 
-if not dataset_path.exists():
+if al.util.dataset.should_simulate(str(dataset_path)):
     import subprocess
     import sys
 

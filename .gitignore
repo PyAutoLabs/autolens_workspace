@@ -10,17 +10,12 @@ dataset/**
 !dataset/.gitignore
 !dataset/imaging/cosmos_web_ring/**
 !dataset/imaging/slacs1430+4105/**
-!dataset/imaging/double_einstein_ring/**
-!dataset/imaging/mass_stellar_dark/**
-!dataset/imaging/extra_and_scaling_galaxies/**
 !dataset/group/102021990_NEG650312660474055399/**
 !dataset/point_source/rxj1131/**
 !dataset/cluster/a2744/**
 dataset/cluster/a2744/data.fits
-!dataset/group/double_einstein_ring/**
-!dataset/group/mass_stellar_dark/**
-!dataset/group/scaling_relation/**
-!dataset/cluster/simple/**
+# uv_wavelengths/sma.fits is REAL SMA uv baseline coverage — a read-only input to the
+# interferometer simulators, with no writer anywhere. It is NOT regenerable; never purge it.
 !dataset/interferometer/uv_wavelengths/**
 !dataset/interferometer/many_visibilities/**
 !dataset/interferometer/sdp81/**
