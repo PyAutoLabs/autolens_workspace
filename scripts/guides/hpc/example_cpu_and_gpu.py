@@ -351,8 +351,11 @@ The ENV line declares the environment applied when this script runs in CI
 (PyAutoHands docs/env_profile_redesign.md §10); this whole section is
 stripped from generated notebooks and markdown.
 
-Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
-the pre-existing 100x100 data shape.
+This guide simulates its dataset on demand rather than loading committed
+FITS, and runs green under either dataset regime. `full_datasets` is declared
+so the example runs at the full 100x100 shape the surrounding prose assumes;
+under the small-dataset cap the mask is padded to fit the PSF footprint and
+the reported image-pixel count no longer matches the guide's text.
 
 ENV: full_datasets
 """
