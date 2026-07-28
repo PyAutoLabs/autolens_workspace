@@ -1,0 +1,67 @@
+#!/bin/bash -l
+
+#SBATCH -J autolens_cpu
+#SBATCH -n 1
+#SBATCH --cpus-per-task=8
+#SBATCH -o output/output.%A_%a.out
+#SBATCH -e error/error.%A_%a.err
+#SBATCH --partition=cpu
+#SBATCH -t 18:00:00
+#SBATCH --mem=64gb
+#SBATCH --array=0-0
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=your.email@institution.ac.uk
+
+# -----------------------------------------------------------------------------
+# Environment
+#
+# Set PROJECT_PATH to your workspace on the HPC before submitting:
+#
+#   export PROJECT_PATH=/PATH/TO/LARGE_STORAGE/YOUR_USERNAME/autolens_workspace
+#   sbatch scripts/guides/hpc/batch_cpu/submit
+#
+# This is the same location as $HPC_BASE/$PROJECT_NAME in sync.conf.
+# -----------------------------------------------------------------------------
+source $PROJECT_PATH/activate.sh
+
+# Force JAX onto the CPU backend, so it does not try to use a GPU that was not
+# allocated to this job.
+export JAX_PLATFORM_NAME=cpu
+export JAX_PLATFORMS=cpu
+
+# Pin every linear algebra library to the CPUs SLURM actually allocated. Without
+# this each library spawns one thread per physical core, and array jobs sharing
+# a node oversubscribe it badly.
+THREADS=$SLURM_CPUS_PER_TASK
+export OPENBLAS_NUM_THREADS=$THREADS
+export MKL_NUM_THREADS=$THREADS
+export OMP_NUM_THREADS=$THREADS
+export VECLIB_MAXIMUM_THREADS=$THREADS
+export NUMEXPR_NUM_THREADS=$THREADS
+export NPROC=$THREADS
+
+# -----------------------------------------------------------------------------
+# Dataset list
+#
+# Each entry is the name of a dataset folder inside dataset/imaging/ on the HPC.
+# One array task is launched per entry, and each fits a different lens.
+#
+# To fit many lenses, add entries here and widen the --array directive above
+# to match: three datasets means --array=0-2.
+# -----------------------------------------------------------------------------
+datasets=(
+simple__no_lens_light
+)
+
+dataset="${datasets[$SLURM_ARRAY_TASK_ID]}"
+
+echo "=========================================="
+echo "Array task : $SLURM_ARRAY_TASK_ID"
+echo "Dataset    : $dataset"
+echo "CPUs       : $SLURM_CPUS_PER_TASK"
+date
+
+python3 $PROJECT_PATH/scripts/guides/hpc/example_cpu_and_gpu.py --dataset=$dataset
+
+echo "Finished: $dataset"
+date

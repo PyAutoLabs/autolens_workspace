@@ -1,0 +1,57 @@
+#!/bin/bash -l
+
+#SBATCH -J autolens_gpu
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=32gb
+#SBATCH -t 02:00:00
+#SBATCH --array=0-0
+#SBATCH -o output/output.%A_%a.out
+#SBATCH -e error/error.%A_%a.err
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=your.email@institution.ac.uk
+
+# -----------------------------------------------------------------------------
+# Environment
+#
+# Set PROJECT_PATH to your workspace on the HPC before submitting:
+#
+#   export PROJECT_PATH=/PATH/TO/LARGE_STORAGE/YOUR_USERNAME/autolens_workspace
+#   sbatch scripts/guides/hpc/batch_gpu/submit
+#
+# Note there is no JAX_PLATFORM_NAME override and no CPU thread-pinning block
+# here: JAX auto-detects the allocated GPU, and pinning host threads is
+# irrelevant when the GPU is doing the work.
+# -----------------------------------------------------------------------------
+source $PROJECT_PATH/activate.sh
+
+# -----------------------------------------------------------------------------
+# Dataset list
+#
+# Each entry is the name of a dataset folder inside dataset/imaging/ on the HPC.
+# One array task is launched per entry, and each fits a different lens.
+#
+# To fit many lenses, add entries here and widen the --array directive above
+# to match: three datasets means --array=0-2.
+# -----------------------------------------------------------------------------
+datasets=(
+simple__no_lens_light
+)
+
+dataset="${datasets[$SLURM_ARRAY_TASK_ID]}"
+
+echo "=========================================="
+echo "Array task : $SLURM_ARRAY_TASK_ID"
+echo "Dataset    : $dataset"
+date
+
+# Print the allocated GPU to the log, so a failed or unexpected allocation is
+# obvious when reading back the output file.
+nvidia-smi
+
+python3 $PROJECT_PATH/scripts/guides/hpc/example_cpu_and_gpu.py --dataset=$dataset
+
+echo "Finished: $dataset"
+date

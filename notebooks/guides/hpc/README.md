@@ -58,7 +58,7 @@ There are two supported ways to install PyAutoLens on an HPC system.
 ### Option 2: Clone the GitHub repositories
 
 - Useful if you are developing PyAutoLens itself
-- Follow the instructions in `README_Repos.rst` instead of this guide
+- Follow the instructions in `README_Repos.md` instead of this guide
 
 This document assumes **Option 1**.
 
@@ -192,50 +192,17 @@ On the HPC, this typically lives in:
 $HOME/autolens_workspace
 ```
 
-## Uploading Workspace Files from Your Laptop
-
-From your local machine, navigate to your workspace:
-
-```
-cd /path/to/autolens_workspace
-```
-
-We will use `rsync` to transfer files efficiently.
-
-Recommended `rsync` options:
-
-- `--update` – only copy newer files
-- `-v` – verbose output
-- `-r` – recursive directory transfer
-
-### Uploading Pipelines (Example: SLaM)
-
-```
-rsync --update -v -r slam \
-  YOUR_USERNAME@HPC_LOGIN_HOST:$HOME/autolens_workspace
-```
-
 ## HPC-Specific Workspace Folder
 
-Create an `hpc` folder inside your workspace (for example by copying
-`misc/hpc`).
+The workspace contains an `hpc` folder (`scripts/guides/hpc`) with:
 
-This folder typically contains:
-
-- `config`:
-  \- HPC-specific configuration files
-  \- `general.yaml` with `hpc_mode: true`
-- `runners`:
-  \- runner scripts adapted for batch execution
-- `batch`:
-  \- SLURM submission scripts
-
-Upload the folder:
-
-```
-rsync --update -v -r hpc \
-  YOUR_USERNAME@HPC_LOGIN_HOST:$HOME/autolens_workspace
-```
+- `batch_cpu/` — SLURM submission script for CPU jobs, plus its `output/` and
+  `error/` log folders
+- `batch_gpu/` — SLURM submission script for GPU jobs, plus its `output/` and
+  `error/` log folders
+- `sync` — bash script for transferring files to and from the HPC
+- `sync.conf.example` — configuration template for the sync script
+- `example_cpu_and_gpu.py` — the Python walkthrough of an HPC model-fit
 
 ## Data and Output Directories
 
@@ -258,59 +225,218 @@ mkdir -p dataset
 mkdir -p output
 ```
 
-### Uploading Data from Your Laptop
+## Transferring Files: Manual rsync
 
-From your local workspace:
+`rsync` transfers files between your laptop and the HPC efficiently. The
+most useful flags are:
+
+- `--update` — only copy files that are newer than the destination
+- `-a` — archive mode (preserves timestamps, permissions, symlinks)
+- `-z` — compress data in transit (good for scripts and config; minimal
+  benefit for `.fits` files)
+- `--partial` — resume interrupted transfers instead of restarting
+
+### Uploading Code
+
+From your local workspace root:
 
 ```
-rsync --update -v -r dataset/* \
+rsync --update -v -r scripts/ \
+  YOUR_USERNAME@HPC_LOGIN_HOST:/PATH/TO/WORKSPACE/scripts/
+```
+
+### Uploading Data
+
+```
+rsync --update -v -r dataset/ \
   YOUR_USERNAME@HPC_LOGIN_HOST:/PATH/TO/LARGE_STORAGE/YOUR_USERNAME/dataset/
 ```
 
-### Uploading Existing Output (Optional)
-
-```
-rsync --update -v -r output/* \
-  YOUR_USERNAME@HPC_LOGIN_HOST:/PATH/TO/LARGE_STORAGE/YOUR_USERNAME/output/
-```
-
-### Uploading a Single Dataset or Output Folder
+### Uploading a Single Dataset
 
 ```
 rsync --update -v -r dataset/example \
   YOUR_USERNAME@HPC_LOGIN_HOST:/PATH/TO/LARGE_STORAGE/YOUR_USERNAME/dataset/
 ```
 
-```
-rsync --update -v -r output/example \
-  YOUR_USERNAME@HPC_LOGIN_HOST:/PATH/TO_LARGE_STORAGE/YOUR_USERNAME/output/
-```
-
-### Downloading Results Back to Your Laptop
+### Downloading Results
 
 ```
 rsync --update -v -r \
-  YOUR_USERNAME@HPC_LOGIN_HOST:/PATH/TO_LARGE_STORAGE/YOUR_USERNAME/output/* \
+  YOUR_USERNAME@HPC_LOGIN_HOST:/PATH/TO/LARGE_STORAGE/YOUR_USERNAME/output/ \
   ./output/
 ```
 
+## Transferring Files: Sync Script (Recommended)
+
+The `sync` script in `scripts/guides/hpc/` automates the above rsync
+commands and handles push, pull, and dry-run in a single tool. It is the
+preferred way to transfer files once you are comfortable with the manual
+rsync approach.
+
+### Setup
+
+Copy the example config and fill in your values:
+
+```
+cp scripts/guides/hpc/sync.conf.example scripts/guides/hpc/sync.conf
+```
+
+Edit `sync.conf`:
+
+```
+# SSH host alias (from ~/.ssh/config) or user@hostname
+HPC_HOST=my_hpc
+
+# Base directory on the HPC under which your projects sit
+HPC_BASE=/scratch/YOUR_USERNAME
+
+# Project name on the HPC (defaults to local folder name)
+PROJECT_NAME=autolens_workspace
+```
+
+`sync.conf` is gitignored and stays on your local machine only.
+
+### Usage
+
+Run from the workspace root:
+
+```
+bash scripts/guides/hpc/sync push     # upload code, config, and data
+bash scripts/guides/hpc/sync pull     # download results
+bash scripts/guides/hpc/sync sync     # push then pull (default)
+bash scripts/guides/hpc/sync status   # dry run — show what would transfer
+```
+
+The script uses different rsync strategies per directory type:
+
+- **Code and config** (`scripts/`, `config/`) — changed files are overwritten,
+  new files are added.
+- **Dataset** — `--ignore-existing`: any `.fits` file already on the HPC
+  is never re-transferred, which avoids checksumming a large archive on
+  every sync.
+- **Output** — `--update`: only files newer on the HPC are pulled down,
+  and the large `search_internal/` sampler state is excluded automatically.
+
+```{eval-rst}
+.. note::
+
+   ``$HPC_BASE/$PROJECT_NAME`` in ``sync.conf`` is equivalent to
+   ``$PROJECT_PATH`` used inside the SLURM batch scripts, so activation
+   and script paths stay consistent.
+```
+
+## Submitting Jobs: CPU
+
+SLURM jobs are submitted with `sbatch`. Before submitting, set
+`PROJECT_PATH` so the batch script can find your workspace:
+
+```
+export PROJECT_PATH=/PATH/TO/LARGE_STORAGE/YOUR_USERNAME/autolens_workspace
+sbatch scripts/guides/hpc/batch_cpu/submit
+```
+
+The example CPU script is at `scripts/guides/hpc/batch_cpu/submit`. The
+key SLURM directives are:
+
+- `--partition=cpu` — submit to the CPU partition (name varies by HPC)
+- `--cpus-per-task=8` — number of CPU cores per job; increase for faster
+  Nautilus sampling
+- `--mem=64gb` — memory per job; increase for large pixelized source reconstructions
+- `--time=18:00:00` — wall-clock time limit; job is killed if it overruns
+- `--array=0-0` — launch one job per dataset; SLURM sets
+  `$SLURM_ARRAY_TASK_ID` to a different value in each job. The shipped script
+  fits the single example dataset, so it uses `0-0`; for three datasets you
+  would write `--array=0-2`
+
+The array index selects the dataset:
+
+```
+datasets=(dataset_0 dataset_1 dataset_2)
+dataset="${datasets[$SLURM_ARRAY_TASK_ID]}"
+```
+
+Add entries to `datasets=(...)` and widen `--array` to match — those two edits
+are all that is needed to scale from one lens to a large sample.
+
+This is the standard pattern for fitting many lenses simultaneously: each
+array job is independent, runs on its own CPU allocation, and fits a
+different dataset.
+
+### JAX and thread pinning
+
+Two environment variables tell JAX to use the CPU backend and prevent it
+from attempting to use a GPU that is not allocated to this job:
+
+```
+export JAX_PLATFORM_NAME=cpu
+export JAX_PLATFORMS=cpu
+```
+
+The thread-pinning block sets every linear-algebra library to use exactly
+the number of CPUs SLURM allocated, preventing threads from overloading
+the node:
+
+```
+THREADS=$SLURM_CPUS_PER_TASK
+export OPENBLAS_NUM_THREADS=$THREADS
+export MKL_NUM_THREADS=$THREADS
+export OMP_NUM_THREADS=$THREADS
+...
+```
+
+## Submitting Jobs: GPU
+
+The GPU script at `scripts/guides/hpc/batch_gpu/submit` uses the same
+array-job pattern but requests a GPU instead of extra CPUs.
+
+Key differences from the CPU script:
+
+- `--partition=gpu` — submit to the GPU partition
+- `--gres=gpu:1` — request one GPU per job
+- `--cpus-per-task=1` — only one CPU core is needed; the GPU handles
+  parallelism
+- `--mem=32gb` — GPU jobs typically need less host memory than large
+  multi-CPU jobs
+- No `JAX_PLATFORM_NAME` override — JAX auto-detects and uses the GPU
+- No CPU thread-pinning block — not needed when a GPU is doing the work
+- `nvidia-smi` — prints GPU information to the log at job start, useful
+  for confirming the correct GPU was allocated
+
+Submit with:
+
+```
+export PROJECT_PATH=/PATH/TO/LARGE_STORAGE/YOUR_USERNAME/autolens_workspace
+sbatch scripts/guides/hpc/batch_gpu/submit
+```
+
+```{eval-rst}
+.. note::
+
+   GPU jobs use JAX with ``use_jax=True`` in the analysis object, which is
+   already the default in PyAutoLens. No code changes are required to switch
+   from CPU to GPU — only the batch script changes.
+```
+
+## Monitoring Jobs
+
+After submitting, standard SLURM commands apply:
+
+```
+squeue -u YOUR_USERNAME          # list your running and pending jobs
+scancel JOB_ID                   # cancel a job
+sacct -j JOB_ID --format=...     # inspect a completed job
+```
+
+Output and error logs are written to `batch_cpu/output/` and
+`batch_cpu/error/` (or `batch_gpu/`) with filenames containing the
+job and array index, making it easy to trace a specific dataset failure.
+
 ## Next Steps
 
-You are now fully set up to run PyAutoLens on an HPC system.
-
-To submit your first job:
-
-- Navigate to the example runner script:
-
-  ```
-  autolens_workspace/misc/hpc/example_cpu.py
-  ```
-
-- Review the SLURM batch scripts in:
-
-  ```
-  autolens_workspace/hpc/batch
-  ```
-
-These scripts demonstrate how to configure and submit PyAutoLens jobs using
-SLURM.
+- Read `example_cpu_and_gpu.py` in this folder for a detailed Python walkthrough
+  of how paths, datasets, and Nautilus are configured for HPC runs.
+- Adapt `batch_cpu/submit` or `batch_gpu/submit` for your HPC partition
+  names, memory requirements, and dataset list.
+- Use `scripts/guides/hpc/sync` for day-to-day file transfer once you
+  have filled in `sync.conf`.
