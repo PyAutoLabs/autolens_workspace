@@ -1634,26 +1634,14 @@
     "title": "Galaxies"
   },
   {
-    "contents": [
-      "HPC Output Path",
-      "HPC Dataset Path",
-      "HPC Home Path",
-      "Batch Script Many Lenses",
-      "Batch Script One Lenses",
-      "Dataset",
-      "Nautilus CPUs",
-      "Lens Modeling",
-      "Model",
-      "Analysis"
-    ],
+    "contents": [],
     "cross_refs": [
-      "/hpc/home/hpc_username/runners/example.py",
-      "example.py"
+      "PROJECT_PATH/scripts/guides/hpc/example_cpu_and_gpu.py"
     ],
-    "notebook": "notebooks/guides/hpc/example_cpu.ipynb",
-    "path": "scripts/guides/hpc/example_cpu.py",
-    "summary": "This example illustrates how to set up lens modeling on a High Performance Computing (HPC) system using multiple CPUs.",
-    "title": "HPC: Example CPU"
+    "notebook": "notebooks/guides/hpc/example_cpu_and_gpu.ipynb",
+    "path": "scripts/guides/hpc/example_cpu_and_gpu.py",
+    "summary": "This example illustrates how to set up lens modeling on a High Performance Computing (HPC) system, using either multiple CPUs or a GPU.",
+    "title": "HPC: Example CPU and GPU"
   },
   {
     "contents": [

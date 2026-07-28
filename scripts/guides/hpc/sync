@@ -1,0 +1,163 @@
+#!/usr/bin/env bash
+# sync — bidirectional workspace sync between your laptop and an HPC
+#
+# SETUP
+#   cp scripts/guides/hpc/sync.conf.example scripts/guides/hpc/sync.conf
+#   # Edit sync.conf with your HPC host, base path, and project name.
+#   # sync.conf is gitignored — it stays on your machine only.
+#
+# USAGE (run from the workspace root)
+#   bash scripts/guides/hpc/sync push     Push code, config and data to the HPC
+#   bash scripts/guides/hpc/sync pull     Download results from the HPC
+#   bash scripts/guides/hpc/sync sync     Push, then pull  (default)
+#   bash scripts/guides/hpc/sync status   Dry run — show what would transfer
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# scripts/guides/hpc/ -> scripts/guides/ -> scripts/ -> workspace root
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
+CONF="${SCRIPT_DIR}/sync.conf"
+
+# ---------------------------------------------------------------------------
+# Configuration — loaded from sync.conf, with environment variable overrides
+# ---------------------------------------------------------------------------
+[[ -f "$CONF" ]] && source "$CONF"
+
+HPC_HOST="${HPC_HOST:?HPC_HOST not set. Copy sync.conf.example → sync.conf and edit it.}"
+HPC_BASE="${HPC_BASE:?HPC_BASE not set. Copy sync.conf.example → sync.conf and edit it.}"
+PROJECT_NAME="${PROJECT_NAME:-$(basename "$PROJECT_ROOT")}"
+
+REMOTE="${HPC_HOST}:${HPC_BASE}/${PROJECT_NAME}"
+
+# ---------------------------------------------------------------------------
+# Transfer lists
+# ---------------------------------------------------------------------------
+
+# Code and config — synced normally. Changed files are updated, new files added.
+CODE_DIRS=(scripts config)
+
+# Top-level files that live at the workspace root. Missing entries are skipped,
+# so this list can name files you have not created yet (for example activate.sh,
+# which the README asks you to write for your HPC).
+ROOT_FILES=(activate.sh README.md)
+
+# Raw data — pushed with --ignore-existing.
+# FITS files are written once and never modified, so any file already present
+# on the HPC is guaranteed correct. Skipping re-checksumming avoids scanning
+# the entire archive on every sync (critical for large datasets).
+DATA_DIRS=(dataset)
+
+# Pulled back from the HPC after jobs finish.
+PULL_DIRS=(output)
+
+# ---------------------------------------------------------------------------
+# rsync options
+#   -a          archive (timestamps, permissions, symlinks)
+#   -z          compress in transit (big win for text/JSON/YAML; minimal for FITS)
+#   --partial   keep partial files so interrupted transfers resume rather than restart
+#   --info=progress2  single updating line per file (less noisy than -v)
+# ---------------------------------------------------------------------------
+RSYNC=(rsync -az --partial --info=progress2)
+
+EXCLUDES=(
+    --exclude='__pycache__/'
+    --exclude='*.pyc'
+    --exclude='.git/'
+    --exclude='*.egg-info/'
+    --exclude='sync.conf'          # never push the local HPC config
+)
+
+# ---------------------------------------------------------------------------
+push() {
+    local dryrun="${1:-}"
+
+    echo "==> [push] code/config  ->  ${REMOTE}"
+    for dir in "${CODE_DIRS[@]}"; do
+        local src="${PROJECT_ROOT}/${dir}/"
+        if [[ ! -d "$src" ]]; then
+            echo "    skip: ${dir}/ not found locally"
+            continue
+        fi
+        echo "    ${dir}/"
+        "${RSYNC[@]}" "${EXCLUDES[@]}" ${dryrun} \
+            "${src}" "${REMOTE}/${dir}/"
+    done
+
+    echo "    [root files]"
+    local existing_root_files=()
+    for f in "${ROOT_FILES[@]}"; do
+        [[ -f "${PROJECT_ROOT}/${f}" ]] && existing_root_files+=("${PROJECT_ROOT}/${f}")
+    done
+    if [[ ${#existing_root_files[@]} -gt 0 ]]; then
+        "${RSYNC[@]}" "${EXCLUDES[@]}" ${dryrun} \
+            "${existing_root_files[@]}" "${REMOTE}/"
+    fi
+
+    echo ""
+    echo "==> [push] data  ->  ${REMOTE}  (--ignore-existing: skips files already on HPC)"
+    for dir in "${DATA_DIRS[@]}"; do
+        local src="${PROJECT_ROOT}/${dir}/"
+        if [[ ! -d "$src" ]]; then
+            echo "    skip: ${dir}/ not found locally"
+            continue
+        fi
+        echo "    ${dir}/"
+        "${RSYNC[@]}" "${EXCLUDES[@]}" --ignore-existing ${dryrun} \
+            "${src}" "${REMOTE}/${dir}/"
+    done
+}
+
+pull() {
+    local dryrun="${1:-}"
+
+    echo "<== [pull] results  <-  ${REMOTE}"
+    for dir in "${PULL_DIRS[@]}"; do
+        echo "    ${dir}/"
+        # --update          skip local files that are newer than the remote copy
+        # --exclude         omit search_internal (large sampler state, not needed locally)
+        "${RSYNC[@]}" "${EXCLUDES[@]}" \
+            --update \
+            --exclude='search_internal' \
+            ${dryrun} \
+            "${REMOTE}/${dir}/" \
+            "${PROJECT_ROOT}/${dir}/"
+    done
+}
+
+status() {
+    echo "========================================"
+    echo " DRY RUN - nothing will be transferred "
+    echo "========================================"
+    echo ""
+    push "--dry-run"
+    echo ""
+    pull "--dry-run"
+}
+
+# ---------------------------------------------------------------------------
+cmd="${1:-sync}"
+
+echo ""
+echo "Project : ${PROJECT_NAME}"
+echo "Remote  : ${REMOTE}"
+echo ""
+
+case "$cmd" in
+    push)   push ;;
+    pull)   pull ;;
+    sync)   push && echo "" && pull ;;
+    status) status ;;
+    *)
+        echo "Usage: $(basename "$0") [push|pull|sync|status]"
+        echo ""
+        echo "  push    Upload code, config and data to the HPC"
+        echo "  pull    Download results from the HPC"
+        echo "  sync    push then pull (default)"
+        echo "  status  Dry run - show what would be transferred"
+        exit 1
+        ;;
+esac
+
+echo ""
+echo "Done."

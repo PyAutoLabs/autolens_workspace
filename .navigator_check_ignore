@@ -5,3 +5,9 @@
 # (every line is prefixed with '#', including the docstring's '===' underline),
 # so the banner lint flags the commented underline on line 3. Legitimate.
 scripts/interferometer/features/subhalo/sensitivity/start_here.py
+
+# scripts/guides/hpc/README.md documents how to create a local HPC sync config
+# with `cp scripts/guides/hpc/sync.conf.example scripts/guides/hpc/sync.conf`.
+# The `.example` template is committed; `sync.conf` is the user-generated,
+# git-ignored destination and is intentionally absent from the repo.
+scripts/guides/hpc/sync.conf
