@@ -154,18 +154,12 @@ this blurring of the image.
 
 In this example, use a simple 2D Gaussian PSF, which is convolved with the image of the lens and source galaxies
 when simulating the dataset.
-
-PSF convolution runs at the image resolution (sub size 1), which is the fastest option and accurate for well-sampled
-PSFs. Supplying a PSF at a multiple of the image resolution and raising this value improves blurring fidelity for
-undersampled PSFs (e.g. HST / Euclid VIS) at extra compute cost — see `guides/advanced/over_sampling.py`.
 """
-psf_convolve_over_sample_size = 1
-
 psf = al.Convolver.from_gaussian(
-    convolve_over_sample_size=psf_convolve_over_sample_size,
     shape_native=(11, 11),
     sigma=0.1,
     pixel_scales=grid.pixel_scales,
+    convolve_over_sample_size=1,  # Increase for PSF Oversampling
 )
 
 """

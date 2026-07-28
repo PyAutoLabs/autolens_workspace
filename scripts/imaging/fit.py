@@ -79,20 +79,12 @@ if al.util.dataset.should_simulate(str(dataset_path)):
         check=True,
     )
 
-# PSF convolution runs at the image resolution (sub size 1), which is the fastest
-# option and accurate for well-sampled PSFs. Supplying a PSF at a multiple of the
-# image resolution and raising this value improves blurring fidelity for
-# undersampled PSFs (e.g. HST / Euclid VIS) at extra compute cost — see
-# `guides/advanced/over_sampling.py` and the simulator's `__Oversampled PSF__` section.
-psf_convolve_over_sample_size = 1
-
 dataset = al.Imaging.from_fits(
-    convolve_over_sample_size_lp=psf_convolve_over_sample_size,
-    convolve_over_sample_size_pixelization=psf_convolve_over_sample_size,
     data_path=dataset_path / "data.fits",
     psf_path=dataset_path / "psf.fits",
     noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
+    convolve_over_sample_size_lp=1,  # Increase for PSF Oversampling
 )
 
 """
