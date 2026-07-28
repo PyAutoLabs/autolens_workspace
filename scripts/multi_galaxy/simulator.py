@@ -151,13 +151,11 @@ this blurring of the image.
 In this example, we use a simple 2D Gaussian PSF, which is convolved with the image of the lens and source galaxies
 when simulating the dataset.
 """
-psf_convolve_over_sample_size = 1
-
 psf = al.Convolver.from_gaussian(
-    convolve_over_sample_size=psf_convolve_over_sample_size,
     shape_native=(11, 11),
     sigma=0.08,
     pixel_scales=grid.pixel_scales,
+    convolve_over_sample_size=1,  # Increase for PSF Oversampling
 )
 
 """

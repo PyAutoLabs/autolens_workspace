@@ -1373,7 +1373,6 @@
     ],
     "cross_refs": [
       "/guides/advanced/over_sampling.ipynb",
-      "guides/advanced/over_sampling.py",
       "scripts/imaging/simulator.py"
     ],
     "notebook": "notebooks/group/simulator.ipynb",
@@ -4277,7 +4276,6 @@
     "cross_refs": [
       "/guides/advanced/over_sampling.ipynb",
       "autolens_workspace_test/scripts/imaging/convolution_over_sampled.py",
-      "guides/advanced/over_sampling.py",
       "imaging/fit.py",
       "imaging/likelihood_function.py",
       "imaging/modeling.py",
