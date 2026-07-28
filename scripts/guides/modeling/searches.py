@@ -27,7 +27,7 @@ __Contents__
 - **Emcee:** Emcee (https://github.com/dfm/emcee) is an ensemble MCMC sampler that is commonly used in Astronomy.
 - **Zeus:** Zeus (https://zeus-mcmc.readthedocs.io/en/latest/) is an ensemble MCMC slice sampler.
 - **LBFGS:** LBFGS is a quasi-Newton optimization algorithm from scipy.
-- **MultiStartProdigy:** The recommended JAX multi-start gradient maximum a posteriori (MAP) optimizer (learning-rate free), with `MultiStartAdam` and `MultiStartADABelief` as alternatives. Works for parametric sources (e.g. MGE, Sersic), but not yet pixelized sources.
+- **MultiStartProdigy:** The recommended JAX multi-start gradient maximum a posteriori (MAP) optimizer (learning-rate free), with `MultiStartAdam` and `MultiStartADABelief` as alternatives. Works for parametric sources (e.g. MGE, Sersic) and, with `resurrect=True` and an appropriate regularization scheme, pixelized sources.
 - **Start Point:** For maximum likelihood estimator (MLE) and Markov Chain Monte Carlo (MCMC) non-linear searches.
 - **Search Cookbook:** There are a number of other searches supported by **PyAutoFit** and therefore which can be used.
 
@@ -215,14 +215,29 @@ Three JAX multi-start optimizers are available (they share the same multi-start 
 
 (`MultiStartLion` is a further sign-based alternative that prefers a ~10x smaller `learning_rate`.)
 
-__Parametric sources only (for now)__
+__Pixelized sources__
 
 Because these are gradient-based, they require a JAX-traceable analysis (created via `use_jax=True`). They are
-currently validated and recommended for **parametric sources** (e.g. an MGE or Sersic source). For **pixelized
-sources** (a `Pixelization` / reconstructed source) they do **not** yet reliably work: the pixelized likelihood has
-regions where the gradient becomes non-finite, so a gradient optimizer stalls short of the best fit, and nested
-sampling (`Nautilus`) remains both more reliable and, on these models, faster. Making the JAX multi-start optimizers
-work on pixelized sources is ongoing work.
+validated for **parametric sources** (e.g. an MGE or Sersic source) and — as of the 2026-07 pixelized-mesh
+campaign — for **pixelized sources** (a `Pixelization` / reconstructed source) too, where from fully broad mass
+priors they recover the true lens model on every mesh family (rectangular, k-nearest-neighbour, Delaunay), reaching
+higher likelihoods than a comparably-configured `Nautilus` run in a fraction of the time.
+
+Pixelized likelihoods do have regions where the fit (and hence the gradient) becomes non-finite — dominated by the
+regularization parameters, not the mass model — so three settings matter:
+
+- **`resurrect=True`**: starts whose trajectory goes non-finite are redrawn each step instead of dying in place.
+  This is what converts the pixelized likelihood from unsearchable to searchable, and it is off by default (it is
+  unnecessary on parametric sources).
+- **The regularization scheme**: schemes whose high-coefficient region is numerically fragile (e.g. the adaptive
+  split schemes, whose effective coefficient is raised to the 4th power) slow the search dramatically — it must
+  rediscover the good regularization mode by luck. Two reliable choices: **fix or inherit the regularization** from
+  an earlier fit (exactly what SLaM pipeline chaining does), which converges in a few hundred steps; or use a
+  **kernel regularization** (e.g. `MaternKernel`), whose likelihood degrades smoothly at extreme coefficients and
+  searches cleanly with the regularization left free.
+- **`n_steps` and `batch_size`**: with a free regularization, budget 1500-3000 steps — the best regularization mode
+  is often found late, and a long likelihood plateau is a regularization mode, not convergence. `batch_size`
+  (e.g. 4) bounds the memory of the batched gradient, which pixelized models need.
 
 Because it manages its own broad starting points, this search does not use the start-point API described below. Like
 all optimizers it returns a single best-fit lens model, not a posterior with errors, so `Nautilus` remains the
