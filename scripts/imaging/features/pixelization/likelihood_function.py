@@ -93,7 +93,7 @@ if al.util.dataset.should_simulate(str(dataset_path)):
     import sys
 
     subprocess.run(
-        [sys.executable, "scripts/imaging/features/no_lens_light/simulator.py"],
+        [sys.executable, "scripts/imaging/simulator.py"],
         check=True,
     )
 

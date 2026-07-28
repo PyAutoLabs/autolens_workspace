@@ -69,7 +69,7 @@ This example fits a simulated galaxy where galaxy has an asymmetric light distri
 fitted with `Sersic` profile and therefore requires a multi-Gaussian expansion to fit accurately.
 """
 dataset_name = "lens_light_asymmetric"
-dataset_path = Path("dataset", "imaging", "simple")
+dataset_path = Path("dataset", "imaging", dataset_name)
 
 """
 __Dataset Auto-Simulation__
