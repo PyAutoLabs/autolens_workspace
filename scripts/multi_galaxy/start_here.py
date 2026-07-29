@@ -248,21 +248,39 @@ print(model.info)
 """
 __Model Fit__
 
-We fit the data using the nested sampling algorithm Nautilus and an `AnalysisImaging` object, which defines the
-`log_likelihood_function` fitted to the imaging data.
+We fit the data using `MultiStartProdigy`, a multi-start gradient optimizer, and an `AnalysisImaging` object,
+which defines the `log_likelihood_function` fitted to the imaging data.
 
 This is the point worth pausing on: `AnalysisImaging` is the **extended-source, pixel-level analysis** — the same
 object used for single-galaxy (`imaging/`) and group-scale fits. The multi-galaxy regime changes the mass model,
 not the analysis. Only at cluster scale does the analysis itself switch, to `AnalysisPoint` fits of
 multiple-image positions.
+
+__Multi Start Gradient Optimization__
+
+`MultiStartProdigy` launches `n_starts` independent optimizations from broad starting points spread across the
+parameter space, all of which descend the likelihood in parallel via `jax.vmap`, and returns the best one. A
+single starting point would frequently get stuck in a local maximum — and a multi-galaxy mass model, with several
+co-dominant deflectors, has a particularly multi-modal parameter space. Running a wide population of starts is
+what makes a gradient optimizer reliable here (the GIGA-Lens approach, Gu, Huang et al. 2022, arXiv:2202.07663).
+Prodigy is *learning-rate free* (Mishchenko & Defazio 2024, arXiv:2306.06101), so there is nothing to tune.
+
+__Posterior__
+
+`MultiStartProdigy` is a maximum a posteriori (MAP) optimizer: it returns the **single best-fit lens model** and
+nothing else — no posterior, no error bars, no covariances between parameters.
+
+To get uncertainties, run `autolens_workspace/scripts/multi_galaxy/modeling.py`, which fits this same model with
+the nested sampling algorithm `Nautilus` and returns the **full posterior**. Use the fast optimizer here to check
+your model and data are sensible, then `Nautilus` when you need results you can quote.
 """
-search = af.Nautilus(
+search = af.MultiStartProdigy(
     path_prefix=Path("multi_galaxy"),  # The path where results are stored.
     name="start_here",  # The name of the fit and folder results are output to.
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
-    n_live=200,  # The number of Nautilus "live" points, increase for more complex models.
-    n_batch=50,  # GPU lens model fits are batched and run simultaneously.
-    iterations_per_full_update=100000,  # Every N iterations results are written to hard-disk.
+    n_starts=48,  # The number of independent optimizations run in parallel, increase for more complex models.
+    n_steps=300,  # The maximum gradient steps per start; the search stops early once the best fit stops improving.
+    iterations_per_quick_update=50,  # Every N steps the max likelihood model is visualized and output to hard-disk.
     live_visual_update=False,  # Set True for a live matplotlib window (script) or refreshing cell (notebook).
 )
 

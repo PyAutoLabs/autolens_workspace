@@ -360,6 +360,16 @@ We now fit the data with the lens model using the non-linear fitting method and 
 This requires an `AnalysisImaging` object, which defines the `log_likelihood_function` used by Nautilus to fit
 the model to the imaging data.
 
+__Why Not MultiStartProdigy?__
+
+The single-band `imaging/start_here.py` example fits with `af.MultiStartProdigy`, a much faster multi-start
+gradient optimizer, and uses `Nautilus` only in `modeling.py` where the full posterior is needed.
+
+Multi-wavelength fits stay on `Nautilus` for now. Each waveband here has its own pixel scale, so the bands do not
+share a common grid shape, and JAX must compile a separate large kernel for every band's gradient. Compiling the
+gradient of the joint multi-band likelihood is currently prohibitively slow on CPU as a result — far slower than
+the sampling it would be trying to save. Once that compile cost is addressed, this example will switch too.
+
 **Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce
 an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
 

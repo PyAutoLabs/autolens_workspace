@@ -246,6 +246,11 @@ We fit the data with the lens model using the nested sampling algorithm Nautilus
 object — the same extended-source analysis used at galaxy and group scale. (The analysis object is where the
 regime ladder forks: cluster-scale fits instead use `AnalysisPoint` on multiple-image positions.)
 
+This example uses `Nautilus` because it returns the **full posterior** — every parameter's errors and the
+covariances between them. The folder's `start_here.py` instead fits with `af.MultiStartProdigy`, a multi-start
+gradient optimizer which is far faster but returns only a single best-fit model with no errors at all. Use that
+one to check a model quickly, and this one when you need results you can quote.
+
 __JAX__
 
 `AnalysisImaging` defaults to `use_jax=True`; the search driver wraps the likelihood in `jax.vmap(jax.jit(...))`.

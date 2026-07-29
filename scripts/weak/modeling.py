@@ -151,6 +151,11 @@ The model is fitted to the data using the nested sampling algorithm
 Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), the default search used throughout the
 workspace.
 
+Other data types fit their `start_here.py` with `af.MultiStartProdigy`, a much faster multi-start gradient
+optimizer, and reserve `Nautilus` for the `modeling.py` example where the full posterior is needed. Weak-lensing
+fits use `Nautilus` in both: that optimizer requires the JAX likelihood path, which these examples do not use,
+and this parameter space is small enough that Nautilus is quick regardless.
+
 With only N=5 parameters and a smooth, near-Gaussian likelihood surface, this is an easy parameter space —
 100 live points is ample and keeps the run time to minutes.
 
