@@ -53,9 +53,9 @@ __Prerequisites__
 
 - `interferometer/features/pixelization/likelihood_function.ipynb` — the visibility-space pixelized-source
   evidence, whose terms reappear here.
-- `imaging/features/potential_correction/likelihood_function.ipynb` — the imaging analogue of this walkthrough,
+- `imaging/features/advanced/potential_correction/likelihood_function.ipynb` — the imaging analogue of this walkthrough,
   where the measurement operator is the PSF-blur matrix instead of the Fourier transform.
-- `interferometer/features/potential_correction/start_here.ipynb` — the user-facing example of this feature.
+- `interferometer/features/advanced/potential_correction/start_here.ipynb` — the user-facing example of this feature.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

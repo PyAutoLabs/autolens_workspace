@@ -30,7 +30,7 @@ The sections of this example config set the following:
 >
 > : When the results of a search are passed to a subsequent search to set up the priors of its non-linear search,
 >   this entry describes how the Prior is passed. For a full description of prior passing, checkout the examples
->   in 'autolens_workspace/examples/complex/linking'.
+>   in `scripts/guides/modeling/chaining.py`.
 >
 > limits
 >
@@ -38,5 +38,5 @@ The sections of this example config set the following:
 >   limits set the physical lower and upper limits of this GaussianPrior, such that parameter samples
 >   can not go beyond these limits.
 
-The files `template_module.yaml` and `TemplateObject.yaml` give templates one can use to set up prior default
-configs for your own model components.
+To set up prior defaults for your own model components, copy the structure of an existing config in this
+folder (e.g. `light/`, `mass/`) — one YAML file per module, with one block per class.

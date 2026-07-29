@@ -1,8 +1,9 @@
-The `non_linear` folder contains configuration files which customize the default behaviour of non-linear searches in
-**PyAutoLens**.
+The `non_linear` folder contains configuration files which customize the default behaviour of non-linear
+searches in **PyAutoLens**.
+
+Defaults for individual searches (e.g. Nautilus, Emcee, LBFGS) ship with **PyAutoFit** itself; this folder
+holds only the workspace-level overrides.
 
 # Files
 
-- `mcmc.yaml`: Settings default behaviour of MCMC non-linear searches (e.g. Emcee).
-- `nest.yaml`: Settings default behaviour of nested sampler non-linear searches (e.g. Dynesty).
-- `mle.yaml`: Settings default behaviour of maximum likelihood estimator (mle) searches (e.g. LBFGS).
+- `GridSearch.yaml`: Settings for the non-linear search grid search (e.g. subhalo scanning).

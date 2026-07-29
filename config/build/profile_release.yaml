@@ -50,14 +50,14 @@ overrides:
   # Potential correction builds a dpsi mesh by subsampling the image grid, so the
   # 15x15 small-datasets cap starves it: al.pc.PairRegularDpsiMesh(dpsi_factor=2)
   # raises "The dpsi grid is too sparse" from mesh.py's get_itp_box_ctr. Both the
-  # interferometer and imaging siblings under features/potential_correction/ need
+  # interferometer and imaging siblings under features/advanced/potential_correction/ need
   # the cap lifted; the "*/start_here" patterns above do NOT cover them — their
-  # paths are {interferometer,imaging}/features/potential_correction/..., which
+  # paths are {interferometer,imaging}/features/advanced/potential_correction/..., which
   # that substring misses. Uncapped they are cheap: start_here.py runs in ~58s
   # against the 1800s cap.
-  - pattern: "interferometer/features/potential_correction/"
+  - pattern: "interferometer/features/advanced/potential_correction/"
     set: { PYAUTO_SMALL_DATASETS: "0" }
-  - pattern: "imaging/features/potential_correction/"
+  - pattern: "imaging/features/advanced/potential_correction/"
     set: { PYAUTO_SMALL_DATASETS: "0" }
   # Non-simulator scripts that load committed FITS data need full-size
   # datasets to avoid shape mismatch with pre-existing 100x100 data.

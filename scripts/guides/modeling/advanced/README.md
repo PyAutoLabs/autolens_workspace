@@ -1,4 +1,4 @@
-The `sdvanced/modeling` folder contains example scripts for modeling different datasets (E.g. CCD Imaging, Interferometry).
+The `modeling/advanced` folder contains example scripts for modeling different datasets (E.g. CCD Imaging, Interferometry).
 
 # Files
 

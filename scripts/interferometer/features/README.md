@@ -1,4 +1,4 @@
-The `modeling/features` folder contains example scripts showing how to fit a lens model to interferometer data using
+The `interferometer/features` folder contains example scripts showing how to fit a lens model to interferometer data using
 different **PyAutoLens** features.
 
 The scripts in this folder are all recommended, as they provide tools which make lens modeling more reliable and efficient.
@@ -12,7 +12,7 @@ The following example scripts illustrating lens modeling where:
 - `pixelization`: The source is reconstructed using an adaptive rectangular or Delaunay mesh
 - `extra_galaxies`: Modeling which account for the light and mass of extra nearby galaxies.
 - `subhalo`: Fitting lens models for dark matter subhalo detection and sensitivity mapping.
-- `potential_correction`: Gravitational imaging — pixelized corrections to the lensing potential reconstructed jointly with the source, via the visibility-count-independent sparse-operator route.
+- `advanced`: Advanced features for expert users, for example shapelets and potential correction (gravitational imaging).
 
 # Notes
 
