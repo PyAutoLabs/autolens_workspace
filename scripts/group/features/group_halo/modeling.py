@@ -140,7 +140,9 @@ def member_tier_models():
 
     galaxies = [af.Model(al.Galaxy, redshift=redshift_lens, mass=bgg_mass)]
 
-    for centre, luminosity_ratio in zip(member_centres[1:], member_luminosity_ratios[1:]):
+    for centre, luminosity_ratio in zip(
+        member_centres[1:], member_luminosity_ratios[1:]
+    ):
         mass = af.Model(al.mp.dPIEMassSph)
         mass.centre = tuple(centre)
         mass.sigma = bgg_mass.sigma * luminosity_ratio**alpha  # tied to the BGG

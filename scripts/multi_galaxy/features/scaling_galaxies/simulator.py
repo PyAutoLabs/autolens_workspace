@@ -43,7 +43,13 @@ grid = al.Grid2D.uniform(
 
 main_lens_centres = [(0.35, 0.25), (-0.35, -0.25)]
 
-scaling_galaxies_centres = [(5.5, -4.5), (-5.0, 4.0), (3.5, 6.0), (-6.0, -3.5), (6.5, 2.5)]
+scaling_galaxies_centres = [
+    (5.5, -4.5),
+    (-5.0, 4.0),
+    (3.5, 6.0),
+    (-6.0, -3.5),
+    (6.5, 2.5),
+]
 scaling_galaxies_luminosities = [0.40, 0.28, 0.20, 0.12, 0.08]
 
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(

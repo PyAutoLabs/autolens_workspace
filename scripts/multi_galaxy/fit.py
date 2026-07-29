@@ -139,8 +139,10 @@ deflections_1 = lens_1.deflections_yx_2d_from(grid=grid)
 magnitude_0 = float(np.mean(np.linalg.norm(np.asarray(deflections_0.array), axis=-1)))
 magnitude_1 = float(np.mean(np.linalg.norm(np.asarray(deflections_1.array), axis=-1)))
 
-print(f"mean |deflection| lens_0 = {magnitude_0:.3f}\"  lens_1 = {magnitude_1:.3f}\"")
-print(f"ratio = {magnitude_1 / magnitude_0:.2f}  (co-dominant: neither is a minor perturber)")
+print(f'mean |deflection| lens_0 = {magnitude_0:.3f}"  lens_1 = {magnitude_1:.3f}"')
+print(
+    f"ratio = {magnitude_1 / magnitude_0:.2f}  (co-dominant: neither is a minor perturber)"
+)
 
 """
 __Tracer + Fit__

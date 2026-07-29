@@ -426,7 +426,8 @@ grid_fine = al.Grid2D.uniform(
 
 psf_fine = al.Convolver.from_gaussian(
     shape_native=(21, 21),  # twice the pixels of an 11x11 image-resolution kernel...
-    pixel_scales=grid.pixel_scales[0] / 2,  # ...at half the pixel scale, so the same physical extent.
+    pixel_scales=grid.pixel_scales[0]
+    / 2,  # ...at half the pixel scale, so the same physical extent.
     sigma=0.1,
     normalize=True,
     convolve_over_sample_size=2,
