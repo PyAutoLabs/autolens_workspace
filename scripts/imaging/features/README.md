@@ -1,4 +1,4 @@
-The `modeling/features` folder contains example scripts showing how to fit a lens model to imaging data using
+The `imaging/features` folder contains example scripts showing how to fit a lens model to imaging data using
 different **PyAutoLens** features.
 
 The scripts in this folder are all recommend, as they provide tools which make lens modeling more reliable and efficient.

@@ -3,7 +3,7 @@ The examples\` folder contains scripts which show how to use **PyAutoGalaxy** bu
 The API provides a simple interface with matplotlib for making plots that does not require the user to
 write any matplotlib code themselves.
 
-This is illustrated in the `overview` / `overview.ipynb` file, where new users should begin.
+New users should begin with `guides/plot/start_here.py`.
 
 # Files
 

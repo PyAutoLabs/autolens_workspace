@@ -1,4 +1,4 @@
-The `imaging/advanced/subhalo/detect` folder contains example scripts for strong lens dark matter subhalo
+The `imaging/features/advanced/subhalo/detect` folder contains example scripts for strong lens dark matter subhalo
 detection.
 
 # Files

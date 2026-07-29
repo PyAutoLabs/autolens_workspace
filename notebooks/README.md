@@ -3,7 +3,7 @@ only contains Python scripts (e.g. `.py` files) illustrating how to perform a sp
 
 For Jupyter Notebook examples illustrating the same use-cases, see the `autolens_workspace/notebooks` folder.
 
-Refer to the `autolens_workspace/README.rst` file or the readthedocs documentation for a description of which folder
+Refer to the `autolens_workspace/README.md` file or the readthedocs documentation for a description of which folder
 you should go into next if you are unsure.
 
 # Folders

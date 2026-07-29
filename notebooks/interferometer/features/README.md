@@ -1,4 +1,4 @@
-The `modeling/features` folder contains example scripts showing how to fit a lens model to interferometer data using
+The `interferometer/features` folder contains example scripts showing how to fit a lens model to interferometer data using
 different **PyAutoLens** features.
 
 The scripts in this folder are all recommended, as they provide tools which make lens modeling more reliable and efficient.

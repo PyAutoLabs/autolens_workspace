@@ -1,4 +1,4 @@
-The `imaging/advanced/subhalo/sensitivity` folder contains example scripts for strong lens dark matter subhalo
+The `imaging/features/advanced/subhalo/sensitivity` folder contains example scripts for strong lens dark matter subhalo
 sensitivity mapping.
 
 # Files
