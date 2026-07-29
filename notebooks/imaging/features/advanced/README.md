@@ -10,6 +10,7 @@ for specific scientific topics.The following example scripts illustrating lens m
 - `double_einstein_ring`: The lens is a double Einstein ring system with two lensed sources at different redshifts.
 - `sky_background`: Including the background sky in the model.
 - `subhalo`: Fitting lens models for dark matter subhalo detection and sensitivity mapping.
+- `potential_correction`: Gravitational imaging — pixelized corrections to the lensing potential reconstructed jointly with the source.
 
 # Notes
 
