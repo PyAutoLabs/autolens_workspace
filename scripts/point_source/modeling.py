@@ -241,11 +241,16 @@ print(model.info)
 """
 __Search__
 
-The lens model is fitted to the data using a non-linear search. 
+The lens model is fitted to the data using a non-linear search.
 
-All examples in the autolens workspace use the nested sampling algorithm 
-Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most 
+All examples in the autolens workspace use the nested sampling algorithm
+Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most
 accurate and efficient modeling results.
+
+Other data types fit their `start_here.py` with `af.MultiStartProdigy`, a much faster multi-start gradient
+optimizer, and reserve `Nautilus` for the `modeling.py` example where the full posterior is needed. Point-source
+fits use `Nautilus` in both, because the lens-equation solve behind the point-source likelihood cannot yet be
+differentiated and so a gradient optimizer cannot run on it.
 
 Nautilus has one main setting that trades-off accuracy and computational run-time, the number of `live_points`. 
 A higher number of live points gives a more accurate result, but increases the run-time. A lower value give 

@@ -525,6 +525,11 @@ All examples in the autolens workspace use the nested sampling algorithm
 Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most
 accurate and efficient modeling results.
 
+This example uses `Nautilus` because it returns the **full posterior** — every parameter's errors and the
+covariances between them. The folder's `start_here.py` instead fits with `af.MultiStartProdigy`, a multi-start
+gradient optimizer which is far faster but returns only a single best-fit model with no errors at all. Use that
+one to check a model quickly, and this one when you need results you can quote.
+
 Nautilus has one main setting that trades-off accuracy and computational run-time, the number of `live_points`.
 A higher number of live points gives a more accurate result, but increases the run-time. A lower value give
 less reliable lens modeling (e.g. the fit may infer a local maxima), but is faster.

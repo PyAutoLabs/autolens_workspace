@@ -35,9 +35,10 @@ __JAX__
 
 PyAutoLens runs imaging model-fits on JAX by default. If you installed
 `autolens[jax]`, the `al.AnalysisImaging(dataset=dataset)` line below
-auto-enables `use_jax=True`; expect 10-30 minutes on CPU, 1-10 minutes on
-GPU, vs 1-2 hours on pure NumPy for a typical lens. If you do not have a
-GPU locally, Google Colab provides free GPUs.
+auto-enables `use_jax=True`. JAX is what makes the gradient-based search
+used below possible at all — it supplies the derivatives of the likelihood
+and evaluates all of the search's parallel starts in one batched call. If
+you do not have a GPU locally, Google Colab provides free GPUs.
 
 For the broader JAX principles (when you write `@jax.jit` yourself, the
 return-type contract, how to opt out for debugging), see the `__JAX__`
@@ -237,10 +238,39 @@ print(model.info)
 """
 __Model Fit__
 
-We now fit the data with the lens model using the non-linear fitting method and nested sampling algorithm Nautilus.
+We now fit the data with the lens model using `MultiStartProdigy`, a multi-start gradient optimizer which finds
+the best-fit lens model quickly.
 
-This requires an `AnalysisImaging` object, which defines the `log_likelihood_function` used by Nautilus to fit
+This requires an `AnalysisImaging` object, which defines the `log_likelihood_function` used by the search to fit
 the model to the imaging data.
+
+__Multi Start Gradient Optimization__
+
+`MultiStartProdigy` launches `n_starts` independent optimizations from broad starting points spread across the
+parameter space, all of which descend the likelihood in parallel via `jax.vmap`, and returns the best one.
+
+Descending from a single starting point would frequently get stuck in a local maximum, because the parameter
+spaces of lens models are complex and multi-modal. Running a wide population of starts in parallel is what makes
+a gradient optimizer reliable here — the approach introduced for strong lensing by GIGA-Lens (Gu, Huang et al.
+2022, arXiv:2202.07663).
+
+Prodigy is a *learning-rate free* update rule (Mishchenko & Defazio 2024, arXiv:2306.06101): it estimates its own
+step size as it runs, so there is no learning rate for you to tune.
+
+__Posterior__
+
+`MultiStartProdigy` is a maximum a posteriori (MAP) optimizer: it returns the **single best-fit lens model**, and
+nothing else. There is no posterior, there are no error bars on any parameter, and there are no covariances
+between parameters. If the model says the Einstein radius is 1.6", this fit cannot tell you whether that is
+1.6 +/- 0.01 or 1.6 +/- 0.5.
+
+For most science you need those uncertainties. To get them, run `autolens_workspace/scripts/imaging/modeling.py`,
+which fits this same model with the nested sampling algorithm `Nautilus` and returns the **full posterior** —
+every parameter's probability density, its errors, and the correlations between parameters. It is slower, which
+is exactly why `start_here.py` uses the fast optimizer and `modeling.py` does the statistically complete fit.
+
+A good workflow is therefore to use `MultiStartProdigy` to check quickly that your model and data are sensible,
+then run `Nautilus` when you need results you can quote.
 
 __JAX__
 
@@ -263,7 +293,8 @@ image to hard-disk (as `fit.png` in the output folder).
 This process takes around ~10 seconds, so we don't want it to happen too often so as to slow down the overall
 fit, but we also want it to happen frequently enough that we can track the progress.
 
-The value of 1000 below means this output happens every few minutes on GPU and every ~10 minutes on CPU, a good balance.
+For this search the unit is a gradient step, so the value of 50 below gives us an update every 50 steps. The fit
+usually converges well before the `n_steps` ceiling, so expect a handful of updates rather than `n_steps / 50`.
 
 __Live Visual Update__
 
@@ -278,13 +309,13 @@ live display surface:
 The disk write (`fit.png`) always happens regardless of this flag. Set it to `False` (the default) if you just
 want the on-disk output, or if you are running in a headless environment (e.g. an HPC cluster).
 """
-search = af.Nautilus(
+search = af.MultiStartProdigy(
     path_prefix=Path("imaging"),  # The path where results and output are stored.
     name="start_here",  # The name of the fit and folder results are output to.
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
-    n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
-    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see modeling examples for details.
-    iterations_per_quick_update=1000,  # Every N iterations the max likelihood model is visualized and output to hard-disk.
+    n_starts=48,  # The number of independent optimizations run in parallel, increase for more complex models.
+    n_steps=300,  # The maximum gradient steps per start; the search stops early once the best fit stops improving.
+    iterations_per_quick_update=50,  # Every N steps the max likelihood model is visualized and output to hard-disk.
     live_visual_update=True,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
@@ -294,7 +325,11 @@ analysis = al.AnalysisImaging(
 )
 
 """
-The code below begins the model-fit. This will take around 10 minutes with a GPU, or 20-30 minutes with a CPU.
+The code below begins the model-fit. All 48 starts descend together, so this is much faster than the nested
+sampling fit in `modeling.py` — expect a couple of minutes on a GPU and under ten on a CPU.
+
+The first evaluation is slower than the rest, because JAX compiles the likelihood (and its gradient) before the
+first gradient step. Every step after that re-uses the compiled trace.
 
 **Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce 
 an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
@@ -320,6 +355,9 @@ Now this is running you should checkout the `autolens_workspace/output` folder, 
 are written in a human readable format (e.g. .json files) and .fits and .png images of the fit are stored.
 
 When the fit is complex, we can print the results by printing `result.info`.
+
+Because this was an optimizer, the values printed are the single best-fit model with no errors attached. Run
+`modeling.py` for the same summary with uncertainties.
 """
 print(result.info)
 

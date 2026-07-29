@@ -475,6 +475,11 @@ __Search__
 The lens model is fitted to the data using the nested sampling algorithm Nautilus (see
 ``point_source/start_here.py`` for a full description).
 
+Other data types fit their ``start_here.py`` with ``af.MultiStartProdigy``, a much faster multi-start gradient
+optimizer, and reserve ``Nautilus`` for the ``modeling.py`` example where the full posterior is needed. Cluster
+fits use ``Nautilus`` in both, because the lens-equation solve behind their ``AnalysisPoint`` likelihood cannot
+yet be differentiated and so a gradient optimizer cannot run on it.
+
 The folders ``autolens_workspace/*/guides/modeling/searches`` and ``customize`` give overviews of the
 non-linear searches PyAutoLens supports and how to customize the fit, including the priors.
 

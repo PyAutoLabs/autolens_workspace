@@ -420,6 +420,14 @@ We use Nautilus, a robust nested-sampling algorithm. ``n_live=150`` is a sensibl
 model — increase it for more complex clusters. ``n_batch=50`` batches the GPU log-likelihood
 evaluations for throughput.
 
+__Why Not MultiStartProdigy?__
+
+The imaging and interferometer ``start_here.py`` examples fit with ``af.MultiStartProdigy``, a much
+faster multi-start gradient optimizer. Cluster fits cannot use it yet: this is an ``AnalysisPoint``
+likelihood, computed by solving the lens equation for each system's multiple images, and PyAutoLens
+cannot yet differentiate through that solve. Nautilus also gives us the posterior that the corner
+plot at the end of this script is built from.
+
 Results are written to ``autolens_workspace/output/cluster/a2744/start_here/<unique_hash>/``. The
 ``unique_hash`` is generated from the model, search settings, and dataset — re-running with the same
 configuration resumes the existing fit.

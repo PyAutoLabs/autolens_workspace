@@ -256,6 +256,15 @@ __Model Fit__
 We now fit the data with the halo model using the non-linear fitting method and nested sampling
 algorithm Nautilus. The `AnalysisWeak` object defines the `log_likelihood_function` that compares
 the model's reduced shear at every galaxy position with the measured ellipticities.
+
+__Why Not MultiStartProdigy?__
+
+The imaging and interferometer `start_here.py` examples fit with `af.MultiStartProdigy`, a much
+faster multi-start gradient optimizer. That optimizer is gradient-based and so requires the JAX
+likelihood path, which this fit deliberately does not use (`use_jax=False` below, because weak-lensing
+visualization currently crashes on the JAX path — PyAutoLens#614). This fit is small enough that
+Nautilus finishes in minutes anyway, and it returns the full posterior, which for a 4-parameter NFW
+model fitted to a few hundred galaxies is what you actually want.
 """
 # use_jax=False: this fit is small enough that NumPy completes in minutes, and
 # visualization of a JAX-path weak fit currently crashes (PyAutoLens#614). The

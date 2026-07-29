@@ -244,6 +244,17 @@ We now fit the data with the lens model using the non-linear fitting method and 
 This requires an `AnalysisPoint` object, which defines the `log_likelihood_function` used by Nautilus to fit
 the model to the point source data.
 
+__Why Not MultiStartProdigy?__
+
+The `start_here.py` examples for imaging and interferometer data fit with `af.MultiStartProdigy`, a much faster
+multi-start gradient optimizer, and use `Nautilus` only in their `modeling.py` scripts where the full posterior
+is needed.
+
+That is not yet possible for point-source data: a gradient optimizer needs derivatives of the likelihood, and
+the point-source likelihood is computed by solving the lens equation for the multiple image positions — an
+operation PyAutoLens cannot yet differentiate through. Point-source fits therefore use `Nautilus` here too,
+which has the compensation that you get the full posterior straight away.
+
 __JAX__
 
 `AnalysisPoint` defaults to `use_jax=True` when JAX is installed.

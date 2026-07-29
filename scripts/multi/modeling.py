@@ -314,6 +314,11 @@ print(factor_graph.global_prior_model.info)
 """
 __Search__
 
+Other data types fit their `start_here.py` with `af.MultiStartProdigy`, a much faster multi-start gradient
+optimizer, and reserve `Nautilus` for the `modeling.py` example where the full posterior is needed.
+Multi-wavelength fits use `Nautilus` in both, because each waveband has its own pixel scale and compiling the
+gradient of the joint multi-band likelihood is currently prohibitively slow on CPU.
+
 __Live Visual Update__
 
 By default the quick-update image is only written to disk. Set `live_visual_update=True` to also push it to a
