@@ -28,25 +28,27 @@ running the code will still check correctly that your environment is set up and 
 
 ```python
 
-import subprocess
-import sys
-
 try:
     import google.colab
+except ImportError:
+    from autolens import setup_colab as _setup_colab
+else:
+    import importlib
+    import subprocess
+    import sys
 
     subprocess.check_call(
         [sys.executable, "-m", "pip", "install", "autonerves", "--no-deps"]
     )
-except ImportError:
-    pass
+    _setup_colab = importlib.import_module("autonerves.setup_colab")
 
-from autonerves import setup_colab
-
-setup_colab.for_autolens(
+_setup_colab.for_autolens(
     raise_error_if_not_gpu=False  # Switch to False for CPU Google Colab
 )
 ```
 
+    2026-07-29 19:15:34,441 - matplotlib.font_manager - INFO - Failed to extract font properties from /usr/share/fonts/truetype/noto/NotoColorEmoji.ttf: Can not load face (unknown file format; error code 0x2)
+    2026-07-29 19:15:34,715 - matplotlib.font_manager - INFO - generated new fontManager
     
                 You are not running in a Google Colab environment so cannot use the setup_colab() function.
     
@@ -65,8 +67,6 @@ You'll see these imports in the majority of workspace examples.
 
 
 ```python
-# %matplotlib inline
-
 from pathlib import Path
 import matplotlib.pyplot as plt
 
@@ -138,7 +138,7 @@ plt.imshow(image.native.array)  # Dont worry about the use of .native.array for 
 
 
 
-    <matplotlib.image.AxesImage at 0x7f3bd80d61b0>
+    <matplotlib.image.AxesImage at 0x7fb4d1652ed0>
 
 
 
@@ -318,90 +318,22 @@ __JAX__
 
 **PyAutoLens** runs on either **NumPy** (the default) or **JAX** (Google's
 array library with GPU support and just-in-time compilation). JAX makes
-lens modeling 10-100x faster on large grids — sometimes more on GPU — so
-the library is built to use it automatically wherever it helps.
+lens modeling 10-100x faster on large grids — sometimes more on GPU.
 
-You do not have to do anything to opt in. If you installed `autolens` with
-the JAX extra (`pip install autolens[jax]` on Python 3.11+), the
-`AnalysisImaging`, `AnalysisInterferometer`, and `AnalysisPoint` classes
-you'll meet in the `__Lens Modeling__` section below default to
-`use_jax=True`. The non-linear search driver (Nautilus, dynesty, ...)
-batches parameter vectors and evaluates the likelihood through
-`jax.vmap(jax.jit(...))` internally. You'll see a one-time log line like
-`JAX: Applying vmap and jit to likelihood function -- may take a few
-seconds.` the first time a search starts; that's the JIT compile kicking
-in, after which evaluations re-use the compiled trace.
+You do not have to do anything to use it. If you installed `autolens` with
+the JAX extra (`pip install autolens[jax]` on Python 3.11+), the analysis
+objects you'll meet in the `__Lens Modeling__` section below use JAX
+automatically. The first time a model-fit starts you'll see a one-time log
+line like `JAX: Applying vmap and jit to likelihood function -- may take a
+few seconds.` — that's JAX compiling the likelihood function, after which
+every evaluation re-uses the compiled code. If JAX is not installed, the
+analysis warns once and falls back to NumPy automatically.
 
-If JAX is not installed, the analysis warns once and falls back to NumPy
-automatically. You can force NumPy explicitly with
-`al.AnalysisImaging(dataset=dataset, use_jax=False)` or by setting
-`PYAUTO_DISABLE_JAX=1` — useful when debugging, where NumPy stack traces
-are easier to read than JAX traces.
+That is all a new user needs to know: install the extra, and lens modeling
+is fast. Everything else — disabling JAX, writing `@jax.jit` code yourself
+and how JAX changes the arrays inside results — is covered in the
+`scripts/guides/using_jax.py` guide.
 
-__When you write `@jax.jit` yourself__
-
-Two situations call for it:
-
-1. **Custom simulations.** Pass `use_jax=True` to the simulator constructor
-   and wrap your call in `@jax.jit` when you want to render many datasets
-   fast — parameter sweeps, mock-data studies, batch figure generation.
-   For example:
-
-   ```python
-   import jax
-
-   simulator = al.SimulatorImaging(
-       exposure_time=300.0, psf=psf, background_sky_level=0.1, use_jax=True
-   )
-
-   @jax.jit
-   def simulate(tracer):
-       return simulator.via_tracer_from(tracer=tracer, grid=grid)
-   ```
-
-   The per-dataset-type `simulator.py` scripts (`scripts/imaging/simulator.py`,
-   `scripts/interferometer/simulator.py`, `scripts/point_source/simulator.py`)
-   each show the canonical pattern in their `__JAX Variant__` section.
-
-2. **Custom likelihood functions** that you assemble by hand rather than
-   reaching for `AnalysisImaging`. Same shape: `@jax.jit` around your own
-   `def log_likelihood(instance): ...` that builds a `Tracer` and a
-   `FitImaging` and returns `fit.log_likelihood`. See the per-dataset-type
-   `likelihood_function.py` scripts.
-
-For the advanced path — JIT-ing library methods directly (`tracer.image_2d_from`,
-`LensCalc.magnification_2d_via_hessian_from`, etc.) without going through a
-`Simulator` or `Analysis` — see the `lens_calc.py` workspace guide
-(`scripts/guides/lens_calc.py`). That covers the "JIT-it-yourself" pattern,
-including the one-time `autolens.jax.register_tracer_classes(tracer)` call
-the user makes before the first `@jax.jit`.
-
-__Return-type contract__
-
-When `use_jax=True`, the data structures you get back (`Imaging`, `FitImaging`,
-`Tracer.image_2d_from(...)` results, ...) carry `jax.Array` data inside
-instead of `numpy.ndarray`. For nearly everything you'd do in a workspace —
-plotting, saving to `.fits`, comparing fit residuals — this is transparent:
-the plotters and FITS writers call `numpy.asarray()` internally and you see
-the same images and numbers you would on the NumPy path.
-
-What changes:
-
-- Arithmetic on JAX arrays stays on the JAX path. Direct calls into NumPy
-  (`np.sqrt(fit.residual_map.array)`) will host-transfer the array off the
-  GPU; not wrong, but slower than `jnp.sqrt(...)` if you're inside a hot
-  loop. For one-off analysis code, don't worry about it.
-- The `.array` property of `aa.Array2D` etc. is the raw backing array — a
-  `numpy.ndarray` on the NumPy path, a `jax.Array` on the JAX path.
-
-The `data_structures.py` guide (`scripts/guides/data_structures.py`) covers
-the wrapper-vs-raw-array distinction in detail.
-
-
-```python
-
-# %%
-'''
 __Units__
 
 The units used throughout the strong lensing literature vary, therefore lets quickly describe the units used in
@@ -430,15 +362,6 @@ galaxy can be made up of any number of light profiles and many galaxy objects ca
 Below, wecreate a `Tracer` with 3 galaxies at 3 different redshifts, forming a system with two distinct Einstein
 rings! The mass distribution of the first galaxy has separate components for its stellar mass and dark matter, where
 the stellar components use a `LightAndMassProfile` via the `lmp` module.
-'''
-```
-
-
-
-
-    "\n__Units__\n\nThe units used throughout the strong lensing literature vary, therefore lets quickly describe the units used in\n**PyAutoLens**.\n\nThe `Tracer` object and all mass profiles describe their quantities in terms of angles, which are defined in units\nof arc-seconds. To convert these to physical units (e.g. kiloparsecs), we use the redshift of the lens and source\ngalaxies and an input cosmology. A run through of all normal unit conversions is given in guides in the workspace\noutlined below.\n\nThe use of angles in arc-seconds has an important property, it means that for a two-plane strong lens system \n(e.g. a lens galaxy at one redshift and source galaxy at another redshift) lensing calculations are independent of\nthe galaxies' redshifts and the input cosmology. This has a number of benefits, for example it makes it straight\nforward to compare the lensing properties of different strong lens systems even when the redshifts of the galaxies\nare unknown.\n\nMulti-plane lensing is when there are more than two planes. The tracer fully supports this, if you input 3+ galaxies\nwith different redshifts into the tracer it will use their redshifts and its cosmology to perform multi-plane lensing\ncalculations that depend on them.\n\n__Extensibility__\n\nAll of the objects we've introduced so far are highly extensible, for example a tracer can be made of many galaxies, a \ngalaxy can be made up of any number of light profiles and many galaxy objects can be combined into a galaxies object.\n\nBelow, wecreate a `Tracer` with 3 galaxies at 3 different redshifts, forming a system with two distinct Einstein\nrings! The mass distribution of the first galaxy has separate components for its stellar mass and dark matter, where\nthe stellar components use a `LightAndMassProfile` via the `lmp` module.\n"
-
-
 
 
 ```python
@@ -493,7 +416,7 @@ aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 
 
     
-![png](start_here_files/start_here_24_0.png)
+![png](start_here_files/start_here_23_0.png)
     
 
 
@@ -539,25 +462,14 @@ questions you are interested in, the analysis you perform may differ significant
 
 The autolens_workspace contains a suite of example Jupyter Notebooks, organised by lens scale and dataset type.
 
-__Three Ways To Learn PyAutoLens__
+__PyAutoLens AI Assistant__
 
-There are three ways to learn how to use **PyAutoLens**, which you are free to mix and match:
+The [PyAutoLens AI Assistant](https://github.com/PyAutoLabs/autolens_assistant) supports conversation agents such as
+ChatGPT and coding agents such as Claude Code and Codex. You can get started simply by asking it a question about
+gravitational lensing or describing the task you would like to perform with **PyAutoLens**. See the
+[autolens_assistant GitHub page](https://github.com/PyAutoLabs/autolens_assistant) for its full scope and instructions.
 
-1. **Manual Navigation**: Read the workspace guides yourself. To find the example notebook best suited to your science
-   case, work through the two questions below ("What Scale Lens?" and "What Data Type?"), which point you to the right
-   starting point. This is the traditional route, and the rest of this guide supports it.
-
-2. **AI Chat Assistant**: Ask questions to a conversational AI assistant such as ChatGPT or Claude in the browser.
-   Go to the autolens_assistant repository (https://github.com/PyAutoLabs/autolens_assistant) and copy the ready-to-use
-   example prompt from its README into ChatGPT or Claude to get started. This is ideal for learning the API, working out
-   how to perform a calculation, and creating end-to-end example Python scripts.
-
-3. **Fully Agentic AI**: Use an agentic coding tool such as Claude Code (https://claude.com/claude-code) or Codex
-   (https://developers.openai.com/codex) together with autolens_assistant (https://github.com/PyAutoLabs/autolens_assistant).
-   These can inspect your data, write and run scripts, and manage an end-to-end lens modeling project directly on your
-   machine. See the autolens_assistant repository for more information.
-
-The rest of this guide supports **manual navigation**: we begin by answering two simple questions to find your most
+The rest of this guide is human-readable documentation: we begin by answering two simple questions to find your most
 appropriate starting point.
 
 __What Scale Lens?__
@@ -795,8 +707,3 @@ __Other:__
 - Automated pipelines / SLaM.
 - Dark matter subhalos.
 - Graphical models.
-
-
-```python
-
-```
