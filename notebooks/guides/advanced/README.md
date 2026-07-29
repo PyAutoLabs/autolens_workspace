@@ -1,4 +1,4 @@
-The `guide/advanced` folder contains advanced guides explaining how specific aspects of **PyAutoLens** work.
+The `guides/advanced` folder contains advanced guides explaining how specific aspects of **PyAutoLens** work.
 
 These scripts are intended to help users understand how **PyAutoLens** works.
 

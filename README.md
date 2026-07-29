@@ -55,18 +55,25 @@ The workspace includes the following main directories:
 - `config`: Configuration files which customize **PyAutoLens**'s behaviour.
 - `dataset`: Where data is stored, including example datasets distributed.
 - `output`: Where the **PyAutoLens** analysis and visualization are output.
-- `slam_pipeline`: The Source, Light and Mass (SLaM) pipelines to model strong lens imaging **(Advanced)**.
-- `skills`: AI agent skills (e.g. Claude, codex) for loading, inspecting and analysing workspace results with AI agents.
+- `markdown`: Curated examples rendered with their output images, browsable on GitHub.
+- `.claude/skills`: AI agent skills (e.g. Claude, codex) for loading, inspecting and analysing workspace results with AI agents.
+
+The Source, Light and Mass (SLaM) pipelines **(Advanced)** are not a top-level
+directory: `scripts/guides/modeling/slam_start_here.py` is the canonical
+reference, and the pipelines themselves live in `features/slam/` folders within a
+given topic (e.g. `scripts/multi/features/slam/`).
 
 The examples in the `notebooks` and `scripts` folders are structured as follows:
 
 - `guides`: Guides which introduce the core features of **PyAutoLens**, including the core lensing API.
 - `imaging`: Examples for galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, Euclid).
 - `interferometer`: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA).
+- `multi`: Examples for lenses observed in multiple wavebands, modeled simultaneously.
 - `point_source`: Examples for strong lens point source datasets.
 - `multi_galaxy`: Examples for multi-galaxy strong lenses (two or more co-dominant lens galaxies, no host halo).
 - `group`: Examples for group scale strong lenses.
 - `cluster`: Examples for cluster scale strong lenses.
+- `weak`: Examples for weak lensing analysis.
 
 The tutorial lecture series is shipped as a standalone repo: [PyAutoLabs/HowToLens](https://github.com/PyAutoLabs/HowToLens).
 
@@ -74,7 +81,7 @@ The dataset packages (e.g. `imaging`, `interferometer`, `point_source`, `group` 
 following types of examples:
 
 - `modeling`: Performing lens modeling using that type of data.
-- `simulators`: Simulating examples of that strong lens dataset type.
+- `simulator`: Simulating examples of that strong lens dataset type.
 - `fit`: How to fit the dataset to compute quantities like the residuals, chi squared and likelihood.
 - `data_preparation`: Preparing real datasets of that type for **PyAutoLens** analysis.
 - `source_science`: Performing source science calculations like computing the unlensed source's total flux and magnification.
@@ -83,7 +90,7 @@ following types of examples:
 
 The `guides` package contains a number of important subpackages, which include:
 
-- `results`: How to load, use and inspect the results of **lens modeling to many strong nses** to perform scientific analysis efficiently.
+- `results`: How to load, use and inspect the results of **lens modeling to many strong lenses** to perform scientific analysis efficiently.
 - `modeling`: Ways to customize the lens modeling procedure and build advanced automated lens modeling pipelines.
 - `plot`: How to plot lensing quantities and results.
 
