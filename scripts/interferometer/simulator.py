@@ -368,6 +368,6 @@ Two notes specific to interferometer:
 - The eager call above works and is the supported route today. Note it returns a dataset whose visibilities are
   NumPy-backed, not `jax.Array`.
 
-See `scripts/guides/using_jax.py` for the full picture, and `scripts/guides/lens_calc.py` for the
-"JIT-it-yourself" pattern applied to individual library methods.
+See `scripts/guides/using_jax.py` for the full picture, including the "JIT-it-yourself" pattern applied to
+individual library methods.
 """

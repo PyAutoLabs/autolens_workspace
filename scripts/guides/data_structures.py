@@ -15,6 +15,7 @@ These data structures use the `slim` and `native` data representations API to ma
 
 __Contents__
 
+- **JAX:** These data structures are backend-polymorphic and `.array` is the raw backing array — see `scripts/guides/using_jax.py`.
 - **Units:** In this example, all quantities use the source code's internal unit coordinates, with spatial.
 - **API:** We discuss in detail why these data structures and illustrate their functionality below.
 - **Grids:** We now illustrate data structures using a `Grid2D` object, which is a set of two-dimensional.
@@ -25,6 +26,13 @@ __Contents__
 - **Tracer:** The `Tracer` produces many lensing quantities all of which use the `slim` and `native` data.
 - **Irregular Structures:** We may want to perform calculations at specific (y,x) coordinates which are not tied to a uniform.
 - **Vector Quantities:** Many lensing quantities are vectors.
+
+__JAX__
+
+The data structures in this guide are *backend-polymorphic*: the same wrapper classes hold a `numpy.ndarray` on
+the NumPy path or a `jax.Array` on the JAX path, and the `.array` property is the raw backing array in both
+cases. What switches the backing, the rules for crossing a `@jax.jit` boundary, and executable recipes are all in
+`scripts/guides/using_jax.py`.
 
 __Units__
 
@@ -408,98 +416,6 @@ deflections_yx_2d = tracer.deflections_yx_2d_from(grid=grid_irregular)
 print(deflections_yx_2d)
 
 """
-__JAX__
-
-PyAutoLens runs on either NumPy (the default) or JAX. The data structures
-you've met above are *backend-polymorphic* — they're Python wrappers
-around a numerical array, and that array can be a `numpy.ndarray` or a
-`jax.Array` depending on how the structure was constructed and what code
-path produced it.
-
-You can always reach the raw backing array via `.array`:
-
-```python
-grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
-print(type(grid.array))          # <class 'numpy.ndarray'> on the default path
-```
-
-__When the backing becomes `jax.Array`__
-
-Three situations switch the backing to `jax.Array`:
-
-1. The structure comes back from a JAX-accelerated `Analysis(use_jax=True)`
-   fit — e.g. `fit.residual_map.array`, `fit.model_image.array` are
-   JAX-backed when the analysis ran with `use_jax=True` (the default).
-2. The structure comes back from a `Simulator(use_jax=True)` simulation
-   (see `scripts/imaging/simulator.py` `__JAX Variant (Advanced)__`).
-3. You constructed it inside a JAX-traced function and the upstream grid
-   was `jnp`-backed (e.g. `tracer.image_2d_from(grid=jnp_grid, xp=jnp)`).
-
-In all three cases the Python-level wrapper is the same `aa.Array2D` /
-`aa.Grid2D` / etc. you've been using — only the underlying array type
-changes. Workspace code reads identically on either backend.
-
-__Host transfer (the JAX → NumPy boundary)__
-
-Most things you do with these structures convert back to NumPy
-transparently:
-
-- Plotting (`aplt.plot_array`, `aplt.subplot_fit_imaging`, ...) — calls
-  `np.asarray(...)` internally.
-- `.fits` writing (`aplt.fits_imaging`).
-- `.copy()`, `.tolist()`.
-- Direct NumPy arithmetic — `np.sqrt(fit.residual_map.array)` transfers
-  the array off the GPU. Use `jnp.sqrt(...)` if you want to stay on the
-  GPU inside a hot loop.
-
-For one-off analysis code (notebooks, single-figure plotting), the
-transfer is invisible. For hot loops or production fits, prefer the
-JAX-native call.
-
-__The not-pytree rule__
-
-There's one place the abstraction leaks. If you write your own
-`@jax.jit` function and try to return an `aa.Array2D` (or
-`aa.Grid2DIrregular`) from inside it, the JIT boundary may fail with
-`TypeError: ... is not a valid JAX type`. The wrapper types are not
-reliably registered as JAX pytrees for return-from-JIT purposes.
-
-The workaround: return the raw `.array` from inside the jit and rewrap
-outside on the host side.
-
-```python
-@jax.jit
-def my_image_fn(tracer, grid):
-    return tracer.image_2d_from(grid=grid, xp=jnp).array   # raw jax.Array
-
-arr = my_image_fn(tracer, grid)
-img_wrapped = al.Array2D(values=arr, mask=grid.mask)
-```
-
-You only encounter this when *you* write the `@jax.jit` — the library
-handles its own returns correctly (`AnalysisImaging(use_jax=True)` gives
-back a proper `FitImaging`; `SimulatorImaging(use_jax=True)` gives back a
-proper `Imaging`).
-
-For the full deep-dive on writing your own JAX-jit functions that
-compose PyAutoLens library calls (decorator-on-def vs `jax.jit(bound_method)`,
-cache-identity considerations, closure-captured `self` vs traced-argument
-distinction, the `@jax.jit + xp=jnp` pairing rule), see
-`scripts/guides/lens_calc.py` — that's the canonical advanced guide for
-the "JIT-it-yourself" path.
-
-__Summary__
-
-| You construct / receive | Backing type |
-|---|---|
-| `al.Grid2D.uniform(shape_native, pixel_scales)` | `numpy.ndarray` |
-| `fit = analysis.fit_from(instance)` from `AnalysisImaging(use_jax=True)` | `jax.Array` |
-| `dataset = simulator.via_tracer_from(...)` from `SimulatorImaging(use_jax=True)` | `jax.Array` |
-| `tracer.image_2d_from(grid=jnp_grid, xp=jnp)` inside your own `@jax.jit` | `jax.Array` |
-
-`.array` is the safe accessor for the raw backing in all cases.
-Plotting and `.fits` writers handle the conversion transparently.
-
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

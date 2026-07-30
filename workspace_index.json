@@ -1295,7 +1295,7 @@
     ],
     "cross_refs": [
       "modeling.py",
-      "scripts/guides/lens_calc.py",
+      "scripts/guides/using_jax.py",
       "scripts/imaging/fit.py",
       "start_here.py"
     ],
@@ -1623,6 +1623,7 @@
   },
   {
     "contents": [
+      "JAX",
       "Units",
       "API",
       "Grids",
@@ -1636,8 +1637,7 @@
     ],
     "cross_refs": [
       "guides/units/cosmology.ipynb",
-      "scripts/guides/lens_calc.py",
-      "scripts/imaging/simulator.py"
+      "scripts/guides/using_jax.py"
     ],
     "notebook": "notebooks/guides/data_structures.ipynb",
     "path": "scripts/guides/data_structures.py",
@@ -1646,6 +1646,7 @@
   },
   {
     "contents": [
+      "JAX",
       "Units",
       "Data Structures",
       "Grids",
@@ -1657,8 +1658,7 @@
       "/guides/data_structures.ipynb",
       "guides/units/cosmology.ipynb",
       "results/start_here.ipynb",
-      "scripts/guides/data_structures.py",
-      "scripts/guides/lens_calc.py",
+      "scripts/guides/using_jax.py",
       "tracer.py"
     ],
     "notebook": "notebooks/guides/galaxies.ipynb",
@@ -1678,6 +1678,7 @@
   },
   {
     "contents": [
+      "JAX",
       "Units",
       "Data Structures",
       "Grids",
@@ -1697,13 +1698,8 @@
     ],
     "cross_refs": [
       "/guides/data_structures.ipynb",
-      "PyAutoGalaxy/autogalaxy/operate/lens_calc.py",
-      "autolens_workspace/start_here.py",
-      "guides/data_structures.py",
-      "guides/galaxies.py",
-      "guides/tracer.py",
       "guides/units/cosmology.ipynb",
-      "scripts/guides/data_structures.py"
+      "scripts/guides/using_jax.py"
     ],
     "notebook": "notebooks/guides/lens_calc.ipynb",
     "path": "scripts/guides/lens_calc.py",
@@ -2402,6 +2398,7 @@
   },
   {
     "contents": [
+      "JAX",
       "Units",
       "Data Structures",
       "Other Models",
@@ -2431,13 +2428,8 @@
       "guides/units/cosmology.ipynb",
       "imaging/features/linear_light_profiles/fit.py",
       "imaging/features/pixelization/fit.py",
-      "lens_calc.py",
       "results/start_here.ipynb",
-      "scripts/guides/data_structures.py",
-      "scripts/guides/galaxies.py",
-      "scripts/guides/lens_calc.py",
       "scripts/guides/using_jax.py",
-      "scripts/point_source/simulator.py",
       "start_here.ipynb"
     ],
     "notebook": "notebooks/guides/tracer.ipynb",
@@ -2489,18 +2481,19 @@
       "Writing @jax.jit Yourself",
       "Custom Likelihood Functions",
       "JIT-ing Library Methods",
+      "Pytree Registration",
+      "The Pairing Rule",
+      "Grids Stay Outside the Boundary",
+      "Bound Methods and the JIT Cache",
       "Return-Type Contract"
     ],
     "cross_refs": [
       "autofit.jax.py",
-      "data_structures.py",
-      "lens_calc.py",
       "likelihood_function.py",
-      "scripts/guides/data_structures.py",
-      "scripts/guides/lens_calc.py",
       "scripts/imaging/likelihood_function.py",
       "scripts/imaging/simulator.py",
       "scripts/interferometer/likelihood_function.py",
+      "scripts/point_source/simulator.py",
       "start_here.py"
     ],
     "notebook": "notebooks/guides/using_jax.ipynb",
@@ -4258,9 +4251,9 @@
     "cross_refs": [
       "/imaging/data_preparation/examples/optional/mask_extra_galaxies.py",
       "/imaging/data_preparation/gui/mask_extra_galaxies.py",
-      "lens_calc.py",
       "likelihood_function.py",
       "modeling.py",
+      "scripts/guides/using_jax.py",
       "start_here.py"
     ],
     "notebook": "notebooks/imaging/fit.ipynb",
@@ -4392,7 +4385,6 @@
       "imaging/likelihood_function.py",
       "imaging/modeling.py",
       "scripts/cluster/simulator.py",
-      "scripts/guides/lens_calc.py",
       "scripts/guides/using_jax.py",
       "scripts/interferometer/simulator.py",
       "scripts/point_source/simulator.py"
@@ -5500,7 +5492,7 @@
     ],
     "cross_refs": [
       "modeling.py",
-      "scripts/guides/lens_calc.py",
+      "scripts/guides/using_jax.py",
       "start_here.py"
     ],
     "notebook": "notebooks/interferometer/fit.ipynb",
@@ -5613,7 +5605,6 @@
     "cross_refs": [
       "autolens_workspace_test/scripts/interferometer/nufft.py",
       "scripts/cluster/simulator.py",
-      "scripts/guides/lens_calc.py",
       "scripts/guides/using_jax.py",
       "scripts/point_source/simulator.py"
     ],
@@ -6838,7 +6829,7 @@
     ],
     "cross_refs": [
       "imaging/simulator.py",
-      "scripts/guides/lens_calc.py"
+      "scripts/guides/using_jax.py"
     ],
     "notebook": "notebooks/point_source/simulator.ipynb",
     "path": "scripts/point_source/simulator.py",
