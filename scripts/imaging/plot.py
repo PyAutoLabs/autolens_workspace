@@ -238,5 +238,5 @@ Setting an entry to `true` or `false` in `plots.yaml` therefore switches that fi
 for every model-fit, without changing code.
 
 When multiple datasets are fitted simultaneously, the `Visualizer` also outputs figures combining
-all datasets in one subplot — see `scripts/multi/plot.py` for details.
+all datasets in one subplot — see `scripts/multi_dataset/plot.py` for details.
 """

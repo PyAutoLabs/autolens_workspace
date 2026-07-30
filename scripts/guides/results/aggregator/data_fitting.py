@@ -96,7 +96,7 @@ The `dataset_gen` returns a list of `Imaging` objects, as opposed to just a sing
 only a single `Analysis` class was used in the model-fit, meaning there was only one `Imaging` dataset that was
 fit. 
 
-The `multi` package of the workspace illustrates model-fits which fit multiple datasets 
+The `multi_dataset` package of the workspace illustrates model-fits which fit multiple datasets 
 simultaneously, (e.g. multi-wavelength imaging)  by summing `Analysis` objects together, where the `dataset_list` 
 would contain multiple `Imaging` objects.
 """

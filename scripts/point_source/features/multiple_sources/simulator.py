@@ -9,7 +9,7 @@ The simulated system is a multi-plane lens where source_0 is itself a deflector 
 foreground galaxy lens (z=0.5) lenses both background sources, while source_0's own mass at z=1.0 additionally
 lenses source_1 at z=2.0. The result is two interleaved sets of multiple images (a "double Einstein cross"-like
 configuration). Each source's multiple images are stored as a separate `PointDataset`, and the companion
-`modeling.py` script fits both datasets jointly using the multi/factor-graph API.
+`modeling.py` script fits both datasets jointly using the multi-dataset/factor-graph API.
 
 The lens model below uses:
 

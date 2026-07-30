@@ -8,7 +8,7 @@ gravitational lens modeling. These are the canonical, agent-agnostic instruction
 - `scripts/` — Runnable Python scripts, organised by topic:
   - `imaging/` — CCD imaging (HST, JWST, Euclid) lens modeling
   - `interferometer/` — ALMA / JVLA uv-plane lens modeling
-  - `multi/` — Multi-wavelength simultaneous modeling
+  - `multi_dataset/` — Multi-wavelength simultaneous modeling
   - `point_source/` — Point-source (e.g. lensed quasar) modeling
   - `multi_galaxy/` — Multi-galaxy lenses (2+ co-dominant deflectors, no host halo)
   - `group/` — Group-scale lenses (multiple lens galaxies, optional group halo)
