@@ -22,7 +22,7 @@ __CPU Users__
 Matrices must be set up for a pixelized source reconstruction to speed up the linear algebra. On GPU, this takes
 seconds, or at most a minute for datasets with tens of millions or more visibilities. On CPU, this can be a lot
 slower, taking over an hour for very large datasets. If you are on CPU, the
-`feature/pixelization/many_visibilities_preparation` example explains how this initial setup can be performed
+`features/pixelization/many_visibilities_preparation` example explains how this initial setup can be performed
 before lens modeling and saved to hard disk for fast loading before the model fit.
 
 __Contents__
@@ -476,7 +476,7 @@ Source science focuses on studying the highly magnified properties of the backgr
 Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic 
 size of the source.
 
-The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+The example `autolens_workspace/*/imaging/source_science` gives a complete overview of how to calculate these quantities,
 including examples using a pixelized source reconstruction. 
 
 If you want to study the source galaxy after modeling has reconstructed its unlensed, then check out this example.

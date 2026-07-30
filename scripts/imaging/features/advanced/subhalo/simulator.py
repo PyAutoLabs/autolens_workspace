@@ -280,5 +280,5 @@ aplt.subplot_galaxies_images(
 )
 
 """
-The dataset can be viewed in the folder `autolens_workspace/imaging/dark_matter_subhalo`.
+The dataset can be viewed in the folder `autolens_workspace/dataset/imaging/dark_matter_subhalo`.
 """

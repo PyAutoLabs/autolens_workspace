@@ -191,5 +191,5 @@ al.output_to_json(
 )
 
 """
-The dataset can be viewed in the folder `autolens_workspace/imaging/sky_background`.
+The dataset can be viewed in the folder `autolens_workspace/dataset/imaging/sky_background`.
 """

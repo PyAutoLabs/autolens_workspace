@@ -336,7 +336,7 @@ the `Imaging` dataset.
 
 It is not vital that you as a user understand the details of how the `log_likelihood_function` fits a lens model to 
 data, but interested readers can find a step-by-step guide of the likelihood 
-function at ``autolens_workspace/*/point_source/log_likelihood_function`
+function at ``autolens_workspace/*/cluster/likelihood_function``
 
 __JAX__
 

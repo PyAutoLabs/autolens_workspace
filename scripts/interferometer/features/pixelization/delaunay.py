@@ -52,7 +52,7 @@ Source science focuses on studying the highly magnified properties of the backgr
 Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic
 size of the source.
 
-The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+The example `autolens_workspace/*/imaging/source_science` gives a complete overview of how to calculate these quantities,
 including examples using a Delaunay source reconstruction. Once you have completed lens modeling using a Delaunay mesh,
 you can jump to that example to study the source galaxy.
 

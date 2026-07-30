@@ -649,8 +649,7 @@ The following locations of the workspace are good places to checkout next:
 
 - `autolens_workspace/*/point_source/modeling`: A full description of the lens modeling API and how to customize your model-fits.
 - `autolens_workspace/*/point_source/simulator`: A full description of the lens simulation API and how to customize your simulations.
-- `autolens_workspace/*/point_source/data_preparation`: How to load and prepare your own imaging data for lens modeling.
 - `autolens_workspace/guides/results`: How to load and analyze the results of your lens model fits, including tools for large samples.
 - `autolens_workspace/guides`: A complete description of the API and information on lensing calculations and units.
-- `autolens_workspace/point_source/feature`: A description of advanced features for lens modeling, for example time delays, read this once you're confident with the basics!
+- `autolens_workspace/point_source/features`: A description of advanced features for lens modeling, for example time delays, read this once you're confident with the basics!
 """

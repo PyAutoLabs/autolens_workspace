@@ -65,7 +65,7 @@ import autogalaxy as ag
 """
 __Shared Setup__
 
-Redshifts and cosmology are the same as the ``cluster/simple`` example. The cosmology is the flat
+Redshifts and cosmology are the same as the ``dataset/cluster/simple`` example. The cosmology is the flat
 ``H0 = 67.66``, ``Om0 = 0.30966`` that the dPIE profile uses internally, so nothing is approximate.
 For a real cluster, set these to the measured lens redshift and the run's cosmology.
 

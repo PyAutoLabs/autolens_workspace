@@ -275,5 +275,5 @@ This can be loaded via the method `tracer = al.from_json()`.
 ]
 
 """
-The dataset can be viewed in the folder `autolens_workspace/imaging/multi/dataset_offsets`.
+The dataset can be viewed in the folder `autolens_workspace/dataset/imaging/multi/dataset_offsets`.
 """

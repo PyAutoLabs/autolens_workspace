@@ -458,7 +458,7 @@ the `Imaging` dataset.
 
 It is not vital that you as a user understand the details of how the `log_likelihood_function` fits a lens model to 
 data, but interested readers can find a step-by-step guide of the likelihood 
-function at ``autolens_workspace/*/imaging/log_likelihood_function`
+function at ``autolens_workspace/*/imaging/likelihood_function`
 
 __JAX__
 
@@ -655,7 +655,7 @@ Source science focuses on studying the highly magnified properties of the backgr
 Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic 
 size of the source.
 
-The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+The example `autolens_workspace/*/imaging/source_science` gives a complete overview of how to calculate these quantities,
 including examples using a pixelized source reconstruction. 
 
 If you want to study the source galaxy after modeling has reconstructed its unlensed, then check out this example.

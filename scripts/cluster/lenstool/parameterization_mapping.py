@@ -70,7 +70,7 @@ __Cosmology, Redshifts, and the Distance Factor K__
 
 The only place a redshift enters the dPIE deflection is the ratio ``D_LS / D_S`` (the lensing
 efficiency). We wrap it into the single constant ``K`` so the ``b0 <-> sigma`` conversion is one
-line. These are the same redshifts as the ``cluster/simple`` example (``z_lens = 0.5``,
+line. These are the same redshifts as the ``dataset/cluster/simple`` example (``z_lens = 0.5``,
 ``z_source = 2.0``).
 
 The cosmology **must be the one ``dPIEMass`` uses internally** to build ``b0`` — a flat
@@ -198,7 +198,7 @@ member_luminosities = [0.40, 0.25, 0.16, 0.10, 0.06]
 r_core_ref = 0.158  # arcsec, fixed
 r_cut_ref = 15.8  # arcsec, fixed
 
-# Pick the b0_ref that a redshift-free fit of the `cluster/simple` truth would return: the value
+# Pick the b0_ref that a redshift-free fit of the `dataset/cluster/simple` truth would return: the value
 # that converts (with THESE redshifts) to sigma_ref = 85 km/s — exactly the normalization
 # `cluster/modeling.py` fits directly. This makes the "we recover the standard example" claim literal.
 sigma_ref_target = 85.0

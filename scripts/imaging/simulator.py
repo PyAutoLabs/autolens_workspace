@@ -354,7 +354,7 @@ al.output_to_json(
 )
 
 """
-The dataset can be viewed in the folder `autolens_workspace/imaging/simple`.
+The dataset can be viewed in the folder `autolens_workspace/dataset/imaging/simple`.
 
 __JAX Variant (Advanced)__
 

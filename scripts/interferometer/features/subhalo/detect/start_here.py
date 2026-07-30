@@ -78,8 +78,6 @@ reconstruction of the source's light than fits using light profiles.
 
 This example therefore using a pixelized source and the corresponding SLaM pipelines.
 
-The `subhalo/detection/examples` folder contains an example using light profile sources, if you have a use-case where
-using light profile source is feasible (e.g. fitting simple simulated datasets).
 
 __Model__
 
@@ -97,7 +95,7 @@ This uses the SLaM pipelines:
  `source_pix`
  `light_lp`
  `mass_total`
- `subhalo/detection`
+ `subhalo/detect`
 
 Check them out for a full description of the analysis!
 """

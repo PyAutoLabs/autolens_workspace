@@ -39,7 +39,7 @@ __Preqrequisites__
 
 Before reading this script, you should have familiarity with the following key concepts:
 
-- **Multi**: The `autolens_workspace/*/advanced/multi` package describes many different ways that multiple datasets
+- **Multi**: The `autolens_workspace/*/multi/features` package describes many different ways that multiple datasets
   can be modeled in a single analysis.
 
 __This Script__
