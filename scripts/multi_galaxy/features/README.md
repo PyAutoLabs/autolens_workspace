@@ -40,8 +40,11 @@ co-dominance, using the same tiered API that becomes the default at group and cl
 
 - **`scaling_relation`** — a population of faint galaxies whose masses are tied to their luminosities through a
   scaling relation, so the model dimensionality does not grow with the population. Uses the
-  untruncated-isothermal relation (`einstein_radius ∝ L^0.5`) **anchored on the brightest co-dominant deflector**
-  (the BGC), which makes the whole tier cost zero free parameters;
+  untruncated-isothermal relation (`einstein_radius ∝ L^0.5`) **anchored on the brightest co-dominant deflector**,
+  which makes the whole tier cost zero free parameters. The anchor is called simply "the brightest galaxy" at this
+  scale — a multi-galaxy lens is not a bound system, so there is no brightest *cluster* or *group* galaxy to speak
+  of; `group/features/scaling_relation` uses the BCG/BGG terminology.
+
   `imaging/features/scaling_relation` gives the fuller walkthrough with a single-lens anchor, and
   `group/features/scaling_relation` the reference-magnitude (Lenstool `mag0`) alternative that costs one parameter
   instead. Two framing points matter here, and both examples' prose says so:
