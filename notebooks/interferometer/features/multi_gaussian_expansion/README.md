@@ -36,4 +36,4 @@ A full guide to result analysis is given at `autolens_workspace/*/guides/results
 # Imaging Equivalent
 
 For the CCD-imaging version of these scripts (MGE on the lens galaxy, not the source), see
-`autolens_workspace/scripts/imaging/features/multi_gaussian_expansion`.
+`autolens_workspace/*/imaging/features/multi_gaussian_expansion`.

@@ -1,7 +1,7 @@
-The `autolens_workspace/scripts` folder contains the packages for different science use-cases, where each package
+The `scripts` folder contains the packages for different science use-cases, where each package
 only contains Python scripts (e.g. `.py` files) illustrating how to perform a specific task.
 
-For Jupyter Notebook examples illustrating the same use-cases, see the `autolens_workspace/notebooks` folder.
+For Jupyter Notebook examples illustrating the same use-cases, see the `notebooks` folder.
 
 Refer to the `autolens_workspace/README.md` file or the readthedocs documentation for a description of which folder
 you should go into next if you are unsure.
