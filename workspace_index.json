@@ -143,7 +143,7 @@
     ],
     "notebook": "notebooks/cluster/mass_parameterizations_pyautolens.ipynb",
     "path": "scripts/cluster/mass_parameterizations_pyautolens.py",
-    "summary": "**For Lenstool users: how and why PyAutoLens re-expresses the standard Lenstool cluster / group model in its native parameterization for multi-galaxy lenses (MGLs), and how to keep the dPIE's truncation on the outskirts if you want it.**",
+    "summary": "**For Lenstool users: how and why PyAutoLens re-expresses the standard Lenstool cluster / group model in its native parameterization for multi-galaxy lenses (MGLs), with the scaling galaxies keeping the dPIE's truncation throughout.**",
     "title": "Mass Parameterizations II \u2014 Mapping Lenstool onto PyAutoLens"
   },
   {

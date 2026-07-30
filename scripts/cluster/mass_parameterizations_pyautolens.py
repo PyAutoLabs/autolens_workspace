@@ -3,21 +3,21 @@ Mass Parameterizations II — Mapping Lenstool onto PyAutoLens
 ============================================================
 
 **For Lenstool users: how and why PyAutoLens re-expresses the standard Lenstool cluster / group model
-in its native parameterization for multi-galaxy lenses (MGLs), and how to keep the dPIE's truncation on
-the outskirts if you want it.**
+in its native parameterization for multi-galaxy lenses (MGLs), with the scaling galaxies keeping the
+dPIE's truncation throughout.**
 
 The companion script ``cluster/mass_parameterizations.py`` builds the standard Lenstool model. This
 script takes its **Model 1** as the starting point and maps it, component by component, onto what
 PyAutoLens uses at galaxy / group scale. Both are supported; this is an *alternative*, not a
 replacement, and the focus is the **mass**.
 
-Three sections:
+Two sections:
 
  - **Section 1 — Lenstool Model 1** (dPIE throughout, velocity dispersions, a magnitude-anchored
    Faber-Jackson relation), the starting point.
  - **Section 2 — The standard PyAutoLens model**, mapping every component and justifying each change.
- - **Section 3 — Keeping truncation**: dPIE for the scaling galaxies while the main and extra galaxies
-   stay Isothermal, and how the Faber-Jackson linking bridges the two parameterizations.
+   The scaling galaxies stay truncated dPIEs, with their ``b0`` anchored to the BGC's Einstein
+   radius so the tier costs zero free parameters.
 
 Every model has four tiers, and this is the structure of a PyAutoLens MGL:
 
@@ -37,13 +37,13 @@ Everything uses the model-composition API and prints ``model.info`` so free vs f
 
 __What changes, at a glance__
 
-    Component         Lenstool (Section 1)          PyAutoLens (Sections 2-3)
+    Component         Lenstool (Section 1)          PyAutoLens (Section 2)
     ----------------  ----------------------------  --------------------------------------
     cluster halo      elliptical dPIE (sigma)       NFW  (the CDM halo profile)
     main galaxies     dPIE (sigma, r_core, r_cut)   Isothermal (einstein_radius)
     extra galaxies    dPIE, free                    Isothermal, free but luminosity-bounded
-    scaling galaxies  dPIE, free sigma_ref          Isothermal, TIED to the BGC's Einstein radius
-    mass parameter    sigma (needs redshifts)       einstein_radius (arcsec; redshift-free)
+    scaling galaxies  dPIE, free sigma_ref          dPIE (b0), TIED to the BGC's Einstein radius
+    mass parameter    sigma (needs redshifts)       einstein_radius / b0 (arcsec; redshift-free)
     luminosity        input magnitude               computed from the fitted MGE light
 """
 
@@ -139,9 +139,12 @@ cluster_halo_lt = af.Model(al.Galaxy, redshift=redshift_lens, mass=halo_mass)
 main_galaxies_lt = [dpie_galaxy(c, 100.0, 600.0, 2.0, 200.0) for c in main_centres]
 extra_galaxies_lt = [dpie_galaxy(c, 100.0, 450.0, 2.0, 150.0) for c in extra_centres]
 
-# Scaling galaxies — Faber-Jackson on a FREE normalization sigma_ref (independent of the BGC).
-# Modern (Bergamini+19) convention: r_cut exponent tied via beta_cut = 1 + gamma - 2*alpha = 0.7
-# (alpha = 0.25, gamma = 0.2); vanishing cores, never scaled; r_cut_ref ~ 5" (lensing-typical).
+"""
+The scaling galaxies apply Faber-Jackson to a *free* normalization ``sigma_ref``, independent of the
+BGC, in the modern (Bergamini et al. 2019) convention: the ``r_cut`` exponent is tied via
+``beta_cut = 1 + gamma - 2*alpha = 0.7`` (``alpha = 0.25``, ``gamma = 0.2``), cores vanish and are
+never scaled, and the reference truncation ``r_cut_ref ~ 5"`` is lensing-typical.
+"""
 sigma_ref = af.UniformPrior(lower_limit=100.0, upper_limit=400.0)  # [FREE] km/s
 r_core_ref, r_cut_ref = 0.0, 5.0  # [FIXED] arcsec
 rcut_exponent = 0.7  # [TIED] = 1 + gamma - 2*alpha
@@ -187,20 +190,47 @@ PyAutoLens uses the **NFW**, the CDM-motivated halo profile. A genuine *profile 
 reparameterization — you refit ``kappa_s`` / ``scale_radius`` rather than convert. (Keep a dPIE halo if
 you want to reproduce a Lenstool halo; both are supported.)
 
-**(2) Galaxies: dPIE -> Isothermal (SIE).** One mass parameter, ``einstein_radius`` — the reduced
-deflection, in arcsec, redshift-free, exactly what the images constrain. It equals the dPIE ``b0`` in
-the SIS limit (checked below). No core, no truncation.
+**(2) Main and extra galaxies: dPIE -> Isothermal (SIE).** One mass parameter, ``einstein_radius`` —
+the reduced deflection, in arcsec, redshift-free, exactly what the images constrain. It equals the
+dPIE ``b0`` in the SIS limit (checked below). No core, no truncation: these are a handful of dominant
+galaxies with the arcs nearby, and inside the arc region (R ~ 1-5") the SIE and a truncated dPIE agree
+to a few percent — the truncation only changes the model where no constraints live.
 
-**(3) The coupling spectrum.** The individually-modelled galaxies split into two tiers, and the scaling
-tier is anchored to the brightest galaxy (the BGC):
+**(3) The scaling galaxies keep the dPIE.** The truncation ``rs`` models tidal *stripping* of a
+member's outer halo by the host potential, and the scaling tier is exactly where that matters: its
+members are numerous and packed, so untruncated SIEs would each contribute unbounded, overlapping mass
+at large radius. The SIE has ``rho ~ r^-2`` forever — deflection flat at ``einstein_radius``, mass
+diverging as ``M ~ R`` — while the dPIE falls as ``r^-4`` beyond ``rs``, so its deflection dies away
+and its total mass is *finite*:
+
+    R (arcsec)     SIE deflection      dPIE (rs=20) deflection
+        1              1.40                  1.36
+       20              1.40                  0.82
+      300              1.40                  0.09
+
+There is no separate "truncated isothermal" class — the dPIE *is* it (with ``ra -> 0`` it is a
+Pseudo-Jaffe). The tier is therefore ``dPIEMassB0Sph`` with a vanishing core and a truncation ``rs``,
+keeping ``b0`` (the angular lens strength) as the mass parameter.
+
+**(4) The coupling spectrum.** The individually-modelled galaxies split into two tiers, and the
+scaling tier is anchored to the brightest galaxy (the BGC):
 
  - **main galaxies** — free ``einstein_radius``, no coupling.
  - **extra galaxies** — free ``einstein_radius``, but with a luminosity-informed *upper bound*
    ``min(2 * (upper_einstein_radius / L_BGC^0.5) * L^0.5, 5.0)`` — the BGC-scaled Faber-Jackson
    prediction (x2, capped). It prevents a runaway mass while keeping the galaxy free. This is the
    pipeline's middle tier.
- - **scaling galaxies** — *tied*: ``einstein_radius_i = einstein_radius_BGC * (L/L_BGC) ** 0.5``. Zero
-   free parameters; the members inherit the BGC's mass (mass-anchored coupling, companion Model 3).
+ - **scaling galaxies** — *tied*. Both the SIE ``einstein_radius`` and the dPIE ``b0`` are the
+   *angular lens strength* in arcsec, both ``~ sigma^2``, equal in the SIS limit — so a member's
+   ``b0`` anchors *directly* to the SIE BGC's ``einstein_radius`` with the identical Faber-Jackson
+   relation, no conversion:
+
+       b0_i = einstein_radius_BGC * (L / L_BGC) ** 0.5,     rs_i = rs_ref * (L / L_BGC) ** 0.7
+
+   Zero free parameters; the members inherit the BGC's mass. The truncation ``rs`` is a *separate*
+   parameter (the outer fall-off); it does not enter the anchoring. Caveat: with finite ``rs`` the
+   actual central deflection is a few percent below ``b0`` (truncation removes outer mass) —
+   negligible for subdominant members; you anchor on ``b0`` regardless.
 
 So the magnitude of Model 1 splits its two jobs: the luminosity *ratio* still enters (now from the
 fitted light), but the *normalization* is no longer a free ``sigma_ref`` — it is the BGC's own
@@ -224,7 +254,7 @@ halo_mass.scale_radius = af.UniformPrior(
 )  # [FREE] arcsec
 cluster_halo_pa = af.Model(al.Galaxy, redshift=redshift_lens, mass=halo_mass)
 
-# (2,3a) Main galaxies -> SIE, free einstein_radius. The BGC is the brightest.
+# (2) Main galaxies -> SIE, free einstein_radius. The BGC is the brightest.
 main_galaxies_pa = []
 for centre in main_centres:
     mass = af.Model(al.mp.IsothermalSph)
@@ -239,7 +269,7 @@ upper_einstein_radius = (
     3.0  # fixed proxy for the BGC Einstein radius (the main-lens prior upper bound)
 )
 
-# (3b) Extra galaxies -> SIE, free einstein_radius with a luminosity-informed upper bound.
+# (3) Extra galaxies -> SIE, free einstein_radius with a luminosity-informed upper bound.
 extra_galaxies_pa = []
 for centre, magnitude in zip(extra_centres, extra_magnitudes):
     ratio = luminosity_ratio(magnitude)  # L / L_BGC
@@ -253,15 +283,19 @@ for centre, magnitude in zip(extra_centres, extra_magnitudes):
     )  # [FREE, BOUNDED]
     extra_galaxies_pa.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
-# (3c) Scaling galaxies -> SIE, einstein_radius tied to the BGC.
+# (4) Scaling galaxies -> truncated dPIE, b0 anchored to the SIE BGC's einstein_radius.
+rs_ref = 5.0  # [FIXED] reference truncation (arcsec)
+rs_exponent = 0.7  # [TIED] = 1 + gamma - 2*alpha, like Lenstool's r_cut relation
 scaling_galaxies_pa = []
 for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
     ratio = luminosity_ratio(magnitude)
-    mass = af.Model(al.mp.IsothermalSph)
+    mass = af.Model(al.mp.dPIEMassB0Sph)
     mass.centre = centre  # [FIXED]
-    mass.einstein_radius = (
+    mass.ra = 0.0  # [FIXED] vanishing core (analytic at 0)
+    mass.b0 = (
         einstein_radius_bgc * ratio**0.5
     )  # tied to the BGC -> NO new parameter
+    mass.rs = rs_ref * ratio**rs_exponent  # [FIXED] truncation, scaled with L^0.7
     scaling_galaxies_pa.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
 model_pyautolens = af.Collection(
@@ -272,14 +306,22 @@ model_pyautolens = af.Collection(
 )
 
 print("\n" + "=" * 80)
-print("Section 2 — Standard PyAutoLens model (NFW halo, Isothermal galaxies)")
+print(
+    "Section 2 — Standard PyAutoLens model (NFW halo, Isothermal mains, dPIE scaling tier)"
+)
 print("=" * 80)
 print(
     f"Free parameters: {model_pyautolens.prior_count}  (NFW 4 + 2 main + 1 extra + scaling 0 = 7)"
 )
 assert model_pyautolens.prior_count == 7
 
-# --- Numerical bridge: the scaling-galaxy parameter change is exact ---
+"""
+Four numerical checks make the mapping concrete: (a) ``einstein_radius ~ sigma^2``, so Faber-Jackson
+carries over from the sigma relation unchanged; (b) the SIE and the dPIE ``b0`` agree exactly in the
+SIS limit, which is what licenses anchoring one on the other; (c) every scaling member's ``b0`` is the
+BGC's ``einstein_radius`` scaled by its luminosity ratio; (d) the truncation bites — the member's
+deflection dies away at large radius where an SIE's would stay flat.
+"""
 C_KM_S = 299792.458
 cosmology = ag.cosmo.FlatLambdaCDM(H0=H0, Om0=Om0)
 d_s = cosmology.angular_diameter_distance_to_earth_in_kpc_from(redshift=redshift_source)
@@ -316,127 +358,12 @@ print(
     f"(b) IsothermalSph(einstein_radius={theta}) vs dPIE b0 (SIS limit):  max defl diff = {diff:.2e}"
 )
 assert diff < 1e-5
-print("Section 2 checks passed.")
 
-
-"""
-================================================================================
-__Section 3 — Keeping the Truncation (dPIE outskirts, Isothermal main + extra)__
-================================================================================
-
-Section 2 dropped the members' truncation. Here is how to keep it, changing as little as possible: the
-halo (NFW), the main galaxies and the extra galaxies (all Isothermal) are unchanged from Section 2 —
-**only the scaling galaxies become truncated dPIEs**.
-
-**The difference truncation makes (all at large radius).**
-
-    R (arcsec)     SIE deflection      dPIE (rs=20) deflection
-        1              1.40                  1.36
-       20              1.40                  0.82
-      300              1.40                  0.09
-
-The SIE has ``rho ~ r^-2`` forever: deflection stays at ``einstein_radius``, mass diverges (``M ~ R``).
-The dPIE falls as ``r^-4`` beyond ``rs``: deflection dies away, total mass is *finite*. Inside the arc
-region (R ~ 1-5") they agree to a few percent — which is why the SIE is fine where the constraints live.
-
-**When MGLs do not need it.** ``rs`` models tidal *stripping* of a galaxy's outer halo by the host
-potential. In a rich cluster stripping is strong and members are packed, so untruncated SIEs would each
-contribute unbounded, overlapping mass — truncation is needed. In an MGL that is *not* a rich group the
-potential is shallower, stripping weaker, and members are subdominant perturbers with the arcs near the
-main lens — so the untruncated SIE is a defensible simplification. Keep truncation if the members are
-numerous / massive enough to contribute meaningfully at large radius.
-
-**How, staying closest to the parameterization.** There is no separate "truncated isothermal" class —
-the dPIE *is* it (with ``ra -> 0`` it is a Pseudo-Jaffe). So the scaling galaxies become
-``dPIEMassB0Sph`` with a tiny core and a truncation ``rs``, keeping ``b0`` (the angular lens strength) as
-the mass parameter. The main and extra galaxies stay Isothermal.
-
-**The linking across parameterizations.** Both the SIE ``einstein_radius`` and the dPIE ``b0`` are the
-*angular lens strength* in arcsec, both ``~ sigma^2``, equal in the SIS limit. So a dPIE scaling
-galaxy's ``b0`` anchors *directly* to the SIE BGC's ``einstein_radius`` with the identical relation — no
-conversion:
-
-    b0_i = einstein_radius_BGC * (L / L_BGC) ** 0.5,     rs_i = rs_ref * (L / L_BGC) ** 0.7
-
-The truncation ``rs`` is a *separate* parameter (the outer fall-off); it does not enter the anchoring.
-Caveat: with finite ``rs`` the actual central deflection is a few percent below ``b0`` (truncation
-removes outer mass) — negligible for subdominant members; you anchor on ``b0`` regardless.
-"""
-
-# Halo (NFW), main and extra galaxies (SIE) — identical to Section 2.
-halo_mass = af.Model(al.mp.NFW)
-halo_mass.centre = (0.0, 0.0)
-halo_mass.ell_comps.ell_comps_0 = af.UniformPrior(
-    lower_limit=-0.5, upper_limit=0.5
-)  # [FREE]
-halo_mass.ell_comps.ell_comps_1 = af.UniformPrior(
-    lower_limit=-0.5, upper_limit=0.5
-)  # [FREE]
-halo_mass.kappa_s = af.UniformPrior(lower_limit=0.05, upper_limit=0.5)  # [FREE]
-halo_mass.scale_radius = af.UniformPrior(lower_limit=10.0, upper_limit=60.0)  # [FREE]
-cluster_halo_trunc = af.Model(al.Galaxy, redshift=redshift_lens, mass=halo_mass)
-
-main_galaxies_trunc = []
-for centre in main_centres:
-    mass = af.Model(al.mp.IsothermalSph)
-    mass.centre = centre  # [FIXED]
-    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=3.0)  # [FREE]
-    main_galaxies_trunc.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
-
-einstein_radius_bgc = main_galaxies_trunc[
-    bgc_index
-].mass.einstein_radius  # SIE Einstein radius = anchor
-
-extra_galaxies_trunc = []
-for centre, magnitude in zip(extra_centres, extra_magnitudes):
-    ratio = luminosity_ratio(magnitude)
-    upper = min(2.0 * (3.0 / 1.0**0.5) * ratio**0.5, 5.0)
-    mass = af.Model(al.mp.IsothermalSph)
-    mass.centre = centre  # [FIXED]
-    mass.einstein_radius = af.UniformPrior(
-        lower_limit=0.0, upper_limit=upper
-    )  # [FREE, BOUNDED]
-    extra_galaxies_trunc.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
-
-# Scaling galaxies -> dPIE (truncated), b0 anchored to the SIE BGC's einstein_radius.
-rs_ref = 5.0  # [FIXED] reference truncation (arcsec); lensing-typical ~5"
-rs_exponent = 0.7  # [TIED] = 1 + gamma - 2*alpha, like Lenstool's r_cut relation
-scaling_galaxies_trunc = []
-for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
-    ratio = luminosity_ratio(magnitude)
-    mass = af.Model(al.mp.dPIEMassB0Sph)
-    mass.centre = centre  # [FIXED]
-    mass.ra = 0.0  # [FIXED] vanishing core: a pure truncated isothermal (analytic at 0)
-    mass.b0 = (
-        einstein_radius_bgc * ratio**0.5
-    )  # SIE einstein_radius drives dPIE b0 -> NO new parameter
-    mass.rs = rs_ref * ratio**rs_exponent  # [FIXED] truncation, scaled with L^0.7
-    scaling_galaxies_trunc.append(
-        af.Model(al.Galaxy, redshift=redshift_lens, mass=mass)
-    )
-
-model_truncated = af.Collection(
-    cluster_halo=cluster_halo_trunc,
-    main_galaxies=af.Collection(main_galaxies_trunc),
-    extra_galaxies=af.Collection(extra_galaxies_trunc),
-    scaling_galaxies=af.Collection(scaling_galaxies_trunc),
-)
-
-print("\n" + "=" * 80)
-print(
-    "Section 3 — Truncated scaling galaxies (dPIE outskirts, Isothermal main + extra)"
-)
-print("=" * 80)
-print(
-    f"Free parameters: {model_truncated.prior_count}  (same 7 as Section 2; only the scaling profile changed)"
-)
-assert model_truncated.prior_count == 7
-
-# (a) The cross-parameterization linking: a scaling galaxy's b0 = einstein_radius_BGC * (L/L_BGC)^0.5.
-instance = model_truncated.instance_from_prior_medians()
+# (c) The cross-parameterization linking: b0 = einstein_radius_BGC * (L/L_BGC)^0.5.
+instance = model_pyautolens.instance_from_prior_medians()
 er_bgc = instance.main_galaxies[bgc_index].mass.einstein_radius
 print(
-    f"(a) BGC einstein_radius = {er_bgc:.3f} arcsec (SIE);  dPIE scaling galaxies b0 = einstein_radius_BGC * (L/L_BGC)^0.5:"
+    f"(c) BGC einstein_radius = {er_bgc:.3f} arcsec (SIE);  dPIE scaling galaxies b0 = einstein_radius_BGC * (L/L_BGC)^0.5:"
 )
 worst = 0.0
 for i, magnitude in enumerate(scaling_magnitudes):
@@ -449,14 +376,14 @@ for i, magnitude in enumerate(scaling_magnitudes):
     )
 assert worst < 1e-9
 
-# (b) The truncation bites: the deflection dies away at large radius (an SIE would stay flat).
+# (d) The truncation bites: the deflection dies away at large radius.
 member0 = instance.scaling_galaxies[0].mass
 c = scaling_centres[0]
 print(
-    "(b) scaling galaxy 0 deflection vs radius (truncated dPIE — dies away; an SIE would stay flat):"
+    "(d) scaling galaxy 0 deflection vs radius (truncated dPIE — dies away; an SIE would stay flat):"
 )
 for R in [1.0, 10.0, 50.0, 200.0]:
     g = al.Grid2DIrregular([[c[0], c[1] + R]])
     a = float(np.max(np.abs(np.asarray(member0.deflections_yx_2d_from(grid=g)))))
     print(f'    R={R:>4.0f}":  alpha = {a:.4f} arcsec')
-print("Section 3 checks passed.")
+print("Section 2 checks passed.")

@@ -6,12 +6,13 @@ cluster — how to do the same analysis in **PyAutoLens**, and what you gain on 
 The worked example is **SMACS J0723.3−7327**, the first JWST cluster, using the Lenstool model of
 [Mahler et al. 2023](https://arxiv.org/abs/2207.07101) whose complete workflow (`best.par`,
 `input.par`, `arcs.dat`, `galcat.cat`) is
-[public](https://github.com/guillaumemahler/SMACS0723-mahler2022). Two scripts:
+[public](https://github.com/guillaumemahler/SMACS0723-mahler2022). Three scripts:
 
 | Script | What it does |
 |---|---|
 | `data.py` | Downloads the published model files + a RELICS HST image; converts them to the PyAutoLens cluster CSV formats, recording every unit and sign convention. |
 | `modeling.py` | **Reconstructs** the published best-fit (149 dPIE potentials, read straight from `best.par`), **verifies** it reproduces the observed multiple images, and composes the **refit** — the same free parameters and priors as `input.par` — for a from-scratch PyAutoLens fit you can compare with the paper's Table 3. |
+| `parameterization_mapping.py` | The b0 ↔ sigma dictionary in code: proves the Lenstool-native (`sigma`, `r_core`, `r_cut`) and angular (`b0`, `ra`, `rs`) dPIE parameterizations are the same profile, and that the scaling relation carries across with its exponent halved. |
 
 ## The dictionary
 

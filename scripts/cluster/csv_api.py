@@ -183,14 +183,14 @@ carry both 2 ``dPIEMassSph`` cluster members and 1 ``NFWMCRLudlowSph``
 host halo even though their parameter sets don't overlap.
 
 We start by building a small illustrative cluster in Python.
+
+There is one dict per profile family, each mapping ``{galaxy_name: {attr_name: profile_instance}}``.
+The mass family carries the 2 main-lens dPIE profiles + the host-halo NFW; the light family carries
+the 2 main-lens Sersic bulges + the 2 source-galaxy SersicCore bulges; the point family carries the
+2 source-galaxy Point components.
 """
 redshift_lens = 0.5
 source_redshifts = [1.0, 2.0]
-
-# One dict per profile family. Each maps {galaxy_name: {attr_name: profile_instance}}.
-# Mass family carries the 2 main-lens dPIE profiles + the host-halo NFW; light family
-# carries the 2 main-lens Sersic bulges + the 2 source-galaxy SersicCore bulges; point
-# family carries the 2 source-galaxy Point components.
 
 mass_profiles = {
     "lens_0": {
@@ -381,8 +381,10 @@ galaxy_models = al.galaxy_af_models_from_csv_tables(
     point_table,
 )
 
-# Mutate selected params on the main-lens mass profiles into priors (sigma is
-# Lenstool's fiducial v_disp in km/s; radii in arcsec).
+"""
+We mutate selected parameters on the main-lens mass profiles into priors. ``sigma`` is Lenstool's
+fiducial ``v_disp`` in km/s; the radii are in arcsec.
+"""
 for name in ("lens_0", "lens_1"):
     galaxy_models[name].mass.sigma = af.UniformPrior(
         lower_limit=50.0, upper_limit=600.0

@@ -36,7 +36,7 @@ __Contents__
 - **Imports:** The libraries we'll use.
 - **Dataset:** Load the CCD image and the per-source point datasets.
 - **Model CSVs:** Load the named-galaxy mass + point CSVs written by the simulator.
-- **Scaling Galaxies Table:** Load the 10 scaling-tier members' centres and luminosities from a CSV.
+- **Scaling Galaxies Table:** Load the 188 scaling-tier members' centres and luminosities from a CSV.
 - **Point Solver:** Set up the image-plane multiple-image solver.
 - **Cluster Components:** The four tiers of object that make up the model.
 - **Model:** Compose the lens model fitted to the data.
@@ -134,7 +134,10 @@ We load the real Abell 2744 dataset. The dataset folder contains:
 
 For visualization we also download an HST H-band image cutout of the cluster from the CDS
 hips2fits service on the first run (~1.4 MB, cached). The image is only used for plotting — the
-model is fitted to the multiple-image positions.
+model is fitted to the multiple-image positions. The download uses an explicit timeout because
+``urlretrieve`` has none, so a stalled hips2fits response would hang the script indefinitely (in CI
+this blocked until the build-script timeout); on any failure the script simply continues without
+the image.
 """
 dataset_name = "a2744"
 dataset_path = Path("dataset") / "cluster" / dataset_name
@@ -154,10 +157,6 @@ if not data_fits_path.exists():
         "Downloading HST H-band image of Abell 2744 for visualization (one-off, ~1.4 MB) ..."
     )
     try:
-        # An explicit timeout is essential: `urlretrieve` has none, so a slow or
-        # stalled hips2fits response hangs the script indefinitely (in CI this
-        # blocked until the build-script timeout). On any failure we continue —
-        # the image is used for visualization only.
         with urllib.request.urlopen(HIPS2FITS_URL, timeout=30) as response:
             data_fits_path.write_bytes(response.read())
     except Exception as e:
@@ -217,7 +216,7 @@ point_table = al.galaxy_models_from_csv(
 """
 __Scaling Galaxies Table__
 
-The 10 scaling-tier members come from ``scaling_galaxies.csv`` — one row per member with columns
+The 188 scaling-tier members come from ``scaling_galaxies.csv`` — one row per member with columns
 ``y, x, luminosity``. ``al.galaxy_table_from_csv`` returns a typed ``GalaxyTable`` with ``.centres``
 (a ``Grid2DIrregular``) and ``.luminosities`` (a list). Adding more members to a real cluster is a
 CSV-level edit: append rows, save, re-run. The number of free parameters in the model does not change.
@@ -239,9 +238,9 @@ __Point Solver__
 
 Point-source modeling needs a ``PointSolver`` to find the image-plane multiple images of each source.
 The solver ray-traces triangles from the image plane back to the source plane, iteratively refining
-until the requested precision is reached. We use the same configuration as the more detailed
-``cluster/modeling.py``: a 100x100 starting grid, 0.001" precision, and a magnification threshold of
-0.1 to discard heavily-demagnified central images.
+until the requested precision is reached. We use the same solver settings as the more detailed
+``cluster/modeling.py`` — 0.001" precision and a magnification threshold of 0.1 to discard
+heavily-demagnified central images — on a 120x120 starting grid.
 """
 grid = al.Grid2D.uniform(shape_native=(120, 120), pixel_scales=1.0)
 
@@ -305,18 +304,20 @@ bundled into a single ``af.Collection`` model that the analysis will receive.
 redshift_lens = 0.308
 source_redshifts = [dataset.redshift for dataset in dataset_list]
 
-# Build af.Model[Galaxy] instances directly from the family CSVs. Concrete CSV
-# values become fixed af.Model defaults; we then promote selected params to
-# priors below. Keys: lens_0, lens_1, host_halo, source_0, source_1.
-
+"""
+``al.galaxy_af_models_from_csv_tables`` builds ``af.Model(Galaxy)`` instances directly from the
+family CSVs. Concrete CSV values become fixed ``af.Model`` defaults, which the cells below promote to
+priors selectively. Keys: ``lens_0``, ``lens_1``, ``host_halo``, ``source_0``, ``source_1``.
+"""
 galaxy_models = al.galaxy_af_models_from_csv_tables(mass_table, point_table)
 
-# Main Lens Galaxies: free dPIE sigma / r_cut; centre and redshifts stay fixed at
-# the CSV values, and r_core stays fixed at the CSV's 0.0 — the vanishing core
-# standard for BCGs and members alike (the dPIE is analytic at r_core = 0). The
-# cosmology constants H0 / Om0 are pinned (they are model *constants*, not
-# parameters to sample — if left unset they would inherit the config's default
-# priors and float).
+"""
+The main lens galaxies get free dPIE ``sigma`` / ``r_cut``; their centres and redshifts stay fixed at
+the CSV values, and ``r_core`` stays fixed at the CSV's 0.0 — the vanishing-core standard for BCGs
+and members alike (the dPIE is analytic at ``r_core = 0``). The cosmology constants ``H0`` / ``Om0``
+are pinned: they are model *constants*, not parameters to sample — left unset they would inherit the
+config's default priors and float.
+"""
 for name in ("lens_0", "lens_1"):
     galaxy_models[name].mass.sigma = af.UniformPrior(
         lower_limit=50.0, upper_limit=600.0
@@ -330,9 +331,11 @@ galaxy_models["host_halo"].dark.mass_at_200 = af.LogUniformPrior(
     lower_limit=10**14.5, upper_limit=10**16.0
 )
 
-# Source Galaxies: free Point centres with GaussianPrior initialised from the
-# mean of each source's observed multiple-image positions (NOT the truth from
-# point.csv — in a real analysis the truth is unknown).
+"""
+Each source's ``Point`` centre gets a ``GaussianPrior`` initialised from the mean of that source's
+observed multiple-image positions — not the truth from ``point.csv``, which in a real analysis is
+unknown.
+"""
 for i, dataset in enumerate(dataset_list):
     positions = np.atleast_2d(dataset.positions)
     point_attr = getattr(galaxy_models[f"source_{i}"], f"point_{i}")
@@ -343,15 +346,14 @@ for i, dataset in enumerate(dataset_list):
         mean=float(np.mean(positions[:, 1])), sigma=3.0
     )
 
-# Scaling Tier (reference-anchored: sigma_ref is the single shared free parameter,
-# the fiducial velocity dispersion of a galaxy at the reference magnitude, in km/s;
-# per-member sigma and r_cut derive from it with the exponents fixed and tied at
-# the Bergamini+19 values (sigma ∝ L^0.25; r_cut ∝ L^(1 + gamma - 2*alpha) = L^0.7
-# with gamma = 0.2); r_core is fixed at 0 (vanishing core, never scaled). The
-# reference luminosity is an EXPLICIT FIXED constant (Lenstool's "mag0"); our
-# member luminosities are normalised to the BCG's F160W flux, so L_ref = 1.0
-# anchors the relation to the BCG).
-
+"""
+The scaling tier implements the reference-anchored relation described in __Cluster Components__:
+``scaling_sigma_ref`` — the fiducial velocity dispersion of a reference-magnitude galaxy, in km/s —
+is the single shared free parameter, defined once outside the loop; each member's ``sigma`` /
+``r_cut`` derive from it and the fixed reference truncation via that member's luminosity ratio.
+Since our member luminosities are normalised to the BCG's F160W flux, ``reference_luminosity = 1.0``
+anchors the relation to the BCG itself.
+"""
 scaling_sigma_ref = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
 scaling_sigma_exponent = 0.25  # alpha
 scaling_gamma = 0.2
@@ -416,7 +418,7 @@ factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 """
 __Search__
 
-We use Nautilus, a robust nested-sampling algorithm. ``n_live=150`` is a sensible default for a 22-D
+We use Nautilus, a robust nested-sampling algorithm. ``n_live=150`` is a sensible default for a 20-D
 model — increase it for more complex clusters. ``n_batch=50`` batches the GPU log-likelihood
 evaluations for throughput.
 

@@ -85,10 +85,12 @@ Om0 = 0.30966
 scaling_centres = [(5.5, -6.5), (-7.5, 3.0), (3.0, 13.0), (12.0, -5.0), (-6.5, 11.0)]
 scaling_magnitudes = [19.2, 19.8, 20.4, 21.0, 21.6]
 
-# Individually-modelled galaxies: the BCG (first) plus any bright member we want to free — e.g. a
-# galaxy sitting near a multiple image, which the scaling relation cannot describe accurately enough
-# locally. In Lenstool these are just separate "potentiel" sections; the BCG is not structurally
-# special, only the first of them. The BCG's magnitude also anchors the scaling relation (mag0).
+"""
+The individually-modelled galaxies are the BCG (first) plus any bright member we want to free — e.g.
+a galaxy sitting near a multiple image, which the scaling relation cannot describe accurately enough
+locally. In Lenstool these are just separate "potentiel" sections; the BCG is not structurally
+special, only the first of them. The BCG's magnitude also anchors the scaling relation (``mag0``).
+"""
 individual_centres = [(0.0, 0.0), (8.5, 5.5)]
 individual_magnitudes = [17.8, 18.9]
 
