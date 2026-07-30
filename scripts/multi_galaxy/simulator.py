@@ -25,19 +25,26 @@ This script simulates `Imaging` of a 'multi-galaxy' strong lens where:
 
  - The lens is a pair of galaxies of comparable mass, whose light distributions are `Sersic` profiles and whose
    total mass distributions are `Isothermal` profiles.
+ - The system has a single overall `ExternalShear`, held at the system centre (0.0", 0.0") rather than attached to
+   either galaxy.
  - A single source galaxy is observed, whose `LightProfile` is a `SersicCore`.
+ - A faint extra galaxy contaminates the field (a `mask_extra_galaxies.fits` is written for this purpose).
 
 __Contents__
 
 - **Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a name.
 - **Grid:** Define the 2d grid of (y,x) coordinates that the lens and source galaxy images are evaluated on.
 - **Galaxy Centres:** Define the centres of the two main lens galaxies.
+- **Extra Galaxy Centre:** The centre of the faint contaminating galaxy included in the field.
 - **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
 - **PSF Convolution:** Define the Point Spread Function (PSF) that blurs the simulated image.
 - **Main Lens Galaxies:** The two co-dominant lens galaxies of the merging pair.
+- **External Shear:** The system's overall external shear, held at the system centre.
 - **Source Galaxy:** The source galaxy whose lensed images we simulate.
+- **Extra Galaxy:** A faint galaxy near the lens whose light is not associated with the strong lens.
 - **Ray Tracing:** Use all galaxies to setup a tracer, which generates the image of the simulated `Imaging`.
 - **Dataset:** Simulate and plot the strong lens dataset.
+- **Mask Extra Galaxies:** Write the `mask_extra_galaxies.fits` used by the modeling examples.
 - **Visualize:** Output a subplot of the simulated dataset to the dataset folder.
 - **Tracer json:** Save the `Tracer` in the dataset folder as a .json file.
 - **Centre JSON Files:** Save the centres of the main lens galaxies as a JSON file.
@@ -113,6 +120,18 @@ as a whole, and the data constrains both galaxies' masses.
 main_lens_centres = [(0.35, 0.25), (-0.35, -0.25)]
 
 """
+__Extra Galaxy Centre__
+
+This `simple` dataset deliberately includes a faint extra galaxy offset from the lens pair, so that the modeling
+examples can demonstrate the `__Extra Galaxies Noise Scaling__` step end-to-end. Its centre is defined here so it
+can be reused for over-sampling, the galaxy itself and the `mask_extra_galaxies.fits` written further down.
+
+It is placed inside the 3.0" modeling mask but clear of the lensed source arcs, which wrap around the pair as a
+whole at the combined Einstein radius (~1.8").
+"""
+extra_galaxy_centre = (2.2, 1.6)
+
+"""
 __Over Sampling__
 
 Over sampling is a numerical technique where the images of light profiles and galaxies are evaluated
@@ -121,7 +140,7 @@ on a higher resolution grid than the image data to ensure the calculation is acc
 An adaptive oversampling scheme is used, evaluating the central regions of each lens galaxy's light profile at a
 resolution of 32x32, transitioning to 8x8 in intermediate areas, and 2x2 in the outskirts. This ensures precise and
 accurate image simulation while focusing computational resources on the bright regions that demand higher
-oversampling. The adaptive grid is centred on both main lens galaxies.
+oversampling. The adaptive grid is centred on both main lens galaxies and on the extra galaxy.
 
 An adaptive oversampling grid cannot be defined for the lensed source because its light appears in different regions
 of the image plane for each dataset. For this reason, most workspace examples use cored light profiles for the
@@ -134,7 +153,7 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=grid,
     sub_size_list=[32, 8, 2],
     radial_list=[0.3, 0.6],
-    centre_list=main_lens_centres,
+    centre_list=main_lens_centres + [extra_galaxy_centre],
 )
 
 grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
@@ -181,6 +200,10 @@ Both galaxies use elliptical `Sersic` light and `Isothermal` mass profiles. Note
 galaxy's light centre and mass centre — kiloparsec-scale mass/light offsets in an interacting pair are exactly the
 science the real SDSS J1011+0143 system delivered (Shu et al. 2016), and something only a model with two free mass
 profiles can measure.
+
+Neither galaxy carries the external shear. In the galaxy-scale examples the shear is attached to the single lens
+galaxy, but a multi-galaxy lens has no single galaxy to attach it to, and picking one arbitrarily would misrepresent
+what it is. The shear is defined separately below, centred on the system as a whole.
 """
 lens_0 = al.Galaxy(
     redshift=0.5,
@@ -217,6 +240,23 @@ lens_1 = al.Galaxy(
 main_lens_galaxies = [lens_0, lens_1]
 
 """
+__External Shear__
+
+The `ExternalShear` describes the tidal gravitational field of structure *outside* the system being simulated. It is
+a property of the system as a whole rather than of any individual galaxy, so we give it its own entry at the system
+centre (0.0", 0.0") instead of attaching it to one of the deflectors.
+
+`ExternalShear` takes no `centre` argument because it is a uniform field defined about the coordinate origin, which
+for this dataset is the centre of the lens pair. Holding it in its own galaxy is therefore both the physically
+honest description and exactly equivalent numerically to attaching it to a deflector — the tracer sums every
+deflection field either way.
+"""
+shear_galaxy = al.Galaxy(
+    redshift=0.5,
+    shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
+)
+
+"""
 __Source Galaxy__
 
 The source galaxy whose lensed images we simulate. It uses a cored Sersic profile so that adaptive over-sampling
@@ -237,16 +277,41 @@ source_galaxy = al.Galaxy(
 )
 
 """
+__Extra Galaxy__
+
+We include a single faint extra galaxy offset from the lens pair, representing a nearby object whose emission is
+not associated with the strong lens but blends into the field. Its light contaminates the model-fit and must be
+removed, which the modeling examples demonstrate via the `__Extra Galaxies Noise Scaling__` step (loading the
+`mask_extra_galaxies.fits` written below and calling `dataset.apply_noise_scaling`).
+
+Note the distinction this draws, which matters more here than at galaxy scale: an *extra* galaxy is a contaminant
+whose light we remove from the analysis entirely. A *main lens galaxy* is a co-dominant deflector we model freely.
+Both are "another galaxy in the image", and telling them apart is the first judgement you make about a
+multi-galaxy field — if in doubt, the test is whether it contributes significantly to the lensing.
+
+We give the extra galaxy a light profile only (no mass), so the lensed source arcs are unchanged and the dataset
+remains a clean two-deflector lens for all other examples that load it.
+"""
+extra_galaxy = al.Galaxy(
+    redshift=0.5,
+    light=al.lp.ExponentialSph(
+        centre=extra_galaxy_centre, intensity=1.0, effective_radius=0.3
+    ),
+)
+
+"""
 __Ray Tracing__
 
 Use all galaxies to setup a tracer, which will generate the image for the simulated `Imaging` dataset.
 
-The tracer combines the two main lens galaxies and the source galaxy. Because both deflectors are at the same
-redshift, this is single-plane ray tracing — the two galaxies' deflection fields simply add. (Two deflectors at
-*different* redshifts is compound, multi-plane lensing — see the cluster package, where multi-plane tracing is the
-default.)
+The tracer combines the two main lens galaxies, the shear, the extra galaxy and the source galaxy. Because both
+deflectors are at the same redshift, this is single-plane ray tracing — the two galaxies' deflection fields, and the
+shear's, simply add. (Two deflectors at *different* redshifts is compound, multi-plane lensing — see the cluster
+package, where multi-plane tracing is the default.)
 """
-tracer = al.Tracer(galaxies=main_lens_galaxies + [source_galaxy])
+tracer = al.Tracer(
+    galaxies=main_lens_galaxies + [shear_galaxy, extra_galaxy, source_galaxy]
+)
 
 """
 Lets look at the tracer`s image, this is the image we'll be simulating.
@@ -273,6 +338,31 @@ aplt.fits_imaging(
     data_path=dataset_path / "data.fits",
     psf_path=dataset_path / "psf.fits",
     noise_map_path=dataset_path / "noise_map.fits",
+    overwrite=True,
+)
+
+"""
+__Mask Extra Galaxies__
+
+Build and output a `mask_extra_galaxies.fits` covering the extra galaxy, so the modeling examples
+(`multi_galaxy/start_here.py`, `multi_galaxy/modeling.py`, `multi_galaxy/fit.py`,
+`multi_galaxy/likelihood_function.py`) can load it directly and apply noise scaling without a separate
+data-preparation step.
+
+The circle is sized to ~3x the galaxy's `effective_radius`, which comfortably covers its light extent. The
+geometry is derived from the same `extra_galaxy_centre` defined above, so it stays in sync with any future tweak.
+"""
+mask_extra_galaxies = al.Mask2D.circular(
+    shape_native=dataset.shape_native,
+    pixel_scales=dataset.pixel_scales,
+    centre=extra_galaxy_centre,
+    radius=3.0 * 0.3,
+    invert=True,  # `True` inside the circle, i.e. the region whose noise is scaled.
+)
+
+aplt.fits_array(
+    array=mask_extra_galaxies,
+    file_path=dataset_path / "mask_extra_galaxies.fits",
     overwrite=True,
 )
 
@@ -304,8 +394,12 @@ Save the centres of the main lens galaxies as a JSON file. These are loaded by t
 set up the lens model (initializing the centre priors of each galaxy's light and mass profiles).
 
 Note there is no `extra_galaxies_centres.json` and no scaling-galaxy catalogue: in the multi-galaxy regime every
-deflector is a main lens galaxy. The extra and scaling tiers only enter as feature extensions (see
+*deflector* is a main lens galaxy. The extra and scaling tiers only enter as feature extensions (see
 `multi_galaxy/features`) and become the default at group and cluster scale.
+
+The faint galaxy written into `mask_extra_galaxies.fits` above is not a member of any such tier — it is a
+contaminant removed from the analysis by noise scaling, never a component of the lens model. The `features`
+package is where an extra galaxy is instead *modeled*, with restricted freedom.
 """
 al.output_to_json(
     obj=al.Grid2DIrregular(main_lens_centres),
