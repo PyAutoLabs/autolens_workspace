@@ -1483,10 +1483,11 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "autolens_workspace/scripts/group/modeling.py",
       "autolens_workspace/start_here.py",
       "cluster/start_here.ipynb",
       "imaging/start_here.ipynb",
+      "imaging/start_here.py",
+      "modeling.py",
       "multi_galaxy/start_here.ipynb",
       "scripts/imaging/start_here.py"
     ],
