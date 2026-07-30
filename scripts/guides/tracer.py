@@ -13,6 +13,7 @@ briefly discusses visualization.
 
 __Contents__
 
+- **JAX:** Ray-tracing is JAX-accelerated automatically inside a model-fit — see `scripts/guides/using_jax.py`.
 - **Units:** In this example, all quantities use the source code's internal unit coordinates, with spatial.
 - **Data Structures:** Arrays inspected in this example use bespoke data structures for storing arrays, grids, vectors and.
 - **Other Models:** This tutorial does not use a pixelized source reconstruction or linear light profiles, which have.
@@ -32,6 +33,11 @@ __Contents__
 - **Vector Quantities:** Many lensing quantities are vectors.
 - **Other Vector Lensing Quantities:** The tracer has other vector lensing quantities, which use the same interface described above.
 - **Other Quantities:** Many more quantities are shown below.
+
+__JAX__
+
+Ray-tracing is JAX-accelerated automatically inside a model-fit, including the recursive multi-plane lens
+equation. To JIT tracer calculations yourself, see the executable recipes in `scripts/guides/using_jax.py`.
 
 __Units__
 
@@ -520,84 +526,6 @@ time_delay = tracer.time_delays_from(grid=grid)
 # einstein_mass_angular = tracer.einstein_mass_angular_from(grid=grid)
 
 """
-__JAX__
-
-`Tracer` ray-tracing is the most JAX-friendly part of PyAutoLens — pure
-numerical kernels with no data-dependent control flow. Typical speedups
-for `tracer.image_2d_from(grid)` and related ops on a large grid:
-10-30× for galaxy-scale models, 30-100× for cluster-scale on GPU.
-
-You access this in two ways.
-
-__1. The implicit path: `Analysis`__
-
-`AnalysisImaging(use_jax=True)` (the default) JAX-accelerates the tracer
-internally, and pytree registration runs as a side effect of the first
-`fit_from` call — you write nothing JAX-specific.
-
-`SimulatorImaging(use_jax=True)` also runs the image calculation through
-JAX, but it does *not* register pytrees for you, so it is only implicit
-for the eager call. See `scripts/guides/using_jax.py` before wrapping a
-simulator in `@jax.jit`.
-
-__2. The explicit path: your own `@jax.jit`__
-
-For parameter sweeps, custom forward models, or batch figure generation
-where you want fine-grained control:
-
-```python
-import jax
-import jax.numpy as jnp
-from autolens.jax import register_tracer_classes
-
-register_tracer_classes(tracer)   # one-time pytree registration
-
-@jax.jit
-def image_fn(tracer, grid):
-    return tracer.image_2d_from(grid=grid, xp=jnp).array
-
-image = image_fn(tracer, grid)
-```
-
-Two rules:
-
-- **`@jax.jit` + `xp=jnp` pair up.** Forgetting `xp=jnp` either
-  silently host-transfers (slow) or fails at the boundary; the library
-  now raises a clear `ValueError` on the easy mismatch (see
-  `lens_calc.py` for the rationale and `AbstractMaker.__init__`'s
-  guard).
-- **`.array` unwrap inside the jit, rewrap outside.** Wrapper types
-  (`aa.Array2D`, `aa.Grid2DIrregular`) aren't reliably pytree for
-  return-from-JIT — return raw arrays, rewrap on the host.
-
-__Multi-plane traces under JIT__
-
-The recursive multi-plane lens equation in
-`tracer.traced_grid_2d_list_from(grid)` is pure numerical with no
-data-dependent control flow, so it JITs cleanly. For multi-plane point-
-source solving (forward-solving multiple-image positions through several
-planes), use the higher-level `al.PointSolver(use_jax=True)` — see
-`scripts/point_source/simulator.py` `__JAX Variant (Advanced)__`.
-
-__Performance expectations__
-
-Tracer image generation on JAX-GPU typically beats NumPy-CPU by:
-
-- 10-30× for galaxy-scale (single lens galaxy, single source).
-- 30-100× for cluster-scale (many galaxies, multi-plane).
-
-Actual speedup depends on grid size, profile complexity, and GPU
-hardware. `autolens_workspace_developer/jax_profiling/` carries measured
-numbers for representative configurations.
-
-For the full "JIT-it-yourself" deep-dive (bound-method form, cache-
-identity considerations, closure-captured `self` vs traced-argument),
-see `scripts/guides/lens_calc.py`. `scripts/guides/galaxies.py` covers
-the pytree registration mechanics. `scripts/guides/data_structures.py`
-covers the `.array` host-transfer story.
-
-Fin.
-
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

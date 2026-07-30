@@ -3,7 +3,7 @@ Multi Galaxy Scaling Relation: SLaM
 ==================================
 
 Uses the SLaM pipelines to fit a multi-galaxy lens with a scaling tier whose Einstein radii are tied to the
-brightest co-dominant deflector (the BGC).
+brightest co-dominant deflector.
 
 **This is the script that measures the luminosities.** `modeling.py`, `fit.py` and `likelihood_function.py` all take
 them as given and say they must be measured beforehand; here they are measured, and the measurement is genuinely
@@ -45,7 +45,8 @@ The `intensity` values only exist after a fit, because MGE profiles are linear l
 solved by linear algebra. The measurement therefore reads them off the fitted tracer via
 `max_log_likelihood_fit.tracer_linear_light_profiles_to_light_profiles`.
 
-The BGC is then `argmax` over the main lenses' measured luminosities — a measurement, not a naming convention.
+The brightest galaxy is then `argmax` over the main lenses' measured luminosities — a measurement, not a naming
+convention.
 
 __This Script__
 
@@ -53,7 +54,7 @@ Using LENS LIGHT (two stages), SOURCE LP, SOURCE PIX (two stages), LIGHT LP and 
 fits `Imaging` data where in the final model:
 
  - Each co-dominant deflector has a free MGE bulge and a `PowerLaw` total mass; `lens_0` carries the `ExternalShear`.
- - Each scaling galaxy has a free MGE bulge and an `IsothermalSph` mass tied to the BGC.
+ - Each scaling galaxy has a free MGE bulge and an `IsothermalSph` mass tied to the brightest galaxy.
  - The source galaxy's light is a `Pixelization`.
 
 All scaling-tier mass profiles are **untruncated**: truncation encodes tidal stripping by a host halo's potential,
@@ -76,7 +77,7 @@ __Contents__
 - **SOURCE LP PIPELINE:** Mass and source introduced; the tie applied for the first time.
 - **SOURCE PIX PIPELINE 1 / 2:** Pixelized source, tier carried forward then fixed.
 - **LIGHT LP PIPELINE:** A better light model for the pair, and why it cannot re-measure the tier.
-- **MASS TOTAL PIPELINE:** `PowerLaw` deflectors, with the tie re-applied to the BGC's.
+- **MASS TOTAL PIPELINE:** `PowerLaw` deflectors, with the tie re-applied to the brightest galaxy's.
 - **Dataset / Two Masks / Centres / Settings.**
 - **SLaM Pipeline:** Run the stages in order.
 - **Measured Luminosities:** Write them out as CSVs for reuse.
@@ -303,8 +304,8 @@ Equivalent to `source_lp` in `slam_start_here.py`, except all light is fixed fro
 source enter here for the first time.
 
 Each co-dominant deflector gets a free `Isothermal`; only `lens_0` carries the `ExternalShear`, since one shear
-describes the tidal field of everything outside the system. The tier's Einstein radii are tied to the BGC's free
-`einstein_radius`, so the tier costs nothing.
+describes the tidal field of everything outside the system. The tier's Einstein radii are tied to the brightest
+galaxy's free `einstein_radius`, so the tier costs nothing.
 """
 
 
@@ -315,7 +316,7 @@ def source_lp(
     lens_light_result,
     main_luminosities,
     scaling_luminosities,
-    bgc_index,
+    brightest_index,
     redshift_lens,
     redshift_source,
     upper_einstein_radius=3.0,
@@ -325,8 +326,8 @@ def source_lp(
     analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
     n_main = len(main_luminosities)
-    luminosity_bgc = main_luminosities[bgc_index]
-    bgc_key = f"lens_{bgc_index}"
+    luminosity_brightest = main_luminosities[brightest_index]
+    brightest_key = f"lens_{brightest_index}"
 
     lens_dict = {}
 
@@ -353,7 +354,7 @@ def source_lp(
         mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
     )
 
-    # Scaling tier: light fixed from lens_light[2], mass tied to the BGC.
+    # Scaling tier: light fixed from lens_light[2], mass tied to the brightest galaxy.
 
     scaling_galaxies_list = []
 
@@ -363,8 +364,8 @@ def source_lp(
         mass = af.Model(al.mp.IsothermalSph)
         mass.centre = bulge.profile_list[0].centre
         mass.einstein_radius = (
-            lens_dict[bgc_key].mass.einstein_radius
-            * (luminosity / luminosity_bgc) ** scaling_exponent
+            lens_dict[brightest_key].mass.einstein_radius
+            * (luminosity / luminosity_brightest) ** scaling_exponent
         )
 
         scaling_galaxies_list.append(
@@ -393,7 +394,7 @@ def source_lp(
 __SOURCE PIX PIPELINE 1__
 
 Identical to `slam_start_here.py`, except the tier is carried forward from `source_lp[1]` as a free model. The tie
-travels with the model, so it stays anchored to the BGC without being re-declared.
+travels with the model, so it stays anchored to the brightest galaxy without being re-declared.
 """
 
 
@@ -565,9 +566,10 @@ for two reasons — the second is the important one:
     defined on *its own* mask. Feeding a 11,304-pixel adapt image into a 68,836-pixel analysis fails with
     `TypeError: mul got incompatible shapes for broadcasting`.
 
- 2. Even if it worked, mixing measurements would be wrong. Only the **ratio** `L_i / L_bgc` enters the relation. Take
-    `L_bgc` from this fit and the members' `L_i` from `lens_light[2]` and the ratio is built from two different light
-    models on two different masks — a systematic error injected straight into every member's mass. The relation needs
+ 2. Even if it worked, mixing measurements would be wrong. Only the **ratio** `L_i / L_brightest` enters the
+    relation. Take `L_brightest` from this fit and the members' `L_i` from `lens_light[2]` and the ratio is built from
+    two different light models on two different masks — a systematic error injected straight into every member's mass.
+    The relation needs
     all its luminosities from ONE light fit.
 
 So `lens_light[2]` is the single source of luminosities for this pipeline, and `mass_total` uses them directly. The
@@ -649,10 +651,10 @@ def light_lp(
 __MASS TOTAL PIPELINE__
 
 Identical to `slam_start_here.py`, except each deflector's mass becomes a `PowerLaw` and the tier is re-tied to the
-BGC's `PowerLaw.einstein_radius`, using the luminosities re-measured from `light[1]`.
+brightest galaxy's `PowerLaw.einstein_radius`, using the luminosities re-measured from `light[1]`.
 
-Note the BGC is re-identified from those luminosities rather than reused from the earlier stage. It will almost
-always be the same galaxy; deriving it again keeps the pipeline honest if the improved light model disagrees.
+Note the brightest galaxy is re-identified from those luminosities rather than reused from the earlier stage. It will
+almost always be the same galaxy; deriving it again keeps the pipeline honest if the improved light model disagrees.
 """
 
 
@@ -664,7 +666,7 @@ def mass_total(
     light_result,
     main_luminosities,
     scaling_luminosities,
-    bgc_index,
+    brightest_index,
     redshift_lens,
     scaling_exponent=0.5,
     n_batch=20,
@@ -686,8 +688,8 @@ def mass_total(
     )
 
     n_main = len(main_luminosities)
-    luminosity_bgc = main_luminosities[bgc_index]
-    bgc_key = f"lens_{bgc_index}"
+    luminosity_brightest = main_luminosities[brightest_index]
+    brightest_key = f"lens_{brightest_index}"
 
     lens_dict = {}
 
@@ -719,8 +721,8 @@ def mass_total(
         mass = af.Model(al.mp.IsothermalSph)
         mass.centre = light_galaxy.mass.centre
         mass.einstein_radius = (
-            lens_dict[bgc_key].mass.einstein_radius
-            * (luminosity / luminosity_bgc) ** scaling_exponent
+            lens_dict[brightest_key].mass.einstein_radius
+            * (luminosity / luminosity_brightest) ** scaling_exponent
         )
 
         scaling_galaxies_list.append(
@@ -893,7 +895,7 @@ lens_light_result_2 = lens_light_2(
 )
 
 """
-The luminosities the relation needs, and the BGC identified from them.
+The luminosities the relation needs, and the brightest galaxy identified from them.
 """
 main_luminosities, scaling_luminosities = luminosities_from(
     result=lens_light_result_2,
@@ -901,11 +903,11 @@ main_luminosities, scaling_luminosities = luminosities_from(
     pixel_scale=pixel_scale,
 )
 
-bgc_index = int(np.argmax(main_luminosities))
+brightest_index = int(np.argmax(main_luminosities))
 
 print(f"\nMeasured main lens luminosities: {main_luminosities}")
 print(f"Measured scaling tier:           {scaling_luminosities}")
-print(f"BGC is lens_{bgc_index}")
+print(f"Brightest galaxy is lens_{brightest_index}")
 
 source_lp_result = source_lp(
     settings_search=settings_search,
@@ -914,7 +916,7 @@ source_lp_result = source_lp(
     lens_light_result=lens_light_result_2,
     main_luminosities=main_luminosities,
     scaling_luminosities=scaling_luminosities,
-    bgc_index=bgc_index,
+    brightest_index=brightest_index,
     redshift_lens=redshift_lens,
     redshift_source=redshift_source,
 )
@@ -956,7 +958,7 @@ mass_result = mass_total(
     light_result=light_result,
     main_luminosities=main_luminosities,
     scaling_luminosities=scaling_luminosities,
-    bgc_index=bgc_index,
+    brightest_index=brightest_index,
     redshift_lens=redshift_lens,
 )
 

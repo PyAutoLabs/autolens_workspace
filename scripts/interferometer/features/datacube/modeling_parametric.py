@@ -20,7 +20,7 @@ Use `modeling.py` (the pixelized variant) instead when the source has complex mo
 structure that varies across the cube, or signal-to-noise too low for a Sersic fit to converge.
 
 The FactorGraph wiring here is the canonical "extend the model per dataset" pattern from
-`autolens_workspace/scripts/multi/modeling.py`: every prior in the base model is shared across channels by
+`autolens_workspace/scripts/multi_dataset/modeling.py`: every prior in the base model is shared across channels by
 default, and we explicitly override the source `intensity` prior per `AnalysisFactor` to make it per-channel.
 
 __Contents__
@@ -174,7 +174,7 @@ the source `intensity` prior per factor — overwriting the prior with a fresh `
 parameter per-channel rather than identified across factors. Every other source parameter (centre, ell_comps,
 effective_radius, sersic_index) is left untouched, so the FactorGraph identifies them across channels.
 
-This is the canonical "extend the model per dataset" pattern from `autolens_workspace/scripts/multi/modeling.py`.
+This is the canonical "extend the model per dataset" pattern from `autolens_workspace/scripts/multi_dataset/modeling.py`.
 """
 analysis_factor_list = []
 

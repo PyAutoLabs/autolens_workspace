@@ -6,9 +6,9 @@ Simulates the dataset for the `multi_galaxy/features/scaling_relation` feature: 
 `multi_galaxy/simulator.py`, plus five faint galaxies scattered FAR from the lens whose masses are tied to the
 **brightest** of the pair by a Faber-Jackson relation.
 
-    einstein_radius_i = einstein_radius_bgc * (L_i / L_bgc) ** 0.5
+    einstein_radius_i = einstein_radius_brightest * (L_i / L_brightest) ** 0.5
 
-The anchor is the brighter co-dominant galaxy — the BGC. That is the one structural difference from the
+The anchor is the brighter of the co-dominant pair. That is the one structural difference from the
 galaxy-scale version of this feature (`imaging/features/scaling_relation`), where there is only one lens and so no
 choice to make. Here the anchor has to be *identified*, and `modeling.py` does so by luminosity, not by which
 galaxy happens to be called `lens_0`.
@@ -40,8 +40,8 @@ __Contents__
 
 - **Dataset Paths / Grid / PSF / Simulator:** Standard imaging simulation setup.
 - **Luminosity Convention:** What the luminosity numbers mean.
-- **Main Lens Galaxies:** The co-dominant pair, with the BGC identified by luminosity.
-- **Scaling Galaxies:** Five faint, distant galaxies tied to the BGC.
+- **Main Lens Galaxies:** The co-dominant pair, with the brightest galaxy identified by luminosity.
+- **Scaling Galaxies:** Five faint, distant galaxies tied to the brightest galaxy.
 - **Source / Dataset / Records:** Simulate, write the data, the centre JSONs and the CSVs.
 """
 
@@ -104,7 +104,7 @@ simulator = al.SimulatorImaging(
 __Luminosity Convention__
 
 Luminosities are integrated to a radius far larger than any galaxy here, so they are effectively total
-luminosities. Only ratios to the BGC enter the relation, so the units are irrelevant.
+luminosities. Only ratios to the brightest galaxy enter the relation, so the units are irrelevant.
 """
 luminosity_radius = 100.0
 
@@ -112,12 +112,12 @@ luminosity_radius = 100.0
 __Main Lens Galaxies__
 
 The co-dominant pair, following `multi_galaxy/simulator.py` (an SDSS J1011+0143-like configuration). The first is
-the brighter, so it is the BGC and therefore the anchor.
+the brighter, so it is the anchor.
 
-The BGC's Einstein radius is set directly; the second galaxy's is derived from the relation, which puts the pair on
-a consistent Faber-Jackson locus.
+The brightest galaxy's Einstein radius is set directly; the second galaxy's is derived from the relation, which puts
+the pair on a consistent Faber-Jackson locus.
 """
-einstein_radius_bgc = 1.0
+einstein_radius_brightest = 1.0
 
 lens_0_bulge = al.lp.Sersic(
     centre=(0.35, 0.25),
@@ -140,18 +140,18 @@ main_lens_luminosities = [
     for bulge in [lens_0_bulge, lens_1_bulge]
 ]
 
-bgc_index = int(np.argmax(main_lens_luminosities))
-luminosity_bgc = main_lens_luminosities[bgc_index]
+brightest_index = int(np.argmax(main_lens_luminosities))
+luminosity_brightest = main_lens_luminosities[brightest_index]
 
 print(f"Main lens luminosities = {main_lens_luminosities}")
-print(f"BGC is lens_{bgc_index}, L_bgc = {luminosity_bgc:.4f}")
+print(f"Brightest galaxy is lens_{brightest_index}, L_brightest = {luminosity_brightest:.4f}")
 
 
 def einstein_radius_from(luminosity):
     """
-    The Faber-Jackson Einstein radius of a galaxy of the input luminosity, anchored on the BGC.
+    The Faber-Jackson Einstein radius of a galaxy of the input luminosity, anchored on the brightest galaxy.
     """
-    return einstein_radius_bgc * (luminosity / luminosity_bgc) ** 0.5
+    return einstein_radius_brightest * (luminosity / luminosity_brightest) ** 0.5
 
 
 lens_0 = al.Galaxy(
@@ -180,11 +180,12 @@ print(f"lens_1 einstein_radius = {lens_1.mass.einstein_radius:.4f}")
 """
 __Scaling Galaxies__
 
-Five faint galaxies 5.5-7" from the pair, on the same relation anchored to the BGC.
+Five faint galaxies 5.5-7" from the pair, on the same relation anchored to the brightest galaxy.
 
 An isothermal's deflection magnitude is constant and equal to its Einstein radius, so these members deflect by
-0.16-0.36" everywhere — not negligible next to the BGC's 1.0". A nearly uniform deflection is degenerate with source
-position, though, so what actually matters is the *differential* deflection across the ring: a shear of roughly
+0.16-0.36" everywhere — not negligible next to the brightest galaxy's 1.0". A nearly uniform deflection is degenerate
+with source position, though, so what actually matters is the *differential* deflection across the ring: a shear of
+roughly
 `gamma ~ theta_E / 2d`, which is ~2.5% for the closest member (0.36" at 7.1") and ~1% for the faintest. That is the
 regime where this tier is a refinement rather than a necessity.
 """
@@ -211,12 +212,12 @@ for centre, intensity in zip(scaling_galaxies_centres, scaling_galaxies_intensit
         )
     )
 
-print("\nScaling tier (einstein_radius tied to the BGC):")
+print("\nScaling tier (einstein_radius tied to the brightest galaxy):")
 for centre, luminosity, galaxy in zip(
     scaling_galaxies_centres, scaling_galaxies_luminosities, scaling_galaxies
 ):
     print(
-        f"  {str(centre):>16}  L = {luminosity:8.4f}  L/L_bgc = {luminosity / luminosity_bgc:7.5f}  "
+        f"  {str(centre):>16}  L = {luminosity:8.4f}  L/L_brightest = {luminosity / luminosity_brightest:7.5f}  "
         f"einstein_radius = {galaxy.mass.einstein_radius:.4f}"
     )
 
@@ -271,8 +272,8 @@ __Luminosity CSVs__
 Centres plus luminosities in the `y, x, luminosity` schema `al.galaxy_table_from_csv` reads. The modeling scripts
 document the explicit-Python-list interface first and this CSV interface at the end; both are supported.
 
-The main lenses get a CSV too, because the relation needs `L_bgc` — and, at this scale, needs to work out *which*
-galaxy the BGC is.
+The main lenses get a CSV too, because the relation needs `L_brightest` — and, at this scale, needs to work out *which*
+galaxy the brightest one is.
 """
 al.galaxy_table_to_csv(
     centres=main_lens_centres,

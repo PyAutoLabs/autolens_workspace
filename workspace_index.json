@@ -1295,7 +1295,7 @@
     ],
     "cross_refs": [
       "modeling.py",
-      "scripts/guides/lens_calc.py",
+      "scripts/guides/using_jax.py",
       "scripts/imaging/fit.py",
       "start_here.py"
     ],
@@ -1552,8 +1552,12 @@
     "contents": [
       "Example",
       "Ray Tracing",
+      "Trace",
+      "Lensing Units vs Physical Units",
+      "The PyAutoLens Convention",
       "Profiles With Physical Units",
-      "SLACK"
+      "Science Corollaries",
+      "Attribution"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/PyAutoLens/blob/main/autolens/lens/tracer_util.py",
@@ -1561,7 +1565,7 @@
     ],
     "notebook": "notebooks/guides/advanced/multi_plane.ipynb",
     "path": "scripts/guides/advanced/multi_plane.py",
-    "summary": "Multi-plane ray-tracing is used when there are more planes than just an image-plane and source-plane. When tracing from one plane to another, the redshifts of the different planes must be used to determine scaling factors that are applied to the deflection angles.",
+    "summary": "Multi-plane ray-tracing is used when a lens system has more planes than just an image-plane and source-plane. When tracing from one plane to the next, the redshifts of the planes are used to compute scaling factors that are applied to the deflection angles, so that every plane's lensing effect is combined consistently.",
     "title": "Misc: Multi-Plane"
   },
   {
@@ -1623,6 +1627,7 @@
   },
   {
     "contents": [
+      "JAX",
       "Units",
       "API",
       "Grids",
@@ -1636,8 +1641,7 @@
     ],
     "cross_refs": [
       "guides/units/cosmology.ipynb",
-      "scripts/guides/lens_calc.py",
-      "scripts/imaging/simulator.py"
+      "scripts/guides/using_jax.py"
     ],
     "notebook": "notebooks/guides/data_structures.ipynb",
     "path": "scripts/guides/data_structures.py",
@@ -1646,6 +1650,7 @@
   },
   {
     "contents": [
+      "JAX",
       "Units",
       "Data Structures",
       "Grids",
@@ -1657,8 +1662,7 @@
       "/guides/data_structures.ipynb",
       "guides/units/cosmology.ipynb",
       "results/start_here.ipynb",
-      "scripts/guides/data_structures.py",
-      "scripts/guides/lens_calc.py",
+      "scripts/guides/using_jax.py",
       "tracer.py"
     ],
     "notebook": "notebooks/guides/galaxies.ipynb",
@@ -1678,6 +1682,7 @@
   },
   {
     "contents": [
+      "JAX",
       "Units",
       "Data Structures",
       "Grids",
@@ -1697,13 +1702,8 @@
     ],
     "cross_refs": [
       "/guides/data_structures.ipynb",
-      "PyAutoGalaxy/autogalaxy/operate/lens_calc.py",
-      "autolens_workspace/start_here.py",
-      "guides/data_structures.py",
-      "guides/galaxies.py",
-      "guides/tracer.py",
       "guides/units/cosmology.ipynb",
-      "scripts/guides/data_structures.py"
+      "scripts/guides/using_jax.py"
     ],
     "notebook": "notebooks/guides/lens_calc.ipynb",
     "path": "scripts/guides/lens_calc.py",
@@ -1825,8 +1825,8 @@
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/advanced/guides/modeling/chaining.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/modeling/features/multi_gaussian_expansion.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/modeling/features/shapelets.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi/features/wavelength_dependence/modeling.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi/start_here.ipynb",
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/wavelength_dependence/modeling.ipynb",
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/start_here.ipynb",
       "imaging/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/modeling/cookbook.ipynb",
@@ -2402,6 +2402,7 @@
   },
   {
     "contents": [
+      "JAX",
       "Units",
       "Data Structures",
       "Other Models",
@@ -2431,13 +2432,8 @@
       "guides/units/cosmology.ipynb",
       "imaging/features/linear_light_profiles/fit.py",
       "imaging/features/pixelization/fit.py",
-      "lens_calc.py",
       "results/start_here.ipynb",
-      "scripts/guides/data_structures.py",
-      "scripts/guides/galaxies.py",
-      "scripts/guides/lens_calc.py",
       "scripts/guides/using_jax.py",
-      "scripts/point_source/simulator.py",
       "start_here.ipynb"
     ],
     "notebook": "notebooks/guides/tracer.ipynb",
@@ -2489,18 +2485,19 @@
       "Writing @jax.jit Yourself",
       "Custom Likelihood Functions",
       "JIT-ing Library Methods",
+      "Pytree Registration",
+      "The Pairing Rule",
+      "Grids Stay Outside the Boundary",
+      "Bound Methods and the JIT Cache",
       "Return-Type Contract"
     ],
     "cross_refs": [
       "autofit.jax.py",
-      "data_structures.py",
-      "lens_calc.py",
       "likelihood_function.py",
-      "scripts/guides/data_structures.py",
-      "scripts/guides/lens_calc.py",
       "scripts/imaging/likelihood_function.py",
       "scripts/imaging/simulator.py",
       "scripts/interferometer/likelihood_function.py",
+      "scripts/point_source/simulator.py",
       "start_here.py"
     ],
     "notebook": "notebooks/guides/using_jax.ipynb",
@@ -4258,9 +4255,9 @@
     "cross_refs": [
       "/imaging/data_preparation/examples/optional/mask_extra_galaxies.py",
       "/imaging/data_preparation/gui/mask_extra_galaxies.py",
-      "lens_calc.py",
       "likelihood_function.py",
       "modeling.py",
+      "scripts/guides/using_jax.py",
       "start_here.py"
     ],
     "notebook": "notebooks/imaging/fit.ipynb",
@@ -4362,7 +4359,7 @@
     "cross_refs": [
       "guides/plot/start_here.py",
       "modeling.py",
-      "scripts/multi/plot.py"
+      "scripts/multi_dataset/plot.py"
     ],
     "notebook": "notebooks/imaging/plot.ipynb",
     "path": "scripts/imaging/plot.py",
@@ -4392,7 +4389,6 @@
       "imaging/likelihood_function.py",
       "imaging/modeling.py",
       "scripts/cluster/simulator.py",
-      "scripts/guides/lens_calc.py",
       "scripts/guides/using_jax.py",
       "scripts/interferometer/simulator.py",
       "scripts/point_source/simulator.py"
@@ -4800,7 +4796,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "autolens_workspace/scripts/multi/modeling.py",
+      "autolens_workspace/scripts/multi_dataset/modeling.py",
       "likelihood_function.py",
       "modeling.py",
       "simulator.py",
@@ -4856,7 +4852,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
-      "autolens_workspace/scripts/multi/modeling.py",
+      "autolens_workspace/scripts/multi_dataset/modeling.py",
       "interferometer/start_here.py",
       "likelihood_function.py",
       "modeling.py",
@@ -5500,7 +5496,7 @@
     ],
     "cross_refs": [
       "modeling.py",
-      "scripts/guides/lens_calc.py",
+      "scripts/guides/using_jax.py",
       "start_here.py"
     ],
     "notebook": "notebooks/interferometer/fit.ipynb",
@@ -5613,7 +5609,6 @@
     "cross_refs": [
       "autolens_workspace_test/scripts/interferometer/nufft.py",
       "scripts/cluster/simulator.py",
-      "scripts/guides/lens_calc.py",
       "scripts/guides/using_jax.py",
       "scripts/point_source/simulator.py"
     ],
@@ -5682,10 +5677,10 @@
     ],
     "cross_refs": [
       "features/same_wavelength/modeling.py",
-      "multi/start_here.ipynb"
+      "multi_dataset/start_here.ipynb"
     ],
-    "notebook": "notebooks/multi/features/dataset_offsets/modeling.ipynb",
-    "path": "scripts/multi/features/dataset_offsets/modeling.py",
+    "notebook": "notebooks/multi_dataset/features/dataset_offsets/modeling.ipynb",
+    "path": "scripts/multi_dataset/features/dataset_offsets/modeling.py",
     "summary": "Multi-wavelength datasets often have offsets between their images, which are due to the different telescope pointings during the observations.",
     "title": "Modeling Features: Dataset Offsets"
   },
@@ -5702,8 +5697,8 @@
       "Tracer json"
     ],
     "cross_refs": [],
-    "notebook": "notebooks/multi/features/dataset_offsets/simulator.ipynb",
-    "path": "scripts/multi/features/dataset_offsets/simulator.py",
+    "notebook": "notebooks/multi_dataset/features/dataset_offsets/simulator.ipynb",
+    "path": "scripts/multi_dataset/features/dataset_offsets/simulator.py",
     "summary": "Multi-wavelength datasets often have offsets between their images, which are due to the different telescope pointings during the observations.",
     "title": "Simulator: Dataset Offsets"
   },
@@ -5724,8 +5719,8 @@
       "features/same_wavelength/modeling.py",
       "start.here.py"
     ],
-    "notebook": "notebooks/multi/features/imaging_and_interferometer/modeling.ipynb",
-    "path": "scripts/multi/features/imaging_and_interferometer/modeling.py",
+    "notebook": "notebooks/multi_dataset/features/imaging_and_interferometer/modeling.ipynb",
+    "path": "scripts/multi_dataset/features/imaging_and_interferometer/modeling.py",
     "summary": "This script fits an `Interferometer` and `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:",
     "title": "Modeling: Mass Total + Source Parametric"
   },
@@ -5738,10 +5733,10 @@
       "Tracer json"
     ],
     "cross_refs": [
-      "multi/simulator.py"
+      "multi_dataset/simulator.py"
     ],
-    "notebook": "notebooks/multi/features/imaging_and_interferometer/simulator.ipynb",
-    "path": "scripts/multi/features/imaging_and_interferometer/simulator.py",
+    "notebook": "notebooks/multi_dataset/features/imaging_and_interferometer/simulator.ipynb",
+    "path": "scripts/multi_dataset/features/imaging_and_interferometer/simulator.py",
     "summary": "This script simulates `Interferometer` data of a 'galaxy-scale' strong lens where:",
     "title": "Simulator: Mutli Interferometer"
   },
@@ -5758,8 +5753,8 @@
       "point_source/features/deblending/modeling.py",
       "point_source/start_here.py"
     ],
-    "notebook": "notebooks/multi/features/imaging_and_point_source/modeling.ipynb",
-    "path": "scripts/multi/features/imaging_and_point_source/modeling.py",
+    "notebook": "notebooks/multi_dataset/features/imaging_and_point_source/modeling.ipynb",
+    "path": "scripts/multi_dataset/features/imaging_and_point_source/modeling.py",
     "summary": "This script jointly fits CCD imaging of a lensed quasar's **extended arcs** and its **point-source observables** (image positions and time delays) with a **single lens mass model**, using PyAutoFit's factor-graph API to sample the joint likelihood with one non-linear search.",
     "title": "Modeling: Combined Imaging + Point Source"
   },
@@ -5776,10 +5771,10 @@
       "Second Dataset Offset"
     ],
     "cross_refs": [
-      "multi/start_here.ipynb"
+      "multi_dataset/start_here.ipynb"
     ],
-    "notebook": "notebooks/multi/features/one_by_one/modeling.ipynb",
-    "path": "scripts/multi/features/one_by_one/modeling.py",
+    "notebook": "notebooks/multi_dataset/features/one_by_one/modeling.ipynb",
+    "path": "scripts/multi_dataset/features/one_by_one/modeling.py",
     "summary": "Multi-wavelength analysis does not necessarily require us to fit all datasets simultaneously. Instead, we can fit one dataset first in order to infer a robust lens and source model, and then fit the next dataset, using the inferred model as the starting point.",
     "title": "Modeling Features: One By One"
   },
@@ -5799,8 +5794,8 @@
       "/imaging/data_preparation/gui/positions.py",
       "start.here.py"
     ],
-    "notebook": "notebooks/multi/features/pixelization/modeling.ipynb",
-    "path": "scripts/multi/features/pixelization/modeling.py",
+    "notebook": "notebooks/multi_dataset/features/pixelization/modeling.ipynb",
+    "path": "scripts/multi_dataset/features/pixelization/modeling.py",
     "summary": "This script fits a multi-wavelength `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:",
     "title": "Modeling: Pixelized"
   },
@@ -5815,8 +5810,8 @@
       "Tracer json"
     ],
     "cross_refs": [],
-    "notebook": "notebooks/multi/features/pixelization/simulator.ipynb",
-    "path": "scripts/multi/features/pixelization/simulator.py",
+    "notebook": "notebooks/multi_dataset/features/pixelization/simulator.ipynb",
+    "path": "scripts/multi_dataset/features/pixelization/simulator.py",
     "summary": "This script simulates multi-wavelength `Imaging` of a 'galaxy-scale' strong lens where:",
     "title": "Simulator: SIE"
   },
@@ -5833,8 +5828,8 @@
     "cross_refs": [
       "start.here.py"
     ],
-    "notebook": "notebooks/multi/features/same_wavelength/modeling.ipynb",
-    "path": "scripts/multi/features/same_wavelength/modeling.py",
+    "notebook": "notebooks/multi_dataset/features/same_wavelength/modeling.ipynb",
+    "path": "scripts/multi_dataset/features/same_wavelength/modeling.py",
     "summary": "This script fits a multiple `Imaging` datasets observed at the same wavelength of a 'galaxy-scale' strong lens with a model where:",
     "title": "Modeling: Same Wavelength"
   },
@@ -5848,8 +5843,8 @@
       "Tracer json"
     ],
     "cross_refs": [],
-    "notebook": "notebooks/multi/features/same_wavelength/simulator.ipynb",
-    "path": "scripts/multi/features/same_wavelength/simulator.py",
+    "notebook": "notebooks/multi_dataset/features/same_wavelength/simulator.ipynb",
+    "path": "scripts/multi_dataset/features/same_wavelength/simulator.py",
     "summary": "This script simulates multiple `Imaging` datasets of a 'galaxy-scale' strong lens where:",
     "title": "Simulator: Wavelength Dependent"
   },
@@ -5868,11 +5863,11 @@
     ],
     "cross_refs": [
       "guides/modeling/slam_start_here.ipynb",
-      "multi/features/one_by_one/modeling.ipynb",
+      "multi_dataset/features/one_by_one/modeling.ipynb",
       "start_here.py"
     ],
-    "notebook": "notebooks/multi/features/slam/independent.ipynb",
-    "path": "scripts/multi/features/slam/independent.py",
+    "notebook": "notebooks/multi_dataset/features/slam/independent.ipynb",
+    "path": "scripts/multi_dataset/features/slam/independent.py",
     "summary": "This example shows how to use the SLaM pipeline to fit a lens dataset at one wavelength, and then fit other data of the same lens at different wavelengths with the same mass model fitted to the original dataset.",
     "title": "SLaM: Multi Wavelength Independent"
   },
@@ -5889,8 +5884,8 @@
     "cross_refs": [
       "guides/modeling/slam_start_here.ipynb"
     ],
-    "notebook": "notebooks/multi/features/slam/simultaneous.ipynb",
-    "path": "scripts/multi/features/slam/simultaneous.py",
+    "notebook": "notebooks/multi_dataset/features/slam/simultaneous.ipynb",
+    "path": "scripts/multi_dataset/features/slam/simultaneous.py",
     "summary": "This example shows how to use the SLaM pipeline to fit a lens dataset at multiple wavelengths simultaneously.",
     "title": "SLaM: Multi Wavelength Simultaneous"
   },
@@ -5911,8 +5906,8 @@
       "features/same_wavelength/modeling.py",
       "start.here.py"
     ],
-    "notebook": "notebooks/multi/features/wavelength_dependence/modeling.ipynb",
-    "path": "scripts/multi/features/wavelength_dependence/modeling.py",
+    "notebook": "notebooks/multi_dataset/features/wavelength_dependence/modeling.ipynb",
+    "path": "scripts/multi_dataset/features/wavelength_dependence/modeling.py",
     "summary": "This script fits a multi-wavelength `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:",
     "title": "Modeling: Mass Total + Source Parametric"
   },
@@ -5929,8 +5924,8 @@
       "Tracer json"
     ],
     "cross_refs": [],
-    "notebook": "notebooks/multi/features/wavelength_dependence/simulator.ipynb",
-    "path": "scripts/multi/features/wavelength_dependence/simulator.py",
+    "notebook": "notebooks/multi_dataset/features/wavelength_dependence/simulator.ipynb",
+    "path": "scripts/multi_dataset/features/wavelength_dependence/simulator.py",
     "summary": "This script simulates multi-wavelength `Imaging` of a 'galaxy-scale' strong lens where:",
     "title": "Simulator: Wavelength Dependent"
   },
@@ -5955,8 +5950,8 @@
     "cross_refs": [
       "start_here.py"
     ],
-    "notebook": "notebooks/multi/modeling.ipynb",
-    "path": "scripts/multi/modeling.py",
+    "notebook": "notebooks/multi_dataset/modeling.ipynb",
+    "path": "scripts/multi_dataset/modeling.py",
     "summary": "This script fits a multi-wavelength `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:",
     "title": "Modeling: Multi Modeling"
   },
@@ -5973,11 +5968,11 @@
     "cross_refs": [
       "guides/plot/start_here.py",
       "scripts/imaging/plot.py",
-      "scripts/multi/modeling.py",
-      "scripts/multi/simulator.py"
+      "scripts/multi_dataset/modeling.py",
+      "scripts/multi_dataset/simulator.py"
     ],
-    "notebook": "notebooks/multi/plot.ipynb",
-    "path": "scripts/multi/plot.py",
+    "notebook": "notebooks/multi_dataset/plot.ipynb",
+    "path": "scripts/multi_dataset/plot.py",
     "summary": "This example shows how to plot multiple datasets \u2014 and fits to multiple datasets \u2014 together, with every dataset appearing in one combined subplot.",
     "title": "Plots: Multi"
   },
@@ -5992,10 +5987,10 @@
       "Tracer json"
     ],
     "cross_refs": [
-      "multi/modeling.py"
+      "multi_dataset/modeling.py"
     ],
-    "notebook": "notebooks/multi/simulator.ipynb",
-    "path": "scripts/multi/simulator.py",
+    "notebook": "notebooks/multi_dataset/simulator.ipynb",
+    "path": "scripts/multi_dataset/simulator.py",
     "summary": "This script simulates multi-wavelength `Imaging` of a 'galaxy-scale' strong lens where:",
     "title": "Simulator: SIE"
   },
@@ -6025,8 +6020,8 @@
       "modeling.py",
       "scripts/imaging/simulator.py"
     ],
-    "notebook": "notebooks/multi/start_here.ipynb",
-    "path": "scripts/multi/start_here.py",
+    "notebook": "notebooks/multi_dataset/start_here.ipynb",
+    "path": "scripts/multi_dataset/start_here.py",
     "summary": "Strong gravitational lenses are often observed with CCD imaging, for example using HST, JWST, or ground-based telescopes.",
     "title": "Start Here: Multi Wavelength"
   },
@@ -6320,7 +6315,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/scaling_relation/likelihood_function.ipynb",
     "path": "scripts/multi_galaxy/features/scaling_relation/likelihood_function.py",
-    "summary": "Describes the one step of the `log_likelihood` computation that a BGC-anchored scaling tier changes: how the summed deflection field is composed when most of the deflectors' Einstein radii are not free parameters but derived from the brightest co-dominant galaxy's.",
+    "summary": "Describes the one step of the `log_likelihood` computation that a brightest-galaxy-anchored scaling tier changes: how the summed deflection field is composed when most of the deflectors' Einstein radii are not free parameters but derived from the brightest co-dominant galaxy's.",
     "title": "__Log Likelihood Function: Multi Galaxy Scaling Relation__"
   },
   {
@@ -6345,7 +6340,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/scaling_relation/modeling.ipynb",
     "path": "scripts/multi_galaxy/features/scaling_relation/modeling.py",
-    "summary": "Extends the multi-galaxy model with a **scaling tier**: faint galaxies far from the co-dominant pair whose Einstein radii are tied to the brightest of the pair (the BGC) by a Faber-Jackson relation:",
+    "summary": "Extends the multi-galaxy model with a **scaling tier**: faint galaxies far from the co-dominant pair whose Einstein radii are tied to the brightest of the pair by a Faber-Jackson relation:",
     "title": "Modeling Features (Multi Galaxy): Scaling Relation"
   },
   {
@@ -6388,7 +6383,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/scaling_relation/slam.ipynb",
     "path": "scripts/multi_galaxy/features/scaling_relation/slam.py",
-    "summary": "Uses the SLaM pipelines to fit a multi-galaxy lens with a scaling tier whose Einstein radii are tied to the brightest co-dominant deflector (the BGC).",
+    "summary": "Uses the SLaM pipelines to fit a multi-galaxy lens with a scaling tier whose Einstein radii are tied to the brightest co-dominant deflector.",
     "title": "Multi Galaxy Scaling Relation: SLaM"
   },
   {
@@ -6816,15 +6811,15 @@
     ],
     "cross_refs": [
       "cluster/modeling.py",
-      "multi/modeling.ipynb",
-      "multi/modeling.py",
+      "multi_dataset/modeling.ipynb",
+      "multi_dataset/modeling.py",
       "point_source/modeling.ipynb",
       "point_source/modeling.py",
       "simulator.py"
     ],
     "notebook": "notebooks/point_source/features/multiple_sources/modeling.ipynb",
     "path": "scripts/point_source/features/multiple_sources/modeling.py",
-    "summary": "This script fits a `PointDataset` of a 'galaxy-scale' strong lens with multiple lensed point sources at different redshifts. The lens system is multi-plane: a foreground lens at z=0.5 deflects both background sources, while source_0 at z=1.0 is itself a deflector for source_1 at z=2.0 (the \"double Einstein cross\" configuration). Each source's multiple images are stored in their own `PointDataset`, and the two datasets are fitted jointly using the multi/factor-graph API:",
+    "summary": "This script fits a `PointDataset` of a 'galaxy-scale' strong lens with multiple lensed point sources at different redshifts. The lens system is multi-plane: a foreground lens at z=0.5 deflects both background sources, while source_0 at z=1.0 is itself a deflector for source_1 at z=2.0 (the \"double Einstein cross\" configuration). Each source's multiple images are stored in their own `PointDataset`, and the two datasets are fitted jointly using the multi-dataset/factor-graph API:",
     "title": "Modeling: Multiple Sources"
   },
   {
@@ -6891,7 +6886,7 @@
     ],
     "notebook": "notebooks/point_source/features/scaling_relation/likelihood_function.ipynb",
     "path": "scripts/point_source/features/scaling_relation/likelihood_function.py",
-    "summary": "Describes how a BGC-anchored scaling tier enters the point-source `log_likelihood`.",
+    "summary": "Describes how a scaling tier anchored on the brightest galaxy enters the point-source `log_likelihood`.",
     "title": "__Log Likelihood Function: Scaling Relation (Point Source)__"
   },
   {
@@ -7065,7 +7060,7 @@
     ],
     "cross_refs": [
       "imaging/simulator.py",
-      "scripts/guides/lens_calc.py"
+      "scripts/guides/using_jax.py"
     ],
     "notebook": "notebooks/point_source/simulator.ipynb",
     "path": "scripts/point_source/simulator.py",

@@ -15,7 +15,7 @@ you should go into next if you are unsure.
 - `multi_galaxy`: Examples for multi-galaxy strong lenses (2+ co-dominant lens galaxies, no host halo).
 - `group`: Examples for group scale strong lenses.
 - `cluster`: Examples for cluster scale strong lenses.
-- `multi`: Examples for multiple datasets simultaneously (E.g. multi-wavelength imaging, imaging and interferometry).
+- `multi_dataset`: Examples for multiple datasets simultaneously (E.g. multi-wavelength imaging, imaging and interferometry).
 
 The **HowToLens** tutorial lecture series — which teaches inexperienced scientists what strong lensing is and how to
 use **PyAutoLens** — ships as a separate repository: <https://github.com/PyAutoLabs/HowToLens>.

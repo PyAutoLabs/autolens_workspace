@@ -38,7 +38,7 @@ __JAX__
 Same JAX story as `scripts/imaging/fit.py`: `FitImaging` runs on either
 backend. For the standard analysis-driven path see `start_here.py` /
 `modeling.py`. For JIT-ing library methods directly see
-`scripts/guides/lens_calc.py`.
+`scripts/guides/using_jax.py`.
 
 """
 

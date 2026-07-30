@@ -21,9 +21,10 @@ multi_galaxy/features/scaling_relation/modeling.py
 multi_galaxy/features/no_lens_light/modeling.py
 multi_galaxy/features/linear_light_profiles/modeling.py
 imaging/features/scaling_relation/modeling.py
-# multi/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1
-multi/modeling.py
+# multi_dataset/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1
+multi_dataset/modeling.py
 guides/galaxies.py
+guides/using_jax.py
 # guides/results/start_here.py  # disabled: depends on prior search output in output/ dir (not generated during smoke tests)
 guides/modeling/cookbook.py
 # Delaunay pixelization: the 2026-04-10 parked FitExceptions are fixed. The interferometer

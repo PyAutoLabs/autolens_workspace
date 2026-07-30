@@ -45,7 +45,7 @@ overrides:
     set: { PYAUTO_SMALL_DATASETS: "0" }
   - pattern: "group/start_here"
     set: { PYAUTO_SMALL_DATASETS: "0" }
-  - pattern: "multi/start_here"
+  - pattern: "multi_dataset/start_here"
     set: { PYAUTO_SMALL_DATASETS: "0" }
   # Potential correction builds a dpsi mesh by subsampling the image grid, so the
   # 15x15 small-datasets cap starves it: al.pc.PairRegularDpsiMesh(dpsi_factor=2)

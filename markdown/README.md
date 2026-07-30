@@ -20,9 +20,9 @@ Every page below is the corresponding example script **fully executed**, rendere
 - [Simulator: Start Here](point_source/simulator.md) — from `scripts/point_source/simulator.py`
 - [Guide: Point Sources](point_source/fit.md) — from `scripts/point_source/fit.py`
 - [Modeling: Start Here](point_source/modeling.md) — from `scripts/point_source/modeling.py`
-- [Start Here: Multi Wavelength](multi/start_here.md) — from `scripts/multi/start_here.py`
-- [Simulator: SIE](multi/simulator.md) — from `scripts/multi/simulator.py`
-- [Modeling: Multi Modeling](multi/modeling.md) — from `scripts/multi/modeling.py`
+- [Start Here: Multi Wavelength](multi/start_here.md) — from `scripts/multi_dataset/start_here.py`
+- [Simulator: SIE](multi/simulator.md) — from `scripts/multi_dataset/simulator.py`
+- [Modeling: Multi Modeling](multi/modeling.md) — from `scripts/multi_dataset/modeling.py`
 - [Start Here: Group](group/start_here.md) — from `scripts/group/start_here.py`
 - [Simulator: Group](group/simulator.md) — from `scripts/group/simulator.py`
 - [Log Likelihood Function: Group](group/likelihood_function.md) — from `scripts/group/likelihood_function.py`
