@@ -303,14 +303,14 @@
     ],
     "cross_refs": [
       "autolens_workspace/scripts/group/start_here.py",
-      "autolens_workspace/scripts/imaging/features/advanced/double_einstein_ring/chaining.py",
+      "autolens_workspace/scripts/imaging/features/advanced/double_source_plane_lens/chaining.py",
       "modeling.py",
       "slam.py"
     ],
-    "notebook": "notebooks/group/features/advanced/double_einstein_ring/chaining.ipynb",
-    "path": "scripts/group/features/advanced/double_einstein_ring/chaining.py",
-    "summary": "This script chains two non-linear searches to fit `Imaging` data of a group-scale double Einstein ring lens \u2014 two source galaxies at different redshifts lensed by multiple main lens galaxies at the lens-plane redshift.",
-    "title": "Chaining: Group Double Einstein Ring"
+    "notebook": "notebooks/group/features/advanced/double_source_plane_lens/chaining.ipynb",
+    "path": "scripts/group/features/advanced/double_source_plane_lens/chaining.py",
+    "summary": "This script chains two non-linear searches to fit `Imaging` data of a group-scale double source-plane lens (DSPL) \u2014 two source galaxies at different redshifts lensed by multiple main lens galaxies at the lens-plane redshift.",
+    "title": "Chaining: Group DSPL"
   },
   {
     "contents": [
@@ -326,15 +326,15 @@
     ],
     "cross_refs": [
       "autolens_workspace/scripts/group/fit.py",
-      "autolens_workspace/scripts/imaging/features/advanced/double_einstein_ring/fit.py",
+      "autolens_workspace/scripts/imaging/features/advanced/double_source_plane_lens/fit.py",
       "chaining.py",
       "modeling.py",
       "slam.py"
     ],
-    "notebook": "notebooks/group/features/advanced/double_einstein_ring/fit.ipynb",
-    "path": "scripts/group/features/advanced/double_einstein_ring/fit.py",
-    "summary": "A group-scale double Einstein ring lens, where two source galaxies at different redshifts are lensed by multiple main lens galaxies at the lens-plane redshift.",
-    "title": "Features: Group Double Einstein Ring Fit"
+    "notebook": "notebooks/group/features/advanced/double_source_plane_lens/fit.ipynb",
+    "path": "scripts/group/features/advanced/double_source_plane_lens/fit.py",
+    "summary": "A group-scale double source-plane lens (DSPL), where two source galaxies at different redshifts are lensed by multiple main lens galaxies at the lens-plane redshift.",
+    "title": "Features: Group DSPL Fit"
   },
   {
     "contents": [
@@ -349,16 +349,16 @@
       "Wrap Up."
     ],
     "cross_refs": [
-      "autolens_workspace/scripts/imaging/features/advanced/double_einstein_ring/likelihood_function.py",
+      "autolens_workspace/scripts/imaging/features/advanced/double_source_plane_lens/likelihood_function.py",
       "autolens_workspace/scripts/imaging/features/multi_gaussian_expansion/likelihood_function.py",
       "autolens_workspace/scripts/imaging/likelihood_function.py",
       "imaging/features/multi_gaussian_expansion/likelihood_function.py",
       "imaging/likelihood_function.py"
     ],
-    "notebook": "notebooks/group/features/advanced/double_einstein_ring/likelihood_function.ipynb",
-    "path": "scripts/group/features/advanced/double_einstein_ring/likelihood_function.py",
-    "summary": "This script describes the additional steps required to compute the `log_likelihood` for a group-scale double Einstein ring lens \u2014 two source galaxies at different redshifts lensed by multiple main lens galaxies at the lens-plane redshift.",
-    "title": "__Log Likelihood Function: Group Double Einstein Ring__"
+    "notebook": "notebooks/group/features/advanced/double_source_plane_lens/likelihood_function.ipynb",
+    "path": "scripts/group/features/advanced/double_source_plane_lens/likelihood_function.py",
+    "summary": "This script describes the additional steps required to compute the `log_likelihood` for a group-scale double source-plane lens (DSPL) \u2014 two source galaxies at different redshifts lensed by multiple main lens galaxies at the lens-plane redshift.",
+    "title": "__Log Likelihood Function: Group DSPL__"
   },
   {
     "contents": [
@@ -371,14 +371,14 @@
       "Search, Analysis, Run-Time, Result, Wrap Up."
     ],
     "cross_refs": [
-      "autolens_workspace/scripts/group/features/advanced/double_einstein_ring/chaining.py",
+      "autolens_workspace/scripts/group/features/advanced/double_source_plane_lens/chaining.py",
       "chaining.py",
       "slam.py"
     ],
-    "notebook": "notebooks/group/features/advanced/double_einstein_ring/modeling.ipynb",
-    "path": "scripts/group/features/advanced/double_einstein_ring/modeling.py",
-    "summary": "A group-scale double Einstein ring lens, where two source galaxies at different redshifts are lensed by multiple main lens galaxies at the lens-plane redshift.",
-    "title": "Modeling Features: Group Double Einstein Ring"
+    "notebook": "notebooks/group/features/advanced/double_source_plane_lens/modeling.ipynb",
+    "path": "scripts/group/features/advanced/double_source_plane_lens/modeling.py",
+    "summary": "A group-scale double source-plane lens (DSPL), where two source galaxies at different redshifts are lensed by multiple main lens galaxies at the lens-plane redshift.",
+    "title": "Modeling Features: Group DSPL"
   },
   {
     "contents": [
@@ -395,24 +395,24 @@
     ],
     "cross_refs": [
       "autolens_workspace/scripts/group/simulator.py",
-      "autolens_workspace/scripts/imaging/features/advanced/double_einstein_ring/simulator.py",
+      "autolens_workspace/scripts/imaging/features/advanced/double_source_plane_lens/simulator.py",
       "group/simulator.py"
     ],
-    "notebook": "notebooks/group/features/advanced/double_einstein_ring/simulator.ipynb",
-    "path": "scripts/group/features/advanced/double_einstein_ring/simulator.py",
-    "summary": "A double Einstein ring lens in a group-scale context, where two source galaxies at different redshifts are lensed by multiple main lens galaxies at the lens-plane redshift.",
-    "title": "Simulator: Group Double Einstein Ring"
+    "notebook": "notebooks/group/features/advanced/double_source_plane_lens/simulator.ipynb",
+    "path": "scripts/group/features/advanced/double_source_plane_lens/simulator.py",
+    "summary": "A double source-plane lens (DSPL) in a group-scale context, where two source galaxies at different redshifts are lensed by multiple main lens galaxies at the lens-plane redshift.",
+    "title": "Simulator: Group DSPL"
   },
   {
     "contents": [],
     "cross_refs": [
       "guides/modeling/slam_start_here.py",
-      "scripts/imaging/features/advanced/double_einstein_ring/slam.py"
+      "scripts/imaging/features/advanced/double_source_plane_lens/slam.py"
     ],
-    "notebook": "notebooks/group/features/advanced/double_einstein_ring/slam.ipynb",
-    "path": "scripts/group/features/advanced/double_einstein_ring/slam.py",
+    "notebook": "notebooks/group/features/advanced/double_source_plane_lens/slam.ipynb",
+    "path": "scripts/group/features/advanced/double_source_plane_lens/slam.py",
     "summary": "This script adapts the SLaM (Source, Light and Mass) pipelines to a group-scale Double Source Plane Lens (DSPL) system, where two source galaxies at different redshifts behind multiple main lens galaxies form a double Einstein ring.",
-    "title": "SLaM (Source, Light and Mass): Group Double Einstein Ring"
+    "title": "SLaM (Source, Light and Mass): Group DSPL"
   },
   {
     "contents": [
@@ -533,9 +533,9 @@
     "cross_refs": [
       "autolens_workspace/scripts/group/simulator.py",
       "autolens_workspace/scripts/imaging/features/advanced/mass_stellar_dark/simulator.py",
-      "group/features/advanced/double_einstein_ring/simulator.py",
+      "group/features/advanced/double_source_plane_lens/simulator.py",
       "group/simulator.py",
-      "scripts/group/features/advanced/double_einstein_ring/slam.py"
+      "scripts/group/features/advanced/double_source_plane_lens/slam.py"
     ],
     "notebook": "notebooks/group/features/advanced/mass_stellar_dark/simulator.ipynb",
     "path": "scripts/group/features/advanced/mass_stellar_dark/simulator.py",
@@ -546,7 +546,7 @@
     "contents": [],
     "cross_refs": [
       "guides/modeling/slam_start_here.py",
-      "scripts/group/features/advanced/double_einstein_ring/slam.py",
+      "scripts/group/features/advanced/double_source_plane_lens/slam.py",
       "scripts/imaging/features/advanced/mass_stellar_dark/slam.py"
     ],
     "notebook": "notebooks/group/features/advanced/mass_stellar_dark/slam.ipynb",
@@ -1564,21 +1564,6 @@
   },
   {
     "contents": [
-      "Simulate",
-      "Smooth Model Fit",
-      "Joint Fit",
-      "Dkappa Map",
-      "Iterative Fit",
-      "Evidence Sampling"
-    ],
-    "cross_refs": [],
-    "notebook": "notebooks/guides/advanced/potential_correction.ipynb",
-    "path": "scripts/guides/advanced/potential_correction.py",
-    "summary": "Parametric lens mass models (e.g. the `PowerLaw` used throughout the workspace) are smooth: their convergence and deflection angles vary gradually across the image plane. Real lens galaxies are not perfectly smooth. They contain substructure \u2014 dark matter subhaloes, globular clusters, satellite galaxies \u2014 and their large-scale mass distributions can depart from ellipsoidal symmetry in ways no simple parametric profile captures.",
-    "title": "Potential Corrections (Gravitational Imaging)"
-  },
-  {
-    "contents": [
       "Conventions",
       "Lens Model",
       "Export",
@@ -1825,16 +1810,19 @@
   },
   {
     "contents": [
+      "Nautilus",
+      "MultiStartProdigy",
       "Dynesty",
       "Emcee",
       "Zeus",
       "LBFGS",
-      "MultiStartProdigy",
       "Start Point",
       "Search Cookbook"
     ],
     "cross_refs": [
-      "imaging/start_here.ipynb"
+      "imaging/start_here.ipynb",
+      "modeling.py",
+      "start_here.py"
     ],
     "notebook": "notebooks/guides/modeling/searches.ipynb",
     "path": "scripts/guides/modeling/searches.py",
@@ -1877,10 +1865,10 @@
     "cross_refs": [
       "guides/plot/start_here.ipynb"
     ],
-    "notebook": "notebooks/guides/plot/advanced/plotters_double_einstein_ring.ipynb",
-    "path": "scripts/guides/plot/advanced/plotters_double_einstein_ring.py",
-    "summary": "This example illustrates the plotting API for double Einstein ring systems, which have more than two planes at different redshifts.",
-    "title": "Plots: Double Einstein Ring"
+    "notebook": "notebooks/guides/plot/advanced/plotters_double_source_plane_lens.ipynb",
+    "path": "scripts/guides/plot/advanced/plotters_double_source_plane_lens.py",
+    "summary": "This example illustrates the plotting API for double source-plane lenses (DSPLs), which have more than two planes at different redshifts.",
+    "title": "Plots: DSPL"
   },
   {
     "contents": [
@@ -2773,12 +2761,12 @@
     ],
     "cross_refs": [
       "guides/modeling/chaining.ipynb",
-      "notebooks/imaging/features/advanced/double_einstein_ring/chaining.ipynb"
+      "notebooks/imaging/features/advanced/double_source_plane_lens/chaining.ipynb"
     ],
-    "notebook": "notebooks/imaging/features/advanced/double_einstein_ring/chaining.ipynb",
-    "path": "scripts/imaging/features/advanced/double_einstein_ring/chaining.py",
-    "summary": "This script chains two searches to fit `Imaging` data of a 'galaxy-scale' strong lens which has two source galaxies at two different redshifts, forming a double Einstein ring system. This fits a model where:",
-    "title": "Chaining: Double Einstein Ring"
+    "notebook": "notebooks/imaging/features/advanced/double_source_plane_lens/chaining.ipynb",
+    "path": "scripts/imaging/features/advanced/double_source_plane_lens/chaining.py",
+    "summary": "This script chains two searches to fit `Imaging` data of a 'galaxy-scale' strong lens which has two source galaxies at two different redshifts, forming a double source-plane lens (DSPL). This fits a model where:",
+    "title": "Chaining: DSPL"
   },
   {
     "contents": [
@@ -2800,10 +2788,10 @@
       "modeling.py",
       "slam.py"
     ],
-    "notebook": "notebooks/imaging/features/advanced/double_einstein_ring/fit.ipynb",
-    "path": "scripts/imaging/features/advanced/double_einstein_ring/fit.py",
-    "summary": "A double Einstein ring lens is a strong lens system where two source galaxies at different redshifts are lensed by the foreground lens galaxy. They appear as two distinct Einstein rings in the image-plane.",
-    "title": "Features: Double Einstein Ring Fit"
+    "notebook": "notebooks/imaging/features/advanced/double_source_plane_lens/fit.ipynb",
+    "path": "scripts/imaging/features/advanced/double_source_plane_lens/fit.py",
+    "summary": "A double source-plane lens (DSPL) is a strong lens system where two source galaxies at different redshifts are lensed by the foreground lens galaxy. They appear as two distinct Einstein rings in the image-plane.",
+    "title": "Features: DSPL Fit"
   },
   {
     "contents": [
@@ -2824,10 +2812,10 @@
       "imaging/likelihood_function.py",
       "modeling.py"
     ],
-    "notebook": "notebooks/imaging/features/advanced/double_einstein_ring/likelihood_function.ipynb",
-    "path": "scripts/imaging/features/advanced/double_einstein_ring/likelihood_function.py",
-    "summary": "This script describes the additional steps required to compute the `log_likelihood` for a double Einstein ring lens \u2014 a strong lens system with two source galaxies at different redshifts behind the foreground lens.",
-    "title": "__Log Likelihood Function: Double Einstein Ring__"
+    "notebook": "notebooks/imaging/features/advanced/double_source_plane_lens/likelihood_function.ipynb",
+    "path": "scripts/imaging/features/advanced/double_source_plane_lens/likelihood_function.py",
+    "summary": "This script describes the additional steps required to compute the `log_likelihood` for a double source-plane lens (DSPL) \u2014 a strong lens system with two source galaxies at different redshifts behind the foreground lens.",
+    "title": "__Log Likelihood Function: DSPL__"
   },
   {
     "contents": [
@@ -2846,21 +2834,21 @@
     ],
     "cross_refs": [
       "/guides/advanced/over_sampling.ipynb",
-      "autolens_workspace/scripts/imaging/features/advanced/double_einstein_ring/chaining.py",
+      "autolens_workspace/scripts/imaging/features/advanced/double_source_plane_lens/chaining.py",
       "chaining.py",
       "features/advanced/shapelets/modeling.ipynb",
       "features/multi_gaussian_expansion/modeling.ipynb",
       "features/pixelization/modeling.ipynb",
-      "imaging/features/advanced/double_einstein_ring/chaining.py",
+      "imaging/features/advanced/double_source_plane_lens/chaining.py",
       "imaging/start_here.ipynb",
       "slam.py",
       "start.here.py",
       "start_here.ipynb"
     ],
-    "notebook": "notebooks/imaging/features/advanced/double_einstein_ring/modeling.ipynb",
-    "path": "scripts/imaging/features/advanced/double_einstein_ring/modeling.py",
-    "summary": "A double Einstein ring lens is a strong lens system where there are two source galaxies at different redshifts behind the lens galaxy. They appear as two distinct Einstein rings in the image-plane, and can constrain Cosmological parameters in a way single Einstein ring lenses cannot.",
-    "title": "Modeling Features: Double Einstein Ring"
+    "notebook": "notebooks/imaging/features/advanced/double_source_plane_lens/modeling.ipynb",
+    "path": "scripts/imaging/features/advanced/double_source_plane_lens/modeling.py",
+    "summary": "A double source-plane lens (DSPL) is a strong lens system where there are two source galaxies at different redshifts behind the lens galaxy. They appear as two distinct Einstein rings in the image-plane, and can constrain Cosmological parameters in a way single Einstein ring lenses cannot.",
+    "title": "Modeling Features: DSPL"
   },
   {
     "contents": [
@@ -2873,23 +2861,23 @@
       "Tracer json"
     ],
     "cross_refs": [
-      "imaging/features/advanced/double_einstein_ring/modeling.py",
+      "imaging/features/advanced/double_source_plane_lens/modeling.py",
       "imaging/simulator.ipynb"
     ],
-    "notebook": "notebooks/imaging/features/advanced/double_einstein_ring/simulator.ipynb",
-    "path": "scripts/imaging/features/advanced/double_einstein_ring/simulator.py",
-    "summary": "A double Einstein ring lens is a strong lens system where there are two source galaxies at different redshifts behind the lens galaxy. They appear as two distinct Einstein rings in the image-plane, and can constrain Cosmological parameters in a way single Einstein ring lenses cannot.",
-    "title": "Simulator: Double Einstein Ring"
+    "notebook": "notebooks/imaging/features/advanced/double_source_plane_lens/simulator.ipynb",
+    "path": "scripts/imaging/features/advanced/double_source_plane_lens/simulator.py",
+    "summary": "A double source-plane lens (DSPL) is a strong lens system where there are two source galaxies at different redshifts behind the lens galaxy. They appear as two distinct Einstein rings in the image-plane, and can constrain Cosmological parameters in a way single Einstein ring lenses cannot.",
+    "title": "Simulator: DSPL"
   },
   {
     "contents": [],
     "cross_refs": [
       "guides/modeling/slam_start_here.py"
     ],
-    "notebook": "notebooks/imaging/features/advanced/double_einstein_ring/slam.ipynb",
-    "path": "scripts/imaging/features/advanced/double_einstein_ring/slam.py",
+    "notebook": "notebooks/imaging/features/advanced/double_source_plane_lens/slam.ipynb",
+    "path": "scripts/imaging/features/advanced/double_source_plane_lens/slam.py",
     "summary": "This script adapts the SLaM (Source, Light and Mass) pipelines to a Double Source Plane Lens (DSPL) system, where there are two source galaxies at different redshifts behind the lens galaxy. Both source galaxies must be modeled simultaneously because the first source (at the intermediate redshift) acts as both a background source of the lens galaxy and as an additional deflector for the second (higher-redshift) source.",
-    "title": "SLaM (Source, Light and Mass): Double Einstein Ring"
+    "title": "SLaM (Source, Light and Mass): DSPL"
   },
   {
     "contents": [
@@ -3143,15 +3131,33 @@
     "cross_refs": [
       "autolens_workspace_test/scripts/imaging/jax_likelihood/potential_correction.py",
       "features/pixelization/likelihood_function.py",
-      "guides/advanced/potential_correction.ipynb",
-      "guides/advanced/potential_correction.py",
+      "imaging/features/advanced/potential_correction/start_here.ipynb",
       "imaging/features/pixelization/likelihood_function.ipynb",
-      "imaging/likelihood_function.ipynb"
+      "imaging/likelihood_function.ipynb",
+      "start_here.py"
     ],
     "notebook": "notebooks/imaging/features/advanced/potential_correction/likelihood_function.ipynb",
     "path": "scripts/imaging/features/advanced/potential_correction/likelihood_function.py",
     "summary": "This script provides a step-by-step guide of the **PyAutoLens** potential-correction `log_likelihood_function` (the Bayesian evidence of `al.pc.FitDpsiSrcImaging`), which jointly inverts `Imaging` data for a pixelized source and pixelized corrections $\\delta\\psi$ to the lensing potential.",
     "title": "__Log Likelihood Function: Potential Correction (Gravitational Imaging)__"
+  },
+  {
+    "contents": [
+      "Simulate",
+      "Smooth Model Fit",
+      "Joint Fit",
+      "Dkappa Map",
+      "Iterative Fit",
+      "Evidence Sampling"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/potential_correction/likelihood_function.ipynb",
+      "interferometer/features/advanced/potential_correction/start_here.ipynb"
+    ],
+    "notebook": "notebooks/imaging/features/advanced/potential_correction/start_here.ipynb",
+    "path": "scripts/imaging/features/advanced/potential_correction/start_here.py",
+    "summary": "Parametric lens mass models (e.g. the `PowerLaw` used throughout the workspace) are smooth: their convergence and deflection angles vary gradually across the image plane. Real lens galaxies are not perfectly smooth. They contain substructure \u2014 dark matter subhaloes, globular clusters, satellite galaxies \u2014 and their large-scale mass distributions can depart from ellipsoidal symmetry in ways no simple parametric profile captures.",
+    "title": "Potential Correction: Start Here"
   },
   {
     "contents": [
@@ -4492,7 +4498,7 @@
   {
     "contents": [],
     "cross_refs": [
-      "guides/advanced/potential_correction.ipynb",
+      "imaging/features/advanced/potential_correction/start_here.ipynb",
       "interferometer/start_here.ipynb",
       "interferometer/start_here.py"
     ],
@@ -4551,6 +4557,57 @@
     "path": "scripts/interferometer/features/advanced/shapelets/modeling.py",
     "summary": "A shapelet is a basis function appropriate for capturing the exponential / disk-like features of a galaxy. It has been employed in many strong lensing studies to model the light of the lensed source galaxy, because it can represent features of disky star-forming galaxies that a single Sersic function cannot.",
     "title": "Modeling Features: Shapelets (Interferometer)"
+  },
+  {
+    "contents": [
+      "SLaM Pipelines",
+      "Grid Search",
+      "Pixelized Source",
+      "Model",
+      "SOURCE LP PIPELINE",
+      "SOURCE PIX PIPELINE 1",
+      "SOURCE PIX PIPELINE 2",
+      "MASS TOTAL PIPELINE",
+      "Two Datasets",
+      "Sparse Operators",
+      "Settings",
+      "Settings AutoFit",
+      "Redshifts",
+      "Mesh Shape",
+      "SLaM Pipeline"
+    ],
+    "cross_refs": [
+      "slam_start_here.py"
+    ],
+    "notebook": "notebooks/interferometer/features/advanced/subhalo/detect/start_here.ipynb",
+    "path": "scripts/interferometer/features/advanced/subhalo/detect/start_here.py",
+    "summary": "Strong gravitational lenses can be used to detect the presence of small-scale dark matter (DM) subhalos. This occurs when the DM subhalo overlaps the lensed source emission, and therefore gravitationally perturbs the observed image of the lensed source galaxy.",
+    "title": "Subhalo Detection: Start Here"
+  },
+  {
+    "contents": [],
+    "cross_refs": [],
+    "notebook": "notebooks/interferometer/features/advanced/subhalo/sensitivity/start_here.ipynb",
+    "path": "scripts/interferometer/features/advanced/subhalo/sensitivity/start_here.py",
+    "summary": "(no summary in script docstring)",
+    "title": "start_here"
+  },
+  {
+    "contents": [
+      "Dataset Paths",
+      "Simulate",
+      "Ray Tracing",
+      "Output",
+      "Visualize",
+      "Tracer json"
+    ],
+    "cross_refs": [
+      "interferometer/simulator.ipynb"
+    ],
+    "notebook": "notebooks/interferometer/features/advanced/subhalo/simulator.ipynb",
+    "path": "scripts/interferometer/features/advanced/subhalo/simulator.py",
+    "summary": "This script simulates `Interferometer` data of a 'galaxy-scale' strong lens where:",
+    "title": "Simulator: Subhalo"
   },
   {
     "contents": [
@@ -5255,57 +5312,6 @@
   },
   {
     "contents": [
-      "SLaM Pipelines",
-      "Grid Search",
-      "Pixelized Source",
-      "Model",
-      "SOURCE LP PIPELINE",
-      "SOURCE PIX PIPELINE 1",
-      "SOURCE PIX PIPELINE 2",
-      "MASS TOTAL PIPELINE",
-      "Two Datasets",
-      "Sparse Operators",
-      "Settings",
-      "Settings AutoFit",
-      "Redshifts",
-      "Mesh Shape",
-      "SLaM Pipeline"
-    ],
-    "cross_refs": [
-      "slam_start_here.py"
-    ],
-    "notebook": "notebooks/interferometer/features/subhalo/detect/start_here.ipynb",
-    "path": "scripts/interferometer/features/subhalo/detect/start_here.py",
-    "summary": "Strong gravitational lenses can be used to detect the presence of small-scale dark matter (DM) subhalos. This occurs when the DM subhalo overlaps the lensed source emission, and therefore gravitationally perturbs the observed image of the lensed source galaxy.",
-    "title": "Subhalo Detection: Start Here"
-  },
-  {
-    "contents": [],
-    "cross_refs": [],
-    "notebook": "notebooks/interferometer/features/subhalo/sensitivity/start_here.ipynb",
-    "path": "scripts/interferometer/features/subhalo/sensitivity/start_here.py",
-    "summary": "(no summary in script docstring)",
-    "title": "start_here"
-  },
-  {
-    "contents": [
-      "Dataset Paths",
-      "Simulate",
-      "Ray Tracing",
-      "Output",
-      "Visualize",
-      "Tracer json"
-    ],
-    "cross_refs": [
-      "interferometer/simulator.ipynb"
-    ],
-    "notebook": "notebooks/interferometer/features/subhalo/simulator.ipynb",
-    "path": "scripts/interferometer/features/subhalo/simulator.py",
-    "summary": "This script simulates `Interferometer` data of a 'galaxy-scale' strong lens where:",
-    "title": "Simulator: Subhalo"
-  },
-  {
-    "contents": [
       "Mask",
       "Loading Data",
       "Fitting",
@@ -5819,6 +5825,50 @@
     "path": "scripts/multi/start_here.py",
     "summary": "Strong gravitational lenses are often observed with CCD imaging, for example using HST, JWST, or ground-based telescopes.",
     "title": "Start Here: Multi Wavelength"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Mask & Over Sampling",
+      "Centres",
+      "Why Not Noise Scaling",
+      "Model",
+      "Extra Galaxies Model",
+      "Getting The Tier Wrong",
+      "Search + Analysis / Run Time / Model-Fit / Result.",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/extra_galaxies/modeling.ipynb",
+      "multi_galaxy/modeling.ipynb",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/simulator.py",
+      "multi_galaxy/start_here.ipynb"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/extra_galaxies/modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/extra_galaxies/modeling.py",
+    "summary": "Extends the multi-galaxy lens model with an **extra galaxies tier**: perturbers near the co-dominant pair which are carried in the model with their own light and mass, their centres fixed to the observed light.",
+    "title": "Modeling Features (Multi Galaxy): Extra Galaxies"
+  },
+  {
+    "contents": [
+      "Dataset Paths / Grid / PSF / Simulator",
+      "Main Lens Galaxies",
+      "Extra Galaxies",
+      "Shear / Source",
+      "Dataset",
+      "Mask Extra Galaxies",
+      "Records"
+    ],
+    "cross_refs": [
+      "modeling.py",
+      "multi_galaxy/simulator.ipynb",
+      "multi_galaxy/simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/extra_galaxies/simulator.ipynb",
+    "path": "scripts/multi_galaxy/features/extra_galaxies/simulator.py",
+    "summary": "Simulates the dataset for the `multi_galaxy/features/extra_galaxies` feature: the co-dominant pair of `multi_galaxy/simulator.py`, plus two extra galaxies near the lens which have **mass as well as light**.",
+    "title": "Simulator: Multi Galaxy Extra Galaxies"
   },
   {
     "contents": [

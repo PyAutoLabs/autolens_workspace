@@ -6,9 +6,17 @@ Two extensions add galaxies *below* co-dominance, using the same tiered API that
 and cluster scale:
 
 - **Extra galaxies** — perturbers near (but not part of) the co-dominant system, added with restricted freedom
-  (centres fixed to the observed light, free Einstein radius). See
-  `imaging/features/extra_galaxies` for the worked example; the API is identical here, applied on top of N main
-  galaxies instead of one.
+  (centres fixed to the observed light, free but capped Einstein radius). The worked example lives here, in
+  `features/extra_galaxies` (simulator + modeling); `imaging/features/extra_galaxies` gives the fuller API
+  walkthrough at galaxy scale, including the SLaM variant.
+
+  Note the division of labour with the core scripts. `multi_galaxy/simulator.py` puts a **massless** contaminant
+  in the `simple` dataset and `start_here` / `modeling` / `fit` / `likelihood_function` demonstrate the
+  `__Extra Galaxies Noise Scaling__` step which scales its light out of the fit. That is the right lever when
+  light is the only problem. The example here gives its perturbers **mass as well as light**, where noise
+  scaling is no longer sufficient — on that dataset, removing only the extra galaxies' mass shifts the model
+  image by up to 7.6 sigma, none of it in the pixels the mask covers. What is left for the model to decide is
+  the tier question: co-dominant deflector, perturber, or scaling-relation member.
 
 - **Scaling galaxies** — a population of faint galaxies whose masses are tied to their luminosities through a
   scaling relation, so the model dimensionality does not grow with the population. The worked example lives

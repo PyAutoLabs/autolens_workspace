@@ -55,7 +55,8 @@ __Prerequisites__
 
 - `imaging/likelihood_function.ipynb` — the standard imaging likelihood.
 - `imaging/features/pixelization/likelihood_function.ipynb` — the pixelized-source evidence, whose terms reappear here.
-- `guides/advanced/potential_correction.ipynb` — the user-facing overview of the technique.
+- `imaging/features/advanced/potential_correction/start_here.ipynb` — the sibling example in this folder, the
+  user-facing overview of the technique.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -404,7 +405,7 @@ and verified `al.pc.FitDpsiSrcImaging` reproduces the number exactly.
 
 In a science analysis the regularization hyper-parameters are sampled with a non-linear search through
 `al.pc.DpsiSrcInvAnalysis` (one-shot) or refined with the iterative Levenberg-Marquardt engine
-`al.pc.IterFitDpsiSrcImaging` — see `guides/advanced/potential_correction.py`.
+`al.pc.IterFitDpsiSrcImaging` — see this folder's `start_here.py`.
 
 If you use this functionality, please cite Cao et al. 2025
 (https://github.com/caoxiaoyue/potential_correction_paper) alongside PyAutoLens.

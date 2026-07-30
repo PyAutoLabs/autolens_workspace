@@ -117,7 +117,7 @@ and an `NFWSph` dark matter halo aligned with the bulge.
 
 The first galaxy additionally carries an `ExternalShear` — a single shear field representing the wider group
 environment, conventionally attached to `lens_0` (matches the group SLaM convention in
-`scripts/group/features/advanced/double_einstein_ring/slam.py`).
+`scripts/group/features/advanced/double_source_plane_lens/slam.py`).
 """
 lens_0 = al.Galaxy(
     redshift=0.5,
@@ -213,7 +213,7 @@ al.output_to_json(
 __Centres JSON__
 
 Save the main lens centres so the modeling scripts can load them via `al.from_json(...)`. This mirrors the
-canonical `group/simulator.py` and `group/features/advanced/double_einstein_ring/simulator.py` conventions.
+canonical `group/simulator.py` and `group/features/advanced/double_source_plane_lens/simulator.py` conventions.
 """
 al.output_to_json(
     obj=al.Grid2DIrregular(main_lens_centres),
