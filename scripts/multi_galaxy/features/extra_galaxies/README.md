@@ -24,8 +24,9 @@ So the question these scripts answer is not "how do I remove them" but **which t
   configuration.
 - **Extra galaxies** — light and mass with centres fixed and `einstein_radius` capped. Perturbers on a
   configuration the main galaxies already set. This folder.
-- **Scaling galaxies** — a population whose masses follow a luminosity relation, costing a fixed couple of
-  parameters no matter how many galaxies. See `features/scaling_galaxies`.
+- **Scaling galaxies** — a population whose masses follow a luminosity relation, anchored on the brightest
+  co-dominant deflector so the tier costs **zero** free parameters no matter how many galaxies it holds. See
+  `features/scaling_relation`.
 
 `multi_galaxy/simulator.py` states the test: does the galaxy contribute significantly to the *lensing*, not to
 the *light*? `modeling.py` here works through what each mistake actually costs, in both directions.

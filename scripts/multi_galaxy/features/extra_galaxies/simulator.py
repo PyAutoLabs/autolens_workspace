@@ -138,7 +138,7 @@ tier:
  - **Not main lens galaxies.** A main lens galaxy is co-dominant — it changes the image configuration, and its
    mass must be free to move. At a tenth of the Einstein radius these two do not; they perturb a lens
    configuration that the pair alone already sets.
- - **Not scaling galaxies either.** The scaling tier (`features/scaling_galaxies`) is for populations far from
+ - **Not scaling galaxies either.** The scaling tier (`features/scaling_relation`) is for populations far from
    the lens whose collective contribution is a weak correction and which are too numerous to model individually.
    These two are near the lens, few, and individually resolvable — so they get an individual free parameter
    each, not a shared relation.

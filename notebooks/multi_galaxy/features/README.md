@@ -20,9 +20,12 @@ and cluster scale:
 
 - **Scaling galaxies** — a population of faint galaxies whose masses are tied to their luminosities through a
   scaling relation, so the model dimensionality does not grow with the population. The worked example lives
-  here, in `features/scaling_galaxies` (simulator + modeling), using the untruncated-isothermal relation
-  (`einstein_radius ∝ L^0.5`); `group/features/scaling_relation` gives the fuller API walkthrough. Two framing
-  points matter here, and both examples' prose says so:
+  here, in `features/scaling_relation` (simulator, modeling, fit, likelihood_function, slam), using the
+  untruncated-isothermal relation (`einstein_radius ∝ L^0.5`) **anchored on the brightest co-dominant deflector**
+  (the BGC), which makes the whole tier cost zero free parameters;
+  `imaging/features/scaling_relation` gives the fuller walkthrough with a single-lens anchor, and
+  `group/features/scaling_relation` the reference-magnitude (Lenstool `mag0`) alternative that costs one parameter
+  instead. Two framing points matter here, and both examples' prose says so:
 
   1. **Untruncated profiles are the physically right choice at this scale, not a simplification.** Truncation
      of a member's mass profile encodes tidal stripping by a host halo's potential. A multi-galaxy lens has no

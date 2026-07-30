@@ -28,9 +28,9 @@ to place a galaxy in:
  - **Extra galaxies** (`extra_galaxies=af.Collection(...)`) — light and mass with **centres fixed** to the
    observed positions and a capped `einstein_radius`. Perturbers on a configuration the main galaxies already
    set. This example.
- - **Scaling galaxies** (`features/scaling_galaxies`) — a population whose masses follow a luminosity relation,
-   so the tier costs a fixed couple of parameters no matter how many galaxies it holds. For many distant,
-   individually-negligible galaxies.
+ - **Scaling galaxies** (`features/scaling_relation`) — a population whose masses follow a luminosity relation
+   anchored on the brightest co-dominant deflector, so the tier costs **zero** parameters no matter how many
+   galaxies it holds. For many distant, individually-negligible galaxies.
 
 The dataset fitted here is built to sit in the band where the middle tier is the right answer, and the section
 **Getting The Tier Wrong** below quantifies what each mistake costs.
@@ -327,8 +327,8 @@ must be evaluated and blurred and its deflection angles computed. `ExponentialSp
 cheap, so the increase is small.
 
 The larger cost is dimensionality — three free parameters per extra galaxy, which is why the tier does not scale
-to large populations. That is precisely the boundary at which `features/scaling_galaxies` takes over, tying many
-galaxies' masses to their luminosities through one shared relation instead.
+to large populations. That is precisely the boundary at which `features/scaling_relation` takes over, tying many
+galaxies' masses to the brightest deflector's through one shared relation instead.
 
 __Model-Fit__
 
@@ -360,7 +360,7 @@ perturbers are added alongside it.
 
 Where to go next on the ladder:
 
-- `autolens_workspace/*/multi_galaxy/features/scaling_galaxies` — the tier above this one in population size,
+- `autolens_workspace/*/multi_galaxy/features/scaling_relation` — the tier above this one in population size,
   for many distant galaxies on a shared luminosity relation rather than a free parameter each.
 - `autolens_workspace/*/imaging/features/extra_galaxies` — the galaxy-scale version, with the fuller API
   walkthrough and both levers side by side including the SLaM pipeline variant.

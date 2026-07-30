@@ -15,7 +15,9 @@ composition.
 __Prerequisites__
 
  - `autolens_workspace/scripts/imaging/features/scaling_relation/likelihood_function.py` — the single-main-lens
-   walkthrough. The three-tier version below generalises that example across the `lens_dict` API.
+   walkthrough. The three-tier version below generalises that example across the `lens_dict` API. That script
+   anchors the relation on the main lens's own Einstein radius rather than a reference magnitude; only the value fed
+   into each member's profile differs, not the likelihood steps.
  - `autolens_workspace/scripts/group/start_here.py` — the group `lens_dict` API, including how
    `main_lens_centres.json` is loaded.
  - `autolens_workspace/scripts/imaging/likelihood_function.py` — canonical single-plane walkthrough.

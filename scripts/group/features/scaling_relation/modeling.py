@@ -29,8 +29,13 @@ galaxies are split into three distinct populations:
 Splitting galaxies across these three tiers is the standard pattern in production group fits (see the `euclid_strong_lens_modeling_pipeline` repository). It gives the lensing-significant galaxies the model flexibility they need
 while keeping the model tractable as the number of foreground galaxies grows.
 
-For the simpler imaging-only counterpart — one main lens + one tier of extras on a scaling relation — see
-`autolens_workspace/scripts/imaging/features/scaling_relation/modeling.py`.
+For the galaxy-scale counterpart — one main lens, one bounded tier and one scaling tier — see
+`autolens_workspace/scripts/imaging/features/scaling_relation/modeling.py`. Note it uses a **different
+normalisation**: it anchors the relation on the main lens galaxy's own `einstein_radius`, so its scaling tier costs
+zero free parameters. That is attractive but assumes one galaxy obviously anchors the system and that it sits on the
+relation itself. This example instead uses the reference-magnitude normalisation (Lenstool's ``mag0``), which costs
+one free parameter and stays invariant to which galaxies you place in the tier — the right choice at group scale,
+where the BGG is not always dominant and the members share a host halo.
 
 __Contents__
 
@@ -380,8 +385,11 @@ for stellar mass / velocity dispersion.
 
 Related examples:
 
- - `autolens_workspace/scripts/imaging/features/scaling_relation/modeling.py` — the imaging-only counterpart, with one
-   `extra_galaxies` collection containing both individually-modelled and relational galaxies.
+ - `autolens_workspace/scripts/imaging/features/scaling_relation/modeling.py` — the galaxy-scale counterpart, which
+   anchors the relation on the main lens's own `einstein_radius` (zero free parameters) instead of a reference
+   magnitude.
+ - `autolens_workspace/scripts/multi_galaxy/features/scaling_relation/modeling.py` — the same anchored relation with
+   the anchor chosen as the brightest of several co-dominant deflectors.
  - `autolens_workspace/scripts/group/features/scaling_relation/modeling_for_luminosities.py` — the standalone
    light-only fit that produces the `scaling_galaxies_luminosity_list` used here.
  - `autolens_workspace/scripts/group/slam.py` and friends — the SLaM pipeline equivalent (`source_lp[0]` stage).
