@@ -29,7 +29,7 @@ This script takes a few minutes to run (the one-off sparse-operator precomputati
 
 __Prerequisites__
 
-- `guides/advanced/potential_correction.ipynb` — the technique overview (imaging).
+- `imaging/features/advanced/potential_correction/start_here.ipynb` — the technique overview (imaging).
 - `interferometer/start_here.ipynb` — interferometer dataset basics.
 """
 
