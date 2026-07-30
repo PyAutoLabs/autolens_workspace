@@ -586,7 +586,3 @@ source_pix_result_2 = source_pix_2(
     mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
     regularization=al.reg.Adapt,
 )
-
-"""
-Finish.
-"""

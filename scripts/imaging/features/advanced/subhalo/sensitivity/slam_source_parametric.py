@@ -1045,7 +1045,3 @@ sensitivity = af.Sensitivity(
 )
 
 subhalo_results = sensitivity.run()
-
-"""
-Finish.
-"""

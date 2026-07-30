@@ -822,7 +822,3 @@ print(subhalo_centres_grid)
 einstein_radius_array = subhalo_grid_search_result.attribute_grid(
     "galaxies.lens.mass.einstein_radius"
 )
-
-"""
-Finish.
-"""

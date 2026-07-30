@@ -332,7 +332,3 @@ mass_result = mass_total(
     source_lp_result=source_lp_result,
     light_result=light_result,
 )
-
-"""
-Finish.
-"""

@@ -547,7 +547,3 @@ mass_result = mass_light_dark(
     source_result_for_source=source_pix_result_2,
     light_result=light_result,
 )
-
-"""
-Finish.
-"""

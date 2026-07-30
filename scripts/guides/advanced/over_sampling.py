@@ -554,8 +554,6 @@ The numerical verification of all of the above lives in
 `autolens_workspace_test/scripts/imaging/convolution_over_sampled.py`, which pins the implementation to
 brute-force reference calculations.
 
-Finish.
-
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

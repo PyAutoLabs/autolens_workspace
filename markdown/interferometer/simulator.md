@@ -393,8 +393,6 @@ al.output_to_json(
     
 
 
-Finish.
-
 __JAX Variant__
 
 For fast repeated interferometer simulations, instantiate the simulator

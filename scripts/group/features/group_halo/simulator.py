@@ -214,7 +214,3 @@ al.output_to_json(
     obj=al.Grid2DIrregular(member_centres),
     file_path=Path(dataset_path, "member_centres.json"),
 )
-
-"""
-Finished.
-"""

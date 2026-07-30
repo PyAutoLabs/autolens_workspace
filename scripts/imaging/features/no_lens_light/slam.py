@@ -401,7 +401,3 @@ mass_result = mass_total(
     source_result_for_lens=source_pix_result_1,
     source_result_for_source=source_pix_result_2,
 )
-
-"""
-Finish.
-"""

@@ -243,7 +243,3 @@ if al.util.dataset.should_simulate(str(dataset_path)):
         obj=positions,
         file_path=dataset_path / "positions.json",
     )
-
-"""
-Finished.
-"""

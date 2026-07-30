@@ -232,8 +232,6 @@ for tracer_gen in tracer_list_gen:
     print(f"Axis-Ratio = {median_axis_ratio} ({upper_axis_ratio} {lower_axis_ratio}")
 
 """
-Finish.
-
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

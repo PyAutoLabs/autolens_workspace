@@ -179,7 +179,7 @@ print(f"  residuals = {[round(float(r), 3) for r in np.asarray(fit.residual_map)
 print(f"  chi_squared = {float(fit.chi_squared):.4f}")
 
 """
-Finished. For the production-scale picture — real solver, multi-plane cluster tracer, timings —
+For the production-scale picture — real solver, multi-plane cluster tracer, timings —
 see ``scripts/cluster/likelihood_function.py`` and the profiling breakdowns referenced above.
 
 __Env__ (Developer Only)

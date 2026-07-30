@@ -398,7 +398,3 @@ print(
 print(
     f"Linear Light Profile list (Source SersicCore) = {inversion.linear_obj_list[1].light_profile_list}"
 )
-
-"""
-Finish.
-"""

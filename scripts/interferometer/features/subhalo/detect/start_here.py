@@ -718,7 +718,3 @@ result_with_subhalo = subhalo_refine(
     subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
     settings=settings,
 )
-
-"""
-Finish.
-"""

@@ -211,8 +211,6 @@ aplt.plot_array(
 )
 
 """
-Finish.
-
 __Env__ (Developer Only)
 
 Not user documentation: this section configures the automated test harness.

@@ -480,7 +480,3 @@ mass_result = mass_total(
     extra_galaxies_centres=extra_galaxies_centres,
     redshift_lens=redshift_lens,
 )
-
-"""
-Finish.
-"""

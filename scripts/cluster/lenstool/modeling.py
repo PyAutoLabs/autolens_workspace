@@ -500,7 +500,7 @@ else:
     )
 
 """
-Finished. The README in this folder is the narrative companion: the full .par ↔ PyAutoLens
+The README in this folder is the narrative companion: the full .par ↔ PyAutoLens
 dictionary, the conventions verified here, and where to go next (image-plane likelihood, JAX,
 extended-source modeling of the arcs — everything Lenstool cannot do is on the other side of
 this door).

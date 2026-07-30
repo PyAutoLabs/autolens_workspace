@@ -1,4 +1,3 @@
-# %%
 """
 HPC: Example CPU and GPU
 ========================
@@ -33,7 +32,6 @@ See README.md in this folder for the full setup guide, including how to transfer
 using the sync script.
 """
 
-# %%
 """
 __Contents__
 

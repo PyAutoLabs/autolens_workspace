@@ -219,7 +219,3 @@ al.output_to_json(
     obj=al.Grid2DIrregular(main_lens_centres),
     file_path=Path(dataset_path, "main_lens_centres.json"),
 )
-
-"""
-Finished.
-"""
