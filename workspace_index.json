@@ -4521,6 +4521,57 @@
   },
   {
     "contents": [
+      "SLaM Pipelines",
+      "Grid Search",
+      "Pixelized Source",
+      "Model",
+      "SOURCE LP PIPELINE",
+      "SOURCE PIX PIPELINE 1",
+      "SOURCE PIX PIPELINE 2",
+      "MASS TOTAL PIPELINE",
+      "Two Datasets",
+      "Sparse Operators",
+      "Settings",
+      "Settings AutoFit",
+      "Redshifts",
+      "Mesh Shape",
+      "SLaM Pipeline"
+    ],
+    "cross_refs": [
+      "slam_start_here.py"
+    ],
+    "notebook": "notebooks/interferometer/features/advanced/subhalo/detect/start_here.ipynb",
+    "path": "scripts/interferometer/features/advanced/subhalo/detect/start_here.py",
+    "summary": "Strong gravitational lenses can be used to detect the presence of small-scale dark matter (DM) subhalos. This occurs when the DM subhalo overlaps the lensed source emission, and therefore gravitationally perturbs the observed image of the lensed source galaxy.",
+    "title": "Subhalo Detection: Start Here"
+  },
+  {
+    "contents": [],
+    "cross_refs": [],
+    "notebook": "notebooks/interferometer/features/advanced/subhalo/sensitivity/start_here.ipynb",
+    "path": "scripts/interferometer/features/advanced/subhalo/sensitivity/start_here.py",
+    "summary": "(no summary in script docstring)",
+    "title": "start_here"
+  },
+  {
+    "contents": [
+      "Dataset Paths",
+      "Simulate",
+      "Ray Tracing",
+      "Output",
+      "Visualize",
+      "Tracer json"
+    ],
+    "cross_refs": [
+      "interferometer/simulator.ipynb"
+    ],
+    "notebook": "notebooks/interferometer/features/advanced/subhalo/simulator.ipynb",
+    "path": "scripts/interferometer/features/advanced/subhalo/simulator.py",
+    "summary": "This script simulates `Interferometer` data of a 'galaxy-scale' strong lens where:",
+    "title": "Simulator: Subhalo"
+  },
+  {
+    "contents": [
       "What ALMA Gives You",
       "Polarisation Handling",
       "Canonical 3D Shape",
@@ -5219,57 +5270,6 @@
     "path": "scripts/interferometer/features/pixelization/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).",
     "title": "Pixelization: Source Reconstruction"
-  },
-  {
-    "contents": [
-      "SLaM Pipelines",
-      "Grid Search",
-      "Pixelized Source",
-      "Model",
-      "SOURCE LP PIPELINE",
-      "SOURCE PIX PIPELINE 1",
-      "SOURCE PIX PIPELINE 2",
-      "MASS TOTAL PIPELINE",
-      "Two Datasets",
-      "Sparse Operators",
-      "Settings",
-      "Settings AutoFit",
-      "Redshifts",
-      "Mesh Shape",
-      "SLaM Pipeline"
-    ],
-    "cross_refs": [
-      "slam_start_here.py"
-    ],
-    "notebook": "notebooks/interferometer/features/subhalo/detect/start_here.ipynb",
-    "path": "scripts/interferometer/features/subhalo/detect/start_here.py",
-    "summary": "Strong gravitational lenses can be used to detect the presence of small-scale dark matter (DM) subhalos. This occurs when the DM subhalo overlaps the lensed source emission, and therefore gravitationally perturbs the observed image of the lensed source galaxy.",
-    "title": "Subhalo Detection: Start Here"
-  },
-  {
-    "contents": [],
-    "cross_refs": [],
-    "notebook": "notebooks/interferometer/features/subhalo/sensitivity/start_here.ipynb",
-    "path": "scripts/interferometer/features/subhalo/sensitivity/start_here.py",
-    "summary": "(no summary in script docstring)",
-    "title": "start_here"
-  },
-  {
-    "contents": [
-      "Dataset Paths",
-      "Simulate",
-      "Ray Tracing",
-      "Output",
-      "Visualize",
-      "Tracer json"
-    ],
-    "cross_refs": [
-      "interferometer/simulator.ipynb"
-    ],
-    "notebook": "notebooks/interferometer/features/subhalo/simulator.ipynb",
-    "path": "scripts/interferometer/features/subhalo/simulator.py",
-    "summary": "This script simulates `Interferometer` data of a 'galaxy-scale' strong lens where:",
-    "title": "Simulator: Subhalo"
   },
   {
     "contents": [
