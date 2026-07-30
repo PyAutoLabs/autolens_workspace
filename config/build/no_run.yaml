@@ -25,7 +25,6 @@
 #   banner. Investigate the failure, fix the underlying bug, and remove
 #   the NEEDS_FIX marker.
 
-- guides/results/database/start_here # SLOW 2026-04-10 - previously failed fast on a broken aggregator query; now runs the real aggregator and exceeds 60s
 - gui/extra_galaxies_centres # GUI scripts cannot be run
 - gui/mask_extra_galaxies # GUI scripts cannot be run
 - gui/lens_light_centre # GUI scripts cannot be run
@@ -44,3 +43,4 @@
 - interferometer/casa_reduction # Requires CASA MeasurementSet output, not runnable standalone
 - cluster/start_here # SLOW 2026-07-22 - hits the full 1800s mode=release cap in workspace-validation (PyAutoHeart run 29912642195). Script-specific, not a shard-wide problem: every other cluster script passes, the next-slowest being lenstool/modeling.py at 137.8s. Consistent with cluster scripts being known un-smoke-able (>500s even in TEST_MODE). Not yet profiled — SLOW-skipped to unblock the release; remove once the cost is found and fixed (autolens_workspace#314).
 - weak/features/strong_lensing/a2744 # SLOW 2026-07-22 - hits the full 1800s mode=release cap in workspace-validation (PyAutoHeart run 29912642195). Script-specific: its sibling weak/real_data/a2744.py passes in 8.9s and the next-slowest weak script is modeling.py at 23.6s, so the cost is in the strong_lensing feature path rather than the A2744 dataset itself. Not yet profiled — SLOW-skipped to unblock the release (autolens_workspace#314).
+- guides/results/database/start_here # NEEDS_FIX 2026-07-30 - fails fast in a clean checkout (FileNotFoundError dataset/imaging/simple/data.fits - needs simulator outputs); was mis-parked as SLOW against the 60s-cap myth
