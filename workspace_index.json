@@ -1552,8 +1552,12 @@
     "contents": [
       "Example",
       "Ray Tracing",
+      "Trace",
+      "Lensing Units vs Physical Units",
+      "The PyAutoLens Convention",
       "Profiles With Physical Units",
-      "SLACK"
+      "Science Corollaries",
+      "Attribution"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/PyAutoLens/blob/main/autolens/lens/tracer_util.py",
@@ -1561,7 +1565,7 @@
     ],
     "notebook": "notebooks/guides/advanced/multi_plane.ipynb",
     "path": "scripts/guides/advanced/multi_plane.py",
-    "summary": "Multi-plane ray-tracing is used when there are more planes than just an image-plane and source-plane. When tracing from one plane to another, the redshifts of the different planes must be used to determine scaling factors that are applied to the deflection angles.",
+    "summary": "Multi-plane ray-tracing is used when a lens system has more planes than just an image-plane and source-plane. When tracing from one plane to the next, the redshifts of the planes are used to compute scaling factors that are applied to the deflection angles, so that every plane's lensing effect is combined consistently.",
     "title": "Misc: Multi-Plane"
   },
   {
