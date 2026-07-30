@@ -6197,6 +6197,161 @@
   },
   {
     "contents": [
+      "Dataset & Mask",
+      "Basis",
+      "Two Bases",
+      "Fit",
+      "Comparison To A Sersic",
+      "How Many Gaussians",
+      "Solved Intensities",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/multi_gaussian_expansion/fit.py",
+      "likelihood_function.py",
+      "modeling.py",
+      "multi_galaxy/features/linear_light_profiles/fit.py",
+      "multi_galaxy/features/multi_gaussian_expansion/likelihood_function.py",
+      "multi_galaxy/features/multi_gaussian_expansion/modeling.py",
+      "multi_galaxy/modeling.py",
+      "simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/multi_gaussian_expansion/fit.ipynb",
+    "path": "scripts/multi_galaxy/features/multi_gaussian_expansion/fit.py",
+    "summary": "This script fits a multi-galaxy strong lens with an MGE per co-dominant deflector **without a non-linear search**, so the basis can be built by hand and the MGE-versus-Sersic comparison run directly.",
+    "title": "Fits: Multi Gaussian Expansion (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "What Changes",
+      "Dataset, Mask & Over Sampling",
+      "Tracer",
+      "Linear Object Lists",
+      "Blurred Mapping Matrix",
+      "Curvature Matrix (F)",
+      "Condition Number",
+      "Reconstruction",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "fit.py",
+      "imaging/features/multi_gaussian_expansion/likelihood_function.py",
+      "multi_galaxy/features/linear_light_profiles/likelihood_function.py",
+      "multi_galaxy/features/multi_gaussian_expansion/fit.py",
+      "multi_galaxy/features/multi_gaussian_expansion/source_science.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/multi_gaussian_expansion/likelihood_function.ipynb",
+    "path": "scripts/multi_galaxy/features/multi_gaussian_expansion/likelihood_function.py",
+    "summary": "This script walks through the log likelihood function of a multi-galaxy lens fitted with **an MGE per co-dominant deflector**, focusing on the one structure that has no galaxy-scale equivalent: the block structure of the curvature matrix when two nearby galaxies each carry their own basis.",
+    "title": "__Log Likelihood Function: Multi Gaussian Expansion (Multi Galaxy)__"
+  },
+  {
+    "contents": [
+      "Why This Folder Exists",
+      "Advantages",
+      "Disadvantages",
+      "Model",
+      "Dataset & Mask",
+      "Centres",
+      "Over Sampling",
+      "Model Composition",
+      "How Many Gaussians",
+      "Search",
+      "Analysis",
+      "Result",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/multi_gaussian_expansion/modeling.py",
+      "multi_galaxy/features/linear_light_profiles/likelihood_function.py",
+      "multi_galaxy/features/multi_gaussian_expansion/fit.py",
+      "multi_galaxy/features/multi_gaussian_expansion/likelihood_function.py",
+      "multi_galaxy/features/multi_gaussian_expansion/slam.py",
+      "multi_galaxy/features/multi_gaussian_expansion/source_science.py",
+      "multi_galaxy/modeling.py",
+      "simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/multi_gaussian_expansion/modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/multi_gaussian_expansion/modeling.py",
+    "summary": "A Multi Gaussian Expansion (MGE) decomposes a galaxy's light into ~10-30 Gaussians whose `intensity` values are solved by linear algebra. This script fits a multi-galaxy strong lens giving **each co-dominant deflector its own MGE**.",
+    "title": "Modeling Features: Multi Gaussian Expansion (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset Paths",
+      "Grid",
+      "Galaxy Centres",
+      "Over Sampling",
+      "PSF Convolution",
+      "Main Lens Galaxies",
+      "External Shear",
+      "Source Galaxy",
+      "Ray Tracing",
+      "Dataset",
+      "Visualize",
+      "Tracer json",
+      "Centre JSON Files",
+      "Positions"
+    ],
+    "cross_refs": [
+      "multi_galaxy/simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/multi_gaussian_expansion/simulator.ipynb",
+    "path": "scripts/multi_galaxy/features/multi_gaussian_expansion/simulator.py",
+    "summary": "This script simulates `Imaging` of a 'multi-galaxy' strong lens whose co-dominant deflectors have **disturbed, asymmetric light** that a single symmetric `Sersic` cannot represent.",
+    "title": "Simulator: Multi Gaussian Expansion (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Source LP Pipeline",
+      "Source Pix Pipeline 1 & 2",
+      "Light LP Pipeline",
+      "Mass Total Pipeline",
+      "Dataset, Centres, Mask",
+      "SLaM Pipeline"
+    ],
+    "cross_refs": [
+      "fit.py",
+      "likelihood_function.py",
+      "multi_galaxy/features/multi_gaussian_expansion/fit.py",
+      "multi_galaxy/features/multi_gaussian_expansion/source_science.py",
+      "multi_galaxy/slam.py",
+      "simulator.py",
+      "source_science.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/multi_gaussian_expansion/slam.ipynb",
+    "path": "scripts/multi_galaxy/features/multi_gaussian_expansion/slam.py",
+    "summary": "The SLaM pipeline for a multi-galaxy lens whose deflectors have disturbed, twisted light \u2014 the `mge` dataset of this folder's `simulator.py`.",
+    "title": "SLaM (Source, Light and Mass): Multi Gaussian Expansion (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Why Integrate A Basis",
+      "Dataset & Fit",
+      "Deflector Luminosities",
+      "The Flux Ratio",
+      "Source Magnification",
+      "Source Flux",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "fit.py",
+      "imaging/features/multi_gaussian_expansion/source_science.py",
+      "likelihood_function.py",
+      "modeling.py",
+      "multi_galaxy/features/multi_gaussian_expansion/likelihood_function.py",
+      "multi_galaxy/features/scaling_relation/slam.py",
+      "multi_galaxy/fit.py",
+      "multi_galaxy/slam.py",
+      "multi_galaxy/source_science.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/multi_gaussian_expansion/source_science.ipynb",
+    "path": "scripts/multi_galaxy/features/multi_gaussian_expansion/source_science.py",
+    "summary": "Science calculations on a multi-galaxy lens fitted with an MGE per co-dominant deflector: the **luminosity of each deflector**, the **flux ratio** between them, and the source's magnification and flux.",
+    "title": "Source Science: Multi Gaussian Expansion (Multi Galaxy)"
+  },
+  {
+    "contents": [
       "Advantages",
       "Disadvantages",
       "Model",
