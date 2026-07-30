@@ -27,8 +27,8 @@ multi-galaxy lens does not have. Truncated `dPIEMass` members belong to the grou
 __Contents__
 
 - **Dataset & Mask:** Load and mask (auto-simulating if absent).
-- **Centres + Luminosities:** The pair, the tier, and identifying the BGC.
-- **The Relation:** Anchored on the BGC.
+- **Centres + Luminosities:** The pair, the tier, and identifying the brightest galaxy.
+- **The Relation:** Anchored on the brightest galaxy.
 - **Galaxies:** The co-dominant pair, the mass-only tier, and the source.
 - **Tracer & Fit:** Build the `Tracer` and fit.
 - **Deflection Sum:** Per-galaxy deflections, summed by hand and checked against the tracer.
@@ -95,26 +95,26 @@ main_lens_luminosities = [9.7913, 5.6663]
 
 scaling_galaxies_luminosities = [1.2636, 0.8845, 0.6318, 0.3791, 0.2527]
 
-bgc_index = int(np.argmax(main_lens_luminosities))
-luminosity_bgc = main_lens_luminosities[bgc_index]
+brightest_index = int(np.argmax(main_lens_luminosities))
+luminosity_brightest = main_lens_luminosities[brightest_index]
 
-print(f"BGC is lens_{bgc_index}, L_bgc = {luminosity_bgc}")
+print(f"Brightest galaxy is lens_{brightest_index}, L_brightest = {luminosity_brightest}")
 
 """
 __The Relation__
 
-Anchored on the BGC's Einstein radius, which is a fixed number here (simulator truth) and a free parameter in
-`modeling.py`.
+Anchored on the brightest galaxy's Einstein radius, which is a fixed number here (simulator truth) and a free
+parameter in `modeling.py`.
 """
-einstein_radius_bgc = 1.0
+einstein_radius_brightest = 1.0
 scaling_exponent = 0.5
 
 
 def einstein_radius_from(luminosity):
     """
-    The Faber-Jackson Einstein radius of a galaxy of the input luminosity, anchored on the BGC.
+    The Faber-Jackson Einstein radius of a galaxy of the input luminosity, anchored on the brightest galaxy.
     """
-    return einstein_radius_bgc * (luminosity / luminosity_bgc) ** scaling_exponent
+    return einstein_radius_brightest * (luminosity / luminosity_brightest) ** scaling_exponent
 
 
 """
@@ -204,7 +204,7 @@ for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminos
     centre_str = f"({float(centre[0]):5.2f}, {float(centre[1]):5.2f})"
     print(
         f"  scaling galaxy @ {centre_str}: "
-        f"{einstein_radius_bgc:.3f} * ({luminosity:.4f} / {luminosity_bgc:.4f}) ** {scaling_exponent} "
+        f"{einstein_radius_brightest:.3f} * ({luminosity:.4f} / {luminosity_brightest:.4f}) ** {scaling_exponent} "
         f"= {einstein_radius_from(luminosity):.4f}"
     )
 
@@ -266,7 +266,7 @@ __CSV Interface__
     scaling_galaxies_centres = scaling_table.centres
     scaling_galaxies_luminosities = scaling_table.luminosities
 
-The `argmax` that identifies the BGC runs on those luminosities unchanged.
+The `argmax` that identifies the brightest galaxy runs on those luminosities unchanged.
 """
 main_lens_table = al.galaxy_table_from_csv(
     file_path=dataset_path / "main_lens_galaxies.csv"

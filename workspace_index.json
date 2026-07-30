@@ -6110,7 +6110,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/scaling_relation/likelihood_function.ipynb",
     "path": "scripts/multi_galaxy/features/scaling_relation/likelihood_function.py",
-    "summary": "Describes the one step of the `log_likelihood` computation that a BGC-anchored scaling tier changes: how the summed deflection field is composed when most of the deflectors' Einstein radii are not free parameters but derived from the brightest co-dominant galaxy's.",
+    "summary": "Describes the one step of the `log_likelihood` computation that a brightest-galaxy-anchored scaling tier changes: how the summed deflection field is composed when most of the deflectors' Einstein radii are not free parameters but derived from the brightest co-dominant galaxy's.",
     "title": "__Log Likelihood Function: Multi Galaxy Scaling Relation__"
   },
   {
@@ -6135,7 +6135,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/scaling_relation/modeling.ipynb",
     "path": "scripts/multi_galaxy/features/scaling_relation/modeling.py",
-    "summary": "Extends the multi-galaxy model with a **scaling tier**: faint galaxies far from the co-dominant pair whose Einstein radii are tied to the brightest of the pair (the BGC) by a Faber-Jackson relation:",
+    "summary": "Extends the multi-galaxy model with a **scaling tier**: faint galaxies far from the co-dominant pair whose Einstein radii are tied to the brightest of the pair by a Faber-Jackson relation:",
     "title": "Modeling Features (Multi Galaxy): Scaling Relation"
   },
   {
@@ -6178,7 +6178,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/scaling_relation/slam.ipynb",
     "path": "scripts/multi_galaxy/features/scaling_relation/slam.py",
-    "summary": "Uses the SLaM pipelines to fit a multi-galaxy lens with a scaling tier whose Einstein radii are tied to the brightest co-dominant deflector (the BGC).",
+    "summary": "Uses the SLaM pipelines to fit a multi-galaxy lens with a scaling tier whose Einstein radii are tied to the brightest co-dominant deflector.",
     "title": "Multi Galaxy Scaling Relation: SLaM"
   },
   {
@@ -6655,7 +6655,7 @@
     ],
     "notebook": "notebooks/point_source/features/scaling_relation/likelihood_function.ipynb",
     "path": "scripts/point_source/features/scaling_relation/likelihood_function.py",
-    "summary": "Describes how a BGC-anchored scaling tier enters the point-source `log_likelihood`.",
+    "summary": "Describes how a scaling tier anchored on the brightest galaxy enters the point-source `log_likelihood`.",
     "title": "__Log Likelihood Function: Scaling Relation (Point Source)__"
   },
   {
