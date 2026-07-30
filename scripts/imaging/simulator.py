@@ -407,8 +407,8 @@ simpler for one-off simulations; the `@jax.jit` wrap pays off when you call the 
 **Interferometer is different:** the jitted simulator path does *not* yet work there — see
 `scripts/interferometer/simulator.py`.
 
-See `scripts/guides/using_jax.py` for the full picture, and `scripts/guides/lens_calc.py` for the
-"JIT-it-yourself" pattern that wraps individual library methods like `tracer.image_2d_from` directly.
+See `scripts/guides/using_jax.py` for the full picture, including the "JIT-it-yourself" pattern that wraps
+individual library methods like `tracer.image_2d_from` directly.
 
 __Oversampled PSF (Advanced)__
 

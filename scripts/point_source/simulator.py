@@ -537,5 +537,5 @@ Two notes:
 - Unlike imaging / interferometer simulators, `PointSolver.use_jax=True` does not go through `Array2D.native` at
   all — the triangle-refinement loop operates on raw arrays throughout.
 
-See `scripts/guides/lens_calc.py` for the broader "JIT-it-yourself" pattern applied to other library methods.
+See `scripts/guides/using_jax.py` for the broader "JIT-it-yourself" pattern applied to other library methods.
 """
