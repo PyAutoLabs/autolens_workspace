@@ -19,6 +19,7 @@ New users should read the `start_here` example, which gives an overview of all e
 - `modeling`: Detailed example of performing lens modeling of a cluster scale strong lens using the multiple image locations.
 - `simulator`: Detailed example of how to simulate a cluster scale strong lens.
 - `data_preparation`: How to prepare data for cluster scale lens modeling, including marking the multiple image positions and lens galaxy centres.
+- `plot`: How to plot a cluster-scale strong lens dataset, including the multiple-image positions of its lensed sources.
 
 # Folders
 

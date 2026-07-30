@@ -11,6 +11,7 @@ The following example scripts illustrating lens modeling where:
 - `modeling`: Lens modeling of DSPL strong lenses.
 - `simulator`: Simulating a DSPL strong lens system.
 - `chaining`: Using non-linear search chaining to fit a DSPL, which fits the first source followed by the second for efficient and robust modeling.
+- `plot`: The plotting API for double source-plane lenses.
 
 # Results
 

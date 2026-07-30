@@ -185,6 +185,25 @@
   },
   {
     "contents": [
+      "Dataset",
+      "Dataset Figures",
+      "Positions Overlay",
+      "Cluster Subplot",
+      "Visualizer"
+    ],
+    "cross_refs": [
+      "guides/plot/start_here.py",
+      "scripts/cluster/start_here.py",
+      "scripts/imaging/plot.py",
+      "scripts/point_source/plot.py"
+    ],
+    "notebook": "notebooks/cluster/plot.ipynb",
+    "path": "scripts/cluster/plot.py",
+    "summary": "This example shows how to plot a cluster-scale strong lens dataset \u2014 the multiple-image positions of its lensed sources, individually and overlaid together on an image of the cluster.",
+    "title": "Plots: Cluster"
+  },
+  {
+    "contents": [
       "Multi-Plane Setup",
       "Main Lens vs Scaling Members vs Host Halo vs Source Galaxies",
       "Dataset Paths",
@@ -1358,6 +1377,26 @@
   },
   {
     "contents": [
+      "Dataset",
+      "Dataset Figures",
+      "Dataset Subplot",
+      "Fit",
+      "Fit Figures",
+      "Plane Images",
+      "Fit Subplot",
+      "Visualizer"
+    ],
+    "cross_refs": [
+      "guides/plot/start_here.py",
+      "scripts/imaging/plot.py"
+    ],
+    "notebook": "notebooks/group/plot.ipynb",
+    "path": "scripts/group/plot.py",
+    "summary": "This example shows how to plot a group-scale `Imaging` dataset and a `FitImaging` fit, figure by figure and via multi-panel subplots.",
+    "title": "Plots: Group"
+  },
+  {
+    "contents": [
       "Main Lens Galaxies vs Extra Galaxies",
       "No Group Halo",
       "Dataset Paths",
@@ -1857,83 +1896,32 @@
   {
     "contents": [
       "Setup",
-      "Fit Imaging",
-      "Full Subplot",
-      "Pixelized Source Reconstruction",
-      "Inversion"
-    ],
-    "cross_refs": [
-      "guides/plot/start_here.ipynb"
-    ],
-    "notebook": "notebooks/guides/plot/advanced/plotters_double_source_plane_lens.ipynb",
-    "path": "scripts/guides/plot/advanced/plotters_double_source_plane_lens.py",
-    "summary": "This example illustrates the plotting API for double source-plane lenses (DSPLs), which have more than two planes at different redshifts.",
-    "title": "Plots: DSPL"
-  },
-  {
-    "contents": [
-      "Setup",
-      "Fit Imaging",
-      "Inversion",
-      "Mapper Grids",
-      "Mapper Galaxy Dict",
-      "Fit Interferometer"
-    ],
-    "cross_refs": [
-      "guides/plot/start_here.ipynb"
-    ],
-    "notebook": "notebooks/guides/plot/advanced/plotters_pixelization.ipynb",
-    "path": "scripts/guides/plot/advanced/plotters_pixelization.py",
-    "summary": "This example illustrates the plotting API for pixelized source reconstructions.",
-    "title": "Plots: Pixelization"
-  },
-  {
-    "contents": [
-      "Setup",
-      "Output",
-      "Title",
-      "Colormap",
-      "Log10",
-      "Config Defaults"
-    ],
-    "cross_refs": [
-      "guides/plot/start_here.ipynb"
-    ],
-    "notebook": "notebooks/guides/plot/examples/mat_plot.ipynb",
-    "path": "scripts/guides/plot/examples/mat_plot.py",
-    "summary": "This example illustrates how to customize the appearance of figures in the new plotting API.",
-    "title": "Plots: Customization"
-  },
-  {
-    "contents": [
-      "Setup",
-      "Array2D",
-      "Grid2D",
-      "Tracer",
-      "Imaging Dataset",
-      "Fit Imaging",
       "Light Profile",
       "Mass Profile",
       "Galaxy",
-      "Interferometer"
+      "Tracer",
+      "Lensed Grids",
+      "1D Profiles"
     ],
     "cross_refs": [
-      "guides/plot/start_here.ipynb"
+      "guides/plot/start_here.py",
+      "plot.py",
+      "scripts/imaging/plot.py"
     ],
-    "notebook": "notebooks/guides/plot/examples/plotters.ipynb",
-    "path": "scripts/guides/plot/examples/plotters.py",
-    "summary": "This example illustrates the new plotting API for all key PyAutoLens objects.",
-    "title": "Plots: Plotters"
+    "notebook": "notebooks/guides/plot/plotters.ipynb",
+    "path": "scripts/guides/plot/plotters.py",
+    "summary": "This example illustrates how to plot each key PyAutoLens object \u2014 light profiles, mass profiles, galaxies and tracers \u2014 figure by figure.",
+    "title": "Plots: Objects"
   },
   {
     "contents": [
       "Setup",
       "Notation",
-      "DynestyPlotter",
+      "Dynesty",
       "Plots",
-      "EmceePlotter",
+      "Emcee",
       "Search Specific Visualization",
-      "ZeusPlotter",
+      "Zeus",
       "GetDist",
       "Parameter Names",
       "GetDist Plotter",
@@ -1947,10 +1935,36 @@
       "corner.py",
       "guides/plot/start_here.ipynb"
     ],
-    "notebook": "notebooks/guides/plot/examples/searches.ipynb",
-    "path": "scripts/guides/plot/examples/searches.py",
+    "notebook": "notebooks/guides/plot/searches.ipynb",
+    "path": "scripts/guides/plot/searches.py",
     "summary": "This example illustrates the API for plotting the results of different non-linear searches.",
     "title": "Plots: Searches"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "plot_array",
+      "plot_grid",
+      "Customization",
+      "Output",
+      "Config Defaults",
+      "Overlays",
+      "subplot_* Functions",
+      "Where To Next"
+    ],
+    "cross_refs": [
+      "plot.py",
+      "scripts/guides/plot/plotters.py",
+      "scripts/guides/plot/searches.py",
+      "scripts/guides/plot/visuals.py",
+      "scripts/imaging/plot.py",
+      "scripts/interferometer/plot.py",
+      "scripts/point_source/plot.py"
+    ],
+    "notebook": "notebooks/guides/plot/start_here.ipynb",
+    "path": "scripts/guides/plot/start_here.py",
+    "summary": "This example introduces the PyAutoLens plotting API.",
+    "title": "Plots: Start Here"
   },
   {
     "contents": [
@@ -1966,25 +1980,10 @@
     "cross_refs": [
       "guides/plot/start_here.ipynb"
     ],
-    "notebook": "notebooks/guides/plot/examples/visuals.ipynb",
-    "path": "scripts/guides/plot/examples/visuals.py",
-    "summary": "This example illustrates how to add overlays to plots using the new API.",
+    "notebook": "notebooks/guides/plot/visuals.ipynb",
+    "path": "scripts/guides/plot/visuals.py",
+    "summary": "This example illustrates how to add overlays to plots.",
     "title": "Plots: Visuals (Overlays)"
-  },
-  {
-    "contents": [
-      "Dataset",
-      "Customization",
-      "Config Defaults",
-      "Overlays"
-    ],
-    "cross_refs": [
-      "scripts/guides/plot/examples/searches.py"
-    ],
-    "notebook": "notebooks/guides/plot/start_here.ipynb",
-    "path": "scripts/guides/plot/start_here.py",
-    "summary": "This example introduces the new plotting API in PyAutoLens.",
-    "title": "Plots: Start Here"
   },
   {
     "contents": [],
@@ -2849,6 +2848,24 @@
     "path": "scripts/imaging/features/advanced/double_source_plane_lens/modeling.py",
     "summary": "A double source-plane lens (DSPL) is a strong lens system where there are two source galaxies at different redshifts behind the lens galaxy. They appear as two distinct Einstein rings in the image-plane, and can constrain Cosmological parameters in a way single Einstein ring lenses cannot.",
     "title": "Modeling Features: DSPL"
+  },
+  {
+    "contents": [
+      "Setup",
+      "Fit Imaging",
+      "Per-Plane Images",
+      "Full Subplot",
+      "Pixelized Source Reconstruction",
+      "Inversion"
+    ],
+    "cross_refs": [
+      "guides/plot/start_here.py",
+      "scripts/imaging/plot.py"
+    ],
+    "notebook": "notebooks/imaging/features/advanced/double_source_plane_lens/plot.ipynb",
+    "path": "scripts/imaging/features/advanced/double_source_plane_lens/plot.py",
+    "summary": "This example illustrates the plotting API for double source-plane lenses (DSPLs), which have more than two planes at different redshifts.",
+    "title": "Plots: DSPL"
   },
   {
     "contents": [
@@ -4015,6 +4032,24 @@
   },
   {
     "contents": [
+      "Setup",
+      "Fit Imaging",
+      "Inversion",
+      "Mapper Grids",
+      "Mapper Galaxy Dict",
+      "Fit Interferometer"
+    ],
+    "cross_refs": [
+      "guides/plot/start_here.py",
+      "scripts/imaging/plot.py"
+    ],
+    "notebook": "notebooks/imaging/features/pixelization/plot.ipynb",
+    "path": "scripts/imaging/features/pixelization/plot.py",
+    "summary": "This example illustrates how to plot fits which reconstruct the source galaxy using a pixelization.",
+    "title": "Plots: Pixelization"
+  },
+  {
+    "contents": [
       "Prerequisites",
       "SOURCE LP PIPELINE",
       "SOURCE PIX PIPELINE 1",
@@ -4303,6 +4338,27 @@
     "path": "scripts/imaging/modeling.py",
     "summary": "This script is the starting point for lens modeling of CCD imaging data (E.g. Hubble Space Telescope, Euclid) with **PyAutoLens** and it provides an overview of the lens modeling API.",
     "title": "Imaging: Modeling"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Dataset Figures",
+      "Dataset Subplot",
+      "Fit",
+      "Fit Figures",
+      "Plane Images",
+      "Fit Subplot",
+      "Visualizer"
+    ],
+    "cross_refs": [
+      "guides/plot/start_here.py",
+      "modeling.py",
+      "scripts/multi/plot.py"
+    ],
+    "notebook": "notebooks/imaging/plot.ipynb",
+    "path": "scripts/imaging/plot.py",
+    "summary": "This example shows how to plot an `Imaging` dataset and a `FitImaging` fit, figure by figure and via multi-panel subplots.",
+    "title": "Plots: Imaging"
   },
   {
     "contents": [
@@ -5511,6 +5567,24 @@
   },
   {
     "contents": [
+      "Dataset",
+      "Dataset Subplot",
+      "Fit",
+      "Fit Figures",
+      "Fit Subplot",
+      "Visualizer"
+    ],
+    "cross_refs": [
+      "guides/plot/start_here.py",
+      "modeling.py"
+    ],
+    "notebook": "notebooks/interferometer/plot.ipynb",
+    "path": "scripts/interferometer/plot.py",
+    "summary": "This example shows how to plot an `Interferometer` dataset and a `FitInterferometer` fit, figure by figure and via multi-panel subplots.",
+    "title": "Plots: Interferometer"
+  },
+  {
+    "contents": [
       "Grid",
       "Over Sampling",
       "Ray Tracing",
@@ -5876,18 +5950,22 @@
     "contents": [
       "Dataset",
       "Single Dataset Subplots",
-      "Multi Dataset Plot",
-      "Multi Dataset Array Plot",
+      "Combined Dataset Subplot",
+      "Fits",
+      "Combined Fit Subplot",
       "Multi Fits",
-      "Wrap Up"
+      "Visualizer"
     ],
     "cross_refs": [
-      "plot/start_here.ipynb"
+      "guides/plot/start_here.py",
+      "scripts/imaging/plot.py",
+      "scripts/multi/modeling.py",
+      "scripts/multi/simulator.py"
     ],
     "notebook": "notebooks/multi/plot.ipynb",
     "path": "scripts/multi/plot.py",
-    "summary": "This example shows how to plot the same figure from multiple datasets on a single subplot.",
-    "title": "Plots: Multi Figure Plotter"
+    "summary": "This example shows how to plot multiple datasets \u2014 and fits to multiple datasets \u2014 together, with every dataset appearing in one combined subplot.",
+    "title": "Plots: Multi"
   },
   {
     "contents": [
@@ -6224,6 +6302,27 @@
     "path": "scripts/multi_galaxy/modeling.py",
     "summary": "This script models an example strong lens on the 'multi galaxy' scale, where two (or more) galaxies of comparable mass both contribute significantly to the lensing of a single background source.",
     "title": "Multi Galaxy: Modeling"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Dataset Figures",
+      "Dataset Subplot",
+      "Fit",
+      "Fit Figures",
+      "Plane Images",
+      "Fit Subplot",
+      "Visualizer"
+    ],
+    "cross_refs": [
+      "guides/plot/start_here.py",
+      "imaging/plot.py",
+      "scripts/imaging/plot.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/plot.ipynb",
+    "path": "scripts/multi_galaxy/plot.py",
+    "summary": "This example shows how to plot a multi-galaxy `Imaging` dataset and a `FitImaging` fit, figure by figure and via multi-panel subplots.",
+    "title": "Plots: Multi Galaxy"
   },
   {
     "contents": [
@@ -6690,6 +6789,25 @@
   },
   {
     "contents": [
+      "Dataset",
+      "Dataset Figures",
+      "Fit",
+      "Fit Figures",
+      "Visualizer"
+    ],
+    "cross_refs": [
+      "guides/plot/start_here.py",
+      "modeling.py",
+      "scripts/imaging/plot.py",
+      "scripts/point_source/fit.py"
+    ],
+    "notebook": "notebooks/point_source/plot.ipynb",
+    "path": "scripts/point_source/plot.py",
+    "summary": "This example shows how to plot a `PointDataset` and a `FitPointDataset` fit.",
+    "title": "Plots: Point Source"
+  },
+  {
+    "contents": [
       "Model",
       "Dataset Paths",
       "Ray Tracing",
@@ -6899,6 +7017,28 @@
     "path": "scripts/weak/modeling.py",
     "summary": "This script fits a lens mass model to a weak gravitational lensing shear catalogue using a non-linear search. It is the weak-lensing analogue of `scripts/imaging/modeling.py`: where that script infers a lens model from a 2D image of a lensed source, this script infers one from the (gamma_2, gamma_1) shear measurements of background source galaxies \u2014 a `WeakDataset` produced by `scripts/weak/simulator.py`.",
     "title": "Modeling: Weak Lensing"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Dataset Figures",
+      "Dataset Subplot",
+      "Fit",
+      "Fit Subplot",
+      "Shear Profile",
+      "Visualizer"
+    ],
+    "cross_refs": [
+      "guides/plot/start_here.py",
+      "modeling.py",
+      "scripts/imaging/plot.py",
+      "scripts/weak/fit.py",
+      "scripts/weak/simulator.py"
+    ],
+    "notebook": "notebooks/weak/plot.ipynb",
+    "path": "scripts/weak/plot.py",
+    "summary": "This example shows how to plot a `WeakDataset` and a `FitWeak` fit.",
+    "title": "Plots: Weak"
   },
   {
     "contents": [

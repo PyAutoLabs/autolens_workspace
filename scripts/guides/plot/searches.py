@@ -13,11 +13,11 @@ __Contents__
 
 - **Setup:** General setup for the analysis.
 - **Notation:** Plot are labeled with short hand parameter names (e.g.
-- **DynestyPlotter:** We set up the Dynesty non-linear search and perform the fit to get the samples we will plot below.
+- **Dynesty:** We set up the Dynesty non-linear search and perform the fit to get the samples we will plot below.
 - **Plots:** All plots use dynesty's inbuilt plotting library and the model.
-- **EmceePlotter:** We now use the MCMC plotting functions to visualize emcee's results.
+- **Emcee:** We now use the MCMC plotting functions to visualize emcee's results.
 - **Search Specific Visualization:** The internal sampler can be used to plot the results of the non-linear search.
-- **ZeusPlotter:** We now use the MCMC plotting functions to visualize Zeus's results.
+- **Zeus:** We now use the MCMC plotting functions to visualize Zeus's results.
 - **GetDist:** This example illustrates how to plot visualization summarizing the results of model-fit using any.
 - **Parameter Names:** Note that in order to customize the figure, we will use the `samples.model.parameter_names` list.
 - **GetDist Plotter:** To make plots we use a GetDist plotter object, which can be customized to change the appearance of.
@@ -115,13 +115,13 @@ and can be customized.
 Each label also has a superscript corresponding to the model component the parameter originates from. For example,
 Gaussians are given the superscript `g`. This can also be customized in the `config/notation.yaml` file.
 
-__DynestyPlotter__
+__Dynesty__
 
 We set up the Dynesty non-linear search and perform the fit to get the samples we will plot below.
 """
 search = af.DynestyStatic(
     path_prefix=Path("plot"),
-    name="DynestyPlotter",
+    name="searches",
     unique_tag=dataset_name,
     n_live=100,
 )
@@ -129,7 +129,7 @@ search = af.DynestyStatic(
 result = search.fit(model=model, analysis=analysis)
 
 """
-We now pass the samples to a `DynestyPlotter` which will allow us to use the corner plotting function of the
+We now pass the samples to the `corner_anesthetic` function, which uses the corner plotting function of the
 public library anesthetic
 
 The Dynesty readthedocs describes fully all of the methods used below 
@@ -393,7 +393,7 @@ except (AttributeError, TypeError):
     pass  # search_internal unavailable in test mode
 
 """
-__EmceePlotter__
+__Emcee__
 
 We now use the MCMC plotting functions to visualize emcee's results.
 
@@ -514,7 +514,7 @@ except AttributeError:
     pass  # MCMC-specific methods not available for non-MCMC searches
 
 """
-__ZeusPlotter__
+__Zeus__
 
 We now use the MCMC plotting functions to visualize Zeus's results.
 
@@ -568,57 +568,11 @@ search_internal = result.search_internal
 """
 __Plots__
 
-The method below shows a 2D projection of the walker trajectories.
+The walker-trajectory plots shown above in the __Emcee__ section (a 2D projection of the walker
+trajectories, the likelihood as a series of steps, and the parameter values of every walker at
+every step) work identically for Zeus, using the same `search_internal.get_chain()` and
+`search_internal.get_log_prob()` calls, so are not repeated here.
 """
-try:
-    fig, axes = plt.subplots(result.model.prior_count, figsize=(10, 7))
-
-    for i in range(result.model.prior_count):
-        for walker_index in range(search_internal.get_log_prob().shape[1]):
-            ax = axes[i]
-            ax.plot(
-                search_internal.get_chain()[:, walker_index, i],
-                search_internal.get_log_prob()[:, walker_index],
-                alpha=0.3,
-            )
-
-        ax.set_ylabel("Log Likelihood")
-        ax.set_xlabel(result.model.parameter_labels_with_superscripts_latex[i])
-
-    plt.show()
-
-    """
-    This method shows the likelihood as a series of steps.
-    """
-
-    fig, axes = plt.subplots(1, figsize=(10, 7))
-
-    for walker_index in range(search_internal.get_log_prob().shape[1]):
-        axes.plot(search_internal.get_log_prob()[:, walker_index], alpha=0.3)
-
-    axes.set_ylabel("Log Likelihood")
-    axes.set_xlabel("step number")
-
-    plt.show()
-
-    """
-    This method shows the parameter values of every walker at every step.
-    """
-    fig, axes = plt.subplots(
-        result.samples.model.prior_count, figsize=(10, 7), sharex=True
-    )
-
-    for i in range(result.samples.model.prior_count):
-        ax = axes[i]
-        ax.plot(search_internal.get_chain()[:, :, i], alpha=0.3)
-        ax.set_ylabel(result.model.parameter_labels_with_superscripts_latex[i])
-
-    axes[-1].set_xlabel("step number")
-
-    plt.show()
-except AttributeError:
-    pass  # MCMC-specific methods not available for non-MCMC searches
-
 
 """
 __GetDist__

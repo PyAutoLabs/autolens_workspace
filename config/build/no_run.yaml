@@ -34,7 +34,7 @@
 - fits_make # Test mode does not output .fits images.
 - png_make # Test mode does not output .png images.
 - time_delays # Test mode does not support cosmology ift
-- examples/searches # Test mode breaks search visualization.
+- guides/plot/searches # Test mode breaks search visualization.
 - mass_stellar_dark/modeling # Requires CSE to be JAX enabled.
 - mass_stellar_dark/slam # Requires CSE to be JAX enabled.
 - detect/database # Unsure but not a feature actively used currently.

@@ -12,6 +12,7 @@ New users should read the `start_here` example, which gives an overview of all e
 - `simulator`: Detailed example of how to simulate strong lens point source lensing data.
 - `simulator_sample`: How to simulate a sample of strong lenses point source observations.
 - `fit`: How to fit point source data to compute quantities like the residuals, chi squared and likelihood, also includes how to use the point solver.
+- `plot`: How to plot a `PointDataset` and a `FitPointDataset` fit.
 
 # Folders
 

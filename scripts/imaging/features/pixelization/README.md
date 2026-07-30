@@ -6,6 +6,7 @@ The following example scripts illustrating lens modeling where:
 
 - `modeling`: Lens modeling using a pixelized source reconstruction.
 - `fit`: Fit a pixelized source and compute quantities like the residuals, chi squared and likelihood.
+- `plot`: How to plot fits which reconstruct the source galaxy using a pixelization.
 - `likelihood_function`: A step-by-step guide of the pixelized source likelihood function.
 - `cpu_fast_modeling`: How to speed up pixelized source modeling using CPUs ,if you do not have access to modern GPUs.
 - `source_science`: Performing source science calculations like the unlensed source's total flux and magnification.
