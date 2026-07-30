@@ -15,6 +15,7 @@ __Contents__
 - **Auto-Enabled Modeling:** What "JAX is used automatically" means under the hood for model-fits.
 - **Disabling JAX:** Forcing the NumPy path per-analysis or globally, and why that helps when debugging.
 - **Writing @jax.jit Yourself:** Custom simulations and custom likelihood functions.
+- **Custom Likelihood Functions:** Writing your own log likelihood — via the `Analysis` object, by hand, and via `Fitness`.
 - **JIT-ing Library Methods:** The advanced path wrapping library methods like `tracer.image_2d_from` directly.
 - **Return-Type Contract:** What `jax.Array` data inside results means for plotting, saving and arithmetic.
 
@@ -65,8 +66,89 @@ Two situations call for it:
    their `__JAX Variant__` section.
 
 2. **Custom likelihood functions** that you assemble by hand rather than reaching for `AnalysisImaging`. Same
-   shape: `@jax.jit` around your own `def log_likelihood(instance): ...` that builds a `Tracer` and a `FitImaging`
-   and returns `fit.log_likelihood`. See the per-dataset-type `likelihood_function.py` scripts.
+   shape: `@jax.jit` around your own `def log_likelihood(instance): ...`. The next section works this through.
+
+__Custom Likelihood Functions__
+
+The `likelihood_function.py` script in each dataset-type folder (`scripts/imaging/likelihood_function.py`,
+`scripts/interferometer/likelihood_function.py`, ...) walks through a lens model's log likelihood one NumPy step
+at a time, so you can see exactly what a model-fit computes. A real fit does not run that step-by-step code — it
+runs the same calculation compiled by JAX. This section shows how to reach it.
+
+**One-time setup.** A `ModelInstance` is not a JAX type, so it cannot cross a `@jax.jit` boundary until the
+model's classes are registered as pytrees:
+
+```python
+import jax
+import jax.numpy as jnp
+from autofit.jax.pytrees import enable_pytrees, register_model
+
+enable_pytrees()
+register_model(model)
+```
+
+Skip this and the first call raises `TypeError: Error interpreting argument ... as an abstract array. The
+problematic value is of type ModelInstance`.
+
+**Via the `Analysis` object.** The short path, and the one to reach for first. The analysis threads `xp` through
+the whole calculation for you, so `@jax.jit` is the only JAX you write:
+
+```python
+analysis = al.AnalysisImaging(dataset=dataset)  # use_jax=True by default
+
+@jax.jit
+def log_likelihood(instance):
+    return analysis.log_likelihood_function(instance=instance)
+```
+
+`instance` is a model instance — e.g. `model.instance_from_prior_medians()`, or
+`model.instance_from_vector(vector=...)` — the same object a non-linear search hands the analysis on every
+iteration.
+
+**Assembling the fit yourself.** If you want the `Tracer` and `FitImaging` in your own hands — a custom forward
+model, a modified fit, a likelihood the shipped `Analysis` classes do not cover — build them inside the jitted
+function. Here you must pass `xp=jnp` explicitly, because nothing is threading it for you:
+
+```python
+@jax.jit
+def log_likelihood(instance):
+    tracer = al.Tracer(galaxies=instance.galaxies)
+    return al.FitImaging(dataset=dataset, tracer=tracer, xp=jnp).log_likelihood
+```
+
+Omit `xp=jnp` and the fit falls back to NumPy internals, raising `TracerArrayConversionError` the moment JAX
+traces it. You do *not* need `register_tracer_classes` here — the tracer is built inside the jitted function
+rather than passed across its boundary. That call is for the `__JIT-ing Library Methods__` case below, where a
+`Tracer` is an argument.
+
+For interferometer data the same shape applies with `al.FitInterferometer`, with one constraint: use
+`TransformerDFT` (the default). `TransformerNUFFT` is not JAX-traceable.
+
+**Via `Fitness` — the production path.** A non-linear search does not call your function; it calls a `Fitness`
+object, which maps a raw parameter vector to a model instance, calls the analysis, and returns the figure of
+merit. `Fitness` performs the pytree registration itself, so it needs none of the setup above:
+
+```python
+from autofit.non_linear.fitness import Fitness   # not exported at autofit's top level
+
+fitness = Fitness(
+    model=model,
+    analysis=al.AnalysisImaging(dataset=dataset),
+    fom_is_log_likelihood=True,
+)
+
+log_likelihood = fitness._vmap(jnp.array([parameters]))[0]
+```
+
+`parameters` is a flat list of physical parameter values in the model's order (e.g.
+`model.physical_values_from_prior_medians`), and `_vmap` evaluates a *batch* of them — hence the extra dimension
+and the `[0]`.
+
+This is the pattern to use when checking a JAX likelihood against the NumPy value a `likelihood_function.py`
+walkthrough computes. Prefer it over a single `jax.jit(fn)(concrete)` call: `_vmap` is `jax.vmap(jax.jit(call))`,
+exactly what a search runs, and vmapping over a batch forces every operation through JAX tracing. A single
+concrete call can quietly succeed on code with NumPy leaking through an un-threaded `xp`, which then breaks as
+soon as a real search batches parameter vectors.
 
 __JIT-ing Library Methods__
 

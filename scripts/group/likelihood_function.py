@@ -20,6 +20,7 @@ for a single lens galaxy. This script extends that to the group scale.
 
 __Contents__
 
+- **JAX:** Model-fits run this likelihood function through JAX — see `scripts/guides/using_jax.py`.
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
 - **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
 - **Masked Image Grid:** To perform galaxy calculations we define a 2D image-plane grid of (y,x) coordinates.
@@ -38,6 +39,12 @@ __Contents__
 - **Fit:** Fit the lens model to the dataset.
 - **Lens Modeling:** To fit a lens model to data, the likelihood function illustrated in this tutorial is sampled using.
 - **Wrap Up:** Summary of the script and next steps.
+
+__JAX__
+
+Model-fits evaluate this likelihood function through JAX rather than NumPy, which is what makes lens modeling
+fast — `scripts/guides/using_jax.py` shows this likelihood function JAX-compiled via both the `Analysis` object
+and the `Fitness` object a non-linear search drives.
 
 """
 
@@ -473,16 +480,4 @@ The key differences from galaxy-scale lensing are:
  - Getting the mass of extra galaxies right is important because their deflection angles affect the
    source-plane coordinates and therefore the quality of the source reconstruction.
  - The `FitImaging` and `Tracer` objects handle all of this automatically for an arbitrary number of galaxies.
-
-__JAX__
-
-Same JAX recipe as `scripts/imaging/likelihood_function.py`: wrap the
-hand-rolled construction in `@jax.jit`, register tracer classes once via
-`autolens.jax.register_tracer_classes(tracer)`, validate via
-`Fitness._vmap`. The group dataset adds nothing JAX-specific beyond the
-imaging case — the extra galaxies are just more `Galaxy` instances and
-the registration walker handles them uniformly.
-
-See `scripts/imaging/likelihood_function.py` `__JAX__` for the full
-recipe.
 """
