@@ -25,4 +25,4 @@ A full guide to result analysis is given at `autolens_workspace/*/guides/results
 
 # Imaging Equivalent
 
-For the CCD-imaging version of these scripts, see `autolens_workspace/scripts/imaging/features/linear_light_profiles`.
+For the CCD-imaging version of these scripts, see `autolens_workspace/*/imaging/features/linear_light_profiles`.
