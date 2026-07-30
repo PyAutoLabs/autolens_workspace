@@ -291,7 +291,9 @@ The modeling API has full support for composing the extra galaxies such that the
 relations. For example, you could assume that the mass of the extra galaxies is related to their luminosity via a
 constant mass-to-light ratio.
 
-This is documented in the `autolens_workspace/*/imaging/features/scaling_relation` example.
+This is documented in the `autolens_workspace/*/interferometer/features/scaling_relation` example, which ties each
+companion's Einstein radius to the main lens's own so the whole population costs zero free parameters. Note that its
+luminosities must come from ancillary optical/NIR imaging — the foreground light is not in interferometer data.
 
 __Wrap Up__
 

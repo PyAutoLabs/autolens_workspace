@@ -386,8 +386,10 @@ luminosities, so that a population of them adds a fixed, small number of free pa
 galaxy. Given how tight the information budget is for point sources, this is often the only affordable way to
 include more than a handful of them.
 
-This is documented in the `autolens_workspace/*/imaging/features/scaling_relation` example, and the API carries
-over to point sources unchanged.
+This is documented in the `autolens_workspace/*/point_source/features/scaling_relation` example, which ties each
+companion's Einstein radius to the main lens's own so the whole population costs zero free parameters. Against the
+12-point budget discussed above that is decisive: in that example, tying five companions gives 8 free parameters where
+freeing them gives 13 — more parameters than data points.
 
 __Wrap Up__
 
