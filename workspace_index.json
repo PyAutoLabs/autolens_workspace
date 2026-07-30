@@ -5789,6 +5789,50 @@
   },
   {
     "contents": [
+      "Dataset",
+      "Mask & Over Sampling",
+      "Centres",
+      "Why Not Noise Scaling",
+      "Model",
+      "Extra Galaxies Model",
+      "Getting The Tier Wrong",
+      "Search + Analysis / Run Time / Model-Fit / Result.",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/extra_galaxies/modeling.ipynb",
+      "multi_galaxy/modeling.ipynb",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/simulator.py",
+      "multi_galaxy/start_here.ipynb"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/extra_galaxies/modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/extra_galaxies/modeling.py",
+    "summary": "Extends the multi-galaxy lens model with an **extra galaxies tier**: perturbers near the co-dominant pair which are carried in the model with their own light and mass, their centres fixed to the observed light.",
+    "title": "Modeling Features (Multi Galaxy): Extra Galaxies"
+  },
+  {
+    "contents": [
+      "Dataset Paths / Grid / PSF / Simulator",
+      "Main Lens Galaxies",
+      "Extra Galaxies",
+      "Shear / Source",
+      "Dataset",
+      "Mask Extra Galaxies",
+      "Records"
+    ],
+    "cross_refs": [
+      "modeling.py",
+      "multi_galaxy/simulator.ipynb",
+      "multi_galaxy/simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/extra_galaxies/simulator.ipynb",
+    "path": "scripts/multi_galaxy/features/extra_galaxies/simulator.py",
+    "summary": "Simulates the dataset for the `multi_galaxy/features/extra_galaxies` feature: the co-dominant pair of `multi_galaxy/simulator.py`, plus two extra galaxies near the lens which have **mass as well as light**.",
+    "title": "Simulator: Multi Galaxy Extra Galaxies"
+  },
+  {
+    "contents": [
       "Dataset & Mask",
       "Scaling Catalogue",
       "Model",
