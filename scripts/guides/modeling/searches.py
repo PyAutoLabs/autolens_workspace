@@ -4,14 +4,22 @@ Modeling: Searches
 
 This script gives a run through of all non-linear searches that are available for modeling.
 
-Extensive testing of lens modeling has shown that the default search used throughout all modeling examples,
-`Nautilus`, is the most accurate and fastest search available. For users familiar with statistical inference, this may
-be surprising, as nested samplers are traditionally slower than MCMC methods such as Emcee and maximum likelihood
-methods such as LBFGS. A description of why Nautilus performs better than these other searches is beyond the scope
-of this script, but if you add me on SLACk I'd be happy to have a discussion about it!
+Two searches account for essentially all lens modeling you will do, and they are the first two documented below:
 
-Therefore, unless you really know what you are doing or want to use an alternative search, it is strongly recommended
-you stick to Nautilus.
+- **`Nautilus`** is the nested sampling algorithm used by every `modeling.py` example. It returns the full
+  posterior -- the errors on every parameter and the covariances between them -- and is therefore the search you
+  use when you need results you can quote. Extensive testing of lens modeling has shown it is the most accurate
+  and efficient search available. For users familiar with statistical inference this may be surprising, as nested
+  samplers are traditionally slower than MCMC methods such as Emcee and maximum likelihood methods such as LBFGS.
+  A description of why Nautilus performs better than these other searches is beyond the scope of this script, but
+  if you add me on SLACk I'd be happy to have a discussion about it!
+
+- **`MultiStartProdigy`** is the JAX multi-start gradient optimizer used by every `start_here.py` example. It is
+  far faster than Nautilus, but returns a single best-fit lens model with no errors at all, so it is the search
+  you use to check quickly that your model and data are sensible.
+
+Every other search documented below is an alternative you would reach for only if you really know what you are
+doing, or want to cross-check a result against a different method.
 
 Three different categories of searches are available, nested samplers (E.g. Nautilus, Dynesty), MCMC (E.g. Emcee) and
 maximum likelihood (e.g. LBFGS). MCMC and MLE methods can often optionally use a "starting point" to initialize the
@@ -23,11 +31,12 @@ object and pass these to the search to perform the fit. We skip these steps for 
 
 __Contents__
 
+- **Nautilus:** Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/) is the recommended nested sampling algorithm, which returns the full posterior. It is gradient-free, so it does not use JAX gradients, but it does exploit JAX GPU acceleration via batched likelihood evaluation.
+- **MultiStartProdigy:** The recommended JAX multi-start gradient maximum a posteriori (MAP) optimizer (learning-rate free), with `MultiStartAdam` and `MultiStartADABelief` as alternatives. Works for parametric sources (e.g. MGE, Sersic) and, with `resurrect=True` and an appropriate regularization scheme, pixelized sources.
 - **Dynesty:** Dynesty (https://github.com/joshspeagle/dynesty) is a nested sampling algorithm.
 - **Emcee:** Emcee (https://github.com/dfm/emcee) is an ensemble MCMC sampler that is commonly used in Astronomy.
 - **Zeus:** Zeus (https://zeus-mcmc.readthedocs.io/en/latest/) is an ensemble MCMC slice sampler.
 - **LBFGS:** LBFGS is a quasi-Newton optimization algorithm from scipy.
-- **MultiStartProdigy:** The recommended JAX multi-start gradient maximum a posteriori (MAP) optimizer (learning-rate free), with `MultiStartAdam` and `MultiStartADABelief` as alternatives. Works for parametric sources (e.g. MGE, Sersic) and, with `resurrect=True` and an appropriate regularization scheme, pixelized sources.
 - **Start Point:** For maximum likelihood estimator (MLE) and Markov Chain Monte Carlo (MCMC) non-linear searches.
 - **Search Cookbook:** There are a number of other searches supported by **PyAutoFit** and therefore which can be used.
 
@@ -43,6 +52,122 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 from pathlib import Path
 import autofit as af
 import autolens as al
+
+"""
+__Nautilus__
+
+Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/) is a nested sampling algorithm, and is the
+recommended search for lens modeling. It is the search used by every `modeling.py` example in the workspace.
+
+__Full Posterior__
+
+Nautilus does not just return a best-fit lens model, it maps out the **full posterior**: the probability density
+of every parameter, the errors on each one, and the covariances between them. If a fit infers an Einstein radius
+of 1.6", Nautilus tells you whether that is 1.6 +/- 0.01 or 1.6 +/- 0.5, and whether it trades off against the
+other mass parameters.
+
+This is what most science needs, and it is why Nautilus remains the default recommendation even though the
+gradient optimizer described next is faster. An optimizer hands you a single point in parameter space; Nautilus
+hands you a measurement you can quote.
+
+__JAX__
+
+Nautilus is a **gradient-free** search. It explores parameter space by drawing new live points from a learned
+boundary around the current live point set, using only evaluations of the likelihood. It therefore never
+differentiates the likelihood, and unlike `MultiStartProdigy` below it neither needs nor uses JAX's gradients.
+
+It does, however, exploit JAX on a GPU. Nautilus proposes points in batches rather than one at a time, and when
+the analysis is JAX-traceable (created via `use_jax=True`) **PyAutoFit** evaluates each batch through the
+`jax.vmap(jax.jit(...))` wrapped likelihood in a single call. All `n_batch` lens models are therefore fitted
+simultaneously on the GPU, and the JAX speed-up applies in full to a Nautilus fit -- it simply comes from batched
+likelihood evaluation instead of gradient descent.
+
+`n_batch` is also the main control on GPU memory: a larger batch fits more lens models per call, but holds more
+of them in VRAM at once.
+
+__Live Points__
+
+`n_live` is the main setting trading off accuracy against run-time. More live points give a more accurate result
+but a longer run-time, whereas fewer are faster but risk inferring a local maxima. More complex models (that is,
+models with more parameters) require more live points.
+"""
+search = af.Nautilus(
+    path_prefix=Path("imaging", "searches"),
+    name="Nautilus",
+    unique_tag="example",
+    # search specific settings
+    n_live=100,  # The number of Nautilus "live" points, increase for more complex models.
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, and this bounds VRAM use.
+    iterations_per_quick_update=10000,
+)
+
+"""
+__MultiStartProdigy (JAX multi-start gradient optimizers)__
+
+`MultiStartProdigy` is the recommended JAX / `optax` multi-start gradient optimizer, a maximum a posteriori (MAP)
+estimator. It directly addresses the weakness of a single-start optimizer like `LBFGS` (described below): instead
+of descending from a single starting point (which, for the complex parameter spaces of lens models, frequently
+gets stuck in a local maximum), it launches `n_starts` independent optimizations from broad starting points in
+parallel via `jax.vmap` and returns the best one.
+
+This "multi-start" approach was introduced for strong-lens modeling by GIGA-Lens (Gu, Huang et al. 2022,
+arXiv:2202.07663; GIGA-Lens 2.0, arXiv:2606.30633): a wide population of parallel starts reliably finds the global
+maximum-likelihood basin where single-start optimizers fail, which is what makes a gradient optimizer robust on the
+multi-modal lens likelihood.
+
+Prodigy is a *learning-rate free* update rule (Mishchenko & Defazio 2024, arXiv:2306.06101): it estimates its own
+step size as it runs, so unlike `MultiStartAdam` it takes no `learning_rate` and there is nothing to tune. On
+lens-modeling likelihoods it reaches the same maximum as a carefully hand-tuned `MultiStartAdam`, which is why it is
+the recommended default of the family.
+
+Three JAX multi-start optimizers are available (they share the same multi-start machinery, differing only in the
+`optax` update rule each start uses):
+
+- `MultiStartProdigy` — learning-rate free (recommended); no `learning_rate` to set.
+- `MultiStartAdam` — the GIGA-Lens original; robust, but you must choose a `learning_rate`.
+- `MultiStartADABelief` — an Adam variant; a drop-in alternative at the same `learning_rate`.
+
+(`MultiStartLion` is a further sign-based alternative that prefers a ~10x smaller `learning_rate`.)
+
+__Pixelized sources__
+
+Because these are gradient-based, they require a JAX-traceable analysis (created via `use_jax=True`). They are
+validated for **parametric sources** (e.g. an MGE or Sersic source) and — as of the 2026-07 pixelized-mesh
+campaign — for **pixelized sources** (a `Pixelization` / reconstructed source) too, where from fully broad mass
+priors they recover the true lens model on every mesh family (rectangular, k-nearest-neighbour, Delaunay), reaching
+higher likelihoods than a comparably-configured `Nautilus` run in a fraction of the time.
+
+Pixelized likelihoods do have regions where the fit (and hence the gradient) becomes non-finite — dominated by the
+regularization parameters, not the mass model — so three settings matter:
+
+- **`resurrect=True`**: starts whose trajectory goes non-finite are redrawn each step instead of dying in place.
+  This is what converts the pixelized likelihood from unsearchable to searchable, and it is off by default (it is
+  unnecessary on parametric sources).
+- **The regularization scheme**: schemes whose high-coefficient region is numerically fragile (e.g. the adaptive
+  split schemes, whose effective coefficient is raised to the 4th power) slow the search dramatically — it must
+  rediscover the good regularization mode by luck. Two reliable choices: **fix or inherit the regularization** from
+  an earlier fit (exactly what SLaM pipeline chaining does), which converges in a few hundred steps; or use a
+  **kernel regularization** (e.g. `MaternKernel`), whose likelihood degrades smoothly at extreme coefficients and
+  searches cleanly with the regularization left free.
+- **`n_steps` and `batch_size`**: with a free regularization, budget 1500-3000 steps — the best regularization mode
+  is often found late, and a long likelihood plateau is a regularization mode, not convergence. `batch_size`
+  (e.g. 4) bounds the memory of the batched gradient, which pixelized models need.
+
+For the rectangular kernel-CDF meshes one further setting matters: a sharp `bandwidth` (e.g. 0.1) gives the mesh
+narrow gradient support that can stall descent, whereas the default `bandwidth=1.0` searches on a smoother
+likelihood at only a small cost in final fit quality — if a rectangular-mesh search stalls, search at the default
+bandwidth first and only sharpen afterwards.
+
+Because it manages its own broad starting points, this search does not use the start-point API described below. Like
+all optimizers it returns a single best-fit lens model, not a posterior with errors, so `Nautilus` above remains the
+default recommendation when parameter uncertainties are required.
+"""
+search = af.MultiStartProdigy(
+    path_prefix=Path("imaging", "searches"),
+    name="MultiStartProdigy",
+    n_starts=50,
+    n_steps=500,
+)
 
 """
 __Dynesty__
@@ -185,74 +310,6 @@ search = af.LBFGS(
     path_prefix=Path("imaging", "searches"),
     name="LBFGS",
     unique_tag="example",
-)
-
-"""
-__MultiStartProdigy (JAX multi-start gradient optimizers)__
-
-`MultiStartProdigy` is the recommended JAX / `optax` multi-start gradient optimizer, a maximum a posteriori (MAP)
-estimator. It directly addresses the weakness of a single-start optimizer like `LBFGS` noted above: instead of
-descending from a single starting point (which, for the complex parameter spaces of lens models, frequently gets
-stuck in a local maximum), it launches `n_starts` independent optimizations from broad starting points in parallel
-via `jax.vmap` and returns the best one.
-
-This "multi-start" approach was introduced for strong-lens modeling by GIGA-Lens (Gu, Huang et al. 2022,
-arXiv:2202.07663; GIGA-Lens 2.0, arXiv:2606.30633): a wide population of parallel starts reliably finds the global
-maximum-likelihood basin where single-start optimizers fail, which is what makes a gradient optimizer robust on the
-multi-modal lens likelihood.
-
-Prodigy is a *learning-rate free* update rule (Mishchenko & Defazio 2024, arXiv:2306.06101): it estimates its own
-step size as it runs, so unlike `MultiStartAdam` it takes no `learning_rate` and there is nothing to tune. On
-lens-modeling likelihoods it reaches the same maximum as a carefully hand-tuned `MultiStartAdam`, which is why it is
-the recommended default of the family.
-
-Three JAX multi-start optimizers are available (they share the same multi-start machinery, differing only in the
-`optax` update rule each start uses):
-
-- `MultiStartProdigy` — learning-rate free (recommended); no `learning_rate` to set.
-- `MultiStartAdam` — the GIGA-Lens original; robust, but you must choose a `learning_rate`.
-- `MultiStartADABelief` — an Adam variant; a drop-in alternative at the same `learning_rate`.
-
-(`MultiStartLion` is a further sign-based alternative that prefers a ~10x smaller `learning_rate`.)
-
-__Pixelized sources__
-
-Because these are gradient-based, they require a JAX-traceable analysis (created via `use_jax=True`). They are
-validated for **parametric sources** (e.g. an MGE or Sersic source) and — as of the 2026-07 pixelized-mesh
-campaign — for **pixelized sources** (a `Pixelization` / reconstructed source) too, where from fully broad mass
-priors they recover the true lens model on every mesh family (rectangular, k-nearest-neighbour, Delaunay), reaching
-higher likelihoods than a comparably-configured `Nautilus` run in a fraction of the time.
-
-Pixelized likelihoods do have regions where the fit (and hence the gradient) becomes non-finite — dominated by the
-regularization parameters, not the mass model — so three settings matter:
-
-- **`resurrect=True`**: starts whose trajectory goes non-finite are redrawn each step instead of dying in place.
-  This is what converts the pixelized likelihood from unsearchable to searchable, and it is off by default (it is
-  unnecessary on parametric sources).
-- **The regularization scheme**: schemes whose high-coefficient region is numerically fragile (e.g. the adaptive
-  split schemes, whose effective coefficient is raised to the 4th power) slow the search dramatically — it must
-  rediscover the good regularization mode by luck. Two reliable choices: **fix or inherit the regularization** from
-  an earlier fit (exactly what SLaM pipeline chaining does), which converges in a few hundred steps; or use a
-  **kernel regularization** (e.g. `MaternKernel`), whose likelihood degrades smoothly at extreme coefficients and
-  searches cleanly with the regularization left free.
-- **`n_steps` and `batch_size`**: with a free regularization, budget 1500-3000 steps — the best regularization mode
-  is often found late, and a long likelihood plateau is a regularization mode, not convergence. `batch_size`
-  (e.g. 4) bounds the memory of the batched gradient, which pixelized models need.
-
-For the rectangular kernel-CDF meshes one further setting matters: a sharp `bandwidth` (e.g. 0.1) gives the mesh
-narrow gradient support that can stall descent, whereas the default `bandwidth=1.0` searches on a smoother
-likelihood at only a small cost in final fit quality — if a rectangular-mesh search stalls, search at the default
-bandwidth first and only sharpen afterwards.
-
-Because it manages its own broad starting points, this search does not use the start-point API described below. Like
-all optimizers it returns a single best-fit lens model, not a posterior with errors, so `Nautilus` remains the
-default recommendation when parameter uncertainties are required.
-"""
-search = af.MultiStartProdigy(
-    path_prefix=Path("imaging", "searches"),
-    name="MultiStartProdigy",
-    n_starts=50,
-    n_steps=500,
 )
 
 """
