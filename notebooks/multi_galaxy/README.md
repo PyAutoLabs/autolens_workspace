@@ -38,6 +38,7 @@ New users should read the `start_here` example, which gives an overview of all e
 - `simulator_sample`: How to simulate a sample of multi-galaxy strong lenses, drawing random co-dominant pairs.
 - `fit`: An anatomy of the multi-galaxy fit — how each co-dominant deflector contributes to the summed
   deflection field, and every quantity `FitImaging` computes.
+- `plot`: How to plot a multi-galaxy `Imaging` dataset and a `FitImaging` fit; identical to `imaging/plot.py`.
 - `source_science`: Source science calculations (total flux, magnification) behind two co-dominant deflectors.
 - `likelihood_function`: A step-by-step guide of the multi-galaxy likelihood function, including the deflection
   summation which defines the regime.

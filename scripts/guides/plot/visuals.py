@@ -2,18 +2,16 @@
 Plots: Visuals (Overlays)
 =========================
 
-This example illustrates how to add overlays to plots using the new API.
+This example illustrates how to add overlays to plots.
 
 Overlays are specified via two keyword arguments on `aplt.plot_array()` and `aplt.plot_grid()`:
 
  - `lines=`: A list of `Grid2DIrregular` objects drawn as lines (e.g. critical curves, caustics).
  - `positions=`: A `Grid2DIrregular` object drawn as scatter points (e.g. image positions).
 
-The old `Visuals2D` and `MatPlot2D` objects that configured overlays have been removed.
-
 __Start Here Notebook__
 
-Refer to `guides/plot/start_here.ipynb` for a general introduction to the new plotting API.
+Refer to `guides/plot/start_here.ipynb` for a general introduction to the plotting API.
 
 __Contents__
 

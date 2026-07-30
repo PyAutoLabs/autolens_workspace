@@ -5,22 +5,20 @@ Plots: DSPL
 This example illustrates the plotting API for double source-plane lenses (DSPLs), which have
 more than two planes at different redshifts.
 
-The new API uses:
+DSPL fits are plotted with the same functions as other imaging fits (see `scripts/imaging/plot.py`):
 
  - `aplt.plot_array()` — plot any 2D array.
  - `aplt.subplot_fit_imaging()` — multi-panel fit overview.
 
-For pixelized source reconstructions, inversion quantities are accessed via `fit.inversion`
-and plotted with `aplt.plot_array()`.
+For pixelized source reconstructions, inversion quantities are accessed via `fit.inversion`.
 
-__Start Here Notebook__
-
-Refer to `guides/plot/start_here.ipynb` for an introduction to the new plotting API.
+For an introduction to the plotting API refer to `guides/plot/start_here.py`.
 
 __Contents__
 
-- **Setup:** General setup for the analysis.
+- **Setup:** Set up the DSPL dataset and fit.
 - **Fit Imaging:** Plot individual fit attributes with `aplt.plot_array()`.
+- **Per-Plane Images:** Plot the model image of each of the three planes.
 - **Full Subplot:** A multi-panel subplot overview is produced with `aplt.subplot_fit_imaging()`.
 - **Pixelized Source Reconstruction:** Now set up a DSPL fit using pixelized source reconstructions.
 - **Inversion:** The inversion is computed directly from a `Tracer` using `TracerToInversion`.
@@ -172,10 +170,10 @@ Plot the fit overview.
 aplt.subplot_fit_imaging(fit=fit)
 
 """
-The pixelized source reconstructions are accessed via the `inversion` property of the fit.
-
-For a DSPL there are two reconstructions (one per source plane), indexed
-by their position in `fit.inversion.reconstruction_dict`.
+The reconstructed sources, mapped back to the image plane, are the model images of the two source
+planes. The raw reconstructions (the values of every source-pixel in each mesh) are stored on the
+fit's `inversion` property; they are defined on the source-plane meshes rather than a uniform 2D
+grid, which is why the figures here plot the per-plane model images.
 """
 aplt.plot_array(
     array=fit.model_images_of_planes_list[1],
@@ -189,7 +187,8 @@ aplt.plot_array(
 """
 __Inversion__
 
-The inversion is computed directly from a `Tracer` using `TracerToInversion`.
+The inversion is computed directly from a `Tracer` using `TracerToInversion`, without building a
+fit first — useful for inspecting the pixelizations before fitting.
 """
 tracer_to_inversion = al.TracerToInversion(
     tracer=tracer,
@@ -198,17 +197,7 @@ tracer_to_inversion = al.TracerToInversion(
 
 inversion = tracer_to_inversion.inversion
 
-"""
-Plot the reconstructed source for each pixelization index.
-"""
-aplt.plot_array(
-    array=fit.model_images_of_planes_list[1],
-    title="Inversion Reconstruction (Plane 1)",
-)
-aplt.plot_array(
-    array=fit.model_images_of_planes_list[2],
-    title="Inversion Reconstruction (Plane 2)",
-)
+print(inversion)
 
 """
 __Env__ (Developer Only)

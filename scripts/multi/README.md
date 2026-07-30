@@ -19,6 +19,7 @@ New users should read the `start_here` example, which gives an overview of all e
 - `start_here`: A simple example illustrating how to analyse multiple datasets.
 - `modeling`: Detailed example of performing lens modeling of multiple dataset.
 - `simulator`: Detailed example of how to simulate multiple datasets of the same strong lens.
+- `plot`: How to plot multiple datasets, and fits to multiple datasets, together in combined subplots.
 - `data_preparation`: See `imaging/data_preparation` and `interferometer/data_preparation`, which contain all tools for preparing multiple datasets.
 
 # Folders

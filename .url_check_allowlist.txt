@@ -33,5 +33,5 @@ https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/image
 https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/r_image.png  # start_here.ipynb:643
 
 # Third-party readthedocs (dynesty / nautilus / sphinx / etc.)
-https://dynesty-sampler.readthedocs.io/en/latest/api.html#module-Dynesty.plotting  # scripts/guides/plot/examples/searches.py:138
-https://dynesty-sampler.readthedocs.io/en/latest/quickstart.html  # scripts/guides/plot/examples/searches.py:137
+https://dynesty-sampler.readthedocs.io/en/latest/api.html#module-Dynesty.plotting  # scripts/guides/plot/searches.py:138
+https://dynesty-sampler.readthedocs.io/en/latest/quickstart.html  # scripts/guides/plot/searches.py:137

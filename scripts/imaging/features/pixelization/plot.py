@@ -2,29 +2,28 @@
 Plots: Pixelization
 ===================
 
-This example illustrates the plotting API for pixelized source reconstructions.
+This example illustrates how to plot fits which reconstruct the source galaxy using a pixelization.
 
-The new API uses:
+Pixelized source reconstructions are plotted with the same functions as other fits (see
+`scripts/imaging/plot.py`):
 
- - `aplt.plot_array()` — plot any 2D array (including source reconstructions).
- - `aplt.plot_grid()` — plot a grid of coordinates.
- - `aplt.subplot_fit_imaging()` — multi-panel fit overview.
- - `aplt.subplot_fit_interferometer()` — interferometer fit overview.
+ - `aplt.plot_array()` — plot any 2D array (including source-plane model images).
+ - `aplt.plot_grid()` — plot a grid of coordinates (including source-plane mesh grids).
+ - `aplt.subplot_fit_imaging()` / `aplt.subplot_fit_interferometer()` — multi-panel fit overviews.
 
-Inversion and mapper quantities are accessed via `fit.inversion` and plotted with `aplt.plot_array()`.
+Inversion and mapper quantities are accessed via `fit.inversion` and visualized by plotting the
+fit's source-plane model image and the mapper's mesh grids.
 
-__Start Here Notebook__
-
-Refer to `guides/plot/start_here.ipynb` for an introduction to the new plotting API.
+For an introduction to the plotting API refer to `guides/plot/start_here.py`.
 
 __Contents__
 
-- **Setup:** General setup for the analysis.
-- **Fit Imaging:** Plot the multi-panel fit overview with `aplt.subplot_fit_imaging()`.
-- **Inversion:** The `inversion` property contains the linear algebra, mesh calculations and other key quantities.
-- **Mapper Grids:** The mapper maps pixels from the image-plane to the source-plane pixelization.
-- **Mapper Galaxy Dict:** The mapper galaxy dict maps each mapper to its corresponding galaxy.
-- **Fit Interferometer:** A fit to an interferometer dataset with a pixelized source is plotted with.
+- **Setup:** Set up the dataset and a fit with a pixelized source reconstruction.
+- **Fit Imaging:** Plot the multi-panel fit overview and individual fit attributes.
+- **Inversion:** Access the inversion's linear algebra and plot the source-plane model image.
+- **Mapper Grids:** Plot the mapper's image-plane and source-plane mesh grids.
+- **Mapper Galaxy Dict:** Access each mapper via its corresponding galaxy.
+- **Fit Interferometer:** Plot a fit to an interferometer dataset with a pixelized source.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -44,6 +43,21 @@ grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
 dataset_name = "simple"
 dataset_path = Path("dataset") / "imaging" / dataset_name
+
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if al.util.dataset.should_simulate(str(dataset_path)):
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "scripts/imaging/simulator.py"],
+        check=True,
+    )
 
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",
@@ -107,8 +121,8 @@ aplt.plot_array(array=fit.normalized_residual_map, title="Normalized Residual Ma
 aplt.plot_array(array=fit.chi_squared_map, title="Chi-Squared Map")
 
 """
-The pixelized source reconstruction is accessed via `fit.model_images_of_planes_list[1]`,
-which is the reconstructed image of the source plane.
+The reconstructed source, mapped back to the image plane, is accessed via
+`fit.model_images_of_planes_list[1]` — the model image of the source plane.
 """
 aplt.plot_array(
     array=fit.model_images_of_planes_list[1],
@@ -121,17 +135,17 @@ __Inversion__
 The `inversion` property contains the linear algebra, mesh calculations and other key quantities
 used to reconstruct the source galaxy.
 
-The reconstruction is accessed via `fit.inversion.reconstruction`.
+The raw reconstruction — the value of every source-pixel in the mesh — is stored at
+`fit.inversion.reconstruction`. It is defined on the (irregular) source-plane mesh rather than a
+uniform 2D grid, which is why the figures here plot the source-plane model image above instead.
 """
 inversion = fit.inversion
 
-aplt.plot_array(
-    array=fit.model_images_of_planes_list[1],
-    title="Inversion Reconstruction",
-)
+print(inversion.reconstruction)
 
 """
-An inversion can also be computed directly from a `Tracer` using `TracerToInversion`.
+An inversion can also be computed directly from a `Tracer` using `TracerToInversion`, without
+building a fit first — useful for inspecting a pixelization before fitting.
 """
 tracer_to_inversion = al.TracerToInversion(
     tracer=tracer,
@@ -140,17 +154,13 @@ tracer_to_inversion = al.TracerToInversion(
 
 inversion = tracer_to_inversion.inversion
 
-aplt.plot_array(
-    array=fit.model_images_of_planes_list[1],
-    title="Inversion Reconstruction (via TracerToInversion)",
-)
-
 """
 __Mapper Grids__
 
 The mapper maps pixels from the image-plane to the source-plane pixelization.
 
-We can extract the image-plane and source-plane mesh grids and plot them as overlays.
+We can extract the image-plane mesh grid and overlay it on the data, and ray-trace it to the
+source plane to plot the source-plane mesh grid.
 """
 mapper = inversion.cls_list_from(cls=al.Mapper)[0]
 
@@ -172,28 +182,15 @@ aplt.plot_grid(
 """
 __Mapper Galaxy Dict__
 
-The mapper galaxy dict maps each mapper to its corresponding galaxy.
+When a model contains multiple pixelized galaxies, each mapper is paired to its galaxy via the
+`mapper_galaxy_dict`, whose keys are the mappers and values the galaxies. The mesh-grid plots
+above can be repeated for any mapper extracted from this dictionary.
 """
 mapper_galaxy_dict = tracer_to_inversion.mapper_galaxy_dict
 
 mapper = list(mapper_galaxy_dict)[0]
 
-"""
-Plot the image-plane mesh grid and source-plane mesh grid together.
-"""
-image_plane_mesh_grid = mapper.mask.derive_grid.unmasked
-source_plane_mesh_grid = tracer.traced_grid_2d_list_from(grid=image_plane_mesh_grid)[-1]
-
-aplt.plot_array(
-    array=fit.data,
-    title="Data with Mesh Grid Overlay",
-    positions=image_plane_mesh_grid,
-)
-
-aplt.plot_grid(
-    grid=source_plane_mesh_grid,
-    title="Source-Plane Mesh Grid",
-)
+print(mapper_galaxy_dict[mapper])
 
 """
 __Fit Interferometer__

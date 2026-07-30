@@ -21,6 +21,8 @@ New users should read the `start_here` example, which gives an overview of all e
 
 - `data_preparation`: See `imaging/data_preparation` which has all tools for preparing group scale CCD imaging data.
 
+- `plot`: How to plot a group-scale `Imaging` dataset and a `FitImaging` fit, figure by figure and via multi-panel subplots.
+
 - slam\`\`Using the Source, Light and Mass (SLAM) pipeline to perform lens modeling of group-scale strong lenses.
 
 # Folders

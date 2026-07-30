@@ -18,7 +18,6 @@ dataset/cluster/a2744/data.fits
 # interferometer simulators, with no writer anywhere. It is NOT regenerable; never purge it.
 !dataset/interferometer/uv_wavelengths/**
 !dataset/interferometer/sdp81/**
-notebooks/plot/
 test_report.md
 test_results/
 
