@@ -398,7 +398,7 @@ a likelihood evaluation.
 
 Assuming the use of a 20 x 20 mesh grid above means this is the case, the run times of this model-fit on a GPU
 should take under 10 minutes. If VRAM is exceeded, the run time will be significantly longer (3+ hours). CPU run
-times are also of order hours, but can be sped up using the `numba` library (see the `pixelization/cpu` example).
+times are also of order hours, but can be sped up using the `numba` library (see the `pixelization/cpu_fast_modeling` example).
 
 The run times of pixelizations slow down as the data becomes higher resolution. In this example, data with a pixel
 scale of 0.1" gives of order 10 minute run times (when VRAM is under control), for a pixel scale of 0.05" this
@@ -445,7 +445,7 @@ Source science focuses on studying the highly magnified properties of the backgr
 Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic 
 size of the source.
 
-The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+The example `autolens_workspace/*/imaging/source_science` gives a complete overview of how to calculate these quantities,
 including examples using a pixelized source reconstruction. 
 
 If you want to study the source galaxy after modeling has reconstructed its unlensed, then check out this example.

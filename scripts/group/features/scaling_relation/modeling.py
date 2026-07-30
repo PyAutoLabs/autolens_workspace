@@ -26,8 +26,7 @@ galaxies are split into three distinct populations:
    cluster-scale analyses. The only free parameter is `einstein_radius_ref` — adding more scaling galaxies
    does not grow the model. Use this tier for the long tail of fainter companions.
 
-Splitting galaxies across these three tiers is the standard pattern in production group fits (see
-`z_projects/euclid_group/scripts/group.py`). It gives the lensing-significant galaxies the model flexibility they need
+Splitting galaxies across these three tiers is the standard pattern in production group fits (see the `euclid_strong_lens_modeling_pipeline` repository). It gives the lensing-significant galaxies the model flexibility they need
 while keeping the model tractable as the number of foreground galaxies grows.
 
 For the simpler imaging-only counterpart — one main lens + one tier of extras on a scaling relation — see

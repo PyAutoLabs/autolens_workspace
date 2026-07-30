@@ -21,7 +21,7 @@ A graphical model links the mass models across multiple lenses and includes a **
 a joint inference that improves cosmological constraints compared to individual fits.
 
 Graphical models form the foundation of **hierarchical modeling**, where the parameters of individual lenses are
-assumed to be drawn from a parent distribution (see `guides/modeling/hierarchical`). Hierarchical approaches can
+assumed to be drawn from a parent distribution (see `guides/modeling/advanced/hierarchical`). Hierarchical approaches can
 extract significantly more information from large samples than fitting each dataset independently. The example
 shows how the power-law `slope` of each lens's mass distribution is modeled as being drawn from a shared parent
 Gaussian distribution, whose hyper-parameters (mean and variance) are inferred from the data.

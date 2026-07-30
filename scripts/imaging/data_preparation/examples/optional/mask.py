@@ -38,7 +38,7 @@ import autolens.plot as aplt
 This tool allows one to mask a bespoke mask for a given image of a strong lens, which is loaded before a
 pipeline is run and passed to that pipeline.
 
-Whereas in the previous 3 tutorials we used the data_raw folder of `autolens/propocess`, the mask is generated from
+Whereas in the previous 3 tutorials we used the data_raw folder of `autolens_workspace/*/imaging/data_preparation`, the mask is generated from
 the reduced dataset, so we'll example `Imaging` in the `autolens_workspace/dataset` folder where your dataset reduced
 following `data_preparation` tutorials 1-3 should be located.
 

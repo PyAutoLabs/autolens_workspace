@@ -293,5 +293,5 @@ This can be loaded via the method `tracer = al.from_json()`.
 ]
 
 """
-The dataset can be viewed in the folder `autolens_workspace/imaging/multi/lens_sersic`.
+The dataset can be viewed in the folder `autolens_workspace/dataset/imaging/multi/lens_sersic`.
 """

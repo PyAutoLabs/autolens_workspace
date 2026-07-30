@@ -428,6 +428,6 @@ It should already be quite intuitive how this API can be adapted to fit more com
 datasets with different models. For example, an `AnalysisImaging` and `AnalysisInterferometer` can be combined, into
 a single factor graph model, to simultaneously fit a imaging and interferometric data.
 
-The `advanced/multi/modeling` package has more examples of how to fit multiple datasets with different models,
+The `multi/features` package has more examples of how to fit multiple datasets with different models,
 including relational models that vary parameters across datasets as a function of wavelength.
 """

@@ -197,5 +197,5 @@ al.output_to_json(
 )
 
 """
-The dataset can be viewed in the folder `autolens_workspace/imaging/light_operated`.
+The dataset can be viewed in the folder `autolens_workspace/dataset/imaging/light_operated`.
 """

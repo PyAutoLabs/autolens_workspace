@@ -231,7 +231,7 @@ __Chi Squared__
 For point-source modeling, the likelihood can be defined in the *image plane* (compare model
 multiple-image positions to observed positions) or the *source plane* (collapse observed positions back
 to a common source-plane location). This script uses the image-plane chi-squared via the ``PointSolver``;
-see ``autolens_workspace/*/point_source/log_likelihood_function`` for a full walkthrough.
+see ``autolens_workspace/*/cluster/likelihood_function`` for a full walkthrough.
 """
 grid = al.Grid2D.uniform(
     shape_native=(100, 100),

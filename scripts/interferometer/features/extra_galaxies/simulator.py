@@ -239,5 +239,5 @@ al.output_to_json(
 )
 
 """
-The dataset can be viewed in the folder `autolens_workspace/interferometer/extra_galaxies`.
+The dataset can be viewed in the folder `autolens_workspace/dataset/interferometer/extra_galaxies`.
 """

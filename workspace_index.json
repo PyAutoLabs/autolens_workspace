@@ -1215,8 +1215,7 @@
       "scripts/group/features/pixelization/slam.py",
       "scripts/group/features/scaling_relation/modeling_for_luminosities.py",
       "scripts/group/features/scaling_relation/simulator.py",
-      "scripts/group/slam.py",
-      "z_projects/euclid_group/scripts/group.py"
+      "scripts/group/slam.py"
     ],
     "notebook": "notebooks/group/features/scaling_relation/modeling.ipynb",
     "path": "scripts/group/features/scaling_relation/modeling.py",

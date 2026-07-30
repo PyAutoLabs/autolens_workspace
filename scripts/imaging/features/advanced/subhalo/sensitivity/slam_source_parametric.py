@@ -37,7 +37,7 @@ This uses the SLaM pipelines:
  `source_pix`
  `light_lp`
  `mass_total`
- `subhalo/detection`
+ `subhalo/detect`
 
 Check them out for a full description of the analysis!
 

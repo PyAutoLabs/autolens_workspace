@@ -220,5 +220,5 @@ al.output_to_json(
 )
 
 """
-The dataset can be viewed in the folder `autolens_workspace/imaging/misc/manual_signal_to_noise_ratio`.
+The dataset can be viewed in the folder `autolens_workspace/dataset/imaging/misc/manual_signal_to_noise_ratio`.
 """
