@@ -610,5 +610,6 @@ __Wrap Up__
 - `multi_galaxy/modeling.py` — fitting a model (rather than the truth) to this dataset, and the posterior which
   exposes the two deflectors' mass degeneracy.
 - `multi_galaxy/likelihood_function.py` — a step-by-step guide to how the log likelihood printed above is computed.
-- `multi_galaxy/features/scaling_galaxies` — adding a far-out scaling tier to the deflection sum.
+- `multi_galaxy/features/scaling_relation` — adding a far-out scaling tier to the deflection sum, tied to the
+  brightest deflector so it costs no free parameters.
 """

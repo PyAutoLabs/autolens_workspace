@@ -1,104 +1,69 @@
 """
-Modeling Features: Scaling Relations
-====================================
+Modeling Features: Scaling Relation
+===================================
 
-Strong lenses often have many galaxies surrounding the lens galaxy whose mass contributes to the ray-tracing of the
-source. The `extra_galaxies` example shows how to add each of these galaxies into the model with their own light and
-mass profiles, fixing their centres to the observed centres of light. That works well when only a handful of extra
-galaxies are present, but rapidly becomes unwieldy as the number grows. With 10 extra galaxies modelled with
-`IsothermalSph` mass profiles, the lens model gains 10 additional `einstein_radius` free parameters; with 30, the
-parameter space is so large that the non-linear search struggles to converge and the data lacks the information content
-to constrain every galaxy individually.
+A strong lens often has many foreground galaxies near the line of sight, and freeing an `einstein_radius` for each
+one quickly stops working: with 30 companions the parameter space is too large to sample and the data does not
+contain enough information to constrain them individually anyway.
 
-A common solution is to model the lensing contribution of these galaxies via a **scaling relation**. An easier-to-measure
-property of each galaxy (typically luminosity, but it could also be stellar mass or velocity dispersion) is related to
-its mass profile via a shared, reference-anchored relation (the Lenstool convention):
+This example ties them to the main lens instead. Each companion's Einstein radius follows a Faber-Jackson relation
+**anchored on the main lens galaxy's own Einstein radius**:
 
-    einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5
+    einstein_radius_i = einstein_radius_anchor * (L_i / L_anchor) ** 0.5
 
-The single free parameter is `einstein_radius_ref` — the Einstein radius of a galaxy at a fixed reference magnitude
-(Lenstool's `mag0`) — regardless of how many galaxies sit on the relation; the exponent is fixed at the Faber-Jackson
-value of 0.5. The luminosities act as priors on the masses, ensuring each galaxy's contribution stays
-physically reasonable.
+`einstein_radius_anchor` is not a new parameter — it is the main lens's `einstein_radius`, which the model is
+already fitting. So the entire scaling tier adds **zero free parameters**, however many galaxies it holds. The
+`__Two Tiers__` and `__Zero Free Parameters__` sections below are the point of this script.
 
-This example demonstrates the **mixed-strategy** pattern: a single `extra_galaxies` collection that contains BOTH
-galaxies modelled individually (each with its own free Einstein radius) AND galaxies on a shared scaling relation. This
-is the typical real-world configuration: the brighter / closer companions get individual mass parameters because they
-contribute non-trivially to the lensing on their own, while the long tail of fainter companions sit on the relation.
+__Prerequisites__
 
-The dataset used here is `dataset/imaging/extra_and_scaling_galaxies`, simulated by the paired script
-`scripts/imaging/features/scaling_relation/simulator.py`. It contains a galaxy-scale lens at the origin, two close
-companions (the "individual" tier here), and two fainter further-out companions (the "scaling-relation" tier). All four
-companions live in the same `extra_galaxies` collection in this imaging-context example — the terminology
-`scaling_galaxies` for a separate top-level collection is reserved for the group-scale example.
+This script documents only what is specific to the scaling tier. Read these first:
+
+ - `autolens_workspace/scripts/imaging/modeling.py` — the canonical modeling workflow (dataset, mask,
+   over-sampling, search, analysis, result).
+ - `autolens_workspace/scripts/imaging/features/extra_galaxies/modeling.py` — companions modelled individually,
+   which is the tier this script's bounded population belongs to.
+ - `autolens_workspace/scripts/imaging/features/multi_gaussian_expansion/modeling.py` — the MGE light API.
+
+__Two Tiers__
+
+Which JSON file a galaxy's centre appears in is what decides how it is modelled:
+
+ - `extra_galaxies_centres.json` -> the **bounded** tier. Each galaxy keeps its own free `einstein_radius`, but
+   inside an upper bound derived from its luminosity so it cannot run away to an unphysical mass. Use it for the
+   brighter, closer companions that perturb the lensing appreciably on their own.
+ - `scaling_galaxies_centres.json` -> the **scaling** tier. Einstein radii are tied to the anchor by the relation
+   above. Use it for the long tail of fainter companions, which matter collectively but not individually.
+
+__Untruncated Profiles__
+
+Both tiers use **untruncated** isothermal profiles. Truncation encodes tidal stripping by a host halo's potential,
+and a galaxy-scale lens has no host halo. The truncated `dPIEMass` version of this tier is the group- and
+cluster-scale default, where a host potential does exist — see `group/features/group_halo` and
+`cluster/modeling.py`.
+
+__Relation To The Group And Cluster Packages__
+
+`group/features/scaling_relation` and `cluster/modeling.py` use a *different* normalisation: a standalone free
+`einstein_radius_ref`, the Einstein radius of a galaxy at a fixed reference magnitude (Lenstool's `mag0`). That
+convention costs one free parameter and is the right one when no single galaxy obviously anchors the system, or
+when you want the normalisation to be invariant to which galaxies you place in the tier. Anchoring on the main
+lens, as here, costs nothing but does assume the main lens itself sits on the relation.
 
 __Contents__
 
-- **Two Strategies, One Collection:** Why mix individual + relational extras in the same `extra_galaxies` collection.
-- **Centres:** Two JSON files load the centres of the individually-modelled extras and the scaling-relation extras.
-- **Luminosities:** The scaling-relation tier needs a measured luminosity per galaxy.
-- **Where do luminosities come from?:** The `modeling_for_luminosities.py` example and the SLAM `source_lp[0]` step.
-- **Redshifts:** All foreground galaxies are at the same redshift as the lens galaxy.
-- **Group vs Imaging:** Where the group-scale variant lives.
-- **Dataset & Mask:** Standard set up of the dataset and mask.
-- **Lens & Source:** MGE bulge + Isothermal mass + ExternalShear lens; MGE source.
-- **Individually-Modelled Extras:** Bounded `UniformPrior` on `einstein_radius` per galaxy.
-- **Scaling-Relation Extras:** A single shared `einstein_radius_ref` prior (exponent fixed at 0.5).
-- **Model:** Compose the lens model fitted to the data.
+- **Dataset & Mask:** Load the dataset (auto-simulating if absent) and mask it.
+- **Centres:** Three JSON files, one per tier.
+- **Luminosities:** The measured luminosities the relation needs, and where they come from.
 - **Over Sampling:** Adaptive over-sampling at every galaxy centre.
-- **Search and Analysis:** Configure the non-linear search and run the model-fit.
-- **Wrap Up:** Summary of the script and next steps.
-
-__Two Strategies, One Collection__
-
-There is no architectural distinction in PyAutoLens between "individual" and "scaling-relation" extra galaxies — both
-sit in the same `extra_galaxies = af.Collection([...])`. The distinction is purely in how the per-galaxy `Galaxy` model
-is built:
-
-  - For an individually-modelled galaxy: `mass.einstein_radius = af.UniformPrior(...)` — one free parameter per galaxy.
-  - For a scaling-relation galaxy: `mass.einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`
-    — zero new free parameters per galaxy, because the single shared normalization is used across the whole tier.
-
-The two strategies coexist freely in the same collection. This script builds a Python list, pushes the individually-
-modelled galaxies onto it first, then the relational galaxies, and wraps the whole thing in a single `af.Collection`.
-
-__Where do luminosities come from?__
-
-In a real analysis the luminosities used by the scaling relation are not known a priori — they have to be measured
-from the data itself. Two production patterns:
-
- - **Standalone light-only fit.** Run a single non-linear search whose model is just MGE bulges for every galaxy
-   (no mass, no source). After the fit, compute total luminosity per galaxy from the bulge gaussian intensities:
-   `total_luminosity = sum(2 * pi * sigma**2 / axis_ratio * intensity) / pixel_scale**2`. Feed those numbers into the
-   scaling-relation model below. See `scripts/group/features/scaling_relation/modeling_for_luminosities.py` for a
-   worked example.
-
- - **As the first stage of a SLaM pipeline.** The Source-Light-Mass (SLaM) pipelines define a `source_lp[0]` stage
-   whose only job is to fit a light-only MGE model to the lens, extras and scaling galaxies. The next stage chains
-   from that result to compute luminosities and bound / scale the mass models. See `scripts/group/slam.py`,
-   `scripts/group/features/pixelization/slam.py`, and the other group `slam.py` variants for production examples.
-
-This tutorial loads the luminosities from a `scaling_galaxies.csv` written by the simulator (see
-`al.galaxy_table_from_csv` further down). In a real analysis the same CSV would be the *output* of one of the patterns
-above — `modeling_for_luminosities.py` already writes its result in this format, and the SLAM `source_lp[0]` stage can
-similarly emit one.
-
-__Redshifts__
-
-In this example all foreground galaxies are at the same redshift as the lens galaxy, meaning multi-plane lensing is not
-used. To enable multi-plane lensing, define per-galaxy redshifts and pass them when constructing each
-`af.Model(al.Galaxy, ...)`.
-
-__Group vs Imaging__
-
-This is the **imaging-context** example: there is a single main lens galaxy and all companions live in a single
-`extra_galaxies` collection. For the group-scale variant — multiple "main" lens galaxies AND a top-level
-`scaling_galaxies` collection separate from `extra_galaxies` — see
-`autolens_workspace/scripts/group/features/scaling_relation/modeling.py`.
-
-__Start Here Notebook__
-
-If any code in this script is unclear, refer to the `imaging/start_here.ipynb` notebook.
+- **Main Lens & Source:** The anchor and the source.
+- **Bounded Tier:** Free Einstein radii inside a luminosity-derived bound.
+- **Scaling Tier:** Einstein radii tied to the anchor.
+- **Model:** Three top-level collections.
+- **Zero Free Parameters:** Proof by parameter count that the tier is free.
+- **Search / Analysis / Fit / Result.**
+- **CSV Interface:** Loading centres and luminosities from a CSV instead of JSON + Python lists.
+- **Wrap Up.**
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -111,18 +76,12 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-__Dataset__
+__Dataset & Mask__
 
-We use the `dataset/imaging/extra_and_scaling_galaxies` dataset, which contains:
-
- - a galaxy-scale lens at the origin
- - two close companions (the "individual" tier here)
- - two fainter further-out companions (the "scaling-relation" tier)
-
-The simulator at `scripts/imaging/features/scaling_relation/simulator.py` writes two centre JSON files
-(`extra_galaxies_centres.json` and `scaling_galaxies_centres.json`), one per modeling strategy.
+A 6.0" mask, large enough to enclose the scaling tier ~5" out, because this example models their light as well as
+their mass.
 """
-dataset_name = "extra_and_scaling_galaxies"
+dataset_name = "scaling_relation"
 dataset_path = Path("dataset", "imaging", dataset_name)
 
 if al.util.dataset.should_simulate(str(dataset_path)):
@@ -141,13 +100,6 @@ dataset = al.Imaging.from_fits(
     pixel_scales=0.1,
 )
 
-aplt.subplot_imaging_dataset(dataset=dataset)
-
-"""
-__Mask__
-
-A 6.0" circular mask, large enough to enclose the lens, the close companions, and the further-out scaling galaxies.
-"""
 mask_radius = 6.0
 
 mask = al.Mask2D.circular(
@@ -163,178 +115,55 @@ aplt.subplot_imaging_dataset(dataset=dataset)
 """
 __Centres__
 
-The individually-modelled tier loads its centres from a JSON file (a list of (y, x) tuples) — the centres are the only
-input the modeling script needs for that tier.
+One JSON file per tier, each a list of (y, x) arcsecond coordinates. For your own data, the centre-input GUI in
+`group/start_here.py` writes these files from mouse clicks.
 """
-individual_extras_centres = al.from_json(
+main_lens_centres = al.from_json(file_path=dataset_path / "main_lens_centres.json")
+bounded_galaxies_centres = al.from_json(
     file_path=dataset_path / "extra_galaxies_centres.json"
 )
-
-print(f"Individually-modelled extras: {individual_extras_centres}")
-
-"""
-__Centres + Luminosities (scaling-relation tier)__
-
-The scaling-relation tier needs both centres AND a measured luminosity per galaxy. There are two equally-supported
-ways to provide them in PyAutoLens — both shown below so you can pick whichever fits your workflow.
-
-**Option A — CSV via `al.galaxy_table_from_csv` (recommended for non-trivial galaxy counts).** The simulator writes a
-`scaling_galaxies.csv` with columns `y, x, luminosity` (and optional `redshift`) alongside the centre JSONs. We load it
-in one call which returns a typed `GalaxyTable` with `.centres` (a `Grid2DIrregular`), `.luminosities`, and (optionally)
-`.redshifts`. This scales naturally to populations of tens or hundreds of galaxies — the source of truth lives in a
-single editable file.
-
-In a real analysis, a prior light-only fit produces this CSV — see
-`scripts/group/features/scaling_relation/modeling_for_luminosities.py` for the standalone version of that fit, or the
-SLAM `source_lp[0]` stage in `scripts/group/slam.py` for the chained-pipeline equivalent.
-
-**Option B — JSON centres + hardcoded luminosity list (the original API, fine for short, fixed-length tutorials).**
-Load the centres from `scaling_galaxies_centres.json` with `al.from_json` (the same loader used for the
-individually-modelled tier above) and define the luminosities as a Python list. Concise and obvious for small
-populations; awkward once you have more than a handful.
-
-We use Option A by default below. The Option B equivalent is shown commented out — uncomment it (and comment out
-Option A) to switch.
-"""
-# Option A: CSV (recommended)
-relational_extras_table = al.galaxy_table_from_csv(
-    file_path=dataset_path / "scaling_galaxies.csv"
-)
-relational_extras_centres = relational_extras_table.centres
-relational_extras_luminosity_list = relational_extras_table.luminosities
-
-# Option B: JSON centres + hardcoded luminosities (uncomment to use instead)
-# relational_extras_centres = al.from_json(
-#     file_path=dataset_path / "scaling_galaxies_centres.json"
-# )
-# relational_extras_luminosity_list = [0.45, 0.45]
-# assert len(relational_extras_luminosity_list) == len(list(relational_extras_centres)), (
-#     "Number of luminosities must match number of scaling-relation extra galaxy centres."
-# )
-
-print(f"Scaling-relation extras: {relational_extras_centres}")
-print(f"Scaling-relation luminosities: {relational_extras_luminosity_list}")
-
-"""
-__Lens__
-
-Standard MGE bulge + `Isothermal` mass + `ExternalShear`.
-"""
-bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
-)
-
-mass = af.Model(al.mp.Isothermal)
-
-shear = af.Model(al.mp.ExternalShear)
-
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
-
-"""
-__Source__
-"""
-source_bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius,
-    total_gaussians=20,
-    gaussian_per_basis=1,
-    centre_prior_is_uniform=False,
-)
-
-source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
-
-"""
-__Individually-Modelled Extras__
-
-The first tier inside `extra_galaxies`. Each galaxy gets:
-
- - an MGE bulge with `centre_fixed` (the light is fit but the centre is pinned)
- - an `IsothermalSph` mass with bounded uniform-prior `einstein_radius`
-
-Each adds 1 free Einstein-radius parameter to the model.
-"""
-extra_galaxies_list = []
-
-for centre in individual_extras_centres:
-    bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius, total_gaussians=10, centre_fixed=tuple(centre)
-    )
-
-    mass = af.Model(al.mp.IsothermalSph)
-    mass.centre = tuple(centre)
-    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=1.5)
-
-    extra_galaxies_list.append(
-        af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
-    )
-
-"""
-__Scaling-Relation Extras__
-
-The second tier inside `extra_galaxies`, in the reference-anchored Lenstool convention. The relation is defined ONCE
-outside the loop, so every galaxy in this tier shares it. Adding more galaxies to this tier does not add free
-parameters.
-
-The single free parameter is `einstein_radius_ref` — the Einstein radius of a galaxy *at the reference magnitude*.
-Each member's Einstein radius derives from it via its luminosity ratio to a fixed `reference_luminosity` (Lenstool's
-`mag0`, an explicit constant — *not* the maximum luminosity of the sample; here a fiducial L* = 1.0), with the
-exponent *fixed* at the Faber-Jackson value of 0.5 (einstein_radius ∝ sigma² and sigma ∝ L^(1/4) give
-einstein_radius ∝ L^(1/2)). Fixing the exponent avoids the normalization-slope degeneracy; free it as a systematics
-test with `scaling_exponent = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)`.
-
-For each galaxy:
-
- - an MGE bulge with `centre_fixed`
- - an `Isothermal` mass with `einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`
-"""
-einstein_radius_ref = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
-scaling_exponent = 0.5
-reference_luminosity = 1.0
-
-for relational_centre, relational_luminosity in zip(
-    relational_extras_centres, relational_extras_luminosity_list
-):
-    bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius,
-        total_gaussians=10,
-        centre_fixed=tuple(relational_centre),
-    )
-
-    mass = af.Model(al.mp.Isothermal)
-    mass.centre = tuple(relational_centre)
-    luminosity_ratio = relational_luminosity / reference_luminosity
-    mass.einstein_radius = einstein_radius_ref * luminosity_ratio**scaling_exponent
-
-    extra_galaxies_list.append(
-        af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
-    )
-
-extra_galaxies = af.Collection(extra_galaxies_list)
-
-"""
-__Model__
-
-Two top-level components: `galaxies` (lens + source) and `extra_galaxies` (the mixed individual + relational tier).
-Keeping all extras in one collection matches the `features/extra_galaxies` naming convention while still letting us
-mix the two strategies internally.
-"""
-model = af.Collection(
-    galaxies=af.Collection(lens=lens, source=source),
-    extra_galaxies=extra_galaxies,
+scaling_galaxies_centres = al.from_json(
+    file_path=dataset_path / "scaling_galaxies_centres.json"
 )
 
 """
-The `model.info` attribute prints the composed model. Notice that the first two extras have independent
-`einstein_radius` priors, while the last two share `einstein_radius_ref` — the relation in action.
+__Luminosities__
+
+The relation needs a measured luminosity for every galaxy it touches, including the anchor. They are given here as
+explicit Python lists — the simplest interface, and the one worth reading first. A CSV alternative that scales to
+hundreds of galaxies is shown at the end of this script.
+
+**These numbers must be measured; they are not free parameters and they are not guessed.** They come from a
+light-only fit performed *before* this one. In this tutorial they are the simulator's truth values, printed when
+`simulator.py` runs. In a real analysis, get them from:
+
+ - `scripts/imaging/features/scaling_relation/slam.py` — the SLaM pipeline for this feature. Its light stage fits
+   an MGE to every galaxy, integrates each one's Gaussians to a luminosity, then feeds those luminosities into
+   exactly the relation below. That is the production path.
+ - `scripts/group/features/scaling_relation/modeling_for_luminosities.py` — a standalone light-only fit, if you
+   would rather measure luminosities as a separate step.
+
+Only ratios to the anchor enter the relation, so the units do not matter. A magnitude catalogue converts via
+`L / L_ref = 10 ** (0.4 * (m_ref - m))`.
 """
-print(model.info)
+luminosity_anchor = 31.0962
+
+bounded_galaxies_luminosities = [3.2595, 2.6076]
+
+scaling_galaxies_luminosities = [1.4939, 1.0865, 0.7696, 0.4980, 0.2716]
+
+assert len(bounded_galaxies_luminosities) == len(list(bounded_galaxies_centres))
+assert len(scaling_galaxies_luminosities) == len(list(scaling_galaxies_centres))
 
 """
 __Over Sampling__
 
-Adaptive over-sampling at every galaxy centre — lens, individually-modelled extras, and scaling-relation extras alike.
+Adaptive over-sampling at every galaxy centre — anchor, bounded tier and scaling tier alike.
 """
 all_centres = (
-    [(0.0, 0.0)] + list(individual_extras_centres) + list(relational_extras_centres)
+    list(main_lens_centres)
+    + list(bounded_galaxies_centres)
+    + list(scaling_galaxies_centres)
 )
 
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
@@ -346,10 +175,179 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
 
 dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
 
-aplt.subplot_imaging_dataset(dataset=dataset)
+"""
+__Main Lens & Source__
+
+The main lens is the anchor: an MGE bulge, a free `Isothermal` mass and the system's `ExternalShear`. Its
+`einstein_radius` is what the scaling tier hangs off, so it is the one Einstein radius in this model the tier
+depends on.
+"""
+lens_centre = tuple(list(main_lens_centres)[0])
+
+lens_bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    centre_prior_is_uniform=True,
+    centre=lens_centre,
+)
+
+lens = af.Model(
+    al.Galaxy,
+    redshift=0.5,
+    bulge=lens_bulge,
+    mass=af.Model(al.mp.Isothermal),
+    shear=af.Model(al.mp.ExternalShear),
+)
+
+source_bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    gaussian_per_basis=1,
+    centre_prior_is_uniform=False,
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 
 """
-__Search__
+__Bounded Tier__
+
+Each galaxy gets an MGE bulge with a fixed centre and an `IsothermalSph` whose `einstein_radius` is free but
+bounded above by the Faber-Jackson prediction, doubled to stay conservative:
+
+    upper_limit = min(2 * (einstein_radius_estimate / L_anchor ** 0.5) * L ** 0.5, cap)
+
+Note the asymmetry with the scaling tier below. A prior's `upper_limit` has to be a *number*, so the bound needs an
+advance **estimate** of the anchor's Einstein radius — here the Einstein ring's apparent radius, which you can read
+straight off the data. The tie in the scaling tier needs no such estimate, because it multiplies the model's own
+free parameter rather than a fixed bound. In a SLaM pipeline the estimate is replaced by the previous stage's
+fitted value; see `slam.py`.
+"""
+einstein_radius_estimate = 1.6
+
+einstein_radius_cap = 1.5
+
+bounded_galaxies_list = []
+
+for centre, luminosity in zip(bounded_galaxies_centres, bounded_galaxies_luminosities):
+    bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius, total_gaussians=10, centre_fixed=tuple(centre)
+    )
+
+    mass = af.Model(al.mp.IsothermalSph)
+    mass.centre = tuple(centre)
+    mass.einstein_radius = af.UniformPrior(
+        lower_limit=0.0,
+        upper_limit=min(
+            2 * (einstein_radius_estimate / luminosity_anchor**0.5) * luminosity**0.5,
+            einstein_radius_cap,
+        ),
+    )
+
+    bounded_galaxies_list.append(
+        af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+    )
+
+extra_galaxies = af.Collection(bounded_galaxies_list)
+
+"""
+__Scaling Tier__
+
+The relation itself. `lens.mass.einstein_radius` is the *model's own free parameter*, so multiplying it by the
+luminosity ratio produces a derived quantity rather than a new one — this single line is what makes the tier free.
+
+Each galaxy also gets a **spherical** MGE bulge with a fixed centre, which costs no non-linear parameters either:
+its Gaussian intensities are solved by linear algebra and its widths are fixed by the basis. So a scaling galaxy is
+free in both light and mass. Fitting their light matters here because they sit inside the mask; the multi-galaxy
+variant of this feature places the tier outside the mask instead, so its light never enters the fit at all.
+
+The exponent is fixed at the Faber-Jackson value of 0.5 (`einstein_radius ~ sigma^2` and `sigma ~ L^0.25`), which
+avoids a normalisation-slope degeneracy. Free it as a systematics test by replacing the constant with
+`af.UniformPrior(lower_limit=0.0, upper_limit=1.0)` — that *does* cost one parameter, but still only one for the
+whole tier.
+"""
+scaling_exponent = 0.5
+
+scaling_galaxies_list = []
+
+for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminosities):
+    bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius,
+        total_gaussians=10,
+        centre_fixed=tuple(centre),
+        use_spherical=True,
+    )
+
+    mass = af.Model(al.mp.IsothermalSph)
+    mass.centre = tuple(centre)
+    mass.einstein_radius = (
+        lens.mass.einstein_radius * (luminosity / luminosity_anchor) ** scaling_exponent
+    )
+
+    scaling_galaxies_list.append(
+        af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+    )
+
+scaling_galaxies = af.Collection(scaling_galaxies_list)
+
+"""
+__Model__
+
+Three top-level collections. `scaling_galaxies` is a first-class collection alongside `galaxies` and
+`extra_galaxies`: the analysis appends it to the tracer's galaxy list, and the aggregator restores it when results
+are loaded back. Keeping the tier in its own collection is therefore not just presentational — it is how the
+library expects a scaling population to be expressed, and it keeps `model.info` and `result.info` readable.
+"""
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    extra_galaxies=extra_galaxies,
+    scaling_galaxies=scaling_galaxies,
+)
+
+print(model.info)
+
+"""
+__Zero Free Parameters__
+
+The claim is worth checking rather than believing. Below, the same model is composed with every scaling galaxy's
+`einstein_radius` freed instead of tied, and the parameter counts compared.
+"""
+scaling_galaxies_free_list = []
+
+for centre in scaling_galaxies_centres:
+    bulge = al.model_util.mge_model_from(
+        mask_radius=mask_radius,
+        total_gaussians=10,
+        centre_fixed=tuple(centre),
+        use_spherical=True,
+    )
+
+    mass = af.Model(al.mp.IsothermalSph)
+    mass.centre = tuple(centre)
+    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)
+
+    scaling_galaxies_free_list.append(
+        af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+    )
+
+model_free = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    extra_galaxies=extra_galaxies,
+    scaling_galaxies=af.Collection(scaling_galaxies_free_list),
+)
+
+print(f"\nScaling galaxies in the tier:      {len(scaling_galaxies_list)}")
+print(f"Free parameters, tier tied:        {model.prior_count}")
+print(f"Free parameters, tier freed:       {model_free.prior_count}")
+print(f"Parameters saved by the relation:  {model_free.prior_count - model.prior_count}")
+
+assert model_free.prior_count - model.prior_count == len(scaling_galaxies_list)
+
+"""
+__Search / Analysis / Fit__
+
+Standard `Nautilus` + `AnalysisImaging`, exactly as `imaging/modeling.py` describes. The parameter space here is
+barely larger than a lens-only fit, which is the whole point: the bounded tier costs 3 parameters per galaxy and
+the scaling tier costs nothing at all.
 """
 search = af.Nautilus(
     path_prefix=Path("imaging") / "features",
@@ -363,43 +361,69 @@ search = af.Nautilus(
 
 analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
-"""
-__Run Time__
-
-The mixed-strategy model adds a small per-galaxy likelihood overhead but keeps the parameter space compact: only 2
-extra parameters from the individually-modelled tier (one Einstein radius each) plus 1 shared parameter from the
-scaling-relation tier, no matter how many galaxies sit on it.
-
-GPU log-likelihood evaluation is < 0.005 s per call; CPU is < 0.05 s. Expected end-to-end run time is ~15 minutes on
-GPU, ~30 minutes on CPU.
-
-__Model Fit__
-"""
 result = search.fit(model=model, analysis=analysis)
 
 """
 __Result__
+
+`result.info` lists the three collections separately. The scaling galaxies have no `einstein_radius` entry of their
+own — each is reported as a derived function of the lens's, which is what a tied parameter looks like in the
+output.
 """
 print(result.info)
 
 aplt.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 """
+__CSV Interface__
+
+The explicit Python lists above are clear for a handful of galaxies and unwieldy for a hundred. For larger
+populations, `al.galaxy_table_from_csv` reads a `y, x, luminosity` CSV (with optional `redshift`) and returns a
+`GalaxyTable` with `.centres`, `.luminosities` and `.redshifts`. The simulator writes one per tier, so the block
+below is a drop-in replacement for the centre-JSON loads *and* the luminosity lists:
+
+    main_lens_table = al.galaxy_table_from_csv(file_path=dataset_path / "main_lens_galaxies.csv")
+    main_lens_centres = main_lens_table.centres
+    luminosity_anchor = main_lens_table.luminosities[0]
+
+    bounded_table = al.galaxy_table_from_csv(file_path=dataset_path / "extra_galaxies.csv")
+    bounded_galaxies_centres = bounded_table.centres
+    bounded_galaxies_luminosities = bounded_table.luminosities
+
+    scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+    scaling_galaxies_centres = scaling_table.centres
+    scaling_galaxies_luminosities = scaling_table.luminosities
+
+The advantage is a single editable source of truth per tier, with centres and luminosities guaranteed to stay in
+the same order — which the two-list interface above cannot enforce for you. Everything downstream is unchanged; the
+model composition never sees where the numbers came from.
+
+`slam.py` writes its measured luminosities out in this format, so the CSV interface is the natural one to use once
+you have run a light fit on your own data.
+"""
+main_lens_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "main_lens_galaxies.csv"
+)
+scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+
+print(f"\nAnchor luminosity from CSV:  {main_lens_table.luminosities[0]:.4f}")
+print(f"Tier luminosities from CSV:  {list(scaling_table.luminosities)}")
+
+"""
 __Wrap Up__
 
-This example showed how to mix two strategies for `extra_galaxies` modeling — individually-modelled and on a shared
-scaling relation — within a single `extra_galaxies` collection. The same pattern works with any mass profile and any
-measured property (swap the `Isothermal` for `PowerLaw`, or the luminosity for stellar mass, and the structure is
-unchanged).
+The scaling tier turns N free Einstein radii into zero, by expressing them as a fixed function of a parameter the
+model already has. Adding more galaxies to `scaling_galaxies_centres.json` does not grow the model.
 
-For the production-style luminosity-fitting workflow that produces the `relational_extras_luminosity_list` used here,
-see:
+Where to go next:
 
- - `autolens_workspace/scripts/group/features/scaling_relation/modeling_for_luminosities.py` — a standalone light-only
-   fit that produces per-galaxy total luminosities.
- - `autolens_workspace/scripts/group/slam.py` and `autolens_workspace/scripts/group/features/pixelization/slam.py` —
-   the SLAM `source_lp[0]` stage that does the same job inside a chained pipeline.
-
-For the group-scale variant — multiple "main" lens galaxies AND a top-level `scaling_galaxies` collection separate from
-`extra_galaxies` — see `autolens_workspace/scripts/group/features/scaling_relation/modeling.py`.
+ - `slam.py` in this folder — the production pipeline, which measures the luminosities this script assumed.
+ - `fit.py` and `likelihood_function.py` in this folder — the same composition without a search, and the
+   per-galaxy deflection sum in detail.
+ - `imaging/features/extra_galaxies/modeling.py` — companions given full individual freedom, the tier above this
+   one.
+ - `multi_galaxy/features/scaling_relation` — the same relation where the anchor is chosen as the brightest of
+   several co-dominant deflectors rather than being the only lens.
+ - `group/features/scaling_relation` and `cluster/modeling.py` — the reference-magnitude normalisation, and the
+   truncated `dPIEMass` profiles appropriate once a host halo exists.
 """

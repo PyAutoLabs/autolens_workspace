@@ -1210,6 +1210,7 @@
       "autolens_workspace/scripts/group/features/scaling_relation/modeling_for_luminosities.py",
       "autolens_workspace/scripts/group/slam.py",
       "autolens_workspace/scripts/imaging/features/scaling_relation/modeling.py",
+      "autolens_workspace/scripts/multi_galaxy/features/scaling_relation/modeling.py",
       "group/modeling.py",
       "scripts/cluster/modeling.py",
       "scripts/group/features/pixelization/slam.py",
@@ -4049,98 +4050,133 @@
   },
   {
     "contents": [
-      "Prerequisites",
       "Dataset & Mask",
-      "Over Sampling",
       "Centres + Luminosities",
-      "MGE Basis",
+      "Over Sampling",
+      "The Relation",
       "Galaxies",
-      "Tracer",
-      "Scaling Relation Tour",
+      "Tracer & Fit",
+      "The Relation, Evaluated",
+      "Deflection Sum",
       "Intensities",
-      "Wrap Up"
+      "CSV Interface",
+      "Wrap Up."
     ],
     "cross_refs": [
       "autolens_workspace/scripts/imaging/features/multi_gaussian_expansion/fit.py",
       "autolens_workspace/scripts/imaging/features/scaling_relation/modeling.py",
       "autolens_workspace/scripts/imaging/fit.py",
       "modeling.py",
-      "scripts/group/features/scaling_relation/modeling_for_luminosities.py"
+      "slam.py"
     ],
     "notebook": "notebooks/imaging/features/scaling_relation/fit.ipynb",
     "path": "scripts/imaging/features/scaling_relation/fit.py",
-    "summary": "A strong lens system often has many foreground galaxies near the line of sight to the source, in addition to the primary lens. As the number of foreground galaxies grows, modelling each one individually with its own free `einstein_radius` parameter rapidly becomes intractable.",
+    "summary": "Fits the `scaling_relation` dataset with every parameter set to the simulator's truth, so the two-tier foreground population can be inspected without a non-linear search in the way.",
     "title": "Features: Scaling Relation Fit"
   },
   {
     "contents": [
-      "Prerequisites",
       "Dataset & Mask",
       "Centres + Luminosities",
+      "The Relation",
       "Galaxies",
       "Per-Galaxy Deflection",
       "Manual Ray-Tracing",
       "Source-Plane Image",
-      "Fit Check",
+      "Likelihood",
+      "CSV Interface",
       "Wrap Up."
     ],
     "cross_refs": [
       "autolens_workspace/scripts/imaging/features/multi_gaussian_expansion/likelihood_function.py",
       "autolens_workspace/scripts/imaging/features/scaling_relation/modeling.py",
-      "autolens_workspace/scripts/imaging/likelihood_function.py"
+      "autolens_workspace/scripts/imaging/likelihood_function.py",
+      "fit.py",
+      "slam.py"
     ],
     "notebook": "notebooks/imaging/features/scaling_relation/likelihood_function.ipynb",
     "path": "scripts/imaging/features/scaling_relation/likelihood_function.py",
-    "summary": "This script describes the additional steps required to compute the `log_likelihood` for a strong lens whose foreground galaxy population is split between two tiers \u2014 individually-modelled extras (each with its own free `einstein_radius`) and scaling-tier extras (whose Einstein radii are derived from a shared reference-anchored relation `einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`).",
+    "summary": "Describes the one step of the `log_likelihood` computation that a scaling relation changes: how the lens plane's deflection field is composed when most of the foreground galaxies' Einstein radii are not free parameters but derived from the main lens's.",
     "title": "__Log Likelihood Function: Scaling Relation__"
   },
   {
     "contents": [
-      "Two Strategies, One Collection",
+      "Dataset & Mask",
       "Centres",
       "Luminosities",
-      "Where do luminosities come from?",
-      "Redshifts",
-      "Group vs Imaging",
-      "Dataset & Mask",
-      "Lens & Source",
-      "Individually-Modelled Extras",
-      "Scaling-Relation Extras",
-      "Model",
       "Over Sampling",
-      "Search and Analysis",
-      "Wrap Up"
+      "Main Lens & Source",
+      "Bounded Tier",
+      "Scaling Tier",
+      "Model",
+      "Zero Free Parameters",
+      "Search / Analysis / Fit / Result.",
+      "CSV Interface",
+      "Wrap Up."
     ],
     "cross_refs": [
-      "autolens_workspace/scripts/group/features/pixelization/slam.py",
-      "autolens_workspace/scripts/group/features/scaling_relation/modeling.py",
-      "autolens_workspace/scripts/group/features/scaling_relation/modeling_for_luminosities.py",
-      "autolens_workspace/scripts/group/slam.py",
-      "imaging/start_here.ipynb",
-      "modeling_for_luminosities.py",
-      "scripts/group/features/pixelization/slam.py",
+      "autolens_workspace/scripts/imaging/features/extra_galaxies/modeling.py",
+      "autolens_workspace/scripts/imaging/features/multi_gaussian_expansion/modeling.py",
+      "autolens_workspace/scripts/imaging/modeling.py",
+      "cluster/modeling.py",
+      "fit.py",
+      "group/start_here.py",
+      "imaging/features/extra_galaxies/modeling.py",
+      "imaging/modeling.py",
+      "likelihood_function.py",
       "scripts/group/features/scaling_relation/modeling_for_luminosities.py",
-      "scripts/group/slam.py",
-      "scripts/imaging/features/scaling_relation/simulator.py",
+      "scripts/imaging/features/scaling_relation/slam.py",
+      "simulator.py",
       "slam.py"
     ],
     "notebook": "notebooks/imaging/features/scaling_relation/modeling.ipynb",
     "path": "scripts/imaging/features/scaling_relation/modeling.py",
-    "summary": "Strong lenses often have many galaxies surrounding the lens galaxy whose mass contributes to the ray-tracing of the source. The `extra_galaxies` example shows how to add each of these galaxies into the model with their own light and mass profiles, fixing their centres to the observed centres of light. That works well when only a handful of extra galaxies are present, but rapidly becomes unwieldy as the number grows. With 10 extra galaxies modelled with `IsothermalSph` mass profiles, the lens model gains 10 additional `einstein_radius` free parameters; with 30, the parameter space is so large that the non-linear search struggles to converge and the data lacks the information content to constrain every galaxy individually.",
-    "title": "Modeling Features: Scaling Relations"
+    "summary": "A strong lens often has many foreground galaxies near the line of sight, and freeing an `einstein_radius` for each one quickly stops working: with 30 companions the parameter space is too large to sample and the data does not contain enough information to constrain them individually anyway.",
+    "title": "Modeling Features: Scaling Relation"
   },
   {
-    "contents": [],
+    "contents": [
+      "Dataset Paths / Grid / PSF / Simulator",
+      "Luminosity Convention",
+      "Main Lens Galaxy",
+      "Faber-Jackson Relation",
+      "Bounded Companions",
+      "Scaling Companions",
+      "Source / Dataset / Records"
+    ],
     "cross_refs": [
-      "autogalaxy/galaxy/galaxy_table.py",
+      "cluster/modeling.py",
       "fit.py",
       "likelihood_function.py",
-      "scripts/imaging/features/scaling_relation/modeling.py"
+      "modeling.py"
     ],
     "notebook": "notebooks/imaging/features/scaling_relation/simulator.ipynb",
     "path": "scripts/imaging/features/scaling_relation/simulator.py",
-    "summary": "This script simulates a galaxy-scale strong lens with **two populations of foreground extra galaxies** in front of the lensed source:",
-    "title": "Simulator: Extra and Scaling Galaxies"
+    "summary": "Simulates the dataset for the `imaging/features/scaling_relation` feature: a galaxy-scale lens plus two tiers of foreground companions.",
+    "title": "Simulator: Scaling Relation"
+  },
+  {
+    "contents": [
+      "Luminosity Measurement",
+      "LENS LIGHT PIPELINE",
+      "SOURCE LP PIPELINE",
+      "SOURCE PIX PIPELINE 1 / 2",
+      "LIGHT LP PIPELINE",
+      "MASS TOTAL PIPELINE",
+      "Dataset / Centres / Settings / Redshifts / Mesh Shape.",
+      "SLaM Pipeline",
+      "Measured Luminosities"
+    ],
+    "cross_refs": [
+      "fit.py",
+      "likelihood_function.py",
+      "modeling.py",
+      "slam_start_here.py"
+    ],
+    "notebook": "notebooks/imaging/features/scaling_relation/slam.ipynb",
+    "path": "scripts/imaging/features/scaling_relation/slam.py",
+    "summary": "Uses the SLaM pipelines to fit a lens with two tiers of foreground companions, where the scaling tier's Einstein radii are tied to the main lens's own Einstein radius by a Faber-Jackson relation.",
+    "title": "Scaling Relation: SLaM"
   },
   {
     "contents": [
@@ -5787,33 +5823,118 @@
   {
     "contents": [
       "Dataset & Mask",
-      "Scaling Catalogue",
-      "Model",
-      "Search + Analysis / Fit / Result."
+      "Centres + Luminosities",
+      "The Relation",
+      "Galaxies",
+      "Tracer & Fit",
+      "Deflection Sum",
+      "How Much Does The Tier Matter?",
+      "CSV Interface.",
+      "Wrap Up."
     ],
     "cross_refs": [
-      "group/features/scaling_relation/modeling.py",
-      "multi_galaxy/modeling.py"
+      "autolens_workspace/scripts/imaging/features/scaling_relation/fit.py",
+      "autolens_workspace/scripts/multi_galaxy/features/scaling_relation/modeling.py",
+      "autolens_workspace/scripts/multi_galaxy/fit.py",
+      "modeling.py",
+      "slam.py"
     ],
-    "notebook": "notebooks/multi_galaxy/features/scaling_galaxies/modeling.ipynb",
-    "path": "scripts/multi_galaxy/features/scaling_galaxies/modeling.py",
-    "summary": "Extends the multi-galaxy model with a **scaling-galaxies tier**: faint galaxies far from the co-dominant pair whose masses are tied to their luminosities through a shared relation, so the tier adds ONE free parameter regardless of how many galaxies it holds.",
-    "title": "Modeling Features (Multi Galaxy): Scaling Galaxies"
+    "notebook": "notebooks/multi_galaxy/features/scaling_relation/fit.ipynb",
+    "path": "scripts/multi_galaxy/features/scaling_relation/fit.py",
+    "summary": "Fits the multi-galaxy `scaling_relation` dataset at the simulator's truth values, so the tied tier can be inspected without a non-linear search in the way.",
+    "title": "Features (Multi Galaxy): Scaling Relation Fit"
+  },
+  {
+    "contents": [
+      "Dataset & Mask",
+      "Centres + Luminosities",
+      "The Relation",
+      "Galaxies",
+      "Summed Deflection Field",
+      "Manual Ray-Tracing",
+      "Likelihood",
+      "CSV Interface.",
+      "Wrap Up."
+    ],
+    "cross_refs": [
+      "autolens_workspace/scripts/imaging/features/scaling_relation/likelihood_function.py",
+      "autolens_workspace/scripts/multi_galaxy/features/scaling_relation/modeling.py",
+      "autolens_workspace/scripts/multi_galaxy/likelihood_function.py",
+      "fit.py",
+      "slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/scaling_relation/likelihood_function.ipynb",
+    "path": "scripts/multi_galaxy/features/scaling_relation/likelihood_function.py",
+    "summary": "Describes the one step of the `log_likelihood` computation that a BGC-anchored scaling tier changes: how the summed deflection field is composed when most of the deflectors' Einstein radii are not free parameters but derived from the brightest co-dominant galaxy's.",
+    "title": "__Log Likelihood Function: Multi Galaxy Scaling Relation__"
+  },
+  {
+    "contents": [
+      "Dataset & Mask",
+      "Centres",
+      "Luminosities",
+      "Over Sampling / Main Lens Galaxies / Source.",
+      "Scaling Tier",
+      "Model",
+      "Zero Free Parameters",
+      "Search / Analysis / Fit / Result.",
+      "CSV Interface",
+      "Wrap Up."
+    ],
+    "cross_refs": [
+      "autolens_workspace/scripts/imaging/features/scaling_relation/modeling.py",
+      "autolens_workspace/scripts/multi_galaxy/modeling.py",
+      "multi_galaxy/modeling.py",
+      "simulator.py",
+      "slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/scaling_relation/modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/scaling_relation/modeling.py",
+    "summary": "Extends the multi-galaxy model with a **scaling tier**: faint galaxies far from the co-dominant pair whose Einstein radii are tied to the brightest of the pair (the BGC) by a Faber-Jackson relation:",
+    "title": "Modeling Features (Multi Galaxy): Scaling Relation"
   },
   {
     "contents": [
       "Dataset Paths / Grid / PSF / Simulator",
+      "Luminosity Convention",
       "Main Lens Galaxies",
       "Scaling Galaxies",
       "Source / Dataset / Records"
     ],
     "cross_refs": [
-      "multi_galaxy/simulator.py"
+      "modeling.py",
+      "multi_galaxy/simulator.py",
+      "slam.py"
     ],
-    "notebook": "notebooks/multi_galaxy/features/scaling_galaxies/simulator.ipynb",
-    "path": "scripts/multi_galaxy/features/scaling_galaxies/simulator.py",
-    "summary": "Simulates the dataset for the `multi_galaxy/features/scaling_galaxies` feature: the co-dominant pair of `multi_galaxy/simulator.py`, plus five faint galaxies scattered FAR from the lens whose masses follow a luminosity scaling relation.",
-    "title": "Simulator: Multi Galaxy Scaling Galaxies"
+    "notebook": "notebooks/multi_galaxy/features/scaling_relation/simulator.ipynb",
+    "path": "scripts/multi_galaxy/features/scaling_relation/simulator.py",
+    "summary": "Simulates the dataset for the `multi_galaxy/features/scaling_relation` feature: the co-dominant pair of `multi_galaxy/simulator.py`, plus five faint galaxies scattered FAR from the lens whose masses are tied to the **brightest** of the pair by a Faber-Jackson relation.",
+    "title": "Simulator: Multi Galaxy Scaling Relation"
+  },
+  {
+    "contents": [
+      "Luminosity Measurement",
+      "LENS LIGHT PIPELINE 1",
+      "LENS LIGHT PIPELINE 2",
+      "SOURCE LP PIPELINE",
+      "SOURCE PIX PIPELINE 1 / 2",
+      "LIGHT LP PIPELINE",
+      "MASS TOTAL PIPELINE",
+      "Dataset / Two Masks / Centres / Settings.",
+      "SLaM Pipeline",
+      "Measured Luminosities"
+    ],
+    "cross_refs": [
+      "fit.py",
+      "imaging/features/scaling_relation/slam.py",
+      "likelihood_function.py",
+      "modeling.py",
+      "slam_start_here.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/scaling_relation/slam.ipynb",
+    "path": "scripts/multi_galaxy/features/scaling_relation/slam.py",
+    "summary": "Uses the SLaM pipelines to fit a multi-galaxy lens with a scaling tier whose Einstein radii are tied to the brightest co-dominant deflector (the BGC).",
+    "title": "Multi Galaxy Scaling Relation: SLaM"
   },
   {
     "contents": [

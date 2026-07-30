@@ -37,7 +37,9 @@ __Prerequisites__
 This script focuses on the API specific to a group-scale three-tier extras population. For background:
 
  - `autolens_workspace/scripts/imaging/features/scaling_relation/fit.py` — the single-main-lens version of this
-   script. The three-tier walkthrough below generalises that example across multiple main lens galaxies.
+   script. The three-tier walkthrough below generalises that example across multiple main lens galaxies. It anchors
+   its relation on the main lens's own Einstein radius rather than on a reference magnitude, so the two scripts
+   compose the tier from different normalisations; the deflection-sum machinery is identical.
  - `autolens_workspace/scripts/group/start_here.py` — the group-scale `lens_dict` API, including how
    `main_lens_centres.json` is loaded.
  - `autolens_workspace/scripts/group/features/scaling_relation/modeling.py` — the search-based version of this

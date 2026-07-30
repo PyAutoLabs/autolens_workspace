@@ -823,9 +823,10 @@ The examples in `autolens_workspace/*/multi_galaxy/features` extend this model:
 
  - **Extra galaxies**: more distant perturbers added with restricted freedom (fixed centres) — the tier below
    co-dominance.
- - **Scaling galaxies**: a population of faint galaxies far from the lens tied to a luminosity relation, using
-   **untruncated** isothermal profiles (no host halo means no tidal truncation; the truncated dPIE
-   variant belongs to the group/cluster Lenstool-style workflows).
+ - **Scaling galaxies** (`features/scaling_relation`): a population of faint galaxies far from the lens whose
+   Einstein radii are tied to the brightest deflector's by a Faber-Jackson relation, so the tier costs **zero** free
+   parameters however many galaxies it holds. They use **untruncated** isothermal profiles (no host halo means no
+   tidal truncation; the truncated dPIE variant belongs to the group/cluster Lenstool-style workflows).
  - **Pixelized sources**: swap the MGE source for a Delaunay / adaptive mesh reconstruction, exactly as at
    galaxy scale.
 
