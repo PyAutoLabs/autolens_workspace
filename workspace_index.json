@@ -188,7 +188,11 @@
       "Dataset",
       "Dataset Figures",
       "Positions Overlay",
+      "Image Group Zooms",
       "Cluster Subplot",
+      "Tracer",
+      "Critical Curves",
+      "Caustics",
       "Visualizer"
     ],
     "cross_refs": [
@@ -4348,7 +4352,11 @@
       "Fit",
       "Fit Figures",
       "Plane Images",
+      "Plane Subplots",
       "Fit Subplot",
+      "Fit Subplot (Log10)",
+      "Tracer Subplot",
+      "Outputting to FITS",
       "Visualizer"
     ],
     "cross_refs": [
@@ -5570,9 +5578,14 @@
     "contents": [
       "Dataset",
       "Dataset Subplot",
+      "Dirty Images Subplot",
       "Fit",
       "Fit Figures",
       "Fit Subplot",
+      "Fit Dirty Images Subplot",
+      "Real Space Subplot",
+      "Tracer Subplot",
+      "Outputting to FITS",
       "Visualizer"
     ],
     "cross_refs": [
@@ -6792,6 +6805,7 @@
     "contents": [
       "Dataset",
       "Dataset Figures",
+      "Dataset Subplot",
       "Fit",
       "Fit Figures",
       "Visualizer"
@@ -7024,7 +7038,9 @@
       "Dataset",
       "Dataset Figures",
       "Dataset Subplot",
+      "Convergence Map",
       "Fit",
+      "Fit Figures",
       "Fit Subplot",
       "Shear Profile",
       "Visualizer"

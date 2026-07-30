@@ -21,7 +21,11 @@ __Contents__
 - **Fit:** Set up a tracer and fit the dataset with a `FitImaging` object.
 - **Fit Figures:** Plot the fit's model image, residuals and chi-squared maps individually.
 - **Plane Images:** Plot the model image of each individual plane of the fit.
+- **Plane Subplots:** Plot a multi-panel subplot for each plane of the fit.
 - **Fit Subplot:** Plot all fit quantities in one multi-panel subplot.
+- **Fit Subplot (Log10):** The same subplot on a log10 colour scale.
+- **Tracer Subplot:** Plot the fit's tracer quantities (convergence, potential, deflections).
+- **Outputting to FITS:** Write the dataset to a FITS file instead of an image.
 - **Visualizer:** How these figures are output automatically during a model-fit.
 """
 
@@ -152,12 +156,59 @@ aplt.plot_array(array=fit.model_images_of_planes_list[0], title="Plane 0 Model I
 aplt.plot_array(array=fit.model_images_of_planes_list[1], title="Plane 1 Model Image")
 
 """
+__Plane Subplots__
+
+`aplt.subplot_fit_imaging_of_planes()` produces a 4-panel subplot per plane (data, subtracted
+image, model image and plane image), saved as one figure per plane.
+
+Pass `plane_index` to produce the subplot for a single plane only.
+"""
+aplt.subplot_fit_imaging_of_planes(fit=fit)
+aplt.subplot_fit_imaging_of_planes(fit=fit, plane_index=1)
+
+"""
 __Fit Subplot__
 
 A multi-panel fit subplot is produced with `aplt.subplot_fit_imaging()`, combining the data, model
 image, residual-map and chi-squared map in one figure.
+
+For a tracer with only one plane (no source plane) this function automatically switches to a
+simpler 2 x 3 layout, so the same call works for single-plane and multi-plane fits alike.
 """
 aplt.subplot_fit_imaging(fit=fit)
+
+"""
+__Fit Subplot (Log10)__
+
+`aplt.subplot_fit_imaging_log10()` is the same subplot with the image panels on a `log10` colour
+scale, which makes faint extended emission (e.g. the outskirts of the lensed source) visible.
+"""
+aplt.subplot_fit_imaging_log10(fit=fit)
+
+"""
+__Tracer Subplot__
+
+`aplt.subplot_fit_imaging_tracer()` plots the tracer quantities of the fit — image, convergence,
+potential and deflection angles — without needing to build the tracer and grid separately.
+"""
+aplt.subplot_fit_imaging_tracer(fit=fit)
+
+"""
+__Outputting to FITS__
+
+Figures are images, but the dataset itself can be written to a FITS file with
+`aplt.fits_imaging()`. Passing `file_path` writes a single multi-HDU file with named extensions
+(`mask`, `data`, `psf`, `noise_map`); passing `data_path` / `psf_path` / `noise_map_path` instead
+writes each component to its own file.
+"""
+output_path = Path("output") / "plot" / "imaging"
+output_path.mkdir(parents=True, exist_ok=True)
+
+aplt.fits_imaging(
+    dataset=dataset,
+    file_path=output_path / "dataset.fits",
+    overwrite=True,
+)
 
 """
 __Visualizer__

@@ -16,6 +16,7 @@ __Contents__
 
 - **Dataset:** Load the point-source dataset of multiple-image positions.
 - **Dataset Figures:** Inspect the dataset's info and plot its multiple-image positions.
+- **Dataset Subplot:** Plot all dataset quantities in one multi-panel subplot.
 - **Fit:** Set up a tracer and point solver and fit the dataset with a `FitPointDataset`.
 - **Fit Figures:** Inspect the fit's residuals and plot the fit subplot.
 - **Visualizer:** How these figures are output automatically during a model-fit.
@@ -69,6 +70,15 @@ print(dataset.info)
 The multiple-image positions are a `Grid2DIrregular`, plotted with `aplt.plot_grid()`.
 """
 aplt.plot_grid(grid=dataset.positions, title="Multiple Image Positions")
+
+"""
+__Dataset Subplot__
+
+A multi-panel subplot of the dataset is produced with `aplt.subplot_point_dataset()`, combining the
+multiple-image positions with the dataset's other quantities (its noise-map, and its fluxes and
+time-delays where these are measured).
+"""
+aplt.subplot_point_dataset(dataset=dataset)
 
 """
 __Fit__
