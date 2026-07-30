@@ -5954,6 +5954,65 @@
   },
   {
     "contents": [
+      "Data Preparation",
+      "Dataset",
+      "Point Solver",
+      "Extra Galaxies Centres",
+      "Model",
+      "Extra Galaxies Model",
+      "Information Budget",
+      "Name Pairing",
+      "Search + Analysis",
+      "Run Time",
+      "Model-Fit",
+      "Result",
+      "Approaches to Extra Galaxies",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "/imaging/data_preparation/examples/optional/extra_galaxies_centres.py",
+      "features/fluxes.py",
+      "point_source/modeling.py",
+      "point_source/simulator.py",
+      "point_source/start_here.ipynb",
+      "simulator.py"
+    ],
+    "notebook": "notebooks/point_source/features/extra_galaxies/modeling.ipynb",
+    "path": "scripts/point_source/features/extra_galaxies/modeling.py",
+    "summary": "There may be extra galaxies projected near a lensed point source, for example a faint companion beside the main lens galaxy of a lensed quasar, whose mass contributes to the ray-tracing and therefore to where the multiple images appear.",
+    "title": "Modeling Features: Extra Galaxies"
+  },
+  {
+    "contents": [
+      "Model",
+      "Other Scripts",
+      "Dataset Paths",
+      "Ray Tracing",
+      "Extra Galaxies",
+      "Point Solver",
+      "Fluxes",
+      "Point Dataset",
+      "Extra Galaxies Centres",
+      "Imaging",
+      "Visualize",
+      "Tracer json"
+    ],
+    "cross_refs": [
+      "/imaging/data_preparation/examples/optional/extra_galaxies_centres.py",
+      "/point_source/features/extra_galaxies/modeling.ipynb",
+      "imaging/simulator.py",
+      "modeling.py",
+      "point_source/modeling.py",
+      "point_source/simulator.ipynb",
+      "point_source/simulator.py"
+    ],
+    "notebook": "notebooks/point_source/features/extra_galaxies/simulator.ipynb",
+    "path": "scripts/point_source/features/extra_galaxies/simulator.py",
+    "summary": "Lensed point sources, for example a lensed quasar or supernova, frequently have small galaxies projected near the main lens galaxy. Unlike for extended sources, these galaxies do not blend with the source emission \u2014 a point source has no extended surface brightness to contaminate. What they do instead is perturb the deflection field, shifting the positions (and magnifications) of the multiple images by amounts that are small but easily measurable, because point-source astrometry is precise to a few milli-arcseconds.",
+    "title": "Simulator: Extra Galaxies"
+  },
+  {
+    "contents": [
       "Model",
       "Dataset",
       "Point Solver",

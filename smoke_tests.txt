@@ -5,6 +5,9 @@ imaging/fit.py
 # interferometer/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1
 interferometer/modeling.py
 # point_source/start_here.py  # disabled: bypass mode tuple-path KeyError on point source models (rhayes777/PyAutoFit#1179)
+# The PyAutoFit#1179 bypass failure above is specific to start_here.py's model, not to point-source
+# models in general — this entry was verified to pass under PYAUTO_TEST_MODE=2 from a clean output dir.
+point_source/features/extra_galaxies/modeling.py
 # group/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1
 group/modeling.py
 group/features/group_halo/modeling.py
