@@ -612,7 +612,3 @@ mass_result = mass_total(
     redshift_lens=redshift_lens,
     n_batch=n_batch,
 )
-
-"""
-Finish.
-"""

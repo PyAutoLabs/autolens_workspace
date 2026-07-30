@@ -331,8 +331,6 @@ al.output_to_json(
 )
 
 """
-Finish.
-
 __JAX Variant (Advanced)__
 
 For fast repeated interferometer simulations, instantiate the simulator with `use_jax=True` so the image

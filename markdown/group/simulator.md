@@ -398,8 +398,6 @@ al.output_to_json(
 )
 ```
 
-Finished.
-
 __JAX Variant__
 
 Same pattern as `scripts/imaging/simulator.py` `__JAX Variant__`:

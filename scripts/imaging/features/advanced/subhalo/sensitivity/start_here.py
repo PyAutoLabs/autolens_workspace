@@ -806,7 +806,3 @@ The fit produces a `sensitivity_result`.
 We can print the `log_evidence_differences` of every cell of the sensitivity map.
 """
 print(sensitivity_result.log_evidence_differences.native)
-
-"""
-Finish.
-"""

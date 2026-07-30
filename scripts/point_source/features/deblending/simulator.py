@@ -350,7 +350,3 @@ al.output_to_json(
     obj=tracer,
     file_path=Path(dataset_path, "tracer_imaging.json"),
 )
-
-"""
-Finished.
-"""

@@ -699,7 +699,3 @@ aplt.subplot_tracer(
 aplt.subplot_galaxies_images(
     tracer=tracer, grid=viz_grid, output_path=dataset_path, output_format="png"
 )
-
-"""
-Finished.
-"""

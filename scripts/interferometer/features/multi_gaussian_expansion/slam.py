@@ -548,7 +548,3 @@ mass_result = mass_total(
     source_pix_result_2=source_pix_result_2,
     settings=settings,
 )
-
-"""
-Finish.
-"""

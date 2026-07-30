@@ -568,8 +568,6 @@ dataset.to_csv(
 )
 ```
 
-Finished.
-
 __JAX Variant__
 
 The expensive step in point-source simulation is the multiple-image

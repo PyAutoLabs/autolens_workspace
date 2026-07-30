@@ -271,7 +271,3 @@ al.output_to_json(
     obj=positions,
     file_path=dataset_path / "positions.json",
 )
-
-"""
-Finished.
-"""

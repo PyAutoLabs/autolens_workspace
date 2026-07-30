@@ -1204,7 +1204,3 @@ subhalo_results = sensitivity.run()
 visualize_sensitivity(
     result=subhalo_results, paths=paths, mass_result=mass_result, mask=mask
 )
-
-"""
-Finish.
-"""

@@ -104,7 +104,3 @@ al.output_to_json(
     obj=lens_light_centres,
     file_path=Path(dataset_path, "lens_light_centre.json"),
 )
-
-"""
-Finish.
-"""

@@ -898,7 +898,3 @@ subhalo_centres_grid = subhalo_grid_search_result.subhalo_centres_grid
 
 print("Subhalo Centres Grid: \n")
 print(subhalo_centres_grid)
-
-"""
-Finish.
-"""

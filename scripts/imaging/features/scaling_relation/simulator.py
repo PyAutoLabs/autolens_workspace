@@ -242,7 +242,3 @@ al.galaxy_table_to_csv(
     luminosities=scaling_galaxies_luminosities,
     file_path=Path(dataset_path, "scaling_galaxies.csv"),
 )
-
-"""
-Finished.
-"""

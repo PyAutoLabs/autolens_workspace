@@ -489,8 +489,6 @@ dataset.to_csv(
 )
 
 """
-Finished.
-
 __JAX Variant (Advanced)__
 
 The expensive step in point-source simulation is the multiple-image solve — `PointSolver` runs an iterative
