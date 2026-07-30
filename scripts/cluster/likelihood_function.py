@@ -37,6 +37,7 @@ __Aims__
 
 __Contents__
 
+- **JAX:** Model-fits run this likelihood function through JAX — see ``scripts/guides/using_jax.py``.
 - **Dataset:** Load the CCD imaging (used only for visualisation) and the per-source point datasets.
 - **Truth Model:** Load the truth model from the family CSVs (mass / point / scaling_galaxies).
 - **Tracer:** Build the ``Tracer`` carrying every lens-plane galaxy + the two source-plane galaxies.
@@ -67,6 +68,12 @@ __Contents__
 
 - **Source-Plane vs Image-Plane: When to Use Which:** Practical comparison.
 - **Wrap Up:** Pointers to ``modeling.py``, ``csv_api.py``, and the test-workspace sanity diagnostic.
+
+__JAX__
+
+Model-fits evaluate this likelihood function through JAX rather than NumPy, which is what makes cluster
+modelling fast — ``scripts/guides/using_jax.py`` shows a likelihood function JAX-compiled via both the
+``Analysis`` object and the ``Fitness`` object a non-linear search drives.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -817,34 +824,4 @@ Next steps:
 
 For a deeper understanding of cluster lens modelling and point-source likelihoods, the
 **HowToLens** Jupyter notebook lectures cover both topics in detail.
-
-__JAX__
-
-The chi-squared walkthrough above is pure NumPy. To JAX-accelerate it,
-wrap construction in `@jax.jit` with the post-Phase-2 `PointSolver`
-pattern:
-
-```python
-import jax
-import jax.numpy as jnp
-from autolens.jax import register_tracer_classes
-
-register_tracer_classes(tracer)  # one-time
-
-@jax.jit
-def cluster_log_likelihood(tracer, dataset, source_galaxy):
-    fit = al.FitPositionsSource(
-        name=dataset.name,
-        data=dataset.positions,
-        noise_map=dataset.positions_noise_map,
-        tracer=tracer,
-        solver=None,  # source-plane chi² doesn't need the solver
-        profile=getattr(source_galaxy, dataset.name),
-    )
-    return fit.log_likelihood
-```
-
-For the canonical search-driven path (`AnalysisPoint(use_jax=True)`),
-see `modeling.py`. For JIT-ing library methods directly without going
-through `FitPositionsSource`, see `scripts/guides/lens_calc.py`.
 """
