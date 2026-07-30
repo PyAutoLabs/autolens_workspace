@@ -61,14 +61,14 @@ The workspace includes the following main directories:
 The Source, Light and Mass (SLaM) pipelines **(Advanced)** are not a top-level
 directory: `scripts/guides/modeling/slam_start_here.py` is the canonical
 reference, and the pipelines themselves live in `features/slam/` folders within a
-given topic (e.g. `scripts/multi/features/slam/`).
+given topic (e.g. `scripts/multi_dataset/features/slam/`).
 
 The examples in the `notebooks` and `scripts` folders are structured as follows:
 
 - `guides`: Guides which introduce the core features of **PyAutoLens**, including the core lensing API.
 - `imaging`: Examples for galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, Euclid).
 - `interferometer`: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA).
-- `multi`: Examples for lenses observed in multiple wavebands, modeled simultaneously.
+- `multi_dataset`: Examples for lenses observed in multiple wavebands, modeled simultaneously.
 - `point_source`: Examples for strong lens point source datasets.
 - `multi_galaxy`: Examples for multi-galaxy strong lenses (two or more co-dominant lens galaxies, no host halo).
 - `group`: Examples for group scale strong lenses.

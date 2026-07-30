@@ -131,7 +131,7 @@ Each analysis is wrapped in an `AnalysisFactor` paired with the model. Because b
 *same* model object, the factor graph recognises every prior as shared — a single 11-dimensional parameter
 space whose likelihood is the sum of the two factors.
 
-(In the `multi` examples each factor gets a slightly different copy of the model, e.g. per-wavelength
+(In the `multi_dataset` examples each factor gets a slightly different copy of the model, e.g. per-wavelength
 ellipticities; here total sharing is exactly what "one mass distribution, two datasets" means.)
 """
 analysis_factor_imaging = af.AnalysisFactor(
@@ -217,5 +217,5 @@ Einstein radius by strong lensing and outside it by weak shear, sampled as a sin
 
 The same factor-graph pattern extends directly to the realistic versions of this analysis: cluster-scale
 lenses with many cluster members (see `scripts/cluster`), real shear catalogues (the upcoming real-data
-example in this series), and any other dataset combination (`scripts/multi`).
+example in this series), and any other dataset combination (`scripts/multi_dataset`).
 """

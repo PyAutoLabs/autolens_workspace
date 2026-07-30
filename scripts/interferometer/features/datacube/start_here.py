@@ -244,7 +244,7 @@ deduplicates them — so the global model has the same dimensionality as the sin
 
 If you wanted per-channel free parameters (for example, a per-channel `intensity` for a parametric source),
 you'd override that prior on each `model.copy()` before wrapping it in an `AnalysisFactor`. See
-`autolens_workspace/scripts/multi/modeling.py` for how that works in the multi-band case.
+`autolens_workspace/scripts/multi_dataset/modeling.py` for how that works in the multi-band case.
 """
 analysis_factor_list = [
     af.AnalysisFactor(prior_model=model.copy(), analysis=analysis)

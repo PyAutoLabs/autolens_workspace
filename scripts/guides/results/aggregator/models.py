@@ -76,7 +76,7 @@ The `tracer_gen` returns a list of `Tracer` objects, as opposed to just a single
 only a single `Analysis` class was used in the model-fit, meaning there was only one `Tracer` dataset that was
 fit. 
 
-The `multi` package of the workspace illustrates model-fits which fit multiple datasets 
+The `multi_dataset` package of the workspace illustrates model-fits which fit multiple datasets 
 simultaneously, (e.g. multi-wavelength imaging)  by summing `Analysis` objects together, where the `tracer_list` 
 would contain multiple `Tracer` objects.
 

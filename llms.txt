@@ -18,7 +18,7 @@ If your AI can't browse GitHub, paste this entire file into the chat as context.
 - [scripts/group/start_here.py](scripts/group/start_here.py): Group-scale lens entry point — multiple lens galaxies, one lensed source.
 - [scripts/point_source/start_here.py](scripts/point_source/start_here.py): Point-source (e.g. lensed quasar) lens entry point — two/four point-like images, Hubble-constant and dark-matter science.
 - [scripts/interferometer/start_here.py](scripts/interferometer/start_here.py): Interferometer (e.g. ALMA) entry point — fits complex visibilities in the uv-plane, not CCD images.
-- [scripts/multi/start_here.py](scripts/multi/start_here.py): Multi-wavelength / multi-dataset entry point — simultaneous fit of the same lens across datasets.
+- [scripts/multi_dataset/start_here.py](scripts/multi_dataset/start_here.py): Multi-wavelength / multi-dataset entry point — simultaneous fit of the same lens across datasets.
 - [scripts/cluster/start_here.py](scripts/cluster/start_here.py): Cluster-scale entry point — BCGs, scaling-relation member galaxies, and cluster dark-matter halos.
 
 ## I want to…
@@ -28,7 +28,7 @@ If your AI can't browse GitHub, paste this entire file into the chat as context.
 - **Model a group-scale lens** → [scripts/group/modeling.py](scripts/group/modeling.py): Detailed group modeling API for systems with multiple lens galaxies.
 - **Model a point-source / quasar lens** → [scripts/point_source/modeling.py](scripts/point_source/modeling.py): Detailed point-source modeling API, fitting multiple-image positions (and fluxes).
 - **Model interferometer / ALMA (uv-plane) data** → [scripts/interferometer/modeling.py](scripts/interferometer/modeling.py): Detailed uv-plane modeling API fitting visibilities directly.
-- **Multi-wavelength / multi-dataset modeling** → [scripts/multi/modeling.py](scripts/multi/modeling.py): Detailed API for jointly fitting multiple datasets of one lens.
+- **Multi-wavelength / multi-dataset modeling** → [scripts/multi_dataset/modeling.py](scripts/multi_dataset/modeling.py): Detailed API for jointly fitting multiple datasets of one lens.
 - **Load & inspect results from `output/`** → [scripts/guides/results/start_here.py](scripts/guides/results/start_here.py): Load a completed fit back into Python (`Tracer`, `Model`, samples, model images) from a fit's `output/...` folder.
 - **Compute magnification / source flux** → [scripts/imaging/source_science.py](scripts/imaging/source_science.py): Source-science calculations — total flux, magnification, and intrinsic size of the lensed source from a fitted tracer.
 - **Pixelized source reconstruction** → [scripts/imaging/features/pixelization/modeling.py](scripts/imaging/features/pixelization/modeling.py): Reconstruct the source on a regularized pixel-grid (mesh + regularization) instead of a parametric profile.

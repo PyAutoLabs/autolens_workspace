@@ -6,7 +6,7 @@ This script fits a `PointDataset` of a 'galaxy-scale' strong lens with multiple 
 redshifts. The lens system is multi-plane: a foreground lens at z=0.5 deflects both background sources, while
 source_0 at z=1.0 is itself a deflector for source_1 at z=2.0 (the "double Einstein cross" configuration). Each
 source's multiple images are stored in their own `PointDataset`, and the two datasets are fitted jointly using
-the multi/factor-graph API:
+the multi-dataset/factor-graph API:
 
  - The foreground lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
  - The first source `Galaxy` (at z=1.0) is itself a `Galaxy` with a mass profile and a `Point`.
@@ -19,7 +19,7 @@ non-linear search optimises. Multi-plane lensing is handled automatically inside
 `Point`'s plane redshift in the tracer when solving for image-plane positions.
 
 This is an advanced script and assumes previous knowledge of the core **PyAutoLens** API for point-source modeling
-(see `point_source/modeling.py`) and the multi/factor-graph API (see `multi/modeling.py` and `cluster/modeling.py`).
+(see `point_source/modeling.py`) and the multi-dataset/factor-graph API (see `multi_dataset/modeling.py` and `cluster/modeling.py`).
 Common boilerplate is therefore not re-explained in detail here.
 
 __Currently Blocked By PyAutoLens #480__
@@ -47,7 +47,7 @@ __Contents__
 __Start Here Notebook__
 
 If any code in this script is unclear, refer to the `point_source/modeling.ipynb` notebook for the single-source
-case, and `multi/modeling.ipynb` for the factor-graph API used to combine multiple datasets.
+case, and `multi_dataset/modeling.ipynb` for the factor-graph API used to combine multiple datasets.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -316,6 +316,6 @@ aplt.corner_anesthetic(samples=result_list[0].samples)
 __Wrap Up__
 
 This example introduces the API for fitting multiple lensed point sources at different redshifts with the
-multi/factor-graph API. The same pattern can be extended to many more sources (see `cluster/modeling.py`) or to
+multi-dataset/factor-graph API. The same pattern can be extended to many more sources (see `cluster/modeling.py`) or to
 combine point-source data with imaging or interferometer data via heterogeneous analyses in a single factor graph.
 """

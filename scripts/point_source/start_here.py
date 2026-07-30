@@ -24,7 +24,7 @@ Point source modeling uses the positions of the lensed source in the image-plane
 use their fluxes and time delays. Lensed quasars are also commonly observed with CCD imaging, which is
 used to measure the point-source positions precisely; the extended arcs of the quasar's host galaxy in
 such imaging can be modeled jointly with the point-source data, as shown in the
-`multi/features/imaging_and_point_source` example.
+`multi_dataset/features/imaging_and_point_source` example.
 
 __Contents__
 
@@ -162,7 +162,7 @@ When CCD imaging of the lens is available, it can be loaded alongside the point 
 visualization — seeing where the multiple images sit relative to the lens galaxy makes results much
 easier to interpret, and an image passed to the analysis is overlaid in its output visuals. This is
 entirely optional, and for RXJ1131 the joint modeling of its CCD imaging and point-source data is
-covered in the `multi/features/imaging_and_point_source` example.
+covered in the `multi_dataset/features/imaging_and_point_source` example.
 
 __Point Solver__
 
