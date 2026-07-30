@@ -7,7 +7,7 @@ for specific scientific topics.The following example scripts illustrating lens m
 - `shapelets`: The source (or lens) is reconstructed using shapelet basis functions.
 - `mass_stellar_dark`: The lens galaxy's mass is decomposed into stellar and dark matter mass components.
 - `operated_light_profile`: There are light profiles which are assumed to already be convolved with the instrumental PSF (e.g. point sources), commonly used for modeling bright AGN in the centre of a galaxy.
-- `double_einstein_ring`: The lens is a double Einstein ring system with two lensed sources at different redshifts.
+- `double_source_plane_lens`: The lens is a double source-plane lens (DSPL) with two lensed sources at different redshifts.
 - `sky_background`: Including the background sky in the model.
 - `subhalo`: Fitting lens models for dark matter subhalo detection and sensitivity mapping.
 - `potential_correction`: Gravitational imaging — pixelized corrections to the lensing potential reconstructed jointly with the source.

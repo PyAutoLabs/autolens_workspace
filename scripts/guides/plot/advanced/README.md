@@ -9,4 +9,4 @@ New users should begin with `guides/plot/start_here.py`.
 # Files
 
 - `plotters_pixelization`: Plots for pixelized source inversions.
-- `plotters_double_einstein_ring`: Plots for double Einstein ring lens models.
+- `plotters_double_source_plane_lens`: Plots for double source-plane lens (DSPL) models.

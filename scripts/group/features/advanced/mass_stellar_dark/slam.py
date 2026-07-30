@@ -10,7 +10,7 @@ This script is the group analogue of:
 
  - `guides/modeling/slam_start_here.py` — the canonical single-galaxy SLaM walkthrough.
  - `scripts/imaging/features/advanced/mass_stellar_dark/slam.py` — the single-galaxy decomposed-mass SLaM.
- - `scripts/group/features/advanced/double_einstein_ring/slam.py` — the group SLaM with two source planes (the
+ - `scripts/group/features/advanced/double_source_plane_lens/slam.py` — the group SLaM with two source planes (the
    `lens_dict` plumbing in that script is the structural template used here, simplified for a single source
    plane).
 
