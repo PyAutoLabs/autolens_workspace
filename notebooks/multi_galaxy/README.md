@@ -35,8 +35,12 @@ New users should read the `start_here` example, which gives an overview of all e
 - `start_here`: A simple example illustrating how to analyse multi-galaxy strong lenses.
 - `modeling`: Detailed example of performing lens modeling of a multi-galaxy strong lens.
 - `simulator`: Detailed example of how to simulate a multi-galaxy strong lens.
+- `simulator_sample`: How to simulate a sample of multi-galaxy strong lenses, drawing random co-dominant pairs.
 - `fit`: An anatomy of the multi-galaxy fit — how each co-dominant deflector contributes to the summed
-  deflection field.
+  deflection field, and every quantity `FitImaging` computes.
+- `source_science`: Source science calculations (total flux, magnification) behind two co-dominant deflectors.
+- `likelihood_function`: A step-by-step guide of the multi-galaxy likelihood function, including the deflection
+  summation which defines the regime.
 - `data_preparation`: See `imaging/data_preparation`, which has all tools for preparing CCD imaging data; the
   centre-input GUI in `group/start_here` writes the `main_lens_centres.json` file this package loads.
 
