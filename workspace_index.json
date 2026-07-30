@@ -2504,12 +2504,11 @@
       "data_structures.py",
       "lens_calc.py",
       "likelihood_function.py",
-      "scripts/cluster/simulator.py",
       "scripts/guides/data_structures.py",
       "scripts/guides/lens_calc.py",
       "scripts/imaging/likelihood_function.py",
+      "scripts/imaging/simulator.py",
       "scripts/interferometer/likelihood_function.py",
-      "scripts/point_source/simulator.py",
       "start_here.py"
     ],
     "notebook": "notebooks/guides/using_jax.ipynb",
@@ -4289,6 +4288,7 @@
       "scripts/cluster/simulator.py",
       "scripts/guides/lens_calc.py",
       "scripts/guides/using_jax.py",
+      "scripts/interferometer/simulator.py",
       "scripts/point_source/simulator.py"
     ],
     "notebook": "notebooks/imaging/simulator.ipynb",

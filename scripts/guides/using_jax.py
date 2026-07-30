@@ -52,20 +52,31 @@ Two situations call for it:
    dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
    ```
 
-   **Wrapping that call in `@jax.jit` does not currently work.** Two things stop it, and it is worth knowing
-   which is which:
+   Wrapping that call in `@jax.jit` works for **imaging**, with one setup line you must write yourself:
 
-   - **You must register the pytrees yourself first.** Nothing in the library does it for you, and nothing can:
-     JAX flattens a jitted function's arguments at trace time, *before* entering the callee, so a simulator that
-     registered internally would already be too late. The one-time call is
-     `autolens.jax.register_tracer_classes(tracer)`.
-   - **Even with that, the jitted simulator call fails inside autoarray** on array sites that do not yet thread
-     `xp` — see PyAutoLabs/PyAutoArray for the tracked issue. Until it is fixed, use the eager call above.
+   ```python
+   import jax
+   from autolens.jax import register_tracer_classes
 
-   Note the eager call returns a dataset whose `.data.array` is a `numpy.ndarray`, not a `jax.Array`.
+   register_tracer_classes(tracer)   # one-time, before the first jitted call
 
-   `scripts/point_source/simulator.py` and `scripts/cluster/simulator.py` show the registration step in a
-   `PointSolver` context, where `@jax.jit` *does* work and is the reason those scripts are fast.
+   @jax.jit
+   def simulate(tracer):
+       return simulator.via_tracer_from(tracer=tracer, grid=grid)
+
+   dataset_jax = simulate(tracer)    # .data.array is a jax.Array
+   ```
+
+   The library cannot do that registration for you, and this is not an oversight: JAX flattens a jitted
+   function's arguments at trace time, *before* entering the callee, so a simulator that registered internally
+   would already be too late. `PointSolver.solve_triangles` documents the same constraint at its own call site.
+
+   `scripts/imaging/simulator.py` runs this exact block, and is in `smoke_tests.txt` — so CI executes the recipe
+   rather than this guide merely asserting it works.
+
+   **Interferometer is the exception.** The jitted simulator path does not yet work there: `TransformerDFT` fails
+   at the jit boundary because `Interferometer` is not a registered pytree, and `TransformerNUFFT` fails inside
+   its own transform. Tracked in PyAutoLabs/PyAutoArray. Use the eager call for interferometer simulations.
 
 2. **Custom likelihood functions** that you assemble by hand rather than reaching for `AnalysisImaging`. Same
    shape: `@jax.jit` around your own `def log_likelihood(instance): ...`. The next section works this through.
