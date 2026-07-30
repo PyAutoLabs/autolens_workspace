@@ -15,7 +15,7 @@ in  the `modeling` scripts. This means that the parameters of each simulated str
 distributions  defined via priors, which can be customized to simulate a wider range of strong lenses.
 
 The sample is used in `autolens_workspace/notebooks/advanced/graphical` to illustrate how a graphical and hierarchical
-model can be fitted to a large sample of double Einstein ring strong lenses in order to improve the constraints on
+model can be fitted to a large sample of double source-plane lenses (DSPLs) in order to improve the constraints on
 Cosmological parameters.
 
 __Contents__

@@ -16,6 +16,7 @@ group/features/group_halo/modeling.py
 multi_galaxy/start_here.py
 multi_galaxy/modeling.py
 multi_galaxy/fit.py
+multi_galaxy/features/extra_galaxies/modeling.py
 multi_galaxy/features/scaling_relation/modeling.py
 imaging/features/scaling_relation/modeling.py
 # multi/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1

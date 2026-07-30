@@ -4,7 +4,7 @@
 # This sensitivity-mapping example is intentionally shipped fully commented out
 # (every line is prefixed with '#', including the docstring's '===' underline),
 # so the banner lint flags the commented underline on line 3. Legitimate.
-scripts/interferometer/features/subhalo/sensitivity/start_here.py
+scripts/interferometer/features/advanced/subhalo/sensitivity/start_here.py
 
 # scripts/guides/hpc/README.md documents how to create a local HPC sync config
 # with `cp scripts/guides/hpc/sync.conf.example scripts/guides/hpc/sync.conf`.
