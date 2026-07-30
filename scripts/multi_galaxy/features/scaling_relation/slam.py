@@ -120,8 +120,15 @@ __Luminosity Measurement__
 def luminosity_from(galaxy, pixel_scale):
     """
     The total luminosity of a galaxy's MGE bulge, summed over its Gaussians.
+
+    Raises if the total is not positive. A zero luminosity is what
+    `PYAUTO_TEST_MODE` produces — the light stage returns no usable samples, so every
+    Gaussian's `intensity` is zero. The scaling relation would then evaluate
+    `(0.0 / 0.0) ** 0.5`, and the resulting NaN surfaces much later and far away
+    (an INT_MIN index in the inversion mapper, or a NaN in autofit's identifier hash),
+    naming neither luminosity nor test mode. Fail here instead, where the cause is legible.
     """
-    return (
+    luminosity = (
         np.sum(
             [
                 2 * np.pi * gaussian.sigma**2 / gaussian.axis_ratio() * gaussian.intensity
@@ -130,6 +137,18 @@ def luminosity_from(galaxy, pixel_scale):
         )
         / pixel_scale**2
     )
+
+    if not luminosity > 0:
+        raise ValueError(
+            f"Measured luminosity is {luminosity}, but the scaling relation needs a positive "
+            f"value: it divides by the anchor's luminosity and takes a square root, so a "
+            f"non-positive input yields NaN. The light stage this is measured from produced no "
+            f"usable samples — the usual cause is running this script under PYAUTO_TEST_MODE, "
+            f"which skips or truncates the search. This script needs a real search; it is listed "
+            f"in config/build/no_run.yaml for exactly this reason."
+        )
+
+    return luminosity
 
 
 def luminosities_from(result, n_main, pixel_scale):

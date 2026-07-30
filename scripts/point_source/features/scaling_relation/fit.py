@@ -243,4 +243,17 @@ is tied, having it in the model costs nothing from a 12-point data budget.
 
 Next: `modeling.py` fits this with a search. There is no `slam.py` here — with no light in a `PointDataset` there is no
 light stage in which to measure anything.
+
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+This script asserts on solved image positions. Under SMALL_DATASETS the grid is
+capped to 15x15, at which resolution `PointSolver` returns 2 degenerate images
+instead of 4 and the measured shift collapses to 0 mas, tripping the assertion.
+
+ENV: full_datasets
 """

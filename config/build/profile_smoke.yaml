@@ -22,19 +22,21 @@ defaults:
 
 overrides:
   # The */start_here and guides/ PYAUTO_SMALL_DATASETS unsets migrated to
-  # in-file `# ENV: full_datasets` declarations on each matched script, and
-  # the PYAUTO_TEST_MODE / PYAUTO_FAST_PLOTS unsets below to `# ENV:
-  # real_search` / `# ENV: real_plots` — #187 Stage 2. The non-declarable
-  # PYAUTO_SKIP_* vars remain here.
+  # in-file `ENV: full_datasets` declarations on each matched script, and
+  # the PYAUTO_TEST_MODE / PYAUTO_FAST_PLOTS unsets below to `ENV:
+  # real_search` / `ENV: real_plots` — #187 Stage 2. A declaration is an
+  # `__Env__` docstring SECTION holding a bare `ENV: <tokens>` line; the older
+  # `# ENV:` comment form was removed and now RAISES (PyAutoHands#189/#190).
+  # The non-declarable PYAUTO_SKIP_* vars remain here.
   # guides/results/start_here.py must produce real samples so the example
   # scripts that read from `output/results_folder` afterwards
   # (data_fitting, queries, models, samples_via_aggregator) find a
   # non-empty aggregator. Covers all scripts under guides/results/.
-  # (PYAUTO_TEST_MODE moved to `# ENV: real_search`.)
+  # (PYAUTO_TEST_MODE moved to `ENV: real_search`.)
   - pattern: "guides/results/"
     unset: [PYAUTO_SKIP_FIT_OUTPUT]
   # fits_make / png_make produce .fits / .png outputs from real fits, so they need
-  # visualization turned on. (PYAUTO_FAST_PLOTS moved to `# ENV: real_plots`.)
+  # visualization turned on. (PYAUTO_FAST_PLOTS moved to `ENV: real_plots`.)
   - pattern: fits_make
     unset: [PYAUTO_SKIP_VISUALIZATION]
   - pattern: png_make
