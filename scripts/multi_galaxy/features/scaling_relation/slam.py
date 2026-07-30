@@ -9,14 +9,31 @@ brightest co-dominant deflector.
 them as given and say they must be measured beforehand; here they are measured, and the measurement is genuinely
 awkward at this scale, which is the reason this script exists.
 
-A full overview of SLaM is in `guides/modeling/slam_start_here`. This script documents only how it differs.
+This script documents only how it differs from `multi_galaxy/slam.py`, the multi-galaxy SLaM baseline, which in
+turn documents only how *it* differs from `guides/modeling/slam_start_here`.
 
 __Prerequisites__
 
-- **SLaM Start Here** (`guides/modeling/slam_start_here`)
+- **Multi Galaxy SLaM** (`multi_galaxy/slam.py`) — the regime baseline. It establishes the four things every
+  multi-galaxy pipeline does: one `lens_i` per deflector built in a loop, the external shear held in its own
+  `shear_galaxy`, mass centres fixed in `source_lp[1]` and released in `source_pix[1]`, and `n_live` scaling with
+  the deflector count. None of that is re-explained here.
+- **SLaM Start Here** (`guides/modeling/slam_start_here`) — what the five stages are for.
 - **Multi Galaxy Scaling Relation** (`multi_galaxy/features/scaling_relation/modeling`)
 - **Imaging Scaling Relation SLaM** (`imaging/features/scaling_relation/slam`) — the single-anchor version, whose
   luminosity-measurement machinery is identical.
+
+__What Changes From The Baseline__
+
+Two things, and both are about the scaling tier:
+
+1. **Two extra lens-light stages run first.** `lens_light[1]` fits the co-dominant pair on the standard mask and
+   `lens_light[2]` fits the tier on an enlarged one, because the luminosities the relation needs have to be
+   measured before any mass model can use them. The baseline has no equivalent — it goes straight to
+   `source_lp[1]`.
+2. **A `scaling_galaxies` collection is carried through every stage**, with its Einstein radii tied to the
+   brightest deflector's own free `einstein_radius` rather than freed. The tie travels with the model, so it stays
+   anchored without being re-declared.
 
 __The Two-Mask Problem__
 
@@ -53,7 +70,8 @@ __This Script__
 Using LENS LIGHT (two stages), SOURCE LP, SOURCE PIX (two stages), LIGHT LP and MASS TOTAL pipelines this script
 fits `Imaging` data where in the final model:
 
- - Each co-dominant deflector has a free MGE bulge and a `PowerLaw` total mass; `lens_0` carries the `ExternalShear`.
+ - Each co-dominant deflector has a free MGE bulge and a `PowerLaw` total mass; the system's `ExternalShear`
+   is held in its own `shear_galaxy`.
  - Each scaling galaxy has a free MGE bulge and an `IsothermalSph` mass tied to the brightest galaxy.
  - The source galaxy's light is a `Pixelization`.
 
@@ -303,9 +321,10 @@ __SOURCE LP PIPELINE__
 Equivalent to `source_lp` in `slam_start_here.py`, except all light is fixed from the lens-light stages and mass and
 source enter here for the first time.
 
-Each co-dominant deflector gets a free `Isothermal`; only `lens_0` carries the `ExternalShear`, since one shear
-describes the tidal field of everything outside the system. The tier's Einstein radii are tied to the brightest
-galaxy's free `einstein_radius`, so the tier costs nothing.
+Each co-dominant deflector gets a free `Isothermal`, and the system's single `ExternalShear` is held in its own
+`shear_galaxy` at the system centre, exactly as in `multi_galaxy/slam.py` — the shear describes the tidal field of
+everything outside the system, so attaching it to one of several co-dominant galaxies would misrepresent it. The
+tier's Einstein radii are tied to the brightest galaxy's free `einstein_radius`, so the tier costs nothing.
 """
 
 
@@ -347,8 +366,13 @@ def source_lp(
             disk=lens_instance.disk,
             point=lens_instance.point,
             mass=mass,
-            shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
         )
+
+    shear_galaxy = af.Model(
+        al.Galaxy,
+        redshift=redshift_lens,
+        shear=af.Model(al.mp.ExternalShear),
+    )
 
     source_bulge = al.model_util.mge_model_from(
         mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
@@ -375,6 +399,7 @@ def source_lp(
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
+            shear_galaxy=shear_galaxy,
             source=af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge),
         ),
         scaling_galaxies=af.Collection(scaling_galaxies_list),
@@ -444,12 +469,12 @@ def source_pix_1(
             disk=lens_instance.disk,
             point=lens_instance.point,
             mass=mass,
-            shear=lens_model.shear,
         )
 
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
+            shear_galaxy=source_lp_result.model.galaxies.shear_galaxy,
             source=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.source.redshift,
@@ -519,12 +544,12 @@ def source_pix_2(
             disk=lp_instance.disk,
             point=lp_instance.point,
             mass=pix_instance.mass,
-            shear=pix_instance.shear,
         )
 
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
+            shear_galaxy=source_pix_result_1.instance.galaxies.shear_galaxy,
             source=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.source.redshift,
@@ -620,7 +645,6 @@ def light_lp(
             disk=None,
             point=None,
             mass=lens_instance.mass,
-            shear=lens_instance.shear,
         )
 
     # The tier is carried unchanged: light from `lens_light[2]`, mass from `source_pix[1]`. It lies outside this mask,
@@ -633,7 +657,11 @@ def light_lp(
     )
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict, source=source),
+        galaxies=af.Collection(
+            **lens_dict,
+            shear_galaxy=source_result_for_lens.instance.galaxies.shear_galaxy,
+            source=source,
+        ),
         scaling_galaxies=af.Collection(scaling_galaxies_list),
     )
 
@@ -710,7 +738,6 @@ def mass_total(
             disk=light_instance.disk,
             point=light_instance.point,
             mass=mass,
-            shear=lens_model.shear,
         )
 
     scaling_galaxies_list = []
@@ -737,7 +764,11 @@ def mass_total(
     source = al.util.chaining.source_from(result=source_result_for_source)
 
     model = af.Collection(
-        galaxies=af.Collection(**lens_dict, source=source),
+        galaxies=af.Collection(
+            **lens_dict,
+            shear_galaxy=source_result_for_lens.model.galaxies.shear_galaxy,
+            source=source,
+        ),
         scaling_galaxies=af.Collection(scaling_galaxies_list),
     )
 
