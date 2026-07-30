@@ -492,8 +492,8 @@ model = af.Collection(
 
 """
 The `info` attribute shows the model in a readable format. Note how each lens galaxy is listed as `lens_0`,
-`lens_1`, etc., each with its own free mass model — the signature of the multi-galaxy regime — and how only
-`lens_0` carries a `shear`.
+`lens_1`, etc., each with its own free mass model — the signature of the multi-galaxy regime — and how the
+`shear` belongs to none of them, appearing instead as its own `shear_galaxy` entry.
 
 The `info` below may not display optimally on your computer screen, for example the whitespace between parameter
 names on the left and parameter priors on the right may lead them to appear across multiple lines. This is a

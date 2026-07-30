@@ -6071,6 +6071,207 @@
   },
   {
     "contents": [
+      "What Changes",
+      "The Tier Through The Stages",
+      "Source LP Pipeline",
+      "Source Pix Pipeline 1 & 2",
+      "Light LP Pipeline",
+      "Mass Total Pipeline",
+      "Dataset, Centres, Mask",
+      "SLaM Pipeline"
+    ],
+    "cross_refs": [
+      "imaging/features/extra_galaxies/slam.py",
+      "modeling.py",
+      "multi_galaxy/features/extra_galaxies/modeling.py",
+      "multi_galaxy/features/linear_light_profiles/likelihood_function.py",
+      "multi_galaxy/slam.py",
+      "simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/extra_galaxies/slam.ipynb",
+    "path": "scripts/multi_galaxy/features/extra_galaxies/slam.py",
+    "summary": "The SLaM pipeline for a multi-galaxy lens with a tier of perturbing extra galaxies alongside the co-dominant deflectors.",
+    "title": "SLaM (Source, Light and Mass): Extra Galaxies (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset & Mask",
+      "Tracer",
+      "Fit",
+      "Intensities",
+      "Comparison To Truth",
+      "The Flux Ratio",
+      "Negative Intensities",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/linear_light_profiles/fit.py",
+      "modeling.py",
+      "multi_galaxy/features/linear_light_profiles/likelihood_function.py",
+      "multi_galaxy/features/linear_light_profiles/modeling.py",
+      "multi_galaxy/features/scaling_relation/slam.py",
+      "multi_galaxy/fit.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/simulator.py",
+      "multi_galaxy/slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/linear_light_profiles/fit.ipynb",
+    "path": "scripts/multi_galaxy/features/linear_light_profiles/fit.py",
+    "summary": "This script fits a multi-galaxy strong lens with linear light profiles **without a non-linear search** \u2014 the model is composed at known values and fitted once, so the linear solve can be inspected directly.",
+    "title": "Fits: Linear Light Profiles (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "What Changes",
+      "Dataset, Mask & Over Sampling",
+      "Tracer",
+      "Linear Object Lists",
+      "Blurred Mapping Matrix (f)",
+      "Data Vector (D)",
+      "Curvature Matrix (F)",
+      "Reconstruction",
+      "Log Likelihood",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "fit.py",
+      "imaging/features/linear_light_profiles/likelihood_function.py",
+      "multi_galaxy/features/linear_light_profiles/fit.py",
+      "multi_galaxy/likelihood_function.py",
+      "multi_galaxy/modeling.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/linear_light_profiles/likelihood_function.ipynb",
+    "path": "scripts/multi_galaxy/features/linear_light_profiles/likelihood_function.py",
+    "summary": "This script walks through the log likelihood function of a multi-galaxy lens fitted with **linear light profiles**, step by step, with an emphasis on the one step that behaves differently when there are two co-dominant deflectors.",
+    "title": "__Log Likelihood Function: Linear Light Profiles (Multi Galaxy)__"
+  },
+  {
+    "contents": [
+      "Advantages",
+      "Disadvantages",
+      "Model",
+      "Dataset & Mask",
+      "Centres",
+      "Over Sampling",
+      "Model Composition",
+      "Search",
+      "Analysis",
+      "Result",
+      "Intensities",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/linear_light_profiles/modeling.py",
+      "multi_galaxy/features/linear_light_profiles/fit.py",
+      "multi_galaxy/features/linear_light_profiles/likelihood_function.py",
+      "multi_galaxy/features/linear_light_profiles/slam.py",
+      "multi_galaxy/features/scaling_relation/slam.py",
+      "multi_galaxy/modeling.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/linear_light_profiles/modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/linear_light_profiles/modeling.py",
+    "summary": "A \"linear light profile\" is a variant of a standard light profile where the `intensity` parameter is solved for via linear algebra every time the model is fitted, rather than being sampled by the non-linear search. The solver always computes the `intensity` values that maximize the likelihood for the other parameters' current values.",
+    "title": "Modeling Features: Linear Light Profiles (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "What Changes",
+      "Source LP Pipeline",
+      "Source Pix Pipeline 1 & 2",
+      "Light LP Pipeline",
+      "Mass Total Pipeline",
+      "Dataset, Centres, Mask",
+      "SLaM Pipeline"
+    ],
+    "cross_refs": [
+      "fit.py",
+      "imaging/features/linear_light_profiles/slam.py",
+      "multi_galaxy/features/linear_light_profiles/likelihood_function.py",
+      "multi_galaxy/simulator.py",
+      "multi_galaxy/slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/linear_light_profiles/slam.ipynb",
+    "path": "scripts/multi_galaxy/features/linear_light_profiles/slam.py",
+    "summary": "The SLaM pipeline for a multi-galaxy lens using a single linear `Sersic` per deflector, instead of the MGE bases used by `multi_galaxy/slam.py`.",
+    "title": "SLaM (Source, Light and Mass): Linear Light Profiles (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Advantages",
+      "Disadvantages",
+      "Model",
+      "Dataset & Mask",
+      "Centres",
+      "Over Sampling",
+      "Model Composition",
+      "Search",
+      "Analysis",
+      "Result",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/no_lens_light/modeling.py",
+      "multi_galaxy/features/no_lens_light/slam.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/start_here.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/no_lens_light/modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/no_lens_light/modeling.py",
+    "summary": "CCD imaging data of a multi-galaxy strong lens may not have lens galaxy light emission present \u2014 for example if the deflectors' light has already been subtracted from the image, or if they are undetected at the observed wavelength.",
+    "title": "Modeling Features: No Lens Light (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset Paths",
+      "Grid",
+      "Galaxy Centres",
+      "Over Sampling",
+      "PSF Convolution",
+      "Main Lens Galaxies",
+      "External Shear",
+      "Source Galaxy",
+      "Ray Tracing",
+      "Dataset",
+      "Visualize",
+      "Tracer json",
+      "Centre JSON Files",
+      "Positions"
+    ],
+    "cross_refs": [
+      "imaging/features/no_lens_light/simulator.py",
+      "modeling.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/simulator.py",
+      "slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/no_lens_light/simulator.ipynb",
+    "path": "scripts/multi_galaxy/features/no_lens_light/simulator.py",
+    "summary": "This script simulates `Imaging` of a 'multi-galaxy' strong lens where neither co-dominant deflector has visible light emission \u2014 only their mass profiles contribute to the ray-tracing. The source galaxy still has light.",
+    "title": "Simulator: No Lens Light (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "What Changes",
+      "Source LP Pipeline",
+      "Source Pix Pipeline 1",
+      "Source Pix Pipeline 2",
+      "Mass Total Pipeline",
+      "Dataset, Centres, Mask",
+      "SLaM Pipeline"
+    ],
+    "cross_refs": [
+      "imaging/features/no_lens_light/slam.py",
+      "modeling.py",
+      "multi_galaxy/features/no_lens_light/modeling.py",
+      "multi_galaxy/slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/no_lens_light/slam.ipynb",
+    "path": "scripts/multi_galaxy/features/no_lens_light/slam.py",
+    "summary": "The SLaM pipeline for a multi-galaxy lens whose co-dominant deflectors have no visible light.",
+    "title": "SLaM (Source, Light and Mass): No Lens Light (Multi Galaxy)"
+  },
+  {
+    "contents": [
       "Dataset & Mask",
       "Centres + Luminosities",
       "The Relation",
@@ -6384,6 +6585,32 @@
     "path": "scripts/multi_galaxy/simulator_sample.py",
     "summary": "This script illustrates how to simulate a sample of `Imaging` datasets of 'multi-galaxy' strong lenses, which can easily be used to simulate hundreds or thousands of them.",
     "title": "Simulator: Sample (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Why A Regime Baseline Exists",
+      "What Changes",
+      "Source LP Pipeline",
+      "Source Pix Pipeline 1",
+      "Source Pix Pipeline 2",
+      "Light LP Pipeline",
+      "Mass Total Pipeline",
+      "Dataset",
+      "Centres",
+      "Mask & Over Sampling",
+      "SLaM Pipeline"
+    ],
+    "cross_refs": [
+      "/slam.py",
+      "group/slam.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/simulator.py",
+      "slam_start_here.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/slam.ipynb",
+    "path": "scripts/multi_galaxy/slam.py",
+    "summary": "This script is the multi-galaxy regime's SLaM pipeline: the production path for fitting a lens with two or more co-dominant deflectors, as opposed to the single-search fits of `multi_galaxy/modeling.py`.",
+    "title": "SLaM (Source, Light and Mass): Multi Galaxy"
   },
   {
     "contents": [
