@@ -338,10 +338,11 @@ Finished.
 
 __JAX Variant__
 
-Same pattern as `scripts/imaging/simulator.py` `__JAX Variant__`:
-instantiate `al.SimulatorImaging(use_jax=True)` and wrap
-`via_tracer_from` in `@jax.jit`. The simulator handles pytree
-registration internally.
-
-See `scripts/imaging/simulator.py` for the runnable variant block.
+Same as `scripts/imaging/simulator.py` `__JAX Variant (Advanced)__`:
+instantiate `al.SimulatorImaging(use_jax=True)` and call
+`via_tracer_from` eagerly. Wrapping it in `@jax.jit` does not
+currently work — registration is the caller's job
+(`autolens.jax.register_tracer_classes`) and, even with it, the
+jitted call fails inside autoarray. See that script, or
+`scripts/guides/using_jax.py`, for the detail.
 """

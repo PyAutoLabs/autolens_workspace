@@ -1376,6 +1376,7 @@
     ],
     "cross_refs": [
       "/guides/advanced/over_sampling.ipynb",
+      "scripts/guides/using_jax.py",
       "scripts/imaging/simulator.py"
     ],
     "notebook": "notebooks/group/simulator.ipynb",
@@ -2443,6 +2444,7 @@
       "scripts/guides/data_structures.py",
       "scripts/guides/galaxies.py",
       "scripts/guides/lens_calc.py",
+      "scripts/guides/using_jax.py",
       "scripts/point_source/simulator.py",
       "start_here.ipynb"
     ],
@@ -2502,14 +2504,12 @@
       "data_structures.py",
       "lens_calc.py",
       "likelihood_function.py",
+      "scripts/cluster/simulator.py",
       "scripts/guides/data_structures.py",
       "scripts/guides/lens_calc.py",
       "scripts/imaging/likelihood_function.py",
-      "scripts/imaging/simulator.py",
       "scripts/interferometer/likelihood_function.py",
-      "scripts/interferometer/simulator.py",
       "scripts/point_source/simulator.py",
-      "simulator.py",
       "start_here.py"
     ],
     "notebook": "notebooks/guides/using_jax.ipynb",
@@ -4286,7 +4286,10 @@
       "imaging/fit.py",
       "imaging/likelihood_function.py",
       "imaging/modeling.py",
-      "scripts/guides/lens_calc.py"
+      "scripts/cluster/simulator.py",
+      "scripts/guides/lens_calc.py",
+      "scripts/guides/using_jax.py",
+      "scripts/point_source/simulator.py"
     ],
     "notebook": "notebooks/imaging/simulator.ipynb",
     "path": "scripts/imaging/simulator.py",
@@ -5368,7 +5371,10 @@
     ],
     "cross_refs": [
       "autolens_workspace_test/scripts/interferometer/nufft.py",
-      "scripts/guides/lens_calc.py"
+      "scripts/cluster/simulator.py",
+      "scripts/guides/lens_calc.py",
+      "scripts/guides/using_jax.py",
+      "scripts/point_source/simulator.py"
     ],
     "notebook": "notebooks/interferometer/simulator.ipynb",
     "path": "scripts/interferometer/simulator.py",
@@ -5872,6 +5878,7 @@
     ],
     "cross_refs": [
       "/guides/advanced/over_sampling.ipynb",
+      "scripts/guides/using_jax.py",
       "scripts/imaging/simulator.py"
     ],
     "notebook": "notebooks/multi_galaxy/simulator.ipynb",
