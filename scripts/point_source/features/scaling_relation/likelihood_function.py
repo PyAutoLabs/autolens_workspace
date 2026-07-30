@@ -1,7 +1,7 @@
 """
 __Log Likelihood Function: Scaling Relation (Point Source)__
 
-Describes how a BGC-anchored scaling tier enters the point-source `log_likelihood`.
+Describes how a scaling tier anchored on the brightest galaxy enters the point-source `log_likelihood`.
 
 Point sources differ from extended sources in a way that matters for this feature. For imaging or interferometer data
 the tier perturbs the deflection field, and you can inspect that perturbation directly. For a point source the

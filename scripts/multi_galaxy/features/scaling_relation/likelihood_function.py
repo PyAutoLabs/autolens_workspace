@@ -1,9 +1,9 @@
 """
 __Log Likelihood Function: Multi Galaxy Scaling Relation__
 
-Describes the one step of the `log_likelihood` computation that a BGC-anchored scaling tier changes: how the summed
-deflection field is composed when most of the deflectors' Einstein radii are not free parameters but derived from the
-brightest co-dominant galaxy's.
+Describes the one step of the `log_likelihood` computation that a brightest-galaxy-anchored scaling tier changes:
+how the summed deflection field is composed when most of the deflectors' Einstein radii are not free parameters but
+derived from the brightest co-dominant galaxy's.
 
 This script does NOT repeat the steps shared with the multi-galaxy likelihood (mask, over-sampling, lens light, PSF
 convolution, chi-squared, noise normalisation). Those are documented in the prerequisite and are unaffected by the
@@ -18,25 +18,25 @@ __Prerequisites__
    single-lens anchor.
  - `autolens_workspace/scripts/multi_galaxy/features/scaling_relation/modeling.py` — the search-based composition.
 
-__What Changes For A BGC-Anchored Tier__
+__What Changes For A Brightest-Galaxy-Anchored Tier__
 
 The multi-galaxy likelihood already sums deflections over co-dominant deflectors:
 
     alpha(theta) = sum_d alpha_lens_d(theta)
 
 Adding the scaling tier extends the sum, but every new term's `einstein_radius` is a function of a parameter the
-model already has — the BGC's:
+model already has — the brightest galaxy's:
 
     alpha(theta) = sum_d alpha_lens_d(theta) + sum_j alpha_scaling_j(theta)
 
-    where einstein_radius_j = einstein_radius_bgc * (L_j / L_bgc) ** 0.5
-    and   bgc = argmax_d (L_d)
+    where einstein_radius_j = einstein_radius_brightest * (L_j / L_brightest) ** 0.5
+    and   brightest = argmax_d (L_d)
 
 Two consequences specific to this regime:
 
- - The tier's radii are coupled to *one particular* deflector. If the BGC's Einstein radius moves during sampling,
-   every member moves with it — so the tier is correlated with the BGC and not with the other co-dominant galaxy.
-   That asymmetry is real and worth being aware of when reading a posterior.
+ - The tier's radii are coupled to *one particular* deflector. If the brightest galaxy's Einstein radius moves during
+   sampling, every member moves with it — so the tier is correlated with the brightest galaxy and not with the other
+   co-dominant galaxy. That asymmetry is real and worth being aware of when reading a posterior.
  - The likelihood costs one deflection evaluation per member per call, so the tier costs *time*, not parameters.
 
 Every other step is unchanged.
@@ -44,8 +44,8 @@ Every other step is unchanged.
 __Contents__
 
 - **Dataset & Mask:** Standard set up (auto-simulating if absent).
-- **Centres + Luminosities:** The pair, the tier, and identifying the BGC.
-- **The Relation:** Anchored on the BGC.
+- **Centres + Luminosities:** The pair, the tier, and identifying the brightest galaxy.
+- **The Relation:** Anchored on the brightest galaxy.
 - **Galaxies:** The co-dominant pair, the mass-only tier, and the source.
 - **Summed Deflection Field:** Where the tier enters, computed term by term.
 - **Manual Ray-Tracing:** Hand-compute the source-plane grid and confirm it matches `Tracer`.
@@ -110,23 +110,23 @@ main_lens_luminosities = [9.7913, 5.6663]
 
 scaling_galaxies_luminosities = [1.2636, 0.8845, 0.6318, 0.3791, 0.2527]
 
-bgc_index = int(np.argmax(main_lens_luminosities))
-luminosity_bgc = main_lens_luminosities[bgc_index]
+brightest_index = int(np.argmax(main_lens_luminosities))
+luminosity_brightest = main_lens_luminosities[brightest_index]
 
-print(f"BGC is lens_{bgc_index}, L_bgc = {luminosity_bgc}")
+print(f"Brightest galaxy is lens_{brightest_index}, L_brightest = {luminosity_brightest}")
 
 """
 __The Relation__
 """
-einstein_radius_bgc = 1.0
+einstein_radius_brightest = 1.0
 scaling_exponent = 0.5
 
 
 def einstein_radius_from(luminosity):
     """
-    The Faber-Jackson Einstein radius of a galaxy of the input luminosity, anchored on the BGC.
+    The Faber-Jackson Einstein radius of a galaxy of the input luminosity, anchored on the brightest galaxy.
     """
-    return einstein_radius_bgc * (luminosity / luminosity_bgc) ** scaling_exponent
+    return einstein_radius_brightest * (luminosity / luminosity_brightest) ** scaling_exponent
 
 
 """
@@ -204,14 +204,14 @@ print(f"alpha_scaling (tier sum)  (first coord): {sum(alpha_scaling)[0]}")
 print(f"alpha_total   (all)       (first coord): {alpha_total[0]}")
 
 """
-Each member's radius, and the relation that produced it. Every one of these is a function of `einstein_radius_bgc`,
-so all five move together whenever the BGC's radius moves:
+Each member's radius, and the relation that produced it. Every one of these is a function of
+`einstein_radius_brightest`, so all five move together whenever the brightest galaxy's radius moves:
 """
 for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminosities):
     centre_str = f"({float(centre[0]):5.2f}, {float(centre[1]):5.2f})"
     print(
         f"  scaling galaxy @ {centre_str}: einstein_radius = "
-        f"{einstein_radius_bgc:.3f} * ({luminosity:.4f} / {luminosity_bgc:.4f}) ** {scaling_exponent} "
+        f"{einstein_radius_brightest:.3f} * ({luminosity:.4f} / {luminosity_brightest:.4f}) ** {scaling_exponent} "
         f"= {einstein_radius_from(luminosity):.4f}"
     )
 
@@ -257,7 +257,7 @@ __CSV Interface__
     scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
     scaling_galaxies_luminosities = scaling_table.luminosities
 
-The `argmax` identifying the BGC runs on those luminosities unchanged.
+The `argmax` identifying the brightest galaxy runs on those luminosities unchanged.
 """
 scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
 
@@ -266,9 +266,9 @@ print(f"Tier luminosities from CSV: {list(scaling_table.luminosities)}")
 """
 __Wrap Up__
 
-The tier changes one thing in the likelihood: some deflectors' `einstein_radius` values are set by the BGC's value
-and a measured luminosity rather than sampled. The summation, ray-tracing, convolution, chi-squared and noise
-normalisation are all shared with the multi-galaxy likelihood.
+The tier changes one thing in the likelihood: some deflectors' `einstein_radius` values are set by the brightest
+galaxy's value and a measured luminosity rather than sampled. The summation, ray-tracing, convolution, chi-squared and
+noise normalisation are all shared with the multi-galaxy likelihood.
 
 The cost is one extra deflection evaluation per member per likelihood call — and zero extra parameters.
 """

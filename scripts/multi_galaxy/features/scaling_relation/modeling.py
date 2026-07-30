@@ -3,12 +3,19 @@ Modeling Features (Multi Galaxy): Scaling Relation
 =================================================
 
 Extends the multi-galaxy model with a **scaling tier**: faint galaxies far from the co-dominant pair whose Einstein
-radii are tied to the brightest of the pair (the BGC) by a Faber-Jackson relation:
+radii are tied to the brightest of the pair by a Faber-Jackson relation:
 
-    einstein_radius_i = einstein_radius_bgc * (L_i / L_bgc) ** 0.5
+    einstein_radius_i = einstein_radius_brightest * (L_i / L_brightest) ** 0.5
 
-`einstein_radius_bgc` is the BGC's own `einstein_radius`, which the model already fits, so the tier adds **zero free
-parameters** regardless of how many galaxies it holds.
+`einstein_radius_brightest` is the brightest galaxy's own `einstein_radius`, which the model already fits, so the tier
+adds **zero free parameters** regardless of how many galaxies it holds.
+
+__A Note On Naming__
+
+The anchor is called simply "the brightest galaxy" here. A multi-galaxy lens is a handful of co-dominant deflectors,
+not a bound system, so there is no *brightest cluster galaxy* to anchor on. At group and cluster scale the same
+anchor is the BCG (brightest cluster galaxy) or BGG (brightest group galaxy), and
+`group/features/scaling_relation` uses that terminology.
 
 __What Is Different At Multi-Galaxy Scale__
 
@@ -56,9 +63,9 @@ __Contents__
 
 - **Dataset & Mask:** Load the dataset (auto-simulating if absent) and mask the pair.
 - **Centres:** The pair's centres and the tier's centres.
-- **Luminosities:** The measured luminosities, and identifying the BGC from them.
+- **Luminosities:** The measured luminosities, and identifying the brightest galaxy from them.
 - **Over Sampling / Main Lens Galaxies / Source.**
-- **Scaling Tier:** Einstein radii tied to the BGC.
+- **Scaling Tier:** Einstein radii tied to the brightest galaxy.
 - **Model:** Two top-level collections.
 - **Zero Free Parameters:** Proof by parameter count.
 - **Search / Analysis / Fit / Result.**
@@ -120,7 +127,7 @@ scaling_galaxies_centres = al.from_json(
 )
 
 """
-__Luminosities + The BGC__
+__Luminosities + The Brightest Galaxy__
 
 Explicit Python lists — the simplest interface, and the one worth reading first; the CSV equivalent is at the end.
 
@@ -129,8 +136,8 @@ light-only fit performed before this one. In this tutorial they are the simulato
 `simulator.py` runs. On real data use `slam.py` in this folder, whose light stages fit an MGE to every galaxy — the
 pair on the standard mask and the distant tier on an enlarged one — and integrate each to a luminosity.
 
-The BGC is then whichever main lens is brightest. Note this is a *measurement*, not a naming convention: if
-`main_lens_centres.json` listed the fainter galaxy first, `bgc_index` would simply come out as 1 and everything
+The anchor is then whichever main lens is brightest. Note this is a *measurement*, not a naming convention: if
+`main_lens_centres.json` listed the fainter galaxy first, `brightest_index` would simply come out as 1 and everything
 downstream would still anchor on the right galaxy.
 """
 main_lens_luminosities = [9.7913, 5.6663]
@@ -140,11 +147,11 @@ scaling_galaxies_luminosities = [1.2636, 0.8845, 0.6318, 0.3791, 0.2527]
 assert len(main_lens_luminosities) == len(list(main_lens_centres))
 assert len(scaling_galaxies_luminosities) == len(list(scaling_galaxies_centres))
 
-bgc_index = int(np.argmax(main_lens_luminosities))
-luminosity_bgc = main_lens_luminosities[bgc_index]
-bgc_key = f"lens_{bgc_index}"
+brightest_index = int(np.argmax(main_lens_luminosities))
+luminosity_brightest = main_lens_luminosities[brightest_index]
+brightest_key = f"lens_{brightest_index}"
 
-print(f"BGC is {bgc_key}, L_bgc = {luminosity_bgc}")
+print(f"Brightest galaxy is {brightest_key}, L_brightest = {luminosity_brightest}")
 
 """
 __Over Sampling__
@@ -166,7 +173,8 @@ aplt.subplot_imaging_dataset(dataset=dataset)
 __Main Lens Galaxies__
 
 One MGE bulge + free `Isothermal` mass per co-dominant deflector, exactly as `multi_galaxy/modeling.py` composes
-them. The BGC's `einstein_radius` is what the tier hangs off, but it is otherwise an ordinary free parameter.
+them. The brightest galaxy's `einstein_radius` is what the tier hangs off, but it is otherwise an ordinary free
+parameter.
 """
 lens_dict = {}
 
@@ -204,7 +212,8 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 """
 __Scaling Tier__
 
-The relation. `lens_dict[bgc_key].mass.einstein_radius` is the BGC's free parameter, so multiplying it by each
+The relation. `lens_dict[brightest_key].mass.einstein_radius` is the brightest galaxy's free parameter, so
+multiplying it by each
 member's luminosity ratio produces a derived quantity rather than a new one.
 
 Mass only: no `bulge` is given, because these galaxies sit outside the mask and their light is not in the fit.
@@ -219,8 +228,8 @@ for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminos
     mass = af.Model(al.mp.IsothermalSph)
     mass.centre = tuple(centre)
     mass.einstein_radius = (
-        lens_dict[bgc_key].mass.einstein_radius
-        * (luminosity / luminosity_bgc) ** scaling_exponent
+        lens_dict[brightest_key].mass.einstein_radius
+        * (luminosity / luminosity_brightest) ** scaling_exponent
     )
 
     scaling_galaxies_list.append(af.Model(al.Galaxy, redshift=0.5, mass=mass))
@@ -287,7 +296,8 @@ result = search.fit(model=model, analysis=analysis)
 """
 __Result__
 
-Expect the tier to be *weakly* constrained, and expect that to show up as a broad posterior on the BGC's Einstein
+Expect the tier to be *weakly* constrained, and expect that to show up as a broad posterior on the brightest
+galaxy's Einstein
 radius rather than on the members themselves — they have no parameters of their own. The tier is a percent-level
 perturbation on a system dominated by two co-dominant deflectors, so the data does not push back hard on it. That
 breadth is itself the lesson about how much this tier matters at multi-galaxy scale.
@@ -311,14 +321,14 @@ keeping centres and luminosities in one file that cannot fall out of order:
     scaling_galaxies_centres = scaling_table.centres
     scaling_galaxies_luminosities = scaling_table.luminosities
 
-The `argmax` that identifies the BGC then runs on the CSV's luminosities, unchanged.
+The `argmax` that identifies the brightest galaxy then runs on the CSV's luminosities, unchanged.
 """
 main_lens_table = al.galaxy_table_from_csv(
     file_path=dataset_path / "main_lens_galaxies.csv"
 )
 
 print(f"\nMain lens luminosities from CSV: {list(main_lens_table.luminosities)}")
-print(f"BGC index from CSV:              {int(np.argmax(main_lens_table.luminosities))}")
+print(f"Brightest galaxy index from CSV: {int(np.argmax(main_lens_table.luminosities))}")
 
 """
 __Wrap Up__

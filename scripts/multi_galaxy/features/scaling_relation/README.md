@@ -1,11 +1,16 @@
 The `scaling_relation` folder contains example scripts showing how to add a population of faint, distant galaxies to
-a multi-galaxy lens model by tying their masses to the brightest co-dominant deflector (the BGC), rather than freeing
+a multi-galaxy lens model by tying their masses to the brightest co-dominant deflector, rather than freeing
 each one.
 
-    einstein_radius_i = einstein_radius_bgc * (L_i / L_bgc) ** 0.5
+    einstein_radius_i = einstein_radius_brightest * (L_i / L_brightest) ** 0.5
 
-`einstein_radius_bgc` is the BGC's own `einstein_radius`, which the model already fits, so the tier adds **zero free
-parameters** however many galaxies it holds.
+`einstein_radius_brightest` is the brightest galaxy's own `einstein_radius`, which the model already fits, so the tier
+adds **zero free parameters** however many galaxies it holds.
+
+The anchor is called simply "the brightest galaxy" throughout these scripts. A multi-galaxy lens is a handful of
+co-dominant deflectors, not a bound system, so there is no *brightest cluster galaxy* to speak of. At group and
+cluster scale the same anchor is the BCG (brightest cluster galaxy) or BGG (brightest group galaxy) — see
+`group/features/scaling_relation`, which uses that terminology.
 
 Two things distinguish this tier at multi-galaxy scale:
 
@@ -25,7 +30,7 @@ the cluster-scale default.
 # Files
 
 - `simulator`: Simulating the co-dominant pair plus five distant tied galaxies, truths derived from the relation.
-- `modeling`: Lens modeling with the tier tied to the BGC, assuming measured luminosities.
+- `modeling`: Lens modeling with the tier tied to the brightest galaxy, assuming measured luminosities.
 - `fit`: The same composition without a search, including how much the tier actually contributes.
 - `likelihood_function`: The one step of the likelihood the tier changes.
 - `slam`: The Source, Light and Mass pipeline — **where the luminosities are measured**, using two masks.
