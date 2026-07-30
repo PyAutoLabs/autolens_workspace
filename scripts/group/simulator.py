@@ -339,10 +339,9 @@ Finished.
 __JAX Variant__
 
 Same as `scripts/imaging/simulator.py` `__JAX Variant (Advanced)__`:
-instantiate `al.SimulatorImaging(use_jax=True)` and call
-`via_tracer_from` eagerly. Wrapping it in `@jax.jit` does not
-currently work — registration is the caller's job
-(`autolens.jax.register_tracer_classes`) and, even with it, the
-jitted call fails inside autoarray. See that script, or
-`scripts/guides/using_jax.py`, for the detail.
+instantiate `al.SimulatorImaging(use_jax=True)` and wrap
+`via_tracer_from` in `@jax.jit`, after the one-time
+`autolens.jax.register_tracer_classes(tracer)` — registration is the
+caller's job, because JAX flattens jitted arguments at trace time.
+See that script (which CI executes) or `scripts/guides/using_jax.py`.
 """

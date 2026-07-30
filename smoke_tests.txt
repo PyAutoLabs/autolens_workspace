@@ -27,3 +27,4 @@ guides/modeling/cookbook.py
 # Delaunay inversion. (Phase 2 / PyAutoLens#640: fix the underlying NaN/non-PD producer.)
 imaging/features/pixelization/delaunay.py
 interferometer/features/pixelization/delaunay.py
+imaging/simulator.py
