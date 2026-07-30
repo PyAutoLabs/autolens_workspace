@@ -529,12 +529,16 @@ for `tracer.image_2d_from(grid)` and related ops on a large grid:
 
 You access this in two ways.
 
-__1. The implicit path: `Analysis` and `Simulator`__
+__1. The implicit path: `Analysis`__
 
-`AnalysisImaging(use_jax=True)` (the default) and
-`SimulatorImaging(use_jax=True)` both JAX-accelerate the tracer
-internally. Pytree registration runs as a side effect of the first
-`fit_from` / `via_tracer_from` call; you write nothing JAX-specific.
+`AnalysisImaging(use_jax=True)` (the default) JAX-accelerates the tracer
+internally, and pytree registration runs as a side effect of the first
+`fit_from` call — you write nothing JAX-specific.
+
+`SimulatorImaging(use_jax=True)` also runs the image calculation through
+JAX, but it does *not* register pytrees for you, so it is only implicit
+for the eager call. See `scripts/guides/using_jax.py` before wrapping a
+simulator in `@jax.jit`.
 
 __2. The explicit path: your own `@jax.jit`__
 

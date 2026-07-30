@@ -358,12 +358,9 @@ The dataset can be viewed in the folder `autolens_workspace/imaging/simple`.
 
 __JAX Variant (Advanced)__
 
-For an order-of-magnitude speedup on large or repeated simulations (parameter sweeps, mock-data studies, batch
-figure generation), construct the simulator with `use_jax=True` and wrap your call in `@jax.jit`. The simulator
-handles pytree registration internally — you write nothing JAX-specific beyond the decorator.
+For large or repeated simulations (parameter sweeps, mock-data studies, batch figure generation), construct the
+simulator with `use_jax=True` so the image calculation runs through JAX:
 """
-import jax
-
 simulator_jax = al.SimulatorImaging(
     exposure_time=300.0,
     psf=psf,
@@ -372,28 +369,24 @@ simulator_jax = al.SimulatorImaging(
     use_jax=True,
 )
 
-
-@jax.jit
-def simulate(tracer):
-    return simulator_jax.via_tracer_from(tracer=tracer, grid=grid)
-
-
 """
-The simulation call below is commented out to avoid adding excessive run time to this script and overwriting the
-dataset output above. Uncomment it to run the JAX simulation, which returns an `Imaging` dataset with `jax.Array`
-data.
-"""
-# dataset_jax = simulate(tracer)
+Call it exactly as above — `simulator_jax.via_tracer_from(tracer=tracer, grid=grid)`. It is not called here to
+avoid overwriting the dataset written above. The returned dataset's `.data.array` is a `numpy.ndarray`.
 
-"""
-The `dataset_jax.data.array` is a `jax.Array`; `aplt.fits_imaging` and the plotters call `numpy.asarray()`
-internally, so saving / plotting works without manual conversion.
+**Wrapping the call in `@jax.jit` does not currently work.** Two separate things stop it:
 
-Note: eager `simulator_jax.via_tracer_from(tracer, grid)` (no `@jax.jit`) already runs on JAX and is sufficient
-for one-off simulations. The `@jax.jit` wrap is only beneficial when you call the function many times.
+- **Pytree registration is yours to do, before the first jitted call.** Nothing in the library does it for you,
+  and nothing can — JAX flattens a jitted function's arguments at trace time, before entering the callee, so a
+  simulator that registered internally would already be too late. The one-time call is
+  `autolens.jax.register_tracer_classes(tracer)`.
+- **Even with that, the jitted call fails inside autoarray** on array sites that do not yet thread `xp`. Tracked
+  in PyAutoArray; until it is fixed, use the eager call.
 
-See `scripts/guides/lens_calc.py` for the advanced "JIT-it-yourself" pattern that wraps individual library
-methods like `tracer.image_2d_from` directly.
+`scripts/point_source/simulator.py` and `scripts/cluster/simulator.py` show the registration step in a
+`PointSolver` context, where `@jax.jit` *does* work and is why those scripts are fast.
+
+See `scripts/guides/using_jax.py` for the full picture, and `scripts/guides/lens_calc.py` for the
+"JIT-it-yourself" pattern that wraps individual library methods like `tracer.image_2d_from` directly.
 
 __Oversampled PSF (Advanced)__
 

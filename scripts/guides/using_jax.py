@@ -41,29 +41,31 @@ __Writing @jax.jit Yourself__
 
 Two situations call for it:
 
-1. **Custom simulations.** Pass `use_jax=True` to the simulator constructor and wrap your call in `@jax.jit` when
-   you want to render many datasets fast — parameter sweeps, mock-data studies, batch figure generation.
-   For example:
+1. **Custom simulations.** Pass `use_jax=True` to the simulator constructor to run the image calculation through
+   JAX, for parameter sweeps, mock-data studies or batch figure generation:
 
    ```python
-   import jax
-
    simulator = al.SimulatorImaging(
        exposure_time=300.0, psf=psf, background_sky_level=0.1, use_jax=True
    )
 
-   @jax.jit
-   def simulate(tracer):
-       return simulator.via_tracer_from(tracer=tracer, grid=grid)
+   dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
    ```
 
-   The simulator handles pytree registration internally, so you write nothing JAX-specific beyond the decorator.
-   Note that eager `simulator.via_tracer_from(tracer, grid)` (no `@jax.jit`) already runs on JAX and is sufficient
-   for one-off simulations — the `@jax.jit` wrap only pays off when you call the function many times.
+   **Wrapping that call in `@jax.jit` does not currently work.** Two things stop it, and it is worth knowing
+   which is which:
 
-   The per-dataset-type `simulator.py` scripts (`scripts/imaging/simulator.py`,
-   `scripts/interferometer/simulator.py`, `scripts/point_source/simulator.py`) each show the canonical pattern in
-   their `__JAX Variant__` section.
+   - **You must register the pytrees yourself first.** Nothing in the library does it for you, and nothing can:
+     JAX flattens a jitted function's arguments at trace time, *before* entering the callee, so a simulator that
+     registered internally would already be too late. The one-time call is
+     `autolens.jax.register_tracer_classes(tracer)`.
+   - **Even with that, the jitted simulator call fails inside autoarray** on array sites that do not yet thread
+     `xp` — see PyAutoLabs/PyAutoArray for the tracked issue. Until it is fixed, use the eager call above.
+
+   Note the eager call returns a dataset whose `.data.array` is a `numpy.ndarray`, not a `jax.Array`.
+
+   `scripts/point_source/simulator.py` and `scripts/cluster/simulator.py` show the registration step in a
+   `PointSolver` context, where `@jax.jit` *does* work and is the reason those scripts are fast.
 
 2. **Custom likelihood functions** that you assemble by hand rather than reaching for `AnalysisImaging`. Same
    shape: `@jax.jit` around your own `def log_likelihood(instance): ...`. The next section works this through.
@@ -121,8 +123,10 @@ traces it. You do *not* need `register_tracer_classes` here — the tracer is bu
 rather than passed across its boundary. That call is for the `__JIT-ing Library Methods__` case below, where a
 `Tracer` is an argument.
 
-For interferometer data the same shape applies with `al.FitInterferometer`, with one constraint: use
-`TransformerDFT` (the default). `TransformerNUFFT` is not JAX-traceable.
+For interferometer data the same shape applies with `al.FitInterferometer`. Both `TransformerDFT` and the
+nufftax-backed `TransformerNUFFT` are JAX-traceable, so either works; only the legacy pynufft-backed
+`TransformerNUFFTPyNUFFT` is not. Note the defaults differ by class: `Interferometer` (what a fit uses) defaults
+to `TransformerNUFFT`, while `SimulatorInterferometer` defaults to `TransformerDFT`.
 
 **Via `Fitness` — the production path.** A non-linear search does not call your function; it calls a `Fitness`
 object, which maps a raw parameter vector to a model instance, calls the analysis, and returns the figure of
