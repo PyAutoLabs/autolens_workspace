@@ -325,29 +325,20 @@ print(model.info)
 """
 __Model Fit__
 
-We now fit the data with the lens model using `MultiStartProdigy`, a multi-start gradient optimizer which finds
-the best-fit lens model quickly.
+We now fit the data with the lens model using the non-linear fitting method and nested sampling algorithm Nautilus.
 
-This requires an `AnalysisImaging` object, which defines the `log_likelihood_function` used by the search to fit
+This requires an `AnalysisImaging` object, which defines the `log_likelihood_function` used by Nautilus to fit
 the model to the imaging data.
 
-__Multi Start Gradient Optimization__
+__Why Not MultiStartProdigy?__
 
-`MultiStartProdigy` launches `n_starts` independent optimizations from broad starting points spread across the
-parameter space, all of which descend the likelihood in parallel via `jax.vmap`, and returns the best one. A
-single starting point would frequently get stuck in a local maximum, which a group-scale model — several lens
-galaxies plus an optional group halo — makes especially likely. Running a wide population of starts is what makes
-a gradient optimizer reliable here (the GIGA-Lens approach, Gu, Huang et al. 2022, arXiv:2202.07663). Prodigy is
-*learning-rate free* (Mishchenko & Defazio 2024, arXiv:2306.06101), so there is nothing to tune.
+The single-galaxy `imaging/start_here.py` example fits with `af.MultiStartProdigy`, a much faster multi-start
+gradient optimizer, and uses `Nautilus` only in `modeling.py` where the full posterior is needed.
 
-__Posterior__
-
-`MultiStartProdigy` is a maximum a posteriori (MAP) optimizer: it returns the **single best-fit lens model** and
-nothing else — no posterior, no error bars, no covariances between parameters.
-
-To get uncertainties, run `autolens_workspace/scripts/group/modeling.py`, which fits this same model with the
-nested sampling algorithm `Nautilus` and returns the **full posterior**. Use the fast optimizer here to check
-your model and data are sensible, then `Nautilus` when you need results you can quote.
+Group-scale fits stay on `Nautilus` for now. A group model — several lens galaxies plus an optional group
+halo — gives JAX a far larger kernel to compile and 48 parallel starts to descend, which on CPU takes the fit
+from minutes on `Nautilus` to well over the release-validation budget (measured: 217 seconds vs a 1800-second
+timeout). Once the multi-start compile cost comes down, this example will switch over.
 
 __JAX__
 
@@ -371,13 +362,13 @@ live display surface:
 The disk write (`fit.png`) always happens regardless of this flag. Set it to `False` (the default) if you just
 want the on-disk output, or if you are running in a headless environment (e.g. an HPC cluster).
 """
-search = af.MultiStartProdigy(
+search = af.Nautilus(
     path_prefix=Path("group"),  # The path where results and output are stored.
     name="start_here",  # The name of the fit and folder results are output to.
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
-    n_starts=48,  # The number of independent optimizations run in parallel, increase for more complex models.
-    n_steps=300,  # The maximum gradient steps per start; the search stops early once the best fit stops improving.
-    iterations_per_quick_update=50,  # Every N steps the max likelihood model is visualized and output to hard-disk.
+    n_live=150,  # The number of Nautilus "live" points, increase for more complex models.
+    n_batch=50,  # GPU lens model fits are batched and run simultaneously, see modeling examples for details.
+    iterations_per_full_update=100000,  # Every N iterations the results are written to hard-disk for inspection.
     live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
