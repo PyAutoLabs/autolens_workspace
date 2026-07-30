@@ -1563,21 +1563,6 @@
   },
   {
     "contents": [
-      "Simulate",
-      "Smooth Model Fit",
-      "Joint Fit",
-      "Dkappa Map",
-      "Iterative Fit",
-      "Evidence Sampling"
-    ],
-    "cross_refs": [],
-    "notebook": "notebooks/guides/advanced/potential_correction.ipynb",
-    "path": "scripts/guides/advanced/potential_correction.py",
-    "summary": "Parametric lens mass models (e.g. the `PowerLaw` used throughout the workspace) are smooth: their convergence and deflection angles vary gradually across the image plane. Real lens galaxies are not perfectly smooth. They contain substructure \u2014 dark matter subhaloes, globular clusters, satellite galaxies \u2014 and their large-scale mass distributions can depart from ellipsoidal symmetry in ways no simple parametric profile captures.",
-    "title": "Potential Corrections (Gravitational Imaging)"
-  },
-  {
-    "contents": [
       "Conventions",
       "Lens Model",
       "Export",
@@ -3145,15 +3130,33 @@
     "cross_refs": [
       "autolens_workspace_test/scripts/imaging/jax_likelihood/potential_correction.py",
       "features/pixelization/likelihood_function.py",
-      "guides/advanced/potential_correction.ipynb",
-      "guides/advanced/potential_correction.py",
+      "imaging/features/advanced/potential_correction/start_here.ipynb",
       "imaging/features/pixelization/likelihood_function.ipynb",
-      "imaging/likelihood_function.ipynb"
+      "imaging/likelihood_function.ipynb",
+      "start_here.py"
     ],
     "notebook": "notebooks/imaging/features/advanced/potential_correction/likelihood_function.ipynb",
     "path": "scripts/imaging/features/advanced/potential_correction/likelihood_function.py",
     "summary": "This script provides a step-by-step guide of the **PyAutoLens** potential-correction `log_likelihood_function` (the Bayesian evidence of `al.pc.FitDpsiSrcImaging`), which jointly inverts `Imaging` data for a pixelized source and pixelized corrections $\\delta\\psi$ to the lensing potential.",
     "title": "__Log Likelihood Function: Potential Correction (Gravitational Imaging)__"
+  },
+  {
+    "contents": [
+      "Simulate",
+      "Smooth Model Fit",
+      "Joint Fit",
+      "Dkappa Map",
+      "Iterative Fit",
+      "Evidence Sampling"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/potential_correction/likelihood_function.ipynb",
+      "interferometer/features/advanced/potential_correction/start_here.ipynb"
+    ],
+    "notebook": "notebooks/imaging/features/advanced/potential_correction/start_here.ipynb",
+    "path": "scripts/imaging/features/advanced/potential_correction/start_here.py",
+    "summary": "Parametric lens mass models (e.g. the `PowerLaw` used throughout the workspace) are smooth: their convergence and deflection angles vary gradually across the image plane. Real lens galaxies are not perfectly smooth. They contain substructure \u2014 dark matter subhaloes, globular clusters, satellite galaxies \u2014 and their large-scale mass distributions can depart from ellipsoidal symmetry in ways no simple parametric profile captures.",
+    "title": "Potential Correction: Start Here"
   },
   {
     "contents": [
@@ -4459,7 +4462,7 @@
   {
     "contents": [],
     "cross_refs": [
-      "guides/advanced/potential_correction.ipynb",
+      "imaging/features/advanced/potential_correction/start_here.ipynb",
       "interferometer/start_here.ipynb",
       "interferometer/start_here.py"
     ],

@@ -1,6 +1,6 @@
 """
-Potential Corrections (Gravitational Imaging)
-=============================================
+Potential Correction: Start Here
+================================
 
 Parametric lens mass models (e.g. the `PowerLaw` used throughout the workspace) are smooth: their convergence and
 deflection angles vary gradually across the image plane. Real lens galaxies are not perfectly smooth. They contain
@@ -44,6 +44,13 @@ __Contents__
 - **Dkappa Map:** Convert the corrections to a convergence map and compare to the true subhalo.
 - **Iterative Fit:** Refine the corrections with the iterative Levenberg-Marquardt engine `IterFitDpsiSrcImaging`.
 - **Evidence Sampling:** Sample the regularization hyper-parameters with a non-linear search via `DpsiSrcInvAnalysis`.
+
+__Related Examples__
+
+- `imaging/features/advanced/potential_correction/likelihood_function.ipynb` — a step-by-step walkthrough of the
+  joint source + $\delta\psi$ likelihood, building the evidence term by term.
+- `interferometer/features/advanced/potential_correction/start_here.ipynb` — the same technique in visibility
+  space, via the sparse-operator (w-tilde) route.
 """
 
 # %matplotlib inline
@@ -340,8 +347,12 @@ The ENV line declares the environment applied when this script runs in CI
 (PyAutoHands docs/env_profile_redesign.md §10); this whole section is
 stripped from generated notebooks and markdown.
 
-Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
-the pre-existing 100x100 data shape.
+This script simulates its dataset in-memory, so it does not need full_datasets
+for a shape match. It needs it because the corrections mesh is built by
+subsampling the image grid: under the SMALL_DATASETS cap, RegularDpsiMesh
+(factor=2) has too few points and mesh.py's get_itp_box_ctr raises "The dpsi
+grid is too sparse". config/build/profile_release.yaml carries the same
+reasoning for this folder and its interferometer sibling.
 
 ENV: full_datasets
 """
