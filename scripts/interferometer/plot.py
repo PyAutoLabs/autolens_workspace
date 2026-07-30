@@ -16,10 +16,15 @@ during a model-fit via the `Analysis` object.
 __Contents__
 
 - **Dataset:** Load the interferometer dataset used throughout this example.
-- **Dataset Subplot:** Plot the dataset's dirty images in one multi-panel subplot.
+- **Dataset Subplot:** Plot the dataset's uv-plane quantities in one multi-panel subplot.
+- **Dirty Images Subplot:** Plot the dataset's dirty images in one multi-panel subplot.
 - **Fit:** Set up a tracer and fit the dataset with a `FitInterferometer` object.
 - **Fit Figures:** Plot the fit's dirty image, dirty model image, dirty residuals, dirty normalized residuals and dirty chi-squared maps individually.
 - **Fit Subplot:** Plot all fit quantities in one multi-panel subplot.
+- **Fit Dirty Images Subplot:** Plot the fit's dirty images in one multi-panel subplot.
+- **Real Space Subplot:** Plot the fit's real-space image and source reconstruction.
+- **Tracer Subplot:** Plot the fit's tracer quantities (convergence, potential, deflections).
+- **Outputting to FITS:** Write the dataset to a FITS file instead of an image.
 - **Visualizer:** How these figures are output automatically during a model-fit.
 """
 
@@ -78,6 +83,14 @@ dataset = al.Interferometer.from_fits(
 
 """
 __Dataset Subplot__
+
+`aplt.subplot_interferometer_dataset()` produces a multi-panel subplot of the dataset in the
+uv-plane — the visibilities, their noise-map and the uv-wavelengths sampled by the interferometer.
+"""
+aplt.subplot_interferometer_dataset(dataset=dataset)
+
+"""
+__Dirty Images Subplot__
 
 Visibility data is in uv-space, making it hard to interpret by eye. A multi-panel subplot of the dataset's
 dirty images — the data, noise-map and other quantities mapped back to real-space via the dataset's
@@ -140,6 +153,49 @@ dirty model image, dirty residual-map and dirty chi-squared map in one figure, a
 contained in the tracer such as the source-plane image.
 """
 aplt.subplot_fit_interferometer(fit=fit)
+
+"""
+__Fit Dirty Images Subplot__
+
+`aplt.subplot_fit_dirty_images()` collects the fit's dirty images — data, model data, residuals and
+chi-squared — into a single subplot, the fit-level counterpart of the dataset subplot above.
+"""
+aplt.subplot_fit_dirty_images(fit=fit)
+
+"""
+__Real Space Subplot__
+
+`aplt.subplot_fit_interferometer_real_space()` plots the fit's real-space quantities: the image of
+the tracer evaluated on the `real_space_mask` and the source-plane reconstruction. These are the
+quantities being Fourier transformed to the uv-plane, so they show what the model actually looks
+like on the sky.
+"""
+aplt.subplot_fit_interferometer_real_space(fit=fit)
+
+"""
+__Tracer Subplot__
+
+`aplt.subplot_fit_interferometer_tracer()` plots the tracer quantities of the fit — image,
+convergence, potential and deflection angles — without needing to build the tracer and grid
+separately.
+"""
+aplt.subplot_fit_interferometer_tracer(fit=fit)
+
+"""
+__Outputting to FITS__
+
+The dataset itself can be written to a FITS file with `aplt.fits_interferometer()`. Passing
+`file_path` writes a single multi-HDU file; passing `data_path` / `noise_map_path` /
+`uv_wavelengths_path` instead writes each component to its own file.
+"""
+output_path = Path("output") / "plot" / "interferometer"
+output_path.mkdir(parents=True, exist_ok=True)
+
+aplt.fits_interferometer(
+    dataset=dataset,
+    file_path=output_path / "dataset.fits",
+    overwrite=True,
+)
 
 """
 __Visualizer__

@@ -18,7 +18,11 @@ __Contents__
 - **Dataset:** Load the Abell 2744 point datasets and (if present) the HST image of the cluster.
 - **Dataset Figures:** Inspect each system's info and plot its multiple-image positions.
 - **Positions Overlay:** Plot every system's positions together, overlaid on the cluster image.
+- **Image Group Zooms:** Plot a zoomed cutout around each system's multiple images.
 - **Cluster Subplot:** Plot the combined cluster dataset subplot.
+- **Tracer:** Build the truth-model tracer from the dataset's mass CSVs.
+- **Critical Curves:** Plot the multi-plane critical curves of the cluster.
+- **Caustics:** Plot the multi-plane caustics of the cluster.
 - **Visualizer:** How figures are output automatically during a cluster model-fit.
 """
 
@@ -94,6 +98,26 @@ aplt.plot_positions_overlay(
 )
 
 """
+__Image Group Zooms__
+
+The overlay above shows the whole cluster, where individual multiple images are only a few pixels
+across. `aplt.plot_image_group_zooms()` instead plots one zoomed cutout per system, so each set of
+multiple images can be inspected individually.
+
+ - `zoom_arcsec`: the width of each cutout.
+ - `max_cols`: how many cutouts are placed per row.
+
+It requires the cluster image, so it is skipped when the HST cutout has not been downloaded.
+"""
+if data is not None:
+    aplt.plot_image_group_zooms(
+        positions_list=positions_list,
+        image=data,
+        pixel_scales=pixel_scales,
+        zoom_arcsec=6.0,
+    )
+
+"""
 __Cluster Subplot__
 
 The `aplt.subplot_cluster_dataset()` function combines the cluster dataset's figures into one
@@ -103,6 +127,67 @@ aplt.subplot_cluster_dataset(
     positions_list=positions_list,
     image=data,
     pixel_scales=pixel_scales,
+)
+
+"""
+__Tracer__
+
+The figures above show the data alone. The remaining figures show the lens model, which requires a
+`Tracer`.
+
+The dataset ships with its mass model in `mass.csv` and `point.csv`. `al.galaxy_af_models_from_csv_tables()`
+turns these into `af.Model[Galaxy]` objects whose parameters are all fixed at the CSV values
+(`prior_count` is 0), so `instance_from_prior_medians()` returns the exact truth galaxies rather
+than a sample.
+"""
+mass_table = al.galaxy_models_from_csv(file_path=dataset_path / "mass.csv", family="mass")
+point_table = al.galaxy_models_from_csv(file_path=dataset_path / "point.csv", family="point")
+
+galaxy_models = al.galaxy_af_models_from_csv_tables(mass_table, point_table)
+
+galaxies = [model.instance_from_prior_medians() for model in galaxy_models.values()]
+
+tracer = al.Tracer(galaxies=galaxies)
+
+grid = al.Grid2D.uniform(shape_native=(150, 150), pixel_scales=1.0)
+
+"""
+A cluster is a multi-plane system: one lens plane and one source plane per lensed system. The
+critical curves and caustics differ for every source plane, so a plane is chosen by index.
+"""
+plane_redshifts = [float(plane.redshift) for plane in tracer.planes]
+
+print(f"Plane redshifts: {plane_redshifts}")
+
+plane_indices = [1, len(plane_redshifts) - 1]
+
+"""
+__Critical Curves__
+
+`aplt.plot_critical_curves()` plots the tangential critical curves — the loci of maximum
+magnification in the image-plane — for the chosen source planes, overlaid on the cluster image.
+
+ - `include_radial`: also plot the radial critical curves.
+"""
+aplt.plot_critical_curves(
+    tracer,
+    grid=grid,
+    image=data,
+    pixel_scales=pixel_scales,
+    plane_indices=plane_indices,
+)
+
+"""
+__Caustics__
+
+`aplt.plot_caustics()` plots the source-plane counterpart of the critical curves. A source inside a
+caustic is multiply imaged, so the caustics show where a source must lie to produce the multiple
+images plotted above.
+"""
+aplt.plot_caustics(
+    tracer,
+    grid=grid,
+    plane_indices=plane_indices,
 )
 
 """

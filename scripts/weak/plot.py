@@ -18,7 +18,9 @@ __Contents__
 - **Dataset:** Load the weak lensing dataset of galaxy positions and shear measurements.
 - **Dataset Figures:** Plot the shear field, its magnitude, position angle and noise-map individually.
 - **Dataset Subplot:** Plot all dataset quantities in one multi-panel subplot.
+- **Convergence Map:** Reconstruct and plot the convergence via Kaiser-Squires inversion.
 - **Fit:** Set up a tracer and fit the dataset with a `FitWeak` object.
+- **Fit Figures:** Plot the data-vs-model, residuals and chi-squared map individually.
 - **Fit Subplot:** Plot the data, model and chi-squared mosaic of the fit.
 - **Shear Profile:** Plot the binned tangential and cross shear profiles of the fit.
 - **Visualizer:** How these figures are output automatically during a model-fit.
@@ -82,6 +84,22 @@ four figures above in one mosaic.
 aplt.subplot_weak_dataset(dataset=dataset)
 
 """
+__Convergence Map__
+
+`aplt.plot_convergence_map()` reconstructs the lens convergence directly from the measured shear
+field via a Kaiser-Squires inversion, without fitting a mass model. It is a model-independent look
+at where the mass is.
+
+ - `shape_native`: the `(rows, cols)` grid the shears are binned onto before inversion.
+ - `smoothing_sigma_pixels`: Gaussian smoothing applied to the binned shears.
+"""
+aplt.plot_convergence_map(
+    shear_yx=dataset.shear_yx,
+    shape_native=(30, 30),
+    smoothing_sigma_pixels=1.0,
+)
+
+"""
 __Fit__
 
 To plot a fit, we compose a tracer whose mass model matches the simulator's true values and fit
@@ -102,6 +120,18 @@ source_galaxy = al.Galaxy(redshift=1.0)
 tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
 
 fit = al.FitWeak(dataset=dataset, tracer=tracer)
+
+"""
+__Fit Figures__
+
+The panels of the fit mosaic are also available individually: the observed and model shear fields
+overlaid, the residual shear vectors, and the per-galaxy chi-squared map.
+"""
+aplt.plot_data_vs_model(fit=fit)
+
+aplt.plot_residuals(fit=fit)
+
+aplt.plot_chi_squared_map(fit=fit)
 
 """
 __Fit Subplot__
