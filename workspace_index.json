@@ -5872,12 +5872,12 @@
     ],
     "cross_refs": [
       "/guides/advanced/over_sampling.py",
-      "/guides/using_jax.py",
       "contributor_guide.py",
       "imaging/data_preparation/gui/mask_extra_galaxies.py",
       "imaging/likelihood_function.py",
       "multi_galaxy/simulator.py",
-      "multi_galaxy/start_here.py"
+      "multi_galaxy/start_here.py",
+      "scripts/guides/using_jax.py"
     ],
     "notebook": "notebooks/multi_galaxy/likelihood_function.ipynb",
     "path": "scripts/multi_galaxy/likelihood_function.py",

@@ -22,7 +22,7 @@ modules and packages are called when the likelihood is evaluated.
 
 __Contents__
 
-- **JAX:** JAX acceleration of this likelihood function.
+- **JAX:** Model-fits run this likelihood function through JAX — see `scripts/guides/using_jax.py`.
 - **Dataset:** Load the multi-galaxy dataset (auto-simulating if absent).
 - **Extra Galaxies Noise Scaling:** Scale the noise of nearby contaminating galaxies so they do not impact the fit.
 - **Mask:** Standard set up of the mask that is fitted.
@@ -47,9 +47,10 @@ __Contents__
 
 __JAX__
 
-The step-by-step likelihood you walk through below can be JAX-accelerated, which is how the modeling scripts run it
-in practice. For the JAX patterns — wrapping a likelihood in `@jax.jit`, going via the `Analysis` object, and
-validating the JAX path against the NumPy result computed here — see `autolens_workspace/*/guides/using_jax.py`.
+Model-fits evaluate this likelihood function through JAX rather than NumPy, which is what makes lens modeling
+fast — `scripts/guides/using_jax.py` shows this likelihood function JAX-compiled via both the `Analysis` object
+and the `Fitness` object a non-linear search drives.
+
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -684,5 +685,5 @@ Where to go next:
 
 - `autolens_workspace/*/multi_galaxy/fit`: the `FitImaging` API and every quantity it computes.
 - `autolens_workspace/*/multi_galaxy/modeling`: fitting this model to the data with a non-linear search.
-- `autolens_workspace/*/guides/using_jax`: JAX-accelerating a likelihood function.
+- `scripts/guides/using_jax.py`: this likelihood function JAX-compiled, via the `Analysis` and `Fitness` objects.
 """
