@@ -330,7 +330,7 @@ cores, matches the original Lenstool-era papers but is dated.) Member cores vani
 to zero — PyAutoLens's dPIE is analytic at ``r_core = 0`` — and is never scaled with luminosity. Since
 the dPIE lens strength obeys b0 ∝ sigma^2, the sigma relation is equivalent to a b0 ∝ L^(2*alpha) =
 L^0.5 scaling of the internal parameterization. Freeing an
-exponent (or ``r_cut_ref``) is a one-line change shown in the code comment below —
+exponent (or ``r_cut_ref``) is a one-line change described in the __Scaling Tier__ cell below —
 useful as a systematics test, at the cost of the degeneracy between normalization and slope that the
 fixed-exponent convention exists to avoid. When member velocity dispersions are available, the standard
 refinement is to calibrate the exponents kinematically (Bergamini et al. 2019: sigma ∝ L^0.27-0.28 from
@@ -342,19 +342,21 @@ wider than the truth to give the search room.
 redshift_lens = 0.5
 source_redshifts = [dataset.redshift for dataset in dataset_list]
 
-# Build af.Model[Galaxy] instances from the family CSVs. Concrete CSV values
-# become fixed af.Model defaults; we then promote selected params to priors
-# below. This dict is keyed by galaxy name (lens_0, lens_1, host_halo,
-# source_0, source_1) — the same naming convention the simulator uses.
-
+"""
+``al.galaxy_af_models_from_csv_tables`` builds ``af.Model(Galaxy)`` instances from the family CSVs.
+Concrete CSV values become fixed ``af.Model`` defaults, which the cells below promote to priors
+selectively. The dict is keyed by galaxy name (``lens_0``, ``lens_1``, ``host_halo``, ``source_0``,
+``source_1``) — the same naming convention the simulator uses.
+"""
 galaxy_models = al.galaxy_af_models_from_csv_tables(mass_table, point_table)
 
-# Main Lens Galaxies: free dPIE sigma / r_cut on each; centre and redshifts stay
-# fixed at the CSV values, and r_core stays fixed at the CSV's 0.0 — the vanishing
-# core standard for BCGs and members alike (the dPIE is analytic at r_core = 0).
-# The cosmology constants H0 / Om0 are pinned (they are model *constants*, not
-# parameters to sample — if left unset they would inherit the config's default
-# priors and float).
+"""
+The main lens galaxies get free dPIE ``sigma`` / ``r_cut``; their centres and redshifts stay fixed at
+the CSV values, and ``r_core`` stays fixed at the CSV's 0.0 — the vanishing-core standard for BCGs and
+members alike (the dPIE is analytic at ``r_core = 0``). The cosmology constants ``H0`` / ``Om0`` are
+pinned: they are model *constants*, not parameters to sample — left unset they would inherit the
+config's default priors and float.
+"""
 for name in ("lens_0", "lens_1"):
     galaxy_models[name].mass.sigma = af.UniformPrior(
         lower_limit=50.0, upper_limit=600.0
@@ -368,11 +370,12 @@ galaxy_models["host_halo"].dark.mass_at_200 = af.LogUniformPrior(
     lower_limit=10**14.5, upper_limit=10**16.0
 )
 
-# Source Galaxies: free Point centres with GaussianPrior initialised from the
-# mean of each source's observed multiple-image positions in its PointDataset.
-# This deliberately ignores the truth centre stored in point.csv — in a real
-# analysis you don't know the source's true source-plane position, you only
-# have the image-plane positions of its multiple images.
+"""
+Each source's ``Point`` centre gets a ``GaussianPrior`` initialised from the mean of that source's
+observed multiple-image positions in its ``PointDataset``. This deliberately ignores the truth centre
+stored in ``point.csv`` — in a real analysis you don't know the source's true source-plane position,
+you only have the image-plane positions of its multiple images.
+"""
 for i, dataset in enumerate(dataset_list):
     positions = np.atleast_2d(dataset.positions)
     point_attr = getattr(galaxy_models[f"source_{i}"], f"point_{i}")
@@ -383,29 +386,22 @@ for i, dataset in enumerate(dataset_list):
         mean=float(np.mean(positions[:, 1])), sigma=3.0
     )
 
-# Scaling Tier Members (dPIEMassSph; sigma, r_core and r_cut all derived from the
-# reference-anchored scaling relation).
-#
-# The reference luminosity is an EXPLICIT FIXED constant (Lenstool's reference
-# magnitude "mag0"), NOT the maximum luminosity of the current sample — this keeps
-# the normalization invariant to which galaxies are in the tier. Set it to the BCG
-# magnitude in a real analysis; here it is a fiducial L* = 1.0.
-reference_luminosity = 1.0
+"""
+__Scaling Tier__
 
-# sigma_ref is defined ONCE outside the loop — the tier's only free parameter, the
-# fiducial velocity dispersion of a reference-magnitude galaxy (km/s, so the prior
-# range below is physically interpretable). Every member's sigma and r_cut are
-# derived by scaling the free sigma_ref or the fixed reference truncation by its
-# luminosity ratio, with the exponents fixed and tied at the Bergamini+19 values
-# (sigma ∝ L^0.25; r_cut ∝ L^(1 + gamma - 2*alpha) = L^0.7 with gamma = 0.2);
-# r_core is fixed at 0 (vanishing core, never scaled). The entire tier therefore
-# contributes 1 free parameter regardless of how many members are in
-# scaling_galaxies.csv.
-#
-# To free an exponent as a systematics test, replace the fixed value with e.g.
-# `scaling_sigma_exponent = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)` —
-# every member's sigma then derives from two shared parameters (and the r_cut
-# exponent follows automatically through the 1 + gamma - 2*alpha tie).
+The code below implements the relation. ``scaling_sigma_ref`` is defined once outside the loop — the
+tier's only free parameter — and each member's ``sigma`` / ``r_cut`` derive from it and the fixed
+reference values via that member's luminosity ratio, so the tier contributes 1 free parameter
+regardless of how many members ``scaling_galaxies.csv`` holds. ``reference_luminosity`` is the
+explicit fixed constant discussed above (Lenstool's ``mag0``); set it to the BCG magnitude in a real
+analysis — here it is a fiducial L* = 1.0.
+
+To free an exponent as a systematics test, replace its fixed value with a prior, e.g.
+``scaling_sigma_exponent = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)`` — every member's
+``sigma`` then derives from two shared parameters, and the ``r_cut`` exponent follows automatically
+through the ``1 + gamma - 2*alpha`` tie.
+"""
+reference_luminosity = 1.0
 
 scaling_sigma_ref = af.UniformPrior(lower_limit=0.0, upper_limit=200.0)
 scaling_sigma_exponent = 0.25  # alpha

@@ -148,12 +148,14 @@ main_lens_galaxies = [galaxies_by_name["lens_0"], galaxies_by_name["lens_1"]]
 host_halo_galaxy = galaxies_by_name["host_halo"]
 source_galaxies = [galaxies_by_name["source_0"], galaxies_by_name["source_1"]]
 
-# Scaling tier: per-member dPIE built from the legacy CSV + the reference-anchored
-# scaling relation in its modern (Bergamini+19) form — sigma ∝ L^0.25 and
-# r_cut ∝ L^(1 + gamma - 2*alpha) = L^0.7 with gamma = 0.2, vanishing unscaled cores
-# (see modeling.py for the full rationale). REFERENCE_LUMINOSITY is an explicit
-# fixed constant (Lenstool's "mag0"), not the sample max, and the constants below
-# match the simulator truth so members are reproduced exactly.
+"""
+The scaling tier builds a dPIE per member from the legacy CSV and the reference-anchored scaling
+relation in its modern (Bergamini et al. 2019) form — ``sigma ∝ L^0.25`` and
+``r_cut ∝ L^(1 + gamma - 2*alpha) = L^0.7`` with ``gamma = 0.2``, vanishing unscaled cores (see
+``modeling.py`` for the full rationale). ``REFERENCE_LUMINOSITY`` is an explicit fixed constant
+(Lenstool's ``mag0``), not the sample max, and the constants below match the simulator truth so
+members are reproduced exactly.
+"""
 scaling_galaxies = []
 SCALING_SIGMA_REF_TRUTH = 85.0
 SCALING_SIGMA_EXPONENT = 0.25  # alpha
@@ -681,7 +683,7 @@ for i, dataset in enumerate(dataset_list):
 __Image-Plane Residual Map__
 
 Residual per pair = image-plane Euclidean distance between model and observed (in arc-seconds).
-This is what ``_pair_closest_no_repeat`` already returned as the third element of each tuple.
+This is what ``_pair_hungarian`` already returned as the third element of each tuple.
 """
 residual_maps_image_per_source = []
 for i, pairs in enumerate(pairs_per_source):
@@ -700,13 +702,14 @@ Image-plane chi² per pair:
 
 No magnification weighting — the residual is already in image-plane arc-seconds, the same units
 as the noise.
+
+Each pair should use the noise of its paired observed position. For simplicity we use the dataset's
+mean noise, since all positions in the cluster simulator share the same σ; a real analysis should
+index per-observed-position.
 """
 chi_squared_maps_image_per_source = []
 for i, dataset in enumerate(dataset_list):
     r = residual_maps_image_per_source[i]
-    # Use the noise of each paired observed position. For simplicity we use the dataset's mean
-    # noise since all positions in the cluster simulator share the same σ; in a real analysis
-    # this should index per-observed-position.
     sigma = float(np.mean(np.asarray(dataset.positions_noise_map)))
     chi_sq_map = r**2 / sigma**2
     chi_squared_maps_image_per_source.append(chi_sq_map)
@@ -757,9 +760,9 @@ print(f"Image-plane log likelihood = {log_likelihood_image:.4e}")
 __Image-Plane Validation__
 
 Instantiate ``al.FitPositionsImagePair`` and confirm match. Note: ``FitPositionsImagePair`` uses
-the same closest-no-repeat pairing scheme as our manual implementation above, so the chi² values
-should agree to within numerical precision (the library's solver may use slightly different
-triangle precision at refinement edge cases, producing sub-percent residual differences).
+the same Hungarian (linear-sum-assignment) pairing scheme as our manual implementation above, so the
+chi² values should agree to within numerical precision (the library's solver may use slightly
+different triangle precision at refinement edge cases, producing sub-percent residual differences).
 """
 sum_library_log_likelihood_image = 0.0
 for i, dataset in enumerate(dataset_list):

@@ -145,12 +145,13 @@ be normalized to the *highest* source redshift in the system (here the z = 11.76
 Normalize to any other plane and every deflection is off by a constant D-ratio (for z = 2 it is
 ~15%, which smears each source group by ~2" — we found out the honest way). Both codes then reduce
 to the same beta = D_LS/D_S ratios in the same cosmology.
+
+One ``al.galaxies_from_csv_tables`` call instantiates every ``mass.csv`` row's ``dPIEMass`` with its
+``.par`` values — the ``redshift_source`` (final-plane) normalization and the run's ``H0``/``Om0``
+travel inside the CSV columns, so nothing here needs to remember them.
 """
 Z_REF_SOURCE = max(float(dataset.redshift) for dataset in dataset_list)
 
-# One call: every mass.csv row instantiates its dPIEMass with the .par values —
-# the redshift_source (final-plane) normalization and the run's H0/Om0 travel inside the
-# CSV columns, so nothing here needs to remember them.
 lens_galaxies = list(al.galaxies_from_csv_tables(mass_table).values())
 
 print(f"Reconstructed {len(lens_galaxies)} dPIE mass components from mass.csv.")
@@ -344,10 +345,12 @@ for centre, luminosity, ellipticity, angle_pos in zip(
     member_models.append(af.Model(al.Galaxy, redshift=Z_LENS, mass=mass))
 
 
-# The named halos start as af.Models straight from mass.csv — the canonical
-# al.galaxy_af_models_from_csv_tables call gives every row's values as fixed
-# defaults, and we promote exactly the parameters input.par optimized to priors
-# (in Lenstool units). Redshifts and H0/Om0 ride in from the CSV already fixed.
+"""
+The named halos start as ``af.Model``s straight from ``mass.csv`` — the canonical
+``al.galaxy_af_models_from_csv_tables`` call gives every row's values as fixed defaults, and we
+promote exactly the parameters ``input.par`` optimized to priors (in Lenstool units). Redshifts and
+``H0``/``Om0`` ride in from the CSV already fixed.
+"""
 halo_af_models = al.galaxy_af_models_from_csv_tables(mass_table)
 
 
