@@ -15,15 +15,18 @@ New users should read the `start_here` example, which gives an overview of all e
 
 # Files
 
-- `start_here`: A simple example illustrating how to to analyse cluster scale strong lenses.
+- `start_here`: A simple example illustrating how to analyse cluster scale strong lenses.
 - `modeling`: Detailed example of performing lens modeling of a cluster scale strong lens using the multiple image locations.
 - `simulator`: Detailed example of how to simulate a cluster scale strong lens.
-- `data_preparation`: How to prepare data for cluster scale lens modeling, including marking the multiple image positions and lens galaxy centres.
+- `likelihood_function`: Step-by-step walkthrough of the point-source likelihood (source-plane and image-plane chi-squared).
+- `csv_api`: The named-galaxy CSV schema (`mass.csv` / `light.csv` / `point.csv`) used to define cluster models in spreadsheets.
+- `mass_parameterizations`: The standard Lenstool cluster model (dPIE throughout, velocity dispersions, scaling relation) built in PyAutoLens.
+- `mass_parameterizations_pyautolens`: How the Lenstool model maps onto the PyAutoLens multi-galaxy parameterization (NFW halo, Isothermal mains, dPIE scaling tier anchored to the BCG).
 - `plot`: How to plot a cluster-scale strong lens dataset, including the multiple-image positions of its lensed sources.
 
 # Folders
 
-- `features`: Examples illustrating different core features for cluster scale analysis and lens modeling.
+- `lenstool`: A worked example for Lenstool users — a published cluster model (SMACS J0723) converted, reconstructed and refit in PyAutoLens.
 
 # Results
 

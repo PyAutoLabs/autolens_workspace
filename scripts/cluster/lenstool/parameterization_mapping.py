@@ -131,8 +131,7 @@ mass_lenstool = al.mp.dPIEMass(
     redshift_source=redshift_source,
 )
 
-# The angular twin: same centre, the ell_comps/b0 the Lenstool profile derived, and r_core/r_cut
-# carried across unchanged (they are angular identities).
+# The angular twin — r_core/r_cut carry across unchanged (angular identities).
 mass_b0 = al.mp.dPIEMassB0(
     centre=mass_lenstool.centre,
     ell_comps=mass_lenstool.ell_comps,
@@ -188,7 +187,10 @@ documented here deliberately, because this page's job is mapping Lenstool's nati
 ``r_cut_ref ~ 5"`` — see ``cluster/mass_parameterizations.py``. The exponent-halving identity above
 is unaffected (it applies to whatever radii scaling you choose).
 
-We verify the exponent-halving numerically for a spread of member luminosities.
+We verify the exponent-halving numerically for a spread of member luminosities. The ``b0_ref`` below
+is the value a redshift-free fit of the ``dataset/cluster/simple`` truth would return: the one that
+converts (with these redshifts) to ``sigma_ref = 85`` km/s — exactly the normalization
+``cluster/modeling.py`` fits directly, making the "we recover the standard example" claim literal.
 """
 reference_luminosity = (
     1.0  # Lenstool "mag0" — an explicit fixed anchor, not the sample max
@@ -198,9 +200,6 @@ member_luminosities = [0.40, 0.25, 0.16, 0.10, 0.06]
 r_core_ref = 0.158  # arcsec, fixed
 r_cut_ref = 15.8  # arcsec, fixed
 
-# Pick the b0_ref that a redshift-free fit of the `dataset/cluster/simple` truth would return: the value
-# that converts (with THESE redshifts) to sigma_ref = 85 km/s — exactly the normalization
-# `cluster/modeling.py` fits directly. This makes the "we recover the standard example" claim literal.
 sigma_ref_target = 85.0
 b0_ref = K * (sigma_ref_target / C_KM_S) ** 2
 

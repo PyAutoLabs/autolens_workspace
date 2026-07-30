@@ -270,14 +270,18 @@ al.galaxy_table_to_csv(
     },
 )
 
-# The whole optimized model — 5 named halos + 144 scaling members — becomes ONE canonical
-# ``mass.csv``: each ``potential`` section is a ``dPIEMass`` row whose columns are the
-# ``.par`` keywords verbatim (sigma, r_core, r_cut, ellipticity, angle_pos) plus the run's
-# redshifts and cosmology as flat values. ``modeling.py`` reads it back with the same
-# ``al.galaxy_models_from_csv`` call used throughout ``scripts/cluster/``.
-#
-# Every profile is normalized against the tracer's FINAL source plane (the multi-plane
-# convention modeling.py explains) using the run's own cosmology (H0=70, Om0=0.3).
+"""
+__Mass CSV__
+
+The whole optimized model — 5 named halos + 144 scaling members — becomes one canonical ``mass.csv``:
+each ``potential`` section is a ``dPIEMass`` row whose columns are the ``.par`` keywords verbatim
+(``sigma``, ``r_core``, ``r_cut``, ``ellipticity``, ``angle_pos``) plus the run's redshifts and
+cosmology as flat values. ``modeling.py`` reads it back with the same ``al.galaxy_models_from_csv``
+call used throughout ``scripts/cluster/``.
+
+Every profile is normalized against the tracer's *final* source plane (the multi-plane convention
+``modeling.py`` explains) using the run's own cosmology (H0=70, Om0=0.3).
+"""
 Z_FINAL_PLANE = max(z_by_system.values())
 
 profiles_by_galaxy = {}
@@ -330,9 +334,8 @@ elif not cutout_path.exists():
     mosaic_path = DATASET_PATH / "f814w_mosaic.fits"
     if not mosaic_path.exists():
         print("Downloading the RELICS F814W mosaic (96 MB, one-off)...")
-        # Explicit timeout so a stalled server fails fast instead of hanging
-        # indefinitely (`urlretrieve` has no timeout). The timeout is per socket
-        # read, so a large-but-progressing download is unaffected.
+        # Per-socket-read timeout: a stalled server fails fast, a large-but-
+        # progressing download is unaffected.
         with urllib.request.urlopen(RELICS_F814W_URL, timeout=60) as response:
             mosaic_path.write_bytes(response.read())
 
