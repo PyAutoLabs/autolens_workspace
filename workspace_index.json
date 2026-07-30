@@ -72,6 +72,7 @@
   },
   {
     "contents": [
+      "JAX",
       "Dataset",
       "Truth Model",
       "Tracer",
@@ -112,7 +113,7 @@
       "scripts/cluster/modeling.py",
       "scripts/cluster/simulator.py",
       "scripts/group/likelihood_function.py",
-      "scripts/guides/lens_calc.py",
+      "scripts/guides/using_jax.py",
       "scripts/imaging/likelihood_function.py"
     ],
     "notebook": "notebooks/cluster/likelihood_function.ipynb",
@@ -1282,6 +1283,7 @@
   },
   {
     "contents": [
+      "JAX",
       "Dataset & Mask",
       "Over Sampling",
       "Masked Image Grid",
@@ -1303,7 +1305,7 @@
     ],
     "cross_refs": [
       "/guides/advanced/over_sampling.py",
-      "scripts/imaging/likelihood_function.py"
+      "scripts/guides/using_jax.py"
     ],
     "notebook": "notebooks/group/likelihood_function.ipynb",
     "path": "scripts/group/likelihood_function.py",
@@ -2491,16 +2493,20 @@
       "Auto-Enabled Modeling",
       "Disabling JAX",
       "Writing @jax.jit Yourself",
+      "Custom Likelihood Functions",
       "JIT-ing Library Methods",
       "Return-Type Contract"
     ],
     "cross_refs": [
+      "autofit.jax.py",
       "data_structures.py",
       "lens_calc.py",
       "likelihood_function.py",
       "scripts/guides/data_structures.py",
       "scripts/guides/lens_calc.py",
+      "scripts/imaging/likelihood_function.py",
       "scripts/imaging/simulator.py",
+      "scripts/interferometer/likelihood_function.py",
       "scripts/interferometer/simulator.py",
       "scripts/point_source/simulator.py",
       "simulator.py",
@@ -4184,6 +4190,7 @@
   },
   {
     "contents": [
+      "JAX",
       "Dataset & Mask",
       "Over Sampling",
       "Masked Image Grid",
@@ -4207,9 +4214,7 @@
       "/imaging/data_preparation/gui/mask_extra_galaxies.py",
       "contributor_guide.py",
       "data_preparation/examples/optional/mask_extra_galaxies.py",
-      "modeling.py",
-      "scripts/guides/lens_calc.py",
-      "start_here.py"
+      "scripts/guides/using_jax.py"
     ],
     "notebook": "notebooks/imaging/likelihood_function.ipynb",
     "path": "scripts/imaging/likelihood_function.py",
@@ -5284,6 +5289,7 @@
   },
   {
     "contents": [
+      "JAX",
       "Mask",
       "Dataset",
       "Over Sampling",
@@ -5305,10 +5311,7 @@
     ],
     "cross_refs": [
       "contributor_guide.py",
-      "imaging/likelihood_function.py",
-      "modeling.py",
-      "scripts/guides/lens_calc.py",
-      "start_here.py"
+      "scripts/guides/using_jax.py"
     ],
     "notebook": "notebooks/interferometer/likelihood_function.ipynb",
     "path": "scripts/interferometer/likelihood_function.py",
