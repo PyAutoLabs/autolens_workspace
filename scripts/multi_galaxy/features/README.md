@@ -111,12 +111,16 @@ goals, rather than part of the default model:
   deflection field at different sky positions, not because of the extra redshift — the extra redshift is what
   constrains cosmology.
 
+- **`advanced/mass_stellar_dark`** — each deflector's mass decomposed into stellar and dark components. With
+  two galaxies the mass-to-light ratios are near-degenerate with each other, so tying them across the pair is
+  what makes the decomposition tractable.
+
 See `advanced/README.md` for the full inventory.
 
 # Not yet written
 
 Feature folders present in `group/features` and `imaging/features` but not yet in this package: the remaining
-`advanced/` folders — `mass_stellar_dark` and `subhalo`.
+`advanced/` folder — `subhalo`.
 
 Until they land, the corresponding `imaging/features` scripts apply with the single lens galaxy swapped for the
 `lens_0`, `lens_1`, ... loop of this package.

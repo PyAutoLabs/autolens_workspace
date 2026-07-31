@@ -6186,6 +6186,157 @@
   },
   {
     "contents": [
+      "Prerequisites",
+      "Dataset, Mask & Over Sampling",
+      "Centres",
+      "Paths",
+      "Model (Search 1)",
+      "Search + Analysis + Model-Fit (Search 1)",
+      "Model (Search 2)",
+      "Search + Analysis + Model-Fit (Search 2)",
+      "Result",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/mass_stellar_dark/chaining.py",
+      "modeling.py",
+      "multi_galaxy/features/advanced/mass_stellar_dark/modeling.py",
+      "multi_galaxy/features/advanced/mass_stellar_dark/slam.py",
+      "multi_galaxy/modeling.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/mass_stellar_dark/chaining.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/mass_stellar_dark/chaining.py",
+    "summary": "This script fits a multi-galaxy lens with decomposed stellar and dark mass using **two chained searches**: a total mass model first, the decomposition second.",
+    "title": "Chaining: Stellar and Dark Mass (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Mask",
+      "Centres",
+      "Over Sampling",
+      "Galaxies",
+      "Tracer",
+      "Fit",
+      "Decomposed Deflection",
+      "Component Fractions",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/mass_stellar_dark/fit.py",
+      "modeling.py",
+      "multi_galaxy/features/advanced/mass_stellar_dark/likelihood_function.py",
+      "multi_galaxy/features/advanced/mass_stellar_dark/modeling.py",
+      "multi_galaxy/fit.py",
+      "simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/mass_stellar_dark/fit.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/mass_stellar_dark/fit.py",
+    "summary": "This script fits a multi-galaxy strong lens with decomposed stellar and dark mass, without a non-linear search, so the individual mass components and the deflection field each contributes can be inspected directly.",
+    "title": "Fits: Stellar and Dark Mass (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "What Changes",
+      "Dataset, Mask & Over Sampling",
+      "Galaxies",
+      "Lens Light",
+      "Decomposed Deflection",
+      "Ray Tracing",
+      "Source-Plane Image",
+      "Likelihood",
+      "Fit",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/mass_stellar_dark/likelihood_function.py",
+      "modeling.py",
+      "multi_galaxy/features/advanced/mass_stellar_dark/fit.py",
+      "multi_galaxy/features/advanced/mass_stellar_dark/modeling.py",
+      "multi_galaxy/likelihood_function.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/mass_stellar_dark/likelihood_function.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/mass_stellar_dark/likelihood_function.py",
+    "summary": "This script walks through the log likelihood function of a multi-galaxy lens whose deflectors have **decomposed stellar and dark mass**, step by step.",
+    "title": "__Log Likelihood Function: Stellar and Dark Mass (Multi Galaxy)__"
+  },
+  {
+    "contents": [
+      "Advantages",
+      "Disadvantages",
+      "The Choice This Folder Is About",
+      "Model",
+      "Dataset, Mask & Over Sampling",
+      "Model Composition",
+      "Tying The Mass-To-Light Ratio",
+      "Model Cookbook",
+      "Search & Analysis",
+      "Run Time",
+      "VRAM",
+      "Result",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/mass_stellar_dark/modeling.py",
+      "multi_galaxy/features/advanced/mass_stellar_dark/chaining.py",
+      "multi_galaxy/features/advanced/mass_stellar_dark/fit.py",
+      "multi_galaxy/features/advanced/mass_stellar_dark/slam.py",
+      "multi_galaxy/modeling.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/mass_stellar_dark/modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/mass_stellar_dark/modeling.py",
+    "summary": "This script fits a multi-galaxy strong lens where **each co-dominant deflector's mass is decomposed into a stellar component and a dark matter halo**, rather than described by a single total mass profile.",
+    "title": "Modeling Features: Stellar and Dark Mass (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset Paths",
+      "Grid",
+      "Galaxy Centres",
+      "Over Sampling",
+      "PSF Convolution",
+      "Main Lens Galaxies",
+      "External Shear",
+      "Source Galaxy",
+      "Ray Tracing",
+      "Dataset",
+      "Visualize",
+      "Tracer json",
+      "Centre JSON Files"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/mass_stellar_dark/simulator.py",
+      "modeling.py",
+      "multi_galaxy/simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/mass_stellar_dark/simulator.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/mass_stellar_dark/simulator.py",
+    "summary": "This script simulates a multi-galaxy strong lens where **each co-dominant deflector's mass is decomposed into a stellar component and a dark matter halo**, rather than described by a single total mass profile.",
+    "title": "Simulator: Stellar and Dark Mass (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Helpers",
+      "Source LP Pipeline",
+      "Source Pix Pipeline 1 & 2",
+      "Light LP Pipeline",
+      "Mass Light Dark Pipeline",
+      "Dataset, Centres, Mask",
+      "Mesh Shape",
+      "SLaM Pipeline"
+    ],
+    "cross_refs": [
+      "multi_galaxy/features/advanced/mass_stellar_dark/chaining.py",
+      "multi_galaxy/features/advanced/mass_stellar_dark/modeling.py",
+      "multi_galaxy/slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/mass_stellar_dark/slam.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/mass_stellar_dark/slam.py",
+    "summary": "The SLaM pipeline for a multi-galaxy lens whose deflectors' mass is decomposed into stellar and dark components.",
+    "title": "SLaM (Source, Light and Mass): Stellar and Dark Mass (Multi Galaxy)"
+  },
+  {
+    "contents": [
       "Advantages",
       "Disadvantages",
       "Positive Only Solver",
