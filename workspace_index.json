@@ -6030,6 +6030,188 @@
   },
   {
     "contents": [
+      "Advantages",
+      "Disadvantages",
+      "Positive Only Solver",
+      "Model",
+      "Dataset, Mask & Over Sampling",
+      "Positions",
+      "Model Composition",
+      "Model Cookbook",
+      "Search & Analysis",
+      "Run Time",
+      "VRAM",
+      "Result",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/operated_light_profile/modeling.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/operated_light_profile/modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/operated_light_profile/modeling.py",
+    "summary": "This script fits a multi-galaxy strong lens where **each co-dominant deflector hosts a compact nuclear point source** \u2014 an AGN \u2014 modelled with an operated light profile.",
+    "title": "Modeling Features: Operated Light Profiles (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset Paths",
+      "Grid",
+      "Galaxy Centres",
+      "Over Sampling",
+      "PSF Convolution",
+      "Main Lens Galaxies",
+      "External Shear",
+      "Source Galaxy",
+      "Ray Tracing",
+      "Dataset",
+      "Visualize",
+      "Tracer json",
+      "Centre JSON Files",
+      "Positions"
+    ],
+    "cross_refs": [
+      "modeling.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/operated_light_profile/simulator.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/operated_light_profile/simulator.py",
+    "summary": "This script simulates a multi-galaxy strong lens where **each co-dominant deflector hosts a compact nuclear point source** \u2014 an AGN \u2014 on top of its extended stellar light.",
+    "title": "Simulator: Operated Light Profiles (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Extra Galaxies Noise Scaling",
+      "Mask",
+      "Centres",
+      "Over Sampling",
+      "Basis",
+      "Main Lens Galaxies",
+      "Fit",
+      "Intensities",
+      "Basis Image",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/shapelets/fit.py",
+      "modeling.py",
+      "multi_galaxy/features/advanced/shapelets/modeling.py",
+      "multi_galaxy/features/pixelization/fit.py",
+      "multi_galaxy/fit.py",
+      "multi_galaxy/modeling.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/shapelets/fit.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/shapelets/fit.py",
+    "summary": "This script fits a multi-galaxy strong lens with a shapelet source, without a non-linear search, so the `Basis` API and the solved shapelet intensities can be inspected directly.",
+    "title": "Fits: Shapelets (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Advantages",
+      "Disadvantages",
+      "Positive Negative Solver",
+      "Why The Deflectors Stay MGE",
+      "Model",
+      "Dataset, Mask & Over Sampling",
+      "Positions",
+      "Model Composition",
+      "Model Cookbook",
+      "Search & Analysis",
+      "Run Time",
+      "VRAM",
+      "Result",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/shapelets/modeling.py",
+      "multi_galaxy/features/advanced/shapelets/fit.py",
+      "multi_galaxy/modeling.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/shapelets/modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/shapelets/modeling.py",
+    "summary": "This script fits a multi-galaxy strong lens where the **source** is reconstructed with a basis of shapelets \u2014 a set of orthogonal basis functions well suited to describing irregular, asymmetric morphology with relatively few non-linear parameters.",
+    "title": "Modeling Features: Shapelets (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Mask",
+      "Centres",
+      "Over Sampling",
+      "Main Lens Galaxies",
+      "Fit",
+      "Sky Omitted",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/sky_background/fit.py",
+      "modeling.py",
+      "multi_galaxy/features/advanced/sky_background/modeling.py",
+      "multi_galaxy/fit.py",
+      "simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/sky_background/fit.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/sky_background/fit.py",
+    "summary": "This script fits a multi-galaxy strong lens whose data still contains the sky background, without a non-linear search, so the `DatasetModel` API can be seen directly.",
+    "title": "Fits: Sky Background (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Advantages",
+      "Disadvantages",
+      "Model",
+      "Dataset, Mask & Over Sampling",
+      "Positions",
+      "Model Composition",
+      "Model Cookbook",
+      "Search & Analysis",
+      "Run Time",
+      "VRAM",
+      "Result",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/sky_background/modeling.py",
+      "multi_galaxy/features/advanced/sky_background/fit.py",
+      "multi_galaxy/modeling.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/sky_background/modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/sky_background/modeling.py",
+    "summary": "This script fits a multi-galaxy strong lens whose data still contains the **sky background** \u2014 the diffuse emission from the atmosphere, zodiacal light and unresolved sources in the field.",
+    "title": "Modeling Features: Sky Background (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset Paths",
+      "Grid",
+      "Galaxy Centres",
+      "Over Sampling",
+      "PSF Convolution",
+      "Sky Background",
+      "Main Lens Galaxies",
+      "External Shear",
+      "Source Galaxy",
+      "Ray Tracing",
+      "Dataset",
+      "Visualize",
+      "Tracer json",
+      "Centre JSON Files",
+      "Positions"
+    ],
+    "cross_refs": [
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/sky_background/simulator.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/sky_background/simulator.py",
+    "summary": "This script simulates a multi-galaxy strong lens dataset where the **sky background is not subtracted**, so it is present in the data and has to be accounted for when the lens model is fitted.",
+    "title": "Simulator: Sky Background (Multi Galaxy)"
+  },
+  {
+    "contents": [
       "Dataset",
       "Mask & Over Sampling",
       "Centres",
