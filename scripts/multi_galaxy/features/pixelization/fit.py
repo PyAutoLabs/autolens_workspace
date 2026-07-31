@@ -196,11 +196,22 @@ __Inversion__
 
 The source reconstruction is held on the fit's `inversion`, as an array holding one flux value per source pixel.
 
+The inversion's `reconstruction` is the solution vector over **every** linear object it solves, not just the source
+pixels. Both deflectors here use `lp_linear` bulges, whose intensities are solved by the same linear algebra as the
+source pixels, so `reconstruction` carries 2 entries more than the mesh has pixels. To count the source pixels, pull
+the mapper out of the inversion's linear objects and read its own reconstruction.
+
 The `subplot_fit_imaging` above already shows the reconstructed source alongside the data, model image and
 residuals. `imaging/features/pixelization/fit.py` covers the inversion's internals — its linear objects, mapping
-matrices and grids — in full.
+matrices and grids — in full. That script uses standard light profiles, so its source is the only linear object and
+this distinction does not arise.
 """
-print(f"Number of source pixels reconstructed = {fit.inversion.reconstruction.shape[0]}")
+mapper = fit.inversion.cls_list_from(cls=al.Mapper)[0]
+
+print(
+    f"Number of source pixels reconstructed = "
+    f"{fit.inversion.reconstruction_dict[mapper].shape[0]}"
+)
 
 """
 __Wrap Up__
