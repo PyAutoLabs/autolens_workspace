@@ -62,6 +62,17 @@ import autolens as al
 import autolens.plot as aplt
 
 
+def n_main_from(result) -> int:
+    """
+    The number of main lens galaxies in a result's model.
+
+    Every stage recovers this from the previous result rather than hard-coding `lens_0`, so the whole pipeline
+    runs unchanged on any number of main lens galaxies. The `lens_` prefix is the convention the group package
+    uses; `source` and `subhalo` do not match it and are therefore not counted.
+    """
+    return sum(1 for key in vars(result.instance.galaxies) if key.startswith("lens_"))
+
+
 """
 __SOURCE LP PIPELINE__
 
@@ -188,22 +199,26 @@ def source_pix_1(
 
     # Use the lens model from the SOURCE LP result, fixing light and freeing mass.
 
-    mass = al.util.chaining.mass_from(
-        mass=source_lp_result.model.galaxies.lens_0.mass,
-        mass_result=source_lp_result.model.galaxies.lens_0.mass,
-        unfix_mass_centre=True,
-    )
-    shear = source_lp_result.model.galaxies.lens_0.shear
+    lens_dict = {}
 
-    lens_0 = af.Model(
-        al.Galaxy,
-        redshift=source_lp_result.instance.galaxies.lens_0.redshift,
-        bulge=source_lp_result.instance.galaxies.lens_0.bulge,
-        mass=mass,
-        shear=shear,
-    )
+    for i in range(n_main_from(source_lp_result)):
 
-    lens_dict = {"lens_0": lens_0}
+        lens_instance = getattr(source_lp_result.instance.galaxies, f"lens_{i}")
+        lens_model = getattr(source_lp_result.model.galaxies, f"lens_{i}")
+
+        mass = al.util.chaining.mass_from(
+            mass=lens_model.mass,
+            mass_result=lens_model.mass,
+            unfix_mass_centre=True,
+        )
+
+        lens_dict[f"lens_{i}"] = af.Model(
+            al.Galaxy,
+            redshift=lens_instance.redshift,
+            bulge=lens_instance.bulge,
+            mass=mass,
+            shear=lens_model.shear if i == 0 else None,
+        )
 
     # Fix extra galaxies to their best-fit values.
 
@@ -262,15 +277,20 @@ def source_pix_2(
         use_jax=True,
     )
 
-    lens_0 = af.Model(
-        al.Galaxy,
-        redshift=source_lp_result.instance.galaxies.lens_0.redshift,
-        bulge=source_lp_result.instance.galaxies.lens_0.bulge,
-        mass=source_pix_result_1.instance.galaxies.lens_0.mass,
-        shear=source_pix_result_1.instance.galaxies.lens_0.shear,
-    )
+    lens_dict = {}
 
-    lens_dict = {"lens_0": lens_0}
+    for i in range(n_main_from(source_pix_result_1)):
+
+        lp_instance = getattr(source_lp_result.instance.galaxies, f"lens_{i}")
+        pix_instance = getattr(source_pix_result_1.instance.galaxies, f"lens_{i}")
+
+        lens_dict[f"lens_{i}"] = af.Model(
+            al.Galaxy,
+            redshift=lp_instance.redshift,
+            bulge=lp_instance.bulge,
+            mass=pix_instance.mass,
+            shear=pix_instance.shear if i == 0 else None,
+        )
 
     extra_galaxies = source_pix_result_1.instance.extra_galaxies
 
@@ -327,26 +347,30 @@ def light_lp(
         use_jax=True,
     )
 
-    lens_bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius,
-        total_gaussians=30,
-        gaussian_per_basis=2,
-        centre_prior_is_uniform=True,
-    )
-
     source = al.util.chaining.source_custom_model_from(
         result=source_result_for_source, source_is_model=False
     )
 
-    lens_0 = af.Model(
-        al.Galaxy,
-        redshift=source_result_for_lens.instance.galaxies.lens_0.redshift,
-        bulge=lens_bulge,
-        mass=source_result_for_lens.instance.galaxies.lens_0.mass,
-        shear=source_result_for_lens.instance.galaxies.lens_0.shear,
-    )
+    lens_dict = {}
 
-    lens_dict = {"lens_0": lens_0}
+    for i in range(n_main_from(source_result_for_lens)):
+
+        lens_instance = getattr(source_result_for_lens.instance.galaxies, f"lens_{i}")
+
+        lens_bulge = al.model_util.mge_model_from(
+            mask_radius=mask_radius,
+            total_gaussians=30,
+            gaussian_per_basis=2,
+            centre_prior_is_uniform=True,
+        )
+
+        lens_dict[f"lens_{i}"] = af.Model(
+            al.Galaxy,
+            redshift=lens_instance.redshift,
+            bulge=lens_bulge,
+            mass=lens_instance.mass,
+            shear=lens_instance.shear if i == 0 else None,
+        )
 
     extra_galaxies = source_result_for_lens.instance.extra_galaxies
 
@@ -380,8 +404,6 @@ def mass_total(
     light_result: af.Result,
     n_batch: int = 20,
 ) -> af.Result:
-    mass = af.Model(al.mp.PowerLaw)
-
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
         result=source_result_for_lens
     )
@@ -399,25 +421,29 @@ def mass_total(
         use_jax=True,
     )
 
-    mass = al.util.chaining.mass_from(
-        mass=mass,
-        mass_result=source_result_for_lens.model.galaxies.lens_0.mass,
-        unfix_mass_centre=True,
-    )
-
-    bulge = light_result.instance.galaxies.lens_0.bulge
-
     source = al.util.chaining.source_from(result=source_result_for_source)
 
-    lens_0 = af.Model(
-        al.Galaxy,
-        redshift=source_result_for_lens.instance.galaxies.lens_0.redshift,
-        bulge=bulge,
-        mass=mass,
-        shear=source_result_for_lens.model.galaxies.lens_0.shear,
-    )
+    lens_dict = {}
 
-    lens_dict = {"lens_0": lens_0}
+    for i in range(n_main_from(source_result_for_lens)):
+
+        lens_instance = getattr(source_result_for_lens.instance.galaxies, f"lens_{i}")
+        lens_model = getattr(source_result_for_lens.model.galaxies, f"lens_{i}")
+        light_instance = getattr(light_result.instance.galaxies, f"lens_{i}")
+
+        mass = al.util.chaining.mass_from(
+            mass=af.Model(al.mp.PowerLaw),
+            mass_result=lens_model.mass,
+            unfix_mass_centre=True,
+        )
+
+        lens_dict[f"lens_{i}"] = af.Model(
+            al.Galaxy,
+            redshift=lens_instance.redshift,
+            bulge=light_instance.bulge,
+            mass=mass,
+            shear=lens_model.shear if i == 0 else None,
+        )
 
     extra_galaxies = light_result.instance.extra_galaxies
 
@@ -465,9 +491,11 @@ def subhalo_no_subhalo(
     )
 
     source = al.util.chaining.source_from(result=mass_result)
-    lens_0 = mass_result.model.galaxies.lens_0
 
-    lens_dict = {"lens_0": lens_0}
+    lens_dict = {
+        f"lens_{i}": getattr(mass_result.model.galaxies, f"lens_{i}")
+        for i in range(n_main_from(mass_result))
+    }
 
     extra_galaxies = mass_result.instance.extra_galaxies
 
@@ -539,10 +567,13 @@ def subhalo_grid_search(
         subhalo_no_subhalo_result.instance.galaxies.source.redshift
     )
 
-    lens_0 = mass_result.model.galaxies.lens_0
     source = al.util.chaining.source_from(result=mass_result)
 
-    lens_dict = {"lens_0": lens_0, "subhalo": subhalo}
+    lens_dict = {
+        f"lens_{i}": getattr(mass_result.model.galaxies, f"lens_{i}")
+        for i in range(n_main_from(mass_result))
+    }
+    lens_dict["subhalo"] = subhalo
 
     extra_galaxies = mass_result.instance.extra_galaxies
 
@@ -626,9 +657,10 @@ def subhalo_refine(
     source = subhalo_grid_search_result.model.galaxies.source
 
     lens_dict = {
-        "lens_0": subhalo_grid_search_result.model.galaxies.lens_0,
-        "subhalo": subhalo,
+        f"lens_{i}": getattr(subhalo_grid_search_result.model.galaxies, f"lens_{i}")
+        for i in range(n_main_from(subhalo_grid_search_result))
     }
+    lens_dict["subhalo"] = subhalo
 
     extra_galaxies = mass_result.instance.extra_galaxies
 
