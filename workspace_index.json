@@ -6432,6 +6432,85 @@
   },
   {
     "contents": [
+      "Adaptive Features",
+      "Dataset",
+      "Extra Galaxies Noise Scaling",
+      "Mask, Centres & Over Sampling",
+      "Paths",
+      "Model (Search 1)",
+      "Mesh Shape",
+      "Model (Search 2)",
+      "Adapt Images",
+      "Model (Search 3)",
+      "Model (Search 4)",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/pixelization/adaptive.py",
+      "multi_galaxy/features/pixelization/delaunay.py",
+      "multi_galaxy/features/pixelization/modeling.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/pixelization/adaptive.ipynb",
+    "path": "scripts/multi_galaxy/features/pixelization/adaptive.py",
+    "summary": "This script fits a multi-galaxy strong lens with an **adaptive** pixelized source, where both the mesh and the regularization adapt to the source's own reconstructed morphology rather than being applied uniformly.",
+    "title": "Adaptive Pixelization (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Extra Galaxies Noise Scaling",
+      "Mask, Centres & Over Sampling",
+      "Sparse Operators",
+      "Mesh Shape",
+      "Fit",
+      "Model",
+      "Result",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/pixelization/cpu_fast_modeling.py",
+      "multi_galaxy/features/pixelization/delaunay.py",
+      "multi_galaxy/features/pixelization/fit.py",
+      "multi_galaxy/features/pixelization/modeling.py",
+      "multi_galaxy/modeling.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/pixelization/cpu_fast_modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/pixelization/cpu_fast_modeling.py",
+    "summary": "This script fits a multi-galaxy strong lens with a pixelized source **on the CPU, without JAX**, using:",
+    "title": "CPU Fast Modeling: Pixelization (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Extra Galaxies Noise Scaling",
+      "Mask, Centres & Over Sampling",
+      "Image-Plane Mesh Grid",
+      "Edge Zeroing",
+      "Fit",
+      "Inversion Visualization",
+      "Reconstructed Source",
+      "Model",
+      "Search & Analysis",
+      "Result",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/pixelization/delaunay.py",
+      "multi_galaxy/features/pixelization/adaptive.py",
+      "multi_galaxy/features/pixelization/fit.py",
+      "multi_galaxy/features/pixelization/modeling.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/pixelization/delaunay.ipynb",
+    "path": "scripts/multi_galaxy/features/pixelization/delaunay.py",
+    "summary": "This script fits a multi-galaxy strong lens with a source reconstructed on a **Delaunay** mesh, the alternative to the rectangular meshes used elsewhere in this package.",
+    "title": "Delaunay Pixelization (Multi Galaxy)"
+  },
+  {
+    "contents": [
       "Dataset",
       "Extra Galaxies Noise Scaling",
       "Mask",
@@ -6456,6 +6535,35 @@
   },
   {
     "contents": [
+      "What Changes",
+      "Dataset, Mask & Over Sampling",
+      "Main Lens Galaxies",
+      "Source Galaxy Pixelization",
+      "Lens Light",
+      "Deflection Angles",
+      "Ray Tracing",
+      "Pixelized Source Reconstruction",
+      "Likelihood Function",
+      "Fit",
+      "Inversion Details",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/pixelization/likelihood_function.py",
+      "multi_galaxy/features/pixelization/delaunay.py",
+      "multi_galaxy/features/pixelization/fit.py",
+      "multi_galaxy/features/pixelization/modeling.py",
+      "multi_galaxy/likelihood_function.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/pixelization/likelihood_function.ipynb",
+    "path": "scripts/multi_galaxy/features/pixelization/likelihood_function.py",
+    "summary": "This script walks through the log likelihood function of a multi-galaxy lens fitted with a **pixelized source**, step by step, so the calculation can be followed without reading the source code.",
+    "title": "__Log Likelihood Function: Pixelization (Multi Galaxy)__"
+  },
+  {
+    "contents": [
       "Advantages",
       "Disadvantages",
       "Positive Only Solver",
@@ -6471,6 +6579,8 @@
     ],
     "cross_refs": [
       "imaging/features/pixelization/modeling.py",
+      "multi_galaxy/features/pixelization/adaptive.py",
+      "multi_galaxy/features/pixelization/delaunay.py",
       "multi_galaxy/features/pixelization/fit.py",
       "multi_galaxy/modeling.py",
       "multi_galaxy/slam.py"
@@ -6479,6 +6589,79 @@
     "path": "scripts/multi_galaxy/features/pixelization/modeling.py",
     "summary": "This script fits a multi-galaxy strong lens with a **pixelized source reconstruction**: the source is reconstructed on a mesh of pixels whose fluxes are solved by linear algebra, rather than assumed to follow an analytic profile.",
     "title": "Modeling Features: Pixelization (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Setup",
+      "Fit Imaging",
+      "Inversion",
+      "Mapper Grids",
+      "Mapper Galaxy Dict",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "guides/plot/start_here.py",
+      "imaging/features/pixelization/plot.py",
+      "multi_galaxy/features/pixelization/fit.py",
+      "multi_galaxy/features/pixelization/source_science.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/plot.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/pixelization/plot.ipynb",
+    "path": "scripts/multi_galaxy/features/pixelization/plot.py",
+    "summary": "This script plots a multi-galaxy fit whose source is reconstructed on a pixelized mesh.",
+    "title": "Plots: Pixelization (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Source LP Pipeline",
+      "Source Pix Pipeline 1 & 2",
+      "Light LP Pipeline",
+      "Mass Total Pipeline",
+      "Dataset, Centres, Mask",
+      "Mesh Shape",
+      "SLaM Pipeline"
+    ],
+    "cross_refs": [
+      "multi_galaxy/features/pixelization/adaptive.py",
+      "multi_galaxy/features/pixelization/delaunay.py",
+      "multi_galaxy/features/pixelization/source_science.py",
+      "multi_galaxy/slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/pixelization/slam.ipynb",
+    "path": "scripts/multi_galaxy/features/pixelization/slam.py",
+    "summary": "The SLaM pipeline for a multi-galaxy lens, with every pixelization choice its SOURCE PIX stages make written out.",
+    "title": "SLaM (Source, Light and Mass): Pixelization (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Extra Galaxies Noise Scaling",
+      "Mask, Centres & Over Sampling",
+      "Model Fit",
+      "Inversion",
+      "Source Flux",
+      "Source Magnification",
+      "Omitting A Deflector",
+      "Interpolated Source",
+      "Zoom",
+      "Errors",
+      "Parametric Comparison",
+      "Magnification via Mesh",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/pixelization/source_science.py",
+      "multi_galaxy/features/pixelization/modeling.py",
+      "multi_galaxy/features/pixelization/plot.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/simulator.py",
+      "multi_galaxy/source_science.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/pixelization/source_science.ipynb",
+    "path": "scripts/multi_galaxy/features/pixelization/source_science.py",
+    "summary": "Source science studies the highly magnified background source rather than the deflectors. This script computes the quantities a pixelized reconstruction gives access to for a multi-galaxy lens:",
+    "title": "Source Science: Pixelization (Multi Galaxy)"
   },
   {
     "contents": [

@@ -22,6 +22,12 @@ multi_galaxy/features/no_lens_light/modeling.py
 multi_galaxy/features/linear_light_profiles/modeling.py
 multi_galaxy/features/multi_gaussian_expansion/modeling.py
 multi_galaxy/features/pixelization/modeling.py
+# The two pixelization code paths nothing else in this suite reaches: the adapt mesh +
+# adapt regularization pairing built from a prior search's own result, and the CPU sparse
+# operator route with JAX disabled. The folder's delaunay.py is left out because
+# imaging/features/pixelization/delaunay.py below already covers the Delaunay inversion.
+multi_galaxy/features/pixelization/adaptive.py
+multi_galaxy/features/pixelization/cpu_fast_modeling.py
 imaging/features/scaling_relation/modeling.py
 # multi_dataset/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1
 multi_dataset/modeling.py
