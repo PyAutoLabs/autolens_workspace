@@ -16,16 +16,17 @@ the lens has two co-dominant deflectors rather than one lens galaxy.
   is what constrains the mass split.
 - `mass_stellar_dark`: Each deflector's mass decomposed into a stellar component and a dark halo. The two
   galaxies' mass-to-light ratios are near-degenerate, and tying them is what makes the decomposition tractable.
+- `subhalo`: Detecting a dark matter subhalo. The detection floor is set by the smooth model, whose mass split
+  is degenerate — so a false positive can be a mis-split rather than a perturber.
 
-# Not yet written
+# Scope
 
-Present in `group/features/advanced` and `imaging/features/advanced` but not yet here: `subhalo`. Until it
-lands, the corresponding
-`imaging/features/advanced` scripts apply with the single lens galaxy swapped for the `lens_0`, `lens_1`, ... loop
-of this package.
+Every folder in `group/features/advanced` is now present here. Two things in `imaging/features/advanced` are
+deliberately absent: `potential_correction` and `los_halos`, which have no `group/features/advanced` equivalent
+and are outside this package's scope.
 
-`potential_correction` and `los_halos` exist only in `imaging/features/advanced`, not in
-`group/features/advanced`, and are deliberately not part of this package.
+Subhalo **sensitivity mapping** is likewise not covered — `subhalo` is detection only, the same boundary group
+draws.
 
 # Related
 
