@@ -40,6 +40,11 @@ multi_galaxy/features/advanced/sky_background/modeling.py
 # needs, and it exercises a result-chained model across two searches that modeling.py does not.
 multi_galaxy/features/advanced/double_source_plane_lens/modeling.py
 multi_galaxy/features/advanced/double_source_plane_lens/chaining.py
+# The decomposition entries: modeling.py covers the lmp.Sersic + NFWSph composition with the
+# mass-to-light ratio tied across deflectors, and chaining.py the total-mass-then-decompose
+# workflow. Neither path is reached by any other entry in this suite.
+multi_galaxy/features/advanced/mass_stellar_dark/modeling.py
+multi_galaxy/features/advanced/mass_stellar_dark/chaining.py
 imaging/features/scaling_relation/modeling.py
 # multi_dataset/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1
 multi_dataset/modeling.py

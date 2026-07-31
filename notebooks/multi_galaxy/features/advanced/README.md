@@ -14,11 +14,13 @@ the lens has two co-dominant deflectors rather than one lens galaxy.
 - `double_source_plane_lens`: Two source galaxies at different redshifts behind the pair, appearing as two
   distinct Einstein rings. The second ring's images sample the deflection field where the first's do not, which
   is what constrains the mass split.
+- `mass_stellar_dark`: Each deflector's mass decomposed into a stellar component and a dark halo. The two
+  galaxies' mass-to-light ratios are near-degenerate, and tying them is what makes the decomposition tractable.
 
 # Not yet written
 
-Present in `group/features/advanced` and `imaging/features/advanced` but not yet here:
-`mass_stellar_dark` and `subhalo`. Until they land, the corresponding
+Present in `group/features/advanced` and `imaging/features/advanced` but not yet here: `subhalo`. Until it
+lands, the corresponding
 `imaging/features/advanced` scripts apply with the single lens galaxy swapped for the `lens_0`, `lens_1`, ... loop
 of this package.
 
