@@ -23,10 +23,12 @@ Examples throughout the workspace use a default over-sampling set up that should
 analysis you have done. This default over-sampling is as follows:
 
 - When evaluating the image of a galaxy, an adaptive over sampling grid is used which uses sub grids of size 8 x 8
-in the central regions of the image, 4x4 further out and 1x1 beyond that.
+in the central regions of the image, 4x4 further out and 2x2 beyond that.
 
-- When evaluating the image of the source galaxy, no over-sampling (e.g. a 1 x 1 subgrid) is performed but instead
-cored light profiles for the source are used which can be evaluated accurate without over-sampling.
+- The outer regions retain 2x2 over-sampling (they never drop to 1x1) because the lensed source's light appears far
+from the image centre. Compact source profiles, such as the Gaussians of a Multi Gaussian Expansion (MGE), are not
+evaluated accurately with a single evaluation per pixel, and the resulting aliasing produces small-scale structure
+in the likelihood which degrades gradient-based non-linear searches.
 
 This guide will explain why these choices were made for the default over-sampling behaviour.
 
@@ -404,10 +406,12 @@ __Default Ray Tracing__
 By assuming the lens galaxy is near (0.0", 0.0"), it was simple to set up an adaptive over sampling grid which is
 applicable to all strong lens dataset.
 
-An adaptive oversampling grid cannot be defined for the lensed source because its light appears in different regions of 
-the image plane for each dataset. For this reason, most workspace examples utilize cored light profiles for the 
-source galaxy. Cored light profiles change gradually in their central regions, allowing accurate evaluation without 
-requiring oversampling.
+An adaptive oversampling grid cannot be defined for the lensed source because its light appears in different regions of
+the image plane for each dataset. For this reason, the adaptive schemes used throughout the workspace never drop
+below 2x2 over-sampling in their outer regions, so the lensed source is always evaluated with at least a 2x2 sub-grid
+wherever its arcs fall. This matters most for compact source profiles, such as the Gaussians of a Multi Gaussian
+Expansion (MGE): evaluating them once per pixel produces aliasing which puts small-scale structure on the likelihood
+surface, degrading the performance of gradient-based non-linear searches.
 
 __Adaptive Over Sampling__
 

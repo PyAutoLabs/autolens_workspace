@@ -479,8 +479,8 @@ over sampling to ensure the lensed images are evaluated accurately.
 For a new user, the details of over-sampling are not important, therefore just be aware that calculations either:
 
  (i) use adaptive over sampling for the foregorund lens's light, which ensures high accuracy across.
- (ii) use cored light profiles for the background source galaxy, where the core ensures low levels of over-sampling
- produce numerically accurate but fast to compute results.
+ (ii) retain 2x2 over sampling in the outer regions of the image, where the lensed source's light appears,
+ ensuring compact source profiles (e.g. a Multi Gaussian Expansion) are evaluated accurately.
 
 Over sampling at each galaxy centre (both main lens galaxies and extra galaxies) is performed to ensure the lens
 calculations are accurate across the full field of the group.
@@ -492,7 +492,7 @@ all_centres = list(main_lens_centres) + list(extra_galaxies_centres)
 
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,
-    sub_size_list=[4, 2, 1],
+    sub_size_list=[4, 2, 2],
     radial_list=[0.3, 0.6],
     centre_list=all_centres,
 )

@@ -122,7 +122,7 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
 
     over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
         grid=dataset.grid,
-        sub_size_list=[4, 2, 1],
+        sub_size_list=[4, 2, 2],
         radial_list=[0.3, 0.6],
         centre_list=[(0.0, 0.0)],
     )
