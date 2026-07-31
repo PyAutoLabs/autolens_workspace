@@ -327,8 +327,8 @@ Where to go next:
 
  - `multi_galaxy/features/pixelization/fit.py` — the same pixelization without a search, where the inversion can
    be inspected directly.
+ - `multi_galaxy/features/pixelization/adaptive.py` — the adaptive mesh and regularization schemes.
+ - `multi_galaxy/features/pixelization/delaunay.py` — the Delaunay meshes.
  - `multi_galaxy/slam.py` — the SLaM pipeline, whose later stages use a pixelized source.
- - `imaging/features/pixelization` — the galaxy-scale walkthrough, with the full mesh and regularization API,
-   adaptive meshes, Delaunay meshes and CPU-fast modeling. Those variants are not yet written for this package;
-   they apply with the single lens galaxy swapped for this package's `lens_0`, `lens_1`, ... loop.
+ - `imaging/features/pixelization` — the galaxy-scale walkthrough, with the full mesh and regularization API.
 """

@@ -10,26 +10,30 @@ on every deflector rather than on a single lens.
 
 - `modeling`: Multi-galaxy lens modeling using a pixelized source reconstruction.
 - `fit`: Fit a multi-galaxy lens with a pixelized source without a non-linear search, and inspect the inversion.
+- `likelihood_function`: Step-by-step walkthrough of the pixelized log likelihood function.
+- `adaptive`: The adaptive mesh and adaptive regularization, set up by chaining four searches.
+- `delaunay`: A Delaunay triangulation mesh, and the split regularization schemes it supports.
+- `cpu_fast_modeling`: Fast pixelized modeling on the CPU, using sparse operators instead of JAX.
+- `source_science`: Source flux, magnification and errors measured from the reconstruction.
+- `slam`: The SLaM pipeline, with the pixelization choices its SOURCE PIX stages make written out.
+- `plot`: Plotting a pixelized fit's inversion, mappers and mesh grids.
 
 # Mesh and Regularization
 
-The examples use a `RectangularAdaptDensity` or `RectangularUniform` mesh with `Constant` regularization. Two
-pairings do not work and raise rather than fail silently:
+The rectangular meshes (`RectangularUniform`, `RectangularAdaptDensity`, `RectangularAdaptImage`) are used by
+`modeling`, `fit`, `adaptive`, `cpu_fast_modeling` and `slam`; `delaunay` uses the `Delaunay` mesh.
 
-- `AdaptSplit` regularization requires split-cross mappings that the rectangular meshes do not provide. Use a
-  Delaunay mesh for the split schemes.
-- The `Adapt` regularization schemes require adapt-images, which are derived from a previous model-fit. They are
-  used in `multi_galaxy/slam.py`, where an earlier stage provides them.
+Two constraints govern which regularization pairs with which mesh, and both fail loudly rather than silently:
 
-# Not yet written
-
-The following are present in `imaging/features/pixelization` but not yet here: `adaptive`, `delaunay`,
-`cpu_fast_modeling`, `slam`, `source_science` and `plot`. Until they land, those scripts apply with the single
-lens galaxy swapped for the `lens_0`, `lens_1`, ... loop of this package.
+- The split schemes (`ConstantSplit`, `AdaptSplit`) require split-cross mappings that the rectangular meshes do
+  not provide, and raise a `PixelizationException` against them. Use a Delaunay mesh — see `delaunay`.
+- The `Adapt` schemes require adapt-images, which are derived from a previous model-fit. `adaptive` and `slam`
+  produce their own within the script; a standalone fit uses `Constant` instead.
 
 # Related
 
 - `multi_galaxy/modeling`: the multi-galaxy lens model these scripts extend.
+- `multi_galaxy/slam`: the baseline SLaM pipeline, which this folder's `slam` diffs against.
 - `imaging/features/pixelization`: the galaxy-scale walkthrough, with the full mesh and regularization API.
 
 # Results

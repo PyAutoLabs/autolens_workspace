@@ -21,6 +21,15 @@ deflectors rather than one lens galaxy.
   outside the image, so the parameter saving is 4 rather than the 8 the light removed — and the 4 that came back
   are degenerate with the mass split.
 
+- **`multi_gaussian_expansion`** — one MGE basis per co-dominant deflector, with the over-sampling applied at
+  every deflector's centre. The MGE is already the default in `multi_galaxy/modeling`, so this folder is not
+  introducing it; it is the variations walkthrough, on a dataset whose deflectors have twisted, two-component
+  light.
+
+- **`pixelization`** — the source reconstructed on a mesh of pixels solved by linear algebra, instead of an
+  analytic profile. Covers the rectangular and Delaunay meshes, the adaptive mesh and regularization schemes,
+  the CPU sparse-operator route, and the SLaM pipeline's pixelization choices.
+
 # Galaxy tiers
 
 The core scripts have no galaxy tiers — every deflector is co-dominant. Two extensions add galaxies *below*
@@ -85,9 +94,9 @@ before releasing them, and scales its live points with the deflector count.
 
 # Not yet written
 
-Feature folders present in `group/features` and `imaging/features` but not yet in this package:
-`multi_gaussian_expansion`, `pixelization`, and the `advanced/` subtree (operated light profiles, shapelets, sky
-background, double source plane lenses, stellar-and-dark mass decomposition, subhalo detection).
+Feature folders present in `group/features` and `imaging/features` but not yet in this package: the `advanced/`
+subtree (operated light profiles, shapelets, sky background, double source plane lenses, stellar-and-dark mass
+decomposition, subhalo detection).
 
 Until they land, the corresponding `imaging/features` scripts apply with the single lens galaxy swapped for the
 `lens_0`, `lens_1`, ... loop of this package.
