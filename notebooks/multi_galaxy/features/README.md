@@ -106,12 +106,17 @@ goals, rather than part of the default model:
 - **`advanced/sky_background`** — the residual sky fitted as a `DatasetModel` rather than assumed zero. One sky
   across an image with two bright galaxies is a shared systematic that both light models absorb.
 
+- **`advanced/double_source_plane_lens`** — two source galaxies at different redshifts, appearing as two
+  distinct Einstein rings. The second ring helps with the mass split, but because its images sample the
+  deflection field at different sky positions, not because of the extra redshift — the extra redshift is what
+  constrains cosmology.
+
 See `advanced/README.md` for the full inventory.
 
 # Not yet written
 
 Feature folders present in `group/features` and `imaging/features` but not yet in this package: the remaining
-`advanced/` folders — `double_source_plane_lens`, `mass_stellar_dark` and `subhalo`.
+`advanced/` folders — `mass_stellar_dark` and `subhalo`.
 
 Until they land, the corresponding `imaging/features` scripts apply with the single lens galaxy swapped for the
 `lens_0`, `lens_1`, ... loop of this package.

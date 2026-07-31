@@ -6030,6 +6030,162 @@
   },
   {
     "contents": [
+      "Prerequisites",
+      "Dataset",
+      "Centres",
+      "Paths",
+      "Masking (Search 1)",
+      "Model (Search 1)",
+      "Search + Analysis + Model-Fit (Search 1)",
+      "Masking (Search 2)",
+      "Model (Search 2)",
+      "Search + Analysis + Model-Fit (Search 2)",
+      "Result",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/double_source_plane_lens/chaining.py",
+      "modeling.py",
+      "multi_galaxy/features/advanced/double_source_plane_lens/modeling.py",
+      "multi_galaxy/features/advanced/double_source_plane_lens/slam.py",
+      "multi_galaxy/modeling.py",
+      "slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/double_source_plane_lens/chaining.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/double_source_plane_lens/chaining.py",
+    "summary": "This script fits a multi-galaxy double source-plane lens with **two chained searches**, which is how you would fit one on real data. `modeling.py` in this folder does it in one search, but only by initialising priors at their true values.",
+    "title": "Chaining: DSPL (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "Mask",
+      "Centres",
+      "Over Sampling",
+      "MGE Bases",
+      "Galaxies",
+      "Tracer",
+      "Fit",
+      "Multi-Plane Ray-Tracing",
+      "Basis Images",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/double_source_plane_lens/fit.py",
+      "multi_galaxy/features/advanced/double_source_plane_lens/likelihood_function.py",
+      "multi_galaxy/features/advanced/double_source_plane_lens/modeling.py",
+      "multi_galaxy/fit.py",
+      "simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/double_source_plane_lens/fit.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/double_source_plane_lens/fit.py",
+    "summary": "This script fits a multi-galaxy double source-plane lens without a non-linear search, so the multi-plane tracer and the objects it produces can be inspected directly.",
+    "title": "Fits: DSPL (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "What Changes",
+      "Dataset, Mask & Over Sampling",
+      "Galaxies",
+      "Multi-Plane Ray-Tracing",
+      "Source-Plane Images",
+      "Image Assembly",
+      "Likelihood",
+      "Fit",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/double_source_plane_lens/likelihood_function.py",
+      "multi_galaxy/features/advanced/double_source_plane_lens/fit.py",
+      "multi_galaxy/likelihood_function.py",
+      "simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/double_source_plane_lens/likelihood_function.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/double_source_plane_lens/likelihood_function.py",
+    "summary": "This script walks through the log likelihood function of a multi-galaxy double source-plane lens, step by step, so the calculation can be followed without reading the source code.",
+    "title": "__Log Likelihood Function: DSPL (Multi Galaxy)__"
+  },
+  {
+    "contents": [
+      "Why Two Source Planes Help Here",
+      "Model",
+      "Dataset, Mask & Over Sampling",
+      "Model Composition",
+      "Model Cookbook",
+      "Cheating",
+      "Cosmology",
+      "Search & Analysis",
+      "Run Time",
+      "VRAM",
+      "Result",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "chaining.py",
+      "imaging/features/advanced/double_source_plane_lens/modeling.py",
+      "multi_galaxy/features/advanced/double_source_plane_lens/chaining.py",
+      "multi_galaxy/features/advanced/double_source_plane_lens/fit.py",
+      "multi_galaxy/features/advanced/double_source_plane_lens/slam.py",
+      "multi_galaxy/modeling.py",
+      "simulator.py",
+      "slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/double_source_plane_lens/modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/double_source_plane_lens/modeling.py",
+    "summary": "A double source-plane lens (DSPL) is a strong lens with two source galaxies at different redshifts behind the same deflector. They appear as two distinct Einstein rings in the image plane, and can constrain cosmological parameters in a way single-ring lenses cannot.",
+    "title": "Modeling Features: DSPL (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Dataset Paths",
+      "Grid",
+      "Galaxy Centres",
+      "Over Sampling",
+      "PSF Convolution",
+      "Main Lens Galaxies",
+      "External Shear",
+      "Source Galaxies",
+      "Ray Tracing",
+      "Dataset",
+      "Visualize",
+      "Tracer json",
+      "Centre JSON Files"
+    ],
+    "cross_refs": [
+      "imaging/features/advanced/double_source_plane_lens/simulator.py",
+      "modeling.py",
+      "multi_galaxy/simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/double_source_plane_lens/simulator.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/double_source_plane_lens/simulator.py",
+    "summary": "A double source-plane lens (DSPL) is a strong lens with **two source galaxies at different redshifts** behind the same deflector. They appear as two distinct Einstein rings in the image plane.",
+    "title": "Simulator: DSPL (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Helpers",
+      "Source LP Pipeline 1 & 2",
+      "Source Pix Pipeline 1 & 2",
+      "Light LP Pipeline",
+      "Mass Total Pipeline",
+      "Dataset, Centres, Masks",
+      "Mesh Shape",
+      "SLaM Pipeline"
+    ],
+    "cross_refs": [
+      "chaining.py",
+      "modeling.py",
+      "multi_galaxy/features/advanced/double_source_plane_lens/chaining.py",
+      "multi_galaxy/features/advanced/double_source_plane_lens/modeling.py",
+      "multi_galaxy/slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/double_source_plane_lens/slam.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/double_source_plane_lens/slam.py",
+    "summary": "The SLaM pipeline for a multi-galaxy double source-plane lens.",
+    "title": "SLaM (Source, Light and Mass): DSPL (Multi Galaxy)"
+  },
+  {
+    "contents": [
       "Advantages",
       "Disadvantages",
       "Positive Only Solver",
