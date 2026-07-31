@@ -1677,7 +1677,17 @@
     "title": "Galaxies"
   },
   {
-    "contents": [],
+    "contents": [
+      "HPC Output Path",
+      "HPC Dataset Path",
+      "HPC Home Path",
+      "Batch Script: Many Datasets (Array Job)",
+      "Dataset",
+      "Batch Script: Single Dataset with Multiple CPUs",
+      "Nautilus CPUs",
+      "Lens Modeling",
+      "GPU Jobs"
+    ],
     "cross_refs": [
       "PROJECT_PATH/scripts/guides/hpc/example_cpu_and_gpu.py"
     ],
