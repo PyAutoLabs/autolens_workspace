@@ -11,11 +11,14 @@ the lens has two co-dominant deflectors rather than one lens galaxy.
 - `shapelets`: A shapelet basis for a galaxy's light, flexible enough to describe disturbed and asymmetric
   morphology.
 - `sky_background`: Fitting the uniform sky level alongside the lens model, rather than assuming it is zero.
+- `double_source_plane_lens`: Two source galaxies at different redshifts behind the pair, appearing as two
+  distinct Einstein rings. The second ring's images sample the deflection field where the first's do not, which
+  is what constrains the mass split.
 
 # Not yet written
 
 Present in `group/features/advanced` and `imaging/features/advanced` but not yet here:
-`double_source_plane_lens`, `mass_stellar_dark` and `subhalo`. Until they land, the corresponding
+`mass_stellar_dark` and `subhalo`. Until they land, the corresponding
 `imaging/features/advanced` scripts apply with the single lens galaxy swapped for the `lens_0`, `lens_1`, ... loop
 of this package.
 

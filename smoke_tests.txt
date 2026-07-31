@@ -35,6 +35,11 @@ multi_galaxy/features/pixelization/cpu_fast_modeling.py
 multi_galaxy/features/advanced/operated_light_profile/modeling.py
 multi_galaxy/features/advanced/shapelets/modeling.py
 multi_galaxy/features/advanced/sky_background/modeling.py
+# The DSPL entry covers multi-plane ray tracing with more than one deflector, which nothing else
+# in this suite reaches. chaining.py is registered too: it is the two-mask workflow real data
+# needs, and it exercises a result-chained model across two searches that modeling.py does not.
+multi_galaxy/features/advanced/double_source_plane_lens/modeling.py
+multi_galaxy/features/advanced/double_source_plane_lens/chaining.py
 imaging/features/scaling_relation/modeling.py
 # multi_dataset/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1
 multi_dataset/modeling.py
