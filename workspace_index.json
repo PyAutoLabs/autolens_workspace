@@ -6452,11 +6452,15 @@
   {
     "contents": [
       "Advantages",
+      "Disadvantages",
+      "Positive Only Solver",
       "Model",
       "Dataset, Mask & Over Sampling",
       "Positions",
       "Model Composition",
       "Search & Analysis",
+      "Run Time",
+      "VRAM",
       "Result",
       "Wrap Up"
     ],

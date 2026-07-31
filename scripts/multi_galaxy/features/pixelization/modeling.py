@@ -9,11 +9,15 @@ analytic profile.
 __Contents__
 
 - **Advantages:** Why a pixelized source is used.
+- **Disadvantages:** The costs of a pixelized source.
+- **Positive Only Solver:** Why source pixel fluxes are constrained to be positive.
 - **Model:** Compose the lens model fitted to the data.
 - **Dataset, Mask & Over Sampling:** Standard set up.
 - **Positions:** The constraint that compensates, and why it is not optional here.
 - **Model Composition:** One `lens_i` per deflector, plus a pixelized source.
 - **Search & Analysis:** Configure the fit.
+- **Run Time:** Profiling the expected run time of the model-fit.
+- **VRAM:** GPU memory used by a pixelized model-fit.
 - **Result:** What to check.
 - **Wrap Up:** Where to go next.
 
@@ -26,6 +30,26 @@ can reconstruct essentially any morphology.
 
 This is why `multi_galaxy/slam.py` moves to a pixelized source for its final stages, and why the galaxy-scale
 guidance is to adopt one as soon as your mass model is good enough to support it.
+
+__Disadvantages__
+
+A pixelized source is slower to evaluate than an analytic light profile, because every likelihood evaluation
+performs a linear inversion whose size scales with the number of source pixels. It also uses considerably more
+GPU memory (see __VRAM__ below).
+
+The reconstruction is regularized, and the regularization coefficient is a free parameter which must be fitted.
+Too little regularization over-fits the noise, too much over-smooths the source.
+
+__Positive Only Solver__
+
+Many codes which use linear algebra rely on a solver which allows positive and negative values in the solution
+(e.g. `np.linalg.solve`), because they are computationally fast.
+
+This is problematic, as it means negative surface brightness values can be used to represent a galaxy's light,
+which is unphysical. For a pixelization this often produces negative source pixels which over-fit the data.
+
+All pixelized source reconstructions use a positive-only solver, so every source pixel reconstructs positive flux
+only. This ensures the source reconstruction is physical.
 
 __Model__
 
@@ -54,6 +78,11 @@ __Dataset__
 
 The `simple` multi-galaxy dataset — the same co-dominant pair fitted by `multi_galaxy/modeling.py`, so the two
 fits are directly comparable.
+
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
 """
 dataset_name = "simple"
 dataset_path = Path("dataset", "multi_galaxy", dataset_name)
@@ -217,6 +246,12 @@ Note the source contributes only the regularization parameters — its ~784 pixe
 print(model.info)
 
 """
+__Model Cookbook__
+
+A full description of model composition is provided by the model cookbook:
+
+https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
+
 __Search__
 
 The lens model is fitted using the nested sampling algorithm Nautilus, with 200 live points as in
@@ -246,6 +281,29 @@ analysis = al.AnalysisImaging(
         al.PositionsLH(positions=positions, threshold=0.3)
     ],
 )
+
+"""
+__Run Time__
+
+Run times are discussed in full in `multi_galaxy/modeling.py`.
+
+A pixelized source is slower per likelihood evaluation than an analytic source, because each evaluation performs a
+linear inversion over the source mesh. The cost scales with the number of source pixels, so the `mesh_shape` set
+above is the main run-time dial in this script.
+
+__VRAM__
+
+The `multi_galaxy/modeling.py` example explains how VRAM is used during GPU-based fitting and how to print the
+estimated VRAM required by a model.
+
+Pixelizations use considerably more VRAM than light-profile-only models, with the amount depending on the size of
+the dataset and the number of source pixels in the mesh. Reducing the search's batch size lowers VRAM use at the
+cost of run time.
+
+The method below prints the VRAM estimate for this analysis and model. It takes 20-30 seconds, so comment it out
+once you are familiar with your GPU's limits.
+"""
+# analysis.print_vram_use(model=model, batch_size=search.batch_size)
 
 """
 __Model-Fit__
