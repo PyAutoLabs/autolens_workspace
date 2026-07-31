@@ -92,11 +92,26 @@ difference from that script, which in turn documents only its difference from `g
 want. Here it is not: every stage loops over deflectors, carries a separate `shear_galaxy`, anchors mass centres
 before releasing them, and scales its live points with the deflector count.
 
+# Advanced
+
+`advanced/` holds the more specialised features — useful for particular kinds of data or particular science
+goals, rather than part of the default model:
+
+- **`advanced/operated_light_profile`** — a PSF-convolved point source per deflector, for a lens whose galaxies
+  host AGN. An unmodelled nucleus in one of two deflectors is absorbed asymmetrically by the two light models.
+
+- **`advanced/shapelets`** — a shapelet basis for the source, describing clumps and asymmetry at the cost of no
+  extra non-linear parameters. The deflectors keep their MGEs, for the reason that folder's README gives.
+
+- **`advanced/sky_background`** — the residual sky fitted as a `DatasetModel` rather than assumed zero. One sky
+  across an image with two bright galaxies is a shared systematic that both light models absorb.
+
+See `advanced/README.md` for the full inventory.
+
 # Not yet written
 
-Feature folders present in `group/features` and `imaging/features` but not yet in this package: the `advanced/`
-subtree (operated light profiles, shapelets, sky background, double source plane lenses, stellar-and-dark mass
-decomposition, subhalo detection).
+Feature folders present in `group/features` and `imaging/features` but not yet in this package: the remaining
+`advanced/` folders — `double_source_plane_lens`, `mass_stellar_dark` and `subhalo`.
 
 Until they land, the corresponding `imaging/features` scripts apply with the single lens galaxy swapped for the
 `lens_0`, `lens_1`, ... loop of this package.

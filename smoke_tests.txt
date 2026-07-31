@@ -28,6 +28,13 @@ multi_galaxy/features/pixelization/modeling.py
 # imaging/features/pixelization/delaunay.py below already covers the Delaunay inversion.
 multi_galaxy/features/pixelization/adaptive.py
 multi_galaxy/features/pixelization/cpu_fast_modeling.py
+# The three advanced-light code paths, none of which any other entry in this suite reaches:
+# operated (non-PSF-convolved) profiles, the shapelet basis with the positive-negative solver,
+# and a DatasetModel sky. Each folder's fit.py / simulator.py is left out — the modeling.py
+# entry exercises the same API and auto-simulates the dataset.
+multi_galaxy/features/advanced/operated_light_profile/modeling.py
+multi_galaxy/features/advanced/shapelets/modeling.py
+multi_galaxy/features/advanced/sky_background/modeling.py
 imaging/features/scaling_relation/modeling.py
 # multi_dataset/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1
 multi_dataset/modeling.py
