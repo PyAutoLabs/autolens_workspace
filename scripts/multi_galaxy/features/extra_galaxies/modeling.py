@@ -320,6 +320,17 @@ search = af.Nautilus(
 analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 """
+__VRAM__
+
+The `multi_galaxy/modeling.py` example explains how VRAM is used during GPU-based fitting and how to print the
+estimated VRAM required by a model.
+
+The method below prints the VRAM estimate for this analysis and model. It takes 20-30 seconds, so comment it out
+once you are familiar with your GPU's limits.
+"""
+# analysis.print_vram_use(model=model, batch_size=search.batch_size)
+
+"""
 __Run Time__
 
 Adding extra galaxies increases the likelihood evaluation time, because each perturber's light profile image

@@ -6294,6 +6294,7 @@
       "Positions"
     ],
     "cross_refs": [
+      "multi_galaxy/simulator.ipynb",
       "multi_galaxy/simulator.py"
     ],
     "notebook": "notebooks/multi_galaxy/features/multi_gaussian_expansion/simulator.ipynb",
@@ -6396,6 +6397,7 @@
       "imaging/features/no_lens_light/simulator.py",
       "modeling.py",
       "multi_galaxy/modeling.py",
+      "multi_galaxy/simulator.ipynb",
       "multi_galaxy/simulator.py",
       "slam.py"
     ],

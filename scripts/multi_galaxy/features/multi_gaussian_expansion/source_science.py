@@ -48,6 +48,11 @@ import autolens.plot as aplt
 __Dataset__
 
 The `mge` dataset — the co-dominant pair with twisted two-component light.
+
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script.
 """
 dataset_name = "mge"
 dataset_path = Path("dataset", "multi_galaxy", dataset_name)

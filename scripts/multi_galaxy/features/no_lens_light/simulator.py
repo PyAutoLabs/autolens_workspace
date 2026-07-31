@@ -35,6 +35,10 @@ __Contents__
 - **Centre JSON Files:** Save the centres of the two deflectors as a JSON file.
 - **Positions:** Solve for and save the lensed positions of the source.
 
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `multi_galaxy/simulator.ipynb` notebook.
+
 __No Extra Galaxy__
 
 Unlike the `simple` dataset, no faint contaminating galaxy is included here. In `simple` the extra galaxy exists so
