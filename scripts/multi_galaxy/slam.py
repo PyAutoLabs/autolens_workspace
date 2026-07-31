@@ -24,6 +24,11 @@ __Contents__
 - **Mask & Over Sampling:** The standard 3.0" mask, over-sampled at every deflector.
 - **SLaM Pipeline:** Run the five stages in order.
 
+__Prerequisites__
+
+Read `guides/modeling/slam_start_here` first: it describes what the five SLaM stages are and why they are chained
+in this order. This script documents only what differs.
+
 __Why A Regime Baseline Exists__
 
 `imaging/` has no top-level `slam.py`: its feature pipelines diff directly against
@@ -635,7 +640,7 @@ redshift_lens = 0.5
 redshift_source = 1.0
 
 """
-__Mesh__
+__Mesh Shape__
 
 The pixelization mesh and regularization used by the SOURCE PIX searches, discussed in
 `imaging/features/pixelization`.

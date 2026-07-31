@@ -96,6 +96,17 @@ This is not an argument against the MGE — the Sersic comparison above settles 
 this regime. A positive-negative solver on a system with a condition number of ~1e24 and near-degenerate columns
 will happily produce one galaxy with large positive Gaussians and its neighbour with compensating negative ones.
 
+__Positive Only Solver__
+
+Many codes which use linear algebra rely on a solver which allows positive and negative values in the solution
+(e.g. `np.linalg.solve`), because they are computationally fast.
+
+This is problematic, as it means negative surface brightness values can be used to represent a galaxy's light,
+which is unphysical. For an MGE it produces a positive-negative "ringing", where the Gaussians alternate between
+large positive and negative values.
+
+All MGE light profiles use a positive-only solver, so every Gaussian's solved intensity is positive.
+
 __Model__
 
 This script fits an `Imaging` dataset of a 'multi-galaxy' strong lens where:
@@ -204,6 +215,12 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
 dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
 
 """
+__Model Cookbook__
+
+A full description of model composition is provided by the model cookbook:
+
+https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
+
 __How Many Gaussians__
 
 `total_gaussians` is the one MGE knob worth thinking about, and the measurement above answers it for this dataset:
@@ -320,6 +337,25 @@ analysis = al.AnalysisImaging(
     dataset=dataset,
     use_jax=True,
 )
+
+"""
+__Run Time__
+
+Run times are discussed in full in `multi_galaxy/modeling.py`.
+
+An MGE evaluates many more light profiles per likelihood call than a single Sersic (20 Gaussians per deflector
+here), so each evaluation is slower. This is offset by the simpler parameter space, which converges in fewer
+evaluations.
+
+__VRAM__
+
+The `multi_galaxy/modeling.py` example explains how VRAM is used during GPU-based fitting and how to print the
+estimated VRAM required by a model.
+
+The method below prints the VRAM estimate for this analysis and model. It takes 20-30 seconds, so comment it out
+once you are familiar with your GPU's limits.
+"""
+# analysis.print_vram_use(model=model, batch_size=search.batch_size)
 
 """
 __Model-Fit__

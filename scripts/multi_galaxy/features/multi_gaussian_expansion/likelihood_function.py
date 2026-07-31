@@ -51,7 +51,7 @@ import autolens as al
 import autolens.plot as aplt
 
 """
-__Dataset, Mask & Over Sampling__
+__Dataset__
 
 The `mge` dataset — the co-dominant pair with twisted two-component light.
 """

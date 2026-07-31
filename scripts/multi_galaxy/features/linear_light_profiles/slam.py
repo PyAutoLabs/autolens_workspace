@@ -18,6 +18,11 @@ __Contents__
 - **Dataset, Centres, Mask:** Set up, identical to the baseline.
 - **SLaM Pipeline:** Run the five stages in order.
 
+__Prerequisites__
+
+Read `guides/modeling/slam_start_here` first: it describes what the five SLaM stages are and why they are chained
+in this order. This script documents only what differs.
+
 __What Changes__
 
 One thing: `al.model_util.mge_model_from(...)` becomes `af.Model(al.lp_linear.Sersic)`. Every stage, every
@@ -528,7 +533,7 @@ redshift_lens = 0.5
 redshift_source = 1.0
 
 """
-__Mesh__
+__Mesh Shape__
 """
 mesh_pixels_yx = 28
 mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)

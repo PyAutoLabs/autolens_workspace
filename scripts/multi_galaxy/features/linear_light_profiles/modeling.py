@@ -65,6 +65,16 @@ likelihood, including negative ones. A negative intensity is not physical, and w
 telling you the model is wrong somewhere else. In a multi-galaxy fit the common cause is one deflector's profile
 being flexible enough to over-subtract into its neighbour. Check for it; do not ignore it.
 
+__Positive Only Solver__
+
+Many codes which use linear algebra rely on a solver which allows positive and negative values in the solution
+(e.g. `np.linalg.solve`), because they are computationally fast.
+
+This is problematic, as it means negative surface brightness values can be used to represent a galaxy's light,
+which is unphysical.
+
+All linear light profiles use a positive-only solver, so every solved intensity is positive.
+
 __Model__
 
 This script fits an `Imaging` dataset of a 'multi-galaxy' strong lens where:
@@ -187,6 +197,12 @@ over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
 dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
 
 """
+__Model Cookbook__
+
+A full description of model composition is provided by the model cookbook:
+
+https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
+
 __Model Composition__
 
 The composition is that of `multi_galaxy/modeling.py` with the MGE bases replaced by single `lp_linear.Sersic`
@@ -280,6 +296,25 @@ analysis = al.AnalysisImaging(
     dataset=dataset,
     use_jax=True,
 )
+
+"""
+__Run Time__
+
+Run times are discussed in full in `multi_galaxy/modeling.py`.
+
+Linear light profiles are slower per likelihood evaluation than standard profiles, because each evaluation solves
+a linear inversion for the intensities. This is offset by the reduced dimensionality of the parameter space, so
+the total run time is comparable.
+
+__VRAM__
+
+The `multi_galaxy/modeling.py` example explains how VRAM is used during GPU-based fitting and how to print the
+estimated VRAM required by a model.
+
+The method below prints the VRAM estimate for this analysis and model. It takes 20-30 seconds, so comment it out
+once you are familiar with your GPU's limits.
+"""
+# analysis.print_vram_use(model=model, batch_size=search.batch_size)
 
 """
 __Model-Fit__

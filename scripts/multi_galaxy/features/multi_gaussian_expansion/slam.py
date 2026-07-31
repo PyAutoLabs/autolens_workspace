@@ -8,6 +8,11 @@ this folder's `simulator.py`.
 This script documents only how it differs from `multi_galaxy/slam.py`, the multi-galaxy SLaM baseline. Read that
 first, and `guides/modeling/slam_start_here` before it.
 
+__Prerequisites__
+
+Read `guides/modeling/slam_start_here` first: it describes what the five SLaM stages are and why they are chained
+in this order. This script documents only what differs.
+
 __What Changes__
 
 Two things, and it is worth being plain that neither is "the MGE".
@@ -506,7 +511,7 @@ redshift_lens = 0.5
 redshift_source = 1.0
 
 """
-__Mesh__
+__Mesh Shape__
 """
 mesh_shape = (28, 28)
 

@@ -186,6 +186,12 @@ as the model smaller.
 The source galaxy uses a cored light profile (`SersicCore` in the simulation, an MGE in the model) which varies
 gradually in its centre, so it does not require heavy over-sampling either.
 
+__Model Cookbook__
+
+A full description of model composition is provided by the model cookbook:
+
+https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
+
 __Model Composition__
 
 We compose the lens model with one entry per co-dominant deflector, in a loop over the centres, exactly as
@@ -286,6 +292,17 @@ analysis = al.AnalysisImaging(
     dataset=dataset,
     use_jax=True,
 )
+
+"""
+__VRAM__
+
+The `multi_galaxy/modeling.py` example explains how VRAM is used during GPU-based fitting and how to print the
+estimated VRAM required by a model.
+
+The method below prints the VRAM estimate for this analysis and model. It takes 20-30 seconds, so comment it out
+once you are familiar with your GPU's limits.
+"""
+# analysis.print_vram_use(model=model, batch_size=search.batch_size)
 
 """
 __Run Time__

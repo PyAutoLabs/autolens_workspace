@@ -39,6 +39,10 @@ __Contents__
 - **Centre JSON Files:** Save the deflector centres.
 - **Positions:** Solve for the lensed source positions.
 
+__Start Here Notebook__
+
+If any code in this script is unclear, refer to the `multi_galaxy/simulator.ipynb` notebook.
+
 __Why Two Components And Not A Truly Irregular Profile__
 
 The truth here is still a sum of analytic profiles, because a dataset whose truth cannot be written down is a poor
