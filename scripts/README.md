@@ -8,7 +8,7 @@ you should go into next if you are unsure.
 
 # Folders
 
-- `guides`: Step-by-step guides illustrating many important things, inculding the core API, analysing modeling results and much more.
+- `guides`: Step-by-step guides illustrating many important things, including the core API, analysing modeling results and much more.
 - `imaging`: Examples for galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, Euclid).
 - `interferometer`: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA).
 - `point_source`: Examples for strong lens point source datasets.
@@ -16,6 +16,7 @@ you should go into next if you are unsure.
 - `group`: Examples for group scale strong lenses.
 - `cluster`: Examples for cluster scale strong lenses.
 - `multi_dataset`: Examples for multiple datasets simultaneously (E.g. multi-wavelength imaging, imaging and interferometry).
+- `weak`: Examples for weak lensing analysis.
 
 The **HowToLens** tutorial lecture series — which teaches inexperienced scientists what strong lensing is and how to
 use **PyAutoLens** — ships as a separate repository: <https://github.com/PyAutoLabs/HowToLens>.
