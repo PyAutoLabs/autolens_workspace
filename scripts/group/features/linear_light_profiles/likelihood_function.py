@@ -135,14 +135,21 @@ lens_galaxy = al.Galaxy(
 __Extra Galaxies__
 
 The two extra galaxies are companion galaxies near the main lens. They each have linear SersicSph light
-profiles and isothermal mass profiles.
+profiles and tidally truncated dPIE mass profiles.
 """
 extra_galaxy_0 = al.Galaxy(
     redshift=0.5,
     bulge=al.lp_linear.SersicSph(
         centre=(3.5, 2.5), effective_radius=0.8, sersic_index=3.0
     ),
-    mass=al.mp.IsothermalSph(centre=(3.5, 2.5), einstein_radius=0.8),
+    mass=al.mp.dPIEMassSph(
+        centre=(3.5, 2.5),
+        sigma=212.0,
+        r_core=0.0,
+        r_cut=10.0,
+        redshift_object=0.5,
+        redshift_source=1.0,
+    ),
 )
 
 extra_galaxy_1 = al.Galaxy(
@@ -150,7 +157,14 @@ extra_galaxy_1 = al.Galaxy(
     bulge=al.lp_linear.SersicSph(
         centre=(-4.4, -5.0), effective_radius=0.8, sersic_index=3.0
     ),
-    mass=al.mp.IsothermalSph(centre=(-4.4, -5.0), einstein_radius=1.0),
+    mass=al.mp.dPIEMassSph(
+        centre=(-4.4, -5.0),
+        sigma=239.0,
+        r_core=0.0,
+        r_cut=10.0,
+        redshift_object=0.5,
+        redshift_source=1.0,
+    ),
 )
 
 """

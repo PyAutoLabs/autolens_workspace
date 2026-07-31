@@ -359,6 +359,15 @@ The number of free parameters and therefore the dimensionality of non-linear par
 
 Extra galaxy mass profiles often to go unphysically high `einstein_radius` values, degrading the fit. The 
 `einstein_radius` parameter is set a `UniformPrior` with an upper limit of 0.1" to prevent this.
+
+__Untruncated Profiles (Galaxy Scale) vs Truncated dPIE (Group / Cluster Scale)__
+
+The extra galaxies here use the **untruncated** `IsothermalSph` profile — the PyAutoLens-native
+parameterization. This is the right choice at galaxy scale: with no group- or cluster-scale host environment,
+there is no tidal stripping to encode in the profile. At group and cluster scale the convention flips — member
+galaxies are modeled as tidally truncated `dPIEMassSph` profiles (see `group/modeling.py` and
+`cluster/modeling.py`), whose `r_cut` truncation encodes the stripping of a member's outer dark matter by the
+shared host potential.
 """
 # Extra Galaxies:
 

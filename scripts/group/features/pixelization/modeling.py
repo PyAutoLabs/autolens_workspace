@@ -10,8 +10,9 @@ morphology is often complex, with multiple extended arcs and counter-images prod
 several galaxies. A parametric source model (e.g. Sersic or MGE) may struggle to capture these features,
 whereas a pixelized mesh can reconstruct arbitrarily complex source-plane emission.
 
-The main lens galaxies and extra galaxies are modeled with MGE light profiles (via ``al.model_util.mge_model_from``)
-and Isothermal mass profiles, following the standard group modeling pattern. The source galaxy uses a
+The main lens galaxies and extra galaxies are modeled with MGE light profiles (via ``al.model_util.mge_model_from``),
+with Isothermal mass for the main lenses and tidally truncated ``dPIEMassSph`` mass for the extra galaxies,
+following the standard group modeling pattern. The source galaxy uses a
 Delaunay pixelization with ConstantSplit regularization (`AdaptSplit` requires adapt data from a
 prior search and is wired up later by the SLaM pipeline — see `scripts/group/slam.py`).
 
@@ -30,7 +31,7 @@ __Example__
 This script fits an `Imaging` dataset of a 'group-scale' strong lens where:
 
  - There is a main lens galaxy whose light is an MGE and total mass is `Isothermal` with `ExternalShear`.
- - There are two extra lens galaxies with MGE light and `IsothermalSph` mass, centres fixed.
+ - There are two extra lens galaxies with MGE light and tidally truncated `dPIEMassSph` mass, centres fixed.
  - The source galaxy's light is reconstructed using a `Delaunay` mesh with `ConstantSplit` regularization.
 """
 
@@ -132,7 +133,7 @@ __Model__
 We compose a group lens model where:
 
  - Each main lens galaxy has MGE light and Isothermal mass. Only lens_0 carries ExternalShear.
- - Each extra galaxy has MGE light and IsothermalSph mass with fixed centres and bounded Einstein radii.
+ - Each extra galaxy has MGE light and truncated dPIEMassSph mass with fixed centres and free sigma.
  - The source galaxy uses a Delaunay pixelization with ConstantSplit regularization. `ConstantSplit`
    is used for this first-pass model because adapt data (per-galaxy images from a previous search)
    is not yet available; a SLaM pipeline can later upgrade to `AdaptSplit` once the source has been
@@ -177,10 +178,16 @@ for centre in extra_galaxies_centres:
 
     # Extra Galaxy Mass
 
-    mass = af.Model(al.mp.IsothermalSph)
+    mass = af.Model(al.mp.dPIEMassSph)
 
     mass.centre = centre
-    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+    mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+    mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+    mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+    mass.redshift_object = 0.5
+    mass.redshift_source = 1.0
+    mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+    mass.Om0 = 0.30966
 
     # Extra Galaxy
 

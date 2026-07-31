@@ -3,9 +3,10 @@ __Log Likelihood Function: Group Scaling Relation__
 
 This script describes the additional steps required to compute the `log_likelihood` for a group-scale strong
 lens whose foreground galaxy population is split across three tiers — main lens galaxies (modelled via the
-group `lens_dict` API), individually-modelled extras (each with its own free `einstein_radius`), and
-scaling-tier extras (whose Einstein radii are derived from a shared reference-anchored relation
-`einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`, the Lenstool convention).
+group `lens_dict` API), individually-modelled extras (tidally truncated `dPIEMassSph` profiles, each with its
+own free `sigma`), and scaling-tier extras (whose truncated `dPIEMassSph` masses are derived from a shared
+reference-anchored relation `sigma = sigma_ref * (luminosity / reference_luminosity) ** 0.25` with tied
+truncation `r_cut = r_cut_ref * (luminosity / reference_luminosity) ** 0.7`, the Lenstool convention).
 
 This script does NOT repeat the steps shared with single-plane lensing (mask, image-plane grid, PSF convolution,
 chi-squared, noise normalization, linear-algebra solver for MGE source intensities). It documents only the part
@@ -51,10 +52,11 @@ galaxy AND every extras / scaling-tier galaxy:
                     + sum_j alpha_extra_individual_j(theta)
                     + sum_k alpha_extra_scaling_k(theta)
 
-  where alpha_extra_scaling_k is the deflection of a mass profile whose
-    einstein_radius_k = einstein_radius_ref * (luminosity_k / reference_luminosity) ** 0.5.
+  where alpha_extra_scaling_k is the deflection of a truncated dPIE profile whose
+    sigma_k = sigma_ref * (luminosity_k / reference_luminosity) ** 0.25 and
+    r_cut_k = r_cut_ref * (luminosity_k / reference_luminosity) ** 0.7.
 
-The model gains exactly 1 free parameter (`einstein_radius_ref`) regardless of how many galaxies
+The model gains exactly 1 free parameter (`sigma_ref`) regardless of how many galaxies
 sit on the scaling tier. Every other step of the likelihood (PSF convolution, chi-squared, noise normalization,
 MGE linear-algebra solver) is unchanged.
 """
@@ -126,8 +128,8 @@ __Galaxies__
 Three populations participate in the ray-tracing:
 
  - `lens_dict` (z=0.5): one `IsothermalSph` mass per main lens centre — here, just one with `einstein_radius=4.0`.
- - `individual_extras` (z=0.5): two `IsothermalSph` masses with simulator-true Einstein radii 0.8 and 1.0.
- - `scaling_extras` (z=0.5): two `IsothermalSph` masses with Einstein radii from the scaling relation.
+ - `individual_extras` (z=0.5): two truncated `dPIEMassSph` masses with simulator-true sigma = 212 and 239 km/s.
+ - `scaling_extras` (z=0.5): two truncated `dPIEMassSph` masses with sigma and r_cut from the scaling relation.
  - `source` (z=1.0): a small MGE light component (10 linear Gaussians).
 """
 total_gaussians = 10
@@ -155,33 +157,47 @@ for i, (centre, er) in enumerate(zip(main_lens_centres, main_lens_einstein_radii
         mass=al.mp.IsothermalSph(centre=tuple(centre), einstein_radius=er),
     )
 
-individual_extras_einstein_radii = [0.8, 1.0]
+individual_extras_sigmas = [212.0, 239.0]
 individual_extras = [
     al.Galaxy(
         redshift=0.5,
-        mass=al.mp.IsothermalSph(centre=tuple(centre), einstein_radius=er),
+        mass=al.mp.dPIEMassSph(
+            centre=tuple(centre),
+            sigma=sigma,
+            r_core=0.0,
+            r_cut=10.0,
+            redshift_object=0.5,
+            redshift_source=1.0,
+        ),
     )
-    for centre, er in zip(extra_galaxies_centres, individual_extras_einstein_radii)
+    for centre, sigma in zip(extra_galaxies_centres, individual_extras_sigmas)
 ]
 
 # reference_luminosity is an explicit fixed constant (Lenstool's reference
-# magnitude "mag0"), not the sample max; einstein_radius_ref is the Einstein
-# radius of a galaxy at that reference. Here L_ref = 1.0 (fiducial); both members
-# share luminosity 0.45, so einstein_radius_ref * (0.45)**0.5 = 0.135 (simulator truth).
-einstein_radius_ref = 0.2012
-scaling_exponent = 0.5
+# magnitude "mag0"), not the sample max; sigma_ref is the velocity dispersion
+# of a galaxy at that reference. Here L_ref = 1.0 (fiducial); both members share
+# luminosity 0.45, so sigma = 106.0 * (0.45)**0.25 = 86.8 km/s and
+# r_cut = 5.0 * (0.45)**0.7 = 2.86" (simulator truth).
+sigma_ref = 106.0
+scaling_sigma_exponent = 0.25  # alpha (Faber-Jackson)
+scaling_gamma = 0.2  # M/L tilt, universally fixed
+scaling_rcut_exponent = 1.0 + scaling_gamma - 2.0 * scaling_sigma_exponent  # 0.7
+scaling_r_cut_ref = 5.0
 reference_luminosity = 1.0
 
 scaling_extras = []
 for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminosities):
-    einstein_radius = (
-        einstein_radius_ref * (luminosity / reference_luminosity) ** scaling_exponent
-    )
+    luminosity_ratio = luminosity / reference_luminosity
     scaling_extras.append(
         al.Galaxy(
             redshift=0.5,
-            mass=al.mp.IsothermalSph(
-                centre=tuple(centre), einstein_radius=einstein_radius
+            mass=al.mp.dPIEMassSph(
+                centre=tuple(centre),
+                sigma=sigma_ref * luminosity_ratio**scaling_sigma_exponent,
+                r_core=0.0,
+                r_cut=scaling_r_cut_ref * luminosity_ratio**scaling_rcut_exponent,
+                redshift_object=0.5,
+                redshift_source=1.0,
             ),
         )
     )
@@ -226,10 +242,10 @@ print(f"alpha_scaling    (tier sum, first coord) : {alpha_scaling_total[0]}")
 print(f"alpha_total      (across all, first coord): {alpha_total[0]}")
 
 for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminosities):
-    er = einstein_radius_ref * (luminosity / reference_luminosity) ** scaling_exponent
+    sigma = sigma_ref * (luminosity / reference_luminosity) ** scaling_sigma_exponent
     print(
         f"    scaling galaxy @ {tuple(centre)}: "
-        f"einstein_radius = {einstein_radius_ref:.3f} * ({luminosity:.3f} / {reference_luminosity:.3f}) ** {scaling_exponent:.1f} = {er:.4f}"
+        f"sigma = {sigma_ref:.1f} * ({luminosity:.3f} / {reference_luminosity:.3f}) ** {scaling_sigma_exponent:.2f} = {sigma:.2f} km/s"
     )
 
 """
@@ -261,15 +277,16 @@ aplt.plot_array(
 What `image_2d_from` does internally for our group-scale three-tier lens:
 
   1. Computes `alpha_lens(theta) = sum_i alpha_main_lens_i + sum_j alpha_extra_individual_j + sum_k alpha_extra_scaling_k`.
-     Each `alpha_extra_scaling_k` is the deflection of a profile whose `einstein_radius` was derived from
-     `einstein_radius_ref * (luminosity_k / reference_luminosity) ** 0.5`.
+     Each `alpha_extra_scaling_k` is the deflection of a truncated dPIE profile whose `sigma` and `r_cut` were
+     derived from `sigma_ref * (luminosity_k / reference_luminosity) ** 0.25` and
+     `r_cut_ref * (luminosity_k / reference_luminosity) ** 0.7`.
   2. Ray-traces the image-plane grid to obtain `grid_source = grid - alpha_lens`.
   3. Evaluates the source MGE at `grid_source`, producing its image-plane contribution.
 
 For a single-galaxy lens there is just one profile contributing to step 1; for a group with M main lens
 galaxies, N individually-modelled extras, and K scaling-tier extras, there are `M + N + K` contributions. The
-model gains `M * (mass parameters per main lens) + N` free Einstein-radius parameters plus 1 shared scaling
-normalization (`einstein_radius_ref`) — independent of K.
+model gains `M * (mass parameters per main lens) + N` free sigma parameters plus 1 shared scaling
+normalization (`sigma_ref`) — independent of K.
 
 __Likelihood__
 

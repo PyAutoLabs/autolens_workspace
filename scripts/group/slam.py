@@ -42,10 +42,14 @@ how their masses are parameterized:
 **Extra Galaxies**
 
 Extra galaxies are a small number of nearby companions whose light and mass are modeled individually.
-In each pipeline stage, they receive a free MGE light profile and an `Isothermal` mass profile whose
-Einstein radius prior is bounded by a value derived from the galaxy's luminosity:
+In each pipeline stage, they receive a free MGE light profile and a tidally truncated `dPIEMassSph`
+mass profile — the group and cluster convention, encoding the tidal stripping of a member's outer
+dark matter by the shared group potential (`r_core = 0`, truncation fixed at a fiducial `r_cut`; at
+galaxy scale, with no host environment, extra galaxies are untruncated `Isothermal` profiles). Each
+galaxy's free `sigma` prior is bounded by a value derived from the galaxy's luminosity:
 
-    upper_limit = min(5 * 0.5 * total_luminosity^0.6, 5.0)
+    einstein_radius_upper = min(5 * 0.5 * total_luminosity^0.6, 5.0)
+    sigma_upper = 287 * einstein_radius_upper^0.5   (the SIS-equivalent dispersion at z_l=0.5, z_s=1.0)
 
 This luminosity-informed bound prevents unphysically large mass assignments while keeping the mass
 free per galaxy. The extra-galaxy models are stored in `model.extra_galaxies` (a `Collection`).
@@ -54,20 +58,22 @@ free per galaxy. The extra-galaxy models are stored in `model.extra_galaxies` (a
 
 Scaling galaxies are a larger ensemble of companions whose masses are constrained through a shared
 luminosity-to-mass scaling relation rather than being individually free. They each carry a free MGE
-light profile, but their Einstein radii follow the reference-anchored convention used by Lenstool
-and essentially every published group- and cluster-scale analysis (Limousin et al. 2005;
-Eliasdottir et al. 2007; Bergamini et al. 2019):
+light profile and a tidally truncated `dPIEMassSph` mass whose `sigma` and `r_cut` follow the
+reference-anchored convention used by Lenstool and essentially every published group- and
+cluster-scale analysis (Limousin et al. 2005; Eliasdottir et al. 2007; Bergamini et al. 2019):
 
-    einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity)^0.5
+    sigma = sigma_ref * (luminosity / reference_luminosity)^0.25
+    r_cut = r_cut_ref * (luminosity / reference_luminosity)^0.7
 
-The exponent is FIXED at the Faber-Jackson value (einstein_radius ∝ sigma² and sigma ∝ L^(1/4) give
-einstein_radius ∝ L^(1/2)), avoiding the normalization-slope degeneracy of fitting both. The tier's
-single shared free parameter is `einstein_radius_ref` — the Einstein radius of a galaxy as bright as
-the reference — with the reference luminosity anchored to the brightest main lens galaxy (the BGG),
-whose luminosity is fixed by the preceding light fit. Only the BGG's *luminosity* anchors the
-relation; its (free) mass is deliberately not coupled to the tier. This reduces the number of mass
-parameters considerably when many companion galaxies are present. Scaling-galaxy models are stored
-in `model.scaling_galaxies`.
+The exponents are FIXED at the modern tied values (sigma ∝ L^(1/4) is the Faber-Jackson relation —
+equivalent to the einstein_radius ∝ L^(1/2) form since einstein_radius ∝ sigma²; the r_cut exponent
+follows from 1 + gamma - 2*alpha with gamma = 0.2), avoiding the normalization-slope degeneracy of
+fitting both. The tier's single shared free parameter is `sigma_ref` — the velocity dispersion of a
+galaxy as bright as the reference — with the reference luminosity anchored to the brightest main
+lens galaxy (the BGG), whose luminosity is fixed by the preceding light fit. Only the BGG's
+*luminosity* anchors the relation; its (free) mass is deliberately not coupled to the tier. This
+reduces the number of mass parameters considerably when many companion galaxies are present.
+Scaling-galaxy models are stored in `model.scaling_galaxies`.
 
 The choice between these two categories is determined by which JSON file each galaxy's centre
 appears in (`extra_galaxies_centres.json` vs `scaling_galaxies_centres.json`).
@@ -75,8 +81,9 @@ appears in (`extra_galaxies_centres.json` vs `scaling_galaxies_centres.json`).
 **Comparison with the Galaxy-Scale SLaM Pipeline**
 
 The galaxy-scale extra-galaxies SLaM pipeline (`features/extra_galaxies/slam`) models each
-companion galaxy with a fully free `IsothermalSph` mass — it does not use luminosity bounds or a
-shared scaling relation. The group-scale pipeline introduced here is appropriate when:
+companion galaxy with a fully free, untruncated `IsothermalSph` mass — it does not use luminosity
+bounds, a shared scaling relation, or truncation (with no group-scale host environment there is no
+tidal stripping to encode). The group-scale pipeline introduced here is appropriate when:
 
 - there are more companion galaxies than can be modeled independently, or
 - prior physical knowledge motivates a luminosity-to-mass scaling.
@@ -88,8 +95,8 @@ and TOTAL MASS PIPELINE this SLaM modeling script fits `Imaging` data of a group
 where in the final model:
 
  - Each main lens galaxy has a free MGE bulge and a `PowerLaw` total mass.
- - Each extra galaxy has a free MGE bulge and a luminosity-bounded `Isothermal` mass.
- - Each scaling galaxy has a free MGE bulge and a mass set by a shared scaling relation.
+ - Each extra galaxy has a free MGE bulge and a luminosity-bounded, tidally truncated `dPIEMassSph` mass.
+ - Each scaling galaxy has a free MGE bulge and a truncated `dPIEMassSph` mass set by a shared scaling relation.
  - The source galaxy's light is a Delaunay `Pixelization` with `AdaptSplit` regularization.
 
 __Start Here Notebook__
@@ -217,11 +224,12 @@ Equivalent to `source_lp` in `slam_start_here.py`, except lens light is fixed fr
 `source_lp[0]` rather than free, and mass and source are introduced here for the first time.
 
 Multiple main-lens galaxies each get an `Isothermal` mass; only `lens_0` carries an
-`ExternalShear`. Extra-galaxy Einstein radii are bounded by a luminosity-derived prior
-(`min(5 * 0.5 * L^0.6, 5.0)`). Scaling galaxies share one free parameter,
-`einstein_radius_ref`, so their masses follow the reference-anchored Faber-Jackson relation
-`einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity)^0.5`, with the
-reference luminosity fixed to the brightest main lens (BGG).
+`ExternalShear`. Extra galaxies get truncated `dPIEMassSph` profiles whose `sigma` priors are
+bounded by a luminosity-derived limit (the SIS-equivalent dispersion of
+`min(5 * 0.5 * L^0.6, 5.0)`). Scaling galaxies share one free parameter, `sigma_ref`, so their
+masses follow the reference-anchored relation `sigma = sigma_ref * (L / L_ref)^0.25` (with tied
+truncation `r_cut = r_cut_ref * (L / L_ref)^0.7`), the reference luminosity fixed to the
+brightest main lens (BGG).
 """
 
 
@@ -295,19 +303,28 @@ def source_lp_1(
     for i in range(n_extra):
         lp0_extra = source_lp_result_0.instance.extra_galaxies[i]
 
-        mass = af.Model(al.mp.Isothermal)
+        # Truncated dPIE (group/cluster convention): spherical, since the dPIE's Lenstool-native
+        # (ellipticity, angle_pos) parameterization cannot chain from the MGE's ell_comps and
+        # member ellipticity is a second-order lensing effect.
+        mass = af.Model(al.mp.dPIEMassSph)
         mass.centre = lp0_extra.bulge.centre
-        mass.ell_comps = lp0_extra.bulge.ell_comps
 
         luminosity_per_gaussian_list = [
             2 * np.pi * g.sigma**2 / g.axis_ratio() * g.intensity
             for g in tracer.galaxies[n_main + i].bulge.profile_list
         ]
         total_luminosity = np.sum(luminosity_per_gaussian_list) / pixel_scale**2
-        mass.einstein_radius = af.UniformPrior(
-            lower_limit=0.0,
-            upper_limit=min(5 * 0.5 * total_luminosity**0.6, 5.0),
-        )
+        einstein_radius_upper = min(5 * 0.5 * total_luminosity**0.6, 5.0)
+        # SIS-equivalent dispersion of the luminosity-derived Einstein-radius bound at the
+        # script's redshifts (z_l=0.5, z_s=1.0), carrying the bound over to the dPIE's sigma.
+        sigma_upper = 287.0 * einstein_radius_upper**0.5
+        mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=sigma_upper)
+        mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+        mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+        mass.redshift_object = redshift_lens
+        mass.redshift_source = redshift_source
+        mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+        mass.Om0 = 0.30966
 
         extra_mass_models.append(
             af.Model(
@@ -318,15 +335,16 @@ def source_lp_1(
     extra_galaxies = af.Collection(extra_mass_models) if extra_mass_models else None
 
     # --- scaling lens galaxy models (light fixed, reference-anchored scaling relation) ---
-    # Lenstool convention: einstein_radius = einstein_radius_ref * (L / L_ref)^0.5 with the
-    # exponent FIXED at the Faber-Jackson value (einstein_radius ∝ sigma² and sigma ∝ L^(1/4)
-    # give einstein_radius ∝ L^(1/2)). The tier's single free parameter is
-    # einstein_radius_ref — the Einstein radius of a galaxy as bright as the reference — a
-    # physically interpretable normalization with an easy-to-motivate prior range, avoiding
-    # the normalization-slope degeneracy of fitting both. The reference luminosity is the
-    # brightest MAIN lens galaxy (the BGG) — an explicit anchor fixed by the preceding light
-    # fit and invariant to which galaxies are in the tier. Only the BGG's *luminosity* is the
-    # anchor; its (free) mass is deliberately NOT coupled to the tier.
+    # Lenstool convention: sigma = sigma_ref * (L / L_ref)^0.25 with tied truncation
+    # r_cut = r_cut_ref * (L / L_ref)^0.7, the exponents FIXED at the modern tied values
+    # (sigma ∝ L^(1/4) is Faber-Jackson; the r_cut exponent follows from 1 + gamma - 2*alpha
+    # with gamma = 0.2). The tier's single free parameter is sigma_ref — the velocity
+    # dispersion of a galaxy as bright as the reference — a physically interpretable
+    # normalization with an easy-to-motivate prior range, avoiding the normalization-slope
+    # degeneracy of fitting both. The reference luminosity is the brightest MAIN lens galaxy
+    # (the BGG) — an explicit anchor fixed by the preceding light fit and invariant to which
+    # galaxies are in the tier. Only the BGG's *luminosity* is the anchor; its (free) mass is
+    # deliberately NOT coupled to the tier.
     main_luminosity_list = [
         np.sum(
             [
@@ -339,26 +357,32 @@ def source_lp_1(
     ]
     reference_luminosity = max(main_luminosity_list)
 
-    einstein_radius_ref = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
-    scaling_exponent = 0.5
+    sigma_ref = af.UniformPrior(lower_limit=0.0, upper_limit=400.0)
+    scaling_sigma_exponent = 0.25  # alpha (Faber-Jackson; Bergamini et al. 2019)
+    scaling_gamma = 0.2  # M/L tilt, universally fixed
+    scaling_rcut_exponent = 1.0 + scaling_gamma - 2.0 * scaling_sigma_exponent  # 0.7
+    scaling_r_cut_ref = 5.0  # fixed reference truncation radius
 
     scaling_mass_models = []
     for i in range(n_scaling):
         lp0_scaling = source_lp_result_0.instance.scaling_galaxies[i]
 
-        mass = af.Model(al.mp.Isothermal)
+        mass = af.Model(al.mp.dPIEMassSph)
         mass.centre = lp0_scaling.bulge.centre
-        mass.ell_comps = lp0_scaling.bulge.ell_comps
 
         luminosity_per_gaussian_list = [
             2 * np.pi * g.sigma**2 / g.axis_ratio() * g.intensity
             for g in tracer.galaxies[n_main + n_extra + i].bulge.profile_list
         ]
         total_luminosity = np.sum(luminosity_per_gaussian_list) / pixel_scale**2
-        mass.einstein_radius = (
-            einstein_radius_ref
-            * (total_luminosity / reference_luminosity) ** scaling_exponent
-        )
+        luminosity_ratio = total_luminosity / reference_luminosity
+        mass.sigma = sigma_ref * luminosity_ratio**scaling_sigma_exponent
+        mass.r_core = 0.0  # vanishing core — fixed, never scaled
+        mass.r_cut = scaling_r_cut_ref * luminosity_ratio**scaling_rcut_exponent
+        mass.redshift_object = redshift_lens
+        mass.redshift_source = redshift_source
+        mass.H0 = 67.66
+        mass.Om0 = 0.30966
 
         scaling_mass_models.append(
             af.Model(
@@ -759,8 +783,9 @@ def light_lp(
 __MASS TOTAL PIPELINE__
 
 Identical to `mass_total` in `slam_start_here.py`, except extra galaxies receive a new
-luminosity-bounded `Isothermal` mass (using `light[1]` luminosities) and scaling galaxies
-receive a new shared luminosity scaling relation, both paired with their fixed `light[1]` bulge.
+luminosity-bounded, truncated `dPIEMassSph` mass (using `light[1]` luminosities) and scaling
+galaxies receive a new shared luminosity scaling relation, both paired with their fixed
+`light[1]` bulge.
 """
 
 
@@ -774,6 +799,7 @@ def mass_total(
     positions,
     pixel_scale,
     redshift_lens,
+    redshift_source,
     n_batch=20,
 ):
     # Total mass model for each main lens galaxy.
@@ -796,19 +822,24 @@ def mass_total(
     for i in range(n_extra):
         light_extra = light_result.instance.extra_galaxies[i]
 
-        mass = af.Model(al.mp.Isothermal)
+        # Truncated dPIE (group/cluster convention) — same composition as source_lp_1.
+        mass = af.Model(al.mp.dPIEMassSph)
         mass.centre = light_extra.bulge.centre
-        mass.ell_comps = light_extra.bulge.ell_comps
 
         luminosity_per_gaussian_list = [
             2 * np.pi * g.sigma**2 / g.axis_ratio() * g.intensity
             for g in light_extra.bulge.profile_list
         ]
         total_luminosity = np.sum(luminosity_per_gaussian_list) / pixel_scale**2
-        mass.einstein_radius = af.UniformPrior(
-            lower_limit=0.0,
-            upper_limit=min(5 * 0.5 * total_luminosity**0.6, 5.0),
-        )
+        einstein_radius_upper = min(5 * 0.5 * total_luminosity**0.6, 5.0)
+        sigma_upper = 287.0 * einstein_radius_upper**0.5  # SIS-equivalent bound
+        mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=sigma_upper)
+        mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+        mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+        mass.redshift_object = redshift_lens
+        mass.redshift_source = redshift_source
+        mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+        mass.Om0 = 0.30966
 
         extra_mass_models.append(
             af.Model(
@@ -819,8 +850,9 @@ def mass_total(
     extra_galaxies = af.Collection(extra_mass_models) if extra_mass_models else None
 
     # --- scaling galaxies: fixed light, reference-anchored scaling relation ---
-    # Same Lenstool convention as source_lp_1: free einstein_radius_ref, exponent fixed
-    # at 0.5, reference luminosity = the brightest main lens (BGG) from the light[1] fit.
+    # Same Lenstool convention as source_lp_1: free sigma_ref with tied truncation,
+    # exponents fixed, reference luminosity = the brightest main lens (BGG) from the
+    # light[1] fit.
     main_luminosity_list = [
         np.sum(
             [
@@ -835,26 +867,32 @@ def mass_total(
     ]
     reference_luminosity = max(main_luminosity_list)
 
-    einstein_radius_ref = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
-    scaling_exponent = 0.5
+    sigma_ref = af.UniformPrior(lower_limit=0.0, upper_limit=400.0)
+    scaling_sigma_exponent = 0.25  # alpha (Faber-Jackson; Bergamini et al. 2019)
+    scaling_gamma = 0.2  # M/L tilt, universally fixed
+    scaling_rcut_exponent = 1.0 + scaling_gamma - 2.0 * scaling_sigma_exponent  # 0.7
+    scaling_r_cut_ref = 5.0  # fixed reference truncation radius
 
     scaling_mass_models = []
     for i in range(n_scaling):
         light_scaling = light_result.instance.scaling_galaxies[i]
 
-        mass = af.Model(al.mp.Isothermal)
+        mass = af.Model(al.mp.dPIEMassSph)
         mass.centre = light_scaling.bulge.centre
-        mass.ell_comps = light_scaling.bulge.ell_comps
 
         luminosity_per_gaussian_list = [
             2 * np.pi * g.sigma**2 / g.axis_ratio() * g.intensity
             for g in light_scaling.bulge.profile_list
         ]
         total_luminosity = np.sum(luminosity_per_gaussian_list) / pixel_scale**2
-        mass.einstein_radius = (
-            einstein_radius_ref
-            * (total_luminosity / reference_luminosity) ** scaling_exponent
-        )
+        luminosity_ratio = total_luminosity / reference_luminosity
+        mass.sigma = sigma_ref * luminosity_ratio**scaling_sigma_exponent
+        mass.r_core = 0.0  # vanishing core — fixed, never scaled
+        mass.r_cut = scaling_r_cut_ref * luminosity_ratio**scaling_rcut_exponent
+        mass.redshift_object = redshift_lens
+        mass.redshift_source = redshift_source
+        mass.H0 = 67.66
+        mass.Om0 = 0.30966
 
         scaling_mass_models.append(
             af.Model(
@@ -1082,5 +1120,6 @@ mass_result = mass_total(
     positions=positions,
     pixel_scale=pixel_scale,
     redshift_lens=redshift_lens,
+    redshift_source=redshift_source,
     n_batch=n_batch,
 )

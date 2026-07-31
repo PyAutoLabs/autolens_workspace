@@ -72,11 +72,11 @@ the simulated dataset fitted here that is the true model. For a real group, whet
 Einstein radii or image configurations no galaxy-mass model reproduces) need a dominant halo component.
 
 The `features/group_halo` example teaches that decision: it fits the same data with and without a halo and
-compares them via the lensing-mass radius, Bayesian evidence and external information. In that Lenstool-style
-workflow the halo also changes the member galaxies — they become tidally truncated dPIE profiles (truncation
-encodes stripping by the host halo's tidal field), tied by luminosity scaling relations. A published real-data
-example of group modeling with **PyAutoLens** is CSWA 19 (Ding et al. 2025), whose model combines a group halo
-with scaling-relation members.
+compares them via the lensing-mass radius, Bayesian evidence and external information. Whatever that choice,
+the extra galaxies themselves are modeled as tidally truncated `dPIEMassSph` profiles (truncation encodes
+stripping of a member's outer dark matter by the group environment's tidal field) — see the `__Model__` section
+below. A published real-data example of group modeling with **PyAutoLens** is CSWA 19 (Ding et al. 2025), whose
+model combines a group halo with scaling-relation members.
 
 __Example__
 
@@ -85,7 +85,7 @@ This script fits an `Imaging` dataset of a 'group-scale' strong lens where
  - There is a main lens galaxy whose lens galaxy's light is an MGE.
  - There is a main lens galaxy whose total mass distribution is an `Isothermal` and `ExternalShear`.
  - There are two extra lens galaxies whose light models are `SersicSph` profiles and total mass distributions
-   are `IsothermalSph` models.
+   are tidally truncated `dPIEMassSph` models.
  - The source galaxy's light is an MGE.
 
 __Simulation__
@@ -240,8 +240,9 @@ We compose a lens model where:
 
  - The main lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
 
- - There are two extra lens galaxies with linear `SersicSph` light and `IsothermalSph` total mass distributions, with
-   centres fixed to the observed centres of light [8 parameters].
+ - There are two extra lens galaxies with linear `SersicSph` light and tidally truncated `dPIEMassSph` total mass
+   distributions, with centres fixed to the observed centres of light and one free `sigma` each (`r_core` and
+   `r_cut` fixed) [8 parameters].
 
  - The source galaxy's light is a point `SersicCore` [6 parameters].
 
@@ -255,6 +256,15 @@ and stored as `lens_0`, `lens_1`, etc. Extra galaxies are similarly built in a l
 
 This list-based API scales naturally: adding more main lens galaxies or extra galaxies simply means adding more
 entries to the respective JSON files. The model composition code does not need to change.
+
+The extra galaxies use the tidally truncated `dPIEMassSph` mass profile, not the untruncated `IsothermalSph`
+used at galaxy scale (see `imaging/features/extra_galaxies`). This is the standard convention of group- and
+cluster-scale modeling: member galaxies orbiting in the shared group potential have the outer parts of their
+dark matter halos stripped by tides, so their profiles are physically truncated at a radius `r_cut`. The dPIE
+is parameterized in Lenstool's native convention — `sigma` (fiducial velocity dispersion, km/s), `r_core` and
+`r_cut` (arcsec) — with `sigma` each galaxy's one free parameter; `r_core` is fixed to zero (where the dPIE
+is analytic) and `r_cut` to a fiducial value, and the redshifts and cosmology constants are pinned so they do
+not inherit default priors and float.
 
 A full description of model composition is provided by the model cookbook:
 
@@ -306,10 +316,16 @@ for centre in extra_galaxies_centres:
 
     # Extra Galaxy Mass
 
-    mass = af.Model(al.mp.IsothermalSph)
+    mass = af.Model(al.mp.dPIEMassSph)
 
     mass.centre = centre
-    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+    mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+    mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+    mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+    mass.redshift_object = 0.5
+    mass.redshift_source = 1.0
+    mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+    mass.Om0 = 0.30966
 
     # Extra Galaxy
 
@@ -436,10 +452,16 @@ for centre in extra_galaxies_centres:
 
     # Extra Galaxy Mass
 
-    mass = af.Model(al.mp.IsothermalSph)
+    mass = af.Model(al.mp.dPIEMassSph)
 
     mass.centre = centre
-    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+    mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+    mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+    mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+    mass.redshift_object = 0.5
+    mass.redshift_source = 1.0
+    mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+    mass.Om0 = 0.30966
 
     # Extra Galaxy
 

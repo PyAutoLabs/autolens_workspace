@@ -10,8 +10,8 @@ light" means that **all** main lens galaxies **and** all extra galaxies are mode
 
 This script simulates `Imaging` of a 'group-scale' strong lens where:
 
- - The group consists of one main lens galaxy and two extra galaxies, all with `IsothermalSph` mass profiles
-   and no light profiles.
+ - The group consists of one main lens galaxy with an `IsothermalSph` mass profile and two extra galaxies
+   with tidally truncated `dPIEMassSph` mass profiles, all with no light profiles.
  - A single source galaxy is observed whose `LightProfile` is a `SersicCore`.
 
 __Contents__
@@ -139,19 +139,33 @@ main_lens_galaxies = [lens_0]
 """
 __Extra Galaxies__
 
-The two extra galaxies are companion galaxies near the lens system. They have isothermal mass profiles
-but **no light profiles**, with centres offset from the origin.
+The two extra galaxies are companion galaxies near the lens system. They have tidally truncated dPIE mass
+profiles but **no light profiles**, with centres offset from the origin.
 
 In the list-based API, extra galaxies are stored in a list called `extra_galaxies`.
 """
 extra_galaxy_0 = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.IsothermalSph(centre=(3.5, 2.5), einstein_radius=0.8),
+    mass=al.mp.dPIEMassSph(
+        centre=(3.5, 2.5),
+        sigma=212.0,
+        r_core=0.0,
+        r_cut=10.0,
+        redshift_object=0.5,
+        redshift_source=1.0,
+    ),
 )
 
 extra_galaxy_1 = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.IsothermalSph(centre=(-4.4, -5.0), einstein_radius=1.0),
+    mass=al.mp.dPIEMassSph(
+        centre=(-4.4, -5.0),
+        sigma=239.0,
+        r_core=0.0,
+        r_cut=10.0,
+        redshift_object=0.5,
+        redshift_source=1.0,
+    ),
 )
 
 extra_galaxies = [extra_galaxy_0, extra_galaxy_1]

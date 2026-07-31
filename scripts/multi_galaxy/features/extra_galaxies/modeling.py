@@ -242,6 +242,15 @@ Both restrictions do real work here, and for reasons sharper than at galaxy scal
    co-dominant territory and effectively promote itself into the wrong tier mid-fit — the parameterization would
    then no longer mean what the model says it means.
 
+__Untruncated Profiles (Galaxy Scale) vs Truncated dPIE (Group / Cluster Scale)__
+
+The extra galaxies here use the **untruncated** `IsothermalSph` profile — the PyAutoLens-native
+parameterization. This is the right choice at galaxy scale: with no group- or cluster-scale host environment,
+there is no tidal stripping to encode in the profile. At group and cluster scale the convention flips — member
+galaxies are modeled as tidally truncated `dPIEMassSph` profiles (see `group/modeling.py` and
+`cluster/modeling.py`), whose `r_cut` truncation encodes the stripping of a member's outer dark matter by the
+shared host potential.
+
 The `extra_galaxies` collection is passed alongside `galaxies`. `AnalysisImaging` appends it to the tracer it
 builds from each model instance, so the perturbers contribute to the summed deflection field with no further
 wiring.

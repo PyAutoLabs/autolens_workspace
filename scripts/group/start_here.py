@@ -20,10 +20,10 @@ signature composition of group- and cluster-scale modeling:
  - **Main lens galaxies** (here: 2 — the central galaxy and a bright companion just 0.4" away): the dominant
    lenses, each with a free MGE light model, `Isothermal` mass and (on `lens_0`) an `ExternalShear`.
  - **Extra galaxies** (here: 1): a nearby companion inside the mask, with its own MGE light model and a
-   bounded free `IsothermalSph` mass at its observed centre.
+   tidally truncated `dPIEMassSph` mass (free `sigma`, fixed truncation) at its observed centre.
  - **Scaling galaxies** (here: 5): further-out galaxies whose light sits outside the mask; mass-only
-   `IsothermalSph` profiles tied to their catalogue luminosities through one shared free normalization —
-   the whole tier adds a single parameter, however many galaxies it holds.
+   truncated `dPIEMassSph` profiles tied to their catalogue luminosities through one shared free
+   normalization — the whole tier adds a single parameter, however many galaxies it holds.
 
 This runs in roughly 10-20 minutes on a good GPU; more complex groups with more galaxies fit with the identical
 workflow. A fourth, optional mass component — the group-scale dark-matter halo — is deliberately NOT in this
@@ -230,11 +230,18 @@ to groups with any number of main lens galaxies.
 Only the first lens galaxy (`lens_0`) carries an `ExternalShear`, as the group system has one overall external shear.
 
 The extra galaxies are composed the same way (`extra_0`, `extra_1`, ...), each with a small MGE for its light and a
-bounded free `IsothermalSph` mass fixed at its observed centre. The scaling galaxies sit outside the mask so their
-light is not modeled; each carries a mass-only `IsothermalSph` whose einstein radius is tied to its catalogue
-luminosity via `einstein_radius_ref * (L / L_ref) ** 0.5` — one shared free parameter for the whole tier.
-(These are **untruncated** profiles, the PyAutoLens-native parameterization; the tidally truncated dPIE variant —
-physically motivated once a group halo enters the model — is taught in `group/features/group_halo`.)
+tidally truncated `dPIEMassSph` mass fixed at its observed centre — free `sigma` (fiducial velocity dispersion,
+Lenstool's native parameterization), vanishing core (`r_core = 0`, where the dPIE is analytic) and truncation
+fixed at a fiducial `r_cut`. Truncation is the signature of the group and cluster regimes: members orbiting in
+the shared group potential have their outer dark matter tidally stripped, so their mass profiles are physically
+truncated — unlike the extra galaxies of galaxy-scale modeling (`imaging`, `interferometer`, `point_source`,
+`multi_galaxy`), which are untruncated `Isothermal` profiles because no host environment strips them.
+
+The scaling galaxies sit outside the mask so their light is not modeled; each carries a mass-only truncated
+`dPIEMassSph` whose `sigma` and `r_cut` are tied to its catalogue luminosity via the modern cluster convention
+(Bergamini et al. 2019): `sigma = sigma_ref * (L / L_ref) ** 0.25` and `r_cut = r_cut_ref * (L / L_ref) ** 0.7`,
+with `sigma_ref` the tier's one shared free parameter. This is the same relation the `cluster` package and
+`group/features/group_halo` use, so the group workflow scales seamlessly to richer systems.
 
 The MGE model composition API is quite long and technical, so we simply load the MGE models for the lens and source
 below via a utility function `mge_model_from` which hides the API to make the code in this introduction example ready
@@ -275,15 +282,27 @@ for i, centre in enumerate(extra_galaxies_centres):
         centre=(centre[0], centre[1]),
     )
 
-    mass = af.Model(al.mp.IsothermalSph)
+    mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = (centre[0], centre[1])
-    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+    mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+    mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+    mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+    mass.redshift_object = 0.5
+    mass.redshift_source = 1.0
+    mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+    mass.Om0 = 0.30966
 
     lens_dict[f"extra_{i}"] = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
 # Scaling Galaxies (mass-only; one shared free normalization for the whole tier):
 
-einstein_radius_ref = af.UniformPrior(lower_limit=0.0, upper_limit=1.0)
+scaling_sigma_ref = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+scaling_sigma_exponent = 0.25  # alpha (Bergamini et al. 2019)
+scaling_gamma = 0.2  # M/L tilt, universally fixed
+scaling_rcut_exponent = 1.0 + scaling_gamma - 2.0 * scaling_sigma_exponent  # 0.7
+
+scaling_r_core_fixed = 0.0  # vanishing core — fixed, never scaled
+scaling_r_cut_ref_fixed = 5.0
 
 # A fixed fiducial reference luminosity (the analogue of Lenstool's mag0) — an explicit constant, NOT the
 # sample maximum, so the normalization is invariant to which galaxies are placed in the tier.
@@ -292,9 +311,15 @@ reference_luminosity = 1.0
 for i, (centre, luminosity) in enumerate(zip(scaling_centres, scaling_luminosities)):
     luminosity_ratio = float(luminosity) / reference_luminosity
 
-    mass = af.Model(al.mp.IsothermalSph)
+    mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = tuple(centre)
-    mass.einstein_radius = einstein_radius_ref * luminosity_ratio**0.5
+    mass.sigma = scaling_sigma_ref * luminosity_ratio**scaling_sigma_exponent
+    mass.r_core = scaling_r_core_fixed
+    mass.r_cut = scaling_r_cut_ref_fixed * luminosity_ratio**scaling_rcut_exponent
+    mass.redshift_object = 0.5
+    mass.redshift_source = 1.0
+    mass.H0 = 67.66
+    mass.Om0 = 0.30966
 
     lens_dict[f"scaling_{i}"] = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
@@ -317,8 +342,8 @@ model = af.Collection(galaxies=af.Collection(**lens_dict, source=source))
 We can print the model to show the parameters that the model is composed of, which shows many of the MGE's fixed
 parameter values the API above hided the composition of.
 
-Note how the model lists all three tiers — `lens_0` (main), `extra_0`/`extra_1` (bounded companions) and
-`scaling_0`...`scaling_4` (every einstein radius tied to the single shared `einstein_radius_ref`).
+Note how the model lists all three tiers — `lens_0` (main), `extra_0`/`extra_1` (truncated companions) and
+`scaling_0`...`scaling_4` (every `sigma` and `r_cut` tied to the single shared `scaling_sigma_ref`).
 """
 print(model.info)
 

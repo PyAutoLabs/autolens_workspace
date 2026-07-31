@@ -6,7 +6,7 @@ This script simulates a group-scale strong lens with three populations of galaxi
 exercise the three-tier modeling API used by `group/features/scaling_relation/modeling.py`:
 
  - One **main lens galaxy** at the origin, which dominates the light and mass of the system.
- - Two **extra galaxies** offset from the lens, modelled individually in the fit (one Einstein radius per galaxy).
+ - Two **extra galaxies** offset from the lens, modelled individually in the fit (one free `sigma` per galaxy).
  - Two **scaling galaxies** further out, modelled via a shared luminosity-mass scaling relation.
 
 Each population's centres are saved to a separate JSON file (`main_lens_centres.json`, `extra_galaxies_centres.json`,
@@ -111,14 +111,25 @@ main_lens_galaxies = [lens_0]
 __Extra Galaxies__
 
 Two companion galaxies modelled with their own light + mass.  These are the brighter, closer-in tier; in the modeling
-script they receive their own free `einstein_radius` parameter each.
+script they receive their own free `sigma` parameter each.
+
+Following the group and cluster convention, their mass profiles are tidally truncated `dPIEMassSph` profiles
+(vanishing core `r_core = 0`, truncation radius `r_cut = 10.0`): members orbiting in the shared group potential
+have their outer dark matter stripped by tides. The `sigma` values give Einstein radii of ~0.8" and ~1.0".
 """
 extra_galaxy_0 = al.Galaxy(
     redshift=0.5,
     bulge=al.lp.SersicSph(
         centre=(3.5, 2.5), intensity=0.9, effective_radius=0.8, sersic_index=3.0
     ),
-    mass=al.mp.IsothermalSph(centre=(3.5, 2.5), einstein_radius=0.8),
+    mass=al.mp.dPIEMassSph(
+        centre=(3.5, 2.5),
+        sigma=212.0,
+        r_core=0.0,
+        r_cut=10.0,
+        redshift_object=0.5,
+        redshift_source=1.0,
+    ),
 )
 
 extra_galaxy_1 = al.Galaxy(
@@ -126,7 +137,14 @@ extra_galaxy_1 = al.Galaxy(
     bulge=al.lp.SersicSph(
         centre=(-4.4, -5.0), intensity=0.9, effective_radius=0.8, sersic_index=3.0
     ),
-    mass=al.mp.IsothermalSph(centre=(-4.4, -5.0), einstein_radius=1.0),
+    mass=al.mp.dPIEMassSph(
+        centre=(-4.4, -5.0),
+        sigma=239.0,
+        r_core=0.0,
+        r_cut=10.0,
+        redshift_object=0.5,
+        redshift_source=1.0,
+    ),
 )
 
 extra_galaxies = [extra_galaxy_0, extra_galaxy_1]
@@ -134,31 +152,47 @@ extra_galaxies = [extra_galaxy_0, extra_galaxy_1]
 """
 __Scaling Galaxies__
 
-Two further-out, fainter companions whose true Einstein radii are consistent with the reference-anchored
-relation ``einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`` with
-``einstein_radius_ref = 0.2012`` at a fiducial reference luminosity ``reference_luminosity = 1.0`` (an explicit
-fixed constant — Lenstool's ``mag0`` — not the sample max; both members share luminosity 0.45, so their radii are
-equal at 0.135). Modelling these individually would add 2 free parameters;
-on a scaling relation they add zero (the single free normalization is shared across all scaling galaxies, so
-adding more does not grow the model).
+Two further-out, fainter companions whose true masses are placed EXACTLY on the reference-anchored tied
+scaling relation the modeling script fits — truncated ``dPIEMassSph`` profiles (Bergamini et al. 2019
+convention) with
+
+    sigma = sigma_ref * (luminosity / reference_luminosity) ** 0.25
+    r_cut = r_cut_ref * (luminosity / reference_luminosity) ** 0.7
+
+with ``sigma_ref = 106.0`` km/s, ``r_cut_ref = 5.0`` and a fiducial reference luminosity
+``reference_luminosity = 1.0`` (an explicit fixed constant — Lenstool's ``mag0`` — not the sample max; both
+members share luminosity 0.45, so both get sigma = 86.8 km/s and r_cut = 2.86", an Einstein radius of ~0.136").
+``r_core`` is fixed to zero — the vanishing-core standard, never scaled. Modelling these individually would add
+2 free parameters; on a scaling relation they add zero (the single free normalization is shared across all
+scaling galaxies, so adding more does not grow the model).
 """
-scaling_galaxy_0 = al.Galaxy(
-    redshift=0.5,
-    bulge=al.lp.SersicSph(
-        centre=(6.5, 0.0), intensity=0.45, effective_radius=0.6, sersic_index=2.5
-    ),
-    mass=al.mp.IsothermalSph(centre=(6.5, 0.0), einstein_radius=0.135),
-)
+scaling_sigma_ref_truth = 106.0
+scaling_sigma_exponent = 0.25  # alpha
+scaling_gamma = 0.2  # M/L tilt, universally fixed
+scaling_rcut_exponent = 1.0 + scaling_gamma - 2.0 * scaling_sigma_exponent  # 0.7
+scaling_r_cut_ref = 5.0
+reference_luminosity = 1.0
+scaling_truth_luminosities = [0.45, 0.45]
 
-scaling_galaxy_1 = al.Galaxy(
-    redshift=0.5,
-    bulge=al.lp.SersicSph(
-        centre=(-1.0, 7.0), intensity=0.45, effective_radius=0.6, sersic_index=2.5
-    ),
-    mass=al.mp.IsothermalSph(centre=(-1.0, 7.0), einstein_radius=0.135),
-)
-
-scaling_galaxies = [scaling_galaxy_0, scaling_galaxy_1]
+scaling_galaxies = []
+for centre, luminosity in zip([(6.5, 0.0), (-1.0, 7.0)], scaling_truth_luminosities):
+    luminosity_ratio = luminosity / reference_luminosity
+    scaling_galaxies.append(
+        al.Galaxy(
+            redshift=0.5,
+            bulge=al.lp.SersicSph(
+                centre=centre, intensity=0.45, effective_radius=0.6, sersic_index=2.5
+            ),
+            mass=al.mp.dPIEMassSph(
+                centre=centre,
+                sigma=scaling_sigma_ref_truth * luminosity_ratio**scaling_sigma_exponent,
+                r_core=0.0,
+                r_cut=scaling_r_cut_ref * luminosity_ratio**scaling_rcut_exponent,
+                redshift_object=0.5,
+                redshift_source=1.0,
+            ),
+        )
+    )
 
 """
 __Source Galaxy__
