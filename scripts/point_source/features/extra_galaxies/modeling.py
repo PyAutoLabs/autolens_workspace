@@ -212,6 +212,15 @@ Extra galaxy mass profiles can run away to unphysically high `einstein_radius` v
 `einstein_radius` is therefore given a `UniformPrior` with an upper limit of 0.5", comfortably above the true
 values of 0.1" and 0.15" while excluding solutions where a companion takes over as a main deflector.
 
+__Untruncated Profiles (Galaxy Scale) vs Truncated dPIE (Group / Cluster Scale)__
+
+The extra galaxies here use the **untruncated** `IsothermalSph` profile — the PyAutoLens-native
+parameterization. This is the right choice at galaxy scale: with no group- or cluster-scale host environment,
+there is no tidal stripping to encode in the profile. At group and cluster scale the convention flips — member
+galaxies are modeled as tidally truncated `dPIEMassSph` profiles (see `group/modeling.py` and
+`cluster/modeling.py`), whose `r_cut` truncation encodes the stripping of a member's outer dark matter by the
+shared host potential.
+
 The `extra_galaxies` collection is passed to the overall model as a separate entry alongside `galaxies`. The
 `AnalysisPoint` object appends these galaxies to the tracer it builds from each model instance, so they
 contribute to the ray-tracing the `PointSolver` performs — no further wiring is required.

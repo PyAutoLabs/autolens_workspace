@@ -8,8 +8,9 @@ included in the strong lens model.
 
 This script simulates `Imaging` of a 'group-scale' strong lens where:
 
- - The group consists of one main lens galaxy and two extra galaxies whose light distributions are `SersicSph`
- profiles and total mass distributions are `IsothermalSph` profiles.
+ - The group consists of one main lens galaxy, whose total mass distribution is an `IsothermalSph` profile, and two
+ extra galaxies whose light distributions are `SersicSph` profiles and total mass distributions are tidally
+ truncated `dPIEMassSph` profiles.
  - A single source galaxy is observed whose `LightProfile` is a `SersicCore`.
 
 __Contents__
@@ -46,15 +47,20 @@ Centres for each category are saved to separate JSON files (`main_lens_centres.j
 __No Group Halo__
 
 This simulation deliberately contains **no group-scale dark-matter halo**: all of the mass is in the galaxies
-themselves, as untruncated isothermal profiles. Whether a real group needs a shared halo in its mass model is an
-**explicit modelling choice**, not an automatic ingredient — and because this dataset has none, the default
-group model (which also has none) is the right model for it.
+themselves. Whether a real group needs a shared halo in its mass model is an **explicit modelling choice**, not
+an automatic ingredient — and because this dataset has none, the default group model (which also has none) is
+the right model for it.
 
-The `group/features/group_halo` simulator is the counterpart that DOES include one (via its
-`include_group_halo` switch), pairing the halo with tidally truncated dPIE member galaxies — truncation encodes
-the stripping of a member's outer dark matter by the host halo's tidal field, so the two ingredients enter the
-model together. Its modeling example fits both simulations with and without the halo, teaching the decision
-framework for your own data.
+The extra galaxies are nevertheless simulated as tidally truncated `dPIEMassSph` profiles (vanishing core
+`r_core = 0`, finite truncation radius `r_cut`). Truncation is the signature of the group and cluster regimes:
+members orbiting in a shared group potential have their outer dark matter stripped by tides, so their profiles
+are physically truncated whether or not the model includes the host halo as an explicit component. (At galaxy
+and multi-galaxy scale, with no host environment, extra galaxies are untruncated `Isothermal` profiles — see
+`imaging/features/extra_galaxies` and `multi_galaxy/`.)
+
+The `group/features/group_halo` simulator is the counterpart that DOES include a halo (via its
+`include_group_halo` switch). Its modeling example fits both simulations with and without the halo, teaching
+the decision framework for your own data.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -196,7 +202,13 @@ main_lens_galaxies = [lens_0]
 __Extra Galaxies__
 
 The two extra galaxies are companion galaxies near the lens system. They have spherical Sersic light profiles
-and isothermal mass profiles, with centres offset from the origin.
+and tidally truncated `dPIEMassSph` mass profiles (vanishing core `r_core = 0.0`, truncation radius
+`r_cut = 10.0`), with centres offset from the origin. The `sigma` values (212 and 239 km/s) give the two
+galaxies Einstein radii of ~0.8" and ~1.0" respectively.
+
+The `dPIEMassSph` profile is parameterized in Lenstool's native convention — `sigma` (fiducial velocity
+dispersion, km/s), `r_core` and `r_cut` (arcsec) — and converts these to a lensing strength internally using
+the object/source redshifts and cosmology (`H0` / `Om0`, which default to Planck-like values).
 
 In the list-based API, extra galaxies are stored in a list called `extra_galaxies`.
 """
@@ -205,7 +217,14 @@ extra_galaxy_0 = al.Galaxy(
     bulge=al.lp.SersicSph(
         centre=(3.5, 2.5), intensity=0.9, effective_radius=0.8, sersic_index=3.0
     ),
-    mass=al.mp.IsothermalSph(centre=(3.5, 2.5), einstein_radius=0.8),
+    mass=al.mp.dPIEMassSph(
+        centre=(3.5, 2.5),
+        sigma=212.0,
+        r_core=0.0,
+        r_cut=10.0,
+        redshift_object=0.5,
+        redshift_source=1.0,
+    ),
 )
 
 extra_galaxy_1 = al.Galaxy(
@@ -213,7 +232,14 @@ extra_galaxy_1 = al.Galaxy(
     bulge=al.lp.SersicSph(
         centre=(-4.4, -5.0), intensity=0.9, effective_radius=0.8, sersic_index=3.0
     ),
-    mass=al.mp.IsothermalSph(centre=(-4.4, -5.0), einstein_radius=1.0),
+    mass=al.mp.dPIEMassSph(
+        centre=(-4.4, -5.0),
+        sigma=239.0,
+        r_core=0.0,
+        r_cut=10.0,
+        redshift_object=0.5,
+        redshift_source=1.0,
+    ),
 )
 
 extra_galaxies = [extra_galaxy_0, extra_galaxy_1]

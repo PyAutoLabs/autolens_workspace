@@ -6,7 +6,8 @@ The scaling-relation modeling examples (`modeling.py` in this directory and
 `scripts/imaging/features/scaling_relation/modeling.py`) need a measured **luminosity** for every galaxy that sits on
 the relation:
 
-    einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5
+    sigma = sigma_ref * (luminosity / reference_luminosity) ** 0.25
+    r_cut = r_cut_ref * (luminosity / reference_luminosity) ** 0.7
 
 Those tutorials hardcode the luminosity list for readability. In a production fit the luminosities have to be measured
 from the data itself. This example shows the standard standalone way to do that:

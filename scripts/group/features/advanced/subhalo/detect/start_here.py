@@ -47,7 +47,7 @@ group-scale strong lens where in the final model:
 
  - The main lens galaxy's light is an MGE bulge.
  - The main lens galaxy's total mass distribution is a ``PowerLaw``.
- - Extra galaxies have MGE light and ``IsothermalSph`` mass with fixed centres.
+ - Extra galaxies have MGE light and tidally truncated ``dPIEMassSph`` mass with fixed centres.
  - A dark matter subhalo near the lens galaxy mass is included as an ``NFWMCRLudlowSph``.
  - The source galaxy is an ``Inversion``.
 """
@@ -125,9 +125,15 @@ def source_lp(
             mask_radius=mask_radius, total_gaussians=10, centre_fixed=centre
         )
 
-        mass = af.Model(al.mp.IsothermalSph)
+        mass = af.Model(al.mp.dPIEMassSph)
         mass.centre = centre
-        mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+        mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+        mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+        mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+        mass.redshift_object = 0.5
+        mass.redshift_source = 1.0
+        mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+        mass.Om0 = 0.30966
 
         extra_galaxy = af.Model(
             al.Galaxy, redshift=redshift_lens, bulge=bulge, mass=mass

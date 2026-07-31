@@ -56,7 +56,7 @@ and TOTAL MASS PIPELINE this SLaM modeling script fits `Imaging` data of a group
 where in the final model:
 
  - Each main lens galaxy has a free MGE bulge and a `PowerLaw` total mass.
- - Each extra galaxy has a free MGE bulge and a luminosity-bounded `Isothermal` mass.
+ - Each extra galaxy has a free MGE bulge and a luminosity-bounded, tidally truncated `dPIEMassSph` mass.
  - The source galaxy's light is a rectangular adaptive `Pixelization` with `Adapt` regularization.
 """
 
@@ -156,7 +156,8 @@ Equivalent to `source_lp` in `slam_start_here.py`, except lens light is fixed fr
 rather than free, and mass and source are introduced here for the first time.
 
 Multiple main-lens galaxies each get an `Isothermal` mass; only `lens_0` carries an `ExternalShear`.
-Extra-galaxy Einstein radii are bounded by a luminosity-derived prior.
+Extra galaxies get tidally truncated `dPIEMassSph` profiles (the group/cluster convention) whose
+`sigma` priors are bounded by a luminosity-derived limit.
 """
 
 
@@ -223,9 +224,11 @@ def source_lp_1(
     for i in range(n_extra):
         lp0_extra = source_lp_result_0.instance.extra_galaxies[i]
 
-        mass = af.Model(al.mp.Isothermal)
+        # Truncated dPIE (group/cluster convention): spherical, since the dPIE's Lenstool-native
+        # (ellipticity, angle_pos) parameterization cannot chain from the MGE's ell_comps and
+        # member ellipticity is a second-order lensing effect.
+        mass = af.Model(al.mp.dPIEMassSph)
         mass.centre = lp0_extra.bulge.centre
-        mass.ell_comps = lp0_extra.bulge.ell_comps
 
         luminosity_per_gaussian_list = [
             2 * np.pi * g.sigma**2 / g.axis_ratio() * g.intensity
@@ -233,11 +236,17 @@ def source_lp_1(
         ]
         total_luminosity = np.sum(luminosity_per_gaussian_list) / pixel_scale**2
         luminosity_cap = 5 * 0.5 * total_luminosity**0.6
-        upper_limit = min(luminosity_cap, 5.0) if luminosity_cap > 0 else 5.0
-        mass.einstein_radius = af.UniformPrior(
-            lower_limit=0.0,
-            upper_limit=upper_limit,
-        )
+        einstein_radius_upper = min(luminosity_cap, 5.0) if luminosity_cap > 0 else 5.0
+        # SIS-equivalent dispersion of the luminosity-derived Einstein-radius bound at the
+        # script's redshifts (z_l=0.5, z_s=1.0), carrying the bound over to the dPIE's sigma.
+        sigma_upper = 287.0 * einstein_radius_upper**0.5
+        mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=sigma_upper)
+        mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+        mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+        mass.redshift_object = redshift_lens
+        mass.redshift_source = redshift_source
+        mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+        mass.Om0 = 0.30966
 
         extra_mass_models.append(
             af.Model(
@@ -560,6 +569,7 @@ def mass_total(
     light_result,
     adapt_images,
     redshift_lens,
+    redshift_source,
     n_batch=20,
 ):
     analysis = al.AnalysisImaging(
@@ -607,9 +617,15 @@ def mass_total(
     for i in range(n_extra):
         light_extra = light_result.instance.extra_galaxies[i]
 
-        mass = af.Model(al.mp.IsothermalSph)
+        mass = af.Model(al.mp.dPIEMassSph)
         mass.centre = light_extra.mass.centre
-        mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+        mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+        mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+        mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+        mass.redshift_object = redshift_lens
+        mass.redshift_source = redshift_source
+        mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+        mass.Om0 = 0.30966
 
         extra_models.append(
             af.Model(
@@ -800,6 +816,7 @@ mass_result = mass_total(
     light_result=light_result,
     adapt_images=adapt_images,
     redshift_lens=redshift_lens,
+    redshift_source=redshift_source,
 )
 
 """

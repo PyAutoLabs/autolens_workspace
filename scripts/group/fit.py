@@ -174,7 +174,14 @@ extra_galaxy_0 = al.Galaxy(
     bulge=al.lp.SersicSph(
         centre=(3.5, 2.5), intensity=0.9, effective_radius=0.8, sersic_index=3.0
     ),
-    mass=al.mp.IsothermalSph(centre=(3.5, 2.5), einstein_radius=0.8),
+    mass=al.mp.dPIEMassSph(
+        centre=(3.5, 2.5),
+        sigma=212.0,
+        r_core=0.0,
+        r_cut=10.0,
+        redshift_object=0.5,
+        redshift_source=1.0,
+    ),
 )
 
 extra_galaxy_1 = al.Galaxy(
@@ -182,7 +189,14 @@ extra_galaxy_1 = al.Galaxy(
     bulge=al.lp.SersicSph(
         centre=(-4.4, -5.0), intensity=0.9, effective_radius=0.8, sersic_index=3.0
     ),
-    mass=al.mp.IsothermalSph(centre=(-4.4, -5.0), einstein_radius=1.0),
+    mass=al.mp.dPIEMassSph(
+        centre=(-4.4, -5.0),
+        sigma=239.0,
+        r_core=0.0,
+        r_cut=10.0,
+        redshift_object=0.5,
+        redshift_source=1.0,
+    ),
 )
 
 source_galaxy = al.Galaxy(
@@ -277,7 +291,14 @@ extra_galaxy_0 = al.Galaxy(
     bulge=al.lp.SersicSph(
         centre=(3.5, 2.5), intensity=0.9, effective_radius=0.8, sersic_index=3.0
     ),
-    mass=al.mp.IsothermalSph(centre=(3.5, 2.5), einstein_radius=0.8),
+    mass=al.mp.dPIEMassSph(
+        centre=(3.5, 2.5),
+        sigma=212.0,
+        r_core=0.0,
+        r_cut=10.0,
+        redshift_object=0.5,
+        redshift_source=1.0,
+    ),
 )
 
 extra_galaxy_1 = al.Galaxy(
@@ -285,7 +306,14 @@ extra_galaxy_1 = al.Galaxy(
     bulge=al.lp.SersicSph(
         centre=(-4.4, -5.0), intensity=0.9, effective_radius=0.8, sersic_index=3.0
     ),
-    mass=al.mp.IsothermalSph(centre=(-4.4, -5.0), einstein_radius=1.0),
+    mass=al.mp.dPIEMassSph(
+        centre=(-4.4, -5.0),
+        sigma=239.0,
+        r_core=0.0,
+        r_cut=10.0,
+        redshift_object=0.5,
+        redshift_source=1.0,
+    ),
 )
 
 source_galaxy = al.Galaxy(

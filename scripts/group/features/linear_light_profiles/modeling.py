@@ -39,7 +39,7 @@ This script fits an ``Imaging`` dataset of a 'group-scale' strong lens where:
 
  - Each main lens galaxy's light is a linear ``Sersic`` bulge [6 parameters].
  - The first main lens galaxy's total mass distribution is an ``Isothermal`` and ``ExternalShear`` [7 parameters].
- - There are two extra lens galaxies with linear ``SersicSph`` light and ``IsothermalSph`` total mass
+ - There are two extra lens galaxies with linear ``SersicSph`` light and tidally truncated ``dPIEMassSph`` total mass
    distributions, with centres fixed to the observed centres of light [8 parameters].
  - The source galaxy's light is a linear ``SersicCore`` [5 parameters].
 
@@ -159,10 +159,16 @@ for centre in extra_galaxies_centres:
 
     # Extra Galaxy Mass
 
-    mass = af.Model(al.mp.IsothermalSph)
+    mass = af.Model(al.mp.dPIEMassSph)
 
     mass.centre = centre
-    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+    mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+    mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+    mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+    mass.redshift_object = 0.5
+    mass.redshift_source = 1.0
+    mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+    mass.Om0 = 0.30966
 
     # Extra Galaxy
 

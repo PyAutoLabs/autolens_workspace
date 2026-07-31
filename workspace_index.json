@@ -235,6 +235,7 @@
       "Visualize"
     ],
     "cross_refs": [
+      "group/modeling.py",
       "modeling.py",
       "scripts/cluster/csv_api.py",
       "scripts/point_source/simulator.py",
@@ -1217,7 +1218,7 @@
     ],
     "notebook": "notebooks/group/features/scaling_relation/likelihood_function.ipynb",
     "path": "scripts/group/features/scaling_relation/likelihood_function.py",
-    "summary": "This script describes the additional steps required to compute the `log_likelihood` for a group-scale strong lens whose foreground galaxy population is split across three tiers \u2014 main lens galaxies (modelled via the group `lens_dict` API), individually-modelled extras (each with its own free `einstein_radius`), and scaling-tier extras (whose Einstein radii are derived from a shared reference-anchored relation `einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5`, the Lenstool convention).",
+    "summary": "This script describes the additional steps required to compute the `log_likelihood` for a group-scale strong lens whose foreground galaxy population is split across three tiers \u2014 main lens galaxies (modelled via the group `lens_dict` API), individually-modelled extras (tidally truncated `dPIEMassSph` profiles, each with its own free `sigma`), and scaling-tier extras (whose truncated `dPIEMassSph` masses are derived from a shared reference-anchored relation `sigma = sigma_ref * (luminosity / reference_luminosity) ** 0.25` with tied truncation `r_cut = r_cut_ref * (luminosity / reference_luminosity) ** 0.7`, the Lenstool convention).",
     "title": "__Log Likelihood Function: Group Scaling Relation__"
   },
   {
@@ -1248,7 +1249,7 @@
     ],
     "notebook": "notebooks/group/features/scaling_relation/modeling.ipynb",
     "path": "scripts/group/features/scaling_relation/modeling.py",
-    "summary": "Group-scale strong lenses can have many galaxies in the foreground beyond the primary lens. As the number grows, modelling each galaxy individually becomes impractical: a system with 10 companions would gain 10 extra Einstein-radius free parameters, and the data is rarely informative enough to constrain them all.",
+    "summary": "Group-scale strong lenses can have many galaxies in the foreground beyond the primary lens. As the number grows, modelling each galaxy individually becomes impractical: a system with 10 companions would gain 10 extra mass free parameters, and the data is rarely informative enough to constrain them all.",
     "title": "Modeling Features (Group): Scaling Relations"
   },
   {
@@ -3462,6 +3463,8 @@
       "/guides/advanced/over_sampling.ipynb",
       "/imaging/data_preparation/examples/optional/extra_galaxies_centres.py",
       "/imaging/data_preparation/examples/optional/mask_extra_galaxies.py",
+      "cluster/modeling.py",
+      "group/modeling.py",
       "imaging/start_here.ipynb"
     ],
     "notebook": "notebooks/imaging/features/extra_galaxies/modeling.ipynb",
@@ -4886,6 +4889,8 @@
     ],
     "cross_refs": [
       "/imaging/data_preparation/examples/optional/extra_galaxies_centres.py",
+      "cluster/modeling.py",
+      "group/modeling.py",
       "interferometer/start_here.ipynb"
     ],
     "notebook": "notebooks/interferometer/features/extra_galaxies/modeling.ipynb",
@@ -6584,6 +6589,8 @@
       "Wrap Up"
     ],
     "cross_refs": [
+      "cluster/modeling.py",
+      "group/modeling.py",
       "imaging/features/extra_galaxies/modeling.ipynb",
       "multi_galaxy/modeling.ipynb",
       "multi_galaxy/modeling.py",
@@ -7672,7 +7679,9 @@
     ],
     "cross_refs": [
       "/imaging/data_preparation/examples/optional/extra_galaxies_centres.py",
+      "cluster/modeling.py",
       "features/fluxes.py",
+      "group/modeling.py",
       "point_source/modeling.py",
       "point_source/simulator.py",
       "point_source/start_here.ipynb",

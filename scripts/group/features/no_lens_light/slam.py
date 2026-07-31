@@ -48,7 +48,7 @@ Using a SOURCE LP PIPELINE (one search), SOURCE PIX PIPELINE (two searches) and 
 SLaM modeling script fits `Imaging` data of a group-scale strong lens where in the final model:
 
  - Each main lens galaxy has a `PowerLaw` total mass — no light.
- - Each extra galaxy has a bounded `IsothermalSph` mass — no light.
+ - Each extra galaxy has a truncated `dPIEMassSph` mass (free `sigma`) — no light.
  - The source galaxy's light is a Delaunay `Pixelization` with `AdaptSplit` regularization.
 
 __Start Here Notebook__
@@ -82,7 +82,8 @@ Fits mass + source directly. Because no galaxy has light, there is no need for a
 (`source_lp_0` in the standard group SLaM). We go straight to fitting mass and source simultaneously.
 
 Multiple main-lens galaxies each get an `Isothermal` mass; only `lens_0` carries an `ExternalShear`.
-Extra-galaxy Einstein radii are bounded by a uniform prior.
+Extra galaxies get tidally truncated `dPIEMassSph` profiles (the group/cluster convention) with a
+free `sigma` and fixed truncation.
 """
 
 
@@ -123,9 +124,15 @@ def source_lp(
     extra_mass_models = []
     for centre in extra_lens_centres:
 
-        mass = af.Model(al.mp.IsothermalSph)
+        mass = af.Model(al.mp.dPIEMassSph)
         mass.centre = centre
-        mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+        mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+        mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+        mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+        mass.redshift_object = redshift_lens
+        mass.redshift_source = redshift_source
+        mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+        mass.Om0 = 0.30966
 
         extra_mass_models.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
@@ -409,6 +416,7 @@ def mass_total(
     adapt_images,
     positions,
     redshift_lens,
+    redshift_source,
     n_batch=20,
 ):
     n_lenses = sum(
@@ -420,14 +428,20 @@ def mass_total(
         else 0
     )
 
-    # --- extra galaxies: mass only, new bounded Einstein radii ---
+    # --- extra galaxies: mass only, new free sigma (truncation fixed) ---
     extra_mass_models = []
     for i in range(n_extra):
         pix1_extra = source_pix_result_1.instance.extra_galaxies[i]
 
-        mass = af.Model(al.mp.IsothermalSph)
+        mass = af.Model(al.mp.dPIEMassSph)
         mass.centre = pix1_extra.mass.centre
-        mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+        mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+        mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+        mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+        mass.redshift_object = redshift_lens
+        mass.redshift_source = redshift_source
+        mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+        mass.Om0 = 0.30966
 
         extra_mass_models.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 
@@ -610,5 +624,6 @@ mass_result = mass_total(
     adapt_images=adapt_images,
     positions=positions,
     redshift_lens=redshift_lens,
+    redshift_source=redshift_source,
     n_batch=n_batch,
 )

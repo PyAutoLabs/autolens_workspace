@@ -42,7 +42,7 @@ Using a SOURCE LP PIPELINE, LIGHT LP PIPELINE and a MASS TOTAL PIPELINE this SLa
 fits `Imaging` data of a group-scale strong lens where in the final model:
 
  - Each main lens galaxy has a free MGE bulge and a `PowerLaw` total mass.
- - Each extra galaxy has a free MGE bulge and an `IsothermalSph` mass with bounded Einstein radius.
+ - Each extra galaxy has a free MGE bulge and a truncated `dPIEMassSph` mass with free `sigma`.
  - The source galaxy's light is an MGE.
 
 Because the source is parametric (an MGE), the SOURCE PIX PIPELINE is skipped. This is a simpler
@@ -67,8 +67,8 @@ Fits the lens light, source light, lens mass and external shear simultaneously u
 
 For group-scale lenses:
  - Each main lens galaxy gets a 20-Gaussian MGE with `gaussian_per_basis=1` and uniform centre priors.
- - Each extra galaxy gets a 10-Gaussian MGE with centres fixed to the observed positions and a bounded
-   `IsothermalSph` mass.
+ - Each extra galaxy gets a 10-Gaussian MGE with centres fixed to the observed positions and a truncated
+   `dPIEMassSph` mass.
  - The source galaxy gets a 20-Gaussian MGE with Gaussian centre priors.
  - Only `lens_0` carries an `ExternalShear`.
 
@@ -123,9 +123,15 @@ def source_lp(
             mask_radius=mask_radius, total_gaussians=10, centre_fixed=centre
         )
 
-        mass = af.Model(al.mp.IsothermalSph)
+        mass = af.Model(al.mp.dPIEMassSph)
         mass.centre = centre
-        mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+        mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+        mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+        mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+        mass.redshift_object = 0.5
+        mass.redshift_source = 1.0
+        mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+        mass.Om0 = 0.30966
 
         extra_galaxy = af.Model(
             al.Galaxy, redshift=redshift_lens, bulge=bulge, mass=mass
@@ -270,7 +276,7 @@ fixed from previous stages.
 
 For group-scale lenses:
  - Each main lens galaxy's mass is upgraded to a `PowerLaw`.
- - Each extra galaxy keeps its `IsothermalSph` mass with bounded Einstein radius.
+ - Each extra galaxy keeps its truncated `dPIEMassSph` mass with free `sigma`.
  - Light profiles are fixed as instances from the LIGHT LP result.
  - The source is fixed from the SOURCE LP result.
 """
@@ -323,9 +329,15 @@ def mass_total(
         for i, centre in enumerate(extra_galaxies_centres):
             light_extra = light_result.instance.extra_galaxies[i]
 
-            mass = af.Model(al.mp.IsothermalSph)
+            mass = af.Model(al.mp.dPIEMassSph)
             mass.centre = centre
-            mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+            mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+            mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+            mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+            mass.redshift_object = 0.5
+            mass.redshift_source = 1.0
+            mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+            mass.Om0 = 0.30966
 
             extra_galaxy = af.Model(
                 al.Galaxy,

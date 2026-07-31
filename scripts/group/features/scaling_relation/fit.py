@@ -9,12 +9,14 @@ treats differently:
  - **Main lens galaxies** (`main_lens_centres.json`): the primary lens(es) — each modelled with its own free
    mass parameters via the group `lens_dict` API.
  - **Extra galaxies** (`extra_galaxies_centres.json`): individually-modelled companions, each with its own free
-   `einstein_radius`. Use this tier for the brighter / closer companions that contribute non-trivially to the
-   lensing on their own.
+   `sigma` in a tidally truncated `dPIEMassSph` profile — the group/cluster convention, encoding the tidal
+   stripping of a member's outer dark matter by the shared group potential. Use this tier for the brighter /
+   closer companions that contribute non-trivially to the lensing on their own.
  - **Scaling galaxies** (`scaling_galaxies_centres.json` + `scaling_galaxies.csv`): the long tail of fainter
-   companions whose Einstein radii are tied together via a shared reference-anchored relation
-   `einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5` (exponent fixed at the
-   Faber-Jackson value; the Lenstool convention). Adding more galaxies to this tier does not grow the model.
+   companions whose truncated `dPIEMassSph` masses are tied together via a shared reference-anchored relation
+   `sigma = sigma_ref * (luminosity / reference_luminosity) ** 0.25` with tied truncation
+   `r_cut = r_cut_ref * (luminosity / reference_luminosity) ** 0.7` (exponents fixed at the modern tied values;
+   the Lenstool convention). Adding more galaxies to this tier does not grow the model.
 
 This script illustrates the API for performing a fit to a group-scale strong lens with all three tiers active,
 via the standard `Tracer` and `FitImaging` objects, without invoking a non-linear search.
@@ -43,7 +45,7 @@ This script focuses on the API specific to a group-scale three-tier extras popul
  - `autolens_workspace/scripts/group/start_here.py` — the group-scale `lens_dict` API, including how
    `main_lens_centres.json` is loaded.
  - `autolens_workspace/scripts/group/features/scaling_relation/modeling.py` — the search-based version of this
-   script, which composes the same model via `af.Model` with a free `einstein_radius_ref` prior.
+   script, which composes the same model via `af.Model` with a free `sigma_ref` prior.
 
 The group simulator here has only ONE main lens galaxy, so the `lens_dict` has a single entry `lens_0`. The
 pattern generalises naturally to groups with multiple main lens galaxies.
@@ -188,11 +190,12 @@ Three-tier concrete composition:
 
  - `lens_dict` (z=0.5): one `Galaxy` per main lens centre, each with `SersicSph` light + `IsothermalSph` mass.
    The simulator here has a single main lens with `einstein_radius=4.0`.
- - `individual_extras` (z=0.5): two individually-modelled companions with simulator-true Einstein radii 0.8
-   and 1.0.
- - `scaling_extras` (z=0.5): two scaling-tier companions whose Einstein radii are derived from
-   `einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5` (simulator truth:
-   0.135 each from luminosity 0.45).
+ - `individual_extras` (z=0.5): two individually-modelled companions with simulator-true truncated
+   `dPIEMassSph` profiles (sigma = 212 and 239 km/s, giving Einstein radii of ~0.8" and ~1.0").
+ - `scaling_extras` (z=0.5): two scaling-tier companions whose truncated `dPIEMassSph` masses are derived from
+   `sigma = sigma_ref * (luminosity / reference_luminosity) ** 0.25` and
+   `r_cut = r_cut_ref * (luminosity / reference_luminosity) ** 0.7` (simulator truth: sigma = 86.8 km/s and
+   r_cut = 2.86" each from luminosity 0.45).
  - `source` (z=1.0): the MGE basis above.
 """
 main_lens_truth = [
@@ -215,8 +218,8 @@ for i, (centre, truth) in enumerate(zip(main_lens_centres, main_lens_truth)):
     )
 
 extra_truth = [
-    dict(intensity=0.9, effective_radius=0.8, sersic_index=3.0, einstein_radius=0.8),
-    dict(intensity=0.9, effective_radius=0.8, sersic_index=3.0, einstein_radius=1.0),
+    dict(intensity=0.9, effective_radius=0.8, sersic_index=3.0, sigma=212.0),
+    dict(intensity=0.9, effective_radius=0.8, sersic_index=3.0, sigma=239.0),
 ]
 
 individual_extras = []
@@ -230,27 +233,35 @@ for centre, truth in zip(extra_galaxies_centres, extra_truth):
                 effective_radius=truth["effective_radius"],
                 sersic_index=truth["sersic_index"],
             ),
-            mass=al.mp.IsothermalSph(
-                centre=tuple(centre), einstein_radius=truth["einstein_radius"]
+            mass=al.mp.dPIEMassSph(
+                centre=tuple(centre),
+                sigma=truth["sigma"],
+                r_core=0.0,
+                r_cut=10.0,
+                redshift_object=0.5,
+                redshift_source=1.0,
             ),
         )
     )
 
 # reference_luminosity is an explicit fixed constant (Lenstool's reference
-# magnitude "mag0"), not the sample max; einstein_radius_ref is the Einstein
-# radius of a galaxy at that reference. Here L_ref = 1.0 (fiducial); both members
-# share luminosity 0.45, so einstein_radius_ref * (0.45)**0.5 = 0.135 (simulator truth).
-einstein_radius_ref = 0.2012
-scaling_exponent = 0.5
+# magnitude "mag0"), not the sample max; sigma_ref is the velocity dispersion
+# of a galaxy at that reference. Here L_ref = 1.0 (fiducial); both members share
+# luminosity 0.45, so sigma = 106.0 * (0.45)**0.25 = 86.8 km/s and
+# r_cut = 5.0 * (0.45)**0.7 = 2.86" (simulator truth).
+sigma_ref = 106.0
+scaling_sigma_exponent = 0.25  # alpha (Faber-Jackson)
+scaling_gamma = 0.2  # M/L tilt, universally fixed
+scaling_rcut_exponent = 1.0 + scaling_gamma - 2.0 * scaling_sigma_exponent  # 0.7
+scaling_r_cut_ref = 5.0
 reference_luminosity = 1.0
 
 scaling_extras = []
-scaling_extras_einstein_radii = []
+scaling_extras_sigmas = []
 for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminosities):
-    einstein_radius = (
-        einstein_radius_ref * (luminosity / reference_luminosity) ** scaling_exponent
-    )
-    scaling_extras_einstein_radii.append(einstein_radius)
+    luminosity_ratio = luminosity / reference_luminosity
+    sigma = sigma_ref * luminosity_ratio**scaling_sigma_exponent
+    scaling_extras_sigmas.append(sigma)
     scaling_extras.append(
         al.Galaxy(
             redshift=0.5,
@@ -260,8 +271,13 @@ for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminos
                 effective_radius=0.6,
                 sersic_index=2.5,
             ),
-            mass=al.mp.IsothermalSph(
-                centre=tuple(centre), einstein_radius=einstein_radius
+            mass=al.mp.dPIEMassSph(
+                centre=tuple(centre),
+                sigma=sigma,
+                r_core=0.0,
+                r_cut=scaling_r_cut_ref * luminosity_ratio**scaling_rcut_exponent,
+                redshift_object=0.5,
+                redshift_source=1.0,
             ),
         )
     )
@@ -313,14 +329,14 @@ print(f"alpha_main_lens (tier sum, first coord)  : {alpha_main_total[0]}")
 print(f"alpha_individual (tier sum, first coord) : {alpha_individual_total[0]}")
 print(f"alpha_scaling    (tier sum, first coord) : {alpha_scaling_total[0]}")
 
-for centre, luminosity, er in zip(
+for centre, luminosity, sigma in zip(
     scaling_galaxies_centres,
     scaling_galaxies_luminosities,
-    scaling_extras_einstein_radii,
+    scaling_extras_sigmas,
 ):
     print(
         f"    scaling galaxy @ {tuple(centre)}: "
-        f"einstein_radius = {einstein_radius_ref:.3f} * ({luminosity:.3f} / {reference_luminosity:.3f}) ** {scaling_exponent:.1f} = {er:.4f}"
+        f"sigma = {sigma_ref:.1f} * ({luminosity:.3f} / {reference_luminosity:.3f}) ** {scaling_sigma_exponent:.2f} = {sigma:.2f} km/s"
     )
 
 alpha_total_summed = alpha_main_total + alpha_individual_total + alpha_scaling_total
@@ -351,13 +367,13 @@ subplot_basis_image(basis=tracer_fitted.galaxies[-1].bulge, grid=plot_grid)
 __Wrap Up__
 
 This script demonstrated the group-scale three-tier API and the per-tier deflection composition, without
-invoking a non-linear search. The scaling relation collapses what would otherwise be N free `einstein_radius`
-parameters into a single shared normalization (`einstein_radius_ref`, the Einstein radius of a reference-magnitude galaxy,
-with the exponent fixed at 0.5), letting the model dimensionality stay constant as galaxy count grows.
+invoking a non-linear search. The scaling relation collapses what would otherwise be N free `sigma`
+parameters into a single shared normalization (`sigma_ref`, the velocity dispersion of a reference-magnitude
+galaxy, with the exponents fixed), letting the model dimensionality stay constant as galaxy count grows.
 
 In a real modeling workflow:
 
- - `modeling.py` runs the search-based version, where `einstein_radius_ref` is a free `af.Model` parameter with
+ - `modeling.py` runs the search-based version, where `sigma_ref` is a free `af.Model` parameter with
    a `UniformPrior`.
  - `modeling_for_luminosities.py` is the standalone light-only fit that produces the luminosities consumed by
    the scaling relation. In production this stage is the `source_lp[0]` step of a SLaM pipeline.

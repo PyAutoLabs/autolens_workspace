@@ -32,7 +32,7 @@ This script fits an ``Imaging`` dataset of a 'group-scale' strong lens where:
  - The sky background is included as a ``DatasetModel`` with a free ``background_sky_level`` parameter.
  - Each main lens galaxy's light is an MGE bulge.
  - The first main lens galaxy's total mass distribution is an ``Isothermal`` and ``ExternalShear``.
- - There are two extra lens galaxies with MGE light and ``IsothermalSph`` total mass distributions.
+ - There are two extra lens galaxies with MGE light and tidally truncated ``dPIEMassSph`` total mass distributions.
  - The source galaxy's light is an MGE.
 
 __Start Here Notebook__
@@ -141,7 +141,7 @@ We compose a group lens model that includes a sky background component:
  - The main lens galaxies use MGE light profiles and isothermal mass profiles. Only the first main lens
    galaxy carries an ``ExternalShear``.
 
- - The extra galaxies use MGE light profiles with fixed centres and isothermal mass profiles.
+ - The extra galaxies use MGE light profiles with fixed centres and truncated dPIE mass profiles.
 
  - The source galaxy uses an MGE light profile.
 
@@ -184,10 +184,16 @@ for centre in extra_galaxies_centres:
 
     # Extra Galaxy Mass
 
-    mass = af.Model(al.mp.IsothermalSph)
+    mass = af.Model(al.mp.dPIEMassSph)
 
     mass.centre = centre
-    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
+    mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+    mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+    mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+    mass.redshift_object = 0.5
+    mass.redshift_source = 1.0
+    mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+    mass.Om0 = 0.30966
 
     # Extra Galaxy
 

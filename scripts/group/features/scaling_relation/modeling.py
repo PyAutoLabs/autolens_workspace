@@ -3,7 +3,7 @@ Modeling Features (Group): Scaling Relations
 ============================================
 
 Group-scale strong lenses can have many galaxies in the foreground beyond the primary lens. As the number grows,
-modelling each galaxy individually becomes impractical: a system with 10 companions would gain 10 extra Einstein-radius
+modelling each galaxy individually becomes impractical: a system with 10 companions would gain 10 extra mass
 free parameters, and the data is rarely informative enough to constrain them all.
 
 This example demonstrates the **three-tier modeling API** used by the production group pipelines, in which foreground
@@ -13,18 +13,26 @@ galaxies are split into three distinct populations:
    `Isothermal` mass + `ExternalShear` (on `lens_0` only). These dominate the lensing.
 
  - **Extra galaxies** (`extra_galaxies_centres.json`): nearby companion galaxies modelled individually, each with its
-   own MGE bulge and bounded Einstein radius. Their light is fit and their mass is fit but constrained to a sensible
-   range. Use this tier for the brighter / closer companions that contribute non-trivially to the lensing on their own.
+   own MGE bulge and a tidally truncated `dPIEMassSph` mass with bounded free `sigma`. Their light is fit and their
+   mass is fit but constrained to a sensible range. Use this tier for the brighter / closer companions that
+   contribute non-trivially to the lensing on their own.
 
- - **Scaling galaxies** (`scaling_galaxies_centres.json`): further-out, fainter companions whose Einstein radii are
-   tied together via a shared scaling relation:
+ - **Scaling galaxies** (`scaling_galaxies_centres.json`): further-out, fainter companions whose truncated
+   `dPIEMassSph` masses are tied together via a shared scaling relation in Lenstool's native parameters:
 
-       einstein_radius = einstein_radius_ref * (luminosity / reference_luminosity) ** 0.5
+       sigma = sigma_ref * (luminosity / reference_luminosity) ** 0.25
+       r_cut = r_cut_ref * (luminosity / reference_luminosity) ** 0.7
 
-   anchored to a fixed *reference magnitude* (Lenstool's ``mag0``, an explicit constant — not the sample max), with the exponent fixed at the
-   Faber-Jackson value of 0.5 — the convention used by Lenstool and standard in published group- and
-   cluster-scale analyses. The only free parameter is `einstein_radius_ref` — adding more scaling galaxies
-   does not grow the model. Use this tier for the long tail of fainter companions.
+   anchored to a fixed *reference magnitude* (Lenstool's ``mag0``, an explicit constant — not the sample max), with
+   the exponents fixed at the modern tied values (sigma ∝ L^0.25 is Faber-Jackson; beta_cut = 1 + gamma - 2*alpha
+   with gamma = 0.2) — the convention used by Lenstool and standard in published group- and cluster-scale analyses
+   (Bergamini et al. 2019). The only free parameter is `sigma_ref` — adding more scaling galaxies does not grow
+   the model. Use this tier for the long tail of fainter companions.
+
+Both tiers use the tidally truncated dPIE profile, the group and cluster convention: members orbiting in the shared
+group potential have their outer dark matter stripped by tides, so their profiles are physically truncated at
+``r_cut`` (at galaxy scale, with no host environment, extra galaxies are untruncated — see
+`imaging/features/extra_galaxies`).
 
 Splitting galaxies across these three tiers is the standard pattern in production group fits (see the `euclid_strong_lens_modeling_pipeline` repository). It gives the lensing-significant galaxies the model flexibility they need
 while keeping the model tractable as the number of foreground galaxies grows.
@@ -44,8 +52,8 @@ __Contents__
 - **Luminosities:** The scaling galaxies need a measured luminosity each; in this tutorial we hardcode them.
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
 - **Main Lens Galaxies:** MGE bulge + free `Isothermal` mass; `ExternalShear` only on `lens_0`.
-- **Extra Galaxies:** MGE bulge with fixed centre + `IsothermalSph` with bounded uniform `einstein_radius`.
-- **Scaling Galaxies:** MGE bulge with fixed centre + `Isothermal` mass via shared scaling relation.
+- **Extra Galaxies:** MGE bulge with fixed centre + truncated `dPIEMassSph` with bounded uniform `sigma`.
+- **Scaling Galaxies:** MGE bulge with fixed centre + truncated `dPIEMassSph` mass via shared scaling relation.
 - **Model:** Compose the lens model fitted to the data.
 - **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
 - **Search and Analysis:** Configure the non-linear search and run the model-fit.
@@ -57,7 +65,7 @@ The three-tier split is the load-bearing idea here. To make the right choice for
 
  - Is it bright enough that fitting its light independently meaningfully helps the lens model? -> main or extra tier.
  - Does it dominate the lensing? -> main tier.
- - Is it close enough / bright enough to need a free Einstein radius? -> extra tier.
+ - Is it close enough / bright enough to need its own free mass normalization? -> extra tier.
  - Is it part of the long tail of fainter companions, where individually it contributes little but collectively it
    matters? -> scaling tier.
 
@@ -223,8 +231,9 @@ for i, centre in enumerate(main_lens_centres):
 """
 __Extra Galaxies__
 
-Each modelled with its own MGE bulge (fixed centre) + `IsothermalSph` mass with a bounded uniform `einstein_radius`.
-Each adds 1 free Einstein-radius parameter to the model.
+Each modelled with its own MGE bulge (fixed centre) + tidally truncated `dPIEMassSph` mass with a bounded uniform
+`sigma` (`r_core` and `r_cut` fixed; the redshifts and cosmology constants are pinned so they do not inherit
+default priors and float). Each adds 1 free sigma parameter to the model.
 """
 extra_galaxies_list = []
 
@@ -233,9 +242,15 @@ for centre in extra_galaxies_centres:
         mask_radius=mask_radius, total_gaussians=10, centre_fixed=tuple(centre)
     )
 
-    mass = af.Model(al.mp.IsothermalSph)
+    mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = tuple(centre)
-    mass.einstein_radius = af.UniformPrior(lower_limit=0.0, upper_limit=1.5)
+    mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=350.0)
+    mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+    mass.r_cut = 10.0  # truncation fixed at a fiducial radius
+    mass.redshift_object = 0.5
+    mass.redshift_source = 1.0
+    mass.H0 = 67.66  # pinned: model constants, not parameters to sample
+    mass.Om0 = 0.30966
 
     extra_galaxy = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
@@ -247,29 +262,31 @@ extra_galaxies = af.Collection(extra_galaxies_list)
 __Scaling Galaxies__
 
 The scaling-relation tier, in the reference-anchored convention used by Lenstool and essentially every published
-group- and cluster-scale analysis (Limousin et al. 2005; Eliasdottir et al. 2007; Bergamini et al. 2019). The
-normalization ``einstein_radius_ref`` is the Einstein radius of a galaxy *at the reference magnitude* — a physically
-interpretable quantity with an easy-to-motivate prior range — and it is defined ONCE outside the loop: every
-scaling galaxy's mass derives from it via its luminosity ratio to the reference. The reference luminosity
-``reference_luminosity`` is an **explicit fixed constant** (Lenstool's reference magnitude ``mag0``), *not* the
-maximum luminosity of the sample — anchoring to a fixed reference keeps the normalization invariant to which
-galaxies are placed in the tier. In a real analysis set it to the BCG/BGG magnitude (or a characteristic L*); here
-we use a fiducial ``reference_luminosity = 1.0``. The exponent is *fixed* at the Faber-Jackson value
-(einstein_radius ∝ sigma² and sigma ∝ L^(1/4) give einstein_radius ∝ L^(1/2)) rather than fitted, avoiding the
-normalization-slope degeneracy. Only luminosity ratios enter, so the luminosity units are irrelevant; magnitude
-catalogues convert via ``L / L_ref = 10 ** (0.4 * (m_ref - m))``.
+group- and cluster-scale analysis (Limousin et al. 2005; Eliasdottir et al. 2007; Bergamini et al. 2019), expressed
+directly in Lenstool's native dPIE parameters: ``sigma ∝ L^0.25`` (Faber-Jackson — equivalent to
+einstein_radius ∝ L^0.5 since the lens strength goes as sigma²) and ``r_cut ∝ L^0.7`` via the modern tied exponent
+beta_cut = 1 + gamma - 2*alpha with gamma = 0.2, with vanishing unscaled cores. The normalization ``sigma_ref`` is
+the velocity dispersion of a galaxy *at the reference magnitude* — a physically interpretable quantity with an
+easy-to-motivate prior range — and it is defined ONCE outside the loop: every scaling galaxy's mass derives from it
+via its luminosity ratio to the reference. The reference luminosity ``reference_luminosity`` is an **explicit fixed
+constant** (Lenstool's reference magnitude ``mag0``), *not* the maximum luminosity of the sample — anchoring to a
+fixed reference keeps the normalization invariant to which galaxies are placed in the tier. In a real analysis set
+it to the BCG/BGG magnitude (or a characteristic L*); here we use a fiducial ``reference_luminosity = 1.0``. The
+exponents are *fixed* rather than fitted, avoiding the normalization-slope degeneracy. Only luminosity ratios
+enter, so the luminosity units are irrelevant; magnitude catalogues convert via
+``L / L_ref = 10 ** (0.4 * (m_ref - m))``.
 
-The dPIE-profile cluster-scale analogue — expressed directly in Lenstool's native parameters
-(``sigma ∝ L^0.25``, ``r_cut ∝ L^0.7`` via the modern tied exponent beta_cut = 1 + gamma - 2*alpha with
-gamma = 0.2, vanishing unscaled cores; the sigma relation is equivalent to einstein_radius ∝ L^0.5 since
-the lens strength goes as sigma²) — is ``scripts/cluster/modeling.py``. To free the
-exponent as a systematics test, replace the fixed value with e.g. ``af.UniformPrior(lower_limit=0.0, upper_limit=1.0)``.
+The same relation at cluster scale — with hundreds of members — is ``scripts/cluster/modeling.py``. To free an
+exponent as a systematics test, replace its fixed value with e.g. ``af.UniformPrior(lower_limit=0.0, upper_limit=0.5)``.
 
 Adding more scaling galaxies (e.g. by lengthening the centres + luminosity lists) does not add any free parameters
 to the model.
 """
-einstein_radius_ref = af.UniformPrior(lower_limit=0.0, upper_limit=0.5)
-scaling_exponent = 0.5
+sigma_ref = af.UniformPrior(lower_limit=0.0, upper_limit=200.0)
+scaling_sigma_exponent = 0.25  # alpha (Faber-Jackson)
+scaling_gamma = 0.2  # M/L tilt, universally fixed
+scaling_rcut_exponent = 1.0 + scaling_gamma - 2.0 * scaling_sigma_exponent  # 0.7
+scaling_r_cut_ref = 5.0  # fixed reference truncation radius
 
 reference_luminosity = 1.0
 
@@ -284,10 +301,16 @@ for scaling_galaxy_centre, scaling_galaxy_luminosity in zip(
         centre_fixed=tuple(scaling_galaxy_centre),
     )
 
-    mass = af.Model(al.mp.Isothermal)
+    mass = af.Model(al.mp.dPIEMassSph)
     mass.centre = tuple(scaling_galaxy_centre)
     luminosity_ratio = scaling_galaxy_luminosity / reference_luminosity
-    mass.einstein_radius = einstein_radius_ref * luminosity_ratio**scaling_exponent
+    mass.sigma = sigma_ref * luminosity_ratio**scaling_sigma_exponent
+    mass.r_core = 0.0  # vanishing core — fixed, never scaled
+    mass.r_cut = scaling_r_cut_ref * luminosity_ratio**scaling_rcut_exponent
+    mass.redshift_object = 0.5
+    mass.redshift_source = 1.0
+    mass.H0 = 67.66
+    mass.Om0 = 0.30966
 
     scaling_galaxy = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
@@ -367,9 +390,10 @@ result = search.fit(model=model, analysis=analysis)
 """
 __Result__
 
-`result.info` shows all three tiers separately. The recovered `einstein_radius_ref` should be close to the truth
-value used by the simulator (0.2012, the Einstein radius of a reference-magnitude galaxy at
-`reference_luminosity = 1.0`; each member, at luminosity 0.45, then has Einstein radius 0.135).
+`result.info` shows all three tiers separately. The recovered `sigma_ref` should be close to the truth
+value used by the simulator (106.0 km/s, the velocity dispersion of a reference-magnitude galaxy at
+`reference_luminosity = 1.0`; each member, at luminosity 0.45, then has sigma = 86.8 km/s, r_cut = 2.86" and an
+Einstein radius of ~0.136").
 """
 print(result.info)
 
@@ -380,8 +404,8 @@ __Wrap Up__
 
 This example showed the full three-tier modeling API. The same structure scales naturally to systems with many more
 foreground galaxies — the only thing that grows is the JSON centre files. The relation can also be applied to other
-mass profiles or other measured quantities by swapping the `Isothermal` for any other `MassProfile` or the luminosity
-for stellar mass / velocity dispersion.
+mass profiles or other measured quantities by swapping the `dPIEMassSph` for any other `MassProfile` or the
+luminosity for stellar mass / velocity dispersion.
 
 Related examples:
 

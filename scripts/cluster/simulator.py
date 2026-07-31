@@ -101,6 +101,12 @@ appear in a Lenstool ``.par`` file or a published cluster paper's results table:
    as the ``NFWMCRLudlowSph`` host halo below, because the tracer normalizes profile deflections to the
    final source plane.
 
+The truncation is the physics of the cluster regime, not a numerical convenience: member galaxies orbiting
+in the cluster's shared potential have the outer parts of their dark matter halos stripped by tides, so
+their profiles genuinely end at a finite radius ``r_cut``. The same convention applies at group scale
+(`group/modeling.py`); at galaxy and multi-galaxy scale, with no host environment to strip them, extra
+galaxies are untruncated `Isothermal` profiles instead (`imaging/features/extra_galaxies`).
+
 The internal ``(ra, rs, b0)`` parameterization remains available as ``dPIEMassB0Sph`` (non-standard; b0
 is the lens strength in arcsec, with b0 proportional to sigma^2).
 
