@@ -185,6 +185,36 @@ analysis = al.AnalysisPoint(
 )
 
 """
+__Analytic Reference Time (Solved)__
+
+The default `FitTimeDelays` compares *relative* delays by subtracting the minimum delay from both
+the data and the model (the "reference image" convention). An alternative is
+`al.FitTimeDelaysSolved`, which instead solves a precision-weighted analytic reference time from
+the data in closed form and analytically marginalizes over it — a smooth (and JAX-differentiable)
+alternative to the min-subtraction.
+
+Solved fit classes pair with the parameter-free `al.ps.PointSolved` model component (which also
+solves the source centre, dropping its 2 free parameters; mixing solved fits with `Point` raises an
+error). The composition below is shown for reference and not fitted in this script:
+"""
+lens_solved = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
+
+source_solved = af.Model(al.Galaxy, redshift=1.0, point_0=af.Model(al.ps.PointSolved))
+
+model_solved = af.Collection(
+    galaxies=af.Collection(lens=lens_solved, source=source_solved)
+)
+
+analysis_solved = al.AnalysisPoint(
+    dataset=dataset,
+    solver=solver,
+    fit_positions_cls=al.FitPositionsSourceSolved,  # Solved fits pair with `PointSolved`.
+    fit_time_delays_cls=al.FitTimeDelaysSolved,  # Analytic reference time instead of min-subtraction.
+)
+
+print(model_solved.info)
+
+"""
 __Run Times__
 
 For the positions-only fit, the run time of the log likelihood function was ~0.01 seconds, which is fast

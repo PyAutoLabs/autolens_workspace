@@ -300,6 +300,10 @@ __Model__
 The model is composed below in four blocks: main-tier loop, host halo, source-tier loop, scaling-tier
 loop (defining the shared ``sigma_ref`` normalization once outside the loop). The four blocks are then
 bundled into a single ``af.Collection`` model that the analysis will receive.
+
+Each source's ``Point`` centre is sampled as 2 free parameters. A centre-free alternative
+(``al.ps.PointSolved`` + the ``*Solved`` fit classes) solves the centres analytically instead — see
+``guides/point_source_pairing.py``.
 """
 redshift_lens = 0.308
 source_redshifts = [dataset.redshift for dataset in dataset_list]

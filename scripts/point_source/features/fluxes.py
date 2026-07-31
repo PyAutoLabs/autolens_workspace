@@ -185,6 +185,38 @@ analysis = al.AnalysisPoint(
 )
 
 """
+__Analytic Flux (Solved)__
+
+An alternative to sampling `flux` is to solve it analytically: `al.FitFluxesSolved` computes the
+magnification-weighted best-fit source flux from the data in closed form, so the model needs no
+`flux` parameter at all. The model component is then the parameter-free `al.ps.PointSolved` (which
+also solves the source centre analytically — solved fits require it, and mixing solved fits with
+`Point`/`PointFlux` raises an error), reducing the model above from N=8 to N=5.
+
+The composition is shown below (not fitted here — the model-fit in this script demonstrates the
+free-`flux` convention; see `guides/point_source_pairing.py` for when to prefer each):
+
+The microlensing caveat at the top of this script applies equally to the solved flux: solving the
+source flux analytically does not make image fluxes any less affected by microlensing.
+"""
+lens_solved = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
+
+source_solved = af.Model(al.Galaxy, redshift=1.0, point_0=af.Model(al.ps.PointSolved))
+
+model_solved = af.Collection(
+    galaxies=af.Collection(lens=lens_solved, source=source_solved)
+)
+
+analysis_solved = al.AnalysisPoint(
+    dataset=dataset,
+    solver=solver,
+    fit_positions_cls=al.FitPositionsSourceSolved,  # Solved fits pair with `PointSolved`.
+    fit_flux_cls=al.FitFluxesSolved,  # Flux solved analytically, no free `flux` parameter.
+)
+
+print(model_solved.info)
+
+"""
 __Run Times__
 
 For the positions-only fit, the run time of the log likelihood function was ~0.01 seconds, which is a modest run-time.

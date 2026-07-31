@@ -32,6 +32,9 @@ __The .par → PyAutoLens dictionary__
     ``arcs.dat``                        ``point_datasets.csv`` → ``al.PointDataset`` list
     sigposArcsec                        ``positions_noise`` column (same chi-squared)
     source-plane optimization           ``al.FitPositionsSource`` (this script)
+                                        (``al.FitPositionsSourceSolved`` solves the source centre
+                                        analytically; its ``weighting = "magnification"`` option
+                                        matches Lenstool's scalar µ² convention — see guides)
     image-plane optimization            ``al.FitPositionsImagePair*`` (heavier; see guides)
     ``best.par``                        the max-likelihood instance of the PyAutoLens fit
 

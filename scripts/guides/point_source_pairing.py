@@ -10,10 +10,11 @@ models a sampler rewards, and historically lensing codes have handled it with qu
 rather than explicit choices.
 
 This guide documents PyAutoLens's choices: the three image-plane pairing schemes, the
-over/under-prediction policies, the solver settings that interact with them at cluster scale, and
-the source-plane vs image-plane chi-squared trade-off. It is the reference the cluster examples
-(``scripts/cluster/``, including the Lenstool walkthrough in ``scripts/cluster/lenstool/``) point
-at for likelihood choices.
+over/under-prediction policies, the solver settings that interact with them at cluster scale, the
+source-plane vs image-plane chi-squared trade-off, and the second axis of the likelihood-option
+matrix — whether the source-plane centre is a free model parameter or analytically solved
+(``al.ps.PointSolved``). It is the reference the cluster examples (``scripts/cluster/``, including
+the Lenstool walkthrough in ``scripts/cluster/lenstool/``) point at for likelihood choices.
 
 __The two failure modes__
 
@@ -102,7 +103,96 @@ sub-percent mass perturbations do not.
 The pragmatic workflow at cluster scale: **search with the source-plane chi-squared, validate with
 the image-plane chi-squared** — run the image-plane fit (and inspect ``n_unmatched_model_positions``
 plus the per-system image counts) on the max-likelihood model before publishing, exactly as the
-Lenstool-users example does.
+Lenstool-users example does. The solved-centre variants below sharpen this advice further.
+
+__The second axis: free vs analytically-solved source centre__
+
+Every fit above anchors its prediction to a source-plane centre — the ``centre`` of the model's
+``al.ps.Point`` (or ``al.ps.PointFlux``), sampled as two non-linear parameters per point source.
+That centre can instead be **solved analytically** from the observed positions and the current mass
+model, dropping out of the non-linear parameter space entirely. The model component for this is
+``al.ps.PointSolved``, which is parameter-free, and each fit class gains a ``*Solved`` sibling:
+
+| Free-centre fit | Solved-centre sibling |
+|---|---|
+| ``FitPositionsSource`` | ``FitPositionsSourceSolved`` |
+| ``FitPositionsImagePairRepeat`` | ``FitPositionsImagePairRepeatSolved`` |
+| ``FitPositionsImagePairAll`` | ``FitPositionsImagePairAllSolved`` |
+| ``FitPositionsImagePair`` | — (deliberately none; see below) |
+| ``FitFluxes`` | ``FitFluxesSolved`` |
+| ``FitTimeDelays`` | ``FitTimeDelaysSolved`` |
+
+The Hungarian ``FitPositionsImagePair`` has no solved sibling: its linear-sum-assignment pairing is
+numpy-only (not JAX-differentiable) and the repeat/all-pairs solved variants supersede it.
+
+The payoff is dimensionality: each point source loses 2 free parameters (and ``FitFluxesSolved``
+drops the ``flux`` parameter too, so ``PointSolved`` alone covers positions + fluxes + time-delay
+datasets). A 10-source cluster fit loses 20 parameters — at cluster scale, where sources are many
+and each adds little individual constraint on the mass model, this is where the gain is largest.
+
+Mixing the two conventions is an error in both directions, raised loudly as
+``PointProfileMismatchException``: a ``*Solved`` fit given a centre-bearing profile would sample two
+parameters the analytic solve silently ignores, and a free-centre fit given ``PointSolved`` has no
+centre to read.
+
+__The solved source-plane chi-squared (FitPositionsSourceSolved)__
+
+The solved source-plane fit follows Lombardi (2024, arXiv:2406.15280, §5.1): Taylor-expanding the
+lens equation around each observed image position makes the back-traced source position linear in
+the source centre, so the optimal centre has a closed form. Each back-traced position ``β̂ᵢ`` is
+weighted by its precision tensor ``Wᵢ = Aᵢ⁻ᵀ Θᵢ Aᵢ⁻¹`` (``A = ∂β/∂θ`` is the lensing Jacobian,
+``Θᵢ = σᵢ⁻² I`` the image-plane precision), and the solved centre is the precision-weighted mean
+
+    β* = (Σᵢ Wᵢ)⁻¹ Σᵢ Wᵢ β̂ᵢ
+
+with the likelihood analytically marginalized over the centre (a flat prior; the fit's
+``marginalization_term`` property is the resulting log-determinant contribution).
+
+The tensor weighting is also a better error model than the scalar ``µ²/σ²`` weighting of
+``FitPositionsSource``. The eigenvalues of ``Wᵢ`` are ``λ²/σᵢ²`` with ``λ`` the linear stretch
+along each eigendirection: isotropically each stretch is ``√µ``, while near a critical curve the
+tangential stretch is ``≈ µ`` — the scalar ``µ²`` convention coincides with the tensor only in that
+near-critical tangential limit, so it over-weights images everywhere else. The
+``weighting`` class attribute selects the convention: ``"jacobian"`` (default, the tensor) or
+``"magnification"`` (the scalar, retained for comparisons with the traditional Lenstool-style
+convention).
+
+__Solved image-plane variants__
+
+``FitPositionsImagePairRepeatSolved`` and ``FitPositionsImagePairAllSolved`` reuse the same solved
+``β*`` to drive the forward lens-equation solve, then apply their scheme's image-plane pairing
+chi-squared unchanged. These are **not** from Lombardi (2024) — the paper keeps the centre free in
+its image-plane likelihoods. They are a PyAutoLens extension in the spirit of glafic's
+source-position optimization (Oguri 2010, PASJ 62, 1017), which likewise eliminates the source
+position from the sampled space of an image-plane chi-squared.
+
+__Solved fluxes and time delays__
+
+``FitFluxesSolved`` solves the source flux the same way (following Lombardi 2024 §6.1, ported to
+flux space to match PyAutoLens's flux-space Gaussian noise maps): ``F* = Σᵢ µᵢ f̂ᵢ/σᵢ² / Σᵢ µᵢ²/σᵢ²``
+— magnification-first, mirroring ``FitFluxes.model_data = |µᵢ|·F`` — plus its marginalization term.
+``FitTimeDelaysSolved`` replaces the reference-image min-subtraction of ``FitTimeDelays`` with a
+precision-weighted analytic reference time ``T*``. Both are selected via the ``fit_flux_cls`` /
+``fit_time_delays_cls`` inputs of ``FitPointDataset`` / ``AnalysisPoint``, mirroring
+``fit_positions_cls``.
+
+__Missing-image penalty__
+
+``FitPositionsImagePairAll``'s mixture normalization already implements the principled
+over-prediction Occam factor (the ``1/P^I`` term of Lombardi 2024's mixture likelihood).
+``FitPositionsImagePairRepeat``'s ``unmatched_model_policy`` heuristics stay as they are:
+best-match pairing is not a normalized mixture, so no principled combinatorial term applies to it.
+
+__Choosing at cluster scale__
+
+Profiling on the standard cluster model (see the likelihood-breakdown scripts referenced above)
+puts the analytic ``β*`` solve at timing-noise-level overhead per likelihood call — net +3% on the
+image-plane likelihood, +9–30% on sub-0.1 s eager source-plane totals — while removing 2 free
+parameters per point source from the non-linear space. The recommendation for cluster fits is
+therefore to sharpen the workflow above: **search with ``FitPositionsSourceSolved`` (with
+``al.ps.PointSolved`` sources), validate with the image-plane chi-squared** on the max-likelihood
+model. Reserve free-centre ``FitPositionsSource`` for direct comparisons with codes that sample the
+source position (its ``weighting = "magnification"`` scalar convention matches Lenstool's).
 
 __Demonstration__
 
@@ -177,6 +267,26 @@ fit = al.FitPositionsImagePairRepeat(
 print("Case 3 — missing image:")
 print(f"  residuals = {[round(float(r), 3) for r in np.asarray(fit.residual_map)]}")
 print(f"  chi_squared = {float(fit.chi_squared):.4f}")
+
+"""
+__Case 4 — solved source centre__
+
+The solved variants swap the source's ``al.ps.Point`` (free centre) for the parameter-free
+``al.ps.PointSolved``. The source-plane fit needs no solver at all: it back-traces the observed
+positions and solves the centre analytically. The fit exposes the solved centre via
+``source_plane_coordinate`` and the analytic-marginalization contribution via
+``marginalization_term``.
+"""
+source_solved = al.Galaxy(redshift=1.0, point_0=al.ps.PointSolved())
+tracer_solved = al.Tracer(galaxies=[lens, source_solved])
+
+fit = al.FitPositionsSourceSolved(
+    name="point_0", data=data, noise_map=noise_map, tracer=tracer_solved, solver=None
+)
+print("Case 4 — solved source centre (source-plane fit, no free centre parameters):")
+print(f"  solved centre beta* = {tuple(round(float(c), 4) for c in fit.source_plane_coordinate)}")
+print(f"  chi_squared = {float(fit.chi_squared):.4f}")
+print(f"  marginalization_term = {float(fit.marginalization_term):.4f}")
 
 """
 For the production-scale picture — real solver, multi-plane cluster tracer, timings —

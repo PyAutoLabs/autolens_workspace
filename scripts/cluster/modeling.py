@@ -462,6 +462,11 @@ no matching dataset, **PyAutoLens** raises an error.
 
 In multi-source cluster lenses, this name pairing is what ensures every source's positions are fitted by
 the correct model component.
+
+A centre-free alternative exists for the sources: the parameter-free ``al.ps.PointSolved`` paired with
+``fit_positions_cls=al.FitPositionsSourceSolved`` solves each source centre analytically, removing 2 free
+parameters per source — the recommended search-stage configuration at cluster scale (validate image-plane;
+see ``guides/point_source_pairing.py``).
 """
 print(model)
 
