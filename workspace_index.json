@@ -6519,6 +6519,58 @@
   },
   {
     "contents": [
+      "What Changes",
+      "The False Positive This Regime Invites",
+      "Helpers",
+      "Source LP / Source Pix 1 & 2 / Light LP / Mass Total",
+      "Subhalo Pipeline (no subhalo)",
+      "Subhalo Pipeline (grid search)",
+      "Subhalo Pipeline (refine)",
+      "Dataset, Centres, Mask",
+      "Mesh Shape",
+      "Pipeline",
+      "Bayesian Evidence",
+      "Grid Search Result"
+    ],
+    "cross_refs": [
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/subhalo/detect/start_here.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/subhalo/detect/start_here.py",
+    "summary": "This script runs the full SLaM pipeline followed by the three SUBHALO stages, to detect a dark matter subhalo in a multi-galaxy strong lens.",
+    "title": "Subhalo Detection: Multi Galaxy"
+  },
+  {
+    "contents": [
+      "Dataset Paths",
+      "Grid",
+      "Galaxy Centres",
+      "Over Sampling",
+      "PSF Convolution",
+      "Main Lens Galaxies",
+      "External Shear",
+      "Subhalo",
+      "Source Galaxy",
+      "Ray Tracing",
+      "Dataset",
+      "Visualize",
+      "Tracer json",
+      "Centre JSON Files"
+    ],
+    "cross_refs": [
+      "detect/start_here.py",
+      "imaging/features/advanced/subhalo/simulator.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/simulator.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/advanced/subhalo/simulator.ipynb",
+    "path": "scripts/multi_galaxy/features/advanced/subhalo/simulator.py",
+    "summary": "This script simulates a multi-galaxy strong lens containing a **dark matter subhalo** \u2014 a compact, dark perturber that distorts the lensed source's arcs without producing any light of its own.",
+    "title": "Simulator: Subhalo (Multi Galaxy)"
+  },
+  {
+    "contents": [
       "Dataset",
       "Mask & Over Sampling",
       "Centres",

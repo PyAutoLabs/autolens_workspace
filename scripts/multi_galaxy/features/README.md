@@ -115,15 +115,19 @@ goals, rather than part of the default model:
   two galaxies the mass-to-light ratios are near-degenerate with each other, so tying them across the pair is
   what makes the decomposition tractable.
 
+- **`advanced/subhalo`** — detecting a dark matter subhalo. Detection is a comparison against the smooth
+  model, and this regime's smooth model has a degenerate mass split — which produces residuals of the same
+  character as a perturber, so the comparison model has to carry every deflector.
+
 See `advanced/README.md` for the full inventory.
 
-# Not yet written
+# Scope
 
-Feature folders present in `group/features` and `imaging/features` but not yet in this package: the remaining
-`advanced/` folder — `subhalo`.
+This package now covers every folder in `group/features` except `group_halo`, which has no analogue at this
+scale for the reason given above, plus `extra_galaxies` and `scaling_relation`.
 
-Until they land, the corresponding `imaging/features` scripts apply with the single lens galaxy swapped for the
-`lens_0`, `lens_1`, ... loop of this package.
+`potential_correction` and `los_halos` exist only in `imaging/features/advanced` and are deliberately not part
+of this package.
 
 # Results
 

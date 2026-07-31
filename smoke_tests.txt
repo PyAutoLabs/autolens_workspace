@@ -45,6 +45,10 @@ multi_galaxy/features/advanced/double_source_plane_lens/chaining.py
 # workflow. Neither path is reached by any other entry in this suite.
 multi_galaxy/features/advanced/mass_stellar_dark/modeling.py
 multi_galaxy/features/advanced/mass_stellar_dark/chaining.py
+# The subhalo simulator only — it is the one entry whose code path (NFWMCRLudlowSph with a
+# mass-concentration relation) nothing else in this suite reaches. detect/start_here.py is a
+# grid search over a full SLaM pipeline and is left out, like every other slam-style script.
+multi_galaxy/features/advanced/subhalo/simulator.py
 imaging/features/scaling_relation/modeling.py
 # multi_dataset/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1
 multi_dataset/modeling.py
