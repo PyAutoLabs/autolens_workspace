@@ -198,8 +198,10 @@ applicable to all strong lens dataset.
 There is no analogous define an adaptive over sampling grid for the lensed source, because for every dataset the
 source's light will appear in different regions of the image plane.
 
-This is why the majority of workspace examples use cored light profiles for the source galaxy. A cored light profile
-does not rapidly change in its central regions, and therefore can be evaluated accurately without over-sampling.
+This is why the adaptive over sampling schemes used throughout the workspace never drop below 2x2 in their outer
+regions, so the source's arcs are always evaluated with at least a 2x2 sub-grid. This matters most for compact
+source profiles, such as the Gaussians of a Multi Gaussian Expansion (MGE), whose aliasing at 1x1 evaluation would
+degrade the likelihood surface that gradient-based searches optimize.
 
 There is a way to set up an adaptive over sampling grid for a lensed source, however it requries one to use and
 understanding the advanced lens modeling feature search chaining.

@@ -143,8 +143,8 @@ accurate image simulation while focusing computational resources on the bright r
 oversampling. The adaptive grid is centred on both main lens galaxies and on the extra galaxy.
 
 An adaptive oversampling grid cannot be defined for the lensed source because its light appears in different regions
-of the image plane for each dataset. For this reason, most workspace examples use cored light profiles for the
-source galaxy, whose gradual central variation is evaluated accurately without over-sampling.
+of the image plane for each dataset. For this reason, the adaptive schemes used for model fitting never drop below
+2x2 over-sampling in their outer regions, so the source's arcs are always evaluated with at least a 2x2 sub-grid.
 
 Once you are more experienced, you should read up on over-sampling in more detail via
 the `autolens_workspace/*/guides/advanced/over_sampling.ipynb` notebook.

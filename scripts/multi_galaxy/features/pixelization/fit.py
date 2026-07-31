@@ -101,7 +101,7 @@ main_lens_centres = al.from_json(file_path=dataset_path / "main_lens_centres.jso
 dataset = dataset.apply_over_sampling(
     over_sample_size_lp=al.util.over_sample.over_sample_size_via_radial_bins_from(
         grid=dataset.grid,
-        sub_size_list=[8, 4, 1],
+        sub_size_list=[8, 4, 2],
         radial_list=[0.3, 0.6],
         centre_list=list(main_lens_centres),
     )
