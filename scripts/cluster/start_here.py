@@ -52,10 +52,9 @@ __JAX__
 PyAutoLens runs cluster point-source fits on JAX by default —
 `al.AnalysisPoint(use_jax=True)` (auto-enabled) routes the likelihood
 through `jax.vmap(jax.jit(...))`. Cluster fits benefit the most from
-GPU acceleration: the multi-galaxy multi-plane deflection sum + the
-`PointSolver` triangle refinement loop are the dominant costs and
-both vectorise cleanly on GPU. Expect ~10 minutes per fit on GPU vs
-30+ on CPU.
+GPU acceleration: the multi-galaxy multi-plane deflection sum over
+hundreds of members is the dominant cost of the solved source-plane
+likelihood used below, and it vectorises cleanly on GPU.
 
 For the broader JAX principles, see the top-level
 `autolens_workspace/start_here.py` `__JAX__` section. The
@@ -67,7 +66,8 @@ __Capabilities__
 
 Cluster modeling with **PyAutoLens** offers:
 
- - JAX-accelerated image-plane chi-squared, over 50× faster than mainstream cluster modeling tools.
+ - JAX-accelerated point-source chi-squared (solved source-plane search, image-plane validation),
+   over 50× faster than mainstream cluster modeling tools.
  - Multi-plane ray tracing of arbitrary complexity, supported natively.
  - Hand-editable CSV inputs (point datasets, scaling-galaxy catalogues) that make iterating on a real
    cluster straightforward.
@@ -238,9 +238,11 @@ __Point Solver__
 
 Point-source modeling needs a ``PointSolver`` to find the image-plane multiple images of each source.
 The solver ray-traces triangles from the image plane back to the source plane, iteratively refining
-until the requested precision is reached. We use the same solver settings as the more detailed
-``cluster/modeling.py`` — 0.001" precision and a magnification threshold of 0.1 to discard
-heavily-demagnified central images — on a 120x120 starting grid.
+until the requested precision is reached. The solved source-plane fit used below does not invoke it
+per likelihood evaluation — the solver serves visualization and image-plane validation of the
+max-likelihood model. We use the same solver settings as the more detailed ``cluster/modeling.py`` —
+0.001" precision and a magnification threshold of 0.1 to discard heavily-demagnified central images —
+on a 120x120 starting grid.
 """
 grid = al.Grid2D.uniform(shape_native=(120, 120), pixel_scales=1.0)
 
@@ -277,11 +279,12 @@ The model has four tiers, one per cluster component:
    models use several halos; one halo is the deliberately simple starting point, and adding a second
    is a CSV-level edit.) **1 free parameter.**
 
- - **Source galaxies (7):** ``Point`` models, redshift pinned to each source's per-dataset
-   spectroscopic value, with ``GaussianPrior`` centre priors initialised from the mean of each
-   source's observed positions. **14 free parameters total.**
+ - **Source galaxies (7):** parameter-free ``PointSolved`` models, redshift pinned to each source's
+   per-dataset spectroscopic value. The solved source-plane fit computes each source centre
+   analytically, so the sources contribute nothing to the non-linear parameter space.
+   **0 free parameters.**
 
-**Total: N = 20 free parameters.** Adding more rows to ``scaling_galaxies.csv`` does not grow N — that's
+**Total: N = 6 free parameters.** Adding more rows to ``scaling_galaxies.csv`` does not grow N — that's
 the defining feature of cluster-scale modeling on a scaling relation. See
 ``scripts/cluster/modeling.py`` for the full prose on the scaling-relation convention (why the
 normalization anchors to a reference galaxy, why the exponent is fixed, and the kinematic calibrations
@@ -301,9 +304,10 @@ The model is composed below in four blocks: main-tier loop, host halo, source-ti
 loop (defining the shared ``sigma_ref`` normalization once outside the loop). The four blocks are then
 bundled into a single ``af.Collection`` model that the analysis will receive.
 
-Each source's ``Point`` centre is sampled as 2 free parameters. A centre-free alternative
-(``al.ps.PointSolved`` + the ``*Solved`` fit classes) solves the centres analytically instead — see
-``guides/point_source_pairing.py``.
+Each source carries a parameter-free ``al.ps.PointSolved`` component: the solved source-plane fit
+(``al.FitPositionsSourceSolved``, passed to the analyses below) computes each centre analytically,
+the recommended cluster search-stage configuration. The free-centre alternative (``al.ps.Point`` with
+sampled centre priors, the galaxy-scale default) is described in ``guides/point_source_pairing.py``.
 """
 redshift_lens = 0.308
 source_redshifts = [dataset.redshift for dataset in dataset_list]
@@ -336,19 +340,12 @@ galaxy_models["host_halo"].dark.mass_at_200 = af.LogUniformPrior(
 )
 
 """
-Each source's ``Point`` centre gets a ``GaussianPrior`` initialised from the mean of that source's
-observed multiple-image positions — not the truth from ``point.csv``, which in a real analysis is
-unknown.
+Each source's ``point_i`` component is swapped for the parameter-free ``al.ps.PointSolved`` — the
+solved fit computes each centre analytically, so no centre priors are needed. The ``point.csv``
+centres still supply each source galaxy and its redshift but play no role in the fit.
 """
 for i, dataset in enumerate(dataset_list):
-    positions = np.atleast_2d(dataset.positions)
-    point_attr = getattr(galaxy_models[f"source_{i}"], f"point_{i}")
-    point_attr.centre_0 = af.GaussianPrior(
-        mean=float(np.mean(positions[:, 0])), sigma=3.0
-    )
-    point_attr.centre_1 = af.GaussianPrior(
-        mean=float(np.mean(positions[:, 1])), sigma=3.0
-    )
+    setattr(galaxy_models[f"source_{i}"], f"point_{i}", af.Model(al.ps.PointSolved))
 
 """
 The scaling tier implements the reference-anchored relation described in __Cluster Components__:
@@ -403,12 +400,22 @@ We create one ``AnalysisPoint`` per dataset. Each analysis owns its dataset's lo
 factor graph combines them all into a single global model fit. The total log likelihood is the sum of
 the per-dataset log likelihoods.
 
+``fit_positions_cls=al.FitPositionsSourceSolved`` selects the solved source-plane chi-squared: observed
+positions are back-traced to each source's plane and the source centre is solved analytically, with no
+lens-equation forward solve per evaluation. Image-plane residuals are then the validation diagnostic on
+the max-likelihood model (see ``guides/point_source_pairing.py``).
+
 The factor-graph API is what enables cluster-scale modeling with multiple sources at different
 redshifts — every source's positions contribute to the same global model, and the multi-plane
 ray-tracing happens inside each dataset's likelihood evaluation.
 """
 analysis_list = [
-    al.AnalysisPoint(dataset=dataset, solver=solver, use_jax=True)
+    al.AnalysisPoint(
+        dataset=dataset,
+        solver=solver,
+        fit_positions_cls=al.FitPositionsSourceSolved,
+        use_jax=True,
+    )
     for dataset in dataset_list
 ]
 
@@ -422,17 +429,16 @@ factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 """
 __Search__
 
-We use Nautilus, a robust nested-sampling algorithm. ``n_live=150`` is a sensible default for a 20-D
-model — increase it for more complex clusters. ``n_batch=50`` batches the GPU log-likelihood
-evaluations for throughput.
+We use Nautilus, a robust nested-sampling algorithm. ``n_live=150`` is generous for this 6-D model —
+increase it for more complex clusters. ``n_batch=50`` batches the GPU log-likelihood evaluations for
+throughput.
 
 __Why Not MultiStartProdigy?__
 
 The imaging and interferometer ``start_here.py`` examples fit with ``af.MultiStartProdigy``, a much
-faster multi-start gradient optimizer. Cluster fits cannot use it yet: this is an ``AnalysisPoint``
-likelihood, computed by solving the lens equation for each system's multiple images, and PyAutoLens
-cannot yet differentiate through that solve. Nautilus also gives us the posterior that the corner
-plot at the end of this script is built from.
+faster multi-start gradient optimizer. Cluster fits keep Nautilus: cluster analyses report the full
+posterior (the corner plot at the end of this script is built from it), and gradient-optimizer support
+for the solved source-plane likelihood is still being validated.
 
 Results are written to ``autolens_workspace/output/cluster/a2744/start_here/<unique_hash>/``. The
 ``unique_hash`` is generated from the model, search settings, and dataset — re-running with the same

@@ -49,10 +49,11 @@ This script fits a ``PointDataset`` of a small multi-plane cluster where:
    luminosity, and ``r_core`` fixed at 0 [1 parameter total for the entire tier].
  - There is 1 standalone ``NFWMCRLudlowSph`` host dark matter halo with its centre fixed and a free
    ``mass_at_200`` [1 parameter].
- - There are 2 source galaxies modeled as ``Point`` sources, each with its redshift pinned to the value
-   in its ``PointDataset`` row [4 parameters].
+ - There are 2 source galaxies modeled as parameter-free ``PointSolved`` sources, each with its redshift
+   pinned to the value in its ``PointDataset`` row; their source-plane centres are solved analytically
+   by the fit rather than sampled [0 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=10.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=6.
 
 The ``dPIEMassSph`` profile is parameterized in Lenstool's native convention — ``sigma`` (fiducial
 velocity dispersion ``v_disp`` in km/s), ``r_core`` and ``r_cut`` (arcsec) — so the
@@ -230,8 +231,12 @@ __Chi Squared__
 
 For point-source modeling, the likelihood can be defined in the *image plane* (compare model
 multiple-image positions to observed positions) or the *source plane* (collapse observed positions back
-to a common source-plane location). This script uses the image-plane chi-squared via the ``PointSolver``;
-see ``autolens_workspace/*/cluster/likelihood_function`` for a full walkthrough.
+to a common source-plane location). This script searches with the solved source-plane chi-squared
+(``al.FitPositionsSourceSolved``) — the recommended cluster search-stage fit — and reserves the
+image-plane chi-squared, which requires the ``PointSolver`` forward solve, for validating the
+max-likelihood model; see ``autolens_workspace/*/cluster/likelihood_function`` for a full walkthrough.
+The solver defined above is therefore used for visualization and validation rather than in every
+likelihood evaluation.
 """
 grid = al.Grid2D.uniform(
     shape_native=(100, 100),
@@ -263,8 +268,8 @@ We organise the lensing objects into four distinct categories that map directly 
    dominates the large-scale lensing.
 
  - ``source_galaxies``: 2 background sources, *at different redshifts* (so this is a genuine multi-plane
-   lens). Each is modeled as a ``Point`` source whose redshift is pinned to the value in its
-   ``PointDataset``.
+   lens). Each is modeled as a parameter-free ``PointSolved`` source whose redshift is pinned to the
+   value in its ``PointDataset``; the solved source-plane fit computes each centre analytically.
 
 The galaxy-scale analogue of the scaling-relation tier (with extended-light imaging modeling rather than
 point-source) is demonstrated at
@@ -298,10 +303,10 @@ We compose a lens model where:
    ``r_core`` is fixed at 0 [1 parameter].
  - The host halo has an ``NFWMCRLudlowSph`` mass profile with centre fixed and a free ``mass_at_200``
    [1 parameter].
- - Each source has a ``Point`` model with free ``centre_0`` / ``centre_1`` priors initialised from the
-   mean of that source's observed positions [4 parameters].
+ - Each source has a parameter-free ``PointSolved`` model — the fit solves its source-plane centre
+   analytically, so the sources contribute no free parameters [0 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=10.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=6.
 
 __Scaling Relation__
 
@@ -371,20 +376,14 @@ galaxy_models["host_halo"].dark.mass_at_200 = af.LogUniformPrior(
 )
 
 """
-Each source's ``Point`` centre gets a ``GaussianPrior`` initialised from the mean of that source's
-observed multiple-image positions in its ``PointDataset``. This deliberately ignores the truth centre
-stored in ``point.csv`` — in a real analysis you don't know the source's true source-plane position,
-you only have the image-plane positions of its multiple images.
+Each source's ``point_i`` component is swapped for the parameter-free ``al.ps.PointSolved``: the solved
+source-plane fit computes each centre analytically (a precision-weighted mean of the back-traced
+positions), so no centre priors are needed and each source contributes 0 free parameters. The centres
+stored in ``point.csv`` become irrelevant to the fit — the CSV still supplies each source galaxy and
+its redshift, but its centre values are just the truth record.
 """
 for i, dataset in enumerate(dataset_list):
-    positions = np.atleast_2d(dataset.positions)
-    point_attr = getattr(galaxy_models[f"source_{i}"], f"point_{i}")
-    point_attr.centre_0 = af.GaussianPrior(
-        mean=float(np.mean(positions[:, 0])), sigma=3.0
-    )
-    point_attr.centre_1 = af.GaussianPrior(
-        mean=float(np.mean(positions[:, 1])), sigma=3.0
-    )
+    setattr(galaxy_models[f"source_{i}"], f"point_{i}", af.Model(al.ps.PointSolved))
 
 """
 __Scaling Tier__
@@ -453,20 +452,20 @@ print(model.info)
 __Name Pairing__
 
 Every ``PointDataset`` has a ``name`` (e.g. ``point_0``, ``point_1``). This pairs the dataset to the
-``Point`` model component with the same name. Above, the ``af.Model(al.ps.Point)`` for source ``i`` is
-attached to its ``af.Model(al.Galaxy)`` under the key ``point_i`` — that's what the ``**{f"point_{i}":
-point}`` expansion does.
+point model component with the same name. Above, the ``af.Model(al.ps.PointSolved)`` for source ``i``
+is attached to its ``af.Model(al.Galaxy)`` under the key ``point_i``, so the pairing is unchanged by
+the solved swap.
 
-If a dataset has no matching ``Point`` in the model, that dataset is ignored. If a ``Point`` exists with
-no matching dataset, **PyAutoLens** raises an error.
+If a dataset has no matching point component in the model, that dataset is ignored. If a component
+exists with no matching dataset, **PyAutoLens** raises an error.
 
 In multi-source cluster lenses, this name pairing is what ensures every source's positions are fitted by
 the correct model component.
 
-A centre-free alternative exists for the sources: the parameter-free ``al.ps.PointSolved`` paired with
-``fit_positions_cls=al.FitPositionsSourceSolved`` solves each source centre analytically, removing 2 free
-parameters per source — the recommended search-stage configuration at cluster scale (validate image-plane;
-see ``guides/point_source_pairing.py``).
+A free-centre alternative exists for the sources: ``al.ps.Point`` with ``centre`` priors (e.g. a
+``GaussianPrior`` initialised from the mean of each source's observed positions) paired with an
+image-plane or free-centre source-plane fit — the demonstrated default of the galaxy-scale
+``point_source`` examples. See ``guides/point_source_pairing.py`` for the full profile/fit matrix.
 """
 print(model)
 
@@ -478,8 +477,8 @@ The lens model is fitted to the data using the nested sampling algorithm Nautilu
 
 Other data types fit their ``start_here.py`` with ``af.MultiStartProdigy``, a much faster multi-start gradient
 optimizer, and reserve ``Nautilus`` for the ``modeling.py`` example where the full posterior is needed. Cluster
-fits use ``Nautilus`` in both, because the lens-equation solve behind their ``AnalysisPoint`` likelihood cannot
-yet be differentiated and so a gradient optimizer cannot run on it.
+fits use ``Nautilus`` in both: cluster analyses report the full posterior, and gradient-optimizer support for
+the solved source-plane likelihood is still being validated.
 
 The folders ``autolens_workspace/*/guides/modeling/searches`` and ``customize`` give overviews of the
 non-linear searches PyAutoLens supports and how to customize the fit, including the priors.
@@ -527,6 +526,12 @@ __Analysis__
 We create one ``AnalysisPoint`` per dataset. Each defines the ``log_likelihood_function`` Nautilus uses
 to fit the model to that dataset's multiple-image positions.
 
+``fit_positions_cls=al.FitPositionsSourceSolved`` selects the solved source-plane chi-squared: the
+observed positions are back-traced to each source's plane, the source centre is solved analytically,
+and the likelihood is marginalized over it — no lens-equation forward solve per evaluation. Validate
+the image-plane residuals on the max-likelihood model afterwards (see ``guides/point_source_pairing.py``
+and ``cluster/likelihood_function.py``).
+
 We then wrap each analysis in an ``AnalysisFactor`` pairing it to the *shared* lens model, and combine
 all factors into a single ``FactorGraphModel``. The total log likelihood is the sum of the per-dataset
 log likelihoods; each dataset gets its own output subdirectory for visualization.
@@ -535,12 +540,17 @@ __JAX__
 
 `AnalysisPoint(use_jax=True)` per-dataset; the search driver wraps the
 joint likelihood in `jax.vmap(jax.jit(...))`. Cluster point-source fits
-get the largest speedup from JAX on GPU (triangle refinement + multi-
-plane deflection sum dominate runtime). Force NumPy with `use_jax=False`
+get the largest speedup from JAX on GPU (the multi-plane deflection sum
+over many members dominates runtime). Force NumPy with `use_jax=False`
 when debugging.
 """
 analysis_list = [
-    al.AnalysisPoint(dataset=dataset, solver=solver, use_jax=True)
+    al.AnalysisPoint(
+        dataset=dataset,
+        solver=solver,
+        fit_positions_cls=al.FitPositionsSourceSolved,
+        use_jax=True,
+    )
     for dataset in dataset_list
 ]
 
@@ -576,8 +586,9 @@ Cluster lens modeling is computationally expensive — full Nautilus runs are ty
 minutes on GPU. Run times scale with (a) the log-likelihood evaluation time of a single sample and
 (b) the number of iterations Nautilus needs to converge.
 
-For this 2-main + halo + 2-source model the log-likelihood evaluation is < 1 second on CPU and < 0.02 s
-on GPU. A converged fit typically takes a few thousand iterations.
+For this 2-main + halo + 2-source model the solved source-plane log-likelihood needs no lens-equation
+solve, so a single evaluation is milliseconds on CPU. A converged fit typically takes a few thousand
+iterations.
 
 __Model-Fit__
 
