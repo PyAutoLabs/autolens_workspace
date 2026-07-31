@@ -16,6 +16,10 @@ Cluster point-source modelling has two distinct likelihood flavours:
     observed position, and measure the image-plane residuals. More intuitive (residuals in
     arc-seconds), but slower and carries pairing pathologies the source-plane variant avoids.
 
+Each flavour also has a ``*Solved`` sibling (``FitPositionsSourceSolved`` and the image-plane
+solved variants) which solves the source-plane centre analytically instead of sampling it — see
+the ``Source-Plane Centroid`` section below and ``guides/point_source_pairing.py``.
+
 We walk through both, end to end, with the actual library formulae. The standard cluster model is
 assumed: all lens-plane galaxies at ``z = 0.5``, two background sources at *different* redshifts
 (``z = 1.0`` and ``z = 2.0``). Multi-plane ray tracing therefore applies and we explain how the
@@ -314,20 +318,23 @@ __Source-Plane Centroid__
 
 The "reference point" against which we measure the source-plane scatter has two options:
 
- 1. **Truth ``Point`` centre.** Each source carries a ``Point`` profile in the model whose
+ 1. **Free ``Point`` centre.** Each source carries a ``Point`` profile in the model whose
     ``centre`` is a free parameter (or fixed to the truth here). At a model fit, ``Point.centre``
-    *is* the source-plane (y, x) the multiple images should converge to.
+    *is* the source-plane (y, x) the multiple images should converge to, and the sampler explores
+    it as two non-linear parameters per source.
 
- 2. **Barycenter of back-traced positions.** Pretend you don't know the truth centre. Compute the
-    centroid of the back-traced positions — at the right model the centroid sits where the source
-    actually is, and the residuals are scatter around it.
+ 2. **Analytically solved centre.** Give each source the parameter-free ``al.ps.PointSolved``
+    profile and fit with ``al.FitPositionsSourceSolved``: the centre is computed in closed form as
+    the precision-weighted mean of the back-traced positions (Lombardi 2024, arXiv:2406.15280,
+    §5.1), with a tensor weighting derived from the lensing Jacobian, and the likelihood is
+    analytically marginalized over it. This removes 2 free parameters per source from the search —
+    at cluster scale, with many sources, a substantial dimensionality reduction. See
+    ``guides/point_source_pairing.py`` for the full solved-variant matrix.
 
-Option (1) is what ``al.FitPositionsSource(profile=point_profile)`` uses. Option (2) is what
-``al.FitPositionsSource(profile=None)`` uses (the default during model fits, because at search
-time the model doesn't yet know the truth).
-
-For this walkthrough we use option (1) so the residuals have a well-defined physical meaning
-(distance from truth, not from a derived centroid).
+Option (1) is what ``al.FitPositionsSource(profile=point_profile)`` uses and is what this
+walkthrough demonstrates, so the residuals have a well-defined physical meaning (distance from
+truth). Option (2) is its solved sibling ``FitPositionsSourceSolved``, whose reference point is a
+weighted barycenter of the back-traced positions rather than a sampled parameter.
 """
 source_plane_centroids = []
 for i, dataset in enumerate(dataset_list):
@@ -799,13 +806,18 @@ __Source-Plane vs Image-Plane: When to Use Which__
 | **Best for** | Fast Nautilus fits; JAX-jit'd parameter estimation | Final residual visualisation; cases where pairing is unambiguous |
 
 For most cluster fits the source-plane chi² is the right default: it's faster, JAX-compatible,
-and doesn't suffer pairing pathologies. The image-plane chi² is most useful for diagnostic
-visualisation of where the model's predicted images sit relative to the observed ones, and for
-cases where the source-plane chi² has bias issues that need cross-checking.
+and doesn't suffer pairing pathologies. Its solved sibling ``FitPositionsSourceSolved`` (paired
+with ``al.ps.PointSolved`` sources) sharpens this further — the source centres drop out of the
+non-linear space entirely (2 parameters per source) at timing-noise-level extra cost per call,
+and its tensor weighting is a better error model than the scalar ``μ²`` used above. The
+recommended cluster workflow is therefore: **search with ``FitPositionsSourceSolved``, validate
+with the image-plane chi²** on the max-likelihood model. The image-plane chi² remains the
+diagnostic tool — visualising where predicted images sit relative to observed ones, and
+cross-checking any source-plane bias.
 
-The cluster modelling script at ``scripts/cluster/modeling.py`` uses ``AnalysisPoint`` which
-selects the chi² flavour via its constructor; consult the ``AnalysisPoint`` docstring for the
-current default.
+The cluster modelling script at ``scripts/cluster/modeling.py`` uses ``AnalysisPoint``, which
+selects the chi² flavour via its ``fit_positions_cls`` input (default
+``FitPositionsImagePairRepeat``).
 
 __Wrap Up__
 

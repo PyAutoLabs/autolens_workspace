@@ -182,9 +182,13 @@ The API below for composing a lens model uses the `Model` and `Collection` objec
 The API is fairly self explanatory and is straight forward to extend, for example adding more light profiles
 to the lens and source or using a different mass profile.
 
-A full description of model composition is provided by the model cookbook: 
+A full description of model composition is provided by the model cookbook:
 
 https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
+
+A centre-free alternative exists: `al.ps.PointSolved` has no free parameters — the source centre is
+solved analytically by the paired `*Solved` fit classes (e.g. `fit_positions_cls=al.FitPositionsSourceSolved`),
+removing 2 parameters per point source. See `guides/point_source_pairing.py` for the full option matrix.
 
 __Name Pairing__
 

@@ -108,6 +108,7 @@
       "autolens_workspace/scripts/guides/point_source_pairing.py",
       "autolens_workspace_test/scripts/cluster/likelihood_sanity.py",
       "csv_api.py",
+      "guides/point_source_pairing.py",
       "modeling.py",
       "scripts/cluster/csv_api.py",
       "scripts/cluster/modeling.py",
@@ -172,6 +173,7 @@
       "/cluster/simulator.py",
       "autolens_workspace_test/scripts/cluster/visualization.py",
       "cluster/simulator.py",
+      "guides/point_source_pairing.py",
       "point_source/start_here.py",
       "scripts/cluster/csv_api.py",
       "scripts/group/features/scaling_relation/modeling.py",
@@ -268,6 +270,7 @@
       "cluster/modeling.py",
       "csv_api.py",
       "group/start_here.ipynb",
+      "guides/point_source_pairing.py",
       "imaging/start_here.ipynb",
       "multi_galaxy/start_here.ipynb",
       "prep.py",
@@ -6942,6 +6945,7 @@
       "Result"
     ],
     "cross_refs": [
+      "guides/point_source_pairing.py",
       "point_source/start_here.ipynb",
       "start.here.py",
       "start_here.ipynb",
@@ -7129,6 +7133,7 @@
       "Name Pairing",
       "Fitting",
       "Chi Squared",
+      "Solved Source Centre",
       "Fluxes",
       "Flux Point Dataset",
       "Flux Fitting",
@@ -7138,7 +7143,10 @@
       "Shape Solver"
     ],
     "cross_refs": [
+      "guides/point_source_pairing.py",
       "modeling.py",
+      "point_source/features/fluxes.py",
+      "point_source/features/time_delays.py",
       "scripts/point_source/simulator.py",
       "simulator.py",
       "start_here.py"
@@ -7172,6 +7180,7 @@
     ],
     "cross_refs": [
       "/point_source/start_here.py",
+      "guides/point_source_pairing.py",
       "start_here.py"
     ],
     "notebook": "notebooks/point_source/modeling.ipynb",

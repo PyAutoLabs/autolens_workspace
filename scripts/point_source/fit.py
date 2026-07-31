@@ -32,6 +32,7 @@ __Contents__
 - **Name Pairing:** The names of the point-source datasets have an even more important role, the names are used to pair.
 - **Fitting:** Fit the lens model to the dataset and inspect the results.
 - **Chi Squared:** For point-source modeling, there are many different ways to define the likelihood function, broadly.
+- **Solved Source Centre:** The `*Solved` fit variants solve the source-plane centre analytically instead of sampling it.
 - **Fluxes:** Another measurable quantity of a point source is its flux—the total amount of light received from.
 - **Flux Point Dataset:** The fluxes are not input a `PointDataset` object, alongside the image-plane coordinates of the.
 - **Flux Fitting:** Above, we used a `FitPointDataset` to fit the positions of the point source in the image-plane.
@@ -406,6 +407,50 @@ print("Log Likelihood in the Source Plane:")
 print(fit.positions.log_likelihood)
 
 """
+A note on defaults: `FitPointDataset` itself defaults to `FitPositionsImagePair` (Hungarian pairing,
+no repeats), whereas `AnalysisPoint` — the object used in the model-fitting examples — defaults to
+`FitPositionsImagePairRepeat`. The examples above pass `fit_positions_cls` explicitly so there is no
+ambiguity about which chi-squared is being used.
+
+__Solved Source Centre__
+
+Every fit above reads the source-plane centre from the model's `Point` profile, whose `centre` is a
+free parameter during model-fitting. Each fit class also has a `*Solved` variant which instead solves
+the centre analytically from the observed positions and the mass model, removing those 2 free
+parameters per point source from the non-linear search: `FitPositionsSourceSolved` (a
+precision-weighted source-plane centre, following Lombardi 2024, arXiv:2406.15280) and
+`FitPositionsImagePairRepeatSolved` / `FitPositionsImagePairAllSolved` (the same solved centre
+driving the image-plane forward solve).
+
+The solved variants pair with the parameter-free `al.ps.PointSolved` model component instead
+of `Point` — mixing the two conventions (a `Solved` fit with a `Point`, or vice versa) raises
+a `PointProfileMismatchException`, so a model cannot silently sample centre parameters the fit
+ignores.
+"""
+point_source_solved = al.ps.PointSolved()
+
+source_galaxy_solved = al.Galaxy(redshift=1.0, point_0=point_source_solved)
+
+tracer_solved = al.Tracer(galaxies=[lens_galaxy, source_galaxy_solved])
+
+fit = al.FitPointDataset(
+    dataset=dataset,
+    tracer=tracer_solved,
+    solver=solver,
+    fit_positions_cls=al.FitPositionsSourceSolved,  # Solved-centre source-plane chi-squared
+)
+
+print("Analytically Solved Source-Plane Centre:")
+print(fit.positions.source_plane_coordinate)
+
+print("Log Likelihood with Solved Centre:")
+print(fit.positions.log_likelihood)
+
+"""
+The full matrix of pairing schemes × centre treatments — including the solved flux and time-delay
+variants used below, the tensor-vs-scalar magnification weighting, and when each option is
+preferable — is documented in `guides/point_source_pairing.py`.
+
 __Fluxes__
 
 Another measurable quantity of a point source is its flux—the total amount of light received from each multiple image 
@@ -503,6 +548,10 @@ print(fit.flux.chi_squared_map)
 print(fit.flux.log_likelihood)
 
 """
+An analytic-flux variant also exists: `fit_flux_cls=al.FitFluxesSolved` (paired with
+`al.ps.PointSolved`) solves the source flux from the data and magnifications instead of sampling
+a `flux` parameter — see `point_source/features/fluxes.py` and `guides/point_source_pairing.py`.
+
 __Time Delays__
 
 Another measurable quantity of a point source is its time delay—the time it takes for light to travel from the
@@ -588,6 +637,10 @@ print(fit.time_delays.chi_squared_map)
 print(fit.time_delays.log_likelihood)
 
 """
+As with fluxes, an analytic variant exists: `fit_time_delays_cls=al.FitTimeDelaysSolved` replaces
+the reference-image subtraction with a precision-weighted analytic reference time — see
+`point_source/features/time_delays.py` and `guides/point_source_pairing.py`.
+
 __New User Wrap Up__
 
 The `point_source` package of the `autolens_workspace` contains numerous example scripts for performing point source
