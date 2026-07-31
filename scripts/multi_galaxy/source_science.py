@@ -334,9 +334,7 @@ co-dominant deflectors are therefore not equivalent to one bigger galaxy, nor to
 combined potential creates an extended caustic structure that neither produces by itself.
 
 This is the quantitative reason multi-galaxy lenses are prized for studying faint, high-redshift sources.
-"""
 
-"""
 __Tracer__
 
 Lens modeling returns a `max_log_likelihood_tracer`, which is likely the object you have at hand to compute

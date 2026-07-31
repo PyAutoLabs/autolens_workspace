@@ -233,9 +233,7 @@ symmetric profile to a galaxy whose isophotes rotate with radius.
 Neither reaches the truth tracer's ~+28,000, because these bases are spherical with fixed centres while the true
 light is elliptical and offset. A fitted MGE, with free ellipticity per group and a free centre, closes most of
 that gap; this script holds everything fixed so the comparison isolates one variable.
-"""
 
-"""
 __How Many Gaussians__
 
 The other question `modeling.py` answers with a number rather than a rule of thumb. Run the same fit at several

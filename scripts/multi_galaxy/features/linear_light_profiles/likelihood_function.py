@@ -309,9 +309,7 @@ shape is partly absorbed by the other's intensity.
 It also tells you when to worry. The size of $F_{0,1}$ scales with how much the two galaxies' light overlaps, so a
 close, blended pair like this one (0.86" separation) couples strongly, while two well-separated deflectors barely
 couple at all. If you are fitting a wide pair, the flux ratio is far safer than it is here.
-"""
 
-"""
 __Reconstruction__
 
 Solving $F s = D$ gives the intensities $s$ — one per linear light profile.

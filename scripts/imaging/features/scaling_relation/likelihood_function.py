@@ -294,9 +294,7 @@ print(f"\nLog likelihood of the scaling-relation fit: {fit.log_likelihood}")
 Do not read that number as a goodness-of-fit. The lens-plane galaxies here are deliberately mass-only, so none of
 the foreground light present in the data is modelled and the residuals are dominated by it. `fit.py` includes the
 foreground light and reports a sensible likelihood; this script exists to expose the deflection composition.
-"""
 
-"""
 __CSV Interface__
 
 The explicit luminosity lists above are the simplest interface. For larger populations,

@@ -572,9 +572,7 @@ The walker-trajectory plots shown above in the __Emcee__ section (a 2D projectio
 trajectories, the likelihood as a series of steps, and the parameter values of every walker at
 every step) work identically for Zeus, using the same `search_internal.get_chain()` and
 `search_internal.get_log_prob()` calls, so are not repeated here.
-"""
 
-"""
 __GetDist__
 
 This example illustrates how to plot visualization summarizing the results of model-fit using any non-linear search

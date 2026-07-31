@@ -93,7 +93,7 @@ __Dataset__
 
 Load and plot the multi-galaxy strong lens dataset `simple__no_lens_light` via .fits files.
 
-This is the same lens as `multi_galaxy/simple` — same two deflectors, same Einstein radii, same shear, same
+This is the same lens as `dataset/multi_galaxy/simple` — same two deflectors, same Einstein radii, same shear, same
 source — with the lens light removed and nothing else changed.
 """
 dataset_name = "simple__no_lens_light"

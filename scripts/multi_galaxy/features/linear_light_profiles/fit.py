@@ -266,9 +266,7 @@ never wrong. A single mis-specified size parameter on one deflector has corrupte
 This is the mechanism by which a wrong light model biases the flux ratio in a multi-galaxy lens, and it is why
 `multi_galaxy/slam.py` treats its lens-light stage as load-bearing rather than cosmetic. It has no galaxy-scale
 equivalent: with one lens galaxy there is nothing for the solver to redistribute flux *to*.
-"""
 
-"""
 __Negative Intensities__
 
 The solver is not constrained to return positive values. A negative intensity means a profile is subtracting light

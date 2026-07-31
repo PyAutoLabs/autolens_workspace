@@ -255,9 +255,7 @@ relation is what keeps this model on the right side of that line, and it does so
 companions perturb the image positions by the hundreds of milliarcseconds they physically do.
 
 Add a sixth companion and the tied count stays at 8.
-"""
 
-"""
 __Search / Analysis / Fit__
 """
 search = af.Nautilus(
