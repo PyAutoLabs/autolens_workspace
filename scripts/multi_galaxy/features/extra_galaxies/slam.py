@@ -528,6 +528,12 @@ cannot reach — see `multi_galaxy/features/README.md` for that division of labo
 dataset_name = "extra_galaxies"
 dataset_path = Path("dataset") / "multi_galaxy" / dataset_name
 
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script.
+"""
 if al.util.dataset.should_simulate(str(dataset_path)):
     import subprocess
     import sys
