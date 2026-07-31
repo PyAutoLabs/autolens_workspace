@@ -30,9 +30,7 @@ The SLURM batch scripts referenced throughout this example are in:
 
 See README.md in this folder for the full setup guide, including how to transfer files
 using the sync script.
-"""
 
-"""
 __Contents__
 
 - **HPC Output Path:** Set the output path for results on the HPC.
