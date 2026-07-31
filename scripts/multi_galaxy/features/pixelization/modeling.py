@@ -8,8 +8,7 @@ analytic profile.
 
 __Contents__
 
-- **Advantages:** Why a pixelized source, at any scale.
-- **The Multi-Galaxy Cost:** What it does to the mass split, measured.
+- **Advantages:** Why a pixelized source is used.
 - **Model:** Compose the lens model fitted to the data.
 - **Dataset, Mask & Over Sampling:** Standard set up.
 - **Positions:** The constraint that compensates, and why it is not optional here.
@@ -27,37 +26,6 @@ can reconstruct essentially any morphology.
 
 This is why `multi_galaxy/slam.py` moves to a pixelized source for its final stages, and why the galaxy-scale
 guidance is to adopt one as soon as your mass model is good enough to support it.
-
-__The Multi-Galaxy Cost__
-
-There is a cost specific to this regime, and it is large enough to change how you use the feature.
-
-`multi_galaxy/modeling.py` establishes the regime's central degeneracy: the data constrains the **total**
-deflection well and the **split** between the deflectors much less well. A pixelized source weakens the
-constraint on that split further, because a free-form mesh can rearrange itself to keep reproducing the arcs when
-the split is wrong — where a parametric source, having a fixed functional form, simply fails.
-
-`fit.py` in this folder measures the size of it. Holding the total Einstein radius at its true 1.8" and varying
-only the split between the two deflectors:
-
-     split    r_0   r_1 |   parametric    pixelized
-     0.556   1.00  0.80 |     12,379.2     11,466.6      <- true split
-     0.600   1.08  0.72 |     -7,955.3      5,907.2
-     0.700   1.26  0.54 |   -110,272.7    -32,605.9
-     0.800   1.44  0.36 |   -182,813.4    -76,774.0
-
-As a penalty relative to each model's own best:
-
-     split    parametric    pixelized    ratio
-     0.600       20,334        5,560      3.7x
-     0.700      122,652       44,073      2.8x
-     0.800      195,193       88,241      2.2x
-
-A 26% error in `lens_0`'s Einstein radius (the 0.600 row) costs a parametric fit 20,334 in log likelihood and a
-pixelized fit only 5,560. The mesh absorbs roughly three quarters of the evidence against a wrong mass split.
-
-This is not an argument against pixelized sources — a Sersic fitted to a genuinely irregular source biases the
-mass model in its own way. It is an argument for the two mitigations below.
 
 __Model__
 
@@ -157,12 +125,8 @@ aplt.subplot_imaging_dataset(dataset=dataset)
 """
 __Positions__
 
-Multiple-image positions constrain the mass model **directly** — they depend on where the deflection field sends
-rays, not on how well the source is reconstructed. That makes them the natural compensation for the effect
-measured above: the constraint a free-form mesh weakens is precisely the one positions restore.
-
-At galaxy scale the positions likelihood is presented as a guard against unphysical source reconstructions. Here
-it is doing a second job, and skipping it costs more.
+The multiple images of the source, used to constrain the mass model via a `PositionsLH` likelihood penalty. This
+is described in full in `imaging/features/pixelization/modeling.py`.
 
 The positions were solved by the simulator and saved alongside the dataset.
 """
@@ -273,8 +237,8 @@ search = af.Nautilus(
 """
 __Analysis__
 
-The `positions_likelihood` is passed here. Given the measurement above, treat it as part of the model rather than
-an optional safeguard when fitting a multi-galaxy lens with a pixelized source.
+The `positions_likelihood_list` is passed to the analysis, which applies the likelihood penalty to every lens
+mass model that is fitted.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
@@ -291,14 +255,8 @@ result = search.fit(model=model, analysis=analysis)
 """
 __Result__
 
-Beyond the usual checks (`multi_galaxy/modeling.py`, `guides/results`), two are specific to a pixelized source at
-multi-galaxy scale:
-
- - **Inspect the mass split and its errors.** If the two Einstein radii are individually poorly constrained while
-   their sum is tight, that is the degeneracy this feature widens, showing up exactly where expected.
- - **Look at the reconstructed source for structure that tracks the deflectors.** A source with features aligned
-   to the lens galaxies' positions rather than to its own morphology is the visible signature of the mesh
-   absorbing a mass-model error.
+The search returns a result object, described in `multi_galaxy/modeling.py` and in full in
+`autolens_workspace/*/guides/results`.
 """
 print(result.info)
 
@@ -309,9 +267,9 @@ __Wrap Up__
 
 Where to go next:
 
- - `multi_galaxy/features/pixelization/fit.py` — the measurement quoted above, run directly.
- - `multi_galaxy/slam.py` — the pipeline whose stage ordering (parametric source first, pixelized second, mass
-   held while the source is freed) exists to manage this.
+ - `multi_galaxy/features/pixelization/fit.py` — the same pixelization without a search, where the inversion can
+   be inspected directly.
+ - `multi_galaxy/slam.py` — the SLaM pipeline, whose later stages use a pixelized source.
  - `imaging/features/pixelization` — the galaxy-scale walkthrough, with the full mesh and regularization API,
    adaptive meshes, Delaunay meshes and CPU-fast modeling. Those variants are not yet written for this package;
    they apply with the single lens galaxy swapped for this package's `lens_0`, `lens_1`, ... loop.
