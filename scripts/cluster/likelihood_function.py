@@ -815,9 +815,10 @@ with the image-plane chi²** on the max-likelihood model. The image-plane chi² 
 diagnostic tool — visualising where predicted images sit relative to observed ones, and
 cross-checking any source-plane bias.
 
-The cluster modelling script at ``scripts/cluster/modeling.py`` uses ``AnalysisPoint``, which
-selects the chi² flavour via its ``fit_positions_cls`` input (default
-``FitPositionsImagePairRepeat``).
+This is exactly what the cluster modeling scripts (``scripts/cluster/start_here.py`` and
+``scripts/cluster/modeling.py``) demonstrate: their ``AnalysisPoint`` analyses pass
+``fit_positions_cls=al.FitPositionsSourceSolved`` with parameter-free ``al.ps.PointSolved``
+sources (the class default remains ``FitPositionsImagePairRepeat``).
 
 __Wrap Up__
 

@@ -113,6 +113,7 @@
       "scripts/cluster/csv_api.py",
       "scripts/cluster/modeling.py",
       "scripts/cluster/simulator.py",
+      "scripts/cluster/start_here.py",
       "scripts/group/likelihood_function.py",
       "scripts/guides/using_jax.py",
       "scripts/imaging/likelihood_function.py"
@@ -172,6 +173,7 @@
     "cross_refs": [
       "/cluster/simulator.py",
       "autolens_workspace_test/scripts/cluster/visualization.py",
+      "cluster/likelihood_function.py",
       "cluster/simulator.py",
       "guides/point_source_pairing.py",
       "point_source/start_here.py",
