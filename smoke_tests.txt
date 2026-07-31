@@ -21,6 +21,7 @@ multi_galaxy/features/scaling_relation/modeling.py
 multi_galaxy/features/no_lens_light/modeling.py
 multi_galaxy/features/linear_light_profiles/modeling.py
 multi_galaxy/features/multi_gaussian_expansion/modeling.py
+multi_galaxy/features/pixelization/modeling.py
 imaging/features/scaling_relation/modeling.py
 # multi_dataset/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1
 multi_dataset/modeling.py

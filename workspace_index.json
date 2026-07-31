@@ -6430,6 +6430,56 @@
   },
   {
     "contents": [
+      "Dataset",
+      "Extra Galaxies Noise Scaling",
+      "Mask",
+      "Over Sampling",
+      "Mesh Shape",
+      "Pixelization",
+      "Main Lens Galaxies",
+      "Fit",
+      "Inversion",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/pixelization/fit.py",
+      "multi_galaxy/features/pixelization/modeling.py",
+      "multi_galaxy/fit.py",
+      "multi_galaxy/modeling.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/pixelization/fit.ipynb",
+    "path": "scripts/multi_galaxy/features/pixelization/fit.py",
+    "summary": "This script fits a multi-galaxy strong lens with a pixelized source reconstruction, without a non-linear search, so the pixelization API and the objects it produces can be inspected directly.",
+    "title": "Fits: Pixelization (Multi Galaxy)"
+  },
+  {
+    "contents": [
+      "Advantages",
+      "Disadvantages",
+      "Positive Only Solver",
+      "Model",
+      "Dataset, Mask & Over Sampling",
+      "Positions",
+      "Model Composition",
+      "Search & Analysis",
+      "Run Time",
+      "VRAM",
+      "Result",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "imaging/features/pixelization/modeling.py",
+      "multi_galaxy/features/pixelization/fit.py",
+      "multi_galaxy/modeling.py",
+      "multi_galaxy/slam.py"
+    ],
+    "notebook": "notebooks/multi_galaxy/features/pixelization/modeling.ipynb",
+    "path": "scripts/multi_galaxy/features/pixelization/modeling.py",
+    "summary": "This script fits a multi-galaxy strong lens with a **pixelized source reconstruction**: the source is reconstructed on a mesh of pixels whose fluxes are solved by linear algebra, rather than assumed to follow an analytic profile.",
+    "title": "Modeling Features: Pixelization (Multi Galaxy)"
+  },
+  {
+    "contents": [
       "Dataset & Mask",
       "Centres + Luminosities",
       "The Relation",
