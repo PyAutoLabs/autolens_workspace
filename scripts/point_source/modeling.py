@@ -34,8 +34,10 @@ performing lens modeling using light profiles, which have parameter that describ
 galaxy's luminous emission.
 
 For point sources, for example a lensed quasar, it is invalid to model the source using light profiles, because they
-implicitly assume an extended surface brightness distribution. Point source modeling instead assumes the source
-has a (y,x) `centre` (y,x), but does not have other parameters like elliptical components or an effective radius.
+implicitly assume an extended surface brightness distribution. Point source modeling instead reduces the source to a
+single (y,x) source-plane position, with no other parameters like elliptical components or an effective radius. In
+this example even that position is not a free parameter — it is solved for analytically at every likelihood
+evaluation (see `__Solved Source Centre__` below).
 
 This changes how the ray-tracing calculations that go into point source modeling are performed. They are briefly
 touched on in this example, but for a more detailed explanation checkout the
@@ -46,7 +48,7 @@ __Model__
 This script fits a `PointDataset` data of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal`.
- - The source `Galaxy` is a point source `Point`.
+ - The source `Galaxy` is a point source `PointSolved`, whose source-plane centre is solved for analytically.
 
 The `ExternalShear` is also not included in the mass model, where it is for the `imaging` and `interferometer` examples.
 For a quadruply imaged point source (8 data points) there is insufficient information to fully constain a model with
@@ -169,15 +171,15 @@ __Model__
 We compose a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
- 
- - The source galaxy's light is a point `Point` [2 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=7.
+ - The source galaxy is a `PointSolved` point source [0 parameters].
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=5.
 
 __Model Composition__
 
-The API below for composing a lens model uses the `Model` and `Collection` objects, which are imported from 
-**PyAutoLens**'s parent project **PyAutoFit** 
+The API below for composing a lens model uses the `Model` and `Collection` objects, which are imported from
+**PyAutoLens**'s parent project **PyAutoFit**
 
 The API is fairly self explanatory and is straight forward to extend, for example adding more light profiles
 to the lens and source or using a different mass profile.
@@ -186,9 +188,34 @@ A full description of model composition is provided by the model cookbook:
 
 https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 
-A centre-free alternative exists: `al.ps.PointSolved` has no free parameters — the source centre is
-solved analytically by the paired `*Solved` fit classes (e.g. `fit_positions_cls=al.FitPositionsSourceSolved`),
-removing 2 parameters per point source. See `guides/point_source_pairing.py` for the full option matrix.
+__Solved Source Centre__
+
+The `al.ps.PointSolved` component has no free parameters: for every trial mass model, the source-plane centre
+that best fits the observed positions is solved for analytically (a precision-weighted mean of the back-traced
+positions), rather than sampled as two free parameters. This is the recommended default because:
+
+ - It removes 2 parameters per point source, which compounds quickly (a 5-source cluster drops 10 parameters).
+
+ - The analytic centre makes the likelihood far better behaved for the non-linear search: in benchmark tests
+   a gradient-based search converges on the solved likelihood but stalls below the true solution with free
+   centres, and Nautilus converges faster.
+
+ - Its posteriors on the mass parameters are not artificially narrowed by the analytic solve — in like-for-like
+   tests the solved fit's `einstein_radius` error bars were slightly wider than the free-centre fit's, not tighter.
+
+A free source centre (`al.ps.Point`, 2 extra parameters) is the right choice when the centre itself carries
+information you want to keep or share:
+
+ - Informative centre priors, e.g. from a light-profile fit of the quasar host galaxy.
+ - A centre linked across multiple datasets (bands, epochs) that must share one consistent source position.
+ - The source position is itself the science measurement.
+ - Standardizable-candle fluxes (e.g. lensed supernovae): `PointSolved` forces the analytically-solved flux
+   fit, whose flat-prior flux normalization discards a standard-candle prior on the intrinsic flux — compose
+   `al.ps.PointFlux` with free parameters instead.
+
+If you compose a centre-bearing `al.ps.Point` model, you must also pass a free-centre fit class to the
+analysis (e.g. `fit_positions_cls=al.FitPositionsImagePairAll`) — the solved default raises an error rather
+than silently ignoring the centre priors. See `guides/point_source_pairing.py` for the full option matrix.
 
 __Name Pairing__
 
@@ -221,7 +248,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
 
 # Source:
 
-point_0 = af.Model(al.ps.Point)
+point_0 = af.Model(al.ps.PointSolved)
 
 source = af.Model(al.Galaxy, redshift=1.0, point_0=point_0)
 
@@ -252,9 +279,12 @@ Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive t
 accurate and efficient modeling results.
 
 Other data types fit their `start_here.py` with `af.MultiStartProdigy`, a much faster multi-start gradient
-optimizer, and reserve `Nautilus` for the `modeling.py` example where the full posterior is needed. Point-source
-fits use `Nautilus` in both, because the lens-equation solve behind the point-source likelihood cannot yet be
-differentiated and so a gradient optimizer cannot run on it.
+optimizer, and reserve `Nautilus` for the `modeling.py` example where the full posterior is needed. The
+point-source likelihood is differentiable (the solved image positions carry an exact implicit gradient), and
+benchmark tests show `af.MultiStartProdigy` converges on the solved-centre likelihood used here — but this
+example uses `Nautilus` because the full posterior (parameter error bars) is usually the goal of a
+point-source fit. Note that gradient searches only converge reliably with the solved source centre; with a
+free centre they stall below the true solution even with many starts.
 
 Nautilus has one main setting that trades-off accuracy and computational run-time, the number of `live_points`. 
 A higher number of live points gives a more accurate result, but increases the run-time. A lower value give 
@@ -312,23 +342,33 @@ We will use an "image-plane chi-squared", which uses the `PointSolver` to determ
 source in the image-plane for the given mass model and compares the positions of these model images to the observed
 images to compute the chi-squared and likelihood.
 
-There are still many different ways the image-plane chi-squared can be computed, for example do we allow for 
-repeat image-pairs (i.e. the same multiple image being observed multiple times)? Do we pair all possible combinations
-of multiple images to observed images? This example uses the simplest approach, which is to pair each multiple image
-with the observed image that is closest to it, allowing for repeat image pairs. 
+There are still many different ways the image-plane chi-squared can be computed, differing in how the model's
+multiple images are paired to the observed positions. The default, used here, is `FitPositionsImagePairAllSolved`:
+an "all-to-all" pairing, where every model image is compared against every observed position via a smooth
+probabilistic mixture, combined with the analytically-solved source centre described above.
 
-For a "source-plane chi-squared", the likelihood is computed in the source-plane. The analysis basically just ray-traces
-the multiple images back to the source-plane and defines a chi-squared metric. For example, the default implementation 
-sums the Euclidean distance between the image positions and the point source centre in the source-plane.
+All-to-all pairing is the default because of its robustness to imperfect position data. In truth-anchored
+benchmark tests, when one true multiple image was missing from the dataset (e.g. lost under the lens galaxy's
+light or below the detection limit), the alternative "repeat" pairing — which pairs each observed position with
+its nearest model image — mis-ranked the true lens model by a log likelihood of order 10^5, because it has no
+way to leave an unobserved model image unmatched. The all-to-all mixture absorbs a missing image gracefully and
+recovered the truth cleanly on the same data. On clean data the two pairings give statistically equivalent
+results at near-identical cost, so robustness decides the default.
 
-The source-plane chi-squared is significantly faster to compute than the image-plane chi-squared, as it requires 
-only ray-tracing the ~4 observed image positions and does not require the iterative triangle ray-tracing approach
-of the image-plane chi-squared. However, the source-plane chi-squared is less robust than the image-plane chi-squared,
-and can lead to biased lens model results. If you are using the source-plane chi-squared, you should be aware of this
-and interpret the results with caution.
+For a "source-plane chi-squared", the likelihood is computed in the source-plane. The analysis just ray-traces
+the observed image positions back to the source-plane and defines a chi-squared metric there. This is orders of
+magnitude faster than the image-plane chi-squared (no iterative triangle solve), and with the modern tensor
+weighting (`al.FitPositionsSourceSolved`, `weighting="jacobian"`) it is far more accurate than its traditional
+reputation: the tensor maps each image's position noise through the full lensing Jacobian, whereas the
+traditional scalar magnification weighting can catastrophically mis-rank models when one image is highly
+magnified. Truth-anchored tests show the tensor-weighted fit ranks the true model first at galaxy and cluster
+scale alike, while the scalar version preferred wrong models by thousands of log likelihood. The image-plane
+chi-squared remains the most robust choice and is the demonstrated default; the tensor source-plane fit is the
+recommended fast alternative for large samples or as an initialization stage.
 
 Checkout the guide `autolens_workspace/*/point_source/fit` for more details and a full illustration of the
-different ways the chi-squared can be computed.
+different ways the chi-squared can be computed, and `guides/point_source_pairing.py` for the full option
+matrix with the benchmark evidence.
 
 __Analysis__
 
@@ -353,7 +393,9 @@ If you don’t have a GPU locally, consider Google Colab which provides free GPU
 analysis = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    fit_positions_cls=al.FitPositionsImagePairRepeat,  # Image-plane chi-squared with repeat image pairs.
+    # The default fit is `al.FitPositionsImagePairAllSolved` (all-to-all image-plane chi-squared, solved
+    # source centre). Pass `fit_positions_cls` to use another, e.g. `al.FitPositionsImagePairAll` for a
+    # free source centre or `al.FitPositionsSourceSolved` for the fast tensor source-plane chi-squared.
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 

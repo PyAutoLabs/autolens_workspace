@@ -111,7 +111,14 @@ solver = al.PointSolver.for_grid(
     grid=point_grid, pixel_scale_precision=0.001, magnification_threshold=0.1
 )
 
-fit = al.FitPointDataset(dataset=dataset, tracer=tracer, solver=solver)
+# The tracer's `PointFlux` carries a free source centre, so the solved-centre default fit cannot
+# be used — pass the free-centre all-to-all image-plane chi-squared explicitly.
+fit = al.FitPointDataset(
+    dataset=dataset,
+    tracer=tracer,
+    solver=solver,
+    fit_positions_cls=al.FitPositionsImagePairAll,
+)
 
 """
 __Fit Figures__

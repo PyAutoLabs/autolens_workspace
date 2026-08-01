@@ -258,10 +258,15 @@ model_imaging = af.Collection(
     galaxies=af.Collection(lens=lens_imaging, source=source_imaging)
 )
 
-# Point model (same mass + shear objects -> same priors):
+# Point model (same mass + shear objects -> same priors). The `PointSolved` source has no free
+# parameters — its source-plane centre is solved analytically by the default positions fit. If you
+# instead want the point source's centre *linked* to the imaging source's light centre (a shared
+# free parameter across the two factors), compose `al.ps.Point` with its centre priors tied to
+# `source_bulge`'s centre and pass a free-centre fit class
+# (e.g. `fit_positions_cls=al.FitPositionsImagePairAll`) to `AnalysisPoint`:
 
 lens_point = af.Model(al.Galaxy, redshift=0.295, mass=mass, shear=shear)
-source_point = af.Model(al.Galaxy, redshift=0.658, point_0=af.Model(al.ps.Point))
+source_point = af.Model(al.Galaxy, redshift=0.658, point_0=af.Model(al.ps.PointSolved))
 
 model_point = af.Collection(
     galaxies=af.Collection(lens=lens_point, source=source_point)

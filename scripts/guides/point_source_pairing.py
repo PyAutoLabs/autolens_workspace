@@ -31,23 +31,25 @@ images below the detection limit are tolerated; bright extra images count agains
 
 __The three pairing schemes__
 
-- ``FitPositionsImagePairRepeat`` (the model-fit default): every observed position pairs to its
-  *nearest* model position, repeats allowed. Under-prediction is penalized by construction (an
-  unmatched observed image pays its distance to the nearest surviving image; if the solver returns
-  no images at all, a large finite floor applies). Over-prediction is governed by the
-  ``unmatched_model_policy`` described below.
+- ``FitPositionsImagePairAll`` (the model-fit default, in its solved-centre form
+  ``FitPositionsImagePairAllSolved``): a mixture likelihood — each observed position marginalizes
+  over every model position, and the 1/n_permutations normalization acts as an Occam factor that
+  mildly penalizes extra images. Statistically the most principled, smooth in the pairings (and so
+  gradient-friendly), and differentiable end to end; its penalties are implicit rather than
+  tunable. The mixture is computed with a max-shifted log-sum-exp, so it stays finite even when
+  the worst pairing is tens of sigma away.
+
+- ``FitPositionsImagePairRepeat``: every observed position pairs to its *nearest* model position,
+  repeats allowed. Under-prediction is penalized by construction (an unmatched observed image pays
+  its distance to the nearest surviving image; if the solver returns no images at all, a large
+  finite floor applies). Over-prediction is governed by the ``unmatched_model_policy`` described
+  below. See the benchmark evidence below for why this is no longer the default.
 
 - ``FitPositionsImagePair``: Hungarian (linear-sum-assignment) pairing without repeats. Unmatched
   observed positions (under-prediction) now contribute their distance to the nearest model
   position — this scheme previously *dropped* them, which rewarded under-predicting models and is
   why its docstring long carried a do-not-use warning. Repeats-forbidden pairing is mainly useful
   when images are well separated and you want strict one-to-one bookkeeping.
-
-- ``FitPositionsImagePairAll``: a mixture likelihood — each observed position marginalizes over
-  every model position, and the 1/n_permutations normalization acts as an Occam factor that
-  mildly penalizes extra images. Statistically the most principled, and differentiable end to end
-  (it is the scheme the JAX point-source likelihood tests exercise); its penalties are implicit
-  rather than tunable.
 
 __The over-prediction policy (FitPositionsImagePairRepeat)__
 
@@ -183,6 +185,54 @@ over-prediction Occam factor (the ``1/P^I`` term of Lombardi 2024's mixture like
 ``FitPositionsImagePairRepeat``'s ``unmatched_model_policy`` heuristics stay as they are:
 best-match pairing is not a normalized mixture, so no principled combinatorial term applies to it.
 
+__Benchmark evidence (truth-anchored, A100)__
+
+The defaults above are not conventions — they were decided by a truth-anchored benchmark campaign
+(PyAutoLens#678): every likelihood option was evaluated *at the simulator-truth model* on
+galaxy-scale (quad) and cluster-scale (multi-plane, two sources) datasets, and searches were scored
+by ``delta = max_log_likelihood - truth_log_likelihood``. A small positive delta means the search
+found the truth basin; a large positive delta means the likelihood *mis-ranks* models (a wrong
+model beats truth — the failure a default must never have); a negative delta means the search
+failed to reach the basin. The result JSONs live in ``autolens_profiling/results/searches/`` with
+a written synthesis in ``autolens_profiling/results/notes/point_source_defaults_campaign.md``.
+The headline numbers:
+
+- **Pairing robustness (why all-to-all is the default).** On a quad with one true image removed
+  from the dataset — a missing image, e.g. lost under the lens light — ``PairAllSolved`` recovered
+  truth cleanly (delta +1.3) while ``PairRepeatSolved`` mis-ranked it catastrophically (truth
+  log likelihood -183389, delta +183402): nearest-image pairing has no way to leave an unobserved
+  model image unmatched, so the truth pays a huge spurious residual. On clean data the two pairings
+  are statistically equivalent (delta +2.85 vs +2.88) at near-identical cost (147 s vs 163 s
+  Nautilus wall on an A100) — robustness, not performance, decides the default.
+
+- **Tensor vs scalar source-plane weighting (why ``"jacobian"`` is the default).** The scalar
+  ``µ²/σ²`` weighting mis-ranks models when magnifications are extreme: on the galaxy quad
+  (one image at |µ| = 367) the true model's scalar source-plane log likelihood is -33788 while
+  wrong models score around -300 — a catastrophic inversion. The tensor weighting ranks truth
+  first at both tiers (galaxy delta +0.6; cluster truth log likelihood +61 vs +36 scalar-solved
+  and +40 free-scalar). The solved centre is the orthogonal win — it removes parameters — but the
+  *weighting* is what fixes the ranking.
+
+- **Free vs solved centres under gradient searches.** ``af.MultiStartProdigy`` converges on the
+  solved image-plane likelihood (delta +1.95, 118 s) but stalls below truth with free centres
+  (delta -75.7 at 256 starts) — and this persists after the log-sum-exp stabilization, so it is a
+  genuine geometry effect, not a numerical cliff. Nautilus handles both. If you use gradient
+  searches, use solved centres.
+
+- **Posterior honesty.** The solved image-plane fits are plug-in profiles (no marginalization term
+  over the centre), raising the worry that their posteriors are overconfident. The like-for-like
+  Nautilus comparison shows the opposite on the benchmark quad: the solved fit's
+  ``einstein_radius`` standard deviation is 0.038 vs 0.027 free — slightly wider, not narrower.
+
+- **Near-caustic domain of validity.** With the source at 0.95x the tangential caustic the tensor
+  source-plane fit still recovers truth (delta +2.0), as do the solved image-plane fits — no
+  breakdown of the linearization was observed at this proximity.
+
+- **Spurious extra positions.** The complementary discriminator — one spurious observed position
+  injected into the dataset — is computationally punishing for both pairings (both searches ran
+  ~10x longer than their clean-data siblings), which is itself a practical warning: a contaminant
+  position slows the fit dramatically before it biases it. Vet your position catalogues.
+
 __Choosing at cluster scale__
 
 Profiling on the standard cluster model (see the likelihood-breakdown scripts referenced above)
@@ -190,9 +240,13 @@ puts the analytic ``β*`` solve at timing-noise-level overhead per likelihood ca
 image-plane likelihood, +9–30% on sub-0.1 s eager source-plane totals — while removing 2 free
 parameters per point source from the non-linear space. The recommendation for cluster fits is
 therefore to sharpen the workflow above: **search with ``FitPositionsSourceSolved`` (with
-``al.ps.PointSolved`` sources), validate with the image-plane chi-squared** on the max-likelihood
-model. Reserve free-centre ``FitPositionsSource`` for direct comparisons with codes that sample the
-source position (its ``weighting = "magnification"`` scalar convention matches Lenstool's).
+``al.ps.PointSolved`` sources, tensor weighting), validate with the default image-plane
+chi-squared** on the max-likelihood model. Reserve free-centre ``FitPositionsSource`` for direct
+comparisons with codes that sample the source position (its ``weighting = "magnification"`` scalar
+convention matches Lenstool's). One search-strategy caveat from the benchmarks: at cluster scale
+the source-plane objectives defeated the gradient optimizer (it converged to basins thousands of
+log likelihood below truth while Nautilus recovered them) — use Nautilus for cluster source-plane
+searches; the gradient-search story at cluster scale is the solved image-plane likelihood.
 
 __Demonstration__
 

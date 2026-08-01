@@ -129,13 +129,15 @@ We compose a multi-plane lens model where:
 
  - The lens galaxy at z=0.5 has an `Isothermal` mass distribution with `ExternalShear` [7 parameters].
 
- - The first source galaxy at z=1.0 has its own `Isothermal` mass distribution and a `Point` source [7 parameters].
-   The mass of this galaxy is what makes the system genuinely multi-plane: it lenses the further source behind it
-   in addition to the foreground lens, doubling the number of images of source_1.
+ - The first source galaxy at z=1.0 has its own `Isothermal` mass distribution and a `PointSolved` source
+   [5 parameters]. The mass of this galaxy is what makes the system genuinely multi-plane: it lenses the further
+   source behind it in addition to the foreground lens, doubling the number of images of source_1.
 
- - The second source galaxy at z=2.0 is a `Point` only [2 parameters].
+ - The second source galaxy at z=2.0 is a `PointSolved` only [0 parameters] — its source-plane centre, like
+   source_0's, is solved analytically at every likelihood evaluation rather than sampled.
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=16.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=12 (the solved
+source centres remove 2 parameters per source relative to the free-centre `Point` composition).
 
 __Name Pairing__
 
@@ -161,18 +163,20 @@ lens = af.Model(
     shear=al.mp.ExternalShear,
 )
 
-# Source 0 (z=1.0) — itself a lens for source 1 behind it:
+# Source 0 (z=1.0) — itself a lens for source 1 behind it. The `PointSolved` component has no free
+# parameters: each source's source-plane centre is solved analytically per likelihood evaluation,
+# which with multiple sources compounds quickly (2 parameters saved per source):
 
 source_0 = af.Model(
     al.Galaxy,
     redshift=1.0,
     mass=al.mp.Isothermal,
-    point_0=al.ps.Point,
+    point_0=al.ps.PointSolved,
 )
 
 # Source 1 (z=2.0):
 
-source_1 = af.Model(al.Galaxy, redshift=2.0, point_1=al.ps.Point)
+source_1 = af.Model(al.Galaxy, redshift=2.0, point_1=al.ps.PointSolved)
 
 # Overall Lens Model:
 
@@ -205,9 +209,10 @@ search = af.Nautilus(
 """
 __Analysis List__
 
-Set up one `AnalysisPoint` per dataset. We use an "image-plane chi-squared" via `FitPositionsImagePairRepeat`,
-which is the most robust likelihood for point-source modeling. See `point_source/modeling.py` for an in-depth
-discussion of the chi-squared options.
+Set up one `AnalysisPoint` per dataset. The default fit is the "image-plane chi-squared"
+`FitPositionsImagePairAllSolved` — all-to-all image pairing (robust to missing images) with the analytically
+solved source centre — which is the most robust likelihood for point-source modeling. See
+`point_source/modeling.py` for an in-depth discussion of the chi-squared options.
 
 __JAX__
 
@@ -219,7 +224,6 @@ analysis_list = [
     al.AnalysisPoint(
         dataset=dataset,
         solver=solver,
-        fit_positions_cls=al.FitPositionsImagePairRepeat,
         use_jax=True,
     )
     for dataset in dataset_list

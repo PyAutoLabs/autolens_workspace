@@ -341,10 +341,12 @@ The default settings used above use the image-plane chi-squared, which uses the 
 multiple images of the point source in the image-plane for the given mass model and compares the positions of these 
 model images to the observed images to compute the chi-squared and likelihood.
 
-There are still many different ways the image-plane chi-squared can be computed, for example do we allow for 
-repeat image-pairs (i.e. the same multiple image being observed multiple times)? Do we pair all possible combinations
-of multiple images to observed images? This default settings use the simplest approach, which pair each multiple image
-with the observed image that is closest to it, allowing for repeat image pairs. 
+There are still many different ways the image-plane chi-squared can be computed, differing in how model images
+are paired to observed positions: do we allow repeat image-pairs (the same model image matched to multiple
+observed positions)? Do we pair all possible combinations of model images to observed positions? The default is
+the all-to-all pairing combined with the analytically-solved source centre (`FitPositionsImagePairAllSolved`,
+illustrated in the `__Solved Source Centre__` section below); the examples here walk through the free-centre
+pairings one by one, passing each class explicitly.
 
 For example, we can repeat the fit above whilst not allowing for repeat image pairs as follows:
 """
@@ -364,7 +366,7 @@ print("Log Likelihood Without Repeats:")
 print(fit.positions.log_likelihood)
 
 """
-We can allow for repeat image pairs by using the `FitPositionsImagePairRepeat` class, which is the default input.
+We can allow for repeat image pairs by using the `FitPositionsImagePairRepeat` class.
 """
 fit = al.FitPointDataset(
     dataset=dataset,
@@ -379,6 +381,25 @@ print(
 print(fit.positions.residual_map)
 
 print("Log Likelihood With Repeats:")
+print(fit.positions.log_likelihood)
+
+"""
+The `FitPositionsImagePairAll` class instead marginalizes each observed position over *every* model
+image via a smooth probabilistic mixture — the pairing scheme of the default fit (in its solved-centre
+form). Its key property is robustness: nearest-image pairing has no way to leave an unobserved model
+image unmatched, so if a true multiple image is missing from the dataset (e.g. hidden under the lens
+galaxy's light) the repeat pairing mis-ranks the true model catastrophically, while the all-to-all
+mixture absorbs the missing image gracefully. On clean data the two give statistically equivalent
+results, which is why robustness decides the default.
+"""
+fit = al.FitPointDataset(
+    dataset=dataset,
+    tracer=tracer,
+    solver=solver,
+    fit_positions_cls=al.FitPositionsImagePairAll,  # Different input to the one used above
+)
+
+print("Log Likelihood With All-To-All Pairing:")
 print(fit.positions.log_likelihood)
 
 """
@@ -407,10 +428,12 @@ print("Log Likelihood in the Source Plane:")
 print(fit.positions.log_likelihood)
 
 """
-A note on defaults: `FitPointDataset` itself defaults to `FitPositionsImagePair` (Hungarian pairing,
-no repeats), whereas `AnalysisPoint` — the object used in the model-fitting examples — defaults to
-`FitPositionsImagePairRepeat`. The examples above pass `fit_positions_cls` explicitly so there is no
-ambiguity about which chi-squared is being used.
+A note on defaults: `FitPointDataset` and `AnalysisPoint` — the object used in the model-fitting
+examples — both default to `FitPositionsImagePairAllSolved` (all-to-all pairing with the analytically
+solved source centre, demonstrated below). The examples above pass `fit_positions_cls` explicitly so
+there is no ambiguity about which chi-squared is being used — note the free-centre classes used here
+require a centre-bearing profile (`al.ps.Point`), while the solved default requires the parameter-free
+`al.ps.PointSolved`.
 
 __Solved Source Centre__
 

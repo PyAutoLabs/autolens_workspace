@@ -181,7 +181,9 @@ Create the `AnalysisPoint` object defining how the via Nautilus the model is fit
 analysis = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    fit_positions_cls=al.FitPositionsImagePairRepeat,  # Image-plane chi-squared with repeat image pairs.
+    # `PointFlux` carries a free source centre, so the solved-centre default fit cannot be used
+    # (it would raise an error) — we pass the free-centre all-to-all image-plane chi-squared.
+    fit_positions_cls=al.FitPositionsImagePairAll,
 )
 
 """
@@ -198,6 +200,12 @@ free-`flux` convention; see `guides/point_source_pairing.py` for when to prefer 
 
 The microlensing caveat at the top of this script applies equally to the solved flux: solving the
 source flux analytically does not make image fluxes any less affected by microlensing.
+
+A second caveat decides between the two conventions for standardizable candles (e.g. lensed
+supernovae): `FitFluxesSolved` marginalizes the source flux over a *flat* prior, so any informative
+prior you hold on the intrinsic flux — the whole point of a standard candle — is discarded. For
+glSNe-style science, keep the free-`flux` `PointFlux` composition demonstrated above and place your
+standardization prior on `flux`.
 """
 lens_solved = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
 
