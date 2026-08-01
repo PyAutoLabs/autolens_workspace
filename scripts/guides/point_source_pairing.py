@@ -51,6 +51,30 @@ __The three pairing schemes__
   why its docstring long carried a do-not-use warning. Repeats-forbidden pairing is mainly useful
   when images are well separated and you want strict one-to-one bookkeeping.
 
+__How the default penalizes too few / too many images__
+
+Because ``FitPositionsImagePairAll(Solved)`` is the default, it is worth being precise about what its
+mixture does in each failure mode — there are no tunable knobs, the penalties fall out of the
+likelihood itself:
+
+- **Too few images (under-prediction)**: every *observed* position marginalizes over every model
+  position (a max-shifted log-sum-exp of Gaussian terms). An observed image with no model image
+  nearby is dominated by its distance to the *nearest* model image, so its penalty grows
+  quadratically with that distance over the position noise — automatic, and damning, exactly as
+  under-prediction should be. If the solver returns no images at all, every observed position
+  contributes a large finite floor (``no_image_residual = 1e4``, on the same (residual/noise)^2
+  scale as the other schemes) so the model is *scored* terribly rather than silently resampled.
+
+- **Too many images (over-prediction)**: extra model positions enter through the mixture's
+  ``1/n_permutations`` normalization, which costs ``n_observed x log(n_model)`` — a *mild,
+  logarithmic* Occam penalty per extra image (the ``1/P^I`` term of the Lombardi 2024 mixture).
+  This penalty is magnification-blind: the ubiquitous demagnified central image is tolerated by
+  construction, with no threshold to tune — but so is a *bright* predicted image on blank sky,
+  which only pays the same gentle factor. If your science demands a hard penalty for bright
+  unobserved images, that is what ``FitPositionsImagePairRepeat``'s ``unmatched_model_policy``
+  (next section) provides — and in every case the image-plane validation of the max-likelihood
+  model should inspect the unmatched model images before you trust a fit.
+
 __The over-prediction policy (FitPositionsImagePairRepeat)__
 
 The ``unmatched_model_policy`` class attribute selects what happens to model images no observed

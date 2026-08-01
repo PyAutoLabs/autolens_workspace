@@ -355,6 +355,16 @@ way to leave an unobserved model image unmatched. The all-to-all mixture absorbs
 recovered the truth cleanly on the same data. On clean data the two pairings give statistically equivalent
 results at near-identical cost, so robustness decides the default.
 
+The default's penalties for a mismatched image count fall straight out of its mixture likelihood, with no
+knobs to tune. If the model produces *too few* images (an observed position with no model image nearby), that
+position's penalty grows quadratically with its distance to the nearest model image — automatic and severe, as
+under-prediction should be (you *saw* the image). If the model produces *too many* images, each extra one pays
+only a mild logarithmic Occam factor — so the demagnified central image that almost every lens model predicts
+(and observations almost never detect) is tolerated by construction, but note a bright spurious predicted image
+is penalized just as gently, which is one reason to inspect the image-plane residuals of the max-likelihood
+model before trusting a fit. See `guides/point_source_pairing.py` for the full discussion of both failure
+modes and the stricter, tunable over-prediction policies.
+
 For a "source-plane chi-squared", the likelihood is computed in the source-plane. The analysis just ray-traces
 the observed image positions back to the source-plane and defines a chi-squared metric there. This is orders of
 magnitude faster than the image-plane chi-squared (no iterative triangle solve), and with the modern tensor
