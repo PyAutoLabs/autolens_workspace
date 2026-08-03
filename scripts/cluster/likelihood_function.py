@@ -103,8 +103,18 @@ likelihood.
 dataset_name = "simple"
 dataset_path = Path("dataset") / "cluster" / dataset_name
 
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+
+This script reads the truth model CSVs as well as the image, so it also checks ``mass.csv`` — a
+directory left half-written by an interrupted simulator run must still trigger a rebuild.
+``should_simulate`` is evaluated first so that its ``PYAUTO_SMALL_DATASETS`` rebuild always runs.
+"""
 if (
-    not (dataset_path / "data.fits").exists()
+    al.util.dataset.should_simulate(str(dataset_path))
     or not (dataset_path / "mass.csv").exists()
 ):
     subprocess.run([sys.executable, "scripts/cluster/simulator.py"], check=True)
