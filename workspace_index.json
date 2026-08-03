@@ -289,37 +289,6 @@
   },
   {
     "contents": [
-      "Pixel Scale",
-      "Image",
-      "Noise Map",
-      "PSF",
-      "Data Processing Complete"
-    ],
-    "cross_refs": [
-      "data_preparation/examples/optional/info.py",
-      "data_preparation/examples/optional/mask.ipynb",
-      "data_preparation/examples/optional/mask_extra_galaxies.py",
-      "data_preparation/examples/optional/positions.ipynb",
-      "data_preparation/gui/extra_galaxies_centres.py",
-      "data_preparation/gui/mask.ipynb",
-      "data_preparation/gui/mask_extra_galaxies.ipynb",
-      "data_preparation/gui/positions.ipynb",
-      "extra_galaxies_centres.py",
-      "features/extra_galaxies/modeling.py",
-      "imaging/data_preparation/examples/data.ipynb",
-      "imaging/data_preparation/examples/noise_map.ipynb",
-      "imaging/data_preparation/examples/psf.ipynb",
-      "imaging/data_preparation/gui/extra_galaxies_centres.py",
-      "imaging/data_preparation/gui/lens_light_centre.py",
-      "mask_extra_galaxies.py"
-    ],
-    "notebook": "notebooks/group/data_preparation/start_here.ipynb",
-    "path": "scripts/group/data_preparation/start_here.py",
-    "summary": "When a group-scale strong lens CCD imaging dataset is analysed, it must conform to certain standards in order for the analysis to be performed correctly. This tutorial describes these standards and links to more detailed scripts which will help you prepare your dataset to adhere to them if it does not already.",
-    "title": "Group: Data Preparation"
-  },
-  {
-    "contents": [
       "Dataset & Paths",
       "Main Lens Centres",
       "Masking (Search 1)",
