@@ -409,4 +409,24 @@ In a science analysis the regularization hyper-parameters are sampled with a non
 
 If you use this functionality, please cite Cao et al. 2025
 (https://github.com/caoxiaoyue/potential_correction_paper) alongside PyAutoLens.
+
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+This script simulates its dataset in-memory, so it does not need full_datasets
+for a shape match. It needs it for the same reason as this folder's
+start_here.py: the corrections mesh is built by subsampling the image grid, and
+under the SMALL_DATASETS cap al.pc.PairRegularDpsiMesh (dpsi_factor=2) can be
+starved to the point where mesh.py's get_itp_box_ctr raises "The dpsi grid is
+too sparse". Unlike its interferometer siblings this script does not currently
+fail capped — its arc mask happens to retain a valid interpolation box — but
+that is incidental, and config/build/profile_release.yaml already lifts the cap
+for this whole folder. Declaring it here keeps the smoke and release profiles
+in agreement instead of waiting for the coincidence to break.
+
+ENV: full_datasets
 """

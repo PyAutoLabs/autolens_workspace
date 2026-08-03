@@ -463,4 +463,22 @@ in this folder for the certified end-to-end recipe.
 
 If you use this functionality, please cite Cao et al. 2025
 (https://github.com/caoxiaoyue/potential_correction_paper) alongside PyAutoLens.
+
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+This script simulates its dataset in-memory, so it does not need full_datasets
+for a shape match. It needs it because the corrections mesh is built by
+subsampling the real-space mask: under the SMALL_DATASETS cap that mask is
+shrunk to 16x16, so al.pc.PairRegularDpsiMesh (dpsi_factor=2) has too few
+points and mesh.py's get_itp_box_ctr raises "The dpsi grid is too sparse".
+Uncapped this script runs in ~44s against the 300s smoke cap.
+config/build/profile_release.yaml carries the same reasoning for this folder
+and its imaging sibling.
+
+ENV: full_datasets
 """
