@@ -224,7 +224,7 @@ lens = af.Model(al.Galaxy, redshift=0.295, mass=mass)
 
 # Source:
 
-point_0 = af.Model(al.ps.Point)
+point_0 = af.Model(al.ps.PointSolved)
 
 source = af.Model(al.Galaxy, redshift=0.658, point_0=point_0)
 
