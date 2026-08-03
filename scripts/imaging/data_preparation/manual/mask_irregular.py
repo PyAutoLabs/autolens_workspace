@@ -41,6 +41,21 @@ folder `dataset/imaging/data_preparation/simple__no_lens_light`.
 dataset_name = "simple__no_lens_light"
 dataset_path = Path("dataset") / "imaging" / dataset_name
 
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if al.util.dataset.should_simulate(str(dataset_path)):
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "scripts/imaging/features/no_lens_light/simulator.py"],
+        check=True,
+    )
+
 data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.1)
 noise_map = al.Array2D.from_fits(
     file_path=dataset_path / "noise_map.fits", pixel_scales=0.1

@@ -42,7 +42,6 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 
 # from autolens import setup_notebook; setup_notebook()
 
-import json
 from pathlib import Path
 import autofit as af
 import autolens as al
@@ -57,22 +56,29 @@ search change, to ensure different fits to not overwrite one another on hard-dis
 Each unique identifier is used to define every entry of the database as it is built. Unique identifiers therefore play 
 the same vital role for the database of ensuring that every set of results written to it are unique.
 
-In this example, we fit 3 different datasets with the same search and model. Each `dataset_name` is therefore passed
-in as the search's `unique_tag` to ensure 3 separate sets of results for each model-fit are written to the .sqlite
+In this example, we fit 2 different datasets with the same search and model. Each `dataset_name` is therefore passed
+in as the search's `unique_tag` to ensure 2 separate sets of results for each model-fit are written to the .sqlite
 database.
 
 __Dataset__
 
-For each dataset we load it from hard-disc, set up its `Analysis` class and fit it with a non-linear search. 
+For each dataset we load it from hard-disc, set up its `Analysis` class and fit it with a non-linear search.
 
-We want each results to be stored in the database with an entry specific to the dataset. We'll use the `Dataset`'s name 
-string to do this, so lets create a list of the 3 dataset names.
+We want each results to be stored in the database with an entry specific to the dataset. We'll use the `Dataset`'s name
+string to do this, so lets create a list of the 2 dataset names.
 """
 dataset_names = [
     "simple",
-    "lens_sersic",
     "simple__no_lens_light",
 ]
+
+"""
+The simulator script which creates each dataset, used below to simulate any dataset not already on your hard-disk.
+"""
+simulator_paths = {
+    "simple": "scripts/imaging/simulator.py",
+    "simple__no_lens_light": "scripts/imaging/features/no_lens_light/simulator.py",
+}
 
 pixel_scales = 0.1
 
@@ -96,6 +102,21 @@ for dataset_name in dataset_names:
     Set up the config and output paths.
     """
     dataset_path = Path("dataset") / "imaging" / dataset_name
+
+    """
+    __Dataset Auto-Simulation__
+
+    If the dataset does not already exist on your system, it will be created by running the corresponding
+    simulator script. This ensures that all example scripts can be run without manually simulating data first.
+    """
+    if al.util.dataset.should_simulate(str(dataset_path)):
+        import subprocess
+        import sys
+
+        subprocess.run(
+            [sys.executable, simulator_paths[dataset_name]],
+            check=True,
+        )
 
     """
     __Dataset__
@@ -133,13 +154,20 @@ for dataset_name in dataset_names:
     Information about the model-fit that is not part included in the model-fit itself can be made accessible via the 
     database by passing an `info` dictionary. 
 
-    Below we write info on the dataset`s (hypothetical) data of observation and exposure time, which we will later show
-    the database can access. 
+    Below we define (hypothetical) information about the lens and source, which we will later show the database can
+    access.
+
+    The example `imaging/data_preparation/examples/optional/info.py` shows how to store this alongside your dataset
+    as an `info.json` file, which you would then load here instead of defining it inline.
 
     For fits to large datasets this ensures that all relevant information for interpreting results is accessible.
     """
-    with open(Path(dataset_path, "info.json")) as json_file:
-        info = json.load(json_file)
+    info = {
+        "redshift_lens": 0.5,
+        "redshift_source": 1.0,
+        "velocity_dispersion": 250000,
+        "stellar mass": 1e11,
+    }
 
     """
     __Model__
@@ -173,6 +201,7 @@ for dataset_name in dataset_names:
         session=session,  # This can instruct the search to write to the .sqlite database.
         n_live=100,
         n_batch=50,  # GPU batching and VRAM use explained in `modeling` examples.
+        n_like_max=300,
     )
 
     analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
@@ -225,6 +254,7 @@ to large samples by writing directly to the database.
 #     session=session,  # This can instruct the search to write to the .sqlite database.
 #     n_live=100,
 #     n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
+#     n_like_max=300,
 # )
 
 
