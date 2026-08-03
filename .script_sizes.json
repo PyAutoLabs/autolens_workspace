@@ -14,7 +14,6 @@
   "scripts/cluster/start_here.py": 24027,
   "scripts/group/__init__.py": 0,
   "scripts/group/data_preparation/__init__.py": 0,
-  "scripts/group/data_preparation/start_here.py": 19804,
   "scripts/group/features/__init__.py": 0,
   "scripts/group/features/advanced/__init__.py": 0,
   "scripts/group/features/advanced/double_source_plane_lens/__init__.py": 0,
