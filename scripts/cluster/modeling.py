@@ -528,9 +528,30 @@ to fit the model to that dataset's multiple-image positions.
 
 ``fit_positions_cls=al.FitPositionsSourceSolved`` selects the solved source-plane chi-squared: the
 observed positions are back-traced to each source's plane, the source centre is solved analytically,
-and the likelihood is marginalized over it — no lens-equation forward solve per evaluation. Validate
-the image-plane residuals on the max-likelihood model afterwards (see ``guides/point_source_pairing.py``
-and ``cluster/likelihood_function.py``).
+and the likelihood is marginalized over it — no lens-equation forward solve per evaluation. Its default
+``weighting="jacobian"`` maps each image's position noise through the full lensing Jacobian; this
+tensor weighting is what makes the source-plane chi-squared trustworthy — in truth-anchored benchmark
+tests on this cluster configuration it gives the true model its highest likelihood, while the
+traditional scalar magnification weighting ranks wrong models above the truth.
+
+One thing the source-plane chi-squared *cannot* do is penalize a wrong image count: it never solves
+the lens equation forwards, so a model that would produce extra images, or fail to produce an observed
+one, is invisible to it. At cluster scale this matters — faint counter-images are routinely undetected,
+and a mass model that under- or over-predicts multiplicities is exactly the failure you want to catch.
+This is why the workflow is **search source-plane, validate image-plane**: after the fit, evaluate the
+max-likelihood model with the image-plane chi-squared (the library default,
+``al.FitPositionsImagePairAllSolved``), which penalizes a missing model image quadratically and extra
+images via a mild Occam factor, and inspect its residuals per system. The full discussion of the
+pairing schemes, their too-few/too-many-image penalties, and the benchmark evidence behind these
+recommendations is in ``guides/point_source_pairing.py`` (see also ``cluster/likelihood_function.py``
+for the likelihood internals).
+
+Two search-strategy notes from the same benchmarks: use Nautilus for this source-plane objective —
+gradient optimizers (e.g. ``af.MultiStartProdigy``) converge to basins far below the truth on
+cluster-scale source-plane likelihoods, while Nautilus recovers them; and if you do want a
+gradient search at cluster scale, use the solved *image-plane* chi-squared
+(``al.FitPositionsImagePairAllSolved``, the library default), whose solved positions carry an exact
+implicit gradient and converge under gradient searches.
 
 We then wrap each analysis in an ``AnalysisFactor`` pairing it to the *shared* lens model, and combine
 all factors into a single ``FactorGraphModel``. The total log likelihood is the sum of the per-dataset

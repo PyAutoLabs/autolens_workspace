@@ -193,9 +193,15 @@ __Model__
 To perform lens modeling we must define a lens model, describing the mass profile of the lens 
 galaxy and point source model of the source galaxy.
 
-A brilliant lens model to start with is one which uses aSingular Isothermal 
+A brilliant lens model to start with is one which uses a Singular Isothermal
 Ellipsoid (SIE) plus shear to model the lens mass and simply assumes the source is
-a point source, with a `centre` (y,x) position that is a free parameter of the model.
+a point source. The source is composed as `al.ps.PointSolved`, which has no free
+parameters at all: its source-plane (y,x) centre is solved for analytically at every
+likelihood evaluation, rather than sampled as two free parameters. This is the
+recommended default — it shrinks parameter space and makes the likelihood much
+better behaved for the search. A free-centre alternative (`al.ps.Point`) exists for
+cases where the centre carries science or must be shared across datasets; see
+`point_source/modeling.py` and `guides/point_source_pairing.py`.
 
 __Name Pairing__
 
@@ -250,10 +256,12 @@ The `start_here.py` examples for imaging and interferometer data fit with `af.Mu
 multi-start gradient optimizer, and use `Nautilus` only in their `modeling.py` scripts where the full posterior
 is needed.
 
-That is not yet possible for point-source data: a gradient optimizer needs derivatives of the likelihood, and
-the point-source likelihood is computed by solving the lens equation for the multiple image positions — an
-operation PyAutoLens cannot yet differentiate through. Point-source fits therefore use `Nautilus` here too,
-which has the compensation that you get the full posterior straight away.
+Point-source fits use `Nautilus` here too, but for a different reason: the point-source likelihood *is*
+differentiable (the solved multiple-image positions carry an exact implicit gradient), and benchmark tests
+show `af.MultiStartProdigy` converges on the solved-centre likelihood this example uses. `Nautilus` is
+preferred in `start_here` because point-source datasets are small, so its runs are already fast, and you get
+the full posterior (parameter error bars) straight away. If you swap in a gradient optimizer, keep the solved
+source centre — with free centres a gradient search stalls below the true solution even with many starts.
 
 __JAX__
 
@@ -408,7 +416,7 @@ lens = af.Model(al.Galaxy, redshift=0.295, mass=mass)
 
 # Source:
 
-point_0 = af.Model(al.ps.Point)
+point_0 = af.Model(al.ps.PointSolved)
 
 source = af.Model(al.Galaxy, redshift=0.658, point_0=point_0)
 

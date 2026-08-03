@@ -119,15 +119,16 @@ We compose our model using `Model` objects, which represent the lenses we fit to
 This graphical model creates a non-linear parameter space that has parameters for every lens mass and source galaxy point
 source in our sample. In this example, there are 3 lenses each with their own model, therefore:
 
- - The lens galaxy's total mass distribution is an `Isothermal` with fixec centre [3 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal` with fixed centre [3 parameters].
 
- - The source galaxy's light is a point `Point` [2 parameters].
+ - The source galaxy is a `PointSolved` point source [0 parameters — its source-plane centre is solved
+   analytically at every likelihood evaluation].
 
  - There is a single cosmological shared free parameter, `H0` [1 parameter]
 
- - There are 3 strong lenses in our graphical model [(3 x 5) + 1 = 16 parameters]. 
+ - There are 3 strong lenses in our graphical model [(3 x 3) + 1 = 10 parameters].
 
-The overall dimensionality of parameter space is therefore N=16.
+The overall dimensionality of parameter space is therefore N=10.
 """
 cosmology = af.Model(al.cosmo.FlatLambdaCDM)
 
@@ -146,7 +147,7 @@ for model_index in range(total_datasets):
 
     # Source:
 
-    point_0 = af.Model(al.ps.Point)
+    point_0 = af.Model(al.ps.PointSolved)
 
     source = af.Model(al.Galaxy, redshift=1.0, point_0=point_0)
 

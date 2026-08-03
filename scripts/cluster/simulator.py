@@ -483,16 +483,28 @@ solver = al.PointSolver.for_grid(
 )
 
 
-@jax.jit
-def jitted_solve(tracer, source_plane_coordinate):
-    return solver.solve(
-        tracer=tracer, source_plane_coordinate=source_plane_coordinate
-    ).array
+# `plane_redshift` is per-source and MUST be passed: `solve` defaults to the tracer's
+# *final* plane, which silently produces positions of a hypothetical final-plane source
+# for every non-final source. In this simulator that bug placed the z=1.0 source's
+# multiple images as if it sat at z=2.0 (PyAutoLens#678 phase B discovery — the
+# committed positions only back-traced to the truth centre on the wrong plane). It is
+# closed over per source below (a python float, so it must be static under jit).
+def jitted_solve_for(plane_redshift):
+    @jax.jit
+    def jitted_solve(tracer, source_plane_coordinate):
+        return solver.solve(
+            tracer=tracer,
+            source_plane_coordinate=source_plane_coordinate,
+            plane_redshift=plane_redshift,
+        ).array
+
+    return jitted_solve
 
 
 positions_list = []
-for i, src_centre in enumerate(source_centres):
+for i, (src_centre, src_z) in enumerate(zip(source_centres, source_redshifts)):
     coord = jnp.asarray(src_centre)
+    jitted_solve = jitted_solve_for(float(src_z))
     raw = np.asarray(jitted_solve(tracer, coord))
     finite = ~(np.isinf(raw).any(axis=1) | np.isnan(raw).any(axis=1))
     positions_list.append(al.Grid2DIrregular(raw[finite]))

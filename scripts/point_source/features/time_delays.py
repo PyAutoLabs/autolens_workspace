@@ -128,9 +128,10 @@ __Model__
 We compose a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
- - The source galaxy's light is a point `Point` [2 parameters].
+ - The source galaxy is a `PointSolved` point source [0 parameters — its source-plane centre is solved
+   analytically at every likelihood evaluation].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=7.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=5.
 
 Name pairing is used as before to pair the `PointDataset` to the `Point` in the model, which is discussed below.
 
@@ -144,9 +145,10 @@ mass = af.Model(al.mp.Isothermal)
 
 lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
 
-# Source:
+# Source (`PointSolved`: the source-plane centre is solved analytically, not sampled; time delays
+# are computed from the tracer at the observed positions, so they need no centre parameter either):
 
-point_0 = af.Model(al.ps.Point)
+point_0 = af.Model(al.ps.PointSolved)
 
 source = af.Model(al.Galaxy, redshift=1.0, point_0=point_0)
 
@@ -181,7 +183,7 @@ Create the `AnalysisPoint` object defining how the via Nautilus the model is fit
 analysis = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    fit_positions_cls=al.FitPositionsImagePairRepeat,  # Image-plane chi-squared with repeat image pairs.
+    # Positions use the default `FitPositionsImagePairAllSolved` (all-to-all pairing, solved centre).
 )
 
 """
@@ -191,28 +193,14 @@ The default `FitTimeDelays` compares *relative* delays by subtracting the minimu
 the data and the model (the "reference image" convention). An alternative is
 `al.FitTimeDelaysSolved`, which instead solves a precision-weighted analytic reference time from
 the data in closed form and analytically marginalizes over it — a smooth (and JAX-differentiable)
-alternative to the min-subtraction.
-
-Solved fit classes pair with the parameter-free `al.ps.PointSolved` model component (which also
-solves the source centre, dropping its 2 free parameters; mixing solved fits with `Point` raises an
-error). The composition below is shown for reference and not fitted in this script:
+alternative to the min-subtraction. It is selected via `fit_time_delays_cls`, independently of the
+positions fit (the model composition is unchanged):
 """
-lens_solved = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
-
-source_solved = af.Model(al.Galaxy, redshift=1.0, point_0=af.Model(al.ps.PointSolved))
-
-model_solved = af.Collection(
-    galaxies=af.Collection(lens=lens_solved, source=source_solved)
-)
-
 analysis_solved = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    fit_positions_cls=al.FitPositionsSourceSolved,  # Solved fits pair with `PointSolved`.
     fit_time_delays_cls=al.FitTimeDelaysSolved,  # Analytic reference time instead of min-subtraction.
 )
-
-print(model_solved.info)
 
 """
 __Run Times__

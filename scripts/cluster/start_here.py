@@ -402,8 +402,15 @@ the per-dataset log likelihoods.
 
 ``fit_positions_cls=al.FitPositionsSourceSolved`` selects the solved source-plane chi-squared: observed
 positions are back-traced to each source's plane and the source centre is solved analytically, with no
-lens-equation forward solve per evaluation. Image-plane residuals are then the validation diagnostic on
-the max-likelihood model (see ``guides/point_source_pairing.py``).
+lens-equation forward solve per evaluation. Its tensor error weighting (``weighting="jacobian"``, the
+default) is what makes this fast chi-squared trustworthy — truth-anchored benchmarks at cluster scale
+show it ranks the true model first where the traditional scalar magnification weighting does not.
+Because it never solves the lens equation forwards, the source-plane chi-squared cannot penalize a model
+that predicts too many or too few multiple images — so the image-plane fit (whose mixture likelihood
+penalizes a missing model image quadratically and extra images via a mild Occam factor) is the validation
+diagnostic on the max-likelihood model. See ``guides/point_source_pairing.py`` for the pairing schemes,
+their image-count penalties and the benchmark evidence — it also records why this search uses Nautilus
+(gradient optimizers underperform on cluster source-plane objectives).
 
 The factor-graph API is what enables cluster-scale modeling with multiple sources at different
 redshifts — every source's positions contribute to the same global model, and the multi-plane

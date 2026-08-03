@@ -311,7 +311,9 @@ search = af.Nautilus(
 analysis = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    fit_positions_cls=al.FitPositionsImagePairRepeat,  # Image-plane chi-squared with repeat image pairs.
+    # `PointFlux` carries a free source centre (needed here because fluxes are fitted), so the
+    # solved-centre default fit cannot be used — we pass the free-centre all-to-all chi-squared.
+    fit_positions_cls=al.FitPositionsImagePairAll,
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 

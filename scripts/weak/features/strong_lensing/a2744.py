@@ -163,15 +163,12 @@ galaxy_models["host_halo"].dark.mass_at_200 = af.LogUniformPrior(
     lower_limit=10**14.5, upper_limit=10**16.0
 )
 
+# Each source's ``point_i`` component is swapped for the parameter-free ``al.ps.PointSolved``,
+# matching the cluster examples' demonstrated default: the fit solves each source-plane centre
+# analytically, so no centre priors are needed (the ``point.csv`` centres still supply each source
+# galaxy and its redshift but play no role in the fit).
 for i, dataset in enumerate(dataset_list):
-    positions = np.atleast_2d(dataset.positions)
-    point_attr = getattr(galaxy_models[f"source_{i}"], f"point_{i}")
-    point_attr.centre_0 = af.GaussianPrior(
-        mean=float(np.mean(positions[:, 0])), sigma=3.0
-    )
-    point_attr.centre_1 = af.GaussianPrior(
-        mean=float(np.mean(positions[:, 1])), sigma=3.0
-    )
+    setattr(galaxy_models[f"source_{i}"], f"point_{i}", af.Model(al.ps.PointSolved))
 
 # Scaling tier: the modern (Bergamini+19) tied-exponent convention — sigma ~ L^0.25,
 # r_cut ~ L^(1 + gamma - 2*alpha) = L^0.7 with gamma = 0.2, vanishing unscaled cores.
@@ -240,7 +237,15 @@ solver = al.PointSolver.for_grid(
 analysis_factor_list = [
     af.AnalysisFactor(
         prior_model=model_strong,
-        analysis=al.AnalysisPoint(dataset=dataset, solver=solver, use_jax=True),
+        # The solved source-plane chi-squared is the cluster search convention (fast — no forward
+        # lens-equation solve per likelihood call); validate the max-likelihood model with the
+        # image-plane chi-squared afterwards, per `guides/point_source_pairing.py`.
+        analysis=al.AnalysisPoint(
+            dataset=dataset,
+            solver=solver,
+            fit_positions_cls=al.FitPositionsSourceSolved,
+            use_jax=True,
+        ),
     )
     for dataset in dataset_list
 ]

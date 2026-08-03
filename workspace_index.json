@@ -8037,7 +8037,9 @@
       "autolens_workspace/start_here.py",
       "cluster/start_here.ipynb",
       "group/start_here.ipynb",
+      "guides/point_source_pairing.py",
       "modeling.py",
+      "point_source/modeling.py",
       "scripts/point_source/simulator.py",
       "simulator.py"
     ],
