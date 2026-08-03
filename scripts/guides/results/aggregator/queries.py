@@ -57,7 +57,7 @@ We can use the `Aggregator` to query the database and return only specific fits 
 do this using the `unique_tag` which we can query to load the results of a specific `dataset_name` string we 
 input into the model-fit's search. 
 
-By querying using the string `lens_sersic` the model-fit to only the second dataset is returned:
+By querying using the string `simple__no_lens_light` the model-fit to only the second dataset is returned:
 """
 unique_tag = agg.search.unique_tag
 agg_query = agg.query(unique_tag == "simple__no_lens_light")

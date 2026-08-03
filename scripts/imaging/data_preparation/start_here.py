@@ -47,6 +47,21 @@ Lets inspect an image which conforms to **PyAutoLens** standards:
 """
 dataset_path = Path("dataset") / "imaging" / "simple"
 
+"""
+__Dataset Auto-Simulation__
+
+If the dataset does not already exist on your system, it will be created by running the corresponding
+simulator script. This ensures that all example scripts can be run without manually simulating data first.
+"""
+if al.util.dataset.should_simulate(str(dataset_path)):
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "scripts/imaging/simulator.py"],
+        check=True,
+    )
+
 data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.1)
 
 aplt.plot_array(array=data, title="")
