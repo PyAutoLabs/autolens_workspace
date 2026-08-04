@@ -546,12 +546,14 @@ pairing schemes, their too-few/too-many-image penalties, and the benchmark evide
 recommendations is in ``guides/point_source_pairing.py`` (see also ``cluster/likelihood_function.py``
 for the likelihood internals).
 
-Two search-strategy notes from the same benchmarks: use Nautilus for this source-plane objective —
-gradient optimizers (e.g. ``af.MultiStartProdigy``) converge to basins far below the truth on
-cluster-scale source-plane likelihoods, while Nautilus recovers them; and if you do want a
-gradient search at cluster scale, use the solved *image-plane* chi-squared
-(``al.FitPositionsImagePairAllSolved``, the library default), whose solved positions carry an exact
-implicit gradient and converge under gradient searches.
+One search-strategy note from the same benchmarks: **use Nautilus at cluster scale.** Gradient
+optimizers (e.g. ``af.MultiStartProdigy``) converged to basins far below the truth on *every*
+cluster-scale objective benchmarked — source-plane tensor and solved, and the solved image-plane
+chi-squared — while Nautilus recovered each of them. The solved positions do carry an exact
+implicit gradient, so the objective is differentiable end to end; that is a statement about the
+derivatives being correct, not about the optimizer finding the global basin, and at cluster scale
+it does not. Gradient searches remain the right tool at galaxy scale with solved centres (see
+``point_source/modeling.py``).
 
 We then wrap each analysis in an ``AnalysisFactor`` pairing it to the *shared* lens model, and combine
 all factors into a single ``FactorGraphModel``. The total log likelihood is the sum of the per-dataset
