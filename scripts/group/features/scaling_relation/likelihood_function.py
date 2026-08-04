@@ -133,7 +133,7 @@ Three populations participate in the ray-tracing:
  - `source` (z=1.0): a small MGE light component (10 linear Gaussians).
 """
 total_gaussians = 10
-log10_sigma_list = np.linspace(-2, np.log10(0.5), total_gaussians)
+log10_sigma_list = np.linspace(-4, np.log10(0.5), total_gaussians)
 
 
 def build_source_basis(centre):

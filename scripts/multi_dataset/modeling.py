@@ -204,6 +204,7 @@ bulge = al.model_util.mge_model_from(
     total_gaussians=total_gaussians,
     gaussian_per_basis=1,
     centre_prior_is_uniform=True,
+    sigma_min=dataset.pixel_scales[0] / 10.0,
 )
 
 lens = af.Model(

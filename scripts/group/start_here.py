@@ -258,6 +258,7 @@ for i, centre in enumerate(main_lens_centres):
         total_gaussians=20,
         centre_prior_is_uniform=True,
         centre=(centre[0], centre[1]),
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     mass = af.Model(al.mp.Isothermal)
@@ -280,6 +281,7 @@ for i, centre in enumerate(extra_galaxies_centres):
         total_gaussians=10,
         centre_prior_is_uniform=True,
         centre=(centre[0], centre[1]),
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     mass = af.Model(al.mp.dPIEMassSph)

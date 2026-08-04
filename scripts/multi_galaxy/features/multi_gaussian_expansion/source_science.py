@@ -105,7 +105,7 @@ The same composition as `fit.py` in this folder: an MGE per deflector, true mass
 """
 total_gaussians = 20
 
-log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
+log10_sigma_list = np.linspace(np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians)
 
 
 def mge_basis_from(centre):

@@ -110,6 +110,7 @@ def source_lp_0(
             centre_prior_is_uniform=False,
             centre=(centre[0], centre[1]),
             centre_sigma=0.1,
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
         lens_dict[f"lens_{i}"] = af.Model(
             al.Galaxy, redshift=redshift_lens, bulge=bulge, disk=None, point=None
@@ -124,6 +125,7 @@ def source_lp_0(
             centre_prior_is_uniform=True,
             centre=(centre[0], centre[1]),
             ell_comps_prior_is_uniform=True,
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
         extra_light_models.append(
             af.Model(al.Galaxy, redshift=redshift_lens, bulge=bulge)
@@ -497,6 +499,7 @@ def light_lp(
             centre_prior_is_uniform=False,
             centre=prev_lens.bulge.centre,
             centre_sigma=0.1,
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 
         lens_dict[f"lens_{i}"] = af.Model(
@@ -524,6 +527,7 @@ def light_lp(
             centre_prior_is_uniform=True,
             centre=prev_extra.bulge.centre,
             ell_comps_prior_is_uniform=True,
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 
         extra_models.append(

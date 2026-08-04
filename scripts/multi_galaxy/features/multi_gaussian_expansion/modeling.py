@@ -267,6 +267,7 @@ for i, centre in enumerate(main_lens_centres):
         centre_prior_is_uniform=True,
         centre=(centre[0], centre[1]),
         centre_sigma=0.1,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     mass = af.Model(al.mp.Isothermal)

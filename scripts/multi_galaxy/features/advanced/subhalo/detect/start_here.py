@@ -125,6 +125,7 @@ def source_lp(
             centre_prior_is_uniform=True,
             centre=(centre[0], centre[1]),
             centre_sigma=0.1,
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 
         mass = af.Model(al.mp.Isothermal)
@@ -354,6 +355,7 @@ def light_lp(
             gaussian_per_basis=2,
             centre_prior_is_uniform=True,
             centre=tuple(lens_instance.mass.centre),
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 
         lens_dict[f"lens_{i}"] = af.Model(

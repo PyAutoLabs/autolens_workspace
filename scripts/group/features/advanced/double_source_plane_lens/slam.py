@@ -63,6 +63,7 @@ def build_lens_dict_model(
     main_lens_centres,
     redshift_lens: float,
     mask_radius: float,
+    sigma_min: float,
     total_gaussians: int = 20,
     gaussian_per_basis: int = 2,
 ):
@@ -74,6 +75,7 @@ def build_lens_dict_model(
             gaussian_per_basis=gaussian_per_basis,
             centre_prior_is_uniform=True,
             centre=(centre[0], centre[1]),
+            sigma_min=sigma_min,
         )
 
         mass = af.Model(al.mp.Isothermal)
@@ -137,6 +139,7 @@ def source_lp_1(
         main_lens_centres=main_lens_centres,
         redshift_lens=redshift_lens,
         mask_radius=mask_radius,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     source_0_bulge = al.model_util.mge_model_from(

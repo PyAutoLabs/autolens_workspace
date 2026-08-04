@@ -432,6 +432,7 @@ bulge = al.model_util.mge_model_from(
     total_gaussians=30,
     gaussian_per_basis=2,
     centre_prior_is_uniform=True,
+    sigma_min=dataset.pixel_scales[0] / 10.0,
 )
 
 lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge)
@@ -616,6 +617,7 @@ bulge = al.model_util.mge_model_from(
     total_gaussians=30,
     gaussian_per_basis=2,
     centre_prior_is_uniform=True,
+    sigma_min=dataset.pixel_scales[0] / 10.0,
 )
 
 lens = af.Model(

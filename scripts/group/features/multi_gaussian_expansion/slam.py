@@ -99,6 +99,7 @@ def source_lp(
             total_gaussians=20,
             gaussian_per_basis=1,
             centre_prior_is_uniform=True,
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 
         mass = af.Model(al.mp.Isothermal)
@@ -120,7 +121,8 @@ def source_lp(
     for centre in extra_galaxies_centres:
 
         bulge = al.model_util.mge_model_from(
-            mask_radius=mask_radius, total_gaussians=10, centre_fixed=centre
+            mask_radius=mask_radius, total_gaussians=10, centre_fixed=centre,
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 
         mass = af.Model(al.mp.dPIEMassSph)
@@ -209,6 +211,7 @@ def light_lp(
             total_gaussians=20,
             gaussian_per_basis=1,
             centre_prior_is_uniform=True,
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 
         lens = af.Model(
@@ -230,7 +233,8 @@ def light_lp(
             extra_instance = source_lp_result.instance.extra_galaxies[i]
 
             bulge = al.model_util.mge_model_from(
-                mask_radius=mask_radius, total_gaussians=10, centre_fixed=centre
+                mask_radius=mask_radius, total_gaussians=10, centre_fixed=centre,
+                sigma_min=dataset.pixel_scales[0] / 10.0,
             )
 
             extra_galaxy = af.Model(

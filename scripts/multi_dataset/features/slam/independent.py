@@ -542,6 +542,7 @@ lens_bulge = al.model_util.mge_model_from(
     total_gaussians=20,
     gaussian_per_basis=2,
     centre_prior_is_uniform=True,
+    sigma_min=dataset.pixel_scales[0] / 10.0,
 )
 
 # Source Light
@@ -608,6 +609,7 @@ lens_bulge = al.model_util.mge_model_from(
     total_gaussians=20,
     gaussian_per_basis=2,
     centre_prior_is_uniform=True,
+    sigma_min=dataset.pixel_scales[0] / 10.0,
 )
 
 analysis = al.AnalysisImaging(
@@ -725,7 +727,7 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
     total_gaussians = 20
     gaussian_per_basis = 1
 
-    log10_sigma_list = np.linspace(-3, np.log10(1.0), total_gaussians)
+    log10_sigma_list = np.linspace(-4, np.log10(1.0), total_gaussians)
 
     bulge_gaussian_list = []
 

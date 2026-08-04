@@ -118,7 +118,7 @@ The mass-profile parameters and source centres are set to the simulator's true v
 computation below produces a sensible-looking model image.
 """
 total_gaussians = 10
-log10_sigma_list = np.linspace(-2, np.log10(0.5), total_gaussians)
+log10_sigma_list = np.linspace(-4, np.log10(0.5), total_gaussians)
 
 
 def build_source_basis(centre):

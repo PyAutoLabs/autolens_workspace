@@ -171,6 +171,7 @@ bulge = al.model_util.mge_model_from(
     total_gaussians=20,
     centre_prior_is_uniform=True,
     centre=(0.0, 0.0),
+    sigma_min=dataset.pixel_scales[0] / 10.0,
 )
 mass = af.Model(al.mp.Isothermal)
 

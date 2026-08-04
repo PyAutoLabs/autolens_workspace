@@ -137,6 +137,7 @@ for i, centre in enumerate(main_lens_centres):
         centre_prior_is_uniform=False,
         centre=tuple(centre),
         centre_sigma=0.1,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
     lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, redshift=0.5, bulge=bulge)
 
@@ -149,6 +150,7 @@ for centre in extra_galaxies_centres:
         centre_prior_is_uniform=True,
         centre=tuple(centre),
         ell_comps_prior_is_uniform=True,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
     extra_galaxies_list.append(af.Model(al.Galaxy, redshift=0.5, bulge=bulge))
 
@@ -163,6 +165,7 @@ for centre in scaling_galaxies_centres:
         centre_prior_is_uniform=True,
         centre=tuple(centre),
         ell_comps_prior_is_uniform=True,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
     scaling_galaxies_list.append(af.Model(al.Galaxy, redshift=0.5, bulge=bulge))
 

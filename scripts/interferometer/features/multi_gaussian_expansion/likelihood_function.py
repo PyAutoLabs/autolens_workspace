@@ -141,7 +141,7 @@ Each Gaussian is a linear light profile — its `intensity` is solved for analyt
 below. Internally each linear profile carries `intensity=1.0`, which the inversion later rescales.
 """
 total_gaussians = 5
-log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
+log10_sigma_list = np.linspace(-4, np.log10(mask_radius), total_gaussians)
 
 bulge_gaussian_list = []
 for i in range(total_gaussians):

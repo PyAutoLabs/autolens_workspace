@@ -227,6 +227,7 @@ def lens_light_1(
             centre_prior_is_uniform=True,
             centre=(centre[0], centre[1]),
             centre_sigma=0.1,
+            sigma_min=dataset_larger.pixel_scales[0] / 10.0,
         )
 
         lens_dict[f"lens_{i}"] = af.Model(
@@ -314,6 +315,7 @@ def lens_light_2(
             mask_radius=mask_radius_larger,
             total_gaussians=10,
             centre_fixed=tuple(centre),
+            sigma_min=dataset_larger.pixel_scales[0] / 10.0,
         )
 
         scaling_galaxies_list.append(
@@ -661,6 +663,7 @@ def light_lp(
             gaussian_per_basis=2,
             centre_prior_is_uniform=True,
             centre=tuple(lens_instance.mass.centre),
+            sigma_min=dataset_larger.pixel_scales[0] / 10.0,
         )
 
         lens_dict[f"lens_{i}"] = af.Model(

@@ -261,7 +261,8 @@ lens_dict = {}
 for i, centre in enumerate(main_lens_centres):
 
     bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True
+        mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     mass = af.Model(al.mp.Isothermal)
@@ -283,7 +284,8 @@ extra_galaxies_list = []
 for centre in extra_galaxies_centres:
 
     bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius, total_gaussians=10, centre_fixed=centre
+        mask_radius=mask_radius, total_gaussians=10, centre_fixed=centre,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     mass = af.Model(al.mp.dPIEMassSph)

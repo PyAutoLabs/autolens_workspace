@@ -139,7 +139,7 @@ We build a `Basis` of 30 linear Gaussians as the source-galaxy light model, cent
 position.
 """
 total_gaussians = 30
-log10_sigma_list = np.linspace(-2, np.log10(0.5), total_gaussians)
+log10_sigma_list = np.linspace(-4, np.log10(0.5), total_gaussians)
 
 
 def build_source_basis(centre):
