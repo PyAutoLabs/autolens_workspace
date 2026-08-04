@@ -246,16 +246,24 @@ The headline numbers:
 - **Posterior honesty.** The solved image-plane fits are plug-in profiles (no marginalization term
   over the centre), raising the worry that their posteriors are overconfident. The like-for-like
   Nautilus comparison shows the opposite on the benchmark quad: the solved fit's
-  ``einstein_radius`` standard deviation is 0.038 vs 0.027 free — slightly wider, not narrower.
+  ``einstein_radius`` standard deviation is 0.038 vs 0.029 free — slightly wider, not narrower.
 
 - **Near-caustic domain of validity.** With the source at 0.95x the tangential caustic the tensor
   source-plane fit still recovers truth (delta +2.0), as do the solved image-plane fits — no
   breakdown of the linearization was observed at this proximity.
 
 - **Spurious extra positions.** The complementary discriminator — one spurious observed position
-  injected into the dataset — is computationally punishing for both pairings (both searches ran
-  ~10x longer than their clean-data siblings), which is itself a practical warning: a contaminant
-  position slows the fit dramatically before it biases it. Vet your position catalogues.
+  injected into the dataset — did not run to completion for *either* pairing: both searches were
+  stopped by an 8 hour wall clock after roughly 200x the wall of their clean-data siblings. That
+  non-result is the finding. A spurious position cannot be explained by any model, so it imposes
+  a floor of order -1e4 on the log likelihood of every sample alike; the live set never
+  compresses (the all-to-all arm finished with 92% of its points still live and an effective
+  sample size of 12) and the sampler cannot converge. The practical warning is therefore stronger
+  than a slowdown: a contaminant position destroys convergence outright rather than quietly
+  biasing the fit — so a fit that will not converge is itself evidence to re-examine your
+  positions. Vet your position catalogues. Because both pairings fail here symmetrically, this
+  arm does not discriminate between them; the missing-image arm above is what decides the
+  default.
 
 __Choosing at cluster scale__
 
@@ -268,9 +276,11 @@ therefore to sharpen the workflow above: **search with ``FitPositionsSourceSolve
 chi-squared** on the max-likelihood model. Reserve free-centre ``FitPositionsSource`` for direct
 comparisons with codes that sample the source position (its ``weighting = "magnification"`` scalar
 convention matches Lenstool's). One search-strategy caveat from the benchmarks: at cluster scale
-the source-plane objectives defeated the gradient optimizer (it converged to basins thousands of
-log likelihood below truth while Nautilus recovered them) — use Nautilus for cluster source-plane
-searches; the gradient-search story at cluster scale is the solved image-plane likelihood.
+the gradient optimizer was defeated by every objective tested, converging to basins hundreds to
+thousands of log likelihood below truth (source-plane tensor -11062, source-plane solved -15,
+image-plane solved -1724) while Nautilus recovered each of them. **Use Nautilus for cluster-scale
+point-source searches.** Gradient searches remain the right tool at galaxy scale with solved
+centres; at cluster scale they are not yet competitive on any of these likelihoods.
 
 __Demonstration__
 
