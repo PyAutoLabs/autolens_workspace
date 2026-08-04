@@ -444,8 +444,10 @@ __Why Not MultiStartProdigy?__
 
 The imaging and interferometer ``start_here.py`` examples fit with ``af.MultiStartProdigy``, a much
 faster multi-start gradient optimizer. Cluster fits keep Nautilus: cluster analyses report the full
-posterior (the corner plot at the end of this script is built from it), and gradient-optimizer support
-for the solved source-plane likelihood is still being validated.
+posterior (the corner plot at the end of this script is built from it), and the benchmarks found
+gradient optimizers converge to basins far below the truth on every cluster-scale objective tested
+— source-plane and solved image-plane alike — while Nautilus recovers each of them. See
+``guides/point_source_pairing.py`` for those numbers.
 
 Results are written to ``autolens_workspace/output/cluster/a2744/start_here/<unique_hash>/``. The
 ``unique_hash`` is generated from the model, search settings, and dataset — re-running with the same

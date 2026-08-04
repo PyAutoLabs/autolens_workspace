@@ -176,6 +176,7 @@
       "cluster/likelihood_function.py",
       "cluster/simulator.py",
       "guides/point_source_pairing.py",
+      "point_source/modeling.py",
       "point_source/start_here.py",
       "scripts/cluster/csv_api.py",
       "scripts/group/features/scaling_relation/modeling.py",
