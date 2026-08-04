@@ -22,6 +22,7 @@ __Contents__
 - **Unique Identifiers:** Results output to hard-disk are contained in a folder named via a unique identifier (a random.
 - **Dataset:** Load and plot the strong lens dataset.
 - **Results From Hard Disk:** In this example, results will be first be written to hard-disk using the standard output directory.
+- **Sample Retention:** Keep every sample of the short fits below, so indexed sample access works.
 - **Building a Database File From an Output Folder:** The fits above wrote the results to hard-disk in folders, not as an .sqlite database file.
 - **Writing Directly To Database:** Results can be written directly to the .sqlite database file, skipping output to hard-disk.
 - **Files:** When performing fits which output results to hard-disc, a `files` folder is created containing.
@@ -45,6 +46,7 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 from pathlib import Path
 import autofit as af
 import autolens as al
+from autolens import conf
 
 """
 __Unique Identifiers__
@@ -94,6 +96,19 @@ Later in this example we show how results can also also be output directly to an
 space. This will be acheived by setting `session` to something that is not `None`.
 """
 session = None
+
+"""
+__Sample Retention__
+
+The fits below are capped at 300 likelihood evaluations so this example runs quickly. Nested sampling concentrates
+nearly all of the weight of such a short run in a handful of samples, and the `samples_weight_threshold` in
+`config/output.yaml` drops every sample below that weight from `samples.csv`. Too few samples would then remain for
+the indexed sample access demonstrated at the end of this script.
+
+Disabling the threshold keeps every sample. A full-length fit retains plenty of samples above the threshold, so you
+do not need this line in your own analysis.
+"""
+conf.instance["output"]["samples_weight_threshold"] = None
 
 for dataset_name in dataset_names:
     """
