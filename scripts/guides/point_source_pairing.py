@@ -224,8 +224,13 @@ The headline numbers:
 - **Pairing robustness (why all-to-all is the default).** On a quad with one true image removed
   from the dataset — a missing image, e.g. lost under the lens light — ``PairAllSolved`` recovered
   truth cleanly (delta +1.3) while ``PairRepeatSolved`` mis-ranked it catastrophically (truth
-  log likelihood -183389, delta +183402): nearest-image pairing has no way to leave an unobserved
-  model image unmatched, so the truth pays a huge spurious residual. On clean data the two pairings
+  log likelihood -183389, delta +183402). The mechanism is the unmatched-*model*-image policy, not
+  the pairing itself: with an observed image missing, the model image that would have paired to it
+  is the nearest neighbour of no observed position, so ``unmatched_model_policy`` sees a bright
+  extra image (it is a real, magnified image, so the ``"magnification_filter"`` exemption does not
+  apply) and charges its full distance to the nearest *other* observed position as a residual. The
+  true model is punished for correctly predicting an image the data happens not to contain. The
+  all-to-all mixture instead absorbs it as the mild ``1/n_permutations`` Occam factor. On clean data the two pairings
   are statistically equivalent (delta +2.85 vs +2.88) at near-identical cost (147 s vs 163 s
   Nautilus wall on an A100) — robustness, not performance, decides the default.
 
@@ -233,9 +238,12 @@ The headline numbers:
   ``µ²/σ²`` weighting mis-ranks models when magnifications are extreme: on the galaxy quad
   (one image at |µ| = 367) the true model's scalar source-plane log likelihood is -33788 while
   wrong models score around -300 — a catastrophic inversion. The tensor weighting ranks truth
-  first at both tiers (galaxy delta +0.6; cluster truth log likelihood +61 vs +36 scalar-solved
-  and +40 free-scalar). The solved centre is the orthogonal win — it removes parameters — but the
-  *weighting* is what fixes the ranking.
+  first at both tiers (galaxy truth log likelihood +12.8 vs +0.6 scalar-solved and -33788
+  free-scalar; cluster +61 vs +36 scalar-solved and +40 free-scalar). The solved centre is the
+  orthogonal win — it removes parameters — but the *weighting* is what fixes the ranking. Note the
+  catastrophic scalar mis-ranking is a *free-centre* effect: solving the centre already tames it
+  (the solved-scalar search sits an ordinary +5.8 above truth, not the +33474 of free-scalar), and
+  the tensor is the further refinement that puts truth highest.
 
 - **Free vs solved centres under gradient searches.** ``af.MultiStartProdigy`` converges on the
   solved image-plane likelihood (delta +1.95, 118 s) but stalls below truth with free centres
@@ -254,16 +262,17 @@ The headline numbers:
 
 - **Spurious extra positions.** The complementary discriminator — one spurious observed position
   injected into the dataset — did not run to completion for *either* pairing: both searches were
-  stopped by an 8 hour wall clock after roughly 200x the wall of their clean-data siblings. That
-  non-result is the finding. A spurious position cannot be explained by any model, so it imposes
-  a floor of order -1e4 on the log likelihood of every sample alike; the live set never
-  compresses (the all-to-all arm finished with 92% of its points still live and an effective
-  sample size of 12) and the sampler cannot converge. The practical warning is therefore stronger
-  than a slowdown: a contaminant position destroys convergence outright rather than quietly
-  biasing the fit — so a fit that will not converge is itself evidence to re-examine your
-  positions. Vet your position catalogues. Because both pairings fail here symmetrically, this
-  arm does not discriminate between them; the missing-image arm above is what decides the
-  default.
+  stopped by an 8 hour wall clock, roughly 200x the wall of their clean-data siblings (147 s and
+  163 s). That non-result is the finding. The likely mechanism is that a spurious position cannot
+  be explained by any model, so it floors the log likelihood of every sample alike, the live set
+  never compresses and the sampler cannot converge — the run-time diagnostics pointed that way,
+  though those logs were not retained, so treat the mechanism as indicative and the
+  non-completion as the solid part. Either way the practical warning is stronger than a slowdown:
+  a contaminant position can stop a fit converging at all rather than quietly biasing it, so a
+  point-source fit that will not converge is itself a reason to re-examine your positions before
+  reaching for sampler settings. Vet your position catalogues. Because both pairings fail here
+  symmetrically, this arm does not discriminate between them; the missing-image arm above is what
+  decides the default.
 
 __Choosing at cluster scale__
 
@@ -276,9 +285,9 @@ therefore to sharpen the workflow above: **search with ``FitPositionsSourceSolve
 chi-squared** on the max-likelihood model. Reserve free-centre ``FitPositionsSource`` for direct
 comparisons with codes that sample the source position (its ``weighting = "magnification"`` scalar
 convention matches Lenstool's). One search-strategy caveat from the benchmarks: at cluster scale
-the gradient optimizer was defeated by every objective tested, converging to basins hundreds to
-thousands of log likelihood below truth (source-plane tensor -11062, source-plane solved -15,
-image-plane solved -1724) while Nautilus recovered each of them. **Use Nautilus for cluster-scale
+the gradient optimizer was defeated by every objective tested, converging to basins from tens to
+tens of thousands of log likelihood below truth (source-plane solved -15, image-plane solved
+-1724, source-plane tensor -11062) while Nautilus recovered each of them. **Use Nautilus for cluster-scale
 point-source searches.** Gradient searches remain the right tool at galaxy scale with solved
 centres; at cluster scale they are not yet competitive on any of these likelihoods.
 

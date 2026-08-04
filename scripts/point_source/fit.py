@@ -386,10 +386,11 @@ print(fit.positions.log_likelihood)
 """
 The `FitPositionsImagePairAll` class instead marginalizes each observed position over *every* model
 image via a smooth probabilistic mixture — the pairing scheme of the default fit (in its solved-centre
-form). Its key property is robustness: nearest-image pairing has no way to leave an unobserved model
-image unmatched, so if a true multiple image is missing from the dataset (e.g. hidden under the lens
-galaxy's light) the repeat pairing mis-ranks the true model catastrophically, while the all-to-all
-mixture absorbs the missing image gracefully. On clean data the two give statistically equivalent
+form). Its key property is robustness: if a true multiple image is missing from the dataset (e.g.
+hidden under the lens galaxy's light), the model image that would have paired to it is left as the
+nearest neighbour of no observed position, so repeat pairing's `unmatched_model_policy` charges it
+as a bright extra image and mis-ranks the true model catastrophically — while the all-to-all
+mixture absorbs the missing image gracefully as a mild Occam factor. On clean data the two give statistically equivalent
 results, which is why robustness decides the default.
 """
 fit = al.FitPointDataset(
