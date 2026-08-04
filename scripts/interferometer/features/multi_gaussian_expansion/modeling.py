@@ -212,8 +212,8 @@ https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 total_gaussians = 5
 gaussian_per_basis = 2
 
-# The sigma values of the Gaussians will be fixed to values spanning 0.01 to the mask radius, 3.5".
-log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
+# The sigma values of the Gaussians will be fixed to values spanning 0.0001 to the mask radius, 3.5".
+log10_sigma_list = np.linspace(-4, np.log10(mask_radius), total_gaussians)
 
 # By defining the centre here, it creates two free parameters that are assigned below to all Gaussians.
 

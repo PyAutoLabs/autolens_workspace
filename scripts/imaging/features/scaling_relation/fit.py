@@ -214,7 +214,7 @@ scaling_galaxies = [
 ]
 
 total_gaussians = 30
-log10_sigma_list = np.linspace(-2, np.log10(0.5), total_gaussians)
+log10_sigma_list = np.linspace(-4, np.log10(0.5), total_gaussians)
 
 source_bulge = al.lp_basis.Basis(
     profile_list=[

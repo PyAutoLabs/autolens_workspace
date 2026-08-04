@@ -176,7 +176,7 @@ The MGE source model offers advantages for source science calculations:
 """
 total_gaussians = 20
 
-log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
+log10_sigma_list = np.linspace(-4, np.log10(mask_radius), total_gaussians)
 
 bulge_gaussian_list = []
 

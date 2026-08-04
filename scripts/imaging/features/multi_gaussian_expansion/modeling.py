@@ -209,9 +209,9 @@ https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 total_gaussians = 30
 gaussian_per_basis = 2
 
-# The sigma values of the Gaussians will be fixed to values spanning 0.01 to the mask radius, 3.0".
+# The sigma values of the Gaussians will be fixed to values spanning a tenth of the pixel scale to the mask radius, 3.0".
 mask_radius = 3.0
-log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
+log10_sigma_list = np.linspace(np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians)
 
 # By defining the centre here, it creates two free parameters that are assigned below to all Gaussians.
 
@@ -371,9 +371,9 @@ and reuse the code below in your own scripts.
 total_gaussians = 30
 gaussian_per_basis = 2
 
-# The sigma values of the Gaussians will be fixed to values spanning 0.01 to the mask radius, 3.0".
+# The sigma values of the Gaussians will be fixed to values spanning a tenth of the pixel scale to the mask radius, 3.0".
 mask_radius = 3.0
-log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
+log10_sigma_list = np.linspace(np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians)
 
 # By defining the centre here, it creates two free parameters that are assigned below to all Gaussians.
 
@@ -422,7 +422,7 @@ gaussian_per_basis = 1
 centre_0 = af.GaussianPrior(mean=0.0, sigma=0.3)
 centre_1 = af.GaussianPrior(mean=0.0, sigma=0.3)
 
-log10_sigma_list = np.linspace(-2, np.log10(1.0), total_gaussians)
+log10_sigma_list = np.linspace(-4, np.log10(1.0), total_gaussians)
 
 bulge_gaussian_list = []
 
@@ -510,9 +510,9 @@ pixel_scales = 0.1
 
 total_point_gaussians = 10
 
-# Sigma values span 0.01" (10**-2) up to twice the pixel scale, keeping the basis compact and point-like.
+# Sigma values span a tenth of the pixel scale up to twice the pixel scale, keeping the basis compact and point-like.
 
-log10_sigma_list = np.linspace(-2, np.log10(2.0 * pixel_scales), total_point_gaussians)
+log10_sigma_list = np.linspace(np.log10(dataset.pixel_scales[0] / 10.0), np.log10(2.0 * pixel_scales), total_point_gaussians)
 
 # The centre is the only free parameter, shared by every Gaussian and given a +/- 0.1" uniform prior.
 
@@ -555,9 +555,10 @@ in a single line. It takes the data's `pixel_scales` (which sets the maximum Gau
 compact the source is), the number of Gaussians and the source `centre`:
 """
 point = al.model_util.mge_point_model_from(
-    pixel_scales=0.1,
+    pixel_scales=dataset.pixel_scales[0],
     total_gaussians=10,
     centre=(0.0, 0.0),
+    sigma_min=dataset.pixel_scales[0] / 10.0,
 )
 
 lens = af.Model(

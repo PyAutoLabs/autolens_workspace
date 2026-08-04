@@ -123,9 +123,9 @@ radius of 3.0".
 """
 total_gaussians = 20
 
-# The sigma values of the Gaussians will be fixed to values spanning 0.01 to the mask radius, 3.0".
+# The sigma values of the Gaussians will be fixed to values spanning 0.0001 to the mask radius, 3.0".
 
-log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
+log10_sigma_list = np.linspace(-4, np.log10(mask_radius), total_gaussians)
 
 # A list of linear light profile Gaussians will be input here, which will then be used to fit the data.
 

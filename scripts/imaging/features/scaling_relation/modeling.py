@@ -189,6 +189,7 @@ lens_bulge = al.model_util.mge_model_from(
     total_gaussians=20,
     centre_prior_is_uniform=True,
     centre=lens_centre,
+    sigma_min=dataset.pixel_scales[0] / 10.0,
 )
 
 lens = af.Model(
@@ -230,7 +231,8 @@ bounded_galaxies_list = []
 
 for centre, luminosity in zip(bounded_galaxies_centres, bounded_galaxies_luminosities):
     bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius, total_gaussians=10, centre_fixed=tuple(centre)
+        mask_radius=mask_radius, total_gaussians=10, centre_fixed=tuple(centre),
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     mass = af.Model(al.mp.IsothermalSph)
@@ -275,6 +277,7 @@ for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminos
         total_gaussians=10,
         centre_fixed=tuple(centre),
         use_spherical=True,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     mass = af.Model(al.mp.IsothermalSph)
@@ -319,6 +322,7 @@ for centre in scaling_galaxies_centres:
         total_gaussians=10,
         centre_fixed=tuple(centre),
         use_spherical=True,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     mass = af.Model(al.mp.IsothermalSph)

@@ -90,6 +90,7 @@ def source_lp(
         total_gaussians=30,
         gaussian_per_basis=2,
         centre_prior_is_uniform=True,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     source_bulge = al.model_util.mge_model_from(
@@ -101,7 +102,7 @@ def source_lp(
     for centre in extra_galaxies_centres:
         total_gaussians = 10
 
-        log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
+        log10_sigma_list = np.linspace(np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians)
 
         gaussian_list = af.Collection(
             af.Model(al.lp_linear.GaussianSph) for _ in range(total_gaussians)
@@ -326,6 +327,7 @@ def light_lp(
         total_gaussians=20,
         gaussian_per_basis=2,
         centre_prior_is_uniform=True,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     source = al.util.chaining.source_custom_model_from(

@@ -127,8 +127,8 @@ familiarize yourself with that example before using the multi-Gaussian expansion
 """
 total_gaussians = 5
 
-# The sigma values of the Gaussians will be fixed to values spanning 0.01 to the mask radius.
-log10_sigma_list = np.linspace(-2, np.log10(mask_radius), total_gaussians)
+# The sigma values of the Gaussians will be fixed to values spanning 0.0001 to the mask radius.
+log10_sigma_list = np.linspace(-4, np.log10(mask_radius), total_gaussians)
 
 bulge_gaussian_list = []
 for i in range(total_gaussians):

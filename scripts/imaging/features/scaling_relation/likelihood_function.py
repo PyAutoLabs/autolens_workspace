@@ -156,7 +156,7 @@ All profiles are **untruncated**: truncation encodes tidal stripping by a host h
 not have. The truncated `dPIEMass` form of this tier belongs to the group and cluster workflows.
 """
 total_gaussians = 10
-log10_sigma_list = np.linspace(-2, np.log10(0.5), total_gaussians)
+log10_sigma_list = np.linspace(-4, np.log10(0.5), total_gaussians)
 
 source_bulge = al.lp_basis.Basis(
     profile_list=[

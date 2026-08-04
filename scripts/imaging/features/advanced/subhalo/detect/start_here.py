@@ -128,6 +128,7 @@ def source_lp(
         total_gaussians=30,
         gaussian_per_basis=2,
         centre_prior_is_uniform=True,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     source_bulge = al.model_util.mge_model_from(
@@ -335,6 +336,7 @@ def light_lp(
         total_gaussians=30,
         gaussian_per_basis=2,
         centre_prior_is_uniform=True,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     source = al.util.chaining.source_custom_model_from(

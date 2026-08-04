@@ -216,6 +216,7 @@ def lens_light(
         gaussian_per_basis=2,
         centre_prior_is_uniform=True,
         centre=main_lens_centre,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     lens = af.Model(
@@ -230,6 +231,7 @@ def lens_light(
                 mask_radius=mask_radius,
                 total_gaussians=10,
                 centre_fixed=tuple(centre),
+                sigma_min=dataset.pixel_scales[0] / 10.0,
             ),
         )
         for centre in bounded_galaxies_centres
@@ -244,6 +246,7 @@ def lens_light(
                 total_gaussians=10,
                 centre_fixed=tuple(centre),
                 use_spherical=True,
+                sigma_min=dataset.pixel_scales[0] / 10.0,
             ),
         )
         for centre in scaling_galaxies_centres
@@ -541,6 +544,7 @@ def light_lp(
         gaussian_per_basis=2,
         centre_prior_is_uniform=True,
         centre=main_lens_centre,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     source = al.util.chaining.source_custom_model_from(
@@ -554,6 +558,7 @@ def light_lp(
             mask_radius=mask_radius,
             total_gaussians=10,
             centre_fixed=tuple(galaxy.mass.centre),
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 
         bounded_galaxies_list.append(
@@ -568,6 +573,7 @@ def light_lp(
             total_gaussians=10,
             centre_fixed=tuple(galaxy.mass.centre),
             use_spherical=True,
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 
         scaling_galaxies_list.append(

@@ -76,6 +76,7 @@ def source_lp_1(
         total_gaussians=20,
         gaussian_per_basis=2,
         centre_prior_is_uniform=True,
+        sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 
     source_0_bulge = al.model_util.mge_model_from(

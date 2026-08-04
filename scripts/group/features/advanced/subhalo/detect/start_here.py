@@ -103,6 +103,7 @@ def source_lp(
             total_gaussians=30,
             gaussian_per_basis=2,
             centre_prior_is_uniform=True,
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 
         lens = af.Model(
@@ -122,7 +123,8 @@ def source_lp(
     for centre in extra_galaxies_centres:
 
         bulge = al.model_util.mge_model_from(
-            mask_radius=mask_radius, total_gaussians=10, centre_fixed=centre
+            mask_radius=mask_radius, total_gaussians=10, centre_fixed=centre,
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 
         mass = af.Model(al.mp.dPIEMassSph)
@@ -368,6 +370,7 @@ def light_lp(
             total_gaussians=30,
             gaussian_per_basis=2,
             centre_prior_is_uniform=True,
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 
         lens_dict[f"lens_{i}"] = af.Model(
