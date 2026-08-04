@@ -182,11 +182,21 @@ __Decomposed Deflection__
 
 Four mass profiles, plus the shear. Each is evaluated on the same grid and the results are added.
 """
-deflections_0_stellar = np.asarray(lens_0.bulge.deflections_yx_2d_from(grid=masked_dataset.grid))
-deflections_0_dark = np.asarray(lens_0.dark.deflections_yx_2d_from(grid=masked_dataset.grid))
-deflections_1_stellar = np.asarray(lens_1.bulge.deflections_yx_2d_from(grid=masked_dataset.grid))
-deflections_1_dark = np.asarray(lens_1.dark.deflections_yx_2d_from(grid=masked_dataset.grid))
-deflections_shear = np.asarray(shear_galaxy.shear.deflections_yx_2d_from(grid=masked_dataset.grid))
+deflections_0_stellar = np.asarray(
+    lens_0.bulge.deflections_yx_2d_from(grid=masked_dataset.grid)
+)
+deflections_0_dark = np.asarray(
+    lens_0.dark.deflections_yx_2d_from(grid=masked_dataset.grid)
+)
+deflections_1_stellar = np.asarray(
+    lens_1.bulge.deflections_yx_2d_from(grid=masked_dataset.grid)
+)
+deflections_1_dark = np.asarray(
+    lens_1.dark.deflections_yx_2d_from(grid=masked_dataset.grid)
+)
+deflections_shear = np.asarray(
+    shear_galaxy.shear.deflections_yx_2d_from(grid=masked_dataset.grid)
+)
 
 deflections_total = (
     deflections_0_stellar
@@ -196,9 +206,13 @@ deflections_total = (
     + deflections_shear
 )
 
-print(f"mean |deflection|, lens_0 stellar = {np.mean(np.abs(deflections_0_stellar)):.6f}")
+print(
+    f"mean |deflection|, lens_0 stellar = {np.mean(np.abs(deflections_0_stellar)):.6f}"
+)
 print(f"mean |deflection|, lens_0 dark    = {np.mean(np.abs(deflections_0_dark)):.6f}")
-print(f"mean |deflection|, lens_1 stellar = {np.mean(np.abs(deflections_1_stellar)):.6f}")
+print(
+    f"mean |deflection|, lens_1 stellar = {np.mean(np.abs(deflections_1_stellar)):.6f}"
+)
 print(f"mean |deflection|, lens_1 dark    = {np.mean(np.abs(deflections_1_dark)):.6f}")
 print(f"mean |deflection|, total          = {np.mean(np.abs(deflections_total)):.6f}")
 
@@ -218,9 +232,7 @@ traced_grid = tracer.traced_grid_2d_list_from(grid=masked_dataset.grid)[-1]
 """
 Confirm the tracer's field is the sum computed by hand above.
 """
-tracer_deflections = np.asarray(
-    tracer.deflections_yx_2d_from(grid=masked_dataset.grid)
-)
+tracer_deflections = np.asarray(tracer.deflections_yx_2d_from(grid=masked_dataset.grid))
 
 print(
     f"\nMax difference, summed components vs tracer: "

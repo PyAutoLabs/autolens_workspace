@@ -131,7 +131,11 @@ def luminosity_from(galaxy, pixel_scale):
     luminosity = (
         np.sum(
             [
-                2 * np.pi * gaussian.sigma**2 / gaussian.axis_ratio() * gaussian.intensity
+                2
+                * np.pi
+                * gaussian.sigma**2
+                / gaussian.axis_ratio()
+                * gaussian.intensity
                 for gaussian in galaxy.bulge.profile_list
             ]
         )
@@ -163,7 +167,9 @@ def luminosities_from(result, n_main, pixel_scale):
 
     The main lenses are the first `n_main` entries because every model in this script composes `**lens_dict` first.
     """
-    tracer = result.max_log_likelihood_fit.tracer_linear_light_profiles_to_light_profiles
+    tracer = (
+        result.max_log_likelihood_fit.tracer_linear_light_profiles_to_light_profiles
+    )
 
     n_galaxies = len(list(result.instance.galaxies))
 

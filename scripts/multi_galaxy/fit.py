@@ -528,7 +528,9 @@ mask_centre = al.Mask2D.circular(
 
 normalized_residuals = fit.normalized_residual_map.apply_mask(mask=mask_centre)
 
-print(f"mean |normalized residual| within 1.0 of centre = {np.mean(np.abs(normalized_residuals.slim)):.3f}")
+print(
+    f"mean |normalized residual| within 1.0 of centre = {np.mean(np.abs(normalized_residuals.slim)):.3f}"
+)
 
 for i, centre in enumerate(main_lens_centres):
     mask_galaxy = al.Mask2D.circular(

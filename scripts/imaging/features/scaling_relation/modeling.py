@@ -338,7 +338,9 @@ model_free = af.Collection(
 print(f"\nScaling galaxies in the tier:      {len(scaling_galaxies_list)}")
 print(f"Free parameters, tier tied:        {model.prior_count}")
 print(f"Free parameters, tier freed:       {model_free.prior_count}")
-print(f"Parameters saved by the relation:  {model_free.prior_count - model.prior_count}")
+print(
+    f"Parameters saved by the relation:  {model_free.prior_count - model.prior_count}"
+)
 
 assert model_free.prior_count - model.prior_count == len(scaling_galaxies_list)
 
@@ -404,7 +406,9 @@ you have run a light fit on your own data.
 main_lens_table = al.galaxy_table_from_csv(
     file_path=dataset_path / "main_lens_galaxies.csv"
 )
-scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
 
 print(f"\nAnchor luminosity from CSV:  {main_lens_table.luminosities[0]:.4f}")
 print(f"Tier luminosities from CSV:  {list(scaling_table.luminosities)}")

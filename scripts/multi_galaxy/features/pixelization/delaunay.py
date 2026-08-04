@@ -315,9 +315,7 @@ pix = af.Model(
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pix)
 
 model = af.Collection(
-    galaxies=af.Collection(
-        **lens_dict, shear_galaxy=shear_galaxy_model, source=source
-    )
+    galaxies=af.Collection(**lens_dict, shear_galaxy=shear_galaxy_model, source=source)
 )
 
 print(model.info)
@@ -342,9 +340,7 @@ model path rather than the galaxy object, so it resolves at instance time during
 The multiple images are loaded from the dataset and used as a `PositionsLH` penalty, as in
 `multi_galaxy/features/pixelization/modeling.py`.
 """
-positions = al.Grid2DIrregular(
-    al.from_json(file_path=dataset_path / "positions.json")
-)
+positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.json"))
 
 adapt_images = al.AdaptImages(
     galaxy_name_image_plane_mesh_grid_dict={

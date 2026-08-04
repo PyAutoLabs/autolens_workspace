@@ -277,9 +277,7 @@ source = af.Model(al.Galaxy, redshift=1.0, pixelization=pix)
 # Overall Lens Model:
 
 model = af.Collection(
-    galaxies=af.Collection(
-        **lens_dict, shear_galaxy=shear_galaxy_model, source=source
-    )
+    galaxies=af.Collection(**lens_dict, shear_galaxy=shear_galaxy_model, source=source)
 )
 
 print(model.info)
@@ -293,9 +291,7 @@ search = af.Nautilus(
     live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
-positions = al.Grid2DIrregular(
-    al.from_json(file_path=dataset_path / "positions.json")
-)
+positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.json"))
 
 analysis = al.AnalysisImaging(
     dataset=dataset,

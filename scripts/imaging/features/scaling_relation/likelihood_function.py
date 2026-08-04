@@ -200,9 +200,7 @@ scaling_galaxies = [
 
 source = al.Galaxy(redshift=1.0, bulge=source_bulge)
 
-tracer = al.Tracer(
-    galaxies=[anchor] + bounded_galaxies + scaling_galaxies + [source]
-)
+tracer = al.Tracer(galaxies=[anchor] + bounded_galaxies + scaling_galaxies + [source])
 
 """
 __Per-Galaxy Deflection__
@@ -264,7 +262,9 @@ The source MGE basis is evaluated at the ray-traced source-plane grid, each Gaus
 """
 model_image_unconvolved = tracer.image_2d_from(grid=masked_grid)
 
-aplt.plot_array(array=model_image_unconvolved, title="Model image before PSF convolution")
+aplt.plot_array(
+    array=model_image_unconvolved, title="Model image before PSF convolution"
+)
 
 """
 So what `image_2d_from` does internally, for this two-tier population:
@@ -307,7 +307,9 @@ The explicit luminosity lists above are the simplest interface. For larger popul
 
 Nothing downstream changes — the likelihood never sees where the numbers came from.
 """
-scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
 
 print(f"Tier luminosities from CSV: {list(scaling_table.luminosities)}")
 

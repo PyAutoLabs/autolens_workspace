@@ -395,7 +395,9 @@ did not work, and it went unnoticed for months precisely because nothing ever ra
 `dataset_jax.data.array` is a `jax.Array`. `aplt.fits_imaging` and the plotters call `numpy.asarray()` internally,
 so saving and plotting work without manual conversion.
 """
-print(f"JAX-jitted simulation: data backing type is {type(dataset_jax.data.array).__name__}")
+print(
+    f"JAX-jitted simulation: data backing type is {type(dataset_jax.data.array).__name__}"
+)
 
 """
 Note the eager call `simulator_jax.via_tracer_from(tracer=tracer, grid=grid)` (no `@jax.jit`) also works and is

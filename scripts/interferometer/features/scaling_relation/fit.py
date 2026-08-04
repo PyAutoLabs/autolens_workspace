@@ -229,7 +229,9 @@ For larger populations, `al.galaxy_table_from_csv` reads a `y, x, luminosity` CS
 Since both quantities come from the same external photometric catalogue for this regime, one file for both is the
 natural representation.
 """
-scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
 
 print(f"\nTier luminosities from CSV: {list(scaling_table.luminosities)}")
 

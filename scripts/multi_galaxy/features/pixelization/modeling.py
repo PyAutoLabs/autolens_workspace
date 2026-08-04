@@ -159,9 +159,7 @@ is described in full in `imaging/features/pixelization/modeling.py`.
 
 The positions were solved by the simulator and saved alongside the dataset.
 """
-positions = al.Grid2DIrregular(
-    al.from_json(file_path=dataset_path / "positions.json")
-)
+positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.json"))
 
 print(f"Multiple image positions used to constrain the mass model:\n{positions}")
 
@@ -277,9 +275,7 @@ mass model that is fitted.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    positions_likelihood_list=[
-        al.PositionsLH(positions=positions, threshold=0.3)
-    ],
+    positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
 )
 
 """

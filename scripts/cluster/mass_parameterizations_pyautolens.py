@@ -292,9 +292,7 @@ for centre, magnitude in zip(scaling_centres, scaling_magnitudes):
     mass = af.Model(al.mp.dPIEMassB0Sph)
     mass.centre = centre  # [FIXED]
     mass.ra = 0.0  # [FIXED] vanishing core (analytic at 0)
-    mass.b0 = (
-        einstein_radius_bgc * ratio**0.5
-    )  # tied to the BGC -> NO new parameter
+    mass.b0 = einstein_radius_bgc * ratio**0.5  # tied to the BGC -> NO new parameter
     mass.rs = rs_ref * ratio**rs_exponent  # [FIXED] truncation, scaled with L^0.7
     scaling_galaxies_pa.append(af.Model(al.Galaxy, redshift=redshift_lens, mass=mass))
 

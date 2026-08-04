@@ -199,7 +199,9 @@ is the same quantity `multi_galaxy/likelihood_function.py` computes.
 """
 deflections_to_plane_1 = np.asarray(traced_grids[0]) - np.asarray(traced_grids[1])
 
-print(f"Mean |deflection| image plane -> z=1.0: {np.mean(np.abs(deflections_to_plane_1)):.6f}")
+print(
+    f"Mean |deflection| image plane -> z=1.0: {np.mean(np.abs(deflections_to_plane_1)):.6f}"
+)
 
 """
 The deflection applied between z=1.0 and z=2.0 includes `source_0`'s mass on top of the rescaled lens-plane
@@ -209,8 +211,12 @@ deflections_1_to_2 = np.asarray(traced_grids[1]) - np.asarray(traced_grids[2])
 
 ratio = np.abs(deflections_1_to_2) / (np.abs(deflections_to_plane_1) + 1e-12)
 
-print(f"Mean |deflection| z=1.0 -> z=2.0:       {np.mean(np.abs(deflections_1_to_2)):.6f}")
-print(f"Ratio of the two, spread across the grid: min {ratio.min():.4f}, max {ratio.max():.4f}")
+print(
+    f"Mean |deflection| z=1.0 -> z=2.0:       {np.mean(np.abs(deflections_1_to_2)):.6f}"
+)
+print(
+    f"Ratio of the two, spread across the grid: min {ratio.min():.4f}, max {ratio.max():.4f}"
+)
 
 """
 __Source-Plane Images__

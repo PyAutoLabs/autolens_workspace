@@ -435,7 +435,9 @@ sigma_crit_to_next = (
 )
 
 print(f"beta(z=0.5 -> z=1.0, final z=2.0) = {beta:.6f}")
-print(f"sigma_crit(0.5, 2.0) / sigma_crit(0.5, 1.0) = {sigma_crit_to_final / sigma_crit_to_next:.6f}")
+print(
+    f"sigma_crit(0.5, 2.0) / sigma_crit(0.5, 1.0) = {sigma_crit_to_final / sigma_crit_to_next:.6f}"
+)
 
 assert np.isclose(beta, sigma_crit_to_final / sigma_crit_to_next, rtol=1e-8)
 
@@ -468,7 +470,9 @@ kappa = halo_0.mass.convergence_2d_from(grid=al.Grid2DIrregular(values=[(0.5, 0.
 
 sigma = np.asarray(kappa) * sigma_crit_to_final
 
-print(f"Surface mass density of the z=0.5 halo at (0.5\", 0.0\") = {sigma[0]:.3e} Msun / kpc^2")
+print(
+    f'Surface mass density of the z=0.5 halo at (0.5", 0.0") = {sigma[0]:.3e} Msun / kpc^2'
+)
 
 """
 __Science Corollaries__

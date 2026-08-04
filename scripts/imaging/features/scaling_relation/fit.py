@@ -236,7 +236,9 @@ The `Tracer` queries every mass profile attached to every lens-plane galaxy and 
 the anchor's profile plus one per bounded-tier galaxy plus one per scaling-tier galaxy — eight in total, from a
 model that would cost only the anchor's own parameters plus three per bounded galaxy.
 """
-tracer = al.Tracer(galaxies=[main_lens] + bounded_galaxies + scaling_galaxies + [source])
+tracer = al.Tracer(
+    galaxies=[main_lens] + bounded_galaxies + scaling_galaxies + [source]
+)
 
 fit = al.FitImaging(dataset=dataset, tracer=tracer)
 
@@ -333,7 +335,9 @@ The explicit luminosity lists above are the simplest interface. For larger popul
 The simulator writes one CSV per tier plus `main_lens_galaxies.csv` for the anchor, so the relation can be driven
 entirely from CSVs.
 """
-scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
 
 print(f"\nTier luminosities from CSV: {list(scaling_table.luminosities)}")
 

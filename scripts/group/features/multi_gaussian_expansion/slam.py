@@ -332,7 +332,9 @@ def mass_total(
             mass = af.Model(al.mp.dPIEMassSph)
             mass.centre = centre
             mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
-            mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+            mass.r_core = (
+                0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
+            )
             mass.r_cut = 10.0  # truncation fixed at a fiducial radius
             mass.redshift_object = 0.5
             mass.redshift_source = 1.0

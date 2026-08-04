@@ -241,7 +241,9 @@ print(f"\nData points (2 per position + 1 per flux): {n_data}")
 print(f"Scaling galaxies in the tier:              {len(scaling_galaxies_list)}")
 print(f"Free parameters, tier tied:                {model.prior_count}")
 print(f"Free parameters, tier freed:               {model_free.prior_count}")
-print(f"Parameters saved by the relation:          {model_free.prior_count - model.prior_count}")
+print(
+    f"Parameters saved by the relation:          {model_free.prior_count - model.prior_count}"
+)
 
 assert model_free.prior_count - model.prior_count == len(scaling_galaxies_list)
 
@@ -303,7 +305,9 @@ returns a `GalaxyTable` with `.centres`, `.luminosities` and `.redshifts`:
 For this regime the CSV is the truer representation of the workflow: centres and luminosities are two columns of one
 photometric measurement on the accompanying imaging, so they belong in one file that cannot fall out of order.
 """
-scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
 
 print(f"\nTier luminosities from CSV: {list(scaling_table.luminosities)}")
 

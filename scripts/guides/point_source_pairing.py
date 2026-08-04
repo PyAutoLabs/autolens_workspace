@@ -362,7 +362,9 @@ fit = al.FitPositionsSourceSolved(
     name="point_0", data=data, noise_map=noise_map, tracer=tracer_solved, solver=None
 )
 print("Case 4 — solved source centre (source-plane fit, no free centre parameters):")
-print(f"  solved centre beta* = {tuple(round(float(c), 4) for c in fit.source_plane_coordinate)}")
+print(
+    f"  solved centre beta* = {tuple(round(float(c), 4) for c in fit.source_plane_coordinate)}"
+)
 print(f"  chi_squared = {float(fit.chi_squared):.4f}")
 print(f"  marginalization_term = {float(fit.marginalization_term):.4f}")
 

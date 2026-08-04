@@ -164,9 +164,7 @@ shear_galaxy = al.Galaxy(
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
-tracer = al.Tracer(
-    galaxies=[lens_galaxy_0, lens_galaxy_1, shear_galaxy, source_galaxy]
-)
+tracer = al.Tracer(galaxies=[lens_galaxy_0, lens_galaxy_1, shear_galaxy, source_galaxy])
 
 """
 By plotting the image of the tracer, we confirm it looks like the simulated dataset but does not have CCD imaging

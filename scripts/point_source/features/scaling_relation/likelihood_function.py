@@ -188,11 +188,7 @@ positions_without_tier = solver.solve(
 )
 
 shifts_mas = sorted(
-    float(
-        np.linalg.norm(
-            np.asarray(positions_without_tier) - position, axis=1
-        ).min()
-    )
+    float(np.linalg.norm(np.asarray(positions_without_tier) - position, axis=1).min())
     * 1000.0
     for position in np.asarray(positions)
 )
@@ -203,7 +199,9 @@ tier_deflection_mas = [
     for g in scaling_galaxies
 ]
 
-print(f"\nPer-member deflection magnitude (mas): {[f'{d:.0f}' for d in tier_deflection_mas]}")
+print(
+    f"\nPer-member deflection magnitude (mas): {[f'{d:.0f}' for d in tier_deflection_mas]}"
+)
 print(f"Resulting image-position shifts  (mas): {[f'{s:.0f}' for s in shifts_mas]}")
 print(
     "The largest shift exceeds the largest single deflection — the lens equation amplifies, it does not average."

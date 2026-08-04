@@ -103,7 +103,11 @@ def luminosity_from(galaxy, pixel_scale):
     luminosity = (
         np.sum(
             [
-                2 * np.pi * gaussian.sigma**2 / gaussian.axis_ratio() * gaussian.intensity
+                2
+                * np.pi
+                * gaussian.sigma**2
+                / gaussian.axis_ratio()
+                * gaussian.intensity
                 for gaussian in galaxy.bulge.profile_list
             ]
         )
@@ -134,7 +138,9 @@ def luminosities_from(result, pixel_scale):
 
     The anchor is `galaxies[0]` because every model in this script composes the lens first.
     """
-    tracer = result.max_log_likelihood_fit.tracer_linear_light_profiles_to_light_profiles
+    tracer = (
+        result.max_log_likelihood_fit.tracer_linear_light_profiles_to_light_profiles
+    )
 
     n_galaxies = len(list(result.instance.galaxies))
 
@@ -154,9 +160,7 @@ def luminosities_from(result, pixel_scale):
     )
 
     bounded_luminosities = [
-        luminosity_from(
-            galaxy=tracer.galaxies[n_galaxies + i], pixel_scale=pixel_scale
-        )
+        luminosity_from(galaxy=tracer.galaxies[n_galaxies + i], pixel_scale=pixel_scale)
         for i in range(n_bounded)
     ]
 
@@ -355,9 +359,7 @@ def source_lp(
     model = af.Collection(
         galaxies=af.Collection(
             lens=lens,
-            source=af.Model(
-                al.Galaxy, redshift=redshift_source, bulge=source_bulge
-            ),
+            source=af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge),
         ),
         extra_galaxies=af.Collection(bounded_galaxies_list),
         scaling_galaxies=af.Collection(scaling_galaxies_list),
@@ -555,9 +557,7 @@ def light_lp(
         )
 
         bounded_galaxies_list.append(
-            af.Model(
-                al.Galaxy, redshift=redshift_lens, bulge=bulge, mass=galaxy.mass
-            )
+            af.Model(al.Galaxy, redshift=redshift_lens, bulge=bulge, mass=galaxy.mass)
         )
 
     scaling_galaxies_list = []
@@ -571,9 +571,7 @@ def light_lp(
         )
 
         scaling_galaxies_list.append(
-            af.Model(
-                al.Galaxy, redshift=redshift_lens, bulge=bulge, mass=galaxy.mass
-            )
+            af.Model(al.Galaxy, redshift=redshift_lens, bulge=bulge, mass=galaxy.mass)
         )
 
     model = af.Collection(
@@ -918,9 +916,7 @@ the fitted anchor Einstein radius so the bounded tier no longer needs the hand e
     scaling_galaxies_luminosities,
 ) = luminosities_from(result=light_result, pixel_scale=pixel_scale)
 
-einstein_radius_anchor = (
-    source_pix_result_1.instance.galaxies.lens.mass.einstein_radius
-)
+einstein_radius_anchor = source_pix_result_1.instance.galaxies.lens.mass.einstein_radius
 
 print(f"\nRe-measured anchor luminosity: {luminosity_anchor}")
 print(f"Fitted anchor einstein_radius: {einstein_radius_anchor}")

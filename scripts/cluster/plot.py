@@ -140,8 +140,12 @@ turns these into `af.Model[Galaxy]` objects whose parameters are all fixed at th
 (`prior_count` is 0), so `instance_from_prior_medians()` returns the exact truth galaxies rather
 than a sample.
 """
-mass_table = al.galaxy_models_from_csv(file_path=dataset_path / "mass.csv", family="mass")
-point_table = al.galaxy_models_from_csv(file_path=dataset_path / "point.csv", family="point")
+mass_table = al.galaxy_models_from_csv(
+    file_path=dataset_path / "mass.csv", family="mass"
+)
+point_table = al.galaxy_models_from_csv(
+    file_path=dataset_path / "point.csv", family="point"
+)
 
 galaxy_models = al.galaxy_af_models_from_csv_tables(mass_table, point_table)
 

@@ -176,9 +176,7 @@ The source's multiple images, applied as a `PositionsLH` likelihood penalty on t
 A flexible source model makes this more useful than it is for a Sersic source: the more freedom the source has,
 the more readily an incorrect mass model can be made to fit, and the positions constrain the mass model directly.
 """
-positions = al.Grid2DIrregular(
-    al.from_json(file_path=dataset_path / "positions.json")
-)
+positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.json"))
 
 """
 __Model Composition__
@@ -301,9 +299,7 @@ __Analysis__
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    positions_likelihood_list=[
-        al.PositionsLH(positions=positions, threshold=0.3)
-    ],
+    positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
     settings=al.Settings(use_positive_only_solver=False),
     use_jax=True,
 )

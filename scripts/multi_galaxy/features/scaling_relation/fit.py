@@ -98,7 +98,9 @@ scaling_galaxies_luminosities = [1.2636, 0.8845, 0.6318, 0.3791, 0.2527]
 brightest_index = int(np.argmax(main_lens_luminosities))
 luminosity_brightest = main_lens_luminosities[brightest_index]
 
-print(f"Brightest galaxy is lens_{brightest_index}, L_brightest = {luminosity_brightest}")
+print(
+    f"Brightest galaxy is lens_{brightest_index}, L_brightest = {luminosity_brightest}"
+)
 
 """
 __The Relation__
@@ -114,7 +116,10 @@ def einstein_radius_from(luminosity):
     """
     The Faber-Jackson Einstein radius of a galaxy of the input luminosity, anchored on the brightest galaxy.
     """
-    return einstein_radius_brightest * (luminosity / luminosity_brightest) ** scaling_exponent
+    return (
+        einstein_radius_brightest
+        * (luminosity / luminosity_brightest) ** scaling_exponent
+    )
 
 
 """
@@ -251,7 +256,9 @@ magnitude_scaling = np.mean(np.linalg.norm(np.asarray(sum(alpha_scaling)), axis=
 
 print(f"\nMean |alpha| from the co-dominant pair: {magnitude_main:.4f}")
 print(f"Mean |alpha| from the scaling tier:    {magnitude_scaling:.4f}")
-print(f"Ratio:                                 {magnitude_scaling / magnitude_main:.4f}")
+print(
+    f"Ratio:                                 {magnitude_scaling / magnitude_main:.4f}"
+)
 
 """
 __CSV Interface__

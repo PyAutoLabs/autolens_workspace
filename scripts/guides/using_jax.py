@@ -213,11 +213,15 @@ grid = al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=0.05)
 
 lens = al.Galaxy(
     redshift=0.5,
-    mass=al.mp.Isothermal(centre=(0.0, 0.0), einstein_radius=1.2, ell_comps=(0.05, 0.05)),
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0), einstein_radius=1.2, ell_comps=(0.05, 0.05)
+    ),
 )
 source = al.Galaxy(
     redshift=1.0,
-    bulge=al.lp.Sersic(centre=(0.0, 0.0), intensity=1.0, effective_radius=0.5, sersic_index=2.0),
+    bulge=al.lp.Sersic(
+        centre=(0.0, 0.0), intensity=1.0, effective_radius=0.5, sersic_index=2.0
+    ),
 )
 tracer = al.Tracer(galaxies=[lens, source])
 
@@ -269,7 +273,9 @@ def image_fn(tracer):
 
 image = image_fn(tracer)
 
-print(f"jitted tracer image: type={type(image).__name__}, total flux={float(image.sum()):.4f}")
+print(
+    f"jitted tracer image: type={type(image).__name__}, total flux={float(image.sum()):.4f}"
+)
 
 """
 Because `tracer` is a traced argument, a different tracer (same classes, different parameter values) re-uses the
@@ -290,27 +296,39 @@ def magnification_fn(tracer):
 
 magnification = magnification_fn(tracer)
 
-print(f"jitted magnification: type={type(magnification).__name__}, max={float(magnification.max()):.2f}")
+print(
+    f"jitted magnification: type={type(magnification).__name__}, max={float(magnification.max()):.2f}"
+)
 
 """
 The multi-plane lens equation compiles just as cleanly — `traced_grid_2d_list_from` is pure numerical code, so a
 three-plane trace works with the identical recipe (each returned plane grid unwraps via `.array`):
 """
 
-lens_2 = al.Galaxy(redshift=1.0, mass=al.mp.Isothermal(centre=(0.3, 0.3), einstein_radius=0.4))
-source_2 = al.Galaxy(redshift=2.0, bulge=al.lp.Sersic(centre=(0.0, 0.0), intensity=1.0, effective_radius=0.5))
+lens_2 = al.Galaxy(
+    redshift=1.0, mass=al.mp.Isothermal(centre=(0.3, 0.3), einstein_radius=0.4)
+)
+source_2 = al.Galaxy(
+    redshift=2.0,
+    bulge=al.lp.Sersic(centre=(0.0, 0.0), intensity=1.0, effective_radius=0.5),
+)
 
 tracer_multi = al.Tracer(galaxies=[lens, lens_2, source_2])
 
 
 @jax.jit
 def traced_grids_fn(tracer):
-    return [traced_grid.array for traced_grid in tracer.traced_grid_2d_list_from(grid=grid, xp=jnp)]
+    return [
+        traced_grid.array
+        for traced_grid in tracer.traced_grid_2d_list_from(grid=grid, xp=jnp)
+    ]
 
 
 traced_grids = traced_grids_fn(tracer_multi)
 
-print(f"multi-plane trace: {len(traced_grids)} planes, leaf type={type(traced_grids[0]).__name__}")
+print(
+    f"multi-plane trace: {len(traced_grids)} planes, leaf type={type(traced_grids[0]).__name__}"
+)
 
 """
 __Forgetting xp=jnp__

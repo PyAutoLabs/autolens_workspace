@@ -205,9 +205,7 @@ The tracer holds galaxies at three redshifts. PyAutoLens orders them internally,
 `multi_galaxy/simulator.py`'s tracer has two planes; this one has three, and that is the whole structural
 difference.
 """
-tracer = al.Tracer(
-    galaxies=main_lens_galaxies + [shear_galaxy, source_0, source_1]
-)
+tracer = al.Tracer(galaxies=main_lens_galaxies + [shear_galaxy, source_0, source_1])
 
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 

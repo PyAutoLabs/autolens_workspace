@@ -113,7 +113,9 @@ scaling_galaxies_luminosities = [1.2636, 0.8845, 0.6318, 0.3791, 0.2527]
 brightest_index = int(np.argmax(main_lens_luminosities))
 luminosity_brightest = main_lens_luminosities[brightest_index]
 
-print(f"Brightest galaxy is lens_{brightest_index}, L_brightest = {luminosity_brightest}")
+print(
+    f"Brightest galaxy is lens_{brightest_index}, L_brightest = {luminosity_brightest}"
+)
 
 """
 __The Relation__
@@ -126,7 +128,10 @@ def einstein_radius_from(luminosity):
     """
     The Faber-Jackson Einstein radius of a galaxy of the input luminosity, anchored on the brightest galaxy.
     """
-    return einstein_radius_brightest * (luminosity / luminosity_brightest) ** scaling_exponent
+    return (
+        einstein_radius_brightest
+        * (luminosity / luminosity_brightest) ** scaling_exponent
+    )
 
 
 """
@@ -189,7 +194,8 @@ The multi-galaxy step, extended by the tier. Each term is computed separately so
 masked_grid = dataset.grid
 
 alpha_main = [
-    galaxy.mass.deflections_yx_2d_from(grid=masked_grid) for galaxy in main_lens_galaxies
+    galaxy.mass.deflections_yx_2d_from(grid=masked_grid)
+    for galaxy in main_lens_galaxies
 ]
 alpha_scaling = [
     galaxy.mass.deflections_yx_2d_from(grid=masked_grid) for galaxy in scaling_galaxies
@@ -259,7 +265,9 @@ __CSV Interface__
 
 The `argmax` identifying the brightest galaxy runs on those luminosities unchanged.
 """
-scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
 
 print(f"Tier luminosities from CSV: {list(scaling_table.luminosities)}")
 

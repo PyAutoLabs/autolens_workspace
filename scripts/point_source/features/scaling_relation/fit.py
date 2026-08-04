@@ -129,13 +129,13 @@ scaling_galaxies = [
     )
 ]
 
-source = al.Galaxy(
-    redshift=1.0, point_0=al.ps.PointFlux(centre=(0.07, 0.07), flux=1.0)
-)
+source = al.Galaxy(redshift=1.0, point_0=al.ps.PointFlux(centre=(0.07, 0.07), flux=1.0))
 
 tracer = al.Tracer(galaxies=[lens] + scaling_galaxies + [source])
 
-print(f"\nAnchor: einstein_radius = {einstein_radius_anchor:.4f}, L = {luminosity_anchor:.4f}")
+print(
+    f"\nAnchor: einstein_radius = {einstein_radius_anchor:.4f}, L = {luminosity_anchor:.4f}"
+)
 
 for centre, luminosity in zip(scaling_galaxies_centres, scaling_galaxies_luminosities):
     centre_str = f"({float(centre[0]):5.2f}, {float(centre[1]):5.2f})"
@@ -154,9 +154,7 @@ solver = al.PointSolver.for_grid(
     grid=grid, pixel_scale_precision=0.001, magnification_threshold=0.1
 )
 
-positions = solver.solve(
-    tracer=tracer, source_plane_coordinate=source.point_0.centre
-)
+positions = solver.solve(tracer=tracer, source_plane_coordinate=source.point_0.centre)
 
 print(f"\nMultiple images solved with the tier: {len(positions)}")
 print(positions)
@@ -229,7 +227,9 @@ __CSV Interface__
 Both columns come from one photometric measurement on the accompanying imaging, so one file for both is the natural
 form here.
 """
-scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
 
 print(f"\nTier luminosities from CSV: {list(scaling_table.luminosities)}")
 

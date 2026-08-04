@@ -224,9 +224,7 @@ fit = al.FitImaging(dataset=dataset, tracer=tracer)
 
 aplt.subplot_fit_imaging(fit=fit)
 
-print(
-    f"\nLog likelihood of the manual group DSPL fit: {fit.log_likelihood}"
-)
+print(f"\nLog likelihood of the manual group DSPL fit: {fit.log_likelihood}")
 
 """
 __Wrap Up__

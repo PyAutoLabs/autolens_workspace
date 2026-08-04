@@ -153,9 +153,7 @@ __Positions__
 The source's multiple images, solved by the simulator and saved alongside the dataset, applied as a `PositionsLH`
 likelihood penalty on the mass model.
 """
-positions = al.Grid2DIrregular(
-    al.from_json(file_path=dataset_path / "positions.json")
-)
+positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.json"))
 
 print(f"Multiple image positions used to constrain the mass model:\n{positions}")
 
@@ -264,9 +262,7 @@ __Analysis__
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    positions_likelihood_list=[
-        al.PositionsLH(positions=positions, threshold=0.3)
-    ],
+    positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
     use_jax=True,
 )
 

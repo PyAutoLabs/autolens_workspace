@@ -185,7 +185,8 @@ extra) are at the same redshift and therefore share a single plane, so `model_im
 is their combined light, while `model_images_of_planes_list[1]` is the lensed source's plane.
 """
 aplt.plot_array(
-    array=fit.model_images_of_planes_list[0], title="Plane 0 Model Image (Lens Galaxies)"
+    array=fit.model_images_of_planes_list[0],
+    title="Plane 0 Model Image (Lens Galaxies)",
 )
 aplt.plot_array(
     array=fit.model_images_of_planes_list[1], title="Plane 1 Model Image (Source)"

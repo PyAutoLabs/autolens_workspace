@@ -174,9 +174,7 @@ source_0 = af.Model(
 )
 
 model_1 = af.Collection(
-    galaxies=af.Collection(
-        **lens_dict_1, shear_galaxy=shear_galaxy, source_0=source_0
-    )
+    galaxies=af.Collection(**lens_dict_1, shear_galaxy=shear_galaxy, source_0=source_0)
 )
 
 print(model_1.info)

@@ -185,7 +185,8 @@ for centre, luminosity in zip([(6.5, 0.0), (-1.0, 7.0)], scaling_truth_luminosit
             ),
             mass=al.mp.dPIEMassSph(
                 centre=centre,
-                sigma=scaling_sigma_ref_truth * luminosity_ratio**scaling_sigma_exponent,
+                sigma=scaling_sigma_ref_truth
+                * luminosity_ratio**scaling_sigma_exponent,
                 r_core=0.0,
                 r_cut=scaling_r_cut_ref * luminosity_ratio**scaling_rcut_exponent,
                 redshift_object=0.5,

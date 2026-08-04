@@ -273,7 +273,9 @@ model_free = af.Collection(
 print(f"\nScaling galaxies in the tier:      {len(scaling_galaxies_list)}")
 print(f"Free parameters, tier tied:        {model.prior_count}")
 print(f"Free parameters, tier freed:       {model_free.prior_count}")
-print(f"Parameters saved by the relation:  {model_free.prior_count - model.prior_count}")
+print(
+    f"Parameters saved by the relation:  {model_free.prior_count - model.prior_count}"
+)
 
 assert model_free.prior_count - model.prior_count == len(scaling_galaxies_list)
 
@@ -328,7 +330,9 @@ main_lens_table = al.galaxy_table_from_csv(
 )
 
 print(f"\nMain lens luminosities from CSV: {list(main_lens_table.luminosities)}")
-print(f"Brightest galaxy index from CSV: {int(np.argmax(main_lens_table.luminosities))}")
+print(
+    f"Brightest galaxy index from CSV: {int(np.argmax(main_lens_table.luminosities))}"
+)
 
 """
 __Wrap Up__

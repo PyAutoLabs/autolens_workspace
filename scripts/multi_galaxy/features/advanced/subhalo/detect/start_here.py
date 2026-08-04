@@ -900,9 +900,7 @@ The grid search results show where in the image plane a subhalo improves the fit
 informative than the single number above — a detection smeared across many cells is a different situation from
 one confined to a single cell.
 """
-subhalo_result = al.subhalo.SubhaloGridSearchResult(
-    result=result_subhalo_grid_search
-)
+subhalo_result = al.subhalo.SubhaloGridSearchResult(result=result_subhalo_grid_search)
 
 log_evidence_array = subhalo_result.figure_of_merit_array(
     use_log_evidences=True,

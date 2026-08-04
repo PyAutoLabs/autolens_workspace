@@ -56,6 +56,7 @@ This example assumes results are output to the directory, where `hpc_username` i
 
 You will need to update `hpc_username` to your hpc username below.
 """
+
 from pathlib import Path
 
 hpc_output_path = Path("/") / "hpc" / "data" / "hpc_username" / "output"

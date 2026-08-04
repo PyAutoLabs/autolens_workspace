@@ -323,7 +323,9 @@ happening across two galaxies that each have a real luminosity someone will want
 the positive-only solver, and its intensities are the ones to trust.
 """
 n_negative = int((reconstruction < 0.0).sum())
-print(f"\nnegative intensities from the naive solve: {n_negative} of {len(reconstruction)}")
+print(
+    f"\nnegative intensities from the naive solve: {n_negative} of {len(reconstruction)}"
+)
 
 fit = al.FitImaging(dataset=masked_dataset, tracer=tracer)
 

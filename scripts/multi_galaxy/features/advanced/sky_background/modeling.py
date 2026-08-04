@@ -146,9 +146,7 @@ __Positions__
 
 The source's multiple images, applied as a `PositionsLH` likelihood penalty on the mass model.
 """
-positions = al.Grid2DIrregular(
-    al.from_json(file_path=dataset_path / "positions.json")
-)
+positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.json"))
 
 """
 __Model Composition__
@@ -208,9 +206,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 # Sky Background:
 
 dataset_model = af.Model(al.DatasetModel)
-dataset_model.background_sky_level = af.UniformPrior(
-    lower_limit=0.0, upper_limit=10.0
-)
+dataset_model.background_sky_level = af.UniformPrior(lower_limit=0.0, upper_limit=10.0)
 
 # Overall Lens Model:
 
@@ -253,9 +249,7 @@ __Analysis__
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    positions_likelihood_list=[
-        al.PositionsLH(positions=positions, threshold=0.3)
-    ],
+    positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
     use_jax=True,
 )
 

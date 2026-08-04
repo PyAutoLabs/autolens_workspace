@@ -241,9 +241,7 @@ for r in radii:
     )
     dark = np.mean(np.abs(np.asarray(lens_0.dark.deflections_yx_2d_from(grid=ring))))
 
-    print(
-        f"  r = {r:.2f}\"  lens_0 stellar fraction = {stellar / (stellar + dark):.3f}"
-    )
+    print(f'  r = {r:.2f}"  lens_0 stellar fraction = {stellar / (stellar + dark):.3f}')
 
 """
 __Wrap Up__

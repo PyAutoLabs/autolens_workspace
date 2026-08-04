@@ -204,9 +204,7 @@ __Ray Tracing__
 The subhalo is at the same redshift as the deflectors, so this is still single-plane tracing — the deflection
 field simply has one more term.
 """
-tracer = al.Tracer(
-    galaxies=main_lens_galaxies + [shear_galaxy, subhalo, source_galaxy]
-)
+tracer = al.Tracer(galaxies=main_lens_galaxies + [shear_galaxy, subhalo, source_galaxy])
 
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 

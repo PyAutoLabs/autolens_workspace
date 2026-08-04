@@ -502,9 +502,7 @@ plane to compute their $\\beta$ values.
 """
 shear_galaxy = al.Galaxy(redshift=0.5, shear=shear)
 
-tracer = al.Tracer(
-    galaxies=[lens_galaxy_0, lens_galaxy_1, shear_galaxy, source_galaxy]
-)
+tracer = al.Tracer(galaxies=[lens_galaxy_0, lens_galaxy_1, shear_galaxy, source_galaxy])
 
 # A list of every grid (e.g. image-plane, source-plane) however we only need the source plane grid with index -1.
 traced_grid = tracer.traced_grid_2d_list_from(grid=masked_dataset.grid)[-1]

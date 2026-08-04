@@ -96,7 +96,10 @@ if al.util.dataset.should_simulate(str(dataset_path)):
     import sys
 
     subprocess.run(
-        [sys.executable, "scripts/multi_dataset/features/wavelength_dependence/simulator.py"],
+        [
+            sys.executable,
+            "scripts/multi_dataset/features/wavelength_dependence/simulator.py",
+        ],
         check=True,
     )
 

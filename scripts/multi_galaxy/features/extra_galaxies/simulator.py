@@ -156,18 +156,14 @@ extra_galaxies = [
         light=al.lp.ExponentialSph(
             centre=extra_galaxy_0_centre, intensity=1.0, effective_radius=0.3
         ),
-        mass=al.mp.IsothermalSph(
-            centre=extra_galaxy_0_centre, einstein_radius=0.08
-        ),
+        mass=al.mp.IsothermalSph(centre=extra_galaxy_0_centre, einstein_radius=0.08),
     ),
     al.Galaxy(
         redshift=0.5,
         light=al.lp.ExponentialSph(
             centre=extra_galaxy_1_centre, intensity=0.8, effective_radius=0.35
         ),
-        mass=al.mp.IsothermalSph(
-            centre=extra_galaxy_1_centre, einstein_radius=0.10
-        ),
+        mass=al.mp.IsothermalSph(centre=extra_galaxy_1_centre, einstein_radius=0.10),
     ),
 ]
 

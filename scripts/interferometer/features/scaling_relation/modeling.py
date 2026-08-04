@@ -217,7 +217,9 @@ model_free = af.Collection(
 print(f"\nScaling galaxies in the tier:      {len(scaling_galaxies_list)}")
 print(f"Free parameters, tier tied:        {model.prior_count}")
 print(f"Free parameters, tier freed:       {model_free.prior_count}")
-print(f"Parameters saved by the relation:  {model_free.prior_count - model.prior_count}")
+print(
+    f"Parameters saved by the relation:  {model_free.prior_count - model.prior_count}"
+)
 
 assert model_free.prior_count - model.prior_count == len(scaling_galaxies_list)
 
@@ -265,7 +267,9 @@ Keeping centres and luminosities in one file means they cannot fall out of order
 cannot enforce for you. For this regime it is also the honest representation of the workflow: both quantities come
 from the same external photometric catalogue, so they belong in the same file.
 """
-scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
 
 print(f"\nTier luminosities from CSV: {list(scaling_table.luminosities)}")
 

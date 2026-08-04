@@ -236,7 +236,9 @@ __CSV Interface__
 
 Nothing downstream changes — the likelihood never sees where the numbers came from.
 """
-scaling_table = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+scaling_table = al.galaxy_table_from_csv(
+    file_path=dataset_path / "scaling_galaxies.csv"
+)
 
 print(f"Tier luminosities from CSV: {list(scaling_table.luminosities)}")
 

@@ -144,7 +144,9 @@ brightest_index = int(np.argmax(main_lens_luminosities))
 luminosity_brightest = main_lens_luminosities[brightest_index]
 
 print(f"Main lens luminosities = {main_lens_luminosities}")
-print(f"Brightest galaxy is lens_{brightest_index}, L_brightest = {luminosity_brightest:.4f}")
+print(
+    f"Brightest galaxy is lens_{brightest_index}, L_brightest = {luminosity_brightest:.4f}"
+)
 
 
 def einstein_radius_from(luminosity):
