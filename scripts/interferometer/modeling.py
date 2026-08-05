@@ -392,9 +392,20 @@ The method below prints the VRAM usage estimate for the analysis and model with 
 it takes about 20-30 seconds to run so you may want to comment it out once you are familiar with your GPU's VRAM limits.
 
 With `TransformerNUFFT` (backed by `nufftax`), the dominant contributor to VRAM is usually the real-space image
-and its transforms inside the likelihood function, rather than the visibility count itself. VRAM does not scale
-with batch size for the persistent buffers, so if the analysis fits within VRAM for `batch_size=1` you should be
-able to push the batch size up (e.g. to 50) to maximise GPU throughput without running out of memory.
+and its transforms inside the likelihood function, rather than the visibility count itself.
+
+**A single-start measurement does not tell you a large batch will fit.** Memory splits into a fixed part (buffers
+shared by the whole batch, e.g. the dataset) and a per-evaluation part that scales with `batch_size`. Whether you
+can raise the batch size depends on which dominates, and for interferometer data under a *gradient* search the
+per-evaluation part dominates: the batched `value_and_grad` carries the whole forward tape, so it is far larger
+than the likelihood alone. A 48-start fit of the SDP.81 dataset measured ~1.79 GB *per start* — ~86 GB in total,
+which exhausted the machine even though a single start fitted comfortably. This is why
+`interferometer/start_here.py` passes `batch_size=4` rather than leaving it at `None`.
+
+So size the batch against the per-start slope, not against a single measurement. Note that `print_vram_use`
+profiles the likelihood **only** by default; pass `gradient=True` to profile the `value_and_grad` a gradient
+search (e.g. `af.MultiStartProdigy`) actually evaluates. `Nautilus`, used in this script, does not take
+gradients, so the default is the right figure here.
 
 For an MGE model with the small dataset fitted in this example, VRAM use is modest (~0.3 GB). Larger real-space
 masks (finer pixel scales) and higher visibility counts increase VRAM gradually rather than catastrophically, and
