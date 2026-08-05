@@ -315,6 +315,7 @@ search = af.MultiStartProdigy(
     name="start_here",  # The name of the fit and folder results are output to.
     unique_tag=dataset_name,  # A unique tag which also defines the folder.
     n_starts=48,  # The number of independent optimizations run in parallel, increase for more complex models.
+    batch_size=None,  # Starts evaluated at once: `None` vmaps all 48 together, which is fastest but allocates the whole batched gradient; set an integer (e.g. 4) if you hit an out-of-memory error.
     n_steps=300,  # The maximum gradient steps per start; the search stops early once the best fit stops improving.
     iterations_per_quick_update=50,  # Every N steps the max likelihood model is visualized and output to hard-disk.
     live_visual_update=True,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
