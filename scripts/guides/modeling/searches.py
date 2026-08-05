@@ -166,6 +166,7 @@ search = af.MultiStartProdigy(
     path_prefix=Path("imaging", "searches"),
     name="MultiStartProdigy",
     n_starts=50,
+    batch_size=None,  # Starts evaluated at once: `None` vmaps all 50 together, which is fastest but allocates the whole batched gradient; set an integer (e.g. 4) if you hit an out-of-memory error.
     n_steps=500,
 )
 
