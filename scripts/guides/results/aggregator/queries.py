@@ -83,7 +83,7 @@ We can also use the `name` of the search used to fit to the model as a query.
 
 In this example, all three fits used the same search, which had the `name` `database_example`. Thus, using it as a 
 query in this example is somewhat pointless. However, querying based on the search name is very useful for model-fits
-which use search chaining (see chapter 3 **HowToLens**), where the results of a particular fit in the chain can be
+which use search chaining (see **HowToLens** chapter 2, tutorials 9-11), where the results of a particular fit in the chain can be
 instantly loaded.
 
 As expected, this query contains all 3 results.

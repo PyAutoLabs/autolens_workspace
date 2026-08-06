@@ -16,7 +16,7 @@ galaxy’s light is straightforward and can be done in exactly the same framewor
 You may wish to first read the pixelization/fit.py example, which demonstrates how a pixelized source reconstruction
 is applied to a single dataset.
 
-Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
+Pixelizations are covered in detail in chapter 3 of the **HowToLens** lectures.
 
 __GPU Run Times__
 
@@ -528,12 +528,12 @@ Modeling with a pixelization can be made more efficient, robust, and automated u
 to compose a pipeline that begins by fitting a simpler model using parametric light profiles.
 
 More information on chaining is provided in the
-`autogalaxy_workspace/notebooks/guides/modeling/chaining` folder and in chapter 3 of the **HowToGalaxy** lectures.
+`autogalaxy_workspace/notebooks/guides/modeling/chaining` folder and at the end of chapter 2 of the **HowToGalaxy** lectures (tutorials 9-10).
 
 __HowToGalaxy__
 
 A full description of how pixelizations work—which relies heavily on linear algebra, Bayesian statistics, and
-2D geometry—is provided in chapter 4 of the **HowToGalaxy** lectures.
+2D geometry—is provided in chapter 3 of the **HowToGalaxy** lectures.
 
 __Future Ideas / Contributions__
 

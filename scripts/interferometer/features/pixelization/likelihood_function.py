@@ -908,7 +908,7 @@ These two terms therefore counteract the `chi_squared` and `regularization_term`
 `log_likelihood` to solutions which fit the data with a more smoothed and less complex source (e.g. one with a higher 
 `regularization_coefficient`).
 
-In **HowToGalaxy** -> `chapter 4` -> `tutorial_4_bayesian_regularization` we expand on this further and give a more
+In **HowToGalaxy** -> `chapter 3` -> `tutorial_4_bayesian_regularization` we expand on this further and give a more
 detailed description of how these different terms impact the `log_likelihood_function`. 
 """
 log_curvature_reg_matrix_term = np.linalg.slogdet(curvature_reg_matrix)[1]
