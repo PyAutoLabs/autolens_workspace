@@ -264,7 +264,7 @@ Coordinates that are ray-traced near the mass profile centres are heavily demagn
 the source-plane. 
 
 We relocate these pixels (for both grids above) to the edge of the source-plane border (defined via the border of the 
-image-plane mask). This is detailed in **HowToLens chapter 4 tutorial 5** and figure 2 of https://arxiv.org/abs/1708.07377.
+image-plane mask). This is detailed in **HowToLens chapter 3 tutorial 6** and figure 2 of https://arxiv.org/abs/1708.07377.
 """
 from autoarray.inversion.mesh.border_relocator import BorderRelocator
 
