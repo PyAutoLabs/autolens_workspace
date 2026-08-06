@@ -204,7 +204,7 @@ their true values. This is why the true `centre` values were input into the `mge
 For real data, we obviously do not know the true parameters and therefore cannot cheat in this way. Readers should
 checkout the **PyAutoLens**'s advanced feature `chaining`, which chains together multiple non-linear searches. 
 
-This feature is described in HowToLens chapter 3 and specific examples for a DSPL are given in
+This feature is described in HowToLens chapter 2 (tutorials 9 and 10) and specific examples for a DSPL are given in
 the script `imaging/features/advanced/double_source_plane_lens/chaining.py`.
 """
 lens.mass.centre_0 = af.GaussianPrior(mean=0.0, sigma=0.1)
@@ -351,9 +351,9 @@ to model a real DSPL:
  - Basis based light profiles (e.g. `features/advanced/shapelets/modeling.ipynb` / `features/multi_gaussian_expansion/modeling.ipynb`): these allow one to fit
    complex lens and source morphologies whilst keeping the dimensionality of the problem low.
 
- - Search chaining (e.g. `guides/modeling/chaining` and HowToLens chapter 3): by breaking the model-fit into a series
+ - Search chaining (e.g. `guides/modeling/chaining` and HowToLens chapter 2, tutorials 9-10): by breaking the model-fit into a series
    of Nautilus searches models of gradually increasing complexity can be fitted.
 
- - pixelizations (e.g. `features/pixelization/modeling.ipynb` and HowToLens chapter 4): to infer the cosmological parameters reliably
+ - pixelizations (e.g. `features/pixelization/modeling.ipynb` and HowToLens chapter 3): to infer the cosmological parameters reliably
    the source must be reconstructed on an adaptive mesh to capture a irregular morphological features.
 """
