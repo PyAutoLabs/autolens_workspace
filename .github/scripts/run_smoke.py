@@ -8,6 +8,12 @@ runs each listed entry with the appropriate environment. Continues
 through failures and exits non-zero if any entry failed.
 
 Notebook execution uses `jupyter nbconvert --to notebook --execute`.
+If `jupyter` is not installed the notebook entries are reported as
+per-entry failures (exit 127) rather than aborting the run: the runner's
+contract is to continue through failures and always end with the summary
+line. CI images always ship jupyter, so this only bites a local sweep --
+where an abort would print a raw traceback and silently discard coverage
+of every remaining entry.
 On failure the runner regenerates the single failing notebook from its
 source `.py` script via PyAutoHands's `py_to_notebook` and retries
 once — this catches stale notebooks where the script has moved on but
@@ -45,6 +51,16 @@ NOTEBOOK_FILE = WORKSPACE / "smoke_notebooks.txt"
 ENV_VARS_FILE = WORKSPACE / "config" / "build" / "profile_smoke.yaml"
 SCRIPTS_DIR = WORKSPACE / "scripts"
 NOTEBOOKS_DIR = WORKSPACE / "notebooks"
+
+# Exit code reported for a notebook entry when the `jupyter` executable is
+# absent, mirroring the shell's "command not found". Distinct from any code
+# nbconvert itself returns, so run_notebook can recognise the case.
+JUPYTER_MISSING_RC = 127
+JUPYTER_MISSING_MSG = (
+    "jupyter not found on PATH: cannot execute notebooks.\n"
+    "Install it with `pip install jupyter` to cover the notebook entries; "
+    "the script entries above are unaffected.\n"
+)
 
 # CI puts PyAutoHands/autohands on PYTHONPATH (PyAutoHeart's reusable
 # smoke-tests.yml clones it alongside the dependency chain); for local runs,
@@ -113,24 +129,31 @@ def execute_notebook(nb_path: Path, env: dict) -> tuple[int, str]:
     staged = WORKSPACE / f".smoke_run_{os.getpid()}_{nb_path.name}"
     shutil.copyfile(nb_path, staged)
     try:
-        result = subprocess.run(
-            [
-                "jupyter",
-                "nbconvert",
-                "--to",
-                "notebook",
-                "--execute",
-                "--output-dir",
-                str(tmp_dir),
-                "--output",
-                nb_path.name,
-                str(staged),
-            ],
-            cwd=str(WORKSPACE),
-            env=env,
-            capture_output=True,
-            text=True,
-        )
+        try:
+            result = subprocess.run(
+                [
+                    "jupyter",
+                    "nbconvert",
+                    "--to",
+                    "notebook",
+                    "--execute",
+                    "--output-dir",
+                    str(tmp_dir),
+                    "--output",
+                    nb_path.name,
+                    str(staged),
+                ],
+                cwd=str(WORKSPACE),
+                env=env,
+                capture_output=True,
+                text=True,
+            )
+        except FileNotFoundError:
+            # `jupyter` is not installed. Report a per-entry failure instead of
+            # letting the exception escape main(), which would abort the run
+            # with a raw traceback, print no summary line, and leave every
+            # remaining entry silently uncovered.
+            return JUPYTER_MISSING_RC, JUPYTER_MISSING_MSG
     finally:
         staged.unlink(missing_ok=True)
         shutil.rmtree(tmp_dir, ignore_errors=True)
@@ -169,6 +192,10 @@ def run_notebook(nb_rel: str, cfg: dict | None) -> tuple[str, int, float, str]:
         return nb_rel, 1, 0.0, f"Notebook not found: {nb_path}\n"
 
     rc, output = execute_notebook(nb_path, env)
+    if rc == JUPYTER_MISSING_RC:
+        # No jupyter, so regenerating the notebook and retrying cannot help.
+        # Checked before the skip guard so a missing tool is never a PASS.
+        return nb_rel, rc, time.time() - t0, output
     if rc != 0 and is_clean_skip_exit(output):
         # Optional-dependency skip guard (`sys.exit(0)`): a clean exit 0 as a
         # `.py` script, so the notebook form is a PASS too (PyAutoHands#198).
