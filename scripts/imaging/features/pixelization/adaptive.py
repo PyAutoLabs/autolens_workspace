@@ -20,7 +20,7 @@ scheme to adapt the source reconstruction to the source galaxy's morphology (as 
 examplesw hich adapt to the mass model magnification and apply a constant regularization scheme).
 
 This script illustrates the API used for adaptive pixelizations, but does not go into the details of how they
-work. This is described in chapter 4 of the **HowToLens** lectures.
+work. This is described in chapter 3 of the **HowToLens** lectures (tutorials 11 and 12).
 
 __Why Chain?__
 
@@ -31,7 +31,7 @@ pixelization in one search:
  parameters for the search to fit than a pixelized source, the model-fit is faster overall.
 
  - pixelizations often go to unphysical solutions where the mass model goes to high / low normalization_list and the source
- is reconstructed as a demagnified version of the image. (see Chapter 4, tutorial 6 for a complete description of
+ is reconstructed as a demagnified version of the image. (see Chapter 3, tutorial 7 for a complete description of
  this effect). This does not occur for a linear source, therefore the mass model can be initialized using a
  parametric source, which sets up the search which fits a pixelization so as to not sample these unphysical solutions.
 
@@ -335,7 +335,7 @@ are difficult to sample. Extensive testing has shown that this does not reduce t
 For this reason, search 2 fixes the lens galaxy's light and mass model to the best-fit model of search 1. A third
 search will then fit for the lens galaxy's light and mass model using these adaptive features.
 
-The details of how the above features work is not provided here, but is given at the end of chapter 4 of the HowToLens
+The details of how the above features work is not provided here, but is given at the end of chapter 3 of the HowToLens
 lecture series.
 
 __Model (Search 3)__

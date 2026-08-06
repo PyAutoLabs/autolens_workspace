@@ -15,7 +15,7 @@ datasets, the lens light is rarely present and this is the common scenario.
 You may wish to first read the pixelization/fit.py example, which demonstrates how a pixelized source reconstruction
 is applied to a single dataset.
 
-Pixelizations are covered in detail in Chapter 4 of the HowToLens lecture series.
+Pixelizations are covered in detail in Chapter 3 of the HowToLens lecture series.
 
 __CPU Users__
 
@@ -500,12 +500,12 @@ Modeling using a pixelization can be more efficient, robust and automated using 
 compose a pipeline which begins by fitting a simpler model using a parametric source.
 
 More information on chaining is provided in the `autolens_workspace/notebooks/guides/modeling/chaining` folder,
-chapter 3 of the **HowToLens** lectures.
+the end of chapter 2 of the **HowToLens** lectures (tutorials 9-11).
 
 __HowToLens__
 
 A full description of how pixelizations work, which comes down to a lot of linear algebra, Bayesian statistics and
-2D geometry, is provided in chapter 4 of the **HowToLens** lectures.
+2D geometry, is provided in chapter 3 of the **HowToLens** lectures.
 
 __Future Ideas / Contributions__
 

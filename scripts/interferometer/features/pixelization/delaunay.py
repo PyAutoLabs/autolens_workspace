@@ -376,7 +376,7 @@ of the adaptive regularization scheme.
 For this reason, search 2 fixes the lens galaxy's light and mass model to the best-fit model of search 1. A third
 search will then fit for the lens galaxy's light and mass model using these adaptive features.
 
-The details of how the above features work is not provided here, but is given at the end of chapter 4 of the HowToLens
+The details of how the above features work is not provided here, but is given at the end of chapter 3 of the HowToLens
 lecture series.
 """
 galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(

@@ -15,7 +15,7 @@ computationally fast and accurate solutions.
 For simplicity, the lens galaxy's light is omitted from the model and is not present in the simulated data. It is
 straightforward to include the lens galaxy's light in the model.
 
-Pixelizations are covered in detail in chapter 4 of the **HowToLens** lectures.
+Pixelizations are covered in detail in chapter 3 of the **HowToLens** lectures.
 
 __CPU Users__
 
@@ -406,7 +406,7 @@ print(inversion.reconstruction)
 
 """
 The (y,x) grid of coordinates associated with these values is given by the `Inversion`'s `Mapper` (which are 
-described in chapter 4 of **HowToLens**.
+described in chapter 3 of **HowToLens**.
 """
 mapper = inversion.linear_obj_list[0]
 print(mapper.source_plane_mesh_grid)
