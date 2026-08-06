@@ -5091,9 +5091,11 @@
     ],
     "cross_refs": [
       "features/linear_light_profiles/likelihood_function.py",
+      "fit.py",
       "interferometer/features/linear_light_profiles/likelihood_function.ipynb",
       "interferometer/features/linear_light_profiles/likelihood_function.py",
-      "interferometer/likelihood_function.ipynb"
+      "interferometer/likelihood_function.ipynb",
+      "modeling.py"
     ],
     "notebook": "notebooks/interferometer/features/multi_gaussian_expansion/likelihood_function.ipynb",
     "path": "scripts/interferometer/features/multi_gaussian_expansion/likelihood_function.py",
