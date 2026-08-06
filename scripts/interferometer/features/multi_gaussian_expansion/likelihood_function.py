@@ -135,13 +135,23 @@ lens_galaxy = al.Galaxy(redshift=0.5, mass=mass, shear=shear)
 __Source Galaxy MGE Basis__
 
 We build a `Basis` of 5 linear `Gaussian` profiles for the source bulge, all sharing the same centre and
-`ell_comps`, with `sigma` values spanning 0.01" to the mask radius in log-spaced increments.
+`ell_comps`, with `sigma` values spanning a tenth of the real-space pixel scale (0.01") to the mask
+radius in log-spaced increments.
+
+Source MGE ladders elsewhere in this folder (`fit.py`, `modeling.py`) extend down to sigma=1e-4, because
+magnification samples the source plane more finely than the image pixel scale and their inversions use
+the positive-only solver, which simply zeroes any Gaussian too small to resolve. This guide instead
+floors the smallest Gaussian at a resolvable scale: the step-by-step positive-negative solve below
+inverts the curvature matrix `F` directly via `np.linalg.solve`, and a Gaussian far below the grid's
+resolution underflows to an all-zero mapping-matrix column, making `F` singular.
 
 Each Gaussian is a linear light profile — its `intensity` is solved for analytically via the inversion
 below. Internally each linear profile carries `intensity=1.0`, which the inversion later rescales.
 """
 total_gaussians = 5
-log10_sigma_list = np.linspace(-4, np.log10(mask_radius), total_gaussians)
+log10_sigma_list = np.linspace(
+    np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians
+)
 
 bulge_gaussian_list = []
 for i in range(total_gaussians):
