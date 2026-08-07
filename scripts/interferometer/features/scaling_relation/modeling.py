@@ -1,6 +1,6 @@
 """
 Modeling Features (Interferometer): Scaling Relation
-===================================================
+====================================================
 
 Ties a population of foreground companions to the main lens's own Einstein radius by a Faber-Jackson relation, so
 the whole tier costs **zero free parameters**:

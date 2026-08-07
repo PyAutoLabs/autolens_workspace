@@ -1,6 +1,6 @@
 """
 Pixelization: Group SLaM
-=========================
+========================
 
 This script uses the SLaM (Source, Light and Mass) pipelines to fit a group-scale strong lens where the
 source galaxy is reconstructed using a pixelized mesh with adaptive regularization.

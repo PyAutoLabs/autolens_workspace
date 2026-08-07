@@ -1,6 +1,6 @@
 """
 Multi Galaxy Scaling Relation: SLaM
-==================================
+===================================
 
 Uses the SLaM pipelines to fit a multi-galaxy lens with a scaling tier whose Einstein radii are tied to the
 brightest co-dominant deflector.

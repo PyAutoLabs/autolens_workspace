@@ -1,6 +1,6 @@
 """
 Simulator: Datacube
-====================
+===================
 
 This script simulates an ALMA-style spectral-line `Interferometer` datacube of a 'galaxy-scale' strong lens where:
 

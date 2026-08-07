@@ -1,6 +1,6 @@
 """
 Linear Light Profiles: SLaM (Interferometer)
-=============================================
+============================================
 
 This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for `Interferometer`
 data, using a **linear light profile** in the SOURCE LP stage instead of a Multi-Gaussian Expansion (MGE).

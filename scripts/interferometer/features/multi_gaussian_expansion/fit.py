@@ -1,6 +1,6 @@
 """
 Modeling Features: Multi Gaussian Expansion Fit (Interferometer)
-=================================================================
+================================================================
 
 A multi-Gaussian expansion (MGE) decomposes a galaxy's light into ~15-100 Gaussians, where the `intensity`
 of every Gaussian is solved for via linear algebra using a process called an "inversion".

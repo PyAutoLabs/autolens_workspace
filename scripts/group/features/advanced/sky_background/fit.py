@@ -1,6 +1,6 @@
 """
 Fit Features: Sky Background (Group)
-=====================================
+====================================
 
 The background of an image is the light that is not associated with the strong lens we are interested in. This
 script demonstrates how to include the sky background in a fit for a group-scale strong lens, without performing

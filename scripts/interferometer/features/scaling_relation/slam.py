@@ -1,6 +1,6 @@
 """
 Scaling Relation: SLaM (Interferometer)
-======================================
+=======================================
 
 Runs the SLaM pipelines on an interferometer dataset whose foreground companions are tied to the main lens's own
 Einstein radius by a Faber-Jackson relation.

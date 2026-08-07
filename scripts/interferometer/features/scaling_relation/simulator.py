@@ -1,6 +1,6 @@
 """
 Simulator: Scaling Relation (Interferometer)
-===========================================
+============================================
 
 Simulates the dataset for the `interferometer/features/scaling_relation` feature: a lens plus a tier of foreground
 companions whose Einstein radii are tied to the main lens's own by a Faber-Jackson relation.

@@ -1,6 +1,6 @@
 """
 SLaM (Source, Light and Mass): Mass Light Dark
-===============================================
+==============================================
 
 This example shows how to use the SLaM pipelines to end with a mass model which decomposes the lens into its
 stars and dark matter, using a light plus dark matter mass model.

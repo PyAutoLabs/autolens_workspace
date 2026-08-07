@@ -1,6 +1,6 @@
 """
 Features (Point Source): Scaling Relation Fit
-============================================
+=============================================
 
 Fits the point-source `scaling_relation` dataset at the simulator's truth values, so the tied tier can be inspected
 without a non-linear search in the way.

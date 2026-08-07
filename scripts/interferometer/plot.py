@@ -1,6 +1,6 @@
 """
 Plots: Interferometer
-======================
+=====================
 
 This example shows how to plot an `Interferometer` dataset and a `FitInterferometer` fit, figure by figure and
 via multi-panel subplots.

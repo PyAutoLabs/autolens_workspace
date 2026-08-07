@@ -1,6 +1,6 @@
 """
 Modeling Features: Shapelets Fit (Interferometer)
-==================================================
+=================================================
 
 A shapelet is a basis function appropriate for capturing the exponential / disk-like features of a galaxy.
 The `intensity` of every shapelet is solved for via linear algebra ("inversion") rather than being a free

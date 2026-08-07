@@ -1,6 +1,6 @@
 """
 Subhalo Detection: Group
-=========================
+========================
 
 Strong gravitational lenses can be used to detect the presence of small-scale dark matter (DM) subhalos. This occurs
 when the DM subhalo overlaps the lensed source emission, and therefore gravitationally perturbs the observed image of

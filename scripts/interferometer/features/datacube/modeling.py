@@ -1,6 +1,6 @@
 """
 Modeling: Datacube
-===================
+==================
 
 This script fits a list of `Interferometer` channels — a "datacube" — with a single shared lens model and a
 per-channel pixelized source reconstruction. Each channel is an independent `Interferometer` dataset; the

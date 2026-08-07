@@ -1,6 +1,6 @@
 """
 Simulator: Line-of-Sight Halos (JAX)
-=====================================
+====================================
 
 This script simulates the same strong lens configuration as ``simulator.py`` — a galaxy-scale
 lens with line-of-sight (LOS) dark matter halos — but uses a JAX-accelerated path that compiles

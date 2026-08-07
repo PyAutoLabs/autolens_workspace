@@ -1,6 +1,6 @@
 """
 Modeling Features: Linear Light Profiles Fit (Interferometer)
-==============================================================
+=============================================================
 
 A "linear light profile" is a variant of a standard light profile where the `intensity` parameter is solved for
 via linear algebra every time the model is fitted to the data. This uses a process called an "inversion" and it

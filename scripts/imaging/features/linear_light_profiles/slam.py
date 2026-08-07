@@ -1,6 +1,6 @@
 """
 Linear Light Profiles: SLaM
-============================
+===========================
 
 This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines using linear light profiles
 for the lens galaxy's light.

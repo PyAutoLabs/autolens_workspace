@@ -1,6 +1,6 @@
 """
 Modeling Features (Multi Galaxy): Scaling Relation
-=================================================
+==================================================
 
 Extends the multi-galaxy model with a **scaling tier**: faint galaxies far from the co-dominant pair whose Einstein
 radii are tied to the brightest of the pair by a Faber-Jackson relation:
