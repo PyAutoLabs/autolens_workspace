@@ -203,7 +203,9 @@ lensed source.
 # Lens:
 
 bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True,
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    centre_prior_is_uniform=True,
     sigma_min=dataset.pixel_scales[0] / 10.0,
 )
 
@@ -322,7 +324,9 @@ https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 # Lens:
 
 bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True,
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    centre_prior_is_uniform=True,
     sigma_min=dataset.pixel_scales[0] / 10.0,
 )
 mass = af.Model(al.mp.Isothermal)
@@ -380,7 +384,9 @@ for extra_galaxy_centre in extra_galaxies_centres:
     # Extra Galaxy Light
 
     bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius, total_gaussians=10, centre_fixed=extra_galaxy_centre,
+        mask_radius=mask_radius,
+        total_gaussians=10,
+        centre_fixed=extra_galaxy_centre,
         sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 

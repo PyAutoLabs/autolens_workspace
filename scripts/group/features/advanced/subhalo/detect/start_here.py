@@ -123,7 +123,9 @@ def source_lp(
     for centre in extra_galaxies_centres:
 
         bulge = al.model_util.mge_model_from(
-            mask_radius=mask_radius, total_gaussians=10, centre_fixed=centre,
+            mask_radius=mask_radius,
+            total_gaussians=10,
+            centre_fixed=centre,
             sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 

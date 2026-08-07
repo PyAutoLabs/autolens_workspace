@@ -211,7 +211,9 @@ gaussian_per_basis = 2
 
 # The sigma values of the Gaussians will be fixed to values spanning a tenth of the pixel scale to the mask radius, 3.0".
 mask_radius = 3.0
-log10_sigma_list = np.linspace(np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians)
+log10_sigma_list = np.linspace(
+    np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians
+)
 
 # By defining the centre here, it creates two free parameters that are assigned below to all Gaussians.
 
@@ -373,7 +375,9 @@ gaussian_per_basis = 2
 
 # The sigma values of the Gaussians will be fixed to values spanning a tenth of the pixel scale to the mask radius, 3.0".
 mask_radius = 3.0
-log10_sigma_list = np.linspace(np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians)
+log10_sigma_list = np.linspace(
+    np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians
+)
 
 # By defining the centre here, it creates two free parameters that are assigned below to all Gaussians.
 
@@ -512,7 +516,11 @@ total_point_gaussians = 10
 
 # Sigma values span a tenth of the pixel scale up to twice the pixel scale, keeping the basis compact and point-like.
 
-log10_sigma_list = np.linspace(np.log10(dataset.pixel_scales[0] / 10.0), np.log10(2.0 * pixel_scales), total_point_gaussians)
+log10_sigma_list = np.linspace(
+    np.log10(dataset.pixel_scales[0] / 10.0),
+    np.log10(2.0 * pixel_scales),
+    total_point_gaussians,
+)
 
 # The centre is the only free parameter, shared by every Gaussian and given a +/- 0.1" uniform prior.
 

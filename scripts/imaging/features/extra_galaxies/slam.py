@@ -102,7 +102,11 @@ def source_lp(
     for centre in extra_galaxies_centres:
         total_gaussians = 10
 
-        log10_sigma_list = np.linspace(np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians)
+        log10_sigma_list = np.linspace(
+            np.log10(dataset.pixel_scales[0] / 10.0),
+            np.log10(mask_radius),
+            total_gaussians,
+        )
 
         gaussian_list = af.Collection(
             af.Model(al.lp_linear.GaussianSph) for _ in range(total_gaussians)

@@ -111,7 +111,9 @@ def mge_basis_from(centre, total_gaussians: int = 20):
     """
     A basis of spherical linear Gaussians centred on `centre`, with sigmas log10-spaced across the mask.
     """
-    log10_sigma_list = np.linspace(np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians)
+    log10_sigma_list = np.linspace(
+        np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians
+    )
 
     return al.lp_basis.Basis(
         profile_list=[

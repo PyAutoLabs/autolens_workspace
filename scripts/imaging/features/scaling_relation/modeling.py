@@ -231,7 +231,9 @@ bounded_galaxies_list = []
 
 for centre, luminosity in zip(bounded_galaxies_centres, bounded_galaxies_luminosities):
     bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius, total_gaussians=10, centre_fixed=tuple(centre),
+        mask_radius=mask_radius,
+        total_gaussians=10,
+        centre_fixed=tuple(centre),
         sigma_min=dataset.pixel_scales[0] / 10.0,
     )
 

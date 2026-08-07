@@ -243,7 +243,9 @@ shear = af.Model(al.mp.ExternalShear)
 # Imaging model (lens light + host-galaxy source):
 
 lens_bulge = al.model_util.mge_model_from(
-    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=True,
+    mask_radius=mask_radius,
+    total_gaussians=20,
+    centre_prior_is_uniform=True,
     sigma_min=pixel_scales / 10.0,
 )
 source_bulge = al.model_util.mge_model_from(

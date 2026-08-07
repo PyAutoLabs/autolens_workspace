@@ -106,7 +106,9 @@ Two MGE bases — one per deflector — plus the true mass profiles, shear and s
 """
 total_gaussians = 20
 
-log10_sigma_list = np.linspace(np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians)
+log10_sigma_list = np.linspace(
+    np.log10(dataset.pixel_scales[0] / 10.0), np.log10(mask_radius), total_gaussians
+)
 
 
 def mge_basis_from(centre):
