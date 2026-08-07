@@ -91,6 +91,9 @@ if al.util.dataset.should_simulate(str(dataset_path)):
         check=True,
     )
 
+# Intentional raw guard: positions.json is a file (should_simulate rmtree's a directory); the
+# should_simulate guard above already deletes the whole dataset folder under PYAUTO_SMALL_DATASETS,
+# so this file-level check re-fires whenever the dataset is regenerated.
 if not (dataset_path / "positions.json").exists():
     import subprocess
     import sys
