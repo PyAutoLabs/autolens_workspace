@@ -67,7 +67,7 @@ The examples in the `notebooks` and `scripts` folders are structured as follows:
 
 - `guides`: Guides which introduce the core features of **PyAutoLens**, including the core lensing API.
 - `imaging`: Examples for galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, Euclid).
-- `interferometer`: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA).
+- `interferometer`: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA), for both continuum data and spectral-line data cubes.
 - `multi_dataset`: Examples for lenses observed in multiple wavebands, modeled simultaneously.
 - `point_source`: Examples for strong lens point source datasets.
 - `multi_galaxy`: Examples for multi-galaxy strong lenses (two or more co-dominant lens galaxies, no host halo).
