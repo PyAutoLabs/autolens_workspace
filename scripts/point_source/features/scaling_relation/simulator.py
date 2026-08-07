@@ -1,6 +1,6 @@
 """
 Simulator: Scaling Relation (Point Source)
-=========================================
+==========================================
 
 Simulates the dataset for the `point_source/features/scaling_relation` feature: a quadruply imaged point source
 behind a lens with five foreground companions whose Einstein radii are tied to the lens's own by a Faber-Jackson

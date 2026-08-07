@@ -1,6 +1,6 @@
 """
 Fit Features: Multi Gaussian Expansion (Group)
-===============================================
+==============================================
 
 This guide shows how to fit data using the `FitImaging` object for group-scale strong lenses, including visualizing
 and interpreting its results.

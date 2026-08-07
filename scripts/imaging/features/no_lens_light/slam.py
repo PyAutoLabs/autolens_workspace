@@ -1,6 +1,6 @@
 """
 No Lens Light: SLaM
-====================
+===================
 
 This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for fitting a
 lens model where there is no lens light observed in the imaging data.

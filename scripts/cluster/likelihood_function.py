@@ -1,6 +1,6 @@
 """
 Log Likelihood Function: Cluster Point Source
-==============================================
+=============================================
 
 This script provides a step-by-step guide of the cluster point-source ``log_likelihood_function``,
 the figure-of-merit Nautilus optimises when fitting a cluster lens model to ``point_datasets.csv``.

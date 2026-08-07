@@ -1,6 +1,6 @@
 """
 Multi Gaussian Expansion: SLaM (Interferometer)
-================================================
+===============================================
 
 This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for `Interferometer`
 data, using a **multi-Gaussian expansion (MGE)** for the source galaxy in the SOURCE LP stage.

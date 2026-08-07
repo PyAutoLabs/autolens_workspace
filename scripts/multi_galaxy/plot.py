@@ -1,6 +1,6 @@
 """
 Plots: Multi Galaxy
-====================
+===================
 
 This example shows how to plot a multi-galaxy `Imaging` dataset and a `FitImaging` fit, figure by figure and
 via multi-panel subplots.

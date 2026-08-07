@@ -1,6 +1,6 @@
 """
 Results: Galaxies and Fits
-===========================
+==========================
 
 This tutorial inspects an inferred model using galaxies inferred by the non-linear search.
 This allows us to visualize and interpret its results.

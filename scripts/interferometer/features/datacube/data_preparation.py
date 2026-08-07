@@ -1,6 +1,6 @@
 """
 Data Preparation: Datacube
-============================
+==========================
 
 Most users come to datacube modeling with a single 4D FITS file from CASA, with shape
 ``(n_pol, n_chan, n_vis, 2)`` — for example, an ALMA observation of a CO emission line might be

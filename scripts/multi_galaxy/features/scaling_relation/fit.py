@@ -1,6 +1,6 @@
 """
 Features (Multi Galaxy): Scaling Relation Fit
-============================================
+=============================================
 
 Fits the multi-galaxy `scaling_relation` dataset at the simulator's truth values, so the tied tier can be inspected
 without a non-linear search in the way.

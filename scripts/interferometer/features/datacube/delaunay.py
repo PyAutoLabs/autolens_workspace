@@ -1,6 +1,6 @@
 """
 Modeling: Datacube — Delaunay Source
-=====================================
+====================================
 
 This script fits a datacube — a list of `Interferometer` channels — with a single shared lens model and a
 per-channel **Delaunay-pixelized** source reconstruction. It is the Delaunay sibling of `modeling.py`, which

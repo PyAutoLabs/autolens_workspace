@@ -1,6 +1,6 @@
 """
 Simulator: Multi Galaxy Scaling Relation
-=======================================
+========================================
 
 Simulates the dataset for the `multi_galaxy/features/scaling_relation` feature: the co-dominant pair of
 `multi_galaxy/simulator.py`, plus five faint galaxies scattered FAR from the lens whose masses are tied to the

@@ -1,6 +1,6 @@
 """
 Multi Gaussian Expansion: Group SLaM
-=====================================
+====================================
 
 This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for fitting a
 group-scale strong lens where all light profiles use Multi Gaussian Expansion (MGE) models.

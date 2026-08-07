@@ -1,6 +1,6 @@
 """
 Lenstool Users: dPIE Parameterization Mapping (Scaling Galaxies)
-===============================================================
+================================================================
 
 **If you want to fit cluster member (scaling) galaxies without knowing the source or lens redshift,
 this script shows you how — and proves it recovers the standard Lenstool model exactly once the

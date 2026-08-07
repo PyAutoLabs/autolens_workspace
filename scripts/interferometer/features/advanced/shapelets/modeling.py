@@ -1,6 +1,6 @@
 """
 Modeling Features: Shapelets (Interferometer)
-==============================================
+=============================================
 
 A shapelet is a basis function appropriate for capturing the exponential / disk-like features of a galaxy.
 It has been employed in many strong lensing studies to model the light of the lensed source galaxy, because

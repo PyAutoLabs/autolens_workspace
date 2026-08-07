@@ -1,6 +1,6 @@
 """
 Modeling: Datacube — Parametric Source
-=======================================
+======================================
 
 This script fits a datacube — a list of `Interferometer` channels — with a single shared lens model and a
 **parametric** source (`al.lp.Sersic`) whose morphology is shared across channels and whose `intensity` varies

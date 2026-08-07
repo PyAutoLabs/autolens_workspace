@@ -1,6 +1,6 @@
 """
 Extra Galaxies: SLaM
-=====================
+====================
 
 This script uses the SLaM pipelines to fit a lens dataset that includes extra galaxies
 surrounding the main lens, whose light and mass are both included in the model.
