@@ -10,7 +10,7 @@ you should go into next if you are unsure.
 
 - `guides`: Step-by-step guides illustrating many important things, including the core API, analysing modeling results and much more.
 - `imaging`: Examples for galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, Euclid).
-- `interferometer`: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA).
+- `interferometer`: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA), for both continuum data and spectral-line data cubes.
 - `point_source`: Examples for strong lens point source datasets.
 - `multi_galaxy`: Examples for multi-galaxy strong lenses (2+ co-dominant lens galaxies, no host halo).
 - `group`: Examples for group scale strong lenses.

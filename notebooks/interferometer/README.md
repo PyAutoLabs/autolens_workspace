@@ -1,6 +1,10 @@
 The `interferometer` folder contains example scripts showing how to analyse galaxy-scale strong lenses with
 interferometer data (E.g. ALMA, Radio Interferometers)
 
+Both single-channel (continuum) data and spectral-line data cubes are supported. The examples below are for
+continuum data; for cubes, where every channel is fitted simultaneously with a shared lens model, see the
+`interferometer/features/datacube` package.
+
 # Start Here
 
 New users should read the `start_here` example, which gives an overview of all examples in the folder.
@@ -19,7 +23,8 @@ New users should read the `start_here` example, which gives an overview of all e
 
 # Folders
 
-- `features`: Examples illustrating different core features for interferometer analysis and lens modeling.
+- `features`: Examples illustrating different core features for interferometer analysis and lens modeling, including
+  spectral-line data cubes (`features/datacube`).
 
 # Results
 
