@@ -17,9 +17,16 @@ Core features:
 - `multi_gaussian_expansion`: Galaxy light modeled as ~10-30 Gaussian basis functions (MGE).
 - `no_lens_light`: All group galaxies have no visible light — mass-only models.
 - `pixelization`: Source galaxy reconstructed using an adaptive pixel mesh.
+- `scaling_relation`: Foreground galaxy masses tied to their luminosities through a scaling relation,
+  via the three-tier modeling API used by the production group pipelines, so model dimensionality does
+  not grow with the population.
 
 Advanced features:
 
+- `advanced/double_source_plane_lens`: Two source galaxies at two different redshifts behind multiple
+  foreground main lens galaxies.
+- `advanced/mass_stellar_dark`: Each main lens galaxy's mass decomposed into a stellar component (tied
+  to its light) and a separate dark matter halo.
 - `advanced/operated_light_profile`: PSF-convolved (operated) light profiles for group galaxies.
 - `advanced/shapelets`: Shapelet basis functions for group galaxy light.
 - `advanced/sky_background`: Modeling a uniform sky background alongside the group.

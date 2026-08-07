@@ -11,6 +11,7 @@ for specific scientific topics.The following example scripts illustrating lens m
 - `sky_background`: Including the background sky in the model.
 - `subhalo`: Fitting lens models for dark matter subhalo detection and sensitivity mapping.
 - `potential_correction`: Gravitational imaging — pixelized corrections to the lensing potential reconstructed jointly with the source.
+- `los_halos`: Simulating a lens with line-of-sight (LOS) dark matter halos on multiple redshift planes, sampled from a cosmological halo mass function and ray-traced with multi-plane lensing.
 
 # Notes
 

@@ -6,5 +6,5 @@ are extended in order to perform dark matter subhalo analysis.
 
 # Files
 
-- `detection`: Extend the SLaM pipelines to perform dark matter subhalo detection.
+- `detect`: Extend the SLaM pipelines to perform dark matter subhalo detection.
 - `sensitivity`: Extend the SLaM pipelines to perform dark matter subhalo sensitivity mapping.
