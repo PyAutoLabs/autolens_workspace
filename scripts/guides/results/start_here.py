@@ -439,21 +439,24 @@ this object, including:
 
 Below, is an example of how to use the `Samples` object to estimate the lens mass model parameters which are
 the median of the probability distribution function and its errors at 3 sigma confidence intervals.
+
+These statistics are computed independently for every parameter, so their combined vector is not guaranteed to
+describe one physically valid profile. We therefore request dictionaries instead of constructing model instances.
 """
 samples = result.samples
 
-median_pdf_instance = samples.median_pdf()
+median_pdf_dict = samples.median_pdf(as_dict=True)
 
-print("Median PDF Model Instances: \n")
-print(median_pdf_instance.galaxies.lens.mass)
+print("Median PDF Model Parameters: \n")
+print(median_pdf_dict)
 print()
 
-ue3_instance = samples.values_at_upper_sigma(sigma=3.0)
-le3_instance = samples.values_at_lower_sigma(sigma=3.0)
+ue3_dict = samples.values_at_upper_sigma(sigma=3.0, as_dict=True)
+le3_dict = samples.values_at_lower_sigma(sigma=3.0, as_dict=True)
 
-print("Errors Instances: \n")
-print(ue3_instance.galaxies.lens.mass, "\n")
-print(le3_instance.galaxies.lens.mass, "\n")
+print("Marginalized Parameter Bounds: \n")
+print(ue3_dict, "\n")
+print(le3_dict, "\n")
 
 """
 __Linear Light Profiles__

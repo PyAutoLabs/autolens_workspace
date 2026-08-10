@@ -270,12 +270,14 @@ PDF stands for "Probability Density Function" and it quantifies probability of e
 that are sampled. It therefore enables error estimation via a process called marginalization.
 
 The median pdf vector is available, which estimates every parameter via 1D marginalization of their PDFs.
-"""
-mp_instances = [samps.median_pdf() for samps in agg.values("samples")]
 
-print("Median PDF Model Instances: \n")
-print(mp_instances, "\n")
-print(mp_instances[0].galaxies.lens.mass)
+Independent marginal statistics need not combine into a physically valid profile, so they are returned as parameter
+dictionaries instead of model instances.
+"""
+mp_dicts = [samps.median_pdf(as_dict=True) for samps in agg.values("samples")]
+
+print("Median PDF Model Parameters: \n")
+print(mp_dicts, "\n")
 print()
 
 """
@@ -288,47 +290,63 @@ This again uses 1D marginalization, now at an input sigma confidence limit.
 By inputting `sigma=3.0` margnialization find the values spanning 99.7% of 1D PDF. Changing this to `sigma=1.0`
 would give the errors at the 68.3% confidence limit.
 """
-uv3_lists = [samps.values_at_upper_sigma(sigma=3.0) for samps in agg.values("samples")]
-
-uv3_instances = [
-    samps.values_at_upper_sigma(sigma=3.0) for samps in agg.values("samples")
+uv3_lists = [
+    samps.values_at_upper_sigma(sigma=3.0, as_instance=False)
+    for samps in agg.values("samples")
 ]
 
-lv3_lists = [samps.values_at_lower_sigma(sigma=3.0) for samps in agg.values("samples")]
+uv3_dicts = [
+    samps.values_at_upper_sigma(sigma=3.0, as_dict=True)
+    for samps in agg.values("samples")
+]
 
-lv3_instances = [
-    samps.values_at_lower_sigma(sigma=3.0) for samps in agg.values("samples")
+lv3_lists = [
+    samps.values_at_lower_sigma(sigma=3.0, as_instance=False)
+    for samps in agg.values("samples")
+]
+
+lv3_dicts = [
+    samps.values_at_lower_sigma(sigma=3.0, as_dict=True)
+    for samps in agg.values("samples")
 ]
 
 print("Errors Lists: \n")
 print(uv3_lists, "\n")
 print(lv3_lists, "\n")
-print("Errors Instances: \n")
-print(uv3_instances, "\n")
-print(lv3_instances, "\n")
+print("Errors Dictionaries: \n")
+print(uv3_dicts, "\n")
+print(lv3_dicts, "\n")
 
 """
 We can compute the upper and lower errors on each parameter at a given sigma limit.
 
 The `ue3` below signifies the upper error at 3 sigma. 
 """
-ue3_lists = [samps.errors_at_upper_sigma(sigma=3.0) for samps in agg.values("samples")]
+ue3_lists = [
+    samps.errors_at_upper_sigma(sigma=3.0, as_instance=False)
+    for samps in agg.values("samples")
+]
 
-# ue3_instances = [
-#     samps.errors_at_upper_sigma(sigma=3.0) for samps in agg.values("samples")
-# ]
+ue3_dicts = [
+    samps.errors_at_upper_sigma(sigma=3.0, as_dict=True)
+    for samps in agg.values("samples")
+]
 
-le3_lists = [samps.errors_at_lower_sigma(sigma=3.0) for samps in agg.values("samples")]
-# le3_instances = [
-#     samps.errors_at_lower_sigma(sigma=3.0) for samps in agg.values("samples")
-# ]
+le3_lists = [
+    samps.errors_at_lower_sigma(sigma=3.0, as_instance=False)
+    for samps in agg.values("samples")
+]
+le3_dicts = [
+    samps.errors_at_lower_sigma(sigma=3.0, as_dict=True)
+    for samps in agg.values("samples")
+]
 
 print("Errors Lists: \n")
 print(ue3_lists, "\n")
 print(le3_lists, "\n")
-print("Errors Instances: \n")
-# print(ue3_instances, "\n")
-# print(le3_instances, "\n")
+print("Errors Dictionaries: \n")
+print(ue3_dicts, "\n")
+print(le3_dicts, "\n")
 
 """
 __Sample Instance__
