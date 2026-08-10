@@ -278,12 +278,14 @@ PDF stands for "Probability Density Function" and it quantifies probability of e
 that are sampled. It therefore enables error estimation via a process called marginalization.
 
 The median pdf vector is available, which estimates every parameter via 1D marginalization of their PDFs.
-"""
-instance = samples.median_pdf()
 
-print("Median PDF Model Instances: \n")
-print(instance, "\n")
-print(instance.galaxies.source.bulge)
+Because these statistics are computed independently, combining them does not necessarily produce a physically valid
+profile. Requesting a dictionary reports the marginalized parameters without constructing a model instance.
+"""
+parameter_dict = samples.median_pdf(as_dict=True)
+
+print("Median PDF Model Parameters: \n")
+print(parameter_dict, "\n")
 print()
 
 vector = samples.median_pdf(as_instance=False)
@@ -301,22 +303,22 @@ This again uses 1D marginalization, now at an input sigma confidence limit.
 By inputting `sigma=3.0` margnialization find the values spanning 99.7% of 1D PDF. Changing this to `sigma=1.0`
 would give the errors at the 68.3% confidence limit.
 """
-instance_upper_sigma = samples.values_at_upper_sigma(sigma=3.0)
-instance_lower_sigma = samples.values_at_lower_sigma(sigma=3.0)
+parameter_dict_upper_sigma = samples.values_at_upper_sigma(sigma=3.0, as_dict=True)
+parameter_dict_lower_sigma = samples.values_at_lower_sigma(sigma=3.0, as_dict=True)
 
-print("Errors Instances: \n")
-print(instance_upper_sigma.galaxies.source.bulge, "\n")
-print(instance_lower_sigma.galaxies.source.bulge, "\n")
+print("Marginalized Parameter Bounds: \n")
+print(parameter_dict_upper_sigma, "\n")
+print(parameter_dict_lower_sigma, "\n")
 
 """
 They can also be returned at the values of the parameters at their error values.
 """
-instance_upper_values = samples.errors_at_upper_sigma(sigma=3.0)
-instance_lower_values = samples.errors_at_lower_sigma(sigma=3.0)
+parameter_dict_upper_values = samples.errors_at_upper_sigma(sigma=3.0, as_dict=True)
+parameter_dict_lower_values = samples.errors_at_lower_sigma(sigma=3.0, as_dict=True)
 
-print("Errors Instances: \n")
-print(instance_upper_values.galaxies.source.bulge, "\n")
-print(instance_lower_values.galaxies.source.bulge, "\n")
+print("Marginalized Parameter Errors: \n")
+print(parameter_dict_upper_values, "\n")
+print(parameter_dict_lower_values, "\n")
 
 """
 __Sample Instance__
