@@ -453,9 +453,13 @@ For example, what if we want the error on the axis-ratio of the mass model? In o
 PDF of that derived quantity, which we can then marginalize over using the same function we use to marginalize model 
 parameters.
 
-Below, we compute the axis-ratio of every accepted model sampled by the non-linear search and use this determine the PDF 
-of the axis-ratio. When combining the axis-ratio's we weight each value by its `weight`. For Nautilus, a nested sampling 
+Below, we compute the axis-ratio of every accepted model sampled by the non-linear search and use this determine the PDF
+of the axis-ratio. When combining the axis-ratio's we weight each value by its `weight`. For Nautilus, a nested sampling
 algorithm, the weight of every sample is different and thus must be included.
+
+Older stored results can contain points that newer model validation rejects. The
+`valid_sample_instance_pairs` method skips only points rejected via PyAutoFit's `FitException` contract, while letting
+programming errors propagate. Pairing each surviving sample with its instance also keeps the weights aligned.
 
 In order to pass these samples to the function `marginalize`, which marginalizes over the PDF of the axis-ratio to 
 compute its error, we also pass the weight list of the samples.
@@ -463,11 +467,11 @@ compute its error, we also pass the weight list of the samples.
 Note again how because when creating the model above using the input names `lens` and `mass` we access the instance
 below using these.
 """
+sample_instance_pairs = samples.valid_sample_instance_pairs(ignore_assertions=True)
+
 axis_ratio_list = []
 
-for sample in samples.sample_list:
-    instance = sample.instance_for_model(model=samples.model, ignore_assertions=True)
-
+for sample, instance in sample_instance_pairs:
     ell_comps = instance.galaxies.lens.mass.ell_comps
 
     axis_ratio = al.convert.axis_ratio_from(ell_comps=ell_comps)
@@ -475,7 +479,9 @@ for sample in samples.sample_list:
     axis_ratio_list.append(axis_ratio)
 
 median_axis_ratio, lower_axis_ratio, upper_axis_ratio = af.marginalize(
-    parameter_list=axis_ratio_list, sigma=3.0, weight_list=samples.weight_list
+    parameter_list=axis_ratio_list,
+    sigma=3.0,
+    weight_list=[sample.weight for sample, _ in sample_instance_pairs],
 )
 
 print(f"axis_ratio = {median_axis_ratio} ({upper_axis_ratio} {lower_axis_ratio}")
