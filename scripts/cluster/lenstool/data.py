@@ -73,6 +73,8 @@ mass model but not the source redshifts, which keeps the comparison to the publi
 parameters clean (and the multi-plane solve tractable).
 """
 
+# from autolens import setup_notebook; setup_notebook()
+
 import re
 import urllib.request
 from pathlib import Path

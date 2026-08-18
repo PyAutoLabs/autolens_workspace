@@ -61,6 +61,8 @@ __Start Here Notebook__
 If any code in this script is unclear, refer to the `imaging/simulator.ipynb` notebook.
 """
 
+# from autolens import setup_notebook; setup_notebook()
+
 from pathlib import Path
 
 import numpy as np

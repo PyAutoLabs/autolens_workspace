@@ -1,3 +1,5 @@
+# from autolens import setup_notebook; setup_notebook()
+
 import numpy as np
 import autolens as al
 import autogalaxy as ag

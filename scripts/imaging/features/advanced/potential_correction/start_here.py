@@ -53,6 +53,8 @@ __Related Examples__
   space, via the sparse-operator (w-tilde) route.
 """
 
+# from autolens import setup_notebook; setup_notebook()
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

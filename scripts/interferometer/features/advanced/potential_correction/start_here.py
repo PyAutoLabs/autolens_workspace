@@ -33,6 +33,8 @@ __Prerequisites__
 - `interferometer/start_here.ipynb` — interferometer dataset basics.
 """
 
+# from autolens import setup_notebook; setup_notebook()
+
 # %matplotlib inline
 # from pyprojroot import here
 # workspace_path = str(here())

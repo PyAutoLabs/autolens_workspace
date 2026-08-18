@@ -86,6 +86,8 @@ channel-averaging simpler because different SPWs can have different numbers
 of channels.
 """
 
+# from autolens import setup_notebook; setup_notebook()
+
 # CASA:
 # split(
 #     vis="my_obs.ms.split.cal",
