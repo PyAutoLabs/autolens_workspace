@@ -56,6 +56,8 @@ parameter the search would sample; a bare number is **fixed**. A member's ``sigm
 ``MultiplePrior`` is *tied* to a shared free parameter, not free in its own right.
 """
 
+# from autolens import setup_notebook; setup_notebook()
+
 import numpy as np
 
 import autofit as af

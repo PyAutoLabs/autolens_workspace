@@ -78,6 +78,8 @@ redshifts held at their published values). ``PYAUTO_TEST_MODE=2`` exercises the 
 without running the sampler.
 """
 
+# from autolens import setup_notebook; setup_notebook()
+
 from pathlib import Path
 
 import numpy as np

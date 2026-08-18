@@ -42,3 +42,5 @@ the pre-existing 100x100 data shape. Results guides must produce real
 
 ENV: full_datasets real_search
 """
+
+# from autolens import setup_notebook; setup_notebook()

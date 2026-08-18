@@ -59,6 +59,8 @@ Only the scaling tier is covered here (main lenses are modelled directly in Lens
 the other cluster scripts).
 """
 
+# from autolens import setup_notebook; setup_notebook()
+
 import numpy as np
 
 import autofit as af

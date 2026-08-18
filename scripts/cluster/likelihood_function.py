@@ -82,6 +82,8 @@ modelling fast — ``scripts/guides/using_jax.py`` shows a likelihood function J
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
+# from autolens import setup_notebook; setup_notebook()
+
 import subprocess
 import sys
 from pathlib import Path

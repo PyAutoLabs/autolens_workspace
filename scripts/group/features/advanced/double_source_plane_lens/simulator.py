@@ -38,6 +38,8 @@ If any code in this script is unclear, refer to:
    DSPL simulator.
 """
 
+# from autolens import setup_notebook; setup_notebook()
+
 from pathlib import Path
 import autolens as al
 import autolens.plot as aplt

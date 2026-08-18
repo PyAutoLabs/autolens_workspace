@@ -47,6 +47,8 @@ __What changes, at a glance__
     luminosity        input magnitude               computed from the fitted MGE light
 """
 
+# from autolens import setup_notebook; setup_notebook()
+
 import numpy as np
 
 import autofit as af

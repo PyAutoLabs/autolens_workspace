@@ -18,6 +18,8 @@ than running to convergence. This produces a shallow but valid posterior
 fast enough to fit inside the per-script CI timeout.
 """
 
+# from autolens import setup_notebook; setup_notebook()
+
 import shutil
 import sys
 from pathlib import Path

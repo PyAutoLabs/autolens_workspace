@@ -297,6 +297,8 @@ The code below builds a toy under- and over-predicting fit so the policies are v
 using a mock solver so it runs in seconds.
 """
 
+# from autolens import setup_notebook; setup_notebook()
+
 import numpy as np
 
 import autolens as al
