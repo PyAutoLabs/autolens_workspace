@@ -45,8 +45,7 @@ PyAutoLens runs multi-wavelength model-fits on JAX by default. The
 per-band `al.AnalysisImaging(dataset=dataset, use_jax=True)` instances
 below auto-enable JAX, and the `af.FactorGraphModel(*analysis_factor_list,
 use_jax=True)` further down stitches them together with JAX-aware
-broadcasting. If you installed `autolens[jax]`, expect 1-10 minutes per
-band on GPU vs hours on pure NumPy.
+broadcasting. Expect 1-10 minutes per band on GPU vs hours on pure NumPy.
 
 For the broader JAX principles, see the top-level
 `autolens_workspace/start_here.py` `__JAX__` section. Per-band

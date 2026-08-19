@@ -36,8 +36,8 @@ __Contents__
 
 __JAX__
 
-PyAutoLens runs imaging model-fits on JAX by default. If you installed
-`autolens[jax]`, the `al.AnalysisImaging(dataset=dataset)` line below
+PyAutoLens runs imaging model-fits on JAX by default (JAX installs with
+`autolens` itself) — the `al.AnalysisImaging(dataset=dataset)` line below
 auto-enables `use_jax=True`; expect 10-30 minutes on CPU, 1-10 minutes on
 GPU, vs 1-2 hours on pure NumPy for a typical lens. If you do not have a
 GPU locally, Google Colab provides free GPUs.

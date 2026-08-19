@@ -66,8 +66,8 @@ __Contents__
 
 __JAX__
 
-PyAutoLens runs multi-galaxy model-fits on JAX by default — `al.AnalysisImaging` auto-enables `use_jax=True` if
-you installed `autolens[jax]`. The multi-galaxy deflection sum vectorises cleanly, so fits benefit substantially
+PyAutoLens runs multi-galaxy model-fits on JAX by default — `al.AnalysisImaging` auto-enables `use_jax=True`
+(JAX installs with `autolens` itself). The multi-galaxy deflection sum vectorises cleanly, so fits benefit substantially
 from GPU acceleration. Expect ~10-20 minutes on a GPU for this example.
 
 For the broader JAX principles, see the top-level `autolens_workspace/start_here.py` `__JAX__` section.

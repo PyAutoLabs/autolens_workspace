@@ -46,9 +46,9 @@ __Contents__
 
 __JAX__
 
-PyAutoLens runs point-source model-fits on JAX by default. `AnalysisPoint`
-auto-enables `use_jax=True` if you installed `autolens[jax]`; the search
-driver wraps the likelihood in `jax.vmap(jax.jit(...))`.
+PyAutoLens runs point-source model-fits on JAX by default (JAX installs
+with `autolens` itself). `AnalysisPoint` auto-enables `use_jax=True`; the
+search driver wraps the likelihood in `jax.vmap(jax.jit(...))`.
 
 For the broader JAX principles see `autolens_workspace/start_here.py`
 `__JAX__`. For the most user-impactful piece — the `PointSolver(use_jax=True)`

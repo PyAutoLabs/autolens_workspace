@@ -33,8 +33,8 @@ __Contents__
 
 __JAX__
 
-PyAutoLens runs imaging model-fits on JAX by default. If you installed
-`autolens[jax]`, the `al.AnalysisImaging(dataset=dataset)` line below
+PyAutoLens runs imaging model-fits on JAX by default (JAX installs with
+`autolens` itself) — the `al.AnalysisImaging(dataset=dataset)` line below
 auto-enables `use_jax=True`. JAX is what makes the gradient-based search
 used below possible at all — it supplies the derivatives of the likelihood
 and evaluates all of the search's parallel starts in one batched call. If

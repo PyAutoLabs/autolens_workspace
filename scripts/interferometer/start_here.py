@@ -31,8 +31,8 @@ __Contents__
 
 __JAX__
 
-PyAutoLens runs interferometer model-fits on JAX by default. If you
-installed `autolens[jax]`, `al.AnalysisInterferometer(dataset=dataset)`
+PyAutoLens runs interferometer model-fits on JAX by default (JAX installs
+with `autolens` itself) — `al.AnalysisInterferometer(dataset=dataset)`
 below auto-enables `use_jax=True`. Use `TransformerDFT` (the default in
 this script) under JAX — `TransformerNUFFT` (pynufft) is faster on large
 UV sets but is not JAX-traceable; the `nufftax` replacement (see the

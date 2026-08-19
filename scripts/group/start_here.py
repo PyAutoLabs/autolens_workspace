@@ -49,7 +49,7 @@ __Contents__
 __JAX__
 
 PyAutoLens runs group-scale model-fits on JAX by default — `al.AnalysisImaging`
-auto-enables `use_jax=True` if you installed `autolens[jax]`. Group fits
+auto-enables `use_jax=True` (JAX installs with `autolens` itself). Group fits
 benefit substantially from GPU acceleration (the multi-galaxy deflection
 sum is the dominant cost). Expect 5-30 minutes on GPU vs hours on pure
 NumPy.

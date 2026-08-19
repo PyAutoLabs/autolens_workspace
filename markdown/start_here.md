@@ -320,10 +320,9 @@ __JAX__
 array library with GPU support and just-in-time compilation). JAX makes
 lens modeling 10-100x faster on large grids — sometimes more on GPU.
 
-You do not have to do anything to use it. If you installed `autolens` with
-the JAX extra (`pip install autolens[jax]` on Python 3.11+), the analysis
-objects you'll meet in the `__Lens Modeling__` section below use JAX
-automatically. The first time a model-fit starts you'll see a one-time log
+You do not have to do anything to use it. JAX installs with `autolens` by
+default (`pip install autolens`), and the analysis objects you'll meet in
+the `__Lens Modeling__` section below use JAX automatically. The first time a model-fit starts you'll see a one-time log
 line like `JAX: Applying vmap and jit to likelihood function -- may take a
 few seconds.` — that's JAX compiling the likelihood function, after which
 every evaluation re-uses the compiled code. If JAX is not installed, the
