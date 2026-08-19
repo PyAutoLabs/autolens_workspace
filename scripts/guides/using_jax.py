@@ -6,8 +6,8 @@ Using JAX
 just-in-time compilation). JAX makes lens modeling 10-100x faster on large grids — sometimes more on GPU — so the
 library is built to use it automatically wherever it helps.
 
-The `start_here.py` introduction covers the one thing every user needs to know: install the JAX extra
-(`pip install autolens[jax]` on Python 3.11+) and lens modeling uses JAX automatically. This guide covers the
+The `start_here.py` introduction covers the one thing every user needs to know: JAX installs with
+`autolens` by default (`pip install autolens`) and lens modeling uses it automatically. This guide covers the
 technical detail behind that, and the situations where you interact with JAX directly.
 
 Unlike most guides, the JAX recipes below are **executable code cells this script runs** — they are verified
