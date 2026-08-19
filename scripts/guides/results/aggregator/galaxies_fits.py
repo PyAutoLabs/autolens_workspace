@@ -174,11 +174,13 @@ __Refitting__
 Using the API introduced in the first tutorial, we can also refit the data locally. 
 
 This allows us to inspect how the tracer changes for models with similar log likelihoods. We create and plot
-the tracer of the tenth-last accepted model by Nautilus.
+the tracer of the tenth-last accepted model by Nautilus (clamped to the oldest stored sample when fewer are
+available).
 """
 samples = result.samples
 
-instance = samples.from_sample_index(sample_index=-10)
+sample_index = max(-10, -len(samples.parameter_lists))
+instance = samples.from_sample_index(sample_index=sample_index)
 
 # Input to FitImaging to solve for linear light profile intensities, see `start_here.py` for details.
 tracer = al.Tracer(galaxies=instance.galaxies)
@@ -236,11 +238,13 @@ __Refitting__
 Using the API introduced in the first tutorial, we can also refit the data locally. 
 
 This allows us to inspect how the fit changes for models with similar log likelihoods. Below, we refit and plot
-the fit of the tenth-last accepted model by Nautilus.
+the fit of the tenth-last accepted model by Nautilus (clamped to the oldest stored sample when fewer are
+available).
 """
 samples = result.samples
 
-instance = samples.from_sample_index(sample_index=-10)
+sample_index = max(-10, -len(samples.parameter_lists))
+instance = samples.from_sample_index(sample_index=sample_index)
 
 tracer = al.Tracer(galaxies=instance.galaxies)
 

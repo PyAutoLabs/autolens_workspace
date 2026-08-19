@@ -196,8 +196,8 @@ The parameters are stored as a list of lists, where:
 """
 print("All parameters of the very first sample")
 print(samples.parameter_lists[0])
-print("The fourth parameter of the tenth sample")
-print(samples.parameter_lists[9][3])
+print("The fourth parameter of the final sample")
+print(samples.parameter_lists[-1][3])
 
 """
 __Figures of Merit__
@@ -213,13 +213,13 @@ The `Samples` class contains the log likelihood, log prior, log posterior and we
 - The `weight` gives information on how samples are combined to estimate the posterior, which depends on type of search
   used (for `Nautilus` they are all non-zero values which sum to 1).
 
-Lets inspect these values for the tenth sample.
+Lets inspect these values for the final sample.
 """
-print("log(likelihood), log(prior), log(posterior) and weight of the tenth sample.")
-print(samples.log_likelihood_list[9])
-print(samples.log_prior_list[9])
-print(samples.log_posterior_list[9])
-print(samples.weight_list[9])
+print("log(likelihood), log(prior), log(posterior) and weight of the final sample.")
+print(samples.log_likelihood_list[-1])
+print(samples.log_prior_list[-1])
+print(samples.log_posterior_list[-1])
+print(samples.weight_list[-1])
 
 """
 __Instances__
