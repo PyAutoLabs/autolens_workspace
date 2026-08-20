@@ -245,7 +245,7 @@ print(fit_figure_of_merit)
 
 aplt.subplot_fit_imaging(fit=fit)
 
-"""
+r"""
 __Likelihood Function__
 
 The likelihood function for linear light profiles includes the same terms as the standard parametric case:

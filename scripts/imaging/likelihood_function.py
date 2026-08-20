@@ -1,4 +1,4 @@
-"""
+r"""
 __Log Likelihood Function: Inversion (Parametric)__
 
 This script provides a step-by-step guide of the `log_likelihood_function` which is used to fit `Imaging` data with
@@ -176,7 +176,7 @@ print(
     f"(y,x) coordinates of first ten unmasked image-pixels {masked_dataset.grid[0:9]}"
 )
 
-"""
+r"""
 To perform lensing calculations we convert this 2D (y,x) grid of coordinates to elliptical coordinates:
 
  $\eta = \sqrt{(x - x_c)^2 + (y - y_c)^2/q^2}$
@@ -211,7 +211,7 @@ print(
     f"transformed coordinates of first ten unmasked image-pixels {transformed_grid[0:9]}"
 )
 
-"""
+r"""
 Using these transformed (y',x') values we compute the elliptical coordinates $\eta = \sqrt{(x')^2 + (y')^2/q^2}$
 """
 elliptical_radii = profile.elliptical_radii_grid_from(grid=transformed_grid)
@@ -220,7 +220,7 @@ print(
     f"elliptical coordinates of first ten unmasked image-pixels {elliptical_radii[0:9]}"
 )
 
-"""
+r"""
 __Lens Galaxy Light (Setup)__
 
 To perform a likelihood evaluation we now compose our lens model.
@@ -260,7 +260,7 @@ image_2d_bulge = bulge.image_2d_from(grid=masked_dataset.grid)
 
 aplt.plot_array(array=bulge.image_2d_from(grid=masked_dataset.grid), title="Image")
 
-"""
+r"""
 __Lens Galaxy Mass__
 
 We next define the mass profiles which represents the lens galaxy's mass, which will be used to ray-trace the 
@@ -307,7 +307,7 @@ aplt.plot_array(
     array=mass.convergence_2d_from(grid=masked_dataset.grid), title="Convergence"
 )
 
-"""
+r"""
 From each mass profile we can compute its deflection angles, which describe how due to gravitational lensing
 image-pixels are ray-traced to the source plane.
 
@@ -374,7 +374,7 @@ actual mask whose light blurs into the image:
 lens_blurring_image_2d = lens_galaxy.image_2d_from(grid=masked_dataset.grids.blurring)
 
 
-"""
+r"""
 __Ray Tracing__
 
 To perform lensing calculations we ray-trace every 2d (y,x) coordinate $\theta$ from the image-plane to its (y,x) 
@@ -444,7 +444,7 @@ convolved_image_2d = masked_dataset.psf.convolved_image_from(
 
 aplt.plot_array(array=convolved_image_2d, title="")
 
-"""
+r"""
 __Likelihood Function__
 
 We now quantify the goodness-of-fit of our lens and source model.

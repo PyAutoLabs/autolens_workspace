@@ -1,4 +1,4 @@
-"""
+r"""
 Feature: Potential Correction (Gravitational Imaging)
 =====================================================
 
@@ -85,7 +85,7 @@ uv_wavelengths = synthesis_uv_from(
 )
 print(f"{uv_wavelengths.shape[0]} visibilities")
 
-"""
+r"""
 __Simulate__
 
 An `Isothermal` lens whose true mass also contains a $10^{10} M_\odot$ NFW subhalo on the Einstein ring, and a
@@ -161,7 +161,7 @@ source, isolating the technique itself. The source enters the correction operato
 lens_smooth = al.Galaxy(redshift=0.2, mass=lens_true.mass)
 source_start = al.pc.AnalyticSrcFactory(source_galaxy=source_true)
 
-"""
+r"""
 __Source Pixelization + Regime Gate__
 
 The source is reconstructed on a k-nearest-neighbor mesh distributed via an `Overlay` image-mesh. Before

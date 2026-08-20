@@ -1,4 +1,4 @@
-"""
+r"""
 __Log Likelihood Function: Potential Correction (Interferometer)__
 
 This script provides a step-by-step guide of the **PyAutoLens** visibility-space potential-correction
@@ -70,7 +70,7 @@ import autoarray as aa
 import autolens as al
 import autolens.plot as aplt
 
-"""
+r"""
 __Dataset__
 
 We simulate the dataset in-memory (seeded, so this script is fully reproducible): random uv coverage, an
@@ -138,7 +138,7 @@ print(
     f"visibilities: {uv_wavelengths.shape[0]}, real-space mask pixels: n_full = {n_full}"
 )
 
-"""
+r"""
 __Smooth Starting Model__
 
 Potential corrections perturb a smooth starting model — in a real analysis, the maximum-likelihood result of a
@@ -178,7 +178,7 @@ src_regularization_matrix = np.asarray(src_fit.inversion.regularization_matrix)
 n_src = src_regularization_matrix.shape[0]
 print(f"f shape = {src_mapping_matrix.shape}, n_src = {n_src}")
 
-"""
+r"""
 __Dpsi Mesh__
 
 The corrections are only constrained where the lensed arcs are, so their mesh is restricted to an arc-tracing
@@ -202,7 +202,7 @@ n_sub = int(np.count_nonzero(~pair.mask_data))
 n_dpsi = int(np.count_nonzero(~pair.mask_dpsi))
 print(f"arc pixels: n_sub = {n_sub}, dpsi mesh pixels: n_dpsi = {n_dpsi}")
 
-"""
+r"""
 __Correction Response__
 
 As in the imaging walkthrough, a correction $\delta\psi$ perturbs the observed image via the source's brightness
@@ -240,7 +240,7 @@ G = np.zeros((n_full, n_dpsi))
 G[rows_in_full] = G_sub
 print(f"G shape = {G.shape}")
 
-"""
+r"""
 __Joint Response__
 
 The joint real-space response stacks the two blocks, $A = [\, f \; | \; G \,]$, alongside the block-diagonal
@@ -288,7 +288,7 @@ curvature_matrix = M.T @ (M * stacked_inv_variance[:, None])
 data_vector = M.T @ (stacked_inv_variance * stacked_data)
 print(f"dense route: M shape = {M.shape}, curvature shape = {curvature_matrix.shape}")
 
-"""
+r"""
 __Sparse (w-tilde) Route__
 
 The production route computes the identical $F$ and $D$ without ever forming $T(A)$ (Powell et al. 2021's
@@ -308,7 +308,7 @@ print(
     f"{np.allclose(data_vector_sparse, data_vector, rtol=1e-6)}"
 )
 
-"""
+r"""
 The sparse curvature is assembled from the COO triplets of $A$ (the machinery `al.pc.FitDpsiSrcInterferometer`
 uses internally); rather than repeat that plumbing here, we take the fit's sparse-route curvature below and verify
 it against our dense $F$ at the end. For this walkthrough we continue with the dense-route matrices, which we have
@@ -327,7 +327,7 @@ solution = np.linalg.solve(curvature_reg_matrix, data_vector)
 source_solution = solution[:n_src]
 dpsi_solution = solution[n_src:]
 
-"""
+r"""
 __Dkappa Map__
 
 The corrections' physical meaning is clearest as a convergence correction,
@@ -354,7 +354,7 @@ plt.tight_layout()
 plt.show()
 plt.close()
 
-"""
+r"""
 __Evidence Terms__
 
 The Bayesian evidence of the joint inversion has five terms (Suyu et al. 2006 eq. 19; Cao et al. 2025), with the

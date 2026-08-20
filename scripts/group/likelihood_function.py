@@ -154,7 +154,7 @@ print(
     f"(y,x) coordinates of first ten unmasked image-pixels {masked_dataset.grid[0:9]}"
 )
 
-"""
+r"""
 __Lens Galaxy Light (Setup)__
 
 To perform a likelihood evaluation we now compose our lens model.
@@ -388,7 +388,7 @@ convolved_image_2d = masked_dataset.psf.convolved_image_from(
 
 aplt.plot_array(array=convolved_image_2d, title="Convolved Image")
 
-"""
+r"""
 __Likelihood Function__
 
 We now quantify the goodness-of-fit of our group-scale lens model.

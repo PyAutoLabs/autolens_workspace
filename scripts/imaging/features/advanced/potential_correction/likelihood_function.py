@@ -1,4 +1,4 @@
-"""
+r"""
 __Log Likelihood Function: Potential Correction (Gravitational Imaging)__
 
 This script provides a step-by-step guide of the **PyAutoLens** potential-correction `log_likelihood_function`
@@ -70,7 +70,7 @@ from scipy.sparse import block_diag
 import autolens as al
 import autolens.plot as aplt
 
-"""
+r"""
 __Dataset__
 
 We simulate the dataset in-memory (seeded, so this script is fully reproducible): an `IsothermalSph` lens whose
@@ -104,7 +104,7 @@ dataset = simulator.via_tracer_from(
     tracer=al.Tracer(galaxies=[lens_true, source_true]), grid=grid
 )
 
-"""
+r"""
 __Arc Mask__
 
 The corrections respond to the data only through the source's brightness gradients, which vanish away from the
@@ -124,7 +124,7 @@ masked_imaging = dataset.apply_mask(mask=mask)
 n_data = int(np.count_nonzero(~mask_array))
 print(f"unmasked data pixels: n_data = {n_data}")
 
-"""
+r"""
 __Smooth Starting Model__
 
 Potential corrections perturb a smooth starting model — in a real analysis, the maximum-likelihood result of a
@@ -136,7 +136,7 @@ gradients $(\partial S / \partial y, \partial S / \partial x)$ at arbitrary sour
 lens_smooth = al.Galaxy(redshift=0.2, mass=lens_true.mass)
 source_start = al.pc.AnalyticSrcFactory(source_galaxy=source_true)
 
-"""
+r"""
 __Dpsi Mesh__
 
 The corrections are defined on a rectangular mesh a factor coarser than the data grid (here factor 2).
@@ -160,7 +160,7 @@ print(
     f"itp_mat shape = {pair.itp_mat.shape}, row sums all 1: {np.allclose(pair.itp_mat.sum(axis=1), 1.0)}"
 )
 
-"""
+r"""
 __Dpsi Gradient Operator__
 
 The correction $\delta\psi$ deflects rays by its gradient: $\delta\alpha = \nabla \delta\psi$. The sparse operator
@@ -175,7 +175,7 @@ dpsi_gradient_matrix = al.pc.util.dpsi_gradient_matrix_from(
 )
 print(f"D_psi shape = {dpsi_gradient_matrix.shape}")
 
-"""
+r"""
 __Source Gradients__
 
 A small extra deflection $\delta\alpha$ at an image pixel re-samples the source at a position shifted
@@ -207,7 +207,7 @@ psf_matrix = al.pc.util.psf_matrix_from(
 )
 print(f"B shape = {psf_matrix.shape}")
 
-"""
+r"""
 __Dpsi Mapping Matrix__
 
 Combining the three operators gives the linear response of the observed image to the mesh corrections
@@ -222,7 +222,7 @@ dpsi_mapping_matrix = np.asarray(
 )
 print(f"dpsi mapping matrix shape = {dpsi_mapping_matrix.shape}")
 
-"""
+r"""
 __Source Inversion Blocks__
 
 The joint inversion reconstructs the source simultaneously. Its source blocks come from the standard pixelized
@@ -248,7 +248,7 @@ src_regularization_matrix = np.asarray(src_fit.inversion.regularization_matrix)
 n_src = src_regularization_matrix.shape[0]
 print(f"F_src shape = {src_mapping_matrix.shape}, n_src = {n_src}")
 
-"""
+r"""
 __Joint System__
 
 The joint linear system stacks the two blocks:
@@ -274,7 +274,7 @@ regularization_matrix = np.asarray(
 )
 print(f"joint mapping matrix shape = {mapping_matrix.shape}")
 
-"""
+r"""
 __Solve__
 
 With diagonal noise covariance $C^{-1} = \rm{diag}(1/\sigma_i^2)$, the maximum-evidence solution of the joint
@@ -298,7 +298,7 @@ source_solution = solution[:n_src]
 dpsi_solution = solution[n_src:]
 model_image = mapping_matrix @ solution
 
-"""
+r"""
 __Dkappa Map__
 
 The corrections' physical meaning is clearest as a convergence correction,
@@ -325,7 +325,7 @@ plt.tight_layout()
 plt.show()
 plt.close()
 
-"""
+r"""
 __Evidence Terms__
 
 The Bayesian evidence of the joint inversion has five terms (Suyu et al. 2006 eq. 19; Cao et al. 2025):

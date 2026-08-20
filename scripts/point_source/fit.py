@@ -186,7 +186,7 @@ multiple images coincide with the centers of the brightest pixels of the lensed 
 
 aplt.plot_array(array=tracer_extended.image_2d_from(grid=grid), title="Image")
 
-"""
+r"""
 __Number of Solutions__
 
 The number of solutions (e.g. the number of image-plane multiple images that map to the source centre) depends
