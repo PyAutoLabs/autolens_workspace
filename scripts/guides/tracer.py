@@ -214,7 +214,7 @@ aplt.plot_array(
     array=tracer.image_2d_from(grid=grid), title="Image of Strong Lens System"
 )
 
-"""
+r"""
 __Log10__
 
 The light and masss distributions of galaxies are closer to a log10 distribution than a linear one. 

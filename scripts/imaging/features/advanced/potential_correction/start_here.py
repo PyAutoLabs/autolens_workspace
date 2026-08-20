@@ -1,4 +1,4 @@
-"""
+r"""
 Potential Correction: Start Here
 ================================
 
@@ -68,7 +68,7 @@ import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
-"""
+r"""
 __Simulate__
 
 We simulate imaging of a strong lens whose mass model is an `Isothermal` plus a $10^{10} \, M_\odot$ NFW dark
@@ -198,7 +198,7 @@ fit = al.pc.FitDpsiSrcImaging(
 
 print(f"joint source + dpsi log evidence = {fit.log_evidence:.4e}")
 
-"""
+r"""
 __Dkappa Map__
 
 The reconstructed corrections live on the coarse dpsi mesh (`fit.best_fit_dpsi`). Their physical meaning is clearest
@@ -224,7 +224,7 @@ al.pc.visualize.show_fit_dpsi_src(
     fit, output=path.join("output", "potential_correction_joint_fit.png")
 )
 
-"""
+r"""
 __Iterative Fit__
 
 The joint fit above linearizes the corrections around the smooth model once. The iterative engine
@@ -261,7 +261,7 @@ print(
     f"{iter_fit.pair_dpsi_data_obj.xgrid_dpsi_1d[peak]:.2f})"
 )
 
-"""
+r"""
 __Evidence Sampling__
 
 In a real analysis the regularization hyper-parameters (the coefficients and scales above) are not known. They are

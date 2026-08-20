@@ -1,4 +1,4 @@
-"""
+r"""
 __Log Likelihood Function: Parametric__
 
 This script provides a step-by-step guide of the `log_likelihood_function` which is used to fit `Interferometer` data
@@ -146,7 +146,7 @@ aplt.plot_grid(grid=dataset.grids.lp, title="")
 
 print(f"(y,x) coordinates of first ten unmasked image-pixels {dataset.grid[0:9]}")
 
-"""
+r"""
 To perform lensing calculations we convert this 2D (y,x) grid of coordinates to elliptical coordinates:
 
  $\eta = \sqrt{(x - x_c)^2 + (y - y_c)^2/q^2}$
@@ -181,7 +181,7 @@ print(
     f"transformed coordinates of first ten unmasked image-pixels {transformed_grid[0:9]}"
 )
 
-"""
+r"""
 Using these transformed (y',x') values we compute the elliptical coordinates $\eta = \sqrt{(x')^2 + (y')^2/q^2}$
 """
 elliptical_radii = profile.elliptical_radii_grid_from(grid=transformed_grid)
@@ -190,7 +190,7 @@ print(
     f"elliptical coordinates of first ten unmasked image-pixels {elliptical_radii[0:9]}"
 )
 
-"""
+r"""
 __Light Profiles (Setup)__
 
 To perform a likelihood evaluation we now compose our lens model.
@@ -233,7 +233,7 @@ image_2d_bulge = bulge.image_2d_from(grid=dataset.grid)
 
 aplt.plot_array(array=bulge.image_2d_from(grid=dataset.grid), title="Image")
 
-"""
+r"""
 __Lens Galaxy Mass__
 
 We next define the mass profiles which represents the lens galaxy's mass, which will be used to ray-trace the 
@@ -278,7 +278,7 @@ shear = al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
 
 aplt.plot_array(array=mass.convergence_2d_from(grid=dataset.grid), title="Convergence")
 
-"""
+r"""
 From each mass profile we can compute its deflection angles, which describe how due to gravitational lensing
 image-pixels are ray-traced to the source plane.
 
@@ -335,7 +335,7 @@ This computes the `lens_image_2d` of each `LightProfile` and adds them together.
 lens_image_2d = lens_galaxy.image_2d_from(grid=dataset.grid)
 
 
-"""
+r"""
 __Ray Tracing__
 
 To perform lensing calculations we ray-trace every 2d (y,x) coordinate $\theta$ from the image-plane to its (y,x) 
@@ -407,7 +407,7 @@ fully understand how this likelihood function works.
 aplt.plot_grid(grid=visibilities.in_grid, title="")
 
 
-"""
+r"""
 __Likelihood Function__
 
 We now quantify the goodness-of-fit of our galaxy model.

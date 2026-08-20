@@ -261,7 +261,7 @@ convolved_image_2d = masked_dataset.psf.convolved_image_from(
 
 aplt.plot_array(array=convolved_image_2d, title="Convolved Image")
 
-"""
+r"""
 __Likelihood Function__
 
 We now quantify the goodness-of-fit of our group-scale lens model.

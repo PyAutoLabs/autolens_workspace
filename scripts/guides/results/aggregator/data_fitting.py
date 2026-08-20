@@ -147,7 +147,7 @@ for fit_list in fit_gen:
 
     aplt.subplot_fit_imaging(fit=fit)
 
-"""
+r"""
 __Visualization Customization__
 
 The benefit of inspecting fits using the aggregator, rather than the files outputs to the hard-disk, is that we can 

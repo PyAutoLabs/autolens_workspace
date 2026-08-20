@@ -197,7 +197,7 @@ The `aplt.plot_array` makes it straight forward to extract and plot an individua
 """
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 
-"""
+r"""
 __Log10__
 
 The light distributions of galaxies are closer to a log10 distribution than a linear one. 

@@ -1,4 +1,4 @@
-"""
+r"""
 __Log Likelihood Function: Pixelization__
 
 This script provides a step-by-step guide of the **PyAutoLens** `log_likelihood_function` which is used to fit
@@ -267,7 +267,7 @@ lens_subtracted_image = masked_dataset.data - convolved_image_2d
 
 aplt.plot_array(array=lens_subtracted_image, title="")
 
-"""
+r"""
 __Ray Tracing__
 
 To perform lensing calculations we ray-trace every 2d (y,x) coordinate $\theta$ from the image-plane to its (y,x) 
@@ -578,7 +578,7 @@ are the first entry of `mapping_matrix` whereas for $f$ they are the second inde
 """
 print(f"Mapping between image pixel 0 and source pixel 2 = {mapping_matrix[0, 2]}")
 
-"""
+r"""
 __Data Vector (D)__
 
 To solve for the source pixel fluxes we now pose the problem as a linear inversion.
@@ -622,7 +622,7 @@ plt.colorbar()
 plt.show()
 plt.close()
 
-"""
+r"""
 __Curvature Matrix (F)__
 
 The `curvature_matrix` $F$ is the second matrix and it has dimensions `(total_source_pixels, total_source_pixels)`.
@@ -672,7 +672,7 @@ array_2d = al.Array2D(
 
 aplt.plot_array(array=array_2d, title="")
 
-"""
+r"""
 The following chi-squared is minimized when we perform the inversion and reconstruct the source:
 
 $\chi^2 = \sum_{\rm  j=1}^{J} \bigg[ \frac{(\sum_{\rm  i=1}^{I} s_{i} f_{ij}) + b_{j} - d_{j}}{\sigma_{j}} \bigg]$
@@ -706,7 +706,7 @@ ill-posed. We need to apply some form of smoothing on the source reconstruction 
 
 aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
 
-"""
+r"""
 __Regularization Matrix (H)__
 
 Regularization adds a linear regularization term $G_{\rm L}$ to the $\chi^2$ we solve for giving us a new merit 
@@ -802,7 +802,7 @@ mapped_reconstructed_operated_data = al.Array2D(
 
 aplt.plot_array(array=mapped_reconstructed_operated_data, title="")
 
-"""
+r"""
 __Likelihood Function__
 
 We now quantify the goodness-of-fit of our lens model and source reconstruction. 
@@ -851,7 +851,7 @@ chi_squared_map = al.Array2D(values=chi_squared_map, mask=mask)
 aplt.plot_array(array=chi_squared_map, title="")
 
 
-"""
+r"""
 __Regularization Term__
 
 The second term, $s^{T} H s$, corresponds to the $\lambda $G_{\rm L}$ regularization term we added to our merit 
@@ -870,7 +870,7 @@ regularization_term = np.matmul(
 
 print(regularization_term)
 
-"""
+r"""
 __Complexity Terms__
 
 Up to this point, it is unclear why we chose a value of `regularization_coefficient=1.0`. 
