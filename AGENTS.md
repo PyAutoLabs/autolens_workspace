@@ -127,11 +127,12 @@ unless you have read the entire current contents of that file** — a whole-file
 header skim silently deletes every section below the header. (This rule exists because of a real
 incident where a header-insert pass instead replaced ~80% of 17 scripts with the header alone.)
 
-A guard tracks this: `.script_sizes.json` records the byte size of every `scripts/**/*.py`. Run
-`scripts/check_sizes.sh` to flag any script that shrank by >50% since the snapshot. If shrinkage is
-intentional, confirm with `ALLOW_SHRINK=1` and refresh via `scripts/check_sizes.sh --update` in the
-same diff. Prefer targeted `Edit` over whole-file `Write`; after a bulk pass, run
-`scripts/check_sizes.sh` before committing.
+A guard tracks this: `scripts/check_sizes.sh` compares every **changed** `scripts/**/*.py`
+against its size at `HEAD` (or an explicit `--base <ref>`) and flags any script that shrank by
+>50%. Git itself is the baseline — there is no snapshot file to refresh. If shrinkage is
+intentional, confirm with `ALLOW_SHRINK=1 scripts/check_sizes.sh`. Prefer targeted `Edit` over
+whole-file `Write`; after a bulk pass, run `scripts/check_sizes.sh` before committing. CI runs
+the same check against the PR merge-base (`script_size_guard.yml`, advisory).
 
 ## Scientific Context
 

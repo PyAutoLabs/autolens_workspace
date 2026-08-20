@@ -1,0 +1,47 @@
+name: Script Size Guard
+
+# Advisory truncation guard: checks every CHANGED scripts/**/*.py against its
+# size at the PR merge-base (pull_request) or the pre-push tip (push to main),
+# via scripts/check_sizes.sh. See AGENTS.md "Bulk-edit safety". Deliberately
+# NOT in PyAutoHeart's required workflows — the guard is advisory.
+
+# One run per commit: PR events carry the CI; pushes only build main
+# (Heart's ws_ci gate reads main-HEAD conclusions). Superseded runs are
+# cancelled on PR refs only — a cancelled main run would read as red CI
+# (cancelled is in Heart's FAILURE_CONCLUSIONS).
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: script_size_guard-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+permissions:
+  contents: read
+
+jobs:
+  size-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # merge-base needs history
+
+      - name: Check changed script sizes
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          EVENT_BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            base="$(git merge-base HEAD "origin/$BASE_REF")"
+          else
+            base="$EVENT_BEFORE"
+            if [ -z "$base" ] \
+              || [ "$base" = "0000000000000000000000000000000000000000" ] \
+              || ! git rev-parse --verify --quiet "$base^{commit}" >/dev/null; then
+              base="HEAD^"
+            fi
+          fi
+          scripts/check_sizes.sh --base "$base"
