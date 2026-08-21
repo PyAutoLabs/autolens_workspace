@@ -15,12 +15,19 @@ mesh and regularization to the source's unlensed properties. It also uses the re
 calculate and pass the multiple image-plane positions of the lensed source to later searches, which resamples
 bad mass models removing demagnified source reconstructions.
 
-This script illustrates using the `RectangularAdaptImage` mesh and `Adapt` regularization
+This script illustrates using the `RectangularBilinearAdaptImage` mesh and `Adapt` regularization
 scheme to adapt the source reconstruction to the source galaxy's morphology (as opposed to the methods used in other
 examplesw hich adapt to the mass model magnification and apply a constant regularization scheme).
 
 This script illustrates the API used for adaptive pixelizations, but does not go into the details of how they
 work. This is described in chapter 3 of the **HowToLens** lectures (tutorials 11 and 12).
+
+The `RectangularBilinear` meshes used here are the default (fast CPU) adaptive rectangular meshes, which warp
+the grid via the empirical rank CDF of the traced points. Their advanced counterparts `RectangularRTUAdaptDensity` /
+`RectangularRTUAdaptImage` use a smooth kernel-density CDF instead — the ray-guided transformed uniform (RTU)
+grid formulation of Enzi et al. (2026), https://arxiv.org/abs/2606.30620, which should be cited when using them.
+The RTU meshes are recommended on GPUs and for gradient-based (JAX) samplers (the Bilinear likelihood has zero
+gradients at the default `over_sample_size_pixelization=1`; set it >= 4 or use RTU).
 
 __Why Chain?__
 
@@ -49,7 +56,7 @@ __Contents__
 - **Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before modeling.
 - **Analysis + Position Likelihood:** We add a penalty term to the likelihood function, which penalizes models where the brightest multiple images of the lensed source galaxy do not trace close to one another in the source plane.
 - **Brief Description:** In this example we update the positions between searches, where the positions correspond to the (y,x) locations of the lensed source's multiple images.
-- **Adaptive Pixelization:** Search 3 uses two adaptive pixelization classes: `RectangularAdaptImage` mesh and `Adapt` regularization, which adapt the source reconstruction to the source galaxy's morphology.
+- **Adaptive Pixelization:** Search 3 uses two adaptive pixelization classes: `RectangularBilinearAdaptImage` mesh and `Adapt` regularization, which adapt the source reconstruction to the source galaxy's morphology.
 - **Adapt Images:** When we create the analysis, we pass it an `adapt_images`, which contains a dictionary mapping each galaxy name to the corresponding lens subtracted image of the source galaxy from the result of a previous search.
 - **SLaM Pipelines:** The API above allows you to write modeling code using adaptive features yourself, but it is recommended you use the Source, Light and Mass (SLaM) pipeline.
 
@@ -231,7 +238,7 @@ search our lens model is:
  
  - The source galaxy's light uses no image-mesh (only used for Delaunay meshes) [0 parameters].
  
- - The source-galaxy's light uses a 20 x 20 `RectangularAdaptDensity` mesh [0 parameters].
+ - The source-galaxy's light uses a 20 x 20 `RectangularBilinearAdaptDensity` mesh [0 parameters].
 
  - This pixelization is regularized using a `Constant` scheme [1 parameter]. 
 
@@ -245,7 +252,7 @@ lens = result_1.model.galaxies.lens
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.RectangularAdaptDensity(shape=mesh_shape),
+    mesh=al.mesh.RectangularBilinearAdaptDensity(shape=mesh_shape),
     regularization=al.reg.Constant,
 )
 
@@ -319,7 +326,7 @@ __Adaptive Pixelization__
 
 Search 3 uses two adaptive pixelization classes that have not been used elsewhere in the workspace:
 
- - `RectangularAdaptImage` mesh: adapts the rectangular source-pixel upsampling to the source's unlensed morphology. This 
+ - `RectangularBilinearAdaptImage` mesh: adapts the rectangular source-pixel upsampling to the source's unlensed morphology. This 
  means that more rectangular pixels will be used where the source is located, even if its far away from the caustic
  and therefore in lower magnification regions.
 
@@ -351,7 +358,7 @@ the second search our lens model is:
  
  - The source galaxy's light uses no image-mesh (only used for Delaunay meshes) [0 parameters].
  
- - The source-galaxy's light uses a 20 x 20 `RectangularAdaptImage` mesh [0 parameters].
+ - The source-galaxy's light uses a 20 x 20 `RectangularBilinearAdaptImage` mesh [0 parameters].
 
  - This pixelization is regularized using a `Adapt` scheme [2 parameter]. 
 
@@ -365,7 +372,7 @@ lens = result_2.instance.galaxies.lens
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.RectangularAdaptImage(shape=mesh_shape),
+    mesh=al.mesh.RectangularBilinearAdaptImage(shape=mesh_shape),
     regularization=al.reg.Adapt,
 )
 

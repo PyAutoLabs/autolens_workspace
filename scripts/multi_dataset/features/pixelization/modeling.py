@@ -182,7 +182,7 @@ lens = af.Model(
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+    mesh=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
     regularization=al.reg.Constant,
 )
 

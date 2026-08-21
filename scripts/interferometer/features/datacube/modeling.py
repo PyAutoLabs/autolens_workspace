@@ -145,8 +145,8 @@ settings = al.Settings(use_positive_only_solver=False)
 __Mesh Shape__
 
 The pixelization mesh shape is fixed before modeling because JAX needs static array shapes. We use a
-14 x 14 ``RectangularAdaptDensity`` mesh — small enough to keep the prototype cheap, large enough to capture the
-emission-line source morphology produced by the simulator. `RectangularAdaptDensity` adapts the source-plane
+14 x 14 ``RectangularRTUAdaptDensity`` mesh — small enough to keep the prototype cheap, large enough to capture the
+emission-line source morphology produced by the simulator. `RectangularRTUAdaptDensity` adapts the source-plane
 pixel density to the lensing magnification map, giving more pixels to the highly-magnified source-plane regions
 where the lensed signal is concentrated.
 """
@@ -157,7 +157,7 @@ mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 __Model__
 
 The lens galaxy is a shared `Isothermal + ExternalShear`, identical across every channel. The source galaxy is
-a `Pixelization` with a `RectangularAdaptDensity` mesh and `Constant` regularization — the inversion runs
+a `Pixelization` with a `RectangularRTUAdaptDensity` mesh and `Constant` regularization — the inversion runs
 independently per channel inside each `AnalysisInterferometer`, giving each channel its own source-plane
 reconstruction without adding any model parameters.
 
@@ -170,7 +170,7 @@ shear = af.Model(al.mp.ExternalShear)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source (pixelization, no free priors):
-mesh = af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape)
+mesh = af.Model(al.mesh.RectangularRTUAdaptDensity, shape=mesh_shape)
 regularization = af.Model(al.reg.Constant)
 pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)

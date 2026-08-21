@@ -17,7 +17,7 @@ signal-to-noise. These datasets are fitted with the following approach:
   to capture changes in the lens light over wavelength, but it does not update the Gaussian parameters (e.g. `centre`,
  `elliptical_comps`, `sigma`) themselves due to the lower resolution of the data.
 
-- The source reconstruction (RectangularAdaptDensity adaptive mesh) is updated using linear algebra to reconstruct
+- The source reconstruction (RectangularBilinearAdaptDensity adaptive mesh) is updated using linear algebra to reconstruct
   the source, but again fixes  the source pixelization parameters themselves.
 
 - Sub-pixel offsets between the datasets are fully modeled as free parameters, because the precision of a lens model
@@ -246,7 +246,7 @@ def source_pix_1(
                 redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    mesh=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+                    mesh=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
                     regularization=al.reg.Adapt,
                 ),
             ),
@@ -290,7 +290,7 @@ def source_pix_2(
                 redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
+                    mesh=af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape),
                     regularization=al.reg.Adapt,
                 ),
             ),
@@ -464,7 +464,7 @@ def source_pix_1_secondary(
                 redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    mesh=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+                    mesh=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
                     regularization=al.reg.Adapt,
                 ),
             ),
@@ -510,7 +510,7 @@ def source_pix_2_secondary(
                 redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
+                    mesh=af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape),
                     regularization=al.reg.Adapt,
                 ),
             ),

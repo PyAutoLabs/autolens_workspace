@@ -196,7 +196,7 @@ extra_galaxy_1 = al.Galaxy(
     ),
 )
 
-mesh = al.mesh.RectangularAdaptDensity(shape=mesh_shape)
+mesh = al.mesh.RectangularBilinearAdaptDensity(shape=mesh_shape)
 regularization = al.reg.Constant(coefficient=1.0)
 
 pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
@@ -284,7 +284,7 @@ extra_galaxies = af.Collection(extra_galaxies_list)
 
 pix = af.Model(
     al.Pixelization,
-    mesh=al.mesh.RectangularAdaptDensity(shape=mesh_shape),
+    mesh=al.mesh.RectangularBilinearAdaptDensity(shape=mesh_shape),
     regularization=al.reg.Constant,
 )
 

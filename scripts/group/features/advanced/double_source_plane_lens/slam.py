@@ -696,7 +696,7 @@ source_pix_result_1_source_0 = source_pix_1_source_0(
     source_lp_result_1=source_lp_result_1,
     source_lp_result_2=source_lp_result_2,
     redshift_source_1=redshift_source_1,
-    mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+    mesh_init=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.Adapt,
 )
 
@@ -705,7 +705,7 @@ source_pix_result_1_source_1 = source_pix_1_source_1(
     dataset=dataset,
     source_lp_result_2=source_lp_result_2,
     source_pix_result_1_source_0=source_pix_result_1_source_0,
-    mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+    mesh_init=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.Adapt,
 )
 
@@ -715,6 +715,6 @@ source_pix_result_2 = source_pix_2(
     source_lp_result_2=source_lp_result_2,
     source_pix_result_1_source_0=source_pix_result_1_source_0,
     source_pix_result_1_source_1=source_pix_result_1_source_1,
-    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
+    mesh=af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape),
     regularization=al.reg.Adapt,
 )

@@ -26,10 +26,10 @@ __Contents__
 
 __Adaptive Features__
 
-Two adaptive classes are used, replacing the `RectangularAdaptDensity` mesh and `Constant` regularization of
+Two adaptive classes are used, replacing the `RectangularBilinearAdaptDensity` mesh and `Constant` regularization of
 `multi_galaxy/features/pixelization/modeling.py`:
 
- - `RectangularAdaptImage` mesh: places more source pixels where the source's adapt image is brighter, so
+ - `RectangularBilinearAdaptImage` mesh: places more source pixels where the source's adapt image is brighter, so
    resolution follows the source's light rather than the magnification pattern.
 
  - `Adapt` regularization: varies the smoothing strength across the source, regularizing bright regions less
@@ -241,7 +241,7 @@ for i, _ in enumerate(main_lens_centres):
 
 pixelization_2 = af.Model(
     al.Pixelization,
-    mesh=al.mesh.RectangularAdaptDensity(shape=mesh_shape),
+    mesh=al.mesh.RectangularBilinearAdaptDensity(shape=mesh_shape),
     regularization=al.reg.Constant,
 )
 
@@ -301,7 +301,7 @@ for i, _ in enumerate(main_lens_centres):
 
 pixelization_3 = af.Model(
     al.Pixelization,
-    mesh=al.mesh.RectangularAdaptImage(shape=mesh_shape),
+    mesh=al.mesh.RectangularBilinearAdaptImage(shape=mesh_shape),
     regularization=al.reg.Adapt,
 )
 

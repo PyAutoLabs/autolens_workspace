@@ -128,7 +128,7 @@ shear_galaxy = al.Galaxy(
 )
 
 pixelization = al.Pixelization(
-    mesh=al.mesh.RectangularAdaptDensity(shape=(24, 24)),
+    mesh=al.mesh.RectangularBilinearAdaptDensity(shape=(24, 24)),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 

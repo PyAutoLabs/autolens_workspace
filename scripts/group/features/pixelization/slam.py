@@ -285,7 +285,7 @@ This is where the pixelization is first introduced. The source switches from a p
 rectangular adaptive pixelization with `Adapt` regularization.
 
 Key pixelization choices:
- - `al.mesh.RectangularAdaptDensity`: a rectangular mesh whose cell density adapts to the source brightness.
+ - `al.mesh.RectangularBilinearAdaptDensity`: a rectangular mesh whose cell density adapts to the source brightness.
  - Fixed `mesh_shape = (28, 28)` pixels, chosen to match data resolution.
  - `al.reg.Adapt`: adaptive regularization that varies smoothing based on source brightness.
    Rectangular meshes use `Adapt` (not `AdaptSplit`, which is reserved for irregular meshes).
@@ -359,10 +359,10 @@ def source_pix_1(
         else None
     )
 
-    # Source: RectangularAdaptDensity mesh with Adapt regularization.
+    # Source: RectangularBilinearAdaptDensity mesh with Adapt regularization.
     pixelization = af.Model(
         al.Pixelization,
-        mesh=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+        mesh=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
         regularization=af.Model(al.reg.Adapt),
     )
 
@@ -435,7 +435,7 @@ def source_pix_2(
 
     pixelization = af.Model(
         al.Pixelization,
-        mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
+        mesh=af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape),
         regularization=af.Model(al.reg.Adapt),
     )
 

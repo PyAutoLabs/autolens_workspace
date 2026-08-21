@@ -177,9 +177,9 @@ settings = al.Settings(use_positive_only_solver=False)
 __Mesh Shape__
 
 The pixelization mesh shape is fixed before modeling because JAX needs static-shape arrays for its source-plane
-linear algebra. We use a 14 x 14 `RectangularAdaptDensity` mesh — small enough to make the prototype iteration
+linear algebra. We use a 14 x 14 `RectangularRTUAdaptDensity` mesh — small enough to make the prototype iteration
 cheap, large enough to capture the emission-line source morphology produced by the simulator.
-`RectangularAdaptDensity` adapts the source-plane pixel density to the lensing magnification map, giving more
+`RectangularRTUAdaptDensity` adapts the source-plane pixel density to the lensing magnification map, giving more
 pixels to the highly-magnified regions of the source plane where the lensed signal is concentrated.
 """
 mesh_pixels_yx = 14
@@ -193,7 +193,7 @@ The cube model has two ingredients:
  - A shared `Isothermal + ExternalShear` lens. There are 7 free parameters (mass centre, ellipticity components,
    einstein radius, two shear components). The lens does not change with frequency, so a single set of priors is
    used for every channel.
- - A pixelized source: a `RectangularAdaptDensity` mesh with `Constant` regularization (1 free parameter — the
+ - A pixelized source: a `RectangularRTUAdaptDensity` mesh with `Constant` regularization (1 free parameter — the
    regularization coefficient). The pixelization itself has no per-pixel priors; the source-plane fluxes are a
    linear inversion output computed by each channel's `AnalysisInterferometer` at fit time. That is what makes
    each channel an independent linear solve while sharing all of the non-linear parameters.
@@ -206,7 +206,7 @@ shear = af.Model(al.mp.ExternalShear)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source (pixelization, no per-pixel priors):
-mesh = af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape)
+mesh = af.Model(al.mesh.RectangularRTUAdaptDensity, shape=mesh_shape)
 regularization = af.Model(al.reg.Constant)
 pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)

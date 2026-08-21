@@ -45,7 +45,7 @@ __Contents__
 __Simplifications__
 
 This example uses a `RectangularUniform` mesh, where all rectangular source pixels have the same size. Most
-pixelization examples use a `RectangularAdaptDensity` mesh, which adapts the size of source pixels to the
+pixelization examples use a `RectangularBilinearAdaptDensity` mesh, which adapts the size of source pixels to the
 density of points in the source-plane (e.g. the caustic).
 
 The `RectangularUniform` mesh is used here because it is simpler to explain the likelihood function
@@ -471,13 +471,23 @@ __Alternative Meshes__
 We can briefly consider how this step differs for other mesh types. Above, we simply overlaid a uniform rectangular
 grid to define the source pixel centres and then mapped image pixels to these source pixels.
 
-The `RectangularAdaptDensity` mesh pretty much works exactly the same, its just that a calculation (which we don't
+The `RectangularBilinearAdaptDensity` mesh pretty much works exactly the same, its just that a calculation (which we don't
 describe here) works out how to make a grid of rectangular pixels that adapt to the source-plane density and thus
 vary in size. 
 
-There is also a `RectangularAdaptImage` mesh which uses the image of the lensed source to adapt
+There is also a `RectangularBilinearAdaptImage` mesh which uses the image of the lensed source to adapt
 the rectangular pixel sizes. This often puts even smaller pixels in the brightest regions of the source,
 even if it lies offset or away from the caustic.
+
+The adaptive rectangular meshes come in two variants which differ only in the transform used to warp the
+uniform grid: the default `RectangularBilinear` meshes use the empirical rank CDF of the traced points (a sort
+and a cumulative sum — no extra parameters, fastest on CPUs), whereas the advanced `RectangularRTU` meshes use
+a smooth kernel-density CDF — the ray-guided transformed uniform (RTU) grid formulation of Enzi et al. (2026),
+https://arxiv.org/abs/2606.30620, which should be cited when using those meshes (the paper pairs the RTU grid
+with a Gaussian-process source prior, whereas these examples use PyAutoLens's own regularization schemes such
+as `reg.Constant` / `reg.Adapt`). The RTU meshes are recommended on GPUs and are required for gradient-based
+(JAX) samplers at the default `over_sample_size_pixelization=1`, where the Bilinear likelihood is exactly
+piecewise-constant (zero gradients) — gradient users set `over_sample_size_pixelization >= 4` or use RTU.
 
 There is also a `Delaunay` mesh which uses a Delaunay triangulation to define an irregular grid of source pixels.
 This is described fully in the `delaunay` example including a likelihood function guide.

@@ -208,7 +208,7 @@ of the noise in the data and an unrealistically complex and structured source. R
 reconstruction solution by penalizing solutions where neighboring pixels have
 large flux differences.
 """
-mesh = al.mesh.RectangularAdaptDensity(shape=mesh_shape)
+mesh = al.mesh.RectangularBilinearAdaptDensity(shape=mesh_shape)
 regularization = al.reg.Constant(coefficient=1.0)
 
 pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
@@ -460,7 +460,7 @@ print(inversion.log_det_curvature_reg_matrix_term)
 __Simulated Imaging__
 
 We load the source galaxy image from the pixelized inversion of a previous fit, which was performed on an irregular 
-RectangularAdaptDensity.  
+RectangularBilinearAdaptDensity.  
 
 Since irregular meshes cannot be directly used to simulate lensed images, we interpolate the source onto a uniform 
 grid with shape `interpolated_pixelized_shape`. This grid should have a high resolution (e.g., 1000 × 1000) to preserve 

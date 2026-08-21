@@ -3,7 +3,7 @@ __Log Likelihood Function: Datacube__
 
 This script provides a step-by-step guide of the **PyAutoLens** `log_likelihood_function` used to fit a
 **datacube** — a list of N per-channel `Interferometer` objects sharing a single lens model — with a per-channel
-pixelized source reconstruction (specifically a `RectangularAdaptDensity` mesh and `Constant` regularization
+pixelized source reconstruction (specifically a `RectangularRTUAdaptDensity` mesh and `Constant` regularization
 scheme).
 
 This script has the same aims as `interferometer/features/pixelization/likelihood_function.py`:
@@ -45,11 +45,11 @@ script defers to it for almost everything that happens inside a single channel.
 
 __Simplifications__
 
-This example uses a `RectangularAdaptDensity` mesh + `Constant` regularization — the same combination used by
+This example uses a `RectangularRTUAdaptDensity` mesh + `Constant` regularization — the same combination used by
 the rest of the `datacube/` tutorials (`modeling.py`, `start_here.py`). The
 `pixelization/likelihood_function.py` reference uses `RectangularUniform`, which is a thin subclass of
-`RectangularAdaptDensity`; the linear algebra is identical and the construction code is the same. The single
-behaviour difference is that `RectangularAdaptDensity` lets the mesh's pixel density adapt to the source-plane
+`RectangularRTUAdaptDensity`; the linear algebra is identical and the construction code is the same. The single
+behaviour difference is that `RectangularRTUAdaptDensity` lets the mesh's pixel density adapt to the source-plane
 magnification map, which gives slightly better resolution in highly-magnified regions but does not change the
 likelihood-function maths at all.
 
@@ -67,7 +67,7 @@ through the following first:
 __Contents__
 
 - **Comparison:** datacube = N independent pixelization fits + shared lens; cube log-evidence is the sum.
-- **Simplifications:** `RectangularAdaptDensity` mesh, `Constant` regularization.
+- **Simplifications:** `RectangularRTUAdaptDensity` mesh, `Constant` regularization.
 - **Prerequisites:** read `pixelization/likelihood_function.py` first.
 - **Mesh Shape:** identical to the pixelization reference, sized to 14×14 to match `modeling.py`.
 - **Mask:** identical to the pixelization reference, sized to the datacube simulator's 256×256 / 0.1″ grid.
@@ -211,15 +211,15 @@ lens_galaxy = al.Galaxy(redshift=0.5, mass=mass, shear=shear)
 __Source Galaxy Pixelization and Regularization__
 
 Same as `pixelization/likelihood_function.py:__Source Galaxy Pixelization and Regularization__`, with
-`RectangularAdaptDensity` substituted for `RectangularUniform`. The classes share the same construction
-machinery — `RectangularUniform` is a subclass of `RectangularAdaptDensity` — so all of the mesh-grid and
+`RectangularRTUAdaptDensity` substituted for `RectangularUniform`. The classes share the same construction
+machinery — `RectangularUniform` is a subclass of `RectangularRTUAdaptDensity` — so all of the mesh-grid and
 mapper code below is unchanged.
 
 The same source pixelization is used for every channel. Each channel runs its own linear inversion against
 this shared pixelization (which is what gives each channel an independent source-plane reconstruction).
 """
 pixelization = al.Pixelization(
-    mesh=al.mesh.RectangularAdaptDensity(shape=mesh_shape),
+    mesh=al.mesh.RectangularRTUAdaptDensity(shape=mesh_shape),
     regularization=al.reg.Constant(coefficient=1.0),
 )
 source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
@@ -619,7 +619,7 @@ __Lens Modeling__
 To fit a lens model to a datacube, this likelihood function is sampled across many candidate lens-model
 parameters using a non-linear search. For the user-facing modeling story see:
 
- - `modeling.py` — `RectangularAdaptDensity` pixelization fit with `af.Nautilus`, the canonical entry point.
+ - `modeling.py` — `RectangularRTUAdaptDensity` pixelization fit with `af.Nautilus`, the canonical entry point.
  - `start_here.py` — narrative walkthrough wrapping the same fit.
  - `delaunay.py` — Delaunay-pixelized source variant.
  - `modeling_parametric.py` — parametric `Sersic` source variant (per-channel intensity).

@@ -526,7 +526,7 @@ source_pix_result_1 = source_pix_1(
     settings_search=settings_search,
     dataset=dataset_sparse,
     source_lp_result=source_lp_result,
-    mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+    mesh_init=af.Model(al.mesh.RectangularRTUAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.Adapt,
     settings=settings,
 )
@@ -536,7 +536,7 @@ source_pix_result_2 = source_pix_2(
     dataset=dataset_sparse,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
+    mesh=af.Model(al.mesh.RectangularRTUAdaptImage, shape=mesh_shape),
     regularization=al.reg.Adapt,
     settings=settings,
 )

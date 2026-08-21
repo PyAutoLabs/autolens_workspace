@@ -21,8 +21,8 @@ baseline sets in passing.
 
 __Pixelization Choices__
 
- - **Two meshes, not one.** `source_pix[1]` uses `RectangularAdaptDensity`, which places pixels by the traced
-   grid's own density and so needs nothing from an earlier fit. `source_pix[2]` uses `RectangularAdaptImage`,
+ - **Two meshes, not one.** `source_pix[1]` uses `RectangularBilinearAdaptDensity`, which places pixels by the traced
+   grid's own density and so needs nothing from an earlier fit. `source_pix[2]` uses `RectangularBilinearAdaptImage`,
    which places them by the source's adapt image — which `source_pix[1]` has by then produced. The progression is
    the reason there are two SOURCE PIX searches rather than one.
 
@@ -161,7 +161,7 @@ than the parametric SOURCE LP source can.
 
 __Where The Mesh Comes In__
 
-`mesh_init` is passed in rather than hard-coded, and is a `RectangularAdaptDensity` — a mesh that needs no adapt
+`mesh_init` is passed in rather than hard-coded, and is a `RectangularBilinearAdaptDensity` — a mesh that needs no adapt
 image of its own, because it places pixels by the density of the traced grid. That is what makes it usable at
 this point in the pipeline, before a reconstruction exists.
 
@@ -255,7 +255,7 @@ instances.
 
 __Where The Mesh Comes In__
 
-This is the search that uses `RectangularAdaptImage`. It can, because `source_pix[1]` has now produced a
+This is the search that uses `RectangularBilinearAdaptImage`. It can, because `source_pix[1]` has now produced a
 reconstruction of the source, and `galaxy_name_image_dict_via_result_from` below reads its adapt images from that
 result rather than from the parametric SOURCE LP source.
 
@@ -580,8 +580,8 @@ size of every matrix in the inversion and JAX requires those shapes to be static
 a finer source reconstruction and a slower fit.
 
 `mesh_init` and `regularization_init` go to `source_pix[1]`; `mesh` and `regularization` go to `source_pix[2]`.
-The pair differ only in the mesh, for the reason given at the top of this script: `RectangularAdaptDensity` needs
-no reconstruction to exist, `RectangularAdaptImage` does.
+The pair differ only in the mesh, for the reason given at the top of this script: `RectangularBilinearAdaptDensity` needs
+no reconstruction to exist, `RectangularBilinearAdaptImage` does.
 
 To use the Delaunay meshes and their split regularization schemes instead, see
 `multi_galaxy/features/pixelization/delaunay.py`, which builds the image-plane mesh grid those meshes require.
@@ -589,10 +589,10 @@ To use the Delaunay meshes and their split regularization schemes instead, see
 mesh_pixels_yx = 28
 mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
-mesh_init = af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape)
+mesh_init = af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape)
 regularization_init = al.reg.Adapt
 
-mesh = af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape)
+mesh = af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape)
 regularization = al.reg.Adapt
 
 """

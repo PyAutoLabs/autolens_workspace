@@ -389,7 +389,7 @@ This list may include the following objects:
    many light profiles combined in a `Basis` (e.g. `lp_basis.Basis`).
 
  - `Mapper`: The linear object used by a `Pixelization` to reconstruct data via an `Inversion`. The `Mapper`
-   is specific to the `Pixelization`'s `Mesh` (e.g. a `RectangularMapper` is used for a `RectangularAdaptDensity`
+   is specific to the `Pixelization`'s `Mesh` (e.g. a `RectangularMapper` is used for a `RectangularRTUAdaptDensity`
    mesh).
 
 In this example, the model has one linear `SersicCore` for the source galaxy's bulge and no lens-light

@@ -66,7 +66,7 @@ Each pipeline targets a specific part of the lens model:
 
 
 The SLaM workflow is flexible—you can swap MGE light profiles for other light models if desired. Models set up in
-earlier pipelines guide those used in later ones. For example, if the Source Pipeline uses a `RectangularAdaptDensity`
+earlier pipelines guide those used in later ones. For example, if the Source Pipeline uses a `RectangularBilinearAdaptDensity`
 mesh, the same mesh type is carried into later pipelines for consistency.
 
 __Design Choices__
@@ -294,7 +294,7 @@ __SOURCE PIX PIPELINE 2__
 The second search of the SOURCE PIX PIPELINE fits the final pixelized source model using the improved
 adapt images computed from search 1's pixelized source reconstruction.
 
-The `RectangularAdaptImage` mesh and `Adapt` regularization adapt the source pixels and regularization
+The `RectangularBilinearAdaptImage` mesh and `Adapt` regularization adapt the source pixels and regularization
 weights to the source's morphology using the high-quality adapt images from search 1.
 """
 
@@ -608,7 +608,7 @@ source_pix_result_1 = source_pix_1(
     settings_search=settings_search,
     dataset=dataset,
     source_lp_result=source_lp_result,
-    mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+    mesh_init=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.Adapt,
 )
 
@@ -617,7 +617,7 @@ source_pix_result_2 = source_pix_2(
     dataset=dataset,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
+    mesh=af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape),
     regularization=al.reg.Adapt,
 )
 
