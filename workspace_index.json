@@ -4747,7 +4747,7 @@
     ],
     "notebook": "notebooks/interferometer/features/datacube/delaunay.ipynb",
     "path": "scripts/interferometer/features/datacube/delaunay.py",
-    "summary": "This script fits a datacube \u2014 a list of `Interferometer` channels \u2014 with a single shared lens model and a per-channel **Delaunay-pixelized** source reconstruction. It is the Delaunay sibling of `modeling.py`, which fits the same cube with a `RectangularAdaptDensity` mesh.",
+    "summary": "This script fits a datacube \u2014 a list of `Interferometer` channels \u2014 with a single shared lens model and a per-channel **Delaunay-pixelized** source reconstruction. It is the Delaunay sibling of `modeling.py`, which fits the same cube with a `RectangularRTUAdaptDensity` mesh.",
     "title": "Modeling: Datacube \u2014 Delaunay Source"
   },
   {
@@ -4781,7 +4781,7 @@
     ],
     "notebook": "notebooks/interferometer/features/datacube/likelihood_function.ipynb",
     "path": "scripts/interferometer/features/datacube/likelihood_function.py",
-    "summary": "This script provides a step-by-step guide of the **PyAutoLens** `log_likelihood_function` used to fit a **datacube** \u2014 a list of N per-channel `Interferometer` objects sharing a single lens model \u2014 with a per-channel pixelized source reconstruction (specifically a `RectangularAdaptDensity` mesh and `Constant` regularization scheme).",
+    "summary": "This script provides a step-by-step guide of the **PyAutoLens** `log_likelihood_function` used to fit a **datacube** \u2014 a list of N per-channel `Interferometer` objects sharing a single lens model \u2014 with a per-channel pixelized source reconstruction (specifically a `RectangularRTUAdaptDensity` mesh and `Constant` regularization scheme).",
     "title": "__Log Likelihood Function: Datacube__"
   },
   {
