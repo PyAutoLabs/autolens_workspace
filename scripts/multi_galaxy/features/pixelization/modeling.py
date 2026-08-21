@@ -57,7 +57,7 @@ This script fits an `Imaging` dataset of a 'multi-galaxy' strong lens where:
 
  - Each co-dominant deflector's light is an MGE, its mass an `Isothermal` with its centre fixed.
  - The system has a single overall `ExternalShear` at the system centre.
- - The source is reconstructed on a `RectangularAdaptDensity` mesh with `Constant` regularization.
+ - The source is reconstructed on a `RectangularBilinearAdaptDensity` mesh with `Constant` regularization.
 
 __Start Here Notebook__
 
@@ -171,7 +171,7 @@ The standard multi-galaxy composition — one `lens_i` per deflector in a loop, 
 
 A `Pixelization` has two parts:
 
- - a **mesh**, which decides where the source pixels are. `RectangularAdaptDensity` places more pixels where the
+ - a **mesh**, which decides where the source pixels are. `RectangularBilinearAdaptDensity` places more pixels where the
    source is brighter, so resolution follows the signal.
  - a **regularization**, which penalizes unsmooth reconstructions. `Constant` applies one smoothing strength
    everywhere, and its coefficient is the single sampled parameter the source contributes.
@@ -225,7 +225,7 @@ shear_galaxy = af.Model(
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=af.Model(al.mesh.RectangularAdaptDensity, shape=(28, 28)),
+    mesh=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=(28, 28)),
     regularization=af.Model(al.reg.Constant),
 )
 

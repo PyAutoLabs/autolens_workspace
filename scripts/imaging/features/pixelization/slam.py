@@ -17,7 +17,7 @@ The differences from `slam_start_here` are:
 
 (Note: `AdaptSplit` / `ConstantSplit` regularization is only valid on irregular meshes such as `Delaunay` or
 `Voronoi`, where the split-cross scheme is defined — see `features/pixelization/delaunay.py`. This example uses
-a `RectangularAdaptImage` mesh, so it uses `Adapt` regularization, matching `slam_start_here.py`.)
+a `RectangularBilinearAdaptImage` mesh, so it uses `Adapt` regularization, matching `slam_start_here.py`.)
 
 __Contents__
 
@@ -185,7 +185,7 @@ def source_pix_1(
 """
 __SOURCE PIX PIPELINE 2__
 
-Identical to `slam_start_here.py`. It uses a `RectangularAdaptImage` mesh with `Adapt` regularization.
+Identical to `slam_start_here.py`. It uses a `RectangularBilinearAdaptImage` mesh with `Adapt` regularization.
 
 `AdaptSplit` regularization (which splits every source pixel into a cross of four regularization points) is
 reserved for irregular meshes such as `Delaunay` or `Voronoi`, where that split-cross scheme is defined; see
@@ -476,7 +476,7 @@ source_pix_result_1 = source_pix_1(
     settings_search=settings_search,
     dataset=dataset,
     source_lp_result=source_lp_result,
-    mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+    mesh_init=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.Adapt,
 )
 
@@ -485,7 +485,7 @@ source_pix_result_2 = source_pix_2(
     dataset=dataset,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
-    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
+    mesh=af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape),
     regularization=al.reg.Adapt,
 )
 

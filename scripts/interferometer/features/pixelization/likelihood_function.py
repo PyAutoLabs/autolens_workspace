@@ -45,7 +45,7 @@ __Contents__
 __Simplifications__
 
 This example uses a `RectangularUniform` mesh, where all rectangular source pixels have the same size. Most
-pixelization examples use a `RectangularAdaptDensity` mesh, which adapts the size of source pixels to the
+pixelization examples use a `RectangularBilinearAdaptDensity` mesh, which adapts the size of source pixels to the
 density of points in the source-plane (e.g. the caustic).
 
 The `RectangularUniform` mesh is used here because it is simpler to explain the likelihood function
@@ -427,11 +427,11 @@ __Alternative Meshes__
 We can briefly consider how this step differs for other mesh types. Above, we simply overlaid a uniform rectangular
 grid to define the source pixel centres and then mapped image pixels to these source pixels.
 
-The `RectangularAdaptDensity` mesh pretty much works exactly the same, its just that a calculation (which we don't
+The `RectangularBilinearAdaptDensity` mesh pretty much works exactly the same, its just that a calculation (which we don't
 describe here) works out how to make a grid of rectangular pixels that adapt to the source-plane density and thus
 vary in size. 
 
-There is also a `RectangularAdaptImage` mesh which uses the image of the lensed source to adapt
+There is also a `RectangularBilinearAdaptImage` mesh which uses the image of the lensed source to adapt
 the rectangular pixel sizes. This often puts even smaller pixels in the brightest regions of the source,
 even if it lies offset or away from the caustic.
 
@@ -1006,10 +1006,10 @@ There are a number of other inputs features which slightly change the behaviour 
 are described in additional notebooks found in this package. In brief, these describe:
 
  - **Over Sampling**: Oversampling the image grid into a finer grid of sub-pixels, which are all individually 
- paired fractionally with each `RectangularAdaptDensity` pixel.
+ paired fractionally with each `RectangularBilinearAdaptDensity` pixel.
 
- - **Source-plane Interpolation**: Using bilinear interpolation on the `RectangularAdaptDensity` pixelization to pair 
- each image (sub-)pixel to multiple `RectangularAdaptDensity` pixels with interpolation weights.
+ - **Source-plane Interpolation**: Using bilinear interpolation on the `RectangularBilinearAdaptDensity` pixelization to pair 
+ each image (sub-)pixel to multiple `RectangularBilinearAdaptDensity` pixels with interpolation weights.
 
  - **Source Morphology Pixelization Adaption**: Adapting the pixelization such that is congregates source pixels around
  the source's brightest regions, as opposed to the magnification-based pixelization used here.

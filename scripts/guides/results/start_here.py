@@ -631,7 +631,7 @@ The lens model can reconstruct the source galaxy using a pixelization, for examp
 
 The example script `autolens_workspace/*/imaging/features/pixelization/fit.py` describes using pixelization results including:
 
- - Producing source reconstructions using the Voronoi mesh, RectangularAdaptDensity triangulation or whichever mesh is used.
+ - Producing source reconstructions using the Voronoi mesh, RectangularBilinearAdaptDensity triangulation or whichever mesh is used.
  - Inspecting the evidence terms of the fit, which quantify how well the pixelization reconstructs fits the data whilst
    accounting for the complexity of the pixelization.
  - Estimating the magnification of the source galaxy's image using the pixelization.

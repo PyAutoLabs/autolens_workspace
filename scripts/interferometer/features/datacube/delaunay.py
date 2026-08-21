@@ -4,7 +4,7 @@ Modeling: Datacube — Delaunay Source
 
 This script fits a datacube — a list of `Interferometer` channels — with a single shared lens model and a
 per-channel **Delaunay-pixelized** source reconstruction. It is the Delaunay sibling of `modeling.py`, which
-fits the same cube with a `RectangularAdaptDensity` mesh.
+fits the same cube with a `RectangularBilinearAdaptDensity` mesh.
 
 A Delaunay mesh adapts the source-plane reconstruction to the lensed source's morphology more flexibly than a
 rectangular mesh: source pixels are placed via a triangulation of (y, x) image-plane points that are ray-traced

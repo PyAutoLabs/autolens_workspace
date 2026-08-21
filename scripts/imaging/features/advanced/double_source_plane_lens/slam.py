@@ -378,7 +378,7 @@ The final SOURCE PIX PIPELINE search fits both source galaxies simultaneously wi
 Lens mass, shear and `source_0`'s mass are all fixed to the maximum-likelihood instances of the previous
 pixelized searches; only the pixelization regularization parameters are free.
 
-The `RectangularAdaptImage` (or equivalent) mesh uses the high-quality adapt images built up over the earlier
+The `RectangularBilinearAdaptImage` (or equivalent) mesh uses the high-quality adapt images built up over the earlier
 pipeline stages to adapt each source-plane pixelization to its reconstructed morphology.
 """
 
@@ -565,7 +565,7 @@ source_pix_result_1_source_0 = source_pix_1_source_0(
     source_lp_result_1=source_lp_result_1,
     source_lp_result_2=source_lp_result_2,
     redshift_source_1=redshift_source_1,
-    mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+    mesh_init=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.Adapt,
 )
 
@@ -574,7 +574,7 @@ source_pix_result_1_source_1 = source_pix_1_source_1(
     dataset=dataset,
     source_lp_result_2=source_lp_result_2,
     source_pix_result_1_source_0=source_pix_result_1_source_0,
-    mesh_init=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+    mesh_init=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.Adapt,
 )
 
@@ -584,6 +584,6 @@ source_pix_result_2 = source_pix_2(
     source_lp_result_2=source_lp_result_2,
     source_pix_result_1_source_0=source_pix_result_1_source_0,
     source_pix_result_1_source_1=source_pix_result_1_source_1,
-    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
+    mesh=af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape),
     regularization=al.reg.Adapt,
 )

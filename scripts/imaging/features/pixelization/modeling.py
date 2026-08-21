@@ -114,8 +114,25 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's surface-brightness is reconstructed using a `RectangularAdaptDensity` mesh
+ - The source galaxy's surface-brightness is reconstructed using a `RectangularBilinearAdaptDensity` mesh
    and `Constant` regularization scheme.
+
+__Rectangular Mesh Variants__
+
+The `RectangularBilinearAdaptDensity` mesh used here is the default adaptive rectangular mesh: it adapts the
+size of source pixels to the density of traced points via the empirical rank CDF of their coordinates — a
+conceptually simple transform (a sort and a cumulative sum) with no extra parameters, which is why it is also
+the fastest rectangular mesh on CPUs.
+
+An advanced alternative is the `RectangularRTUAdaptDensity` mesh (and its `RectangularRTUAdaptImage`
+counterpart), which instead uses a smooth kernel-density CDF — the ray-guided transformed uniform (RTU) grid
+formulation of Enzi et al. (2026), https://arxiv.org/abs/2606.30620, which should be cited when using those
+meshes. Note the paper pairs the RTU grid with a Gaussian-process source prior, whereas these examples use
+PyAutoLens's own regularization schemes (`reg.Constant` / `reg.Adapt`). The RTU meshes are recommended on GPUs
+(where their kernel evaluation is not a bottleneck) and for gradient-based (JAX) samplers: the Bilinear mesh's
+likelihood is exactly piecewise-constant in the mass model at the default `over_sample_size_pixelization=1`
+(zero gradients), so gradient users must either set `over_sample_size_pixelization >= 4` or use the RTU meshes,
+and interferometer gradient fitting must use the RTU meshes (interferometer datasets have no over-sampling).
 
 __Start Here Notebook__
 
@@ -246,7 +263,7 @@ example fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
 
- - The source-galaxy's light uses a 20 x 20 `RectangularAdaptDensity` mesh [0 parameters].
+ - The source-galaxy's light uses a 20 x 20 `RectangularBilinearAdaptDensity` mesh [0 parameters].
 
  - This pixelization is regularized using a `Constant` scheme which smooths every source pixel equally [1 parameter]. 
 
@@ -266,7 +283,7 @@ shear = af.Model(al.mp.ExternalShear)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
-mesh = af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape)
+mesh = af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape)
 regularization = af.Model(al.reg.Constant)
 
 pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)

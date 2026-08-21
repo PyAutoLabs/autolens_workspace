@@ -153,10 +153,13 @@ regularization parameters, not the mass model — so three settings matter:
   is often found late, and a long likelihood plateau is a regularization mode, not convergence. `batch_size`
   (e.g. 4) bounds the memory of the batched gradient, which pixelized models need.
 
-For the rectangular kernel-CDF meshes one further setting matters: a sharp `bandwidth` (e.g. 0.1) gives the mesh
-narrow gradient support that can stall descent, whereas the default `bandwidth=1.0` searches on a smoother
-likelihood at only a small cost in final fit quality — if a rectangular-mesh search stalls, search at the default
-bandwidth first and only sharpen afterwards.
+Gradient-based searches on rectangular meshes must use the kernel-CDF `RectangularRTUAdaptDensity` /
+`RectangularRTUAdaptImage` meshes (or set `over_sample_size_pixelization >= 4`): the default
+`RectangularBilinearAdaptDensity` mesh's rank-CDF likelihood is exactly piecewise-constant in the mass model at
+the default over-sampling, so its gradients are identically zero. For the RTU meshes one further setting
+matters: a sharp `bandwidth` (e.g. 0.1) gives the mesh narrow gradient support that can stall descent, whereas
+the default `bandwidth=1.0` searches on a smoother likelihood at only a small cost in final fit quality — if a
+rectangular-mesh search stalls, search at the default bandwidth first and only sharpen afterwards.
 
 Because it manages its own broad starting points, this search does not use the start-point API described below. Like
 all optimizers it returns a single best-fit lens model, not a posterior with errors, so `Nautilus` above remains the

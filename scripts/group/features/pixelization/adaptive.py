@@ -28,7 +28,7 @@ __Adaptive Features__
 
 Two key adaptive classes are used:
 
- - `RectangularAdaptImage` mesh: adapts the rectangular source-pixel upsampling to the source's unlensed
+ - `RectangularBilinearAdaptImage` mesh: adapts the rectangular source-pixel upsampling to the source's unlensed
    morphology. More rectangular pixels are placed where the source is located, even in low magnification
    regions.
 
@@ -232,7 +232,7 @@ for i, _ in enumerate(main_lens_centres):
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.RectangularAdaptDensity(shape=mesh_shape),
+    mesh=al.mesh.RectangularBilinearAdaptDensity(shape=mesh_shape),
     regularization=al.reg.Constant,
 )
 
@@ -266,7 +266,7 @@ __Adaptive Pixelization (Search 3)__
 
 Search 3 uses the adaptive pixelization classes:
 
- - `RectangularAdaptImage` mesh: adapts pixel density to the source morphology.
+ - `RectangularBilinearAdaptImage` mesh: adapts pixel density to the source morphology.
  - `Adapt` regularization: adapts smoothing strength to the source brightness.
 
 The lens mass is fixed from search 2 to ensure the adaptation is performed quickly.
@@ -290,7 +290,7 @@ for i, _ in enumerate(main_lens_centres):
 
 pixelization_3 = af.Model(
     al.Pixelization,
-    mesh=al.mesh.RectangularAdaptImage(shape=mesh_shape),
+    mesh=al.mesh.RectangularBilinearAdaptImage(shape=mesh_shape),
     regularization=al.reg.Adapt,
 )
 
@@ -399,7 +399,7 @@ This script demonstrated adaptive pixelization for group-scale lenses.
 Key points:
  - Adaptive pixelizations are set up via search chaining: parametric fit -> constant pixelization -> adaptive.
  - The adapt_data is the lens-subtracted image, so accurate light modeling of ALL group galaxies is essential.
- - `RectangularAdaptImage` concentrates source pixels where the source is brightest.
+ - `RectangularBilinearAdaptImage` concentrates source pixels where the source is brightest.
  - `Adapt` regularization varies smoothing based on source brightness.
  - The SLaM pipeline (see `group/features/pixelization/slam.py`) automates this entire process.
 """

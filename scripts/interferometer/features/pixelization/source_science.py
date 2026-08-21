@@ -96,7 +96,7 @@ lens_galaxy = al.Galaxy(
 mesh_pixels_yx = 28
 mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
-mesh = al.mesh.RectangularAdaptDensity(shape=mesh_shape)
+mesh = al.mesh.RectangularBilinearAdaptDensity(shape=mesh_shape)
 regularization = al.reg.Constant(coefficient=1.0)
 
 pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
@@ -382,7 +382,7 @@ shear = af.Model(al.mp.ExternalShear)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
-mesh = af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape)
+mesh = af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape)
 regularization = af.Model(al.reg.Constant)
 
 pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)
@@ -470,7 +470,7 @@ except FileNotFoundError:
 You can now use standard libraries to performed calculations with the reconstruction on the mesh, again avoiding
 the need to use autolens.
 
-For example, we can create a RectangularAdaptDensity mesh using the scipy.spatial library, which is a triangulation
+For example, we can create a RectangularBilinearAdaptDensity mesh using the scipy.spatial library, which is a triangulation
 of the y and x coordinates of the pixelization mesh. This is useful for visualizing the pixelization
 and performing calculations on the mesh.
 """

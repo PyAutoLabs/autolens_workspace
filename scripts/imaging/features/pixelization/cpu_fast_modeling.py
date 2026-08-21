@@ -177,7 +177,7 @@ pixelized source with a rectangular mesh.
 Below, we perform a similar fit using the **same pixelization**, but this time accelerated on the **CPU**
 using `numba` and sparse operations.
 """
-mesh = al.mesh.RectangularAdaptDensity(shape=mesh_shape)
+mesh = al.mesh.RectangularBilinearAdaptDensity(shape=mesh_shape)
 regularization = al.reg.Constant(coefficient=1.0)
 
 pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
@@ -226,7 +226,7 @@ lens = af.Model(
 
 pixelization = af.Model(
     al.Pixelization,
-    mesh=al.mesh.RectangularAdaptDensity(shape=mesh_shape),
+    mesh=al.mesh.RectangularBilinearAdaptDensity(shape=mesh_shape),
     regularization=al.reg.Constant,
 )
 
@@ -346,7 +346,7 @@ def source_pix_1(
                 redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    mesh=af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape),
+                    mesh=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
                     regularization=al.reg.Adapt,
                 ),
             ),
@@ -391,7 +391,7 @@ def source_pix_2(
                 redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    mesh=af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape),
+                    mesh=af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape),
                     regularization=al.reg.Adapt,
                 ),
             ),

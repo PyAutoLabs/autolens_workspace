@@ -617,10 +617,10 @@ only; `source_1` stays parametric.
 mesh_pixels_yx = 28
 mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
-mesh_init = af.Model(al.mesh.RectangularAdaptDensity, shape=mesh_shape)
+mesh_init = af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape)
 regularization_init = al.reg.Adapt
 
-mesh = af.Model(al.mesh.RectangularAdaptImage, shape=mesh_shape)
+mesh = af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape)
 regularization = al.reg.Adapt
 
 """

@@ -424,7 +424,7 @@ def source_lp_1(
 __SOURCE PIX PIPELINE 1__
 
 Equivalent to `source_pix_1` in `slam_start_here.py`, except a Hilbert image mesh is used
-instead of `RectangularAdaptDensity`, with edge-point padding of 30 pixels. The Hilbert pixel
+instead of `RectangularBilinearAdaptDensity`, with edge-point padding of 30 pixels. The Hilbert pixel
 count is set by `al.model_util.hilbert_pixels_from_pixel_scale`.
 
 Pixelization over-sampling is signal-adaptive: pixels above the S/N threshold use sub-size 4,
