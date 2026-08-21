@@ -4516,6 +4516,49 @@
   },
   {
     "contents": [
+      "Mask",
+      "Dataset",
+      "Dataset Auto-Simulation",
+      "Model",
+      "Search",
+      "Analysis",
+      "Run Time",
+      "Model-Fit",
+      "Result"
+    ],
+    "cross_refs": [
+      "/imaging/features/advanced/operated_light_profile/modeling.py",
+      "fit.py",
+      "interferometer/fit.py",
+      "interferometer/start_here.ipynb"
+    ],
+    "notebook": "notebooks/interferometer/features/advanced/operated_light_profile/modeling.ipynb",
+    "path": "scripts/interferometer/features/advanced/operated_light_profile/modeling.py",
+    "summary": "It is common for galaxies to have point-source emission, for example bright emission right at their centre due to an active galactic nuclei or a compact knot of star formation.",
+    "title": "Modeling Features: Operated Light Profiles (Interferometer)"
+  },
+  {
+    "contents": [
+      "Dataset Paths",
+      "Grid",
+      "uv-wavelengths",
+      "Simulator",
+      "Ray Tracing",
+      "Output",
+      "Visualize",
+      "Tracer json"
+    ],
+    "cross_refs": [
+      "interferometer/features/advanced/operated_light_profile/modeling.py",
+      "interferometer/simulator.ipynb"
+    ],
+    "notebook": "notebooks/interferometer/features/advanced/operated_light_profile/simulator.ipynb",
+    "path": "scripts/interferometer/features/advanced/operated_light_profile/simulator.py",
+    "summary": "It is common for galaxies to have point-source emission, for example bright emission right at their centre due to an active galactic nuclei or a compact knot of star formation.",
+    "title": "Simulator: Light Operated (Interferometer)"
+  },
+  {
+    "contents": [
       "Simplifications",
       "Prerequisites",
       "Dataset",
