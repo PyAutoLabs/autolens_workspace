@@ -108,22 +108,23 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
- - The source galaxy's surface-brightness is reconstructed using a `RectangularRTUAdaptDensity` mesh
+ - The source galaxy's surface-brightness is reconstructed using a `RectangularBilinearAdaptDensity` mesh
    and `Constant` regularization scheme.
 
 __Rectangular Mesh Variants__
 
-Interferometer examples use the `RectangularRTUAdaptDensity` mesh: its smooth kernel-density CDF transform is
-the ray-guided transformed uniform (RTU) grid formulation of Enzi et al. (2026),
-https://arxiv.org/abs/2606.30620, which should be cited when using this mesh (the paper pairs the RTU grid
-with a Gaussian-process source prior, whereas these examples use PyAutoLens's own regularization schemes such
-as `reg.Constant` / `reg.Adapt`).
+Like the imaging examples, interferometer examples use the default `RectangularBilinearAdaptDensity` mesh: it
+adapts the size of source pixels to the density of traced points via the empirical rank CDF of their
+coordinates — no extra parameters and the fastest rectangular mesh on CPUs.
 
-RTU is the required choice for gradient-based (JAX) fitting of interferometer data: the alternative
-`RectangularBilinearAdaptDensity` mesh (the fast CPU default in the imaging examples, which warps the grid via
-the empirical rank CDF of the traced points) has an exactly piecewise-constant likelihood in the mass model on
-the interferometer sparse path — zero gradients, with no over-sampling setting available to fix it. For
-CPU-only fitting with non-gradient samplers, the Bilinear mesh can be swapped in for a substantial speed-up.
+Gradient-based (JAX) fitting of interferometer data must instead use the advanced `RectangularRTUAdaptDensity`
+/ `RectangularRTUAdaptImage` meshes: the Bilinear mesh's likelihood is exactly piecewise-constant in the mass
+model on the interferometer sparse path — zero gradients, with no over-sampling setting available to fix it —
+whereas the RTU meshes' smooth kernel-density CDF (the ray-guided transformed uniform grid formulation of
+Enzi et al. 2026, https://arxiv.org/abs/2606.30620, which should be cited when using them) carries correct
+gradients everywhere. The RTU meshes are also the recommended option on GPUs. Note the Enzi et al. paper
+pairs the RTU grid with a Gaussian-process source prior, whereas these examples use PyAutoLens's own
+regularization schemes (`reg.Constant` / `reg.Adapt`).
 
 __Start Here Notebook__
 
@@ -281,7 +282,7 @@ example fits a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
 
- - The source-galaxy's light uses a 20 x 20 `RectangularRTUAdaptDensity` mesh [0 parameters].
+ - The source-galaxy's light uses a 20 x 20 `RectangularBilinearAdaptDensity` mesh [0 parameters].
 
  - This pixelization is regularized using a `Constant` scheme which smooths every source pixel equally [1 parameter]. 
 
@@ -301,7 +302,7 @@ shear = af.Model(al.mp.ExternalShear)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 # Source:
-mesh = af.Model(al.mesh.RectangularRTUAdaptDensity, shape=mesh_shape)
+mesh = af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape)
 regularization = af.Model(al.reg.Constant)
 
 pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)

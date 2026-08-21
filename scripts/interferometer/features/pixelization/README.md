@@ -15,12 +15,13 @@ The following example scripts illustrating lens modeling where:
 
 # Rectangular Mesh Variants
 
-Interferometer examples use the `RectangularRTUAdaptDensity` / `RectangularRTUAdaptImage` meshes — the
-ray-guided transformed uniform (RTU) grid formulation of Enzi et al. (2026), https://arxiv.org/abs/2606.30620,
-which should be cited when using them. RTU is required for gradient-based (JAX) interferometer fitting: the
-`RectangularBilinear` meshes (the fast CPU default in the imaging examples) have zero likelihood gradients on
-the interferometer sparse path, with no over-sampling setting available to fix it. For CPU-only fitting with
-non-gradient samplers the Bilinear meshes can be swapped in for a substantial speed-up.
+Interferometer examples use the default `RectangularBilinearAdaptDensity` / `RectangularBilinearAdaptImage`
+meshes (empirical rank-CDF transform — no extra parameters, fastest on CPUs), like the imaging examples.
+Gradient-based (JAX) interferometer fitting must instead use the advanced `RectangularRTUAdaptDensity` /
+`RectangularRTUAdaptImage` meshes — the ray-guided transformed uniform (RTU) grid formulation of Enzi et al.
+(2026), https://arxiv.org/abs/2606.30620, which should be cited when using them: the Bilinear meshes have zero
+likelihood gradients on the interferometer sparse path, with no over-sampling setting available to fix it. The
+RTU meshes are also the recommended option on GPUs.
 
 # Results
 

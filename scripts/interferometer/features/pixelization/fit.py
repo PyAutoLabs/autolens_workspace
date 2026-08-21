@@ -235,7 +235,7 @@ where the centres computed by overlayiong a rectangular mesh over the source pla
 of the noise in the data and an unrealistically complex and structured source. Regularization smooths the source
 reconstruction solution by penalizing solutions where neighboring pixels have large flux differences.
 """
-mesh = al.mesh.RectangularRTUAdaptDensity(shape=mesh_shape)
+mesh = al.mesh.RectangularBilinearAdaptDensity(shape=mesh_shape)
 regularization = al.reg.Constant(coefficient=1.0)
 
 pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
