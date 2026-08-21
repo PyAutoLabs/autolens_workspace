@@ -124,15 +124,9 @@ size of source pixels to the density of traced points via the empirical rank CDF
 conceptually simple transform (a sort and a cumulative sum) with no extra parameters, which is why it is also
 the fastest rectangular mesh on CPUs.
 
-An advanced alternative is the `RectangularRTUAdaptDensity` mesh (and its `RectangularRTUAdaptImage`
-counterpart), which instead uses a smooth kernel-density CDF — the ray-guided transformed uniform (RTU) grid
-formulation of Enzi et al. (2026), https://arxiv.org/abs/2606.30620, which should be cited when using those
-meshes. Note the paper pairs the RTU grid with a Gaussian-process source prior, whereas these examples use
-PyAutoLens's own regularization schemes (`reg.Constant` / `reg.Adapt`). The RTU meshes are recommended on GPUs
-(where their kernel evaluation is not a bottleneck) and for gradient-based (JAX) samplers: the Bilinear mesh's
-likelihood is exactly piecewise-constant in the mass model at the default `over_sample_size_pixelization=1`
-(zero gradients), so gradient users must either set `over_sample_size_pixelization >= 4` or use the RTU meshes,
-and interferometer gradient fitting must use the RTU meshes (interferometer datasets have no over-sampling).
+An advanced alternative, the ray-guided transformed uniform (RTU) meshes, exists for GPU users and
+gradient-based (JAX) fitting — see the `__Advanced: RTU Rectangular Meshes__` section at the end of this
+script for what they are, when to use them and how to compose a model with them.
 
 __Start Here Notebook__
 
@@ -563,4 +557,43 @@ in having a go at adding them contact me on SLACK! :)
 - More diagnostic quantities for reconstructed galaxy light.
 - Gradient calculations of the reconstructed light distribution.
 - Quantifying spatial variations in galaxy structure across the image.
+"""
+
+"""
+__Advanced: RTU Rectangular Meshes__
+
+The model fitted in this example uses the default `RectangularBilinearAdaptDensity` mesh (with
+`RectangularBilinearAdaptImage` its adapt-image counterpart), which is the right choice for the vast majority
+of users: its empirical rank-CDF transform has no extra parameters and is the fastest rectangular mesh on CPUs.
+
+An advanced alternative is the ray-guided transformed uniform (RTU) mesh family, `RectangularRTUAdaptDensity`
+and `RectangularRTUAdaptImage`, which warp the source-pixel grid via a smooth kernel-density CDF instead of
+the rank CDF — the RTU grid formulation of Enzi et al. (2026), https://arxiv.org/abs/2606.30620, which should
+be cited when using these meshes.
+
+Two properties distinguish the RTU meshes:
+
+- **Fast on GPUs only**: their kernel-CDF evaluation is a bottleneck on CPUs, so CPU users should stay with
+  the Bilinear default; on GPUs the kernel evaluation is not a bottleneck and the RTU meshes run fast.
+
+- **May have smoother gradients**: the kernel CDF is smooth in the mass-model parameters, whereas the
+  Bilinear rank CDF is piecewise-constant at the default `over_sample_size_pixelization=1` (zero gradients),
+  so gradient-based (JAX) samplers may benefit from the RTU meshes. Imaging users can alternatively set
+  `over_sample_size_pixelization >= 4`; interferometer gradient fitting requires the RTU meshes, as
+  interferometer datasets have no over-sampling.
+
+Composing an RTU model is identical to the fit performed in this example, swapping only the mesh — shown as
+code below but not run here, because the full model-fit would repeat everything above:
+
+    mesh = af.Model(al.mesh.RectangularRTUAdaptDensity, shape=mesh_shape)
+    regularization = af.Model(al.reg.Constant)
+
+    pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)
+
+    source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
+
+    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+Note the Enzi et al. paper pairs the RTU grid with a Gaussian-process source prior, whereas these examples use
+PyAutoLens's own regularization schemes (`reg.Constant` / `reg.Adapt`).
 """

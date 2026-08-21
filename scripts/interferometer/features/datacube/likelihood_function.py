@@ -273,7 +273,7 @@ Identical to `pixelization/likelihood_function.py:__Source Pixel Centre Calculat
 overlays the relocated traced grid; since the relocated grid is the same for every channel (shared mask,
 shared tracer), the source-plane mesh grid is channel-invariant too.
 """
-from autoarray.inversion.mesh.mesh.rectangular_adapt_density import overlay_grid_from
+from autoarray.inversion.mesh.mesh.rectangular_rtu_adapt_density import overlay_grid_from
 
 mesh_grid = overlay_grid_from(
     shape_native=mesh_shape, grid=al.Grid2DIrregular(relocated_grid)
