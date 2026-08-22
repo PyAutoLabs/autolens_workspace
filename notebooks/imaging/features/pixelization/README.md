@@ -14,6 +14,16 @@ The following example scripts illustrating lens modeling where:
 - `slam`: Using the Source, Light and Mass (SLAM) pipeline to perform lens modeling using pixelized source reconstruction.
 - `delaunay`: Using a Delaunay mesh (instead of a rectangular mesh) for the source reconstruction.
 
+# Rectangular Mesh Variants
+
+The default adaptive rectangular mesh is `RectangularBilinearAdaptDensity` (with `RectangularBilinearAdaptImage`
+its adapt-image counterpart): it warps the grid via the empirical rank CDF of the traced points — no extra
+parameters and the fastest rectangular mesh on CPUs. The advanced `RectangularRTUAdaptDensity` /
+`RectangularRTUAdaptImage` meshes use a smooth kernel-density CDF instead — the ray-guided transformed uniform
+(RTU) grid formulation of Enzi et al. (2026), https://arxiv.org/abs/2606.30620, which should be cited when using
+them. Use RTU on GPUs, for gradient-based (JAX) samplers (the Bilinear likelihood has zero gradients at the
+default `over_sample_size_pixelization=1` — set it >= 4 or use RTU), and for interferometer gradient fitting.
+
 # Results
 
 These scripts only give a brief overview of how to analyse and interpret the results a lens model fit.

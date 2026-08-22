@@ -20,7 +20,7 @@ on every deflector rather than on a single lens.
 
 # Mesh and Regularization
 
-The rectangular meshes (`RectangularUniform`, `RectangularAdaptDensity`, `RectangularAdaptImage`) are used by
+The rectangular meshes (`RectangularUniform`, `RectangularBilinearAdaptDensity`, `RectangularBilinearAdaptImage`) are used by
 `modeling`, `fit`, `adaptive`, `cpu_fast_modeling` and `slam`; `delaunay` uses the `Delaunay` mesh.
 
 Two constraints govern which regularization pairs with which mesh, and both fail loudly rather than silently:

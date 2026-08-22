@@ -13,6 +13,16 @@ The following example scripts illustrating lens modeling where:
 - `delaunay`: Using a Delaunay mesh (instead of a rectangular mesh) for the source reconstruction.
 - `many_visibilities_preparation`: How to prepare the linear algbera for datasets with many visibilities for efficient memory usage and run times.
 
+# Rectangular Mesh Variants
+
+Interferometer examples use the default `RectangularBilinearAdaptDensity` / `RectangularBilinearAdaptImage`
+meshes (empirical rank-CDF transform — no extra parameters, fastest on CPUs), like the imaging examples.
+Gradient-based (JAX) interferometer fitting must instead use the advanced `RectangularRTUAdaptDensity` /
+`RectangularRTUAdaptImage` meshes — the ray-guided transformed uniform (RTU) grid formulation of Enzi et al.
+(2026), https://arxiv.org/abs/2606.30620, which should be cited when using them: the Bilinear meshes have zero
+likelihood gradients on the interferometer sparse path, with no over-sampling setting available to fix it. The
+RTU meshes are also the recommended option on GPUs.
+
 # Results
 
 These scripts only give a brief overview of how to analyse and interpret the results a lens model fit.
