@@ -152,11 +152,24 @@ We begin by loading an `Interferometer` dataset from FITS, three ingredients are
 
 We must also choose a transformer for mapping the real-space image to visibilities:
 
-- `TransformerNUFFT`: JAX-native Non-Uniform FFT (default, backed by `nufftax`). Recommended for any
-  dataset size — runs at full GPU speed for millions of visibilities.
-- `TransformerDFT`: exact Discrete FT. Slower than the NUFFT for large `n_vis`, but useful as a reference
-  for verification and for the pixelized source reconstruction's sparse-operator workflow (see
-  `features/pixelization`).
+- `TransformerNUFFT`: JAX-native Non-Uniform FFT (default, backed by `nufftax`). The right choice for
+  real datasets — runs at full GPU speed for millions of visibilities.
+- `TransformerDFT`: exact Discrete FT, pure numpy. Useful as a reference for verification, and
+  genuinely faster than the NUFFT on small problems.
+
+Both are supported everywhere, including the pixelized source reconstruction's sparse-operator
+workflow (`apply_sparse_operator`, see `features/pixelization`), where they agree to ~3e-13.
+
+Which is faster is set by the product `N_vis x N_pix`, not by the visibility count alone — the DFT
+costs `O(N_vis x N_pix)` while the NUFFT costs `O((N_vis + N_pix) log N)` on top of a fixed ~2s
+setup. Below `N_vis x N_pix ~ 1e7` the DFT wins; above it the NUFFT does. At a typical 64x64 mask
+that crossover is near 5,000 visibilities, but on a coarser mask the DFT stays ahead well past that.
+
+Past `~1e8` the choice stops being about speed: the DFT's `O(N_vis x N_pix)` allocation reaches
+~109 GB at a million visibilities, where the NUFFT allocates essentially nothing beyond its working
+buffers. That is why real ALMA-scale work uses the NUFFT. Loading a dataset with more than 10,000
+visibilities and `TransformerDFT` raises an error for this reason; pass
+`raise_error_dft_visibilities_limit=False` if you are deliberately doing a slow reference run.
 
 We load the ALMA long-baseline Science Verification observations of **SDP.81** — the famous
 z = 3.042 dusty star-forming galaxy lensed into an Einstein ring by a z = 0.299 foreground
