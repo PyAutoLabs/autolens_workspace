@@ -407,7 +407,7 @@ simulator_jax = al.SimulatorInterferometer(
     uv_wavelengths=uv_wavelengths,
     exposure_time=300.0,
     noise_sigma=0.1,
-    transformer_class=al.TransformerDFT,  # NUFFT (pynufft) is not JAX-traceable
+    transformer_class=al.TransformerDFT,  # exact; NUFFT is faster on large UV sets
     use_jax=True,
 )
 
@@ -421,7 +421,7 @@ dataset_jax = simulate(tracer)   # Interferometer with jax.Array visibilities
 
 Two notes specific to interferometer:
 
-- Use `TransformerDFT` (the default) under JAX. `TransformerNUFFT` (pynufft)
+- Use `TransformerDFT` (the default) under JAX. `TransformerNUFFT` (nufftax)
   is faster on large UV sets but is not JAX-traceable. The `nufftax`
   research path is tracking a JAX-native NUFFT replacement; see
   `autolens_workspace_test/scripts/interferometer/nufft.py` for the
