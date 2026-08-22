@@ -33,10 +33,10 @@ __JAX__
 
 PyAutoLens runs interferometer model-fits on JAX by default (JAX installs
 with `autolens` itself) — `al.AnalysisInterferometer(dataset=dataset)`
-below auto-enables `use_jax=True`. Use `TransformerDFT` (the default in
-this script) under JAX — `TransformerNUFFT` (pynufft) is faster on large
-UV sets but is not JAX-traceable; the `nufftax` replacement (see the
-`__NUFFT (nufftax)__` section below) is a research path tracking that.
+below auto-enables `use_jax=True`. Both `TransformerDFT` (the default in
+this script) and `TransformerNUFFT` are JAX-traceable, so either works
+under JAX; `TransformerNUFFT` is nufftax-backed and is much faster on
+large UV sets (see the `__NUFFT (nufftax)__` section below).
 
 For the broader JAX principles (when you write `@jax.jit` yourself, the
 return-type contract), see the top-level `autolens_workspace/start_here.py`
@@ -59,8 +59,9 @@ or required switching to a pixelized source reconstruction. Pixelized sources ar
 complex, irregular source morphologies (see `features/pixelization`), but they are no longer a
 performance requirement for large datasets.
 
-If `nufftax` is not installed, install it via `pip install nufftax`. A legacy pynufft-backed
-transformer (`TransformerNUFFTPyNUFFT`) is also available as a non-JAX fallback.
+If `nufftax` is not installed, install it via `pip install nufftax`. Note that `nufftax`
+requires JAX; where JAX is unavailable (notably Intel macOS, for which JAX ships no wheels)
+use `TransformerDFT`, which is exact and pure-numpy but scales as O(N_vis x N_pix).
 
 __Number of Visibilities__
 

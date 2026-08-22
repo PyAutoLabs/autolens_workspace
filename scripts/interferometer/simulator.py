@@ -362,9 +362,9 @@ to avoid overwriting the dataset written above.
 Two notes specific to interferometer:
 
 - `TransformerNUFFT` is backed by the JAX-native `nufftax` library (see `__Many Visibilities__` above), so it
-  supports `jax.jit` and scales to large UV sets. The legacy pynufft-backed `TransformerNUFFTPyNUFFT` is not
-  JAX-traceable; see `autolens_workspace_test/scripts/interferometer/nufft.py` for the parity work. For small
-  visibility counts `TransformerDFT` (the simulator default) is also JAX-traceable.
+  supports `jax.jit` and scales to large UV sets; see
+  `autolens_workspace_test/scripts/interferometer/nufft.py` for the accuracy check against the exact DFT. For
+  small visibility counts `TransformerDFT` (the simulator default) is also JAX-traceable.
 - The eager call above works and is the supported route today. Note it returns a dataset whose visibilities are
   NumPy-backed, not `jax.Array`.
 

@@ -76,8 +76,9 @@ that does the inversion, mass model ray-tracing, and chi-squared sum. There is n
 NUFFT calls, so a model with N linear light profiles costs only N forward-NUFFTs per iteration on the GPU —
 fast enough that linear inversions in the visibility plane are now routinely practical.
 
-If `nufftax` is not installed, install it via `pip install nufftax`. A legacy pynufft-backed transformer
-(`TransformerNUFFTPyNUFFT`) is available as a non-JAX fallback but is not recommended for linear light profiles.
+If `nufftax` is not installed, install it via `pip install nufftax`. Note that `nufftax` requires JAX; where
+JAX is unavailable (notably Intel macOS, for which JAX ships no wheels) `TransformerDFT` is the only option,
+though it is not recommended for linear light profiles at realistic visibility counts.
 
 __Positive Only Solver__
 
