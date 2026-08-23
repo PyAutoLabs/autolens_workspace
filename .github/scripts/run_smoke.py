@@ -30,6 +30,12 @@ the release profile — the seed incident's failure mode 4/7). One resolver
 means the PR gate and the release runner cannot disagree about what a script's
 environment is. See PyAutoHands docs/env_profile_redesign.md §5 (#161 step 2).
 
+Each entry — script or notebook — is capped at `BUILD_SCRIPT_TIMEOUT` seconds
+(default 300), the same env var and default PyAutoHands's `build_util.py` uses,
+so the PR gate and the release runner agree about how long an entry may take.
+On expiry the entry's whole process group is killed and it is reported as
+TIMEOUT.
+
 Mirrors the logic of the `/smoke-test` skill so CI and local runs stay
 in sync.
 """
@@ -38,12 +44,25 @@ from __future__ import annotations
 
 import os
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
 import time
 from pathlib import Path
 
+
+# Per-entry wall-clock cap, shared with PyAutoHands's build_util.py so the PR
+# gate and the release runner agree about how long an entry may take. Same env
+# var, same 300s default; workspace-validation raises it to 1800 for
+# mode=release.
+TIMEOUT_SECS = int(os.environ.get("BUILD_SCRIPT_TIMEOUT", "300"))
+
+# Exit code reported for an entry killed at the cap. 124 is the conventional
+# timeout code; reporting the signal (-9) instead would mislabel a timeout as
+# an ordinary failure, and only one of those means "raise the cap or SLOW-skip
+# it".
+TIMEOUT_RC = 124
 
 WORKSPACE = Path(__file__).resolve().parents[2]
 SMOKE_FILE = WORKSPACE / "smoke_tests.txt"
@@ -73,6 +92,66 @@ except ImportError:  # pragma: no cover - local-run fallback
 
 from build_util import is_clean_skip_exit  # PyAutoHands/autohands on PYTHONPATH
 
+# Resolved parent-side: a profile may set BUILD_SCRIPT_TIMEOUT on an `overrides`
+# pattern, and that value rides the per-entry env handed to the CHILD while the
+# kill timer lives HERE in the parent. Without reading it back out this runner
+# would ignore a profile budget the mega-run honours (PyAutoHands#226/#227).
+# The group kill is build_util's too, so there is one implementation rather than
+# a copy per workspace. Both are guarded: an older PyAutoHands on PYTHONPATH
+# must not break the gate.
+try:
+    from build_util import timeout_for
+except ImportError:  # pragma: no cover - older PyAutoHands
+    def timeout_for(env=None) -> int:
+        """Fallback: whole-run cap only."""
+        return TIMEOUT_SECS
+
+try:
+    from build_util import kill_group
+except ImportError:  # pragma: no cover - older PyAutoHands
+    def kill_group(proc: subprocess.Popen) -> None:
+        """SIGKILL the entry's whole process group, tolerating a dead one."""
+        try:
+            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+        except (ProcessLookupError, PermissionError):  # pragma: no cover - race
+            proc.kill()
+
+
+def _run_capped(argv, env, timeout_secs, cwd=None) -> tuple[int, str, bool]:
+    """Run argv capped at timeout_secs, killing the whole group on expiry.
+
+    Returns (returncode, combined output, timed_out). The child gets its own
+    session so the kill reaches its descendants: capturing output means waiting
+    for the stdout pipe to reach EOF, and a grandchild that inherited that pipe
+    holds it open even after the child itself has exited. Killing only the
+    direct child would leave that grandchild running -- and with no cap at all
+    (what this runner used to do) the read never finishes, which is how smoke
+    CI came to sit at the 6-hour GitHub Actions ceiling reporting nothing since
+    the last completed entry (autolens_workspace_test#196).
+    """
+    proc = subprocess.Popen(
+        argv,
+        cwd=cwd,
+        env=env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        start_new_session=True,
+    )
+    try:
+        output, _ = proc.communicate(timeout=timeout_secs)
+        return proc.returncode, output or "", False
+    except subprocess.TimeoutExpired:
+        kill_group(proc)
+        # The group is gone, so this drains whatever was buffered and returns.
+        output, _ = proc.communicate()
+        output = (output or "") + (
+            f"\n::error::TIMEOUT after {timeout_secs}s — killed the process group. "
+            f"Raise BUILD_SCRIPT_TIMEOUT if this entry is legitimately slow, or "
+            f"add it to config/build/no_run.yaml with a dated SLOW marker.\n"
+        )
+        return TIMEOUT_RC, output, True
+
 
 def load_lines(path: Path) -> list[str]:
     if not path.exists():
@@ -98,26 +177,24 @@ def load_cfg() -> dict | None:
     return load_env_config(ENV_VARS_FILE)
 
 
-def run_script(script_rel: str, cfg: dict | None) -> tuple[str, int, float, str]:
+def run_script(script_rel: str, cfg: dict | None) -> tuple[str, int, float, str, int]:
     env = build_env_for_script(Path(script_rel), cfg)
+    timeout_secs = timeout_for(env)
     script_path = SCRIPTS_DIR / script_rel
     t0 = time.time()
-    result = subprocess.run(
+    rc, output, _ = _run_capped(
         [sys.executable, str(script_path)],
-        cwd=str(WORKSPACE),
         env=env,
-        capture_output=True,
-        text=True,
+        timeout_secs=timeout_secs,
+        cwd=str(WORKSPACE),
     )
-    return (
-        script_rel,
-        result.returncode,
-        time.time() - t0,
-        result.stdout + result.stderr,
-    )
+    # timeout_secs is returned so the caller reports the cap this entry actually
+    # ran under, not the run-wide default -- a quoted cap below the enforced one
+    # biases every "too slow to un-skip?" call (the 60s-cap myth).
+    return script_rel, rc, time.time() - t0, output, timeout_secs
 
 
-def execute_notebook(nb_path: Path, env: dict) -> tuple[int, str]:
+def execute_notebook(nb_path: Path, env: dict, timeout_secs: int) -> tuple[int, str]:
     # Write the executed copy to a throwaway path so the on-disk notebook
     # under notebooks/ is never modified — checked-in notebooks stay clean.
     tmp_dir = Path(tempfile.mkdtemp(prefix="smoke_nb_"))
@@ -130,7 +207,7 @@ def execute_notebook(nb_path: Path, env: dict) -> tuple[int, str]:
     shutil.copyfile(nb_path, staged)
     try:
         try:
-            result = subprocess.run(
+            rc, output, _ = _run_capped(
                 [
                     "jupyter",
                     "nbconvert",
@@ -143,10 +220,9 @@ def execute_notebook(nb_path: Path, env: dict) -> tuple[int, str]:
                     nb_path.name,
                     str(staged),
                 ],
-                cwd=str(WORKSPACE),
                 env=env,
-                capture_output=True,
-                text=True,
+                timeout_secs=timeout_secs,
+                cwd=str(WORKSPACE),
             )
         except FileNotFoundError:
             # `jupyter` is not installed. Report a per-entry failure instead of
@@ -157,7 +233,7 @@ def execute_notebook(nb_path: Path, env: dict) -> tuple[int, str]:
     finally:
         staged.unlink(missing_ok=True)
         shutil.rmtree(tmp_dir, ignore_errors=True)
-    return result.returncode, result.stdout + result.stderr
+    return rc, output
 
 
 def regenerate_notebook(nb_rel: str) -> Path:
@@ -183,36 +259,49 @@ def regenerate_notebook(nb_rel: str) -> Path:
     return generated
 
 
-def run_notebook(nb_rel: str, cfg: dict | None) -> tuple[str, int, float, str]:
+def run_notebook(nb_rel: str, cfg: dict | None) -> tuple[str, int, float, str, int]:
     env = build_env_for_script(Path(nb_rel), cfg)
+    timeout_secs = timeout_for(env)
     nb_path = NOTEBOOKS_DIR / nb_rel
     t0 = time.time()
 
     if not nb_path.exists():
-        return nb_rel, 1, 0.0, f"Notebook not found: {nb_path}\n"
+        return nb_rel, 1, 0.0, f"Notebook not found: {nb_path}\n", timeout_secs
 
-    rc, output = execute_notebook(nb_path, env)
+    rc, output = execute_notebook(nb_path, env, timeout_secs)
     if rc == JUPYTER_MISSING_RC:
         # No jupyter, so regenerating the notebook and retrying cannot help.
         # Checked before the skip guard so a missing tool is never a PASS.
-        return nb_rel, rc, time.time() - t0, output
+        return nb_rel, rc, time.time() - t0, output, timeout_secs
+    if rc == TIMEOUT_RC:
+        # A timeout is not a stale notebook. Retrying would burn a second full
+        # cap to reach the same result, doubling the slowest entry's cost.
+        return nb_rel, rc, time.time() - t0, output, timeout_secs
     if rc != 0 and is_clean_skip_exit(output):
         # Optional-dependency skip guard (`sys.exit(0)`): a clean exit 0 as a
         # `.py` script, so the notebook form is a PASS too (PyAutoHands#198).
         rc = 0
     if rc == 0:
-        return nb_rel, 0, time.time() - t0, output
+        return nb_rel, 0, time.time() - t0, output, timeout_secs
 
     print("  notebook failed; regenerating from source script and retrying...")
     try:
         nb_path = regenerate_notebook(nb_rel)
     except Exception as exc:
         output += f"\n[regenerate_notebook] {exc}\n"
-        return nb_rel, rc, time.time() - t0, output
+        return nb_rel, rc, time.time() - t0, output, timeout_secs
 
-    rc2, output2 = execute_notebook(nb_path, env)
+    rc2, output2 = execute_notebook(nb_path, env, timeout_secs)
     output += "\n--- regenerated from script and retried ---\n" + output2
-    return nb_rel, rc2, time.time() - t0, output
+    return nb_rel, rc2, time.time() - t0, output, timeout_secs
+
+
+def _status(rc: int, cap: int) -> str:
+    if rc == 0:
+        return "PASS"
+    if rc == TIMEOUT_RC:
+        return f"TIMEOUT ({cap}s)"
+    return f"FAIL (exit {rc})"
 
 
 def main() -> int:
@@ -224,21 +313,21 @@ def main() -> int:
         print("No smoke tests listed.")
         return 0
 
-    failures: list[tuple[str, int, str]] = []
+    failures: list[tuple[str, int, str, int]] = []
     total = 0
 
     if scripts:
         print(f"Running {len(scripts)} script smoke test(s) from {SMOKE_FILE.name}\n")
         for rel in scripts:
             print(f"::group::script: {rel}")
-            name, rc, elapsed, output = run_script(rel, cfg)
+            name, rc, elapsed, output, cap = run_script(rel, cfg)
             print(output, end="")
-            status = "PASS" if rc == 0 else f"FAIL (exit {rc})"
+            status = _status(rc, cap)
             print(f"\n[{status}] {name} — {elapsed:.1f}s")
             print("::endgroup::")
             total += 1
             if rc != 0:
-                failures.append((f"script: {name}", rc, output))
+                failures.append((f"script: {name}", rc, output, cap))
 
     if notebooks:
         print(
@@ -246,19 +335,20 @@ def main() -> int:
         )
         for rel in notebooks:
             print(f"::group::notebook: {rel}")
-            name, rc, elapsed, output = run_notebook(rel, cfg)
+            name, rc, elapsed, output, cap = run_notebook(rel, cfg)
             print(output, end="")
-            status = "PASS" if rc == 0 else f"FAIL (exit {rc})"
+            status = _status(rc, cap)
             print(f"\n[{status}] {name} — {elapsed:.1f}s")
             print("::endgroup::")
             total += 1
             if rc != 0:
-                failures.append((f"notebook: {name}", rc, output))
+                failures.append((f"notebook: {name}", rc, output, cap))
 
     passed = total - len(failures)
     print(f"\n=== Smoke test summary: {passed}/{total} passed ===")
-    for name, rc, _ in failures:
-        print(f"  FAIL  {name}  (exit {rc})")
+    for name, rc, _, cap in failures:
+        label = f"TIMEOUT ({cap}s)" if rc == TIMEOUT_RC else f"FAIL  (exit {rc})"
+        print(f"  {label}  {name}")
     return 0 if not failures else 1
 
 
