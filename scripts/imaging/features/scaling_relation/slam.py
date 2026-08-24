@@ -763,6 +763,10 @@ dataset = al.Imaging.from_fits(
     pixel_scales=pixel_scale,
 )
 
+# Read the scale back off the dataset: a capped run (`PYAUTO_SMALL_DATASETS=1`) relabels the data at a
+# coarser scale, so the literal above is only true as the `from_fits` argument.
+pixel_scale = float(dataset.pixel_scales[0])
+
 mask_radius = 6.0
 
 mask = al.Mask2D.circular(
