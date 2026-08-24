@@ -793,6 +793,7 @@ result_path = search.paths.output_path  # Points at the fit's unique output fold
 if (result_path / "files" / "tracer.json").exists():
     tracer = from_json(file_path=result_path / "files" / "tracer.json")
 
+if (result_path / "image" / "tracer.fits").exists():
     tracer_fits = al.Array2D.from_fits(
         file_path=result_path / "image" / "tracer.fits", hdu=0, pixel_scales=0.05
     )
