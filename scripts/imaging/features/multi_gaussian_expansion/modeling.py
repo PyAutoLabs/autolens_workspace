@@ -508,17 +508,13 @@ The point-source MGE is added to the lens galaxy as an additional light componen
 composed above, so the lens galaxy's light becomes the sum of its diffuse stellar emission and its compact nuclear
 source. We recreate the Gaussians line-by-line below so you can copy and paste the code into your own scripts.
 """
-# The pixel scale of the data, which sets the maximum Gaussian sigma (and therefore how compact the source is).
-
-pixel_scales = 0.1
-
 total_point_gaussians = 10
 
 # Sigma values span a tenth of the pixel scale up to twice the pixel scale, keeping the basis compact and point-like.
 
 log10_sigma_list = np.linspace(
     np.log10(dataset.pixel_scales[0] / 10.0),
-    np.log10(2.0 * pixel_scales),
+    np.log10(2.0 * dataset.pixel_scales[0]),
     total_point_gaussians,
 )
 

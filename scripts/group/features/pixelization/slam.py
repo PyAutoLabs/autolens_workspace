@@ -724,7 +724,9 @@ __Settings AutoFit__
 """
 redshift_lens = 0.5
 redshift_source = 1.0
-pixel_scale = 0.1
+# Taken from the dataset, not hardcoded: a capped run (`PYAUTO_SMALL_DATASETS=1`) relabels the data at a
+# coarser scale, and the mesh resolution and luminosities below must follow the data they describe.
+pixel_scale = float(dataset.pixel_scales[0])
 
 settings_search = af.SettingsSearch(
     path_prefix=Path("group") / "features" / "pixelization" / "slam",
