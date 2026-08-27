@@ -273,11 +273,18 @@ fitted value. A pixel with no fitted value has no uncertainty either, so the noi
 
 This is not something to work around; it is the reconstruction and the noise map agreeing about which
 pixels were actually fitted. `reconstruction == 0.0` exactly where `reconstruction_noise_map` is `NaN`.
+
+`NaN` propagates through interpolation, so the interpolated noise map below is blank in the region covered
+by those edge pixels -- which is honest, since there is nothing there to interpolate from. If you need an
+interpolated error map that covers the full field, drop the `NaN` entries from `points` and `values` before
+calling `griddata` rather than filling them with a number.
 """
 reconstruction_noise_map = inversion.reconstruction_noise_map
 
 interpolated_noise_map = griddata(
-    points=source_plane_mesh_grid, values=reconstruction, xi=interpolation_grid
+    points=source_plane_mesh_grid,
+    values=reconstruction_noise_map,
+    xi=interpolation_grid,
 )
 
 # As a pure 2D numpy array in case its useful for calculations
