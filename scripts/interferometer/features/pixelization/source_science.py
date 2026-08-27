@@ -272,7 +272,14 @@ fitted value. A pixel with no fitted value has no uncertainty either, so the noi
 "never estimated" -- rather than a number that would look like a real error bar.
 
 This is not something to work around; it is the reconstruction and the noise map agreeing about which
-pixels were actually fitted. `reconstruction == 0.0` exactly where `reconstruction_noise_map` is `NaN`.
+pixels were actually fitted.
+
+Use `np.isnan(reconstruction_noise_map)` to find these pixels, and not `reconstruction == 0.0`. The two are
+not the same set, and the difference is large. The inversion's non-negative solver also pins pixels it *did*
+solve for at exactly `0.0` -- wherever the fit wants no flux -- and those are real fitted values with real
+error bars. On a typical compact-source fit with a 28x28 mesh, 603 of the 784 source pixels read `0.0`,
+while only the 108 edge pixels the mesh zeroed are `NaN`. A `NaN` noise value always means the
+reconstruction is `0.0` there; a reconstruction of `0.0` does not mean the pixel was never fitted.
 
 `NaN` propagates through interpolation, so the interpolated noise map below is blank in the region covered
 by those edge pixels -- which is honest, since there is nothing there to interpolate from. If you need an
