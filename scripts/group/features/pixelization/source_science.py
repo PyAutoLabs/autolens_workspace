@@ -324,6 +324,27 @@ __Errors__
 
 The reconstruction noise map provides errors on each source pixel, enabling uncertainty propagation
 for source science calculations.
+
+Note that some source-plane pixels have a noise value of `NaN`. These are the pixels the inversion never
+solved for: the mesh zeroes its poorly-constrained edge pixels before solving, to stop them absorbing flux
+and destabilizing the linear algebra, and their reconstruction is therefore an exact `0.0` rather than a
+fitted value. A pixel with no fitted value has no uncertainty either, so the noise map reports `NaN` --
+"never estimated" -- rather than a number that would look like a real error bar.
+
+This is not something to work around; it is the reconstruction and the noise map agreeing about which
+pixels were actually fitted.
+
+Use `np.isnan(reconstruction_noise_map)` to find these pixels, and not `reconstruction == 0.0`. The two are
+not the same set, and the difference is large. The inversion's non-negative solver also pins pixels it *did*
+solve for at exactly `0.0` -- wherever the fit wants no flux -- and those are real fitted values with real
+error bars. On a typical compact-source fit with a 28x28 mesh, 603 of the 784 source pixels read `0.0`,
+while only the 108 edge pixels the mesh zeroed are `NaN`. A `NaN` noise value always means the
+reconstruction is `0.0` there; a reconstruction of `0.0` does not mean the pixel was never fitted.
+
+`NaN` propagates through interpolation, so the interpolated noise map below is blank in the region covered
+by those edge pixels -- which is honest, since there is nothing there to interpolate from. If you need an
+interpolated error map that covers the full field, drop the `NaN` entries from `points` and `values` before
+calling `griddata` rather than filling them with a number.
 """
 reconstruction_noise_map = inversion.reconstruction_noise_map
 
