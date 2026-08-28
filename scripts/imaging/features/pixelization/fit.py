@@ -19,14 +19,14 @@ Pixelizations are covered in detail in chapter 3 of the **HowToLens** lectures.
 
 __CPU Users__
 
-Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra. On GPU, this takes
-seconds, or at most a minute for datasets with tens of millions, or more visibities. On CPU, this can be a lot slower,
-taking over hours. If you are on CPU,  the `features/pixelization/many_visibilities_preparation` explains how this
-initial setup can be performed before lens modeling and saved to hard disk for fast loading before the model fit.
+On CPU, the linear algebra of a pixelized source reconstruction is fastest via the sparse operator formalism, which
+is set up once with `dataset.apply_sparse_operator_cpu()`. This set up takes a few seconds to a few minutes depending
+on the dataset size, after which every fit is substantially faster. The `features/pixelization/cpu_fast_modeling`
+example shows the full CPU set up.
 
 __Contents__
 
-- **CPU Users:** Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra.
+- **CPU Users:** On CPU, the sparse operator formalism set up by `dataset.apply_sparse_operator_cpu()` makes every fit substantially faster.
 - **Advantages & Disadvantages:** Many strongly lensed source galaxies are complex, and have asymmetric and irregular morphologies.
 - **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
