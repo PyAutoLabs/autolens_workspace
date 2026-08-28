@@ -15,7 +15,8 @@ described light-profile fitting as "slow" pre-dates this change.
   function (NUFFT of each linear basis image, mapping/curvature matrices, $\chi^2$ in the visibility plane).
 - `slam`: SLaM SOURCE LP / SOURCE PIX / MASS TOTAL pipeline using a linear `Sersic` source in the
   initialization stage. Light-profile fitting runs on `TransformerNUFFT` and the pixelized stages use the
-  same `TransformerNUFFT` plus `apply_sparse_operator` (FFT-based W̃ precision matrix).
+  same `TransformerNUFFT` plus `apply_sparse_operator` (FFT-based W̃ precision matrix), which also supports
+  linear light profiles fitted alongside a pixelization.
 
 # Results
 

@@ -5321,7 +5321,7 @@
     "cross_refs": [],
     "notebook": "notebooks/interferometer/features/pixelization/many_visibilities_preparation.ipynb",
     "path": "scripts/interferometer/features/pixelization/many_visibilities_preparation.py",
-    "summary": "To perform many visibility modeling, a matrix called `nufft_precision_operator` is created and used, which encodes information and symmetries into the Fourier transform operation performed when modeling interferometer datasets, in a way that exploits the sparsity of the pixelized source reconstructions and means a very small amount of memory or VRAM is used.",
+    "summary": "To perform many visibility modeling, a matrix called `nufft_precision_operator` is created and used, which encodes information and symmetries into the Fourier transform operation performed when modeling interferometer datasets, in a way that exploits the sparsity of the inversion \u2014 pixelizations, linear light profiles, or both \u2014 and means a very small amount of memory or VRAM is used.",
     "title": "Pixelization: Many Visibilities Preparation"
   },
   {

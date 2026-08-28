@@ -515,7 +515,7 @@ def source_lp(
             lens=af.Model(
                 al.Galaxy,
                 redshift=redshift_lens,
-                # interferometry does not support lens light
+                # interferometer data does not contain lens light emission
                 bulge=None,
                 disk=None,
                 mass=af.Model(al.mp.Isothermal),
@@ -688,7 +688,7 @@ def source_pix_2(
             lens=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.lens.redshift,
-                # interferometry does not support lens light
+                # interferometer data does not contain lens light emission
                 bulge=None,
                 disk=None,
                 mass=source_pix_result_1.instance.galaxies.lens.mass,

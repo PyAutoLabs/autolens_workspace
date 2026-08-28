@@ -303,8 +303,9 @@ around 30 linear Gaussians this typically requires a modest amount of VRAM (e.g.
 likelihood). Models that use hundreds of Gaussians, especially in combination with a large batch size, may
 therefore exceed GBs of VRAM and require you to adjust the batch size to fit within your GPU's VRAM.
 
-VRAM on interferometer datasets is driven primarily by the visibility count and the real-space mask size,
-not the number of Gaussians in the MGE basis.
+Without the sparse operator, VRAM on interferometer datasets is driven primarily by the visibility count and
+the real-space mask size, not the number of Gaussians in the MGE basis. With `apply_sparse_operator()` applied
+(which now supports linear light profiles as well as pixelizations) it depends on the real-space mask alone.
 
 __Run Time__
 

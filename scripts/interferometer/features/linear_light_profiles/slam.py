@@ -29,7 +29,8 @@ https://github.com/GragasLab/nufftax). Linear light profile fits to visibilities
 visibility count because the per-iteration NUFFT of each linear basis component is fast on the GPU.
 
 The SOURCE PIX and MASS TOTAL stages switch to `TransformerNUFFT` combined with the pre-computed sparse
-operator, because pixelized source reconstructions exploit sparsity rather than the NUFFT path.
+operator, which makes the inversion cost independent of visibility count (the sparse operator supports linear
+light profiles as well as pixelizations, so a single sparse dataset can serve every stage).
 
 __Contents__
 
@@ -422,9 +423,9 @@ The SLaM pipeline runs in two phases that prefer different transformers:
 - `dataset_nufft` uses `TransformerNUFFT` (backed by JAX-native `nufftax`) for the `source_lp` stage. With
   the linear `SersicCore` source bulge this is the fast path at any visibility count.
 - `dataset_sparse` uses `TransformerNUFFT` combined with `apply_sparse_operator(...)` for
-  `source_pix_1`, `source_pix_2`, and `mass_total`. Pixelized source reconstructions exploit sparsity in
-  the linear inversion rather than the NUFFT, so this combination is the right choice for the pixelized
-  stages.
+  `source_pix_1`, `source_pix_2`, and `mass_total`. The sparse operator makes the inversion cost independent
+  of visibility count; it also supports linear light profiles, so it may be applied to the `source_lp` stage
+  as well.
 
 Both datasets are built from the same FITS files; only the transformer (and sparse-operator preload) differ.
 """
@@ -454,8 +455,8 @@ We use a try / except to load the pre-computed curvature preload, which is neces
 operator formalism. If this file does not exist (e.g. you have not made it manually via the
 `many_visibilities_preparation` example) it is made here.
 
-The sparse operator is applied only to `dataset_sparse` — the NUFFT-backed `dataset_nufft` used by
-`source_lp` does not need it.
+The sparse operator is applied only to `dataset_sparse` here; `source_lp` can also be run on a sparse dataset
+if you prefer a single dataset for the whole pipeline.
 """
 try:
     nufft_precision_operator = np.load(

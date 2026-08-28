@@ -405,10 +405,10 @@ __VRAM__
 The `modeling` example explains how VRAM is used during GPU-based fitting and how to print the estimated VRAM 
 required by a model.
 
-Pixelizations use a lot less VRAM than light profile-only models, provided the sparse operator 
-formalism is used (as it is above). In this mode, datasets with tens of millions of visibilities and real space
-masks with pixel scales below 0.05" can be stored in just GB's of VRAM, which is remarkable given how much
-data they contain.
+Any model fitted through an inversion — a pixelization, linear light profiles, or both together — uses a lot
+less VRAM once the sparse operator formalism is applied (as it is above). In this mode, datasets with tens of
+millions of visibilities and real space masks with pixel scales below 0.05" can be stored in just GB's of
+VRAM, which is remarkable given how much data they contain.
 
 In sparse operator mode, the **amount of VRAM used is independent of the number of visibilities in the dataset**. 
 This is because the sparse operator compresses all the visibility information into a matrix whose size depends only on

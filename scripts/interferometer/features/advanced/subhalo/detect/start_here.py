@@ -172,8 +172,9 @@ The first search of the SOURCE PIX PIPELINE fits a pixelization whose purpose is
 adapt image used in search 2. It uses the adapt image computed from the SOURCE LP result, with the position
 likelihood derived automatically via `source_lp_result.positions_likelihood_from(...)`.
 
-This stage uses `dataset_sparse` (built with `TransformerNUFFT` + `apply_sparse_operator`). Pixelizations
-exploit sparsity in the linear inversion rather than the NUFFT path.
+This stage uses `dataset_sparse` (built with `TransformerNUFFT` + `apply_sparse_operator`), which makes the
+inversion cost independent of visibility count (the sparse operator supports linear light profiles as well as
+pixelizations, so a single sparse dataset can serve every stage).
 """
 
 
@@ -280,7 +281,7 @@ def source_pix_2(
             lens=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.lens.redshift,
-                # interferometry does not support lens light
+                # interferometer data does not contain lens light emission
                 bulge=None,
                 disk=None,
                 mass=source_pix_result_1.instance.galaxies.lens.mass,
@@ -604,8 +605,8 @@ We use a try / except to load the pre-computed curvature preload, which is neces
 the sparse operator formalism. If this file does not exist (e.g. you have not made it manually via
 the `many_visibilities_preparation` example) it is made here.
 
-The sparse operator is applied only to `dataset_sparse` — the NUFFT-backed `dataset_nufft` used by
-`source_lp` does not need it.
+The sparse operator is applied only to `dataset_sparse` here; `source_lp` can also be run on a sparse dataset
+if you prefer a single dataset for the whole pipeline.
 """
 try:
     nufft_precision_operator = np.load(
