@@ -411,10 +411,10 @@ For an MGE model with the small dataset fitted in this example, VRAM use is mode
 masks (finer pixel scales) and higher visibility counts increase VRAM gradually rather than catastrophically, and
 a single GPU comfortably handles millions of visibilities with this approach.
 
-Pixelized source reconstructions (see `features/pixelization`) take a different VRAM trade-off: they keep VRAM
-use low by exploiting sparsity in the linear inversion, which makes them attractive when the real-space mask is
-very large or the source morphology requires it. They are no longer required purely because the dataset has many
-visibilities.
+The sparse-operator route (see `features/pixelization`) takes a different VRAM trade-off: it keeps VRAM use
+low by exploiting sparsity in the linear inversion, and applies to pixelizations, linear light profiles / MGE
+bases, and the two combined. This makes it attractive when the real-space mask is very large or the source
+morphology requires it. It is no longer required purely because the dataset has many visibilities.
 """
 analysis.print_vram_use(model=model, batch_size=search.batch_size)
 

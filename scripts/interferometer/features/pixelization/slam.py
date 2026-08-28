@@ -16,8 +16,9 @@ The interferometer SLaM pipeline closely mirrors the imaging SLaM pipeline, with
 - It uses **two datasets with different transformers**. The `source_lp` stage uses `TransformerNUFFT` (backed
   by the JAX-native `nufftax`, https://github.com/GragasLab/nufftax) so light-profile fitting runs at full GPU
   speed even on ALMA-class datasets with millions of visibilities. The `source_pix` and `mass` stages switch to
-  `TransformerNUFFT` combined with the pre-computed sparse operator, because pixelized source reconstructions
-  exploit sparsity rather than the NUFFT path.
+  `TransformerNUFFT` combined with the pre-computed sparse operator, which makes the inversion cost
+  independent of visibility count (the sparse operator supports linear light profiles as well as pixelizations,
+  so a single sparse dataset can serve every stage).
 
 The interferometer SLaM pipeline still omits the `light_lp` stage, because interferometer data does not contain
 lens light emission. The lens galaxy therefore has no `bulge`/`disk` light components anywhere in the pipeline.
@@ -272,7 +273,7 @@ def source_pix_2(
             lens=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.lens.redshift,
-                # interferometry does not support lens light
+                # interferometer data does not contain lens light emission
                 bulge=None,
                 disk=None,
                 mass=source_pix_result_1.instance.galaxies.lens.mass,
@@ -416,8 +417,8 @@ The SLaM pipeline runs in two phases that prefer different transformers:
 - `dataset_nufft` uses `TransformerNUFFT` (backed by JAX-native `nufftax`) for the `source_lp` stage. With
   light profiles this is the fast path at any visibility count, including ALMA-class datasets.
 - `dataset_sparse` uses `TransformerNUFFT` combined with `apply_sparse_operator(...)` for `source_pix_1`,
-  `source_pix_2` and `mass_total`. Pixelized source reconstructions exploit sparsity in the linear inversion
-  rather than the NUFFT, so this combination is the right choice for the pixelized stages.
+  `source_pix_2` and `mass_total`. The sparse operator makes the inversion cost independent of visibility
+  count; it also supports linear light profiles, so it may be applied to the `source_lp` stage as well.
 
 Both datasets are built from the same FITS files; only the transformer (and sparse-operator preload) differ.
 """
@@ -447,8 +448,8 @@ We use a try / except to load the pre-computed curvature preload, which is neces
 the sparse operator formalism. If this file does not exist (e.g. you have not made it manually via
 the `many_visibilities_preparation` example) it is made here.
 
-The sparse operator is applied only to `dataset_sparse` — the NUFFT-backed `dataset_nufft` used by
-`source_lp` does not need it.
+The sparse operator is applied only to `dataset_sparse` here; `source_lp` can also be run on a sparse dataset
+if you prefer a single dataset for the whole pipeline.
 """
 try:
     nufft_precision_operator = np.load(

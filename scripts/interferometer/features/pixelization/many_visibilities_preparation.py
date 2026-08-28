@@ -4,7 +4,8 @@ Pixelization: Many Visibilities Preparation
 
 To perform many visibility modeling, a matrix called `nufft_precision_operator` is created and used, which encodes information
 and symmetries into the Fourier transform operation performed when modeling interferometer datasets, in a way that
-exploits the sparsity of the pixelized source reconstructions and means a very small amount of memory or VRAM is used.
+exploits the sparsity of the inversion — pixelizations, linear light profiles, or both — and means a very small
+amount of memory or VRAM is used.
 
 The details can be found in the source code, but you do not need to know them to do science with the code,
 nevertheless this ultimately means datasets exceeding millions of visibilities can be modeled in under an hour on a GPU.

@@ -25,8 +25,9 @@ because the per-iteration NUFFT of every Gaussian basis component runs inside th
 as the rest of the model.
 
 The SOURCE PIX and MASS TOTAL stages use the same `TransformerNUFFT` plus a pre-computed sparse
-operator (via `apply_sparse_operator`) so the pixelized source curvature matrix is assembled via the
-FFT-based W̃ precision matrix instead of the dense `transformed_mapping_matrix`.
+operator (via `apply_sparse_operator`) so the curvature matrix — for the pixelization and, since the sparse
+path supports linear function lists, for an MGE basis as well — is assembled via the FFT-based W̃ precision
+matrix instead of the dense `transformed_mapping_matrix`.
 
 __Contents__
 
@@ -454,8 +455,8 @@ pixelized source modeling, especially for many visibilities.
 We use a try / except to load the pre-computed curvature preload, which is necessary to use the sparse
 operator formalism. If this file does not exist it is made here.
 
-The sparse operator is applied only to `dataset_sparse` — the NUFFT-backed `dataset_nufft` used by
-`source_lp` does not need it.
+The sparse operator is applied only to `dataset_sparse` here; `source_lp` can also be run on a sparse dataset
+if you prefer a single dataset for the whole pipeline.
 """
 try:
     nufft_precision_operator = np.load(
