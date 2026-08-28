@@ -29,3 +29,6 @@ scripts/scripts/
 output_path/
 *.log
 .codex/
+
+# Structured smoke/validation reports (run_smoke.py --report-dir)
+test-results/
