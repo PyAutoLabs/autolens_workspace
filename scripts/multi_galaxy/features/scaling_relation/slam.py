@@ -227,7 +227,7 @@ def lens_light_1(
             centre_prior_is_uniform=True,
             centre=(centre[0], centre[1]),
             centre_sigma=0.1,
-            sigma_min=dataset_larger.pixel_scales[0] / 10.0,
+            sigma_min=dataset.pixel_scales[0] / 10.0,
         )
 
         lens_dict[f"lens_{i}"] = af.Model(
@@ -864,7 +864,9 @@ have to reach the tier. The enlarged radius is derived from how far out the tier
 hard-coded, so adding a more distant member widens the mask automatically.
 
 It is capped just inside the image half-width, because a circular mask larger than the data is not a mask, it is a
-crash waiting to happen.
+crash waiting to happen. If the cap bites hard enough that a tier member falls outside the enlarged mask, the fit
+is unmeasurable and the script says so here, rather than a downstream "measured luminosity is 0.0": the linear
+solve of an off-frame Gaussian correctly returns zero intensity.
 """
 mask_radius = 3.0
 
@@ -878,6 +880,19 @@ image_half_width = 0.5 * min(dataset_full.shape_native) * pixel_scale
 mask_radius_larger = min(
     max(mask_radius, float(galaxy_distances.max()) + 0.5), image_half_width - 0.1
 )
+
+if float(galaxy_distances.max()) > mask_radius_larger:
+    raise ValueError(
+        f"The enlarged mask needs a radius of "
+        f"{max(mask_radius, float(galaxy_distances.max()) + 0.5):.2f}\" to enclose the scaling tier, but the "
+        f"image is only {image_half_width:.2f}\" from its centre to its edge, so the mask is capped at "
+        f"{mask_radius_larger:.2f}\" and the outermost members sit off-frame. Their light never enters the fit, "
+        f"the linear solve returns zero intensity for them and the luminosity measurement this script exists to "
+        f"make is impossible. Galaxy radii are "
+        f"{[round(float(d), 2) for d in galaxy_distances]}\". The simulator places the tier as a fraction of its "
+        f"grid's half-width, so a mismatch here means the dataset was simulated on a wider grid than the one "
+        f"being fitted."
+    )
 
 print(f"Standard mask radius: {mask_radius}")
 print(f"Enlarged mask radius: {mask_radius_larger:.2f}")
