@@ -69,12 +69,19 @@ grid = al.Grid2D.uniform(
 
 main_lens_centres = [(0.35, 0.25), (-0.35, -0.25)]
 
+# The tier is placed as a fraction of the simulated grid's half-width rather than in absolute arcseconds, so it
+# stays inside the frame when the grid shrinks (a capped smoke run, `PYAUTO_SMALL_DATASETS=1`, remakes the grid
+# as 16 x 16 at 0.6", a half-width of 4.8", where the arcsecond positions below would all fall off the image and
+# every measured luminosity would be zero). At the full resolution above the half-width is 7.5", which reproduces
+# the tier's design positions exactly: (5.5, -4.5), (-5.0, 4.0), (3.5, 6.0), (-6.0, -3.5), (6.5, 2.5) arcseconds.
+image_half_width = 0.5 * min(grid.shape_native) * grid.pixel_scales[0]
+
 scaling_galaxies_centres = [
-    (5.5, -4.5),
-    (-5.0, 4.0),
-    (3.5, 6.0),
-    (-6.0, -3.5),
-    (6.5, 2.5),
+    (5.5 / 7.5 * image_half_width, -4.5 / 7.5 * image_half_width),
+    (-5.0 / 7.5 * image_half_width, 4.0 / 7.5 * image_half_width),
+    (3.5 / 7.5 * image_half_width, 6.0 / 7.5 * image_half_width),
+    (-6.0 / 7.5 * image_half_width, -3.5 / 7.5 * image_half_width),
+    (6.5 / 7.5 * image_half_width, 2.5 / 7.5 * image_half_width),
 ]
 
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
