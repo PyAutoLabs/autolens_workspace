@@ -1697,6 +1697,14 @@
     "title": "Lens Calc"
   },
   {
+    "contents": [],
+    "cross_refs": [],
+    "notebook": "notebooks/guides/misc/witt_wynne.ipynb",
+    "path": "scripts/guides/misc/witt_wynne.py",
+    "summary": "The singular isothermal elliptical *potential* (SIEP) is the one strong-lens model whose lens equation reduces to a quartic with a closed-form solution. Given a source position it returns, in microseconds and without any iteration, the number of images (4, 2 or 1), their positions, their signed magnifications and their time lags. That speed is what makes it usable inside a transient broker: when a supernova alert lands near a known quad, the question \"is this a fourth image or a foreground star?\" has to be answered before the object fades.",
+    "title": "Guide: Witt-Wynne (SIEP) Projection and the isit4or2or1 Solver"
+  },
+  {
     "contents": [
       "Sample Simulation",
       "Dataset & Mask",

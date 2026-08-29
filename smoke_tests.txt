@@ -56,6 +56,7 @@ guides/galaxies.py
 guides/using_jax.py
 # guides/results/start_here.py  # disabled: depends on prior search output in output/ dir (not generated during smoke tests)
 guides/modeling/cookbook.py
+guides/misc/witt_wynne.py
 # Delaunay pixelization: the 2026-04-10 parked FitExceptions are fixed. The interferometer
 # script's intermittent qhull NaN (source_pix_2 Hilbert mesh) is now tolerated in test-mode by
 # PyAutoFit#1408 (bypass treats a single-eval FitException as resample-to-reject), so it no
