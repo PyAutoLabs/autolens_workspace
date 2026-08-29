@@ -40,6 +40,9 @@ __Contents__
 - **Profiles With Physical Units:** A worked 3-plane example using the `NFWMCRLudlow` profile, with numerical checks
   of the convention.
 - **Science Corollaries:** Mass-sheet degeneracy breaking and multi-plane cosmography.
+- **Cross Validation:** Independent oracles for the recursion — astropy distances, the papers' equations,
+  numerical and exact-autodiff Jacobians, a double Einstein ring — and the two convention traps that make an
+  obvious sanity check give a confidently wrong answer.
 - **Attribution:** The Slack discussion this guide distills.
 
 __Example__
@@ -59,6 +62,7 @@ from typing import List, Optional
 import numpy as np
 
 import autoarray as aa
+import autogalaxy as ag
 import autolens as al
 
 lens_0 = al.Galaxy(redshift=0.5, mass=al.mp.IsothermalSph(einstein_radius=1.0))
@@ -492,6 +496,761 @@ nuisance — it carries real scientific leverage:
  $\\Omega_{\\rm m}$ and the dark energy equation of state), analogously to other geometric probes:
  https://arxiv.org/abs/2110.06232
 
+__Cross Validation__
+
+Everything above describes what the code does. This section is about how you check that it is *right*, which for
+multi-plane ray-tracing deserves a section of its own: a magnification is just a number, and nothing about a
+wrong one announces that the wrong $\\beta$ went into it. PyAutoLens#480 was a magnification that was wrong by a
+factor of 15 and survived four months in exactly that way.
+
+The only defence is an oracle that shares no code with the implementation. There are six available here, and all
+of them are cheap:
+
+ - the scaling factors recomputed from `astropy`'s angular diameter distances,
+ - the multi-plane lens equation written out directly from the paper,
+ - the Jacobian obtained by numerically differencing traced positions,
+ - the Jacobian obtained by the published plane-by-plane recursion,
+ - an exact analytic closed form (two aligned isothermal spheres, which produce a double Einstein ring),
+ - exact automatic differentiation via JAX.
+
+Each arm below is a handful of runnable code that prints its own residual against the `Tracer`. They are the same
+oracles the library's own cross-validation module uses
+(`test_autolens/lens/test_multi_plane_cross_validation.py`), reproduced here so you can point them at your own
+configuration when a multi-plane result surprises you.
+
+__The Formalism__
+
+**Multi-plane lens equation** (Schneider, Ehlers & Falco, *Gravitational Lenses*, 1992, section 9.1, equations 9.6
+and 9.7b). Writing $\\theta_{1}$ for the observed image-plane position and $\\alpha_{i}$ for the deflection of
+plane $i$ evaluated at that plane's own traced position,
+
+$\\theta_{j} = \\theta_{1} - \\sum_{i<j} \\beta_{ij} \\, \\alpha_{i}(\\theta_{i})$
+
+with $\\beta_{ij} = D_{ij} D_{s} / (D_{j} D_{is})$ and $D_{s}$ the distance to the **final** plane of the system.
+Two consequences of that normalization are used repeatedly below: $\\beta_{ij} = 1$ when
+$z_{j} = z_{\\rm final}$ (then $D_{j} = D_{s}$ and $D_{ij} = D_{is}$), and $\\beta_{ij} = 0$ when $z_{i} = z_{j}$
+(then $D_{ij} = 0$) — a deflector sitting *at* plane $j$ cannot bend light that has only reached plane $j$.
+
+**Convergence, shear and magnification** (Narayan & Bartelmann 1996,
+https://inspirehep.net/literature/419263, equations 55 and 60). With $A = d\\beta / d\\theta$ the Jacobian of the
+lens mapping and $H_{ab} = d\\alpha_{a} / d\\theta_{b}$ the Hessian of the lensing potential,
+
+$A = I - H$, $\\kappa = {\\rm tr}(H) / 2 = 1 - {\\rm tr}(A) / 2$, $\\gamma_{1} = (H_{xx} - H_{yy}) / 2$,
+$\\gamma_{2} = H_{xy}$, $\\mu = 1 / \\det(A)$
+
+**Jacobian recursion** (McCully, Keeton, Wong & Zabludoff 2014, https://arxiv.org/abs/1401.0197). Differentiating
+the lens equation above with respect to $\\theta_{1}$ gives, with $U_{i} = d\\alpha_{i} / d\\theta$ evaluated at
+$\\theta_{i}$,
+
+$A_{1} = I$, $A_{j} = I - \\sum_{i<j} \\beta_{ij} \\, U_{i} A_{i}$
+
+This is a genuinely different numerical route to $\\mu$ than differencing a traced position, because the chain
+rule is applied analytically between planes and only the per-plane $U_{i}$ are differenced.
+
+__Two Convention Traps__
+
+Before the oracles, the two mistakes that produce a confidently wrong cross-check. Both come from the same place:
+the final-plane normalization described in `__The PyAutoLens Convention__` above.
+
+**(a) `deflections_between_planes_from` is a difference of traced grids, not a deflection.**
+`Tracer.deflections_between_planes_from(plane_i=i, plane_j=j)` returns `traced_grids[i] - traced_grids[j]`.
+Because every traced grid carries the final-plane normalization, this quantity is the *final-plane-scaled
+difference of two positions*. It is **not** the physical deflection at plane $j$, which in the other common
+convention would be $\\alpha_{j}$ rescaled by $D_{js} / D_{s}$. For `plane_i=0` it is exactly
+$\\theta - \\theta_{j}$.
+
+**(b) Truncating a tracer to the planes up to $j$ is not an oracle for plane $j$.** Dropping the planes above $j$
+changes `redshift_final`, and therefore changes *every* $\\beta_{ij}$ left in the recursion, because $D_{s}$ and
+$D_{is}$ in the formula above refer to the final plane of whatever system is being traced. This one is worth a
+worked example, because it is the natural thing to try and it fails silently.
+
+__Trap (b) In Practice: 1.86 Versus 27.9__
+
+The configuration below is the one from PyAutoLens#480: a main lens at z=0.5, a second deflector at z=1.0 which
+is itself compact (it hosts the intermediate source), and a final source plane at z=2.0. We ask for the
+magnification at the **intermediate** plane, z=1.0, two ways.
+
+The wrong way is to build a tracer containing only the planes up to z=1.0 and ask for the magnification of that
+system. The right way is to keep the full three-plane tracer and select the plane with `plane_j=1`.
+"""
+lens_galaxy = al.Galaxy(
+    redshift=0.5,
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0),
+        einstein_radius=1.6,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
+    ),
+)
+
+intermediate_galaxy = al.Galaxy(
+    redshift=1.0,
+    mass=al.mp.Isothermal(
+        centre=(0.02, 0.03),
+        einstein_radius=0.2,
+        ell_comps=al.convert.ell_comps_from(axis_ratio=0.8, angle=60.0),
+    ),
+)
+
+far_source = al.Galaxy(redshift=2.0)
+
+tracer_480 = al.Tracer(galaxies=[lens_galaxy, intermediate_galaxy, far_source])
+tracer_480_truncated = al.Tracer(galaxies=[lens_galaxy, intermediate_galaxy])
+
+positions_480 = [
+    (0.89140625, 0.63102580),
+    (-0.67578125, -0.76634227),
+    (1.07109375, -0.24131437),
+    (-0.36875000, 1.04644736),
+]
+
+grid_480 = al.Grid2DIrregular(values=positions_480)
+
+magnification_wrong = np.asarray(
+    ag.LensCalc.from_tracer(
+        tracer_480_truncated, use_multi_plane=True, plane_i=0, plane_j=1
+    ).magnification_2d_via_hessian_from(grid=grid_480)
+)
+
+magnification_right = np.asarray(
+    ag.LensCalc.from_tracer(
+        tracer_480, use_multi_plane=True, plane_i=0, plane_j=1
+    ).magnification_2d_via_hessian_from(grid=grid_480)
+)
+
+print(f"mu at z=1.0, truncated tracer (WRONG) = {magnification_wrong}")
+print(f"mu at z=1.0, full tracer, plane_j=1   = {magnification_right}")
+
+"""
+The first image position returns 1.86 the wrong way and 27.9 the right way, and the other three are wrong by
+factors of 6 to 10 — two of them with the sign flipped, so a parity argument would not have caught it either.
+Nothing raised, nothing warned.
+
+The reason is entirely in the scaling factor. In the full system the light travelling from z=0.5 to z=1.0 carries
+$\\beta_{01} = 0.674$, because the deflections are normalized to z=2.0 and must be re-scaled down to reach the
+nearer plane. Truncate the system and z=1.0 *becomes* the final plane, so $\\beta_{01} = 1$ by construction: the
+same mass now deflects the same ray by 48% more.
+"""
+beta_full = cosmology.scaling_factor_between_redshifts_from(
+    redshift_0=0.5, redshift_1=1.0, redshift_final=2.0
+)
+beta_truncated = cosmology.scaling_factor_between_redshifts_from(
+    redshift_0=0.5, redshift_1=1.0, redshift_final=1.0
+)
+
+print(f"beta(0.5 -> 1.0) with final plane z=2.0 = {beta_full:.6f}")
+print(f"beta(0.5 -> 1.0) with final plane z=1.0 = {beta_truncated:.6f}")
+
+"""
+An independent third opinion settles which of the two numbers is the magnification of the real system. The
+Jacobian $A = d\\theta_{j} / d\\theta_{1}$ can be obtained by central-differencing the traced position itself,
+with no `LensCalc` and no Hessian involved, and $\\mu = 1 / \\det(A)$ follows.
+
+This little oracle is the workhorse of the rest of the section, so it is worth reading: `mapping` is the map
+$\\theta \\rightarrow \\theta_{j}$ through the implementation under test, and the Jacobian is two central
+differences per position.
+"""
+
+
+def traced_position_mapping_from(tracer, plane_index):
+    """
+    The map `theta -> theta_j` through the tracer, as a scalar-in / array-out callable suitable for
+    central differencing.
+    """
+
+    def mapping(y, x):
+        grid = al.Grid2DIrregular(values=[(y, x)])
+        return np.asarray(tracer.traced_grid_2d_list_from(grid=grid)[plane_index])[0]
+
+    return mapping
+
+
+def jacobian_via_central_difference(mapping, positions, h=1e-6):
+    """
+    The (N, 2, 2) Jacobian `d theta_j / d theta_1` of an arbitrary (y, x) -> (y_j, x_j) mapping, by
+    two-point central differences.
+    """
+    jacobians = []
+
+    for y, x in np.asarray(positions, dtype=float):
+        d_y = (np.asarray(mapping(y + h, x)) - np.asarray(mapping(y - h, x))) / (2.0 * h)
+        d_x = (np.asarray(mapping(y, x + h)) - np.asarray(mapping(y, x - h))) / (2.0 * h)
+
+        jacobians.append(np.array([[d_y[0], d_x[0]], [d_y[1], d_x[1]]]))
+
+    return np.array(jacobians)
+
+
+def magnification_via_jacobian(jacobians):
+    """
+    `mu = 1 / det(A)`, Narayan & Bartelmann equation 60.
+    """
+    return np.array([1.0 / np.linalg.det(jacobian) for jacobian in jacobians])
+
+
+magnification_traced = magnification_via_jacobian(
+    jacobian_via_central_difference(
+        traced_position_mapping_from(tracer_480, plane_index=1), positions_480
+    )
+)
+
+print(f"mu at z=1.0, ray-traced Jacobian      = {magnification_traced}")
+print(
+    f"max relative residual, LensCalc vs ray-traced Jacobian = "
+    f"{np.max(np.abs(magnification_traced - magnification_right) / np.abs(magnification_right)):.2e}"
+)
+
+"""
+The oracle agrees with the full tracer to a few parts in $10^{8}$ and disagrees with the truncated one by an
+order of magnitude. The rule to take away: to ask for a quantity at an intermediate plane, keep the whole system
+and select the plane index, never rebuild a shorter system.
+
+__Oracle 1: Scaling Factors From Astropy__
+
+The scaling factors are the first thing to check, because every other quantity is downstream of them.
+`ag.cosmo.Planck15` is a hand-rolled `FlatLambdaCDM` that integrates $1/E(z)$ with its own Simpson rule, so
+recomputing $\\beta_{ij}$ from `astropy.cosmology.Planck15` angular diameter distances is genuinely independent
+evidence rather than a tautology.
+"""
+import astropy.units as u
+from astropy.cosmology import Planck15 as astropy_planck15
+
+
+def angular_diameter_distance_from(redshift_0, redshift_1):
+    """
+    Angular diameter distance between two redshifts in Mpc, from astropy's `Planck15`. Astropy 7 renamed
+    the two-redshift form, so both spellings are tried.
+    """
+    try:
+        distance = astropy_planck15.angular_diameter_distance(redshift_0, redshift_1)
+    except TypeError:
+        distance = astropy_planck15.angular_diameter_distance_z1z2(
+            redshift_0, redshift_1
+        )
+
+    return distance.to(u.Mpc).value
+
+
+def beta_via_astropy(redshift_i, redshift_j, redshift_final):
+    """
+    `beta_ij = (D_ij D_s) / (D_j D_is)`, SEF 1992 equation 9.7b, from astropy distances.
+    """
+    D_ij = angular_diameter_distance_from(redshift_i, redshift_j)
+    D_s = angular_diameter_distance_from(0.0, redshift_final)
+    D_j = angular_diameter_distance_from(0.0, redshift_j)
+    D_is = angular_diameter_distance_from(redshift_i, redshift_final)
+
+    return (D_ij * D_s) / (D_j * D_is)
+
+
+def beta_via_project(redshift_i, redshift_j, redshift_final):
+    """
+    The same ratio, from PyAutoGalaxy's own cosmology.
+    """
+    return float(
+        cosmology.scaling_factor_between_redshifts_from(
+            redshift_0=redshift_i,
+            redshift_1=redshift_j,
+            redshift_final=redshift_final,
+        )
+    )
+
+
+redshift_triples = [
+    (0.5, 1.0, 2.0),
+    (0.1, 1.0, 3.0),
+    (0.5, 1.5, 2.0),
+    (1.0, 1.5, 2.0),
+    (0.2, 0.8, 1.6),
+]
+
+residual_list = []
+
+for redshift_i, redshift_j, redshift_final in redshift_triples:
+    beta_astropy = beta_via_astropy(redshift_i, redshift_j, redshift_final)
+    beta_project = beta_via_project(redshift_i, redshift_j, redshift_final)
+
+    residual_list.append(abs(beta_astropy - beta_project) / abs(beta_astropy))
+
+    print(
+        f"beta({redshift_i} -> {redshift_j}, final {redshift_final}): "
+        f"astropy = {beta_astropy:.10f}, PyAutoGalaxy = {beta_project:.10f}"
+    )
+
+print(f"max relative difference, astropy vs PyAutoGalaxy = {max(residual_list):.2e}")
+
+"""
+The two agree to about $2 \\times 10^{-7}$, and that number is not noise — it is the difference between two
+quadratures of the same integral, with all six Planck15 parameters (H0, Om0, Ob0, Tcmb0, Neff, m_nu) matching
+astropy exactly.
+
+That floor is why the next arm is run **twice**. An oracle built on astropy scaling factors can only ever test
+the ray-tracing to $10^{-6}$, because below that it is measuring the cosmology rather than the recursion. Feeding
+the project's *own* scaling factors into the paper's equation removes the cosmology from the comparison entirely
+and lets the recursion itself — plane ordering, which deflection is scaled by which $\\beta$, everything — be
+checked to $10^{-10}$. The first arm asks "is the cosmology right?"; the second asks "is the algebra right?".
+Both are worth asking, and they are different questions.
+
+__Oracle 2: The Lens Equation, Written From The Paper__
+
+The recursion below is transcribed from SEF 1992 equation 9.6, not from `tracer_util.py`. It uses each galaxy's
+*single-plane* `deflections_yx_2d_from` — the one piece of shared code, itself cross-validated against analytic
+closed forms elsewhere in the library — and nothing else.
+
+The test system is a four-plane one with three different elliptical deflectors, chosen so that no symmetry can
+hide an ordering mistake.
+"""
+
+
+def deflections_summed_from(galaxies, positions):
+    """
+    Summed single-plane deflection angles of a list of galaxies at the given (N, 2) positions.
+    """
+    grid = al.Grid2DIrregular(values=np.asarray(positions, dtype=float))
+
+    total = np.zeros(np.asarray(positions, dtype=float).shape)
+
+    for galaxy in galaxies:
+        total = total + np.asarray(galaxy.deflections_yx_2d_from(grid=grid))
+
+    return total
+
+
+def traced_positions_via_paper(planes, positions, redshift_final, beta_from):
+    """
+    `theta_j = theta_1 - sum_{i<j} beta_ij alpha_i(theta_i)`, SEF 1992 equation 9.6, written out here
+    from the paper. Returns one (N, 2) array of positions per plane.
+    """
+    redshifts = [galaxies[0].redshift for galaxies in planes]
+
+    theta_list = []
+    alpha_list = []
+
+    for plane_index, galaxies in enumerate(planes):
+        theta = np.asarray(positions, dtype=float).copy()
+
+        for previous_index in range(plane_index):
+            beta = beta_from(
+                redshifts[previous_index], redshifts[plane_index], redshift_final
+            )
+            theta = theta - beta * alpha_list[previous_index]
+
+        theta_list.append(theta)
+        alpha_list.append(deflections_summed_from(galaxies, theta))
+
+    return theta_list
+
+
+galaxy_0 = al.Galaxy(
+    redshift=0.5,
+    mass=al.mp.Isothermal(
+        centre=(0.0, 0.0), ell_comps=(0.1, -0.05), einstein_radius=1.2
+    ),
+)
+galaxy_1 = al.Galaxy(
+    redshift=1.0,
+    mass=al.mp.PowerLaw(
+        centre=(0.15, -0.1), ell_comps=(0.05, 0.1), einstein_radius=0.4, slope=2.2
+    ),
+)
+galaxy_2 = al.Galaxy(
+    redshift=1.5,
+    mass=al.mp.NFW(
+        centre=(-0.2, 0.25), ell_comps=(0.03, 0.02), kappa_s=0.08, scale_radius=5.0
+    ),
+)
+galaxy_3 = al.Galaxy(redshift=2.0)
+
+tracer_general = al.Tracer(
+    galaxies=[galaxy_0, galaxy_1, galaxy_2, galaxy_3], cosmology=cosmology
+)
+planes_general = [[galaxy_0], [galaxy_1], [galaxy_2], [galaxy_3]]
+
+positions_general = [(1.7, 0.9), (-1.4, 1.1), (0.8, -1.6)]
+grid_general = al.Grid2DIrregular(values=positions_general)
+
+traced_grid_list_general = tracer_general.traced_grid_2d_list_from(grid=grid_general)
+
+for beta_name, beta_from in [("astropy", beta_via_astropy), ("project", beta_via_project)]:
+    theta_list = traced_positions_via_paper(
+        planes_general, positions_general, redshift_final=2.0, beta_from=beta_from
+    )
+
+    residuals = [
+        float(np.max(np.abs(np.asarray(traced_grid_list_general[plane_index]) - theta_list[plane_index])))
+        for plane_index in range(4)
+    ]
+
+    print(f"paper recursion ({beta_name} betas), max |delta| per plane = "
+          f"{['%.2e' % residual for residual in residuals]}")
+
+"""
+With astropy scaling factors the residuals sit at the $10^{-7}$ level set by the cosmology; with the project's
+own scaling factors they are exactly zero to the last bit, at every one of the four planes. The recursion is not
+approximately the paper's equation — it is the paper's equation.
+
+Trap (a) is checked in passing here too: `deflections_between_planes_from(plane_i=0, plane_j=j)` should equal
+$\\theta - \\theta_{j}$ from the recursion above, and *not* the summed single-plane deflections of the planes
+below $j$, which is what the other convention would give.
+"""
+theta_list = traced_positions_via_paper(
+    planes_general, positions_general, redshift_final=2.0, beta_from=beta_via_project
+)
+
+for plane_index in range(1, 4):
+    deflections_between = np.asarray(
+        tracer_general.deflections_between_planes_from(
+            grid=grid_general, plane_i=0, plane_j=plane_index
+        )
+    )
+
+    residual = np.max(
+        np.abs(
+            deflections_between
+            - (np.asarray(positions_general) - theta_list[plane_index])
+        )
+    )
+
+    print(f"plane {plane_index}: |deflections_between_planes - (theta - theta_j)| = {residual:.2e}")
+
+"""
+__Oracle 3: A Numerical Jacobian, And Whether It Is One__
+
+The central-difference Jacobian introduced above settled PyAutoLens#480, but a numerical derivative is only an
+oracle if it is stable: too large a step and the second-order truncation error dominates, too small and
+floating-point cancellation does. The honest way to present one is with its step sweep, so here is $\\mu$ at the
+final plane of the four-plane system for $h$ from $10^{-4}$ to $10^{-7}$.
+"""
+mapping_general = traced_position_mapping_from(tracer_general, plane_index=3)
+
+print("h        mu (three image positions)")
+
+for h in [1e-4, 1e-5, 1e-6, 1e-7]:
+    magnification = magnification_via_jacobian(
+        jacobian_via_central_difference(mapping_general, positions_general, h=h)
+    )
+    print(f"{h:.0e}   {['%.6f' % value for value in magnification]}")
+
+"""
+Six significant figures are stable across three decades of step size, which is what licenses the arm to be used
+as a reference. Where that stability breaks down — very close to a compact deflector's centre — is exactly the
+regime discussed at the end of this section, and the sweep is how you find out you are in it.
+
+__Oracle 4: The Jacobian Recursion__
+
+The McCully et al. recursion propagates the Jacobian plane by plane, $A_{j} = I - \\sum_{i<j} \\beta_{ij} U_{i}
+A_{i}$, so no perturbed ray is ever traced: the chain rule between planes is analytic and only each plane's own
+$U_{i} = d\\alpha_{i} / d\\theta$ is differenced. From $A$ come the magnification, convergence and shear at
+*every* plane, which is what makes this the arm that cross-checks `LensCalc` most broadly.
+
+Note the shear convention: the library returns `[gamma_2, gamma_1]` in that column order, which the helper below
+reproduces from $H = I - A$.
+"""
+
+
+def deflection_gradient_from(galaxies, position, h=1e-6):
+    """
+    `U_ab = d alpha_a / d theta_b` for one plane's galaxies at a single position, by central differences
+    of the *profile* deflections (no ray tracing involved).
+    """
+    y, x = float(position[0]), float(position[1])
+
+    d_y = (
+        deflections_summed_from(galaxies, [(y + h, x)])[0]
+        - deflections_summed_from(galaxies, [(y - h, x)])[0]
+    ) / (2.0 * h)
+    d_x = (
+        deflections_summed_from(galaxies, [(y, x + h)])[0]
+        - deflections_summed_from(galaxies, [(y, x - h)])[0]
+    ) / (2.0 * h)
+
+    return np.array([[d_y[0], d_x[0]], [d_y[1], d_x[1]]])
+
+
+def jacobian_via_recursion(planes, positions, redshift_final, h=1e-6):
+    """
+    `A_1 = I`, `A_j = I - sum_{i<j} beta_ij U_i A_i` (McCully et al. 2014). Returns one (N, 2, 2) array
+    of Jacobians per plane.
+    """
+    redshifts = [galaxies[0].redshift for galaxies in planes]
+    positions = np.asarray(positions, dtype=float)
+
+    jacobian_list = [np.zeros((positions.shape[0], 2, 2)) for _ in range(len(planes))]
+
+    for position_index, position in enumerate(positions):
+        theta_list = []
+        A_list = []
+        U_list = []
+
+        for plane_index, galaxies in enumerate(planes):
+            theta = position.copy()
+            A = np.eye(2)
+
+            for previous_index in range(plane_index):
+                beta = beta_via_astropy(
+                    redshifts[previous_index], redshifts[plane_index], redshift_final
+                )
+                theta = theta - beta * deflections_summed_from(
+                    planes[previous_index], [theta_list[previous_index]]
+                )[0]
+                A = A - beta * U_list[previous_index] @ A_list[previous_index]
+
+            theta_list.append(theta)
+            A_list.append(A)
+            U_list.append(deflection_gradient_from(galaxies, theta, h=h))
+
+            jacobian_list[plane_index][position_index] = A
+
+    return jacobian_list
+
+
+def convergence_via_jacobian(jacobians):
+    """
+    `kappa = 1 - tr(A) / 2`, Narayan & Bartelmann equation 55 rearranged for `A = I - H`.
+    """
+    return np.array([1.0 - np.trace(jacobian) / 2.0 for jacobian in jacobians])
+
+
+def shear_via_jacobian(jacobians):
+    """
+    `gamma_1 = (A_yy - A_xx) / 2` and `gamma_2 = -A[1, 0]`, returned in the library's `[gamma_2, gamma_1]`
+    column order.
+    """
+    return np.array(
+        [
+            [-jacobian[1, 0], 0.5 * (jacobian[0, 0] - jacobian[1, 1])]
+            for jacobian in jacobians
+        ]
+    )
+
+
+jacobian_list = jacobian_via_recursion(
+    planes_general, positions_general, redshift_final=2.0
+)
+
+for plane_index in range(1, 4):
+    lens_calc = ag.LensCalc.from_tracer(
+        tracer_general, use_multi_plane=True, plane_i=0, plane_j=plane_index
+    )
+
+    magnification = np.asarray(lens_calc.magnification_2d_via_hessian_from(grid=grid_general))
+    convergence = np.asarray(lens_calc.convergence_2d_via_hessian_from(grid=grid_general))
+    shear = np.asarray(lens_calc.shear_yx_2d_via_hessian_from(grid=grid_general))
+
+    jacobians = jacobian_list[plane_index]
+
+    print(
+        f"plane {plane_index}: "
+        f"mu residual = {np.max(np.abs(magnification_via_jacobian(jacobians) - magnification) / np.abs(magnification)):.2e}, "
+        f"kappa residual = {np.max(np.abs(convergence_via_jacobian(jacobians) - convergence)):.2e}, "
+        f"gamma residual = {np.max(np.abs(shear_via_jacobian(jacobians) - shear)):.2e}"
+    )
+
+"""
+All three quantities agree at every plane to better than $10^{-6}$, the floor being the astropy scaling factors
+and the central differences rather than either implementation. Two independent Jacobians, two independent
+routes to the same lensing observables.
+
+__Oracle 5: The Double Einstein Ring__
+
+The strongest arm available is one with an exact closed form. Put two singular isothermal spheres on the same
+axis, both centred on the origin, at z=0.5 and z=1.0 with a source plane at z=2.0. An SIS deflects by exactly
+$\\theta_{\\rm E}$ radially outward, so on the y-axis the whole system collapses to a scalar problem:
+
+$\\theta_{2} = \\theta_{1} - \\beta_{01} \\theta_{\\rm E,1} {\\rm sign}(\\theta_{1})$
+
+$\\theta_{3} = \\theta_{1} - \\theta_{\\rm E,1} {\\rm sign}(\\theta_{1}) - \\theta_{\\rm E,2}
+{\\rm sign}(\\theta_{2})$
+
+using $\\beta_{02} = \\beta_{12} = 1$ at the final plane. Setting $\\theta_{3} = 0$ — a source exactly on the
+axis — has two positive roots whenever $\\theta_{\\rm E,2} > (1 - \\beta_{01}) \\theta_{\\rm E,1}$:
+
+outer ring: $\\theta_{1} = \\theta_{\\rm E,1} + \\theta_{\\rm E,2}$, from the branch with $\\theta_{2} > 0$
+
+inner ring: $\\theta_{1} = \\theta_{\\rm E,1} - \\theta_{\\rm E,2}$, from the branch with $\\theta_{2} < 0$
+
+The sign of $\\theta_{2}$ is the whole story: images inside $\\beta_{01} \\theta_{\\rm E,1}$ have already crossed
+the axis by the time they reach the second deflector, so it bends them the other way. That is the double Einstein
+ring — and with $\\theta_{\\rm E,1} = 1.0$ and $\\theta_{\\rm E,2} = 0.5$ the radii are exactly 1.5 and 0.5
+arcsec.
+
+We compare the closed form against root-finding on the *traced* position, i.e. against the implementation.
+"""
+from scipy.optimize import brentq
+
+einstein_radius_0 = 1.0
+einstein_radius_1 = 0.5
+
+tracer_ring = al.Tracer(
+    galaxies=[
+        al.Galaxy(
+            redshift=0.5,
+            mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=einstein_radius_0),
+        ),
+        al.Galaxy(
+            redshift=1.0,
+            mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=einstein_radius_1),
+        ),
+        al.Galaxy(redshift=2.0),
+    ],
+    cosmology=cosmology,
+)
+
+beta_01 = beta_via_astropy(0.5, 1.0, 2.0)
+
+print(f"beta_01 = {beta_01:.6f}, two rings exist = {einstein_radius_1 > (1.0 - beta_01) * einstein_radius_0}")
+
+radius_outer_analytic = einstein_radius_0 + einstein_radius_1
+radius_inner_analytic = einstein_radius_0 - einstein_radius_1
+
+
+def source_plane_y_from(theta):
+    """
+    The y coordinate of an on-axis image position after tracing to the final plane. Its roots are the
+    Einstein ring radii.
+    """
+    grid = al.Grid2DIrregular(values=[(theta, 0.0)])
+
+    return float(np.asarray(tracer_ring.traced_grid_2d_list_from(grid=grid)[2])[0, 0])
+
+
+radius_outer_traced = brentq(source_plane_y_from, 0.9, 2.5, xtol=1e-14)
+radius_inner_traced = brentq(source_plane_y_from, 0.05, 0.6, xtol=1e-14)
+
+print(f"outer ring: closed form = {radius_outer_analytic:.10f}, root-found = {radius_outer_traced:.10f}")
+print(f"inner ring: closed form = {radius_inner_analytic:.10f}, root-found = {radius_inner_traced:.10f}")
+print(
+    f"max |delta| = "
+    f"{max(abs(radius_outer_analytic - radius_outer_traced), abs(radius_inner_analytic - radius_inner_traced)):.2e}"
+)
+
+"""
+Both radii come back to machine precision. A quick figure of the two rings, with the region interior to
+$\\beta_{01} \\theta_{\\rm E,1}$ marked — the images inside it are the ones the second deflector bends backwards:
+"""
+import matplotlib.pyplot as plt
+
+figure, axis = plt.subplots(figsize=(5, 5))
+
+axis.add_patch(
+    plt.Circle((0.0, 0.0), radius_outer_traced, fill=False, color="k", lw=2, label="outer ring")
+)
+axis.add_patch(
+    plt.Circle((0.0, 0.0), radius_inner_traced, fill=False, color="r", lw=2, label="inner ring")
+)
+axis.add_patch(
+    plt.Circle((0.0, 0.0), beta_01 * einstein_radius_0, fill=False, color="b", ls="--", lw=1)
+)
+
+axis.plot(0.0, 0.0, "k+", markersize=10)
+axis.set_xlim(-2.0, 2.0)
+axis.set_ylim(-2.0, 2.0)
+axis.set_aspect("equal")
+axis.set_xlabel('x (")')
+axis.set_ylabel('y (")')
+axis.set_title("Double Einstein ring (two aligned SIS)")
+axis.legend(loc="upper right")
+
+plt.show()
+plt.close()
+
+"""
+__Oracle 6: Exact Automatic Differentiation__
+
+Every Jacobian so far has been a finite difference. JAX gives the derivative itself: `jax.jacfwd` differentiates
+the map $\\theta \\rightarrow \\theta_{j}$ through the library's own ray-tracing code, with no step size to
+choose and no truncation error to sweep.
+
+Two details matter. First, the pairing rule of `guides/using_jax.py` applies — inside a traced function the grid
+and the library call both need `xp=jnp`, and the returned plane grid is unwrapped with `.array`. Second, and less
+obviously, **float64 is not optional here**: in float32 this comparison returns residuals of order $10^{-2}$,
+which would look like a bug in the ray-tracing rather than the rounding error it is. The
+`from autolens import jax_wrapper` import at the top of this script is what turns 64-bit mode on, which is why it
+must come before anything else.
+
+We use the PyAutoLens#480 configuration from the start of this section, at the **final** plane this time.
+"""
+import jax
+import jax.numpy as jnp
+
+
+def magnification_via_jacfwd(tracer, positions, plane_index):
+    """
+    `mu = 1 / det(A)` with `A = d theta_j / d theta_1` from exact forward-mode automatic
+    differentiation of the library's own multi-plane ray-tracing.
+    """
+
+    def traced_position(theta):
+        grid = al.Grid2DIrregular(values=jnp.asarray(theta).reshape(1, 2), xp=jnp)
+
+        return tracer.traced_grid_2d_list_from(grid=grid, xp=jnp)[
+            plane_index
+        ].array.reshape(2)
+
+    magnification = []
+
+    for position in positions:
+        jacobian = jax.jacfwd(traced_position)(jnp.asarray(position, dtype=jnp.float64))
+        magnification.append(float(1.0 / jnp.linalg.det(jacobian)))
+
+    return np.array(magnification)
+
+
+magnification_jax = magnification_via_jacfwd(tracer_480, positions_480, plane_index=2)
+
+magnification_traced_last = magnification_via_jacobian(
+    jacobian_via_central_difference(
+        traced_position_mapping_from(tracer_480, plane_index=2), positions_480, h=1e-7
+    )
+)
+
+print(f"mu at z=2.0, JAX jacfwd (float64)  = {magnification_jax}")
+print(f"mu at z=2.0, ray-traced Jacobian   = {magnification_traced_last}")
+print(
+    f"max relative residual = "
+    f"{np.max(np.abs(magnification_jax - magnification_traced_last) / np.abs(magnification_jax)):.2e}"
+)
+
+"""
+The two agree to a few parts in $10^{4}$ at the hardest position and far better at the others: an exact
+derivative and a finite-difference one, computed by different tools, on a configuration built to be difficult.
+
+__A Warning: The NumPy Hessian Step Is Too Coarse Near A Compact Deflector__
+
+The oracles above have credentials, which lets them be used to make a statement about the library rather than
+only about themselves. Here is one.
+
+`LensCalc`'s NumPy path computes its Hessian by Richardson extrapolation with a hardcoded `buffer = 0.01` arcsec
+step. That is fine almost everywhere, including at the intermediate plane of the #480 configuration where it
+agreed with the ray-traced Jacobian to a few parts in $10^{8}$ at the start of this section. It is not fine at
+the final plane of that same configuration, where the rays pass within $\\sim 4 \\times 10^{-4}$ arcsec of a
+compact isothermal centre — a step 25 times larger than the distance to the singularity samples a completely
+different deflection field.
+"""
+magnification_hessian_last = np.asarray(
+    ag.LensCalc.from_tracer(
+        tracer_480, use_multi_plane=True, plane_i=0, plane_j=2
+    ).magnification_2d_via_hessian_from(grid=grid_480)
+)
+
+print(f"mu at z=2.0, LensCalc Richardson Hessian = {magnification_hessian_last}")
+print(f"mu at z=2.0, exact autodiff and ray-traced Jacobian = {magnification_jax}")
+
+"""
+The Hessian returns approximately `[-0.00694, -0.00221, 0.00139, 0.00246]` where exact autodiff and the
+ray-traced Jacobian both give `[0.04508, 0.01099, -0.08602, -0.01118]`: wrong by 100-120%, with a flipped sign
+at all four image positions.
+
+This is **a known, filed defect, and it is not fixed** — it is pinned as a strict expected failure in the
+library's cross-validation module and tracked as
+`PyAutoMind/draft/bug/autogalaxy/lenscalc_numpy_hessian_step_is_too_coarse.md`. If your multi-plane system is
+compact — a deflector at an intermediate plane sitting close to the sightline of the images you care about — do
+not take a NumPy Hessian magnification on trust. Use the JAX path shown above, or the ray-traced Jacobian, both
+of which resolve the field at the scale the rays actually probe.
+
+More generally, that is what this whole section is for: every arm above is a few lines long, and running two of
+them against each other costs a second. When a multi-plane number surprises you, that is much cheaper than four
+months.
+
 __Attribution__
 
 This guide distills a discussion on the PyAutoLens Slack, where users modeling cluster-scale lenses in physical
@@ -508,5 +1267,5 @@ stripped from generated notebooks and markdown.
 Guides load committed full-resolution FITS; SMALL_DATASETS would mismatch
 the pre-existing 100x100 data shape.
 
-ENV: full_datasets
+ENV: jax full_datasets
 """

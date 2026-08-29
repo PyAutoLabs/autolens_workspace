@@ -1533,10 +1533,13 @@
       "The PyAutoLens Convention",
       "Profiles With Physical Units",
       "Science Corollaries",
+      "Cross Validation",
       "Attribution"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/PyAutoLens/blob/main/autolens/lens/tracer_util.py",
+      "guides/using_jax.py",
+      "test_autolens/lens/test_multi_plane_cross_validation.py",
       "tracer_util.py"
     ],
     "notebook": "notebooks/guides/advanced/multi_plane.ipynb",
