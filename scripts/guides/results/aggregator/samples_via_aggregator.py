@@ -354,11 +354,19 @@ __Sample Instance__
 A non-linear search retains every model that is accepted during the model-fit.
 
 We can create an instance of any model -- below we create an instance of the last accepted model.
+
+A stored sample is not guaranteed to be reconstructable as an instance. A non-linear search evaluates parameter
+values that the model's own validation later rejects (for example an `ell_comps` magnitude of 1.0 or greater), and
+those points are still written to `samples.csv`. Materializing one raises an `af.exc.SamplesException`, whose
+documented recovery is to ask for the raw parameter values instead by passing `as_instance=False`.
 """
 for samples in agg.values("samples"):
-    instance = samples.from_sample_index(sample_index=-1)
+    try:
+        instance = samples.from_sample_index(sample_index=-1)
 
-    print(instance.galaxies.source.bulge)
+        print(instance.galaxies.source.bulge)
+    except af.exc.SamplesException:
+        print(samples.from_sample_index(sample_index=-1, as_instance=False))
 
 """
 __Search Plots__
