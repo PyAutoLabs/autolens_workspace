@@ -281,6 +281,21 @@ adapt_data will contain residuals that confuse the adaptive mesh.
 """
 galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(result=result_2)
 
+"""
+__Adapt Image S/N Cap__
+
+The source adapt image is capped at a signal-to-noise of 3.0 before it is used by the adaptive
+image-mesh and the adaptive regularization. Without the cap the brightest peak dominates the
+weights (they scale as a power of the adapt image), so fainter multiply-imaged features get too
+few source pixels and too little regularization weight. Capping makes every feature above S/N 3.0
+count equally. The cap is applied to an explicit copy so the raw S/N image is untouched.
+"""
+adapt_image_snr_cap = 3.0
+
+source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
+galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
+
 adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
 # Fix the lens mass model from search 2.

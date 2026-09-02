@@ -378,17 +378,48 @@ search will then fit for the lens galaxy's light and mass model using these adap
 
 The details of how the above features work is not provided here, but is given at the end of chapter 3 of the HowToLens
 lecture series.
+
+The adapt image passed to the `Hilbert` image-mesh below is capped in signal-to-noise first (see the cell
+`__Adapt Image S/N Cap (Interferometer)__`), so that fainter multiply-imaged features keep enough mesh
+resolution instead of losing their source pixels to the source's brightest peak.
 """
 galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
     result=result_1, use_model_images=True
 )
 
-galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(result=result_1)
+"""
+__Adapt Image S/N Cap (Interferometer)__
+
+Interferometer adapt images are real-space model images (flux units) because the dirty noise map
+is a dirty beam, not a noise map. To apply the same S/N 3.0 cap as imaging, the clip level is
+derived from a beam-smoothed S/N: the model image is transformed to a dirty image, divided by the
+homogeneous image-plane noise (the square root of half the summed visibility variances, because
+the dirty image is the real part of the transform), and the flux at the S/N = 3 contour is the
+level at which a copy of the model image is clipped. This stops the brightest peak dominating the
+adaptive mesh and regularization weights.
+"""
+adapt_image_snr_cap = 3.0
+
+source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+sigma_pix = np.sqrt(0.5 * np.sum(np.abs(dataset.noise_map.array) ** 2))
+dirty_source = dataset.transformer.image_from(
+    visibilities=dataset.transformer.visibilities_from(image=source_adapt_image)
+)
+above_cap = source_adapt_image.array[
+    dirty_source.array / sigma_pix > adapt_image_snr_cap
+]
+if above_cap.size:
+    source_adapt_image[source_adapt_image > above_cap.min()] = above_cap.min()
+else:
+    print(
+        "Adapt image S/N cap not applied: no pixel reaches S/N 3.0 in the dirty image."
+    )
+galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
 image_mesh = al.image_mesh.Hilbert(pixels=1000, weight_power=3.5, weight_floor=0.01)
 
 image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
-    mask=dataset.mask, adapt_data=galaxy_image_name_dict["('galaxies', 'source')"]
+    mask=dataset.mask, adapt_data=source_adapt_image
 )
 
 # Repeat edge zeroing set up describe above.
@@ -564,6 +595,25 @@ def source_pix_1(
         result=source_lp_result, use_model_images=True
     )
 
+    # Clip the source adapt image at the S/N 3.0 contour (see __Adapt Image S/N Cap (Interferometer)__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    sigma_pix = np.sqrt(0.5 * np.sum(np.abs(dataset.noise_map.array) ** 2))
+    dirty_source = dataset.transformer.image_from(
+        visibilities=dataset.transformer.visibilities_from(image=source_adapt_image)
+    )
+    above_cap = source_adapt_image.array[
+        dirty_source.array / sigma_pix > adapt_image_snr_cap
+    ]
+    if above_cap.size:
+        source_adapt_image[source_adapt_image > above_cap.min()] = above_cap.min()
+    else:
+        print(
+            "Adapt image S/N cap not applied: no pixel reaches S/N 3.0 in the dirty image."
+        )
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
+
     image_mesh = al.image_mesh.Overlay(shape=(26, 26))
 
     image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
@@ -655,10 +705,29 @@ def source_pix_2(
         result=source_pix_result_1, use_model_images=True
     )
 
+    # Clip the source adapt image at the S/N 3.0 contour (see __Adapt Image S/N Cap (Interferometer)__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    sigma_pix = np.sqrt(0.5 * np.sum(np.abs(dataset.noise_map.array) ** 2))
+    dirty_source = dataset.transformer.image_from(
+        visibilities=dataset.transformer.visibilities_from(image=source_adapt_image)
+    )
+    above_cap = source_adapt_image.array[
+        dirty_source.array / sigma_pix > adapt_image_snr_cap
+    ]
+    if above_cap.size:
+        source_adapt_image[source_adapt_image > above_cap.min()] = above_cap.min()
+    else:
+        print(
+            "Adapt image S/N cap not applied: no pixel reaches S/N 3.0 in the dirty image."
+        )
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
+
     image_mesh = al.image_mesh.Hilbert(pixels=1000, weight_power=3.5, weight_floor=0.01)
 
     image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
-        mask=dataset.mask, adapt_data=galaxy_image_name_dict["('galaxies', 'source')"]
+        mask=dataset.mask, adapt_data=source_adapt_image
     )
 
     edge_pixels_total = 30
@@ -741,6 +810,25 @@ def mass_total(
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
         result=source_pix_result_1, use_model_images=True
     )
+
+    # Clip the source adapt image at the S/N 3.0 contour (see __Adapt Image S/N Cap (Interferometer)__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    sigma_pix = np.sqrt(0.5 * np.sum(np.abs(dataset.noise_map.array) ** 2))
+    dirty_source = dataset.transformer.image_from(
+        visibilities=dataset.transformer.visibilities_from(image=source_adapt_image)
+    )
+    above_cap = source_adapt_image.array[
+        dirty_source.array / sigma_pix > adapt_image_snr_cap
+    ]
+    if above_cap.size:
+        source_adapt_image[source_adapt_image > above_cap.min()] = above_cap.min()
+    else:
+        print(
+            "Adapt image S/N cap not applied: no pixel reaches S/N 3.0 in the dirty image."
+        )
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
     adapt_images = al.AdaptImages(
         galaxy_name_image_dict=galaxy_image_name_dict,

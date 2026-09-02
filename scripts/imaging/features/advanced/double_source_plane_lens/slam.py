@@ -199,6 +199,14 @@ freed with priors initialized from the SOURCE LP PIPELINE result, and `source_1`
 so this search constrains the lens mass via `source_0` alone.
 
 Adapt images come from the SOURCE LP PIPELINE result 1 (the single-plane fit).
+
+__Adapt Image S/N Cap__
+
+The source adapt image is capped at a signal-to-noise of 3.0 before it is used by the adaptive
+image-mesh and the adaptive regularization. Without the cap the brightest peak dominates the
+weights (they scale as a power of the adapt image), so fainter multiply-imaged features get too
+few source pixels and too little regularization weight. Capping makes every feature above S/N 3.0
+count equally. The cap is applied to an explicit copy so the raw S/N image is untouched.
 """
 
 
@@ -215,6 +223,16 @@ def source_pix_1_source_0(
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
         result=source_lp_result_1
     )
+
+    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_0_adapt_image = galaxy_image_name_dict["('galaxies', 'source_0')"].copy()
+    source_0_adapt_image[source_0_adapt_image > adapt_image_snr_cap] = (
+        adapt_image_snr_cap
+    )
+    galaxy_image_name_dict["('galaxies', 'source_0')"] = source_0_adapt_image
+
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
     positions_likelihood_source_0 = source_lp_result_1.positions_likelihood_from(
@@ -305,6 +323,22 @@ def source_pix_1_source_1(
         "('galaxies', 'source_0')": pix_dict["('galaxies', 'source_0')"],
         "('galaxies', 'source_1')": lp2_dict["('galaxies', 'source_1')"],
     }
+
+    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_0_adapt_image = galaxy_name_image_dict["('galaxies', 'source_0')"].copy()
+    source_0_adapt_image[source_0_adapt_image > adapt_image_snr_cap] = (
+        adapt_image_snr_cap
+    )
+    galaxy_name_image_dict["('galaxies', 'source_0')"] = source_0_adapt_image
+
+    source_1_adapt_image = galaxy_name_image_dict["('galaxies', 'source_1')"].copy()
+    source_1_adapt_image[source_1_adapt_image > adapt_image_snr_cap] = (
+        adapt_image_snr_cap
+    )
+    galaxy_name_image_dict["('galaxies', 'source_1')"] = source_1_adapt_image
+
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_name_image_dict)
 
     positions_likelihood_source_0 = (
@@ -406,6 +440,22 @@ def source_pix_2(
         "('galaxies', 'source_0')": pix0_dict["('galaxies', 'source_0')"],
         "('galaxies', 'source_1')": pix1_dict["('galaxies', 'source_1')"],
     }
+
+    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_0_adapt_image = galaxy_name_image_dict["('galaxies', 'source_0')"].copy()
+    source_0_adapt_image[source_0_adapt_image > adapt_image_snr_cap] = (
+        adapt_image_snr_cap
+    )
+    galaxy_name_image_dict["('galaxies', 'source_0')"] = source_0_adapt_image
+
+    source_1_adapt_image = galaxy_name_image_dict["('galaxies', 'source_1')"].copy()
+    source_1_adapt_image[source_1_adapt_image > adapt_image_snr_cap] = (
+        adapt_image_snr_cap
+    )
+    galaxy_name_image_dict["('galaxies', 'source_1')"] = source_1_adapt_image
+
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_name_image_dict)
 
     analysis = al.AnalysisImaging(
