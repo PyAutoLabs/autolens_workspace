@@ -26,8 +26,9 @@ The SLaM pipeline makes the following pixelization-specific decisions:
    source-plane reconstruction, preventing edge artifacts.
 
  - **Two-stage pixelization**: SOURCE PIX 1 establishes the pixelization with initial adapt data, then
-   SOURCE PIX 2 refines it using capped adapt data from the first stage. This two-stage approach
-   ensures the adaptive features converge to robust solutions.
+   SOURCE PIX 2 refines it using the adapt data from the first stage. Both stages cap the source
+   adapt image at a S/N of 3.0. This two-stage approach ensures the adaptive features converge to
+   robust solutions.
 
  - **Signal-adaptive over-sampling**: Pixels above a signal-to-noise threshold use higher over-sampling
    (sub_size=4) than faint pixels (sub_size=2), balancing accuracy and speed.
@@ -291,6 +292,15 @@ Key pixelization choices:
    Rectangular meshes use `Adapt` (not `AdaptSplit`, which is reserved for irregular meshes).
 
 Signal-adaptive over-sampling is applied: pixels above the S/N threshold use sub_size=4, others sub_size=2.
+
+__Adapt Image S/N Cap__
+
+The source adapt image is capped at a signal-to-noise of 3.0 before it is used by the adaptive
+image-mesh and the adaptive regularization. Without the cap the brightest peak dominates the
+weights (they scale as a power of the adapt image), so fainter multiply-imaged features get too
+few source pixels and too little regularization weight. Capping makes every feature above S/N 3.0
+count equally. The cap is applied to an explicit copy so the raw S/N image is untouched. Both
+pixelization stages apply it.
 """
 
 
@@ -315,6 +325,14 @@ def source_pix_1(
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
         result=source_lp_result_1
     )
+
+    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
+
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
     analysis = al.AnalysisImaging(
@@ -392,8 +410,9 @@ def source_pix_1(
 """
 __SOURCE PIX PIPELINE 2__
 
-Identical to SOURCE PIX 1 but uses capped adapt data from the first pixelization stage, ensuring
-the adaptive mesh converges to a robust solution. The lens mass is fixed from SOURCE PIX 1.
+Identical to SOURCE PIX 1 but uses the adapt data from the first pixelization stage, ensuring
+the adaptive mesh converges to a robust solution. The adapt image is capped at a S/N of 3.0, as
+in SOURCE PIX 1. The lens mass is fixed from SOURCE PIX 1.
 """
 
 
@@ -412,7 +431,13 @@ def source_pix_2(
         result=source_pix_result_1
     )
 
-    # Cap the adapt data to prevent extreme values from dominating the mesh.
+    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
+
     adapt_images_capped = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
     analysis = al.AnalysisImaging(
@@ -789,7 +814,7 @@ source_pix_result_1, dataset_pix, adapt_images = source_pix_1(
     positions=positions,
 )
 
-# --- SOURCE PIX PIPELINE 2: Refine with capped adapt data ---
+# --- SOURCE PIX PIPELINE 2: Refine with the adapt data from stage 1 ---
 
 source_pix_result_2 = source_pix_2(
     dataset=dataset_pix,
@@ -842,7 +867,7 @@ This script demonstrated the full SLaM pipeline for group-scale lenses with a pi
 The key pixelization choices are:
  - Rectangular adaptive mesh with a fixed shape (28, 28).
  - `Adapt` regularization for brightness-dependent smoothing.
- - Two-stage pixelization refinement with capped adapt data.
+ - Two-stage pixelization refinement, with the source adapt image capped at a S/N of 3.0.
  - Fixed pixelization over-sampling of 4.
 
 These choices are the recommended defaults for science-grade group-scale lens modeling.

@@ -639,10 +639,27 @@ positions_likelihood = source_lp_result.positions_likelihood_from(
     factor=3.0, minimum_threshold=0.2
 )
 
+"""
+__Adapt Image S/N Cap__
+
+The source adapt image is capped at a signal-to-noise of 3.0 before it is used by the adaptive
+image-mesh and the adaptive regularization. Without the cap the brightest peak dominates the
+weights (they scale as a power of the adapt image), so fainter multiply-imaged features get too
+few source pixels and too little regularization weight. Capping makes every feature above S/N 3.0
+count equally. The cap is applied to an explicit copy so the raw S/N image is untouched.
+"""
 adapt_images_list = []
 
 for result in source_lp_result:
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(result=result)
+
+    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
+
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
     adapt_images_list.append(adapt_images)
 
@@ -668,6 +685,14 @@ adapt_images_list = []
 
 for result in source_pix_result_1:
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(result=result)
+
+    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
+
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
     adapt_images_list.append(adapt_images)
 

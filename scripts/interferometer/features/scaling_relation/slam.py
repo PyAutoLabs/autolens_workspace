@@ -77,6 +77,7 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 
 # from autolens import setup_notebook; setup_notebook()
 
+import numpy as np
 from pathlib import Path
 import autofit as af
 import autolens as al
@@ -186,6 +187,16 @@ __SOURCE PIX PIPELINE 1__
 
 Identical to `slam_start_here.py`, except the tier is carried forward from `source_lp[1]` as a free model. The tie
 travels with the model, so it stays anchored without being re-declared.
+
+__Adapt Image S/N Cap (Interferometer)__
+
+Interferometer adapt images are real-space model images (flux units) because the dirty noise map
+is a dirty beam, not a noise map. To apply the same S/N 3.0 cap as imaging, the clip level is
+derived from a beam-smoothed S/N: the model image is transformed to a dirty image, divided by the
+homogeneous image-plane noise (the square root of half the summed visibility variances, because
+the dirty image is the real part of the transform), and the flux at the S/N = 3 contour is the
+level at which a copy of the model image is clipped. This stops the brightest peak dominating the
+adaptive mesh and regularization weights.
 """
 
 
@@ -197,8 +208,27 @@ def source_pix_1(
     n_batch=20,
 ):
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
-        result=source_lp_result
+        result=source_lp_result, use_model_images=True
     )
+
+    # Clip the source adapt image at the S/N 3.0 contour (see __Adapt Image S/N Cap (Interferometer)__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    sigma_pix = np.sqrt(0.5 * np.sum(np.abs(dataset.noise_map.array) ** 2))
+    dirty_source = dataset.transformer.image_from(
+        visibilities=dataset.transformer.visibilities_from(image=source_adapt_image)
+    )
+    above_cap = source_adapt_image.array[
+        dirty_source.array / sigma_pix > adapt_image_snr_cap
+    ]
+    if above_cap.size:
+        source_adapt_image[source_adapt_image > above_cap.min()] = above_cap.min()
+    else:
+        print(
+            "Adapt image S/N cap not applied: no pixel reaches S/N 3.0 in the dirty image."
+        )
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
@@ -259,8 +289,27 @@ def source_pix_2(
     n_batch=20,
 ):
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
-        result=source_pix_result_1
+        result=source_pix_result_1, use_model_images=True
     )
+
+    # Clip the source adapt image at the S/N 3.0 contour (see __Adapt Image S/N Cap (Interferometer)__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    sigma_pix = np.sqrt(0.5 * np.sum(np.abs(dataset.noise_map.array) ** 2))
+    dirty_source = dataset.transformer.image_from(
+        visibilities=dataset.transformer.visibilities_from(image=source_adapt_image)
+    )
+    above_cap = source_adapt_image.array[
+        dirty_source.array / sigma_pix > adapt_image_snr_cap
+    ]
+    if above_cap.size:
+        source_adapt_image[source_adapt_image > above_cap.min()] = above_cap.min()
+    else:
+        print(
+            "Adapt image S/N cap not applied: no pixel reaches S/N 3.0 in the dirty image."
+        )
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
@@ -327,8 +376,27 @@ def mass_total(
     n_batch=20,
 ):
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
-        result=source_result_for_lens
+        result=source_result_for_lens, use_model_images=True
     )
+
+    # Clip the source adapt image at the S/N 3.0 contour (see __Adapt Image S/N Cap (Interferometer)__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    sigma_pix = np.sqrt(0.5 * np.sum(np.abs(dataset.noise_map.array) ** 2))
+    dirty_source = dataset.transformer.image_from(
+        visibilities=dataset.transformer.visibilities_from(image=source_adapt_image)
+    )
+    above_cap = source_adapt_image.array[
+        dirty_source.array / sigma_pix > adapt_image_snr_cap
+    ]
+    if above_cap.size:
+        source_adapt_image[source_adapt_image > above_cap.min()] = above_cap.min()
+    else:
+        print(
+            "Adapt image S/N cap not applied: no pixel reaches S/N 3.0 in the dirty image."
+        )
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 

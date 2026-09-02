@@ -114,6 +114,14 @@ def source_lp(
 __SOURCE PIX PIPELINE 1__
 
 Identical to `slam_start_here.py`.
+
+__Adapt Image S/N Cap__
+
+The source adapt image is capped at a signal-to-noise of 3.0 before it is used by the adaptive
+image-mesh and the adaptive regularization. Without the cap the brightest peak dominates the
+weights (they scale as a power of the adapt image), so fainter multiply-imaged features get too
+few source pixels and too little regularization weight. Capping makes every feature above S/N 3.0
+count equally. The cap is applied to an explicit copy so the raw S/N image is untouched.
 """
 
 
@@ -128,6 +136,13 @@ def source_pix_1(
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
         result=source_lp_result
     )
+
+    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
@@ -205,6 +220,13 @@ def source_pix_2(
         result=source_pix_result_1
     )
 
+    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
+
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
     analysis = al.AnalysisImaging(
@@ -264,6 +286,13 @@ def light_lp(
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
         result=source_result_for_lens
     )
+
+    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
@@ -330,6 +359,13 @@ def mass_light_dark(
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
         result=source_result_for_lens
     )
+
+    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
@@ -515,10 +551,20 @@ galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
     result=source_pix_result_1
 )
 
+# Over-sampling is decided on the raw S/N image; the capped copy never exceeds the cap.
+source_image_raw = galaxy_image_name_dict["('galaxies', 'source')"]
+
+# Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+adapt_image_snr_cap = 3.0
+
+source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
+galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
+
 adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
 over_sampling = al.util.over_sample.over_sample_size_via_adapt_from(
-    data=adapt_images.galaxy_name_image_dict["('galaxies', 'source')"],
+    data=source_image_raw,
     noise_map=dataset.noise_map,
 )
 

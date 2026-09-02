@@ -162,6 +162,17 @@ __SOURCE PIX PIPELINE 1__
 
 Pixelized source with mass carried forward from `source_lp`. No lens light to fix — the galaxies
 remain mass-only. Extra galaxy models are carried forward as free `model` parameters.
+
+__Adapt Image S/N Cap__
+
+The source adapt image is capped at a signal-to-noise of 3.0 before it is used by the adaptive
+image-mesh and the adaptive regularization. Without the cap the brightest peak dominates the
+weights (they scale as a power of the adapt image), so fainter multiply-imaged features get too
+few source pixels and too little regularization weight. Capping makes every feature above S/N 3.0
+count equally. The cap is applied to an explicit copy so the raw S/N image is untouched.
+
+The adaptive over-sampling map is evaluated on the raw (uncapped) S/N image, because the capped
+image never exceeds the threshold.
 """
 
 
@@ -183,13 +194,22 @@ def source_pix_1(
         result=source_lp_result
     )
 
+    source_image_raw = galaxy_image_name_dict["('galaxies', 'source')"]
+
+    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
+
     image_mesh = al.image_mesh.Hilbert(
         pixels=hilbert_pixels, weight_power=3.5, weight_floor=0.01
     )
 
     image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
         mask=mask,
-        adapt_data=galaxy_image_name_dict["('galaxies', 'source')"],
+        adapt_data=source_adapt_image,
     )
 
     image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
@@ -207,7 +227,7 @@ def source_pix_1(
     )
 
     over_sample_size_pixelization = np.where(
-        galaxy_image_name_dict["('galaxies', 'source')"] > signal_to_noise_threshold,
+        source_image_raw > signal_to_noise_threshold,
         4,
         2,
     )
@@ -285,8 +305,7 @@ def source_pix_1(
 """
 __SOURCE PIX PIPELINE 2__
 
-Refined pixelized source. The adapt data for the Hilbert image mesh is capped at a S/N threshold of 3.0
-to prevent over-concentration of source pixels. Extra galaxy models are fixed as instances from `source_pix[1]`.
+Refined pixelized source. Extra galaxy models are fixed as instances from `source_pix[1]`.
 """
 
 
@@ -303,23 +322,26 @@ def source_pix_2(
     hilbert_pixels = al.model_util.hilbert_pixels_from_pixel_scale(pixel_scale)
     edge_pixels_total = 30
     signal_to_noise_threshold = 3.0
-    signal_to_noise_threshold_image_mesh = 3.0
 
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
         result=source_pix_result_1
     )
 
-    adapt_data_snr_max = galaxy_image_name_dict["('galaxies', 'source')"]
-    adapt_data_snr_max[adapt_data_snr_max > signal_to_noise_threshold_image_mesh] = (
-        signal_to_noise_threshold_image_mesh
-    )
+    source_image_raw = galaxy_image_name_dict["('galaxies', 'source')"]
+
+    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
+    adapt_image_snr_cap = 3.0
+
+    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
+    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
+    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
     image_mesh = al.image_mesh.Hilbert(
         pixels=hilbert_pixels, weight_power=3.5, weight_floor=0.01
     )
 
     image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
-        mask=mask, adapt_data=adapt_data_snr_max
+        mask=mask, adapt_data=source_adapt_image
     )
 
     image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
@@ -337,7 +359,7 @@ def source_pix_2(
     )
 
     over_sample_size_pixelization = np.where(
-        galaxy_image_name_dict["('galaxies', 'source')"] > signal_to_noise_threshold,
+        source_image_raw > signal_to_noise_threshold,
         4,
         2,
     )
