@@ -97,6 +97,7 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 
 # from autolens import setup_notebook; setup_notebook()
 
+import numpy as np
 from pathlib import Path
 import autofit as af
 import autolens as al
@@ -718,9 +719,6 @@ __SLaM Pipeline__
 
 The code below calls the full SLaM PIPELINE. See the documentation string above each Python function for
 a description of each pipeline step.
-
-Between SOURCE PIX PIPELINE 1 and 2, adaptive over-sampling is applied to the dataset using the pixelized source
-reconstruction from search 1. This improves the pixelization accuracy in search 2 and all subsequent pipelines.
 """
 source_lp_result = source_lp(
     settings_search=settings_search,
@@ -754,12 +752,32 @@ galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
 adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
-over_sampling = al.util.over_sample.over_sample_size_via_adapt_from(
-    data=source_image_raw,
-    noise_map=dataset.noise_map,
+"""
+__Adaptive Pixelization Over-Sampling__
+
+From SOURCE PIX PIPELINE 2 onwards the pixelization grid is over-sampled adaptively. The source's
+signal-to-noise map from the previous pixelized fit (the same map that becomes the adapt image, read before
+the S/N 3.0 cap is applied) is thresholded at S/N 3.0: pixels above it, the bright lensed source, use a
+sub-size of 4 and every other pixel uses a sub-size of 2. This concentrates the extra over-sampling where the
+source is bright and the pixelization gains the most accuracy from it, and keeps the rest of the mask cheap.
+
+The map returned by `galaxy_name_image_dict_via_result_from` is already signal divided by noise, so it is
+thresholded directly.
+
+SOURCE PIX PIPELINE 1 keeps the dataset's default uniform sub-size. Its adapt image comes from the parametric
+source fit of the SOURCE LP PIPELINE, which does not yet trace the lensed source well enough to steer
+over-sampling.
+"""
+signal_to_noise_threshold = 3.0
+
+over_sample_size_pixelization = al.Array2D(
+    values=np.where(source_image_raw > signal_to_noise_threshold, 4, 2),
+    mask=dataset.mask,
 )
 
-dataset = dataset.apply_over_sampling(over_sample_size_pixelization=over_sampling)
+dataset = dataset.apply_over_sampling(
+    over_sample_size_pixelization=over_sample_size_pixelization
+)
 
 source_pix_result_2 = source_pix_2(
     settings_search=settings_search,

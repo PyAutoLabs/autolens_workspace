@@ -224,9 +224,6 @@ def source_pix_2(
         result=source_pix_result_1
     )
 
-    # Over-sampling is decided on the raw S/N image; the capped copy never exceeds the cap.
-    source_image_raw = galaxy_image_name_dict["('galaxies', 'source')"]
-
     # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
     adapt_image_snr_cap = 3.0
 
@@ -235,15 +232,6 @@ def source_pix_2(
     galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
-
-    over_sampling = al.util.over_sample.over_sample_size_via_adapt_from(
-        data=source_image_raw,
-        noise_map=dataset.noise_map,
-    )
-
-    dataset = dataset.apply_over_sampling(
-        over_sample_size_pixelization=over_sampling,
-    )
 
     analysis = al.AnalysisImaging(
         dataset=dataset,
@@ -1122,6 +1110,37 @@ source_pix_result_1 = source_pix_1(
     dataset=dataset,
     source_lp_result=source_lp_result,
     mesh_shape=mesh_shape,
+)
+
+"""
+__Adaptive Pixelization Over-Sampling__
+
+From SOURCE PIX PIPELINE 2 onwards the pixelization grid is over-sampled adaptively. The source's
+signal-to-noise map from the previous pixelized fit (the same map that becomes the adapt image, read before
+the S/N 3.0 cap is applied) is thresholded at S/N 3.0: pixels above it, the bright lensed source, use a
+sub-size of 4 and every other pixel uses a sub-size of 2. This concentrates the extra over-sampling where the
+source is bright and the pixelization gains the most accuracy from it, and keeps the rest of the mask cheap.
+
+The map returned by `galaxy_name_image_dict_via_result_from` is already signal divided by noise, so it is
+thresholded directly.
+
+SOURCE PIX PIPELINE 1 keeps the dataset's default uniform sub-size. Its adapt image comes from the parametric
+source fit of the SOURCE LP PIPELINE, which does not yet trace the lensed source well enough to steer
+over-sampling.
+"""
+signal_to_noise_threshold = 3.0
+
+source_image_raw = al.galaxy_name_image_dict_via_result_from(
+    result=source_pix_result_1
+)["('galaxies', 'source')"]
+
+over_sample_size_pixelization = al.Array2D(
+    values=np.where(source_image_raw > signal_to_noise_threshold, 4, 2),
+    mask=dataset.mask,
+)
+
+dataset = dataset.apply_over_sampling(
+    over_sample_size_pixelization=over_sample_size_pixelization
 )
 
 source_pix_result_2 = source_pix_2(

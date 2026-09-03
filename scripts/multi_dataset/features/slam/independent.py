@@ -603,6 +603,9 @@ galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
     result=source_pix_result_1
 )
 
+# Bound before the cap: the over-sampling map below uses the raw (uncapped) S/N image.
+source_image_raw = galaxy_image_name_dict["('galaxies', 'source')"]
+
 # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
 adapt_image_snr_cap = 3.0
 
@@ -611,6 +614,34 @@ source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_c
 galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
 adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
+"""
+__Adaptive Pixelization Over-Sampling__
+
+From SOURCE PIX PIPELINE 2 onwards the pixelization grid is over-sampled adaptively. The source's
+signal-to-noise map from the previous pixelized fit (the same map that becomes the adapt image, read before
+the S/N 3.0 cap is applied) is thresholded at S/N 3.0: pixels above it, the bright lensed source, use a
+sub-size of 4 and every other pixel uses a sub-size of 2. This concentrates the extra over-sampling where the
+source is bright and the pixelization gains the most accuracy from it, and keeps the rest of the mask cheap.
+
+The map returned by `galaxy_name_image_dict_via_result_from` is already signal divided by noise, so it is
+thresholded directly.
+
+SOURCE PIX PIPELINE 1 keeps the dataset's default uniform sub-size. Its adapt image comes from the parametric
+source fit of the SOURCE LP PIPELINE, which does not yet trace the lensed source well enough to steer
+over-sampling.
+"""
+signal_to_noise_threshold = 3.0
+
+over_sample_size_pixelization = al.Array2D(
+    values=np.where(source_image_raw > signal_to_noise_threshold, 4, 2),
+    mask=dataset.mask,
+)
+
+dataset = dataset.apply_over_sampling(
+    over_sample_size_lp=over_sample_size,
+    over_sample_size_pixelization=over_sample_size_pixelization,
+)
 
 analysis = al.AnalysisImaging(
     dataset=dataset,
@@ -826,6 +857,9 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
         result=source_pix_result_1
     )
 
+    # Bound before the cap: the over-sampling map below uses the raw (uncapped) S/N image.
+    source_image_raw = galaxy_image_name_dict["('galaxies', 'source')"]
+
     # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
     adapt_image_snr_cap = 3.0
 
@@ -834,6 +868,20 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
     galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
+
+    # Adaptive pixelization over-sampling, from this dataset's own source S/N map
+    # (see __Adaptive Pixelization Over-Sampling__ above).
+    signal_to_noise_threshold = 3.0
+
+    over_sample_size_pixelization = al.Array2D(
+        values=np.where(source_image_raw > signal_to_noise_threshold, 4, 2),
+        mask=dataset.mask,
+    )
+
+    dataset = dataset.apply_over_sampling(
+        over_sample_size_lp=over_sample_size,
+        over_sample_size_pixelization=over_sample_size_pixelization,
+    )
 
     dataset_model.grid_offset.grid_offset_0 = (
         source_lp_result.instance.dataset_model.grid_offset[0]
