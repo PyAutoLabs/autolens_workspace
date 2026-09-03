@@ -54,6 +54,11 @@ imaging/features/scaling_relation/modeling.py
 multi_dataset/modeling.py
 guides/galaxies.py
 guides/using_jax.py
+# The mappings guide is the only entry exercising the image<->source mapping API (ShapeSolver
+# regions, inversion clumps, the brightest multiple-image positions). It declares
+# `ENV: full_datasets` because its clump thresholds are read off a full-resolution
+# reconstruction, so it costs ~30s rather than the usual capped seconds.
+guides/mappings.py
 # guides/results/start_here.py  # disabled: depends on prior search output in output/ dir (not generated during smoke tests)
 guides/modeling/cookbook.py
 guides/misc/witt_wynne.py

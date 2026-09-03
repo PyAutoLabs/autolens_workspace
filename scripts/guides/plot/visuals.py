@@ -9,6 +9,10 @@ Overlays are specified via two keyword arguments on `aplt.plot_array()` and `apl
  - `lines=`: A list of `Grid2DIrregular` objects drawn as lines (e.g. critical curves, caustics).
  - `positions=`: A `Grid2DIrregular` object drawn as scatter points (e.g. image positions).
 
+A third overlay, `regions=`, draws filled polygons (e.g. the multiple images a source region maps to). It is
+available on the `autoarray` `plot_array` rather than the `autolens` one, so the `__Regions__` section below
+imports it as `aaplt.plot_array`.
+
 __Start Here Notebook__
 
 Refer to `guides/plot/start_here.ipynb` for a general introduction to the plotting API.
@@ -23,6 +27,7 @@ __Contents__
 - **Light Profile Centres:** The centres of light profiles can be extracted and plotted as positions over an image.
 - **Mass Profile Centres:** Mass profile centres can be extracted and overlaid in the same way.
 - **Combined Overlays:** `lines=` and `positions=` can be used together on the same plot.
+- **Regions:** `regions=` draws filled polygons, e.g. the image-plane regions a source region maps to.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -31,6 +36,10 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 
 from pathlib import Path
 
+import numpy as np
+
+import autoarray as aa
+import autoarray.plot as aaplt
 import autolens as al
 import autolens.plot as aplt
 
@@ -258,6 +267,53 @@ aplt.plot_array(
     title="Image with Critical Curves and Multiple Images",
     lines=tangential_critical_curve_list,
     positions=multiple_images,
+)
+
+"""
+__Regions__
+
+Regions are filled polygons, drawn one colour per region, and they are what a *mapping* is plotted with: the
+multiple images a region of the source maps to, in the image plane, and the region itself in the source plane.
+
+`regions=` takes a list of regions, each region being a list of `(N, 2)` arrays of `(y, x)` coordinates -- which
+is exactly the `image_contours` (or `source_contours`) of a `Mapping`. `region_colors=` overrides the default
+colour cycle `["r", "g", "b", "m", "c", "y"]`, `region_alpha=` sets the fill transparency (the outline is always
+opaque) and `region_labels=` writes a label at the centre of every polygon of a region, so the same source
+structure is identifiable across figures.
+
+This overlay lives on `autoarray`'s `plot_array` (imported above as `aaplt.plot_array`), not the `autolens` one.
+
+Below we build a mapping by tracing a source-plane `Circle` through the tracer -- note the positional `(y, x)`
+ordering of a `Shape` -- and overlay its image-plane regions. `guides/mappings.py` covers mappings in full.
+"""
+mapping = al.mappings.source_mapping_from(
+    tracer=tracer,
+    grid=grid,
+    shape=aa.Circle(
+        source_galaxy.bulge.centre[0], source_galaxy.bulge.centre[1], radius=0.1
+    ),
+)
+
+aaplt.plot_array(
+    array=image,
+    regions=[mapping.image_contours],
+    region_labels=["1"],
+    title="Image with the Regions One Source Region Maps To",
+)
+
+"""
+Any closed polygon can be drawn this way, so `regions=` is also the overlay for marking an arbitrary area of an
+image -- a masked region, an aperture, a footprint. Each entry of the outer list gets its own colour.
+"""
+box = np.array([[-1.0, -1.0], [-1.0, 1.0], [1.0, 1.0], [1.0, -1.0], [-1.0, -1.0]])
+
+aaplt.plot_array(
+    array=image,
+    regions=[[box], [box + 1.5]],
+    region_colors=["c", "m"],
+    region_alpha=0.15,
+    region_labels=["A", "B"],
+    title="Image with Two Hand-Made Regions",
 )
 
 """

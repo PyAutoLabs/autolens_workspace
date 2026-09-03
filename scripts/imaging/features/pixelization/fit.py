@@ -250,10 +250,19 @@ aplt.subplot_fit_imaging(fit=fit)
 Pixelizations have bespoke visualizations which show more details about the source-reconstruction, image-mesh
 and other quantities.
 
-The `subplot_of_mapper` function produces a comprehensive diagnostic subplot for the inversion. The
-`subplot_mappings` overlays colored circles in the image and source planes that map to one another, thereby
-allowing one to assess how the mass model ray-traces image-pixels and therefore to assess how the source
-reconstruction maps to the image.
+The `subplot_of_mapper` function produces a comprehensive diagnostic subplot for the inversion.
+
+The `subplot_mappings` function produces a 2x2 figure showing how the brightest clumps of the source
+reconstruction map to the image-plane. The panels are the data with all other linear objects subtracted, the
+reconstructed image, and the source reconstruction zoomed and unzoomed. Each clump of the reconstruction is
+drawn as a filled polygon on the two source-plane panels, and the multiple images it maps to are drawn as
+polygons in the same colour, carrying the same number, on the two image-plane panels.
+
+Reading the colours off the figure therefore tells you which arcs are images of which piece of the source,
+which is how one assesses whether the mass model is ray-tracing image-pixels sensibly. A clump is a group of
+connected source pixels brighter than a fraction of the reconstruction's maximum; that fraction is the
+`threshold` input (default 0.5), which decides what counts as a distinct source structure. The
+`guides/mappings.py` guide covers this and the rest of the mappings API in full.
 """
 inversion = fit.inversion
 

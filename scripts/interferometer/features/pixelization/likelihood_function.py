@@ -76,6 +76,7 @@ import numpy as np
 from pathlib import Path
 
 import autolens as al
+import autoarray.plot as aaplt
 import autolens.plot as aplt
 
 """
@@ -373,24 +374,36 @@ aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid
 """
 The reverse mappings of source-pixels to image-pixels can also be used.
 
-If we choose the right source-pixel index, we can see that multiple imaging occur whereby image-pixels in different
-regions of the image-plane are grouped into the same source-pixel.
+If we choose the right source-pixel index, we see multiple imaging: image-pixels in different regions of the
+image-plane are grouped into the same source-pixel.
+
+`mappings_from` returns this as a `Mapping`, whose `image_contours` are the boundaries of the connected
+image-plane regions that source pixel maps to. Passing them to `regions=` draws them as filled polygons, one
+colour per region, so the multiple images of a single source pixel can be read straight off the figure. The
+guide `guides/mappings.py` covers this API in full.
+
+We pick the source pixel closest to the centre of the source-plane, which is where the lensed source's light
+is reconstructed, because an outskirt pixel maps only to a stray corner of the image and shows nothing. For a
+source pixel at the very centre the images merge into one ring-shaped region; a pixel further out maps to
+separated arcs.
 """
-pix_indexes = [[200]]
+mesh_grid = np.asarray(mapper.source_plane_mesh_grid.array)
 
-indexes = mapper.slim_indexes_for_pix_indexes(pix_indexes=pix_indexes)
+pix_index = int(np.argmin(np.sum(mesh_grid**2.0, axis=1)))
 
+mappings = mapper.mappings_from(pix_indexes=[[pix_index]])
 
-aplt.plot_array(
-    array=dataset.dirty_image, title="Image", positions=mapper.image_plane_data_grid
+aaplt.plot_array(
+    array=dataset.dirty_image,
+    regions=[mapping.image_contours for mapping in mappings],
+    title="Image Pixels Which Map To One Source Pixel",
 )
-aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
 
 """
 __Interpolation__
 
-The right hand plot shows more laying over source pixel 200 than its retangular black lines. Pixels further 
-out than the pixel appear to be mapped to this source pixel. 
+The regions drawn above cover more image pixels than those whose traced coordinates land inside that source
+pixel's own rectangular cell. Pixels further out than the cell are also mapped to this source pixel. 
 
 This is because the mesh uses an interpolation mapping scheme whereby each image pixels is paired with four source 
 pixels. For a rectangular mesh, this scheme is called bilinear interpolation, and it means that every pixel maps
