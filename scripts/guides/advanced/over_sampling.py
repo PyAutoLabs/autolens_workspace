@@ -480,6 +480,39 @@ Here is an example of how to change the over sampling applied to a pixelization 
 dataset = dataset.apply_over_sampling(over_sample_size_pixelization=4)
 
 """
+__Adaptive Pixelization Over-Sampling__
+
+A uniform sub-size over-samples the whole mask equally, which is wasteful: the pixelization only gains accuracy
+where the lensed source is bright. Once a pixelized fit has been performed, its source signal-to-noise map can
+steer the over-sampling, using a sub-size of 4 where the source is detected and 2 everywhere else.
+
+`galaxy_name_image_dict_via_result_from` returns, for each galaxy, its model image divided by the noise map --
+that is, a signal-to-noise map. It is therefore thresholded directly.
+
+```python
+signal_to_noise_threshold = 3.0
+
+source_image_raw = al.galaxy_name_image_dict_via_result_from(
+    result=result
+)["('galaxies', 'source')"]
+
+over_sample_size_pixelization = al.Array2D(
+    values=np.where(source_image_raw > signal_to_noise_threshold, 4, 2),
+    mask=dataset.mask,
+)
+
+dataset = dataset.apply_over_sampling(
+    over_sample_size_pixelization=over_sample_size_pixelization
+)
+```
+
+The snippet is not run here because this guide has no pixelized fit to draw a `result` from. This is the SLaM
+default: from SOURCE PIX PIPELINE 2 onwards the pixelization over-sampling is set this way, using the source
+signal-to-noise map of SOURCE PIX PIPELINE 1. SOURCE PIX PIPELINE 1 itself keeps the dataset's uniform
+sub-size. See `guides/modeling/slam_start_here.py` for the full pipeline.
+"""
+
+"""
 __Oversampled PSF Convolution__
 
 Everything above concerns over sampling the *evaluation* of light profiles — computing the image on a sub-grid

@@ -51,6 +51,7 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 
 # from autolens import setup_notebook; setup_notebook()
 
+import numpy as np
 from pathlib import Path
 import autofit as af
 import autolens as al
@@ -505,6 +506,37 @@ source_pix_result_1 = source_pix_1(
     source_lp_result=source_lp_result,
     mesh_init=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.Adapt,
+)
+
+"""
+__Adaptive Pixelization Over-Sampling__
+
+From SOURCE PIX PIPELINE 2 onwards the pixelization grid is over-sampled adaptively. The source's
+signal-to-noise map from the previous pixelized fit (the same map that becomes the adapt image, read before
+the S/N 3.0 cap is applied) is thresholded at S/N 3.0: pixels above it, the bright lensed source, use a
+sub-size of 4 and every other pixel uses a sub-size of 2. This concentrates the extra over-sampling where the
+source is bright and the pixelization gains the most accuracy from it, and keeps the rest of the mask cheap.
+
+The map returned by `galaxy_name_image_dict_via_result_from` is already signal divided by noise, so it is
+thresholded directly.
+
+SOURCE PIX PIPELINE 1 keeps the dataset's default uniform sub-size. Its adapt image comes from the parametric
+source fit of the SOURCE LP PIPELINE, which does not yet trace the lensed source well enough to steer
+over-sampling.
+"""
+signal_to_noise_threshold = 3.0
+
+source_image_raw = al.galaxy_name_image_dict_via_result_from(
+    result=source_pix_result_1
+)["('galaxies', 'source')"]
+
+over_sample_size_pixelization = al.Array2D(
+    values=np.where(source_image_raw > signal_to_noise_threshold, 4, 2),
+    mask=dataset.mask,
+)
+
+dataset = dataset.apply_over_sampling(
+    over_sample_size_pixelization=over_sample_size_pixelization
 )
 
 source_pix_result_2 = source_pix_2(

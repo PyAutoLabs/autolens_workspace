@@ -604,6 +604,44 @@ galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
 
 adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
+"""
+__Adaptive Pixelization Over-Sampling__
+
+From SOURCE PIX PIPELINE 2 onwards the pixelization grid is over-sampled adaptively. The source's
+signal-to-noise map from the previous pixelized fit (the same map that becomes the adapt image, read before
+the S/N 3.0 cap is applied) is thresholded at S/N 3.0: pixels above it, the bright lensed source, use a
+sub-size of 4 and every other pixel uses a sub-size of 2. This concentrates the extra over-sampling where the
+source is bright and the pixelization gains the most accuracy from it, and keeps the rest of the mask cheap.
+
+The map returned by `galaxy_name_image_dict_via_result_from` is already signal divided by noise, so it is
+thresholded directly.
+
+SOURCE PIX PIPELINE 1 keeps the dataset's default uniform sub-size. Its adapt image comes from the parametric
+source fit of the SOURCE LP PIPELINE, which does not yet trace the lensed source well enough to steer
+over-sampling.
+
+The precomputed Numba sparse operator is an attribute of the `Imaging` object it was built from, so
+`apply_sparse_operator_cpu()` is called again after the re-sampling to rebuild it on the new dataset and keep
+the CPU speed-up this example demonstrates.
+"""
+signal_to_noise_threshold = 3.0
+
+source_image_raw = al.galaxy_name_image_dict_via_result_from(
+    result=source_pix_result_1
+)["('galaxies', 'source')"]
+
+over_sample_size_pixelization = al.Array2D(
+    values=np.where(source_image_raw > signal_to_noise_threshold, 4, 2),
+    mask=dataset.mask,
+)
+
+dataset = dataset.apply_over_sampling(
+    over_sample_size_pixelization=over_sample_size_pixelization
+)
+
+# The sparse operator belongs to the `Imaging` it was built from, so it is rebuilt after the re-sample.
+dataset = dataset.apply_sparse_operator_cpu()
+
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,

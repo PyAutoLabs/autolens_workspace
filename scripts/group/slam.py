@@ -427,9 +427,8 @@ Equivalent to `source_pix_1` in `slam_start_here.py`, except a Hilbert image mes
 instead of `RectangularBilinearAdaptDensity`, with edge-point padding of 30 pixels. The Hilbert pixel
 count is set by `al.model_util.hilbert_pixels_from_pixel_scale`.
 
-Pixelization over-sampling is signal-adaptive: pixels above the S/N threshold use sub-size 4,
-the rest sub-size 2. The re-sampled dataset and adapt_images are returned alongside the result.
-Extra and scaling galaxy models are carried forward as free `model` parameters, not fixed instances.
+The dataset and adapt_images are returned alongside the result. Extra and scaling galaxy models are
+carried forward as free `model` parameters, not fixed instances.
 
 __Adapt Image S/N Cap__
 
@@ -438,9 +437,6 @@ image-mesh and the adaptive regularization. Without the cap the brightest peak d
 weights (they scale as a power of the adapt image), so fainter multiply-imaged features get too
 few source pixels and too little regularization weight. Capping makes every feature above S/N 3.0
 count equally. The cap is applied to an explicit copy so the raw S/N image is untouched.
-
-The adaptive over-sampling map is evaluated on the raw (uncapped) S/N image, because the capped
-image never exceeds the threshold.
 """
 
 
@@ -457,13 +453,10 @@ def source_pix_1(
 ):
     hilbert_pixels = al.model_util.hilbert_pixels_from_pixel_scale(pixel_scale)
     edge_pixels_total = 30
-    signal_to_noise_threshold = 3.0
 
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
         result=source_lp_result_1
     )
-
-    source_image_raw = galaxy_image_name_dict["('galaxies', 'source')"]
 
     # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
     adapt_image_snr_cap = 3.0
@@ -495,18 +488,8 @@ def source_pix_1(
         },
     )
 
-    over_sample_size_pixelization = np.where(
-        source_image_raw > signal_to_noise_threshold,
-        4,
-        2,
-    )
-    over_sample_size_pixelization = al.Array2D(
-        values=over_sample_size_pixelization, mask=mask
-    )
-
     dataset = dataset.apply_over_sampling(
         over_sample_size_lp=over_sample_size,
-        over_sample_size_pixelization=over_sample_size_pixelization,
     )
 
     analysis = al.AnalysisImaging(
@@ -579,8 +562,26 @@ def source_pix_1(
 """
 __SOURCE PIX PIPELINE 2__
 
-Identical to `source_pix_1` above, except extra and scaling galaxy models are fixed as
-instances from `source_pix[1]`.
+As `source_pix_1` above, except extra and scaling galaxy models are fixed as instances from
+`source_pix[1]`, and the pixelization over-sampling is now adaptive (see below).
+"""
+
+
+"""
+__Adaptive Pixelization Over-Sampling__
+
+From SOURCE PIX PIPELINE 2 onwards the pixelization grid is over-sampled adaptively. The source's
+signal-to-noise map from the previous pixelized fit (the same map that becomes the adapt image, read before
+the S/N 3.0 cap is applied) is thresholded at S/N 3.0: pixels above it, the bright lensed source, use a
+sub-size of 4 and every other pixel uses a sub-size of 2. This concentrates the extra over-sampling where the
+source is bright and the pixelization gains the most accuracy from it, and keeps the rest of the mask cheap.
+
+The map returned by `galaxy_name_image_dict_via_result_from` is already signal divided by noise, so it is
+thresholded directly.
+
+SOURCE PIX PIPELINE 1 keeps the dataset's default uniform sub-size. Its adapt image comes from the parametric
+source fit of the SOURCE LP PIPELINE, which does not yet trace the lensed source well enough to steer
+over-sampling.
 """
 
 
