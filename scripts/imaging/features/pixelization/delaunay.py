@@ -98,6 +98,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import autofit as af
 import autolens as al
+import autoarray.plot as aaplt
 import autolens.plot as aplt
 
 """
@@ -1324,15 +1325,30 @@ aplt.plot_array(
 )
 aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
 
-pix_indexes = [[200]]
+"""
+The reverse mapping, from a source pixel to the image pixels which map to it, is what makes multiple imaging
+visible: image-pixels in different regions of the image-plane are grouped into the same source pixel.
 
-indexes = mapper.slim_indexes_for_pix_indexes(pix_indexes=pix_indexes)
+`mappings_from` returns this as a `Mapping`, whose `image_contours` are the boundaries of the connected
+image-plane regions the source pixel maps to. Passing them to `regions=` draws them as filled polygons, one
+colour per region. The guide `guides/mappings.py` covers this API in full.
 
+We pick the source pixel closest to the centre of the source-plane, which is where the lensed source's light
+is reconstructed, because an outskirt pixel maps only to a stray corner of the image and shows nothing. For a
+source pixel at the very centre the images merge into one ring-shaped region; a pixel further out maps to
+separated arcs.
+"""
+mesh_grid = np.asarray(mapper.source_plane_mesh_grid.array)
 
-aplt.plot_array(
-    array=lens_subtracted_image, title="Image", positions=mapper.image_plane_data_grid
+pix_index = int(np.argmin(np.sum(mesh_grid**2.0, axis=1)))
+
+mappings = mapper.mappings_from(pix_indexes=[[pix_index]])
+
+aaplt.plot_array(
+    array=lens_subtracted_image,
+    regions=[mapping.image_contours for mapping in mappings],
+    title="Image Pixels Which Map To One Source Pixel",
 )
-aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
 
 mapping_matrix = al.util.mapper.mapping_matrix_from(
     pix_indexes_for_sub_slim_index=pix_indexes_for_sub_slim_index,

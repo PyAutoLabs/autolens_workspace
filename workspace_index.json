@@ -1700,6 +1700,31 @@
     "title": "Lens Calc"
   },
   {
+    "contents": [
+      "Dataset",
+      "Mask",
+      "Point Mappings",
+      "Region Mappings, Parametric Source",
+      "Solver Refinement Steps",
+      "Magnification, Parametric Source",
+      "Region Mappings, Pixelized Source",
+      "Subplot Mappings",
+      "Brightest Image-Plane Positions for Spectroscopic Follow-Up (4MOST)",
+      "Magnification per Image",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "guides/plot/visuals.py",
+      "guides/point_source_pairing.py",
+      "imaging/features/pixelization/fit.py",
+      "imaging/source_science.py"
+    ],
+    "notebook": "notebooks/guides/mappings.ipynb",
+    "path": "scripts/guides/mappings.py",
+    "summary": "A strong lens shows you the same source more than once. The science question that follows is always the same: **which part of the source is this piece of the image?**",
+    "title": "Mappings"
+  },
+  {
     "contents": [],
     "cross_refs": [],
     "notebook": "notebooks/guides/misc/witt_wynne.ipynb",
@@ -1977,9 +2002,11 @@
       "Image Positions",
       "Light Profile Centres",
       "Mass Profile Centres",
-      "Combined Overlays"
+      "Combined Overlays",
+      "Regions"
     ],
     "cross_refs": [
+      "guides/mappings.py",
       "guides/plot/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/plot/visuals.ipynb",
@@ -3922,6 +3949,7 @@
       "//github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/inversion/mappers/voronoi.py",
       "//github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/structures/grids/two_d/grid_iterate.py",
       "//github.com/PyAutoLabs/PyAutoArray/blob/main/autoarray/util/mapper_util.py",
+      "guides/mappings.py",
       "imaging/features/pixelization/adaptive.py",
       "imaging/features/pixelization/fit.py",
       "imaging/features/pixelization/likelihood_function.py",
@@ -3951,7 +3979,9 @@
       "Mapped Reconstructed Images",
       "Simulated Imaging"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "guides/mappings.py"
+    ],
     "notebook": "notebooks/imaging/features/pixelization/fit.ipynb",
     "path": "scripts/imaging/features/pixelization/fit.py",
     "summary": "A pixelization reconstructs the source's light using a pixel-grid, which is regularized using a prior that forces the solution to have a degree of smoothness.",
@@ -3989,6 +4019,7 @@
     ],
     "cross_refs": [
       "/guides/advanced/over_sampling.py",
+      "guides/mappings.py",
       "imaging/features/linear_light_profiles/likelihood_function.ipynb",
       "imaging/likelihood_function.ipynb"
     ],
@@ -5241,6 +5272,7 @@
     ],
     "cross_refs": [
       "contributor_guide.py",
+      "guides/mappings.py",
       "imaging/features/pixelization/adaptive.py",
       "interferometer/features/linear_light_profiles/likelihood_function.py",
       "interferometer/features/pixelization/fit.py",
@@ -5313,6 +5345,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
+      "guides/mappings.py",
       "imaging/features/linear_light_profiles/likelihood_function.py",
       "interferometer/likelihood_function.py"
     ],
