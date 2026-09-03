@@ -426,7 +426,9 @@ The three figures below are the same reconstruction cut at three heights, and th
 different scientific statements about the same source:
 
 - `threshold=0.2` cuts low enough that the two clumps are joined by the emission between them: one
-  clump, i.e. one galaxy.
+  clump, i.e. one galaxy. Its multiple images merge into a single region running round the whole
+  Einstein ring, and because the overlay fills each polygon's outer boundary the ring's interior is
+  shaded too -- the region is the ring, not the disc.
 - `threshold=0.5` cuts above that bridge: two clumps, the two galaxies.
 - `threshold=0.8` cuts above the envelopes entirely and keeps only the compact knots: four clumps,
   the individual star-forming regions.
