@@ -4,7 +4,7 @@
 
 [Installation Guide](https://pyautolens.readthedocs.io/en/latest/installation/overview.html) |
 [readthedocs](https://pyautolens.readthedocs.io/en/latest/index.html) |
-[Introduction on Colab](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.8.29.1/start_here.ipynb) |
+[Introduction on Colab](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.9.4.1/start_here.ipynb) |
 [Browse Examples With Images](markdown/README.md) |
 [HowToLens](https://github.com/PyAutoLabs/HowToLens)
 
@@ -19,7 +19,7 @@ Welcome to the **PyAutoLens** Workspace!
 The following human-readable documentation and examples are useful for new starters:
 
 - [Installation guide](https://pyautolens.readthedocs.io/): set up **PyAutoLens** on your personal computer.
-- [PyAutoLens on Google Colab](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.8.29.1/start_here.ipynb): try **PyAutoLens** in a web browser without installing it.
+- [PyAutoLens on Google Colab](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.9.4.1/start_here.ipynb): try **PyAutoLens** in a web browser without installing it.
 
 ### PyAutoLens AI Assistant
 
@@ -34,7 +34,7 @@ overview of **PyAutoLens**'s core features and API.
 
 This can be done via a web browser by going to the following Google Colab link:
 
-https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.8.29.1/start_here.ipynb
+https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.9.4.1/start_here.ipynb
 
 Then checkout the [new user starting guide](https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html) to navigate the
 workspace for your science case.
