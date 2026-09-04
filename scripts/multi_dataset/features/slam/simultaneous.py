@@ -8,9 +8,10 @@ Simultaneous multi-dataset fits are currently built into the SLaM pipeline witho
 Therefore, as long as lists of `Analysis` objects are created, summed and passed to the SLaM pipelines, the analysis
 will fit every dataset simultaneously and it will adapt the model as follows:
 
-- Sub-pixel offsets between the datasets are fully modeled as free parameters in each stage of the pipeline, assuming
-  broad uniform priors for every step. This is because the precision of a lens model can often be less than the
-  requirements on astrometry.
+- The first dataset is the astrometric reference and its sub-pixel offset is fixed at (0.0, 0.0). The sub-pixel
+  offset of every other dataset is a free parameter in every stage of the pipeline, assuming broad uniform priors
+  for every step. This is because the precision of a lens model can often be less than the requirements on
+  astrometry.
 
 - The regularization parameters are free for every dataset in the `source_pix[1]` and `source_pix[2]` stages. This is because
   the source morphology can be different between datasets, and the regularization scheme adapts to this.
@@ -163,7 +164,7 @@ def source_lp(
     source_bulge,
     redshift_lens,
     redshift_source,
-    dataset_model,
+    dataset_model_list,
     mass_centre=(0.0, 0.0),
     n_batch=50,
 ):
@@ -174,28 +175,32 @@ def source_lp(
     mass = af.Model(al.mp.Isothermal)
     mass.centre = mass_centre
 
-    model = af.Collection(
-        galaxies=af.Collection(
-            lens=af.Model(
-                al.Galaxy,
-                redshift=redshift_lens,
-                bulge=lens_bulge,
-                disk=None,
-                mass=mass,
-                shear=af.Model(al.mp.ExternalShear),
-            ),
-            source=af.Model(
-                al.Galaxy,
-                redshift=redshift_source,
-                bulge=source_bulge,
-            ),
-        ),
-        dataset_model=dataset_model,
+    # The lens and source models are composed once, outside the loop below, so that their priors are shared
+    # across every dataset. Only the `DatasetModel` varies from dataset to dataset.
+
+    lens = af.Model(
+        al.Galaxy,
+        redshift=redshift_lens,
+        bulge=lens_bulge,
+        disk=None,
+        mass=mass,
+        shear=af.Model(al.mp.ExternalShear),
+    )
+
+    source = af.Model(
+        al.Galaxy,
+        redshift=redshift_source,
+        bulge=source_bulge,
     )
 
     analysis_factor_list = []
 
-    for analysis in analysis_list:
+    for i, analysis in enumerate(analysis_list):
+        model = af.Collection(
+            galaxies=af.Collection(lens=lens, source=source),
+            dataset_model=dataset_model_list[i],
+        )
+
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
         analysis_factor_list.append(analysis_factor)
 
@@ -216,7 +221,7 @@ def source_pix_1(
     analysis_list,
     source_lp_result,
     mesh_shape,
-    dataset_model,
+    dataset_model_list,
     n_batch=20,
 ):
     """
@@ -259,7 +264,7 @@ def source_pix_1(
                     ),
                 ),
             ),
-            dataset_model=dataset_model,
+            dataset_model=dataset_model_list[i],
         )
 
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
@@ -283,7 +288,7 @@ def source_pix_2(
     source_lp_result,
     source_pix_result_1,
     mesh_shape,
-    dataset_model,
+    dataset_model_list,
     n_batch=20,
 ):
     """
@@ -308,12 +313,14 @@ def source_pix_2(
                     redshift=source_lp_result[i].instance.galaxies.source.redshift,
                     pixelization=af.Model(
                         al.Pixelization,
-                        mesh=af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape),
+                        mesh=af.Model(
+                            al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape
+                        ),
                         regularization=al.reg.Adapt,
                     ),
                 ),
             ),
-            dataset_model=dataset_model,
+            dataset_model=dataset_model_list[i],
         )
 
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
@@ -337,7 +344,7 @@ def light_lp(
     source_result_for_lens,
     source_result_for_source,
     lens_bulge,
-    dataset_model,
+    dataset_model_list,
     n_batch=20,
 ):
     """
@@ -363,7 +370,7 @@ def light_lp(
                 ),
                 source=source,
             ),
-            dataset_model=dataset_model,
+            dataset_model=dataset_model_list[i],
         )
 
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
@@ -387,7 +394,7 @@ def mass_total(
     source_result_for_lens,
     source_result_for_source,
     light_result,
-    dataset_model,
+    dataset_model_list,
     n_batch=20,
 ):
     """
@@ -422,7 +429,7 @@ def mass_total(
                 ),
                 source=source,
             ),
-            dataset_model=dataset_model,
+            dataset_model=dataset_model_list[i],
         )
 
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
@@ -444,7 +451,7 @@ def subhalo_no_subhalo(
     settings_search,
     analysis_list,
     mass_result,
-    dataset_model,
+    dataset_model_list,
     n_batch=20,
 ):
     """
@@ -459,7 +466,7 @@ def subhalo_no_subhalo(
 
         model = af.Collection(
             galaxies=af.Collection(lens=lens, source=source),
-            dataset_model=dataset_model,
+            dataset_model=dataset_model_list[i],
         )
 
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
@@ -547,7 +554,7 @@ def subhalo_refine(
     subhalo_result_1,
     subhalo_grid_search_result_2,
     subhalo_mass,
-    dataset_model,
+    dataset_model_list,
     n_batch=20,
 ):
     """
@@ -578,7 +585,7 @@ def subhalo_refine(
                 subhalo=subhalo,
                 source=subhalo_grid_search_result_2.model.galaxies.source,
             ),
-            dataset_model=dataset_model,
+            dataset_model=dataset_model_list[i],
         )
 
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
@@ -603,7 +610,33 @@ __SLaM Pipeline__
 mesh_pixels_yx = 28
 mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
-dataset_model = af.Model(al.DatasetModel)
+"""
+__Dataset Offsets__
+
+Sub-pixel offsets between the wavebands are modeled in every stage of the pipeline, via one `DatasetModel` per
+dataset.
+
+The first dataset is the astrometric reference, so its `DatasetModel` keeps the default offset of (0.0, 0.0),
+which is a fixed value and not a free parameter. Every dataset after it has its offset freed with a broad uniform
+prior, allowing its grid to shift by up to 1.0" in y and x relative to the first dataset.
+
+Every stage below is passed this list and gives dataset `i` the model `dataset_model_list[i]`, so the offsets are
+free parameters from the first search through to the final subhalo refinement.
+"""
+dataset_model_list = []
+
+for i in range(len(dataset_list)):
+    dataset_model = af.Model(al.DatasetModel)
+
+    if i > 0:
+        dataset_model.grid_offset.grid_offset_0 = af.UniformPrior(
+            lower_limit=-1.0, upper_limit=1.0
+        )
+        dataset_model.grid_offset.grid_offset_1 = af.UniformPrior(
+            lower_limit=-1.0, upper_limit=1.0
+        )
+
+    dataset_model_list.append(dataset_model)
 
 # Lens Light
 
@@ -632,7 +665,7 @@ source_lp_result = source_lp(
     source_bulge=source_bulge,
     redshift_lens=redshift_lens,
     redshift_source=redshift_source,
-    dataset_model=dataset_model,
+    dataset_model_list=dataset_model_list,
 )
 
 positions_likelihood = source_lp_result.positions_likelihood_from(
@@ -678,7 +711,7 @@ source_pix_result_1 = source_pix_1(
     analysis_list=analysis_list,
     source_lp_result=source_lp_result,
     mesh_shape=mesh_shape,
-    dataset_model=dataset_model,
+    dataset_model_list=dataset_model_list,
 )
 
 """
@@ -747,7 +780,7 @@ source_pix_result_2 = source_pix_2(
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
     mesh_shape=mesh_shape,
-    dataset_model=dataset_model,
+    dataset_model_list=dataset_model_list,
 )
 
 lens_bulge = al.model_util.mge_model_from(
@@ -777,7 +810,7 @@ light_result = light_lp(
     source_result_for_lens=source_pix_result_1,
     source_result_for_source=source_pix_result_2,
     lens_bulge=lens_bulge,
-    dataset_model=dataset_model,
+    dataset_model_list=dataset_model_list,
 )
 
 positions_likelihood = source_pix_result_1[0].positions_likelihood_from(
@@ -803,14 +836,14 @@ mass_result = mass_total(
     source_result_for_lens=source_pix_result_1,
     source_result_for_source=source_pix_result_2,
     light_result=light_result,
-    dataset_model=dataset_model,
+    dataset_model_list=dataset_model_list,
 )
 
 subhalo_result_1 = subhalo_no_subhalo(
     settings_search=settings_search,
     analysis_list=analysis_list,
     mass_result=mass_result,
-    dataset_model=dataset_model,
+    dataset_model_list=dataset_model_list,
 )
 
 subhalo_grid_search_result_2 = subhalo_grid_search(
@@ -829,5 +862,5 @@ subhalo_result_3 = subhalo_refine(
     subhalo_result_1=subhalo_result_1,
     subhalo_grid_search_result_2=subhalo_grid_search_result_2,
     subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
-    dataset_model=dataset_model,
+    dataset_model_list=dataset_model_list,
 )

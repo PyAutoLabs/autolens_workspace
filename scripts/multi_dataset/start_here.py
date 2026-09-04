@@ -259,9 +259,13 @@ intensities, meaning that effects like colour gradients will be captured accurat
 
 Multi wavelength data may also have small offsets between each band, often smaller
 than a pixel and thus below standard astrometric precision. We therefore include
-a `dataset_model` composition which models these offsets as free parameters during
-the lens modeling. Slightly further down in the script we will tell autolens
-to make a different between each dataset.
+a `dataset_model` composition, which can shift each dataset's grid to account for
+these offsets.
+
+The offsets default to a fixed value of (0.0, 0.0) in the priors configuration file
+`config/priors/dataset_model.yaml`, meaning the `dataset_model` below starts with no
+free parameters at all. The offsets are therefore only fitted if we explicitly
+give them priors, which we do further down in the script.
 """
 # Lens:
 
@@ -330,9 +334,16 @@ analysis_list = [
 Each analysis object is wrapped in an `AnalysisFactor`, which pairs it with the model and prepares it for use in a 
 factor graph. This step allows us to flexibly define how each dataset relates to the model.
 
-Whilst not illustrates here, note that the API below is extremely customizeable and allows us to
-make the model vary on a per dataset basis. We use this below to make it so the dataset offset of the second,
-third and fourth datasets are included.
+The API below is extremely customizable and allows us to make the model vary on a per dataset basis. We use
+this below to free the dataset offsets.
+
+The first dataset is the astrometric reference: its offset stays fixed at (0.0, 0.0). Every dataset after it has
+its offset freed with a broad uniform prior, so each band's grid is free to shift by up to 1.0" in y and x
+relative to the first band. Each of these datasets therefore adds two free parameters to the model.
+
+Note that the priors are assigned to `model_analysis`, the copy of the model made for each dataset, and that it
+is this copy which is passed to the `AnalysisFactor`. Priors which are not reassigned on the copy remain shared
+with the original model, meaning the lens and source model parameters are the same for every band.
 """
 analysis_factor_list = []
 
@@ -347,7 +358,7 @@ for i, analysis in enumerate(analysis_list):
             lower_limit=-1.0, upper_limit=1.0
         )
 
-    analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
+    analysis_factor = af.AnalysisFactor(prior_model=model_analysis, analysis=analysis)
 
     analysis_factor_list.append(analysis_factor)
 

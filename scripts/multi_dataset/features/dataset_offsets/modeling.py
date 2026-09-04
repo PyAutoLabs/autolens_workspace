@@ -247,7 +247,7 @@ for i, analysis in enumerate(analysis_list):
             lower_limit=-5.0, upper_limit=5.0
         )
 
-    analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
+    analysis_factor = af.AnalysisFactor(prior_model=model_analysis, analysis=analysis)
 
     analysis_factor_list.append(analysis_factor)
 
