@@ -341,6 +341,12 @@ separate dark matter halo is included.
 The lens bulge is modeled as a `LightMassProfile` (`al.lmp.Sersic`) whose parameters are initialized from the
 LIGHT LP PIPELINE result via `al.util.chaining.mass_light_dark_from`. The dark matter halo (`NFWMCRLudlow`) centre
 is aligned with the stellar bulge centre.
+
+The light-tied mass profiles take their geometry from the fixed light model, so their deflection angles depend
+only on parameters which do not vary over the fit. On the numpy path these fields are therefore memoised across
+likelihood evaluations, and for an MGE lens light (a `Basis` of Gaussians) each fixed Gaussian's field is computed
+once and rescaled by the free `mass_to_light_ratio` on every evaluation after it (on JAX the same field is folded
+out of the traced graph as a constant). Set `AUTOGALAXY_DEFLECTIONS_MEMO=0` to disable this.
 """
 
 
