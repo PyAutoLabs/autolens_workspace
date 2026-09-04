@@ -14,16 +14,18 @@ Welcome to the **PyAutoLens** Workspace!
 
 ## Getting Started
 
-### PyAutoLens AI Assistant
-
-The [**PyAutoLens AI Assistant**](https://github.com/PyAutoLabs/autolens_assistant) supports conversation agents such as ChatGPT and coding agents such as Claude Code and Codex. You can get started simply by asking it a question about gravitational lensing or describing the task you would like to perform with **PyAutoLens**. See the [autolens_assistant GitHub page](https://github.com/PyAutoLabs/autolens_assistant) for its full scope and instructions.
-
 ### Human-Readable Documentation and Examples
 
 The following human-readable documentation and examples are also useful for new starters:
 
 - [Installation guide](https://pyautolens.readthedocs.io/): set up **PyAutoLens** on your personal computer.
 - [PyAutoLens on Google Colab](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.8.29.1/start_here.ipynb): try **PyAutoLens** in a web browser without installing it.
+
+### PyAutoLens AI Assistant
+
+The [**PyAutoLens AI Assistant**](https://github.com/PyAutoLabs/autolens_assistant) supports conversation agents such as ChatGPT and coding agents such as Claude Code and Codex. You can get started simply by asking it a question about gravitational lensing or describing the task you would like to perform with **PyAutoLens**. See the [autolens_assistant GitHub page](https://github.com/PyAutoLabs/autolens_assistant) for its full scope and instructions.
+
+**The PyAutoLens AI Assistant currently only supports AI coding agents which require a paid subscription, either Claude Code or Codex. Work is ongoing to support free AI coding agents and conversation agents like ChatGPT.**
 
 ## New Users
 

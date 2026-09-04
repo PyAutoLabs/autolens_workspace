@@ -349,16 +349,6 @@ questions you are interested in, the analysis you perform may differ significant
 
 The autolens_workspace contains a suite of example Jupyter Notebooks, organised by lens scale and dataset type.
 
-__PyAutoLens AI Assistant__
-
-The [PyAutoLens AI Assistant](https://github.com/PyAutoLabs/autolens_assistant) supports conversation agents such as
-ChatGPT and coding agents such as Claude Code and Codex. You can get started simply by asking it a question about
-gravitational lensing or describing the task you would like to perform with **PyAutoLens**. See the
-[autolens_assistant GitHub page](https://github.com/PyAutoLabs/autolens_assistant) for its full scope and instructions.
-
-The rest of this guide is human-readable documentation: we begin by answering two simple questions to find your most
-appropriate starting point.
-
 __What Scale Lens?__
 
 What size and scale of strong lens system are you expecting to work with? 
@@ -673,4 +663,14 @@ quickstart example fits the real JWST-era shape catalogue of Abell 2744, and str
 be combined in joint analyses of the same cluster.
 
 Checkout `autolens_workspace/*/weak/start_here.py` to fit your first weak lensing dataset.
+
+__PyAutoLens AI Assistant__
+
+The [PyAutoLens AI Assistant](https://github.com/PyAutoLabs/autolens_assistant) supports conversation agents such as
+ChatGPT and coding agents such as Claude Code and Codex. You can get started simply by asking it a question about
+gravitational lensing or describing the task you would like to perform with **PyAutoLens**. See the
+[autolens_assistant GitHub page](https://github.com/PyAutoLabs/autolens_assistant) for its full scope and instructions.
+
+**The PyAutoLens AI Assistant currently only supports AI coding agents which require a paid subscription, either Claude Code or Codex. Work is ongoing to support free AI coding agents and conversation agents like ChatGPT.**
+
 """
