@@ -522,7 +522,9 @@ def source_pix_1(
                 redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    mesh=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
+                    mesh=af.Model(
+                        al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape
+                    ),
                     regularization=al.reg.Adapt,
                 ),
             ),
@@ -604,7 +606,9 @@ def source_pix_2(
                 redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    mesh=af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape),
+                    mesh=af.Model(
+                        al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape
+                    ),
                     regularization=al.reg.Adapt,
                 ),
             ),
@@ -920,12 +924,12 @@ mask_radius_larger = min(
 if float(galaxy_distances.max()) > mask_radius_larger:
     raise ValueError(
         f"The enlarged mask needs a radius of "
-        f"{max(mask_radius, float(galaxy_distances.max()) + 0.5):.2f}\" to enclose the scaling tier, but the "
-        f"image is only {image_half_width:.2f}\" from its centre to its edge, so the mask is capped at "
-        f"{mask_radius_larger:.2f}\" and the outermost members sit off-frame. Their light never enters the fit, "
+        f'{max(mask_radius, float(galaxy_distances.max()) + 0.5):.2f}" to enclose the scaling tier, but the '
+        f'image is only {image_half_width:.2f}" from its centre to its edge, so the mask is capped at '
+        f'{mask_radius_larger:.2f}" and the outermost members sit off-frame. Their light never enters the fit, '
         f"the linear solve returns zero intensity for them and the luminosity measurement this script exists to "
         f"make is impossible. Galaxy radii are "
-        f"{[round(float(d), 2) for d in galaxy_distances]}\". The simulator places the tier as a fraction of its "
+        f'{[round(float(d), 2) for d in galaxy_distances]}". The simulator places the tier as a fraction of its '
         f"grid's half-width, so a mismatch here means the dataset was simulated on a wider grid than the one "
         f"being fitted."
     )

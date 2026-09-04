@@ -236,9 +236,7 @@ The lens galaxy's bulge and compact nuclear emission appear similar to those in 
 """
 print(result.max_log_likelihood_instance)
 
-aplt.subplot_tracer(
-    tracer=result.max_log_likelihood_tracer, grid=result.grids.lp
-)
+aplt.subplot_tracer(tracer=result.max_log_likelihood_tracer, grid=result.grids.lp)
 
 aplt.subplot_fit_interferometer(fit=result.max_log_likelihood_fit)
 

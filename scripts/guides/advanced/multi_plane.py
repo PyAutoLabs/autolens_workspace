@@ -672,8 +672,12 @@ def jacobian_via_central_difference(mapping, positions, h=1e-6):
     jacobians = []
 
     for y, x in np.asarray(positions, dtype=float):
-        d_y = (np.asarray(mapping(y + h, x)) - np.asarray(mapping(y - h, x))) / (2.0 * h)
-        d_x = (np.asarray(mapping(y, x + h)) - np.asarray(mapping(y, x - h))) / (2.0 * h)
+        d_y = (np.asarray(mapping(y + h, x)) - np.asarray(mapping(y - h, x))) / (
+            2.0 * h
+        )
+        d_x = (np.asarray(mapping(y, x + h)) - np.asarray(mapping(y, x - h))) / (
+            2.0 * h
+        )
 
         jacobians.append(np.array([[d_y[0], d_x[0]], [d_y[1], d_x[1]]]))
 
@@ -870,18 +874,30 @@ grid_general = al.Grid2DIrregular(values=positions_general)
 
 traced_grid_list_general = tracer_general.traced_grid_2d_list_from(grid=grid_general)
 
-for beta_name, beta_from in [("astropy", beta_via_astropy), ("project", beta_via_project)]:
+for beta_name, beta_from in [
+    ("astropy", beta_via_astropy),
+    ("project", beta_via_project),
+]:
     theta_list = traced_positions_via_paper(
         planes_general, positions_general, redshift_final=2.0, beta_from=beta_from
     )
 
     residuals = [
-        float(np.max(np.abs(np.asarray(traced_grid_list_general[plane_index]) - theta_list[plane_index])))
+        float(
+            np.max(
+                np.abs(
+                    np.asarray(traced_grid_list_general[plane_index])
+                    - theta_list[plane_index]
+                )
+            )
+        )
         for plane_index in range(4)
     ]
 
-    print(f"paper recursion ({beta_name} betas), max |delta| per plane = "
-          f"{['%.2e' % residual for residual in residuals]}")
+    print(
+        f"paper recursion ({beta_name} betas), max |delta| per plane = "
+        f"{['%.2e' % residual for residual in residuals]}"
+    )
 
 """
 With astropy scaling factors the residuals sit at the $10^{-7}$ level set by the cosmology; with the project's
@@ -910,7 +926,9 @@ for plane_index in range(1, 4):
         )
     )
 
-    print(f"plane {plane_index}: |deflections_between_planes - (theta - theta_j)| = {residual:.2e}")
+    print(
+        f"plane {plane_index}: |deflections_between_planes - (theta - theta_j)| = {residual:.2e}"
+    )
 
 """
 __Oracle 3: A Numerical Jacobian, And Whether It Is One__
@@ -989,9 +1007,13 @@ def jacobian_via_recursion(planes, positions, redshift_final, h=1e-6):
                 beta = beta_via_astropy(
                     redshifts[previous_index], redshifts[plane_index], redshift_final
                 )
-                theta = theta - beta * deflections_summed_from(
-                    planes[previous_index], [theta_list[previous_index]]
-                )[0]
+                theta = (
+                    theta
+                    - beta
+                    * deflections_summed_from(
+                        planes[previous_index], [theta_list[previous_index]]
+                    )[0]
+                )
                 A = A - beta * U_list[previous_index] @ A_list[previous_index]
 
             theta_list.append(theta)
@@ -1032,8 +1054,12 @@ for plane_index in range(1, 4):
         tracer_general, use_multi_plane=True, plane_i=0, plane_j=plane_index
     )
 
-    magnification = np.asarray(lens_calc.magnification_2d_via_hessian_from(grid=grid_general))
-    convergence = np.asarray(lens_calc.convergence_2d_via_hessian_from(grid=grid_general))
+    magnification = np.asarray(
+        lens_calc.magnification_2d_via_hessian_from(grid=grid_general)
+    )
+    convergence = np.asarray(
+        lens_calc.convergence_2d_via_hessian_from(grid=grid_general)
+    )
     shear = np.asarray(lens_calc.shear_yx_2d_via_hessian_from(grid=grid_general))
 
     jacobians = jacobian_list[plane_index]
@@ -1084,11 +1110,15 @@ tracer_ring = al.Tracer(
     galaxies=[
         al.Galaxy(
             redshift=0.5,
-            mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=einstein_radius_0),
+            mass=al.mp.IsothermalSph(
+                centre=(0.0, 0.0), einstein_radius=einstein_radius_0
+            ),
         ),
         al.Galaxy(
             redshift=1.0,
-            mass=al.mp.IsothermalSph(centre=(0.0, 0.0), einstein_radius=einstein_radius_1),
+            mass=al.mp.IsothermalSph(
+                centre=(0.0, 0.0), einstein_radius=einstein_radius_1
+            ),
         ),
         al.Galaxy(redshift=2.0),
     ],
@@ -1097,7 +1127,9 @@ tracer_ring = al.Tracer(
 
 beta_01 = beta_via_astropy(0.5, 1.0, 2.0)
 
-print(f"beta_01 = {beta_01:.6f}, two rings exist = {einstein_radius_1 > (1.0 - beta_01) * einstein_radius_0}")
+print(
+    f"beta_01 = {beta_01:.6f}, two rings exist = {einstein_radius_1 > (1.0 - beta_01) * einstein_radius_0}"
+)
 
 radius_outer_analytic = einstein_radius_0 + einstein_radius_1
 radius_inner_analytic = einstein_radius_0 - einstein_radius_1
@@ -1116,8 +1148,12 @@ def source_plane_y_from(theta):
 radius_outer_traced = brentq(source_plane_y_from, 0.9, 2.5, xtol=1e-14)
 radius_inner_traced = brentq(source_plane_y_from, 0.05, 0.6, xtol=1e-14)
 
-print(f"outer ring: closed form = {radius_outer_analytic:.10f}, root-found = {radius_outer_traced:.10f}")
-print(f"inner ring: closed form = {radius_inner_analytic:.10f}, root-found = {radius_inner_traced:.10f}")
+print(
+    f"outer ring: closed form = {radius_outer_analytic:.10f}, root-found = {radius_outer_traced:.10f}"
+)
+print(
+    f"inner ring: closed form = {radius_inner_analytic:.10f}, root-found = {radius_inner_traced:.10f}"
+)
 print(
     f"max |delta| = "
     f"{max(abs(radius_outer_analytic - radius_outer_traced), abs(radius_inner_analytic - radius_inner_traced)):.2e}"
@@ -1132,13 +1168,19 @@ import matplotlib.pyplot as plt
 figure, axis = plt.subplots(figsize=(5, 5))
 
 axis.add_patch(
-    plt.Circle((0.0, 0.0), radius_outer_traced, fill=False, color="k", lw=2, label="outer ring")
+    plt.Circle(
+        (0.0, 0.0), radius_outer_traced, fill=False, color="k", lw=2, label="outer ring"
+    )
 )
 axis.add_patch(
-    plt.Circle((0.0, 0.0), radius_inner_traced, fill=False, color="r", lw=2, label="inner ring")
+    plt.Circle(
+        (0.0, 0.0), radius_inner_traced, fill=False, color="r", lw=2, label="inner ring"
+    )
 )
 axis.add_patch(
-    plt.Circle((0.0, 0.0), beta_01 * einstein_radius_0, fill=False, color="b", ls="--", lw=1)
+    plt.Circle(
+        (0.0, 0.0), beta_01 * einstein_radius_0, fill=False, color="b", ls="--", lw=1
+    )
 )
 
 axis.plot(0.0, 0.0, "k+", markersize=10)

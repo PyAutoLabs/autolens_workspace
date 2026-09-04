@@ -161,9 +161,7 @@ if al.util.dataset.should_simulate(str(dataset_path)):
         noise_seed=1,
     )
 
-    simulated_dataset = simulator.via_tracer_from(
-        tracer=tracer, grid=simulator_grid
-    )
+    simulated_dataset = simulator.via_tracer_from(tracer=tracer, grid=simulator_grid)
 
     aplt.fits_imaging(
         dataset=simulated_dataset,
@@ -262,7 +260,9 @@ shape = aa.Circle(
 mapping = al.mappings.source_mapping_from(tracer=tracer, grid=grid, shape=shape)
 
 print(f"Image regions: {len(mapping.image_regions)}")
-print(f"Pixels per region: {[len(region.slim_indexes) for region in mapping.image_regions]}")
+print(
+    f"Pixels per region: {[len(region.slim_indexes) for region in mapping.image_regions]}"
+)
 
 aaplt.plot_array(
     array=dataset.data,
@@ -388,7 +388,7 @@ for radius in (0.15, 0.10, 0.05):
         shape=aa.Circle(source_centre[0], source_centre[1], radius=radius),
     )
 
-    print(f"radius = {radius:.2f}\": total magnification = {total:.2f}")
+    print(f'radius = {radius:.2f}": total magnification = {total:.2f}')
 
 """
 __Region Mappings, Pixelized Source__
@@ -541,7 +541,7 @@ the sub-pixel offset.
 """
 pixel_coordinates = al.mappings.multiple_image_pixel_coordinates_from(fit=fit_pixelized)
 
-for (y, x) in pixel_coordinates:
+for y, x in pixel_coordinates:
     print(f"pixel (y, x) = ({y:.2f}, {x:.2f})")
 
 """
@@ -580,10 +580,12 @@ wcs.wcs.ctype = ["RA---TAN", "DEC--TAN"]
 
 print("Fibre positions for spectroscopic follow-up:")
 
-for (y, x) in pixel_coordinates:
+for y, x in pixel_coordinates:
     ra, dec = wcs.all_pix2world(x, y, 1)
 
-    print(f"pixel (y, x) = ({y:.2f}, {x:.2f}) -> RA = {float(ra):.6f}, Dec = {float(dec):.6f}")
+    print(
+        f"pixel (y, x) = ({y:.2f}, {x:.2f}) -> RA = {float(ra):.6f}, Dec = {float(dec):.6f}"
+    )
 
 """
 __Fibre Diameter__
@@ -605,13 +607,15 @@ centroids = al.mappings.multiple_image_positions_from(
     fit=fit_pixelized, use_centroid=True
 )
 
-for brightest, centroid in zip(np.asarray(positions.array), np.asarray(centroids.array)):
+for brightest, centroid in zip(
+    np.asarray(positions.array), np.asarray(centroids.array)
+):
     offset = np.hypot(*(np.asarray(brightest) - np.asarray(centroid)))
 
     print(
         f"brightest = {np.round(brightest, 3)}, "
         f"centroid = {np.round(centroid, 3)}, "
-        f"offset = {offset:.3f}\""
+        f'offset = {offset:.3f}"'
     )
 
 """

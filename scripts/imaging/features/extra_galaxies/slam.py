@@ -235,7 +235,9 @@ def source_pix_1(
                 redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    mesh=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
+                    mesh=af.Model(
+                        al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape
+                    ),
                     regularization=al.reg.Adapt,
                 ),
             ),
@@ -303,7 +305,9 @@ def source_pix_2(
                 redshift=source_lp_result.instance.galaxies.source.redshift,
                 pixelization=af.Model(
                     al.Pixelization,
-                    mesh=af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape),
+                    mesh=af.Model(
+                        al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape
+                    ),
                     regularization=al.reg.Adapt,
                 ),
             ),

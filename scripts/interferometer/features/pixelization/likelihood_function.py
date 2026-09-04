@@ -287,7 +287,9 @@ We do this by overlying a rectangular grid on the relocated traced image-plane g
 This distributes the rectangular mesh so it fully overlaps the region of the source-plane containing the traced 
 image-pixels without having edge pixels that extend beyond this region.
 """
-from autoarray.inversion.mesh.mesh.rectangular_rtu_adapt_density import overlay_grid_from
+from autoarray.inversion.mesh.mesh.rectangular_rtu_adapt_density import (
+    overlay_grid_from,
+)
 
 mesh_grid = overlay_grid_from(
     shape_native=mesh_shape, grid=al.Grid2DIrregular(relocated_grid)
