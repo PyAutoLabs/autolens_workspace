@@ -715,41 +715,33 @@ source_pix_result_1 = source_pix_1(
 )
 
 """
-__Adaptive Pixelization Over-Sampling__
+__Pixelization Over-Sampling__
 
-From SOURCE PIX PIPELINE 2 onwards the pixelization grid is over-sampled adaptively. The source's
-signal-to-noise map from the previous pixelized fit (the same map that becomes the adapt image, read before
-the S/N 3.0 cap is applied) is thresholded at S/N 3.0: pixels above it, the bright lensed source, use a
-sub-size of 4 and every other pixel uses a sub-size of 2. This concentrates the extra over-sampling where the
-source is bright and the pixelization gains the most accuracy from it, and keeps the rest of the mask cheap.
+Every pixelized stage of this pipeline keeps the dataset's default uniform pixelization sub-size.
 
-The map returned by `galaxy_name_image_dict_via_result_from` is already signal divided by noise, so it is
-thresholded directly.
+The single-dataset SLaM pipelines do something more refined. From SOURCE PIX PIPELINE 2 onwards they
+threshold the source's signal-to-noise map at S/N 3.0 and pass the result as an adaptive
+`over_sample_size_pixelization`: the bright lensed source gets a sub-size of 4 and the rest of the mask a
+sub-size of 2, concentrating the over-sampling where the pixelization gains accuracy from it and leaving
+the rest of the mask cheap. The sibling `independent.py` and
+`imaging/advanced/subhalo/detect/start_here.py` both fit this way.
 
-SOURCE PIX PIPELINE 1 keeps the dataset's default uniform sub-size. Its adapt image comes from the parametric
-source fit of the SOURCE LP PIPELINE, which does not yet trace the lensed source well enough to steer
-over-sampling.
+A simultaneous fit does not, because the saving does not survive the JAX compiler. A uniform sub-size bins
+the over-sampled grid with one fixed-shape reshape and average; a non-uniform one has to bin ragged
+sub-pixel blocks with a segmented sum, which costs far more to trace and compile even though it evaluates
+fewer sub-pixels. No script pays that compilation more often than this one: once per SLaM stage, over every
+band at once, and again for every cell of the SUBHALO grid search. Measured under the release-fidelity
+validation environment, the adaptive map roughly tripled the SOURCE PIX PIPELINE 2 compile (12 s to 38 s)
+and took the script from 367 s to past its 1800 s per-script cap, while the same change left the
+single-dataset scripts faster.
 
-Every later stage (LIGHT LP, MASS TOTAL and the SUBHALO searches) rebuilds its analyses from the SOURCE PIX
-PIPELINE 1 datasets, which predate the re-sampling, so each of them re-applies the same per-dataset map.
+If you adapt this script for your own multi-wavelength fit, keep the uniform sub-size and raise it before
+you make it adaptive.
 """
 adapt_images_list = []
-over_sample_size_pixelization_list = []
-
-signal_to_noise_threshold = 3.0
 
 for result in source_pix_result_1:
     galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(result=result)
-
-    # Bound before the cap: the over-sampling map below uses the raw (uncapped) S/N image.
-    source_image_raw = galaxy_image_name_dict["('galaxies', 'source')"]
-
-    over_sample_size_pixelization_list.append(
-        al.Array2D(
-            values=np.where(source_image_raw > signal_to_noise_threshold, 4, 2),
-            mask=result.max_log_likelihood_fit.dataset.mask,
-        )
-    )
 
     # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
     adapt_image_snr_cap = 3.0
@@ -763,15 +755,11 @@ for result in source_pix_result_1:
 
 analysis_list = [
     al.AnalysisImaging(
-        dataset=result.max_log_likelihood_fit.dataset.apply_over_sampling(
-            over_sample_size_pixelization=over_sample_size_pixelization,
-        ),
+        dataset=result.max_log_likelihood_fit.dataset,
         adapt_images=adapt_images,
         use_jax=True,
     )
-    for result, adapt_images, over_sample_size_pixelization in zip(
-        source_pix_result_1, adapt_images_list, over_sample_size_pixelization_list
-    )
+    for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
 ]
 
 source_pix_result_2 = source_pix_2(
@@ -793,15 +781,11 @@ lens_bulge = al.model_util.mge_model_from(
 
 analysis_list = [
     al.AnalysisImaging(
-        dataset=result.max_log_likelihood_fit.dataset.apply_over_sampling(
-            over_sample_size_pixelization=over_sample_size_pixelization,
-        ),
+        dataset=result.max_log_likelihood_fit.dataset,
         adapt_images=adapt_images,
         raise_inversion_positions_likelihood_exception=False,
     )
-    for result, adapt_images, over_sample_size_pixelization in zip(
-        source_pix_result_1, adapt_images_list, over_sample_size_pixelization_list
-    )
+    for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
 ]
 
 light_result = light_lp(
@@ -819,15 +803,11 @@ positions_likelihood = source_pix_result_1[0].positions_likelihood_from(
 
 analysis_list = [
     al.AnalysisImaging(
-        dataset=result.max_log_likelihood_fit.dataset.apply_over_sampling(
-            over_sample_size_pixelization=over_sample_size_pixelization,
-        ),
+        dataset=result.max_log_likelihood_fit.dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[positions_likelihood],
     )
-    for result, adapt_images, over_sample_size_pixelization in zip(
-        source_pix_result_1, adapt_images_list, over_sample_size_pixelization_list
-    )
+    for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
 ]
 
 mass_result = mass_total(
