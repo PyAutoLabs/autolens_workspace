@@ -5964,7 +5964,9 @@
       "SLaM Pipeline"
     ],
     "cross_refs": [
-      "guides/modeling/slam_start_here.ipynb"
+      "guides/modeling/slam_start_here.ipynb",
+      "imaging/advanced/subhalo/detect/start_here.py",
+      "independent.py"
     ],
     "notebook": "notebooks/multi_dataset/features/slam/simultaneous.ipynb",
     "path": "scripts/multi_dataset/features/slam/simultaneous.py",
