@@ -211,7 +211,8 @@ extra_galaxies = af.Collection(extra_galaxies_list)
 pixelization = af.Model(
     al.Pixelization,
     mesh=al.mesh.Delaunay(
-        pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+        pixels=image_plane_mesh_grid.shape[0] - edge_pixels_total,
+        zeroed_pixels=edge_pixels_total,
     ),
     regularization=al.reg.ConstantSplit,
 )

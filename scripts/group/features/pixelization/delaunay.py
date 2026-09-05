@@ -182,7 +182,8 @@ extra_galaxy_1 = al.Galaxy(
 
 pixelization = al.Pixelization(
     mesh=al.mesh.Delaunay(
-        pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+        pixels=image_plane_mesh_grid.shape[0] - edge_pixels_total,
+        zeroed_pixels=edge_pixels_total,
     ),
     regularization=al.reg.Constant(coefficient=1.0),
 )
@@ -319,7 +320,8 @@ extra_galaxies = af.Collection(extra_galaxies_list)
 pix = af.Model(
     al.Pixelization,
     mesh=al.mesh.Delaunay(
-        pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+        pixels=image_plane_mesh_grid.shape[0] - edge_pixels_total,
+        zeroed_pixels=edge_pixels_total,
     ),
     regularization=al.reg.ConstantSplit,
 )
