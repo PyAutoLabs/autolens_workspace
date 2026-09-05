@@ -180,7 +180,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
 
 mesh = af.Model(
     al.mesh.Delaunay,
-    pixels=image_plane_mesh_grid.shape[0],
+    pixels=image_plane_mesh_grid.shape[0] - edge_pixels_total,
     zeroed_pixels=edge_pixels_total,
 )
 regularization = af.Model(al.reg.ConstantSplit)

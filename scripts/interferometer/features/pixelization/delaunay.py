@@ -206,7 +206,10 @@ For a rectangular mesh, the source code computes edge pixels internally using th
 requiring no input from the user. 
 
 For the `Delaunay` mesh, we use the `append_with_circle_edge_points` function to manually setup the Delaunay image 
-mesh to include a ring of edge pixels and then input the total number into the mesh to perform zeroing. 
+mesh to include a ring of edge pixels, and then tell the mesh how many there are (`zeroed_pixels`) so the inversion
+can zero them. The mesh's `pixels` input is the number of interior vertices, i.e. the grid before the ring was
+appended, so below it is the appended grid's length minus `edge_pixels_total`. The inversion zeroes the last
+`zeroed_pixels` vertices of the mesh grid it receives, which is where `append_with_circle_edge_points` puts them.
 
 These points are added to the edge of the image-plane mesh, ray-traced to the source-plane during lens modeling, 
 included in the Delaunay triangulation but zeroed during the inversion.
@@ -232,7 +235,8 @@ The API is nearly identical to the rectangular mesh example, noting that the inp
 mesh are different to the rectangular mesh and use image mesh quantities computed above.
 """
 mesh = al.mesh.Delaunay(
-    pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+    pixels=image_plane_mesh_grid.shape[0] - edge_pixels_total,
+    zeroed_pixels=edge_pixels_total,
 )
 regularization = al.reg.ConstantSplit(coefficient=1.0)
 
@@ -313,7 +317,8 @@ lens = af.Model(
 pixelization = af.Model(
     al.Pixelization,
     mesh=al.mesh.Delaunay(
-        pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+        pixels=image_plane_mesh_grid.shape[0] - edge_pixels_total,
+        zeroed_pixels=edge_pixels_total,
     ),
     regularization=al.reg.ConstantSplit,
 )
@@ -461,7 +466,8 @@ The number of free parameters and therefore the dimensionality of non-linear par
 pixelization = af.Model(
     al.Pixelization,
     mesh=al.mesh.Delaunay(
-        pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
+        pixels=image_plane_mesh_grid.shape[0] - edge_pixels_total,
+        zeroed_pixels=edge_pixels_total,
     ),
     regularization=al.reg.AdaptSplit,
 )
@@ -664,7 +670,7 @@ def source_pix_1(
                 pixelization=af.Model(
                     al.Pixelization,
                     mesh=al.mesh.Delaunay(
-                        pixels=image_plane_mesh_grid.shape[0],
+                        pixels=image_plane_mesh_grid.shape[0] - edge_pixels_total,
                         zeroed_pixels=edge_pixels_total,
                     ),
                     regularization=al.reg.ConstantSplit,
@@ -770,7 +776,7 @@ def source_pix_2(
                 pixelization=af.Model(
                     al.Pixelization,
                     mesh=al.mesh.Delaunay(
-                        pixels=image_plane_mesh_grid.shape[0],
+                        pixels=image_plane_mesh_grid.shape[0] - edge_pixels_total,
                         zeroed_pixels=edge_pixels_total,
                     ),
                     regularization=al.reg.AdaptSplit,
@@ -1033,15 +1039,9 @@ For the rectangular mesh, the pixel centres are computed by overlaying a uniform
 
 For a Delaunay mesh, the uniform grid is instead laid over the image-plane to create a course grid of (y,x) coordinates.
 These are then ray-traced to the source-plane and are used as the vertexes of the Delaunay triangles.
-"""
-pixelization = al.Pixelization(
-    mesh=al.mesh.Delaunay(
-        pixels=image_plane_mesh_grid.shape[0], zeroed_pixels=edge_pixels_total
-    ),
-    regularization=al.reg.ConstantSplit(coefficient=1.0),
-)
 
-source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
+The mesh itself is created below, once that image-plane grid has been built.
+"""
 
 """
 __Source Pixel Centre Calculation__
@@ -1061,6 +1061,29 @@ image_mesh = al.image_mesh.Overlay(shape=(30, 30))  # Specific to Delaunay
 image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
     mask=dataset.mask,
 )
+
+"""
+As in the fits above, a ring of `edge_pixels_total` points is appended just outside the mask edge. They become
+the last `edge_pixels_total` vertices of the Delaunay mesh, which is what the `zeroed_pixels` input to the mesh
+refers to: `pixels` is the number of interior vertices and `zeroed_pixels` the size of the ring, which the
+inversion holds at zero.
+"""
+image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
+    image_plane_mesh_grid=image_plane_mesh_grid,
+    centre=real_space_mask.mask_centre,
+    radius=mask_radius + real_space_mask.pixel_scale / 2.0,
+    n_points=edge_pixels_total,
+)
+
+pixelization = al.Pixelization(
+    mesh=al.mesh.Delaunay(
+        pixels=image_plane_mesh_grid.shape[0] - edge_pixels_total,
+        zeroed_pixels=edge_pixels_total,
+    ),
+    regularization=al.reg.ConstantSplit(coefficient=1.0),
+)
+
+source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
 adapt_images = al.AdaptImages(
     galaxy_image_plane_mesh_grid_dict={source_galaxy: image_plane_mesh_grid},
