@@ -98,3 +98,7 @@ latent_results: true # Whether to output the `latent.results` file.
 search_log: true # `search.log`: logging produced whilst running the fit method
 
 model_graph: false # `model.graph`: graphical-model factor graph summary. Only meaningful for graphical models (autofit.graphical); empty for ordinary PriorModel/Collection fits, so disabled by default.
+
+# `model.png`: the model figure drawn beside `model.info` (af.ModelPlotter). Opt-in until the
+# model-figures epic's phase-3 acceptance renders pass. Unlike other keys an absent key means off.
+model_figure: false

@@ -16,6 +16,7 @@ __Contents__
 - **Prior Customization:** Customize the priors of individual lens model parameters using uniform, log-uniform and Gaussian priors.
 - **Model Customization:** Customize the lens model parameters, including parameter pairing, fixing and offsets.
 - **Redshift Free:** Make the redshift of a galaxy a free parameter in the model-fit.
+- **Solved Parameters:** Parameters which are solved for during the fit, and parameters missing from your configuration.
 - **Available Model Components:** List the available light profiles, mass profiles and other components that can be used for lens modeling.
 
 Advanced Features:
@@ -71,8 +72,9 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 The redshifts in the above model are used to determine which galaxy is the lens and which is the source.
 
 The model `total_free_parameters` tells us the total number of free parameters (which are fitted for via a 
-non-linear search), which in this case is 19 (7 from the lens `Sersic`, 5 from the lens `Isothermal` and 7 from the 
-source `Sersic`).
+non-linear search), which in this case is 17 (6 from the lens `Sersic`, 5 from the lens `Isothermal` and 6 from the 
+source `SersicCore`). The `intensity` of each linear light profile is *not* one of them: it is solved for by the 
+inversion during every likelihood evaluation.
 """
 print(f"Model Total Free Parameters = {model.total_free_parameters}")
 
@@ -80,6 +82,19 @@ print(f"Model Total Free Parameters = {model.total_free_parameters}")
 If we print the `info` attribute of the model we get information on all of the parameters and their priors.
 """
 print(model.info)
+
+"""
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one. The figure therefore shows one thing `model.info` cannot, 
+the dashed `intensity · solved` pill on each linear light profile, whose `intensity` is not a model parameter at all 
+but is solved for by the inversion at every likelihood evaluation; the footer totals the model up as 17 sampled 
+scalars and 2 parameters solved during fitting.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __More Complex Lens Models__
@@ -115,6 +130,14 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk)
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 print(model.info)
+
+"""
+The figure now draws four profile cards inside the lens galaxy's card and two inside the source galaxy's, which is 
+the quickest way to check that a multi-profile model is composed the way you intended. Every linear light profile 
+carries its own dashed `intensity · solved` pill, so the footer counts four parameters solved during fitting 
+alongside the 29 sampled scalars.
+"""
+af.ModelPlotter(model).figure()
 
 """
 The use of the words `bulge`, `disk`, `mass` and `shear` above are arbitrary. They can be replaced with any name you
@@ -166,6 +189,13 @@ model = af.Collection(
 print(model.info)
 
 """
+The two lens galaxies are identical in structure, and so are the two source galaxies, so the figure draws each pair 
+once inside a dashed plate badged `2 components` rather than drawing four cards. Their parameters are badged 
+`independent`: two separate priors with the same configuration, which is not the same thing as one shared prior.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 The above lens model consists of only two planes (an image-plane and source-plane), but has four galaxies in total.
 This is because the lens galaxies have the same redshift and the source galaxies have the same redshift.
 
@@ -198,6 +228,14 @@ source = af.Model(
 
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 print(model.info)
+
+"""
+The concise API is a shorthand for writing a model, not a different model. Note that this stage gives the lens galaxy 
+a `Sersic` bulge *and* a `Sersic` disk, so the two collapse into a single dashed plate badged `2 components`: the 
+figure groups repeated sibling components rather than drawing two identical cards, and the `independent` badges say 
+that each of the two has its own priors.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __Prior Customization__
@@ -245,7 +283,7 @@ lens = af.Model(
 bulge = af.Model(al.lp_linear.SersicCore)
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
-source.effective_radius = af.TruncatedGaussianPrior(
+source.bulge.effective_radius = af.TruncatedGaussianPrior(
     mean=0.1, sigma=0.05, lower_limit=0.0, upper_limit=1.0
 )
 
@@ -254,6 +292,14 @@ source.effective_radius = af.TruncatedGaussianPrior(
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 print(model.info)
+
+"""
+Customizing a prior does not change a parameter's state -- a parameter with a customized prior is still sampled -- so 
+the map is unchanged by the customization above, and this figure is the same map as the simple lens model at the top 
+of this cookbook. Print `model.info`, or call `af.ModelPlotter(model).figure(detail="priors")`, to read the numbers 
+that did change.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __Model Customization__
@@ -319,6 +365,16 @@ model.add_assertion(model.galaxies.lens.mass.einstein_radius < 3.0)
 print(model.info)
 
 """
+This is the stage where the figure earns its keep: the paired `centre` is drawn once on the `bulge` badged 
+`shared ×2`, with a blue link from the `disk` that reuses it (`↗ bulge.centre`), the fixed `sersic_index` is a grey 
+pill, and each assertion is a compact dashed-orange label naming both of its operands rather than a line traced 
+across the figure. The mass profile's two offset `centre` components are a relation, but a relation on one component 
+of a *tuple* parameter is not yet annotated on the tuple's single pill, so the mass `centre` is drawn as an ordinary 
+sampled pill and `model.info` is the place to read it.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Redshift Free__
 
 The redshift of a galaxy can be treated as a free parameter in the model-fit by using the following API:
@@ -327,6 +383,19 @@ redshift = af.Model(al.Redshift)
 redshift.redshift = af.UniformPrior(lower_limit=0.0, upper_limit=2.0)
 
 lens = af.Model(al.Galaxy, redshift=redshift, mass=al.mp.Isothermal)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
+
+model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+
+print(model.info)
+
+"""
+A free redshift is an ordinary sampled parameter, so it is drawn as an ordinary `redshift` pill on the lens galaxy's 
+card. A *fixed* redshift is not drawn as a pill at all: it is printed under the galaxy's header as `redshift = 1.0`, 
+which the source galaxy above shows, and it is the one number the figure puts on the map rather than in the legend.
+"""
+af.ModelPlotter(model).figure()
 
 """
 The model-fit will automatically enable multi-plane ray tracing and alter the ordering of the planes depending on the
@@ -339,6 +408,69 @@ function of redshift.
 
 Redshifts should be made free when modeling three or more planes, as the mulit-plane ray-tracing calculations have an
 obvious dependence on the redshifts of the galaxies which could be inferred by the model-fit.
+
+__Solved Parameters__
+
+Some parameters of a lens model are neither sampled by the non-linear search nor fixed by us: they are solved for 
+during the fit, at every likelihood evaluation. The model below contains all three of them, a linear light profile, a 
+pixelized source and a point source solved analytically:
+"""
+# Lens: a linear light profile, whose `intensity` is solved for by the inversion.
+
+lens = af.Model(
+    al.Galaxy,
+    redshift=0.5,
+    bulge=af.Model(al.lp_linear.Sersic),
+    mass=af.Model(al.mp.Isothermal),
+)
+
+# Source: a pixelization, whose source `reconstruction` is solved for by the inversion.
+
+pixelization = af.Model(
+    al.Pixelization,
+    mesh=af.Model(al.mesh.Delaunay, pixels=500, zeroed_pixels=0),
+    regularization=af.Model(al.reg.ConstantSplit),
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
+
+# Point source: a `PointSolved`, whose `centre` is solved for analytically.
+
+point_source = af.Model(al.Galaxy, redshift=1.0, point=af.Model(al.ps.PointSolved))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source, point_source=point_source)
+)
+
+print(model.info)
+
+"""
+Three parameters in the figure carry a dashed `solved` pill: the `intensity` of the linear `Sersic` bulge, which the 
+inversion solves for by linear algebra; the `reconstruction` of the `Pixelization`, which is the solved surface 
+brightness of every source pixel (the only sampled parameter of a pixelization is its regularization `coefficient`); 
+and the `centre` of the `PointSolved` point source, which is solved for analytically. **None of the three has any 
+counterpart in the `model.info` printed above**: they are additional information the figure supplies, which is why 
+they are drawn dashed, named in the legend as *solved during fitting*, and counted separately in the footer.
+
+A fourth state the figure can draw is `missing`, in red, and it is a different thing again: a parameter for which no 
+prior or value is configured anywhere, which `model.info` prints as `Prior Missing: Enter Manually or Add to Config` 
+and which the fit cannot start without. No pill in this cookbook is `missing`, because this workspace's 
+`config/priors` covers every component used here -- the `Delaunay` mesh's `areas_factor`, for example, is configured 
+as a constant 0.5 and is therefore drawn as an ordinary grey fixed pill. Write your own profile class, or use one 
+whose entry is absent from `config/priors`, and its parameters appear as red `missing` pills: **unset 
+configuration**, not solved and not absent from the model. Absence from the figure would read as absence from the 
+model, so `missing` is a state of its own.
+"""
+af.ModelPlotter(model).figure()
+
+"""
+The figure and `model.info` group the same model differently, and for models with many profiles the correspondence 
+between them is genuinely many-to-many. The figure partitions **by component**: a Multi Gaussian Expansion model 
+built from two bases of thirty Gaussians shows two `30 components` plates, split because each basis holds its own 
+`ell_comps` pair. `model.info` groups **per parameter**: it prints a single `0 - 59` block for `centre` spanning both 
+figure plates, two separate ellipticity blocks, and individual `sigma` blocks. What does hold exactly is the 
+contract between them: every element drawn on the figure resolves to a path or grouped paths in `model.info`, and 
+every omission and every added annotation (`solved`, `missing`) is explicit.
 
 __Available Model Components__
 
@@ -373,6 +505,11 @@ model = af.Model.from_json(file=model_file)
 print(model.info)
 
 """
+The reloaded model prints the same `model.info`, and `af.ModelPlotter(model).figure()` draws it the same way with 
+one exception: a component containing no free parameters at all -- here the `Delaunay` mesh and the whole 
+`point_source` galaxy -- is written to the `.json` file as an instance rather than a model, so the reloaded figure 
+folds each into a single fixed pill instead of drawing its own card.
+
 This means in **PyAutoLens** one can write a model in a script, save it to hard disk and load it elsewhere, as well
 as manually customize it in the .json file directory.
 
