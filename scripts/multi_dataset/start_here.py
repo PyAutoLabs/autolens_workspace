@@ -307,6 +307,23 @@ parameter values the API above hided the composition of.
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+Two things are worth reading off this map. The MGE composition the helper hid is a dashed plate badged 
+`20 components` on each galaxy, with `centre` and `ell_comps` marked `shared across group`, `sigma` 
+`fixed, varies by member` and a dashed `intensity · solved`. And `dataset_model · DatasetModel` is drawn as a frame 
+of its own beside `galaxies`, with every pill greyed: the offsets default to fixed values, so it starts with no free 
+parameters at all, exactly as described above. Giving them priors later in this script is what turns those pills 
+into free parameters.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Analysis__
 
 In other examples, a single `Analysis` object is passed the dataset and used to perform lens modeling.

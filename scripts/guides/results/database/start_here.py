@@ -351,6 +351,13 @@ for model in model_gen:
     print(model.info)
 
 """
+Every fit above used the same model, so the three loaded models share one structure and drawing the last one is
+enough to see it. The figure is the **map** of that model -- which galaxy owns which profile and what state every
+parameter is in -- and the `info` printed above is its **legend**, the priors and fixed values behind it.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Search__
 
 The non-linear search used to perform the model fit can be loaded via the aggregator and printed.

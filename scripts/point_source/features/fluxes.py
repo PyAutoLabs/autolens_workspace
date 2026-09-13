@@ -157,6 +157,20 @@ The `info` attribute shows the model in a readable format, which now includes th
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+Fitting fluxes changes one card. The source's `point_0 · PointFlux` carries a free `centre` and a free `flux` pill, 
+where the `PointSolved` component used in `start_here.py` carried a single dashed `centre · solved` and nothing 
+else. Those three extra pills are the difference between N=5 and N=8.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
@@ -223,6 +237,14 @@ analysis_solved = al.AnalysisPoint(
 )
 
 print(model_solved.info)
+
+"""
+The solved composition is the same map with the source card emptied out: `point_0 · PointSolved` has 
+one dashed `centre · solved` pill and no `flux` at all, because `FitFluxesSolved` computes the source flux in 
+closed form. Reading the two figures side by side is the clearest statement of what the solved convention 
+costs and saves.
+"""
+af.ModelPlotter(model_solved).figure()
 
 """
 __Run Times__

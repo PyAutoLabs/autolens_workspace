@@ -1770,6 +1770,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
+      "expectation_propagation.py",
       "imaging/start_here.ipynb"
     ],
     "notebook": "notebooks/guides/modeling/advanced/graphical.ipynb",
@@ -7976,7 +7977,8 @@
     "cross_refs": [
       "point_source/start_here.ipynb",
       "start.here.py",
-      "start_here.ipynb"
+      "start_here.ipynb",
+      "start_here.py"
     ],
     "notebook": "notebooks/point_source/features/time_delays.ipynb",
     "path": "scripts/point_source/features/time_delays.py",

@@ -162,6 +162,20 @@ The `info` attribute shows the model in a readable format.
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+The map is the same shape as the positions-only model in `start_here.py`: one `mass · Isothermal` card on the lens 
+and a `point_0 · PointSolved` card whose only pill is a dashed `centre · solved`. Time delays add nothing to it, 
+which is the claim the prose above makes -- they are a property of the mass model, not a model component.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
@@ -262,6 +276,14 @@ The `info` attribute shows the model in a readable format
 This confirms the model includes the Cosmology, which has the Hubble constant as a free parameter.
 """
 print(model.info)
+
+"""
+The cosmology is drawn as a frame of its own beside `galaxies`: `cosmology · FlatLambdaCDM`, with `H0` 
+a free parameter and `Om0`, `Tcmb0`, `Neff`, `m_nu` and `Ob0` greyed as fixed Planck18 values. The lens's `centre` 
+and `einstein_radius` pills are greyed too, because they were fixed just above, so the map shows at a glance that 
+this fit samples the lens ellipticity and the Hubble constant and nothing else.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __Search__

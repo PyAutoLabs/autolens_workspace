@@ -401,6 +401,21 @@ model = af.Collection(
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+The mass side of the picture is the `lens · Galaxy` frame, subtitled `redshift = 0.5` and holding a single 
+`mass · Isothermal` card with `centre` (badged `2D`), `ell_comps` (also `2D`) and `einstein_radius`. The source 
+galaxy sits in its own frame at `redshift = 1.0` with light only, which is exactly the split this section 
+describes.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 Printing `model.info` shows the full priors-and-defaults summary — useful before kicking
 off a long fit to confirm the model is shaped the way you expect.
 

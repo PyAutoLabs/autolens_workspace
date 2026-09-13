@@ -151,6 +151,23 @@ The `info` attribute shows the model in a readable format.
 print(model_1.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+The MGE source is what the map makes immediate. Its 20 Gaussians are not drawn 20 times: they collapse into a 
+single dashed plate badged `20 components` and subtitled `0 - 19`, on which `centre` and `ell_comps` carry blue 
+`shared across group` badges (one prior for the whole basis), `sigma` reads `fixed, varies by member` (each 
+Gaussian has its own fixed width) and `intensity · solved` is dashed, because the inversion solves it at every 
+likelihood evaluation. The footer counts `11 unique sampled scalars`, `20 parameters solved during fitting` and 
+`1 plate standing for 20 components`.
+"""
+af.ModelPlotter(model_1).figure()
+
+"""
 __Search + Analysis + Model-Fit (Search 1)__
 
 We now create the non-linear search, analysis and perform the model-fit using this model.
@@ -260,6 +277,13 @@ model_2 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 The `info` attribute shows the model in a readable format.
 """
 print(model_2.info)
+
+"""
+The lens half of the map is unchanged, but the source half is not: the plate of 20 Gaussians has been 
+replaced by a single `bulge · Sersic` card whose `intensity · solved` pill is still dashed, because a linear light 
+profile solves its intensity the same way an MGE does.
+"""
+af.ModelPlotter(model_2).figure()
 
 """
 __Search + Analysis + Model-Fit (Search 1)__

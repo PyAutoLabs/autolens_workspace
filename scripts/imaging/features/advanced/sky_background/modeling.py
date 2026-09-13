@@ -197,6 +197,21 @@ This confirms that the sky is a model component that is not part of the `galaxie
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+The point this example makes is a structural one, and the map states it directly: `dataset_model · DatasetModel` is 
+drawn as a frame of its own beside `galaxies`, not inside it. Its `background_sky_level` is a free parameter while 
+`grid_offset` and `grid_rotation_angle` are greyed fixed values, so the sky is one extra sampled scalar added to a 
+model whose galaxies are otherwise unchanged.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 

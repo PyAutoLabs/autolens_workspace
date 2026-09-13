@@ -509,7 +509,10 @@ The reloaded model prints the same `model.info`, and `af.ModelPlotter(model).fig
 one exception: a component containing no free parameters at all -- here the `Delaunay` mesh and the whole 
 `point_source` galaxy -- is written to the `.json` file as an instance rather than a model, so the reloaded figure 
 folds each into a single fixed pill instead of drawing its own card.
+"""
+af.ModelPlotter(model).figure()
 
+"""
 This means in **PyAutoLens** one can write a model in a script, save it to hard disk and load it elsewhere, as well
 as manually customize it in the .json file directory.
 

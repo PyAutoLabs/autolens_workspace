@@ -168,6 +168,20 @@ The `info` attribute shows the model in a readable format.
 print(model_1.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+Search 1 omits the second source, and the map shows the omission honestly: `source_1 · Galaxy` is drawn as an empty 
+frame at `redshift = 2.0`, holding no light and no mass. The first source's MGE collapses into one dashed plate 
+badged `20 components` with a shared `centre` and `ell_comps` and a dashed `intensity · solved`.
+"""
+af.ModelPlotter(model_1).figure()
+
+"""
 __Search + Analysis + Model-Fit (Search 1)__
 
 We now create the non-linear search, analysis and perform the model-fit using this model.
@@ -273,6 +287,14 @@ model_2 = af.Collection(
 The `info` attribute shows the model, including how parameters and priors were passed from `result_1`.
 """
 print(model_2.info)
+
+"""
+The difference between passing a `model` and an `instance` is drawn rather than described. The lens's 
+mass and the first source's light were passed as instances, so each folds into a single greyed pill, `mass` and 
+`bulge`, with no card and no parameters left to sample. What is new on the map is `mass · IsothermalSph` on 
+`source_0` and a plate of Gaussians on `source_1`, which are the only free parameters search 2 fits.
+"""
+af.ModelPlotter(model_2).figure()
 
 """
 __Search + Analysis + Model-Fit (Search 2)__

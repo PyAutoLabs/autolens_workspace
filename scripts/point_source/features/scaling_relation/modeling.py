@@ -216,6 +216,22 @@ model = af.Collection(
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+The relation is the thing to look at. `scaling_galaxies` is a frame of its own beside `galaxies`, and inside each 
+member the `einstein_radius` pill is an orange relation pill printing the expression itself, 
+`einstein_radius = galaxies.lens.mass.einstein_radius * <ratio>`, with an orange line running back to the lens's own 
+`einstein_radius`. Every member's centre is a greyed fixed value, so the picture shows directly what the prose 
+above claims: the whole tier costs zero free parameters.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Zero Free Parameters__
 
 Worth checking rather than believing — and worth comparing against the data budget, which is the part that matters in

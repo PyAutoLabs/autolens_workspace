@@ -365,6 +365,21 @@ model = af.Collection(
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+For the two-galaxy model above the map is a frame per galaxy: `lens · Galaxy` subtitled `redshift = 0.5` and 
+`source · Galaxy` subtitled `redshift = 1.0`, each holding one `bulge · Sersic` card whose pills are the profile's 
+parameters. `centre` and `ell_comps` are badged `2D`, because each is a tuple of two free parameters. Swapping in a 
+different light profile changes the pills inside the card and nothing else about the picture.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 Printing `model.info` prints the full priors-and-defaults summary — useful before kicking off
 a long fit to confirm the model looks the way you expect.
 

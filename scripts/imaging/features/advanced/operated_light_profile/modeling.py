@@ -215,6 +215,21 @@ This confirms that the lens galaxy's light has a `Gaussian` PSF component.
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+The alignment written as `bulge.centre = psf.centre` above is drawn rather than described: the `centre` pill on 
+`bulge · Sersic` is badged blue `shared ×2` and the `centre` pill on `psf · Gaussian` reads `↗ bulge.centre`, with a 
+blue bracket joining the two cards. Both cards also end in a dashed `intensity · solved` pill, because the operated 
+profile has a linear variant like any other light profile.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 

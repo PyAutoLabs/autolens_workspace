@@ -190,6 +190,21 @@ The `info` attribute shows the model in a readable format.
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+Three frames, and their subtitles are the plane ordering: `lens · Galaxy` at `redshift = 0.5`, `source_0 · Galaxy` 
+at `redshift = 1.0` and `source_1 · Galaxy` at `redshift = 2.0`. `source_0` carries a `mass · Isothermal` card as 
+well as its `point_0 · PointSolved`, because it lenses `source_1` behind it, and every point-source card shows the 
+same dashed `centre · solved` pill -- the two parameters per source that the solved convention removes.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Search__
 
 The model is fitted to the data using a non-linear search. All examples in the autolens workspace use the nested
@@ -267,6 +282,15 @@ factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 To inspect the global model the factor graph fits, print `factor_graph.global_prior_model.info`.
 """
 print(factor_graph.global_prior_model.info)
+
+"""
+The global model adds a frame per dataset, numbered `0`, `1` and so on, and hoists everything the 
+datasets have in common into a blue `shared across datasets` card at the top, linked back to each frame by a 
+`↗ shared` badge on the pill it came from. Because the same `model` object was passed to every `AnalysisFactor`, 
+every parameter is shared: the footer reads `0 per dataset`, which is the figure's way of saying these datasets are 
+fitted by one model rather than one model each.
+"""
+af.ModelPlotter(factor_graph.global_prior_model).figure()
 
 """
 __Model-Fit__

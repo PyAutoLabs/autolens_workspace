@@ -239,10 +239,15 @@ __Model__
 
 The fitted `af.Collection` model is saved to `files/model.json`. This is the *prior* model (with free parameters),
 not the max log likelihood instance — useful for inspecting the structure of what was fitted.
+
+`model.info` is the legend of that model and `af.ModelPlotter(model).figure()` is its map, drawing which galaxy owns
+which profile and what state every parameter is in, so the structure of the reloaded fit can be read at a glance.
 """
 if (files_path / "model.json").exists():
     model = from_json(file_path=files_path / "model.json")
     print(model.info)
+
+    af.ModelPlotter(model).figure()
 
 """
 __Samples__
