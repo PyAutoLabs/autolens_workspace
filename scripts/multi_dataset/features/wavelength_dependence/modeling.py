@@ -236,6 +236,27 @@ factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 print(factor_graph.global_prior_model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+A global model is drawn as one frame per dataset, numbered `0`, `1` and so on, with everything the 
+datasets have in common hoisted out into a blue `shared across datasets` card at the top. Each shared pill inside a 
+frame carries a blue badge pointing back to it, and the footer counts the split directly as `N shared across 
+datasets` and `M per dataset × D datasets`.
+
+The relation is what makes this example worth drawing. In every dataset's frame the `effective_radius` pill is an 
+orange relation pill printing the expression itself, with that dataset's wavelength substituted in: 
+`effective_radius = (<wavelength> * ...lens_m) + ...lens_c`. The parameters actually sampled are `m` and `c`, which 
+is why adding datasets adds no dimensions -- the figure shows the relation where `model.info` can only show the 
+priors on `m` and `c` and leave you to infer what they are attached to.
+"""
+af.ModelPlotter(factor_graph.global_prior_model).figure()
+
+"""
 __Shared Source Mesh (Pixelization)__
 
 When the source is reconstructed on a pixelization, every band can reconstruct its source on the identical

@@ -313,6 +313,26 @@ print `factor_graph.global_prior_model.info`.
 print(factor_graph.global_prior_model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+A global model is drawn as one frame per dataset, numbered `0`, `1` and so on, with everything the 
+datasets have in common hoisted out into a blue `shared across datasets` card at the top. Each shared pill inside a 
+frame carries a blue badge pointing back to it, and the footer counts the split directly as `N shared across 
+datasets` and `M per dataset × D datasets`.
+
+Here that split is the whole point of the example: every parameter of the lens and source models is shared, except 
+the `ell_comps` given their own prior per dataset in the loop above, which stay inside each dataset's frame. The 
+`info` above can express the extension only by repeating the model once per analysis factor; the map states it as 
+one number in the footer.
+"""
+af.ModelPlotter(factor_graph.global_prior_model).figure()
+
+"""
 __Search__
 
 Other data types fit their `start_here.py` with `af.MultiStartProdigy`, a much faster multi-start gradient

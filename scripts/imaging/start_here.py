@@ -239,6 +239,23 @@ parameter values the API above hided the composition of.
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+This is where the MGE composition the helper function hid becomes visible. Its 20 Gaussians are not drawn 20 times: they collapse into a single dashed plate badged 
+`20 components` and subtitled `0 - 19`, on which `centre` and `ell_comps` carry blue `shared across group` badges 
+(one prior for the whole basis), `sigma` reads `fixed, varies by member` (each Gaussian has its own fixed width) and 
+`intensity · solved` is dashed, because the inversion solves it at every likelihood evaluation. The lens and the 
+source each get one such plate, alongside the lens's `mass · Isothermal` and `shear · ExternalShear` cards, so the 
+whole model is a handful of cards rather than the hundreds of lines `model.info` prints.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Model Fit__
 
 We now fit the data with the lens model using `MultiStartProdigy`, a multi-start gradient optimizer which finds

@@ -271,6 +271,24 @@ parameters than it looks!
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+This is the figure that makes an MGE readable. The 60 Gaussians composed above are drawn as two dashed plates 
+badged `30 components`, subtitled `0 - 29` and `30 - 59`, one per basis, rather than as 60 cards. On each plate 
+`centre` and `ell_comps` carry blue `shared across group` badges, the second plate's `centre` reads `↗ 0.centre` 
+with a bracket joining it to the first, `sigma` reads `fixed, varies by member` (the log-spaced widths set above) 
+and `intensity · solved` is dashed. The footer totals it up as a handful of sampled scalars, dozens of fixed leaf 
+slots and `2 plates standing for 60 components` -- the same claim the prose above makes about most parameters being 
+fixed, made by the picture.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start_here.py` for a
@@ -460,6 +478,12 @@ Printing the model info confirms the model has Gaussians for both the lens and s
 print(model.info)
 
 """
+The source frame now carries plates of its own, drawn exactly like the lens's, so the map shows an MGE 
+on both planes of the lens system.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 We now fit this model, which includes the MGE source and lens light models.
 """
 search = af.Nautilus(
@@ -553,6 +577,12 @@ Printing the model info confirms the lens galaxy now has both an extended `bulge
 print(model.info)
 
 """
+The lens frame now holds two `Basis` cards, `bulge` and `point`, each with its own plate: the extended 
+MGE and the compact point-source MGE, separated on the map in the same way they are separated in the code.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 Recreating the Gaussians line-by-line is useful for understanding how the point-source basis is composed, but in
 practice it is more convenient to use the `mge_point_model_from` helper, which builds exactly the same compact basis
 in a single line. It takes the data's `pixel_scales` (which sets the maximum Gaussian `sigma` and therefore how
@@ -572,6 +602,12 @@ lens = af.Model(
 model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 print(model.info)
+
+"""
+The map is unchanged from the one above, which is the point: `mge_point_model_from` composes the same 
+basis in one line as the loop composed by hand.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __Wrap Up__

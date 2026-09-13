@@ -277,6 +277,23 @@ This confirms that the model only has a `lens` and that it has different compone
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+The strange syntax the prose above apologises for is drawn plainly: there is one `lens · Galaxy` frame and nothing 
+else, holding the lens's own `bulge · Sersic` card plus the four multiple images, which collapse into a single 
+dashed plate badged `4 components` and subtitled `multiple_image_0 - multiple_image_3`. On that plate `centre`, 
+`ell_comps` and `sigma` carry `independent` badges, meaning one prior per image rather than one shared across them, 
+and every light profile ends in a dashed `intensity · solved` pill. The footer counts `26 unique sampled scalars`, 
+the N=26 stated above.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 

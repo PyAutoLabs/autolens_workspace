@@ -204,6 +204,21 @@ This confirms that the light profiles of the lens and source galaxies do not inc
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+What a linear light profile does is drawn explicitly. Both `bulge · Sersic` on the lens and `bulge · SersicCore` on 
+the source end in a dashed `intensity · solved` pill, and the legend at the foot of the figure names that state 
+`solved during fitting (dashed)`. The footer then counts those solved intensities separately from the sampled 
+scalars, which is the figure's way of saying they are not dimensions of parameter space at all.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start_here.py` for a

@@ -212,7 +212,8 @@ A factor graph is the explicit representation of our graphical model. It defines
 - how their parameters are linked or shared (e.g., each lens has its own mass distribution, but all share the same
   cosmological parameter `H0`).
 
-Although PyAutoFit does not yet visualize factor graphs, the conceptual structure is straightforward. A factor graph
+The factor graph itself can be drawn, via `af.EPPlotter` (see `expectation_propagation.py`, which fits a graph of
+this shape with expectation propagation). Its structure is straightforward. A factor graph
 consists of:
 
 - **Nodes** — each node corresponds to an `AnalysisFactor`, meaning a specific dataset paired with a model used to fit it.
@@ -232,6 +233,23 @@ Printing the `info` attribute of this model reveals the overall structure of the
 of the analysis factors and therefore datasets.
 """
 print(factor_graph.global_prior_model.info)
+
+"""
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+The map says what makes this a graphical model rather than three independent fits. Each dataset gets its own 
+numbered frame, `0`, `1` and `2`, holding that lens's `galaxies` and `cosmology` components, and `H0` is hoisted 
+out into a blue `shared across datasets` card subtitled `one value across 3 datasets`, with a line running back to 
+the `H0 ↗ shared` pill in every frame. The footer counts `1 shared across datasets` and `3 per dataset × 3 
+datasets`, which is the N=10 dimensionality described above. The `info` above can only express that sharing by 
+repeating `H0` in each frame's listing.
+"""
+af.ModelPlotter(factor_graph.global_prior_model).figure()
 
 """
 __Search__

@@ -250,6 +250,21 @@ Planck18 cosmology.
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+A double source plane lens is three frames rather than two, and their subtitles are the physics: `lens · Galaxy` at 
+`redshift = 0.5`, `source_0 · Galaxy` at `redshift = 1.0` and `source_1 · Galaxy` at `redshift = 2.0`. `source_0` 
+carries a `mass · IsothermalSph` card as well as light, because it lenses `source_1` in turn, and the greyed 
+`centre` pills on both sources are the fixed positions set in the composition above.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 

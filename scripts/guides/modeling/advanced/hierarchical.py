@@ -226,6 +226,22 @@ The factor graph model `info` attribute shows that the hierarchical factor's par
 print(factor_graph.global_prior_model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+The hierarchical factor is drawn as a violet `HierarchicalFactor0 · GaussianPrior` card holding the `mean` and 
+`sigma` we are inferring, with a violet arrow running to the `slope · drawn` pill of every lens's `mass · 
+PowerLawSph` card. That arrow is the parent distribution each `slope` is drawn from, and the footer counts it 
+separately as `2 hyper-parameters` alongside `5 per dataset × 3 datasets`, so the hierarchical part of the model is 
+visible without reading a single prior.
+"""
+af.ModelPlotter(factor_graph.global_prior_model).figure()
+
+"""
 __Search__
 
 We can now create a non-linear search and used it to the fit the factor graph, using its `global_prior_model` property.

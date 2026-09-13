@@ -243,6 +243,22 @@ We can print the model to show the parameters that the model is composed of.
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+For a point source the map is small, and that is the lesson. The `lens · Galaxy` frame subtitled `redshift = 0.295` 
+holds one `mass · Isothermal` card, and the `source · Galaxy` frame subtitled `redshift = 0.658` holds a 
+`point_0 · PointSolved` card whose only pill is a dashed `centre · solved`. That dashed pill is the source-plane 
+position, solved analytically at every likelihood evaluation instead of sampled, so the footer counts it under 
+parameters solved during fitting rather than among the sampled scalars.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Model Fit__
 
 We now fit the data with the lens model using the non-linear fitting method and nested sampling algorithm Nautilus.

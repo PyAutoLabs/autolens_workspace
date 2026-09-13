@@ -117,6 +117,23 @@ The `info` attribute shows the model in a readable format.
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+Here the map shows the two planes of the lens system side by side: the `lens · Galaxy` card subtitled 
+`redshift = 0.5` carries a single `mass · IsothermalSph` component, and the `source · Galaxy` card subtitled 
+`redshift = 1.0` carries `bulge · ExponentialCoreSph`. The greyed `radius_break`, `gamma` and `alpha` pills on the 
+source are fixed values rather than free parameters, which is why the footer counts `7 unique sampled scalars` and 
+`5 fixed leaf slots`. Those 7 scalars are the vector the `Analysis` class below is handed at every likelihood 
+evaluation.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Instances__
 
 Instances of the model above can be created, where an input `vector` of parameters is mapped to create an instance of 

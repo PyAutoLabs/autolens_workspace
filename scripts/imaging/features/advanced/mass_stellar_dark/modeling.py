@@ -221,6 +221,21 @@ are aligned.
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+The decomposition is drawn as two cards inside the lens frame: `bulge · Sersic`, whose `mass_to_light_ratio` pill is 
+what makes it a light *and* mass profile, and `dark · NFW` with `kappa_s` and `scale_radius`. The alignment written 
+as `bulge.centre = dark.centre` above appears as a blue `shared ×2` badge on the bulge's `centre` and a 
+`↗ bulge.centre` badge on the dark matter's, joined by a bracket, so stellar and dark mass share one centre.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a full 

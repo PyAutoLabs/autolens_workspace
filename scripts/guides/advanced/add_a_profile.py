@@ -513,6 +513,22 @@ lens_model_example = af.Model(LensModelExample)
 print(lens_model_example.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+For a profile you have just written, the map is mostly a warning. `LensModelExample` is defined in this script and 
+has no prior configuration file, so every parameter is drawn as a red `missing` pill: `centre` and `ell_comps`, each 
+badged `2D` because a tuple of floats is two parameters, alongside `einstein_radius` and `your_parameter_here`. The 
+footer counts `0 unique sampled scalars` and `6 missing`, which is the figure's way of saying this model cannot be 
+fitted yet.
+"""
+af.ModelPlotter(lens_model_example).figure()
+
+"""
 For this example model, we can manually assign priors to its parameters as shown
 below.
 """
@@ -528,6 +544,12 @@ lens_model_example.your_parameter_here = af.UniformPrior(
 print(lens_model_example.info)
 
 """
+The map is unchanged and only the legend moved: the six red `missing` pills are now ordinary free 
+parameters and the footer counts `6 unique sampled scalars`, because every prior was assigned by hand above.
+"""
+af.ModelPlotter(lens_model_example).figure()
+
+"""
 The exact same API applies to the ``Isothermal`` class defined above, which has
 three ``__init__`` parameters: ``centre``, ``ell_comps``, and
 ``einstein_radius``.
@@ -538,6 +560,13 @@ parameters in total.
 mass = af.Model(Isothermal)
 
 print(mass.info)
+
+"""
+The `Isothermal` class written at the top of this script has no prior configuration file either, so its 
+figure repeats the same warning with three red pills, `centre`, `ell_comps` and `einstein_radius`, and a footer 
+counting `5 missing` -- the five free parameters described above.
+"""
+af.ModelPlotter(mass).figure()
 
 """
 As before, we must manually assign priors to these parameters for lens modelling.

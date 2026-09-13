@@ -428,6 +428,21 @@ model = af.Collection(
 print(model.info)
 
 """
+The same model can also be drawn as a figure, which shows its structure at a glance.
+
+The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
+owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
+one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
+prior on every parameter and the value of every fixed one.
+
+The decomposition is the thing to look for: the `lens · Galaxy` frame holds *two* cards, `bulge · Sersic` and 
+`dark · NFW`, whose convergences are summed during the fit. The stellar card carries the `mass_to_light_ratio` pill 
+that turns light into mass, and the dark card carries `kappa_s` and `scale_radius`. A single-profile lens, as drawn 
+in `mass.py`, has one card here instead of two.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 Printing `model.info` shows the priors-and-defaults summary.  Notice the lens galaxy has
 *two* mass components (`bulge` and `dark`) whose convergences will be summed during the
 fit.  This is how a decomposed lens model differs from the single-profile `Isothermal`
