@@ -129,7 +129,7 @@ We compose a lens model where:
 
  - The source galaxy's light is an MGE with 1 x 20 Gaussians [4 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
 """
 # Lens:
 
@@ -162,18 +162,7 @@ given that the datasets do not vary over wavelength.
 analysis_factor_list = []
 
 for analysis in analysis_list:
-    bulge = al.model_util.mge_model_from(
-        mask_radius=mask_radius,
-        total_gaussians=20,
-        gaussian_per_basis=1,
-        centre_prior_is_uniform=True,
-        sigma_min=dataset_list[0].pixel_scales[0] / 10.0,
-    )
-    disk = af.Model(al.lp_linear.Exponential)
-
-    galaxy = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, disk=disk)
-
-    model_analysis = af.Collection(galaxies=af.Collection(galaxy=galaxy))
+    model_analysis = model.copy()
 
     analysis_factor = af.AnalysisFactor(prior_model=model_analysis, analysis=analysis)
 
@@ -199,11 +188,11 @@ datasets have in common hoisted out into a blue `shared across datasets` card at
 frame carries a blue badge pointing back to it, and the footer counts the split directly as `N shared across 
 datasets` and `M per dataset × D datasets`.
 
-For this example the figure is worth checking against your intention: each `AnalysisFactor` above composes a fresh 
-model rather than copying one, so no prior object is shared between them and the footer reads `0 shared across 
-datasets` with every parameter counted `per dataset`. Two datasets at the same wavelength are therefore being 
-fitted by two independent copies of the model. Sharing a parameter across datasets means passing the *same* model 
-(or a `copy()` of it, which keeps the same priors) to every factor, as `modeling.py` does.
+For this example every parameter is shared, because each `AnalysisFactor` above is passed a `copy()` of the same 
+model and no parameter is given its own prior per dataset. The `shared across datasets` card at the top holds the 
+scalar pills `einstein_radius`, `gamma_1` and `gamma_2`; the 2D pills stay inside frame `0` badged `shared x2` with 
+frame `1` pointing back at them (e.g. `0.galaxies.lens.mass.centre`). The footer states the split as `11 shared 
+across datasets` and `0 per dataset x 2 datasets`.
 """
 af.ModelPlotter(factor_graph.global_prior_model).figure()
 
@@ -282,7 +271,7 @@ for result in result_list:
     aplt.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 
 """
-The `Samples` object still has the dimensions of the overall non-linear search (in this case N=15). 
+The `Samples` object still has the dimensions of the overall non-linear search (in this case N=11). 
 
 Therefore, the samples is identical in every result object.
 """

@@ -526,6 +526,8 @@ shapelets_bulge_list = af.Collection(
 
 for x in range(total_xy):
     for y in range(total_xy):
+        shapelet = shapelets_bulge_list[x * total_xy + y]
+
         shapelet.n_y = y
         shapelet.n_x = x
 
@@ -547,10 +549,10 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 print(model.info)
 
 """
-The Cartesian basis collapses the same way, into one plate badged `25 components` whose `n_y` and `n_x` 
-pills are fixed per member. Unlike the polar basis above, `centre`, `ell_comps` and `beta` here carry an 
-`independent` badge -- one prior per shapelet rather than one shared across the basis -- and the footer's count of 
-sampled scalars is correspondingly larger.
+The Cartesian basis collapses the same way, into one plate badged `25 components` on which `n_y` and `n_x` read 
+`fixed, varies by member` (each shapelet has its own order, set in the loop above), while `centre`, `ell_comps` and 
+`beta` carry the same blue `shared across group` badges as the polar basis and `intensity · solved` is dashed. The 
+footer reads `12 unique sampled scalars`, `5 shared priors` and `25 parameters solved during fitting`.
 """
 af.ModelPlotter(model).figure()
 
