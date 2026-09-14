@@ -145,6 +145,16 @@ formatting if the display does not render well on your screen.)
 print(model.info)
 
 """
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
+
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free,
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed
+parameter.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Search__
 
 The model is fitted to the data using the nested sampling algorithm

@@ -209,6 +209,16 @@ This confirms that no lens galaxy (main or extra) has a light profile — only m
 print(model.info)
 
 """
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
+
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free,
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed
+parameter.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Over Sampling__
 
 When there is no lens light, we do not need adaptive over-sampling for the lens galaxies. Over-sampling is

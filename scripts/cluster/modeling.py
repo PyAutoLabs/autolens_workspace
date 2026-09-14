@@ -449,6 +449,16 @@ kernel after changing it.
 print(model.info)
 
 """
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
+
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free,
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed
+parameter.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Name Pairing__
 
 Every ``PointDataset`` has a ``name`` (e.g. ``point_0``, ``point_1``). This pairs the dataset to the
@@ -602,6 +612,13 @@ factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 Print the global model the factor graph fits.
 """
 print(factor_graph.global_prior_model.info)
+
+"""
+The global model adds a frame per dataset and hoists everything the datasets have in common into a blue
+`shared across datasets` card. Because the same `model` object was passed to every `AnalysisFactor`, every
+parameter is shared.
+"""
+af.ModelPlotter(factor_graph.global_prior_model).figure()
 
 """
 __Run Times__

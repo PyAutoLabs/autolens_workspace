@@ -223,6 +223,16 @@ The ``info`` attribute shows the model in a readable format.
 print(model.info)
 
 """
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
+
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free,
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed
+parameter.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Improved Lens Model__
 
 The model above uses simple parametric profiles. For better performance, we replace the main lens galaxy's light
@@ -312,6 +322,12 @@ model = af.Collection(
 )
 
 print(model.info)
+
+"""
+Each main lens galaxy now carries a second light card, `psf · Gaussian`, the operated light profile. The rest of
+the map is unchanged.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __Search__
