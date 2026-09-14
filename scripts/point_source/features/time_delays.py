@@ -162,16 +162,12 @@ The `info` attribute shows the model in a readable format.
 print(model.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-The map is the same shape as the positions-only model in `start_here.py`: one `mass · Isothermal` card on the lens 
-and a `point_0 · PointSolved` card whose only pill is a dashed `centre · solved`. Time delays add nothing to it, 
-which is the claim the prose above makes -- they are a property of the mass model, not a model component.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 

@@ -270,17 +270,12 @@ appear in a notebook).]
 print(model.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-The whole point-source model is two cards: `mass · Isothermal` on the lens at `redshift = 0.5`, and 
-`point_0 · PointSolved` on the source at `redshift = 1.0` with a single dashed `centre · solved` pill. The name 
-pairing described above is on the map as the card's own name, `point_0`, which is what the `PointDataset` is 
-matched against.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 

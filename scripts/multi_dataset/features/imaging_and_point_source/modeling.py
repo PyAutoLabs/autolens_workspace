@@ -323,23 +323,12 @@ factor_graph = af.FactorGraphModel(factor_imaging, factor_point, use_jax=True)
 print(factor_graph.global_prior_model.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-A global model is drawn as one frame per dataset, numbered `0`, `1` and so on, with everything the 
-datasets have in common hoisted out into a blue `shared across datasets` card at the top. Each shared pill inside a 
-frame carries a blue badge pointing back to it, and the footer counts the split directly as `N shared across 
-datasets` and `M per dataset × D datasets`.
-
-The two frames here describe different observations of the same lens: the imaging frame holds MGE plates on both 
-galaxies, the point-source frame holds a `point_0 · PointSolved` card whose only pill is a dashed `centre · solved`, 
-and the mass and shear parameters in both carry blue badges back to the shared card, because the same `mass` and 
-`shear` model objects were passed to each. That shared card is the whole reason to fit the two datasets 
-simultaneously.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(factor_graph.global_prior_model).figure()
 

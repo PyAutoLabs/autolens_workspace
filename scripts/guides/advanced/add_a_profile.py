@@ -513,18 +513,12 @@ lens_model_example = af.Model(LensModelExample)
 print(lens_model_example.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-For a profile you have just written, the map is mostly a warning. `LensModelExample` is defined in this script and 
-has no prior configuration file, so every parameter is drawn as a red `missing` pill: `centre` and `ell_comps`, each 
-badged `2D` because a tuple of floats is two parameters, alongside `einstein_radius` and `your_parameter_here`. The 
-footer counts `0 unique sampled scalars` and `6 missing`, which is the figure's way of saying this model cannot be 
-fitted yet.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(lens_model_example).figure()
 

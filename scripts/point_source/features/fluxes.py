@@ -157,16 +157,12 @@ The `info` attribute shows the model in a readable format, which now includes th
 print(model.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-Fitting fluxes changes one card. The source's `point_0 · PointFlux` carries a free `centre` and a free `flux` pill, 
-where the `PointSolved` component used in `start_here.py` carried a single dashed `centre · solved` and nothing 
-else. Those three extra pills are the difference between N=5 and N=8.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 

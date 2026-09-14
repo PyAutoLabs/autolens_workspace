@@ -204,17 +204,12 @@ This confirms that the light profiles of the lens and source galaxies do not inc
 print(model.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-What a linear light profile does is drawn explicitly. Both `bulge · Sersic` on the lens and `bulge · SersicCore` on 
-the source end in a dashed `intensity · solved` pill, and the legend at the foot of the figure names that state 
-`solved during fitting (dashed)`. The footer then counts those solved intensities separately from the sampled 
-scalars, which is the figure's way of saying they are not dimensions of parameter space at all.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 
