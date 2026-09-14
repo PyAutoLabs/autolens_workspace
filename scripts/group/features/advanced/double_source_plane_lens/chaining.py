@@ -272,9 +272,8 @@ model_2 = af.Collection(
 print(model_2.info)
 
 """
-Search 2 passed the main lens galaxies and `source_0`'s light forward as instances, so each folds into a greyed
-pill with nothing left to sample. What is new on the map is `source_0`'s `mass · IsothermalSph` and `source_1`'s
-plate of Gaussians, the only components search 2 fits.
+Search 2 passed the main lens galaxies and `source_0`'s light forward as instances, so they have no free
+parameters left. Only `source_0`'s `IsothermalSph` mass and `source_1`'s MGE bulge are fitted.
 """
 af.ModelPlotter(model_2).figure()
 

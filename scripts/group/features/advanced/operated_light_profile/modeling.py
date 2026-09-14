@@ -324,8 +324,8 @@ model = af.Collection(
 print(model.info)
 
 """
-Each main lens galaxy now carries a second light card, `psf · Gaussian`, the operated light profile. The rest of
-the map is unchanged.
+Each main lens galaxy now carries a second light profile, `psf`, the operated Gaussian. Nothing else about the
+model has changed.
 """
 af.ModelPlotter(model).figure()
 

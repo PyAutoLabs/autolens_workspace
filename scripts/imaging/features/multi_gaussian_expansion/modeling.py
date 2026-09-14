@@ -470,8 +470,7 @@ Printing the model info confirms the model has Gaussians for both the lens and s
 print(model.info)
 
 """
-The source frame now carries plates of its own, drawn exactly like the lens's, so the map shows an MGE 
-on both planes of the lens system.
+The source now carries an MGE of its own, so both planes of the lens system are modelled with one.
 """
 af.ModelPlotter(model).figure()
 
@@ -569,8 +568,8 @@ Printing the model info confirms the lens galaxy now has both an extended `bulge
 print(model.info)
 
 """
-The lens frame now holds two `Basis` cards, `bulge` and `point`, each with its own plate: the extended 
-MGE and the compact point-source MGE, separated on the map in the same way they are separated in the code.
+The lens now holds two bases, `bulge` and `point`: the extended MGE and the compact point-source MGE, 
+separated in the model in the same way they are separated in the code.
 """
 af.ModelPlotter(model).figure()
 
@@ -596,8 +595,8 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 print(model.info)
 
 """
-The map is unchanged from the one above, which is the point: `mge_point_model_from` composes the same 
-basis in one line as the loop composed by hand.
+`mge_point_model_from` composes the same basis in one line as the loop composed by hand, so the model is 
+unchanged from the one above.
 """
 af.ModelPlotter(model).figure()
 

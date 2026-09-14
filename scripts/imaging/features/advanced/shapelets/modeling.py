@@ -544,10 +544,9 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 print(model.info)
 
 """
-The Cartesian basis collapses the same way, into one plate badged `25 components` on which `n_y` and `n_x` read 
-`fixed, varies by member` (each shapelet has its own order, set in the loop above), while `centre`, `ell_comps` and 
-`beta` carry the same blue `shared across group` badges as the polar basis and `intensity · solved` is dashed. The 
-footer reads `12 unique sampled scalars`, `5 shared priors` and `25 parameters solved during fitting`.
+The Cartesian basis works the same way as the polar one: each shapelet has its own fixed `n_y` and `n_x` order, 
+set in the loop above, whilst `centre`, `ell_comps` and `beta` are shared across the whole basis and every 
+shapelet's `intensity` is solved by the inversion.
 """
 af.ModelPlotter(model).figure()
 

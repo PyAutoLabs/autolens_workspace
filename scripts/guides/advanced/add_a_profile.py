@@ -538,8 +538,8 @@ lens_model_example.your_parameter_here = af.UniformPrior(
 print(lens_model_example.info)
 
 """
-The map is unchanged and only the legend moved: the six red `missing` pills are now ordinary free 
-parameters and the footer counts `6 unique sampled scalars`, because every prior was assigned by hand above.
+The six parameters that had no configured prior are now ordinary free parameters, because every prior was 
+assigned by hand above.
 """
 af.ModelPlotter(lens_model_example).figure()
 
@@ -556,9 +556,8 @@ mass = af.Model(Isothermal)
 print(mass.info)
 
 """
-The `Isothermal` class written at the top of this script has no prior configuration file either, so its 
-figure repeats the same warning with three red pills, `centre`, `ell_comps` and `einstein_radius`, and a footer 
-counting `5 missing` -- the five free parameters described above.
+The `Isothermal` class written at the top of this script has no prior configuration file either, so none of the 
+five free parameters described above has a configured prior.
 """
 af.ModelPlotter(mass).figure()
 

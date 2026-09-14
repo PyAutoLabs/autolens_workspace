@@ -285,12 +285,10 @@ Printing the model info confirms the model has Gaussians for both the lens and s
 print(model.info)
 
 """
-The lens frame is unchanged and the source's `bulge · SersicCore` card has become a `bulge · Basis` card holding a 
-dashed plate of Gaussians badged `5 components` and subtitled `0 - 4`, so the MGE is drawn as one plate rather than 
-as five cards. On the plate `centre` and `ell_comps` carry blue `shared across group` badges, `sigma` reads 
-`fixed, varies by member` (the log-spaced widths the utility function set) and `intensity · solved` is dashed, which 
-is the linear light profile described above. The footer counts `1 plate standing for 5 components` and 
-`5 parameters solved during fitting`, and fewer sampled scalars than the single Sérsic it replaced.
+The lens is unchanged and the source's `SersicCore` has become an MGE of five Gaussians. They share one `centre` 
+and one `ell_comps`, their `sigma` values are fixed to the log-spaced widths the utility function set, and each 
+`intensity` is solved by the inversion, so the MGE costs fewer sampled parameters than the single Sersic it 
+replaced.
 """
 af.ModelPlotter(model).figure()
 

@@ -276,11 +276,9 @@ The `info` attribute shows the model, including how parameters and priors were p
 print(model_2.info)
 
 """
-The source half of the map has changed shape entirely: the plate of Gaussians is gone and in its place 
-is a `pixelization · Pixelization` card with a dashed `reconstruction · solved` pill and a `regularization · 
-Constant` sub-card. The mesh is passed as an instance rather than a model, so it folds into a single greyed `mesh` 
-pill instead of a card of its own -- a component with no free parameters left to draw. The lens cards look 
-unchanged, but their legend moved: those priors came from search 1.
+The source's MGE is gone and in its place is a `Pixelization` whose `reconstruction` is solved during the fit, 
+regularized by a `Constant`. The mesh is passed as an instance rather than a model, so it has no free parameters 
+left. The lens is unchanged in structure, but its priors came from search 1.
 """
 af.ModelPlotter(model_2).figure()
 

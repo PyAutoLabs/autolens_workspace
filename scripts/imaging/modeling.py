@@ -390,11 +390,10 @@ Printing the model info confirms the model has Gaussians for both the lens and s
 print(model.info)
 
 """
-The map is the same shape as the one above with the light of both galaxies swapped for an MGE: each 
-`bulge · Sersic` card is replaced by a `bulge · Basis` card holding a dashed plate of Gaussians, badged with how 
-many the basis contains. The lens's two plates share one `centre` and one `ell_comps` between all their Gaussians, 
-`sigma` is `fixed, varies by member`, and `intensity · solved` is dashed on every plate, so the footer counts only a 
-handful of sampled scalars despite the model containing dozens of light profiles.
+This model swaps the light of both galaxies for an MGE. The lens's two bases share one `centre` and one 
+`ell_comps` between all their Gaussians, each Gaussian's `sigma` is fixed to its own value, and every 
+`intensity` is solved by the inversion, so the model has only a handful of sampled parameters despite 
+containing dozens of light profiles.
 """
 af.ModelPlotter(model).figure()
 

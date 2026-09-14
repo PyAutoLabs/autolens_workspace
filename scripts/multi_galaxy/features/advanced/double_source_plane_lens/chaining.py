@@ -285,8 +285,9 @@ model_2 = af.Collection(
 print(model_2.info)
 
 """
-Search 2 passed both deflectors, the shear galaxy and `source_0`'s light forward as instances, so they are greyed
-out. What is left free is `source_0`'s `mass · IsothermalSph` and the new `source_1` card at `redshift = 2.0`.
+Search 2 passed both deflectors, the shear galaxy and `source_0`'s light forward as instances, so they have no
+free parameters left. What is left free is `source_0`'s `IsothermalSph` mass and the new `source_1` at
+`redshift = 2.0`.
 """
 af.ModelPlotter(model_2).figure()
 

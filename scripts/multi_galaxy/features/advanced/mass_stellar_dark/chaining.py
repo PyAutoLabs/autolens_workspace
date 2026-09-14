@@ -250,9 +250,8 @@ model_2 = af.Collection(
 print(model_2.info)
 
 """
-The decomposition is drawn: each deflector's single `mass` card is replaced by an `lmp.Sersic` bulge and an
-`NFWSph` dark halo, with a shared badge tying the two galaxies' `mass_to_light_ratio` together. The source is
-greyed out as a passed instance.
+Each deflector's single `mass` is replaced by an `lmp.Sersic` bulge and an `NFWSph` dark halo, with the two
+galaxies' `mass_to_light_ratio` shared. The source is passed as an instance and is not refit.
 """
 af.ModelPlotter(model_2).figure()
 

@@ -285,10 +285,8 @@ The `info` attribute shows the model, including how parameters and priors were p
 print(model_2.info)
 
 """
-The difference between passing a `model` and an `instance` is drawn rather than described. The lens's 
-mass and the first source's light were passed as instances, so each folds into a single greyed pill, `mass` and 
-`bulge`, with no card and no parameters left to sample. What is new on the map is `mass · IsothermalSph` on 
-`source_0` and a plate of Gaussians on `source_1`, which are the only free parameters search 2 fits.
+The lens's mass and the first source's light were passed as instances, so neither has any free parameters left. 
+What search 2 fits is `source_0`'s `IsothermalSph` mass and `source_1`'s MGE.
 """
 af.ModelPlotter(model_2).figure()
 

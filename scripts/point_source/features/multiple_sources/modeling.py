@@ -279,11 +279,8 @@ To inspect the global model the factor graph fits, print `factor_graph.global_pr
 print(factor_graph.global_prior_model.info)
 
 """
-The global model adds a frame per dataset, numbered `0`, `1` and so on, and hoists everything the 
-datasets have in common into a blue `shared across datasets` card at the top, linked back to each frame by a 
-`↗ shared` badge on the pill it came from. Because the same `model` object was passed to every `AnalysisFactor`, 
-every parameter is shared: the footer reads `0 per dataset`, which is the figure's way of saying these datasets are 
-fitted by one model rather than one model each.
+Because the same `model` object was passed to every `AnalysisFactor`, every parameter is shared across the 
+datasets: they are fitted by one model rather than one model each.
 """
 af.ModelPlotter(factor_graph.global_prior_model).figure()
 

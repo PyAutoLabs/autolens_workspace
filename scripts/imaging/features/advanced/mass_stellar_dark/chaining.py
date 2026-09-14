@@ -224,9 +224,9 @@ The `info` attribute shows the model, including how parameters and priors were p
 print(model_2.info)
 
 """
-The map has changed shape: the lens's plates of Gaussians are replaced by a single `bulge · Sersic` 
-card carrying a `mass_to_light_ratio` pill, and a `dark · NFW` card now sits beside it. The legend moved too -- 
-`take_attributes` passed the `centre` and `ell_comps` priors from search 1 into the new stellar profile.
+The lens's MGE is replaced by a single `Sersic` bulge carrying a `mass_to_light_ratio`, with an `NFW` dark halo 
+beside it. `take_attributes` passed the `centre` and `ell_comps` priors from search 1 into the new stellar 
+profile.
 """
 af.ModelPlotter(model_2).figure()
 

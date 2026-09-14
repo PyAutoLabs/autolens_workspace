@@ -203,9 +203,8 @@ The `info` attribute shows the model, including how parameters and priors were p
 print(model_2.info)
 
 """
-The map is unchanged and only the legend moved -- and here it did not even move, which is the point of 
-this section. Passing `result_1.model` gives back the same structure with the same configuration priors, so the 
-figure is identical to the one above.
+Passing `result_1.model` gives back the same model structure with the same configuration priors, which is the 
+point of this section: nothing about the model has changed.
 """
 af.ModelPlotter(model_2).figure()
 
@@ -242,9 +241,8 @@ This now contains `GaussianPrior`'s that are centered on the maximum likelihood 
 print(model_2.info)
 
 """
-The map is again unchanged: prior passing never alters the shape of a model, only the numbers behind 
-it. What moved is the legend, where every prior is now a `GaussianPrior` centred on the maximum likelihood value of 
-search 1.
+Prior passing never alters the structure of a model, only the priors behind it: every prior is now a 
+`GaussianPrior` centred on the maximum likelihood value of search 1.
 """
 af.ModelPlotter(model_2).figure()
 

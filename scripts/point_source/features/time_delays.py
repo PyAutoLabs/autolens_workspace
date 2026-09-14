@@ -274,10 +274,10 @@ This confirms the model includes the Cosmology, which has the Hubble constant as
 print(model.info)
 
 """
-The cosmology is drawn as a frame of its own beside `galaxies`: `cosmology · FlatLambdaCDM`, with `H0` 
-a free parameter and `Om0`, `Tcmb0`, `Neff`, `m_nu` and `Ob0` greyed as fixed Planck18 values. The lens's `centre` 
-and `einstein_radius` pills are greyed too, because they were fixed just above, so the map shows at a glance that 
-this fit samples the lens ellipticity and the Hubble constant and nothing else.
+The cosmology enters the model as a component of its own beside `galaxies`: `FlatLambdaCDM`, with `H0` free and 
+`Om0`, `Tcmb0`, `Neff`, `m_nu` and `Ob0` fixed to their Planck18 values. The lens's `centre` and 
+`einstein_radius` were fixed just above, so this fit samples the lens ellipticity and the Hubble constant and 
+nothing else.
 """
 af.ModelPlotter(model).figure()
 

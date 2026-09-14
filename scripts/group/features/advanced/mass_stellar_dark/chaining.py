@@ -221,9 +221,8 @@ model_2 = af.Collection(galaxies=af.Collection(**lens_dict_2, source=source_2))
 print(model_2.info)
 
 """
-The map has changed shape: each lens galaxy's `bulge · Sersic` becomes an `lmp.Sersic` carrying a
-`mass_to_light_ratio` pill, a `dark · NFWSph` card sits beside it, and the source's MGE plate is greyed out as a
-passed instance.
+Each lens galaxy's `lp.Sersic` bulge has become an `lmp.Sersic`, adding a `mass_to_light_ratio`, and an
+`NFWSph` dark halo now sits beside it. The source's MGE bulge is passed as an instance and is not refit.
 """
 af.ModelPlotter(model_2).figure()
 

@@ -235,10 +235,8 @@ analysis_solved = al.AnalysisPoint(
 print(model_solved.info)
 
 """
-The solved composition is the same map with the source card emptied out: `point_0 · PointSolved` has 
-one dashed `centre · solved` pill and no `flux` at all, because `FitFluxesSolved` computes the source flux in 
-closed form. Reading the two figures side by side is the clearest statement of what the solved convention 
-costs and saves.
+The solved composition is the same model with the source emptied out: `point_0 · PointSolved` has only a solved 
+`centre` and no `flux` at all, because `FitFluxesSolved` computes the source flux in closed form.
 """
 af.ModelPlotter(model_solved).figure()
 

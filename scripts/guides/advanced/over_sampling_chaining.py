@@ -272,9 +272,8 @@ The `info` attribute shows the model in a readable format.
 print(model_2.info)
 
 """
-The lens half of the map is unchanged, but the source half is not: the plate of 20 Gaussians has been 
-replaced by a single `bulge · Sersic` card whose `intensity · solved` pill is still dashed, because a linear light 
-profile solves its intensity the same way an MGE does.
+The lens is unchanged, but the source's 20 Gaussians have been replaced by a single `Sersic`, whose `intensity` 
+is still solved by the inversion, because a linear light profile solves its intensity the same way an MGE does.
 """
 af.ModelPlotter(model_2).figure()
 

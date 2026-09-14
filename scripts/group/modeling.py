@@ -555,8 +555,8 @@ extra galaxies.
 print(model.info)
 
 """
-The improved model keeps the same frames and cards but replaces every `Sersic` with a `Basis` plate of Gaussians,
-each carrying a dashed `intensity · solved` pill.
+The improved model has the same galaxies and profiles, but every `Sersic` is replaced by an MGE basis of
+Gaussians whose `intensity` is solved by the inversion at every likelihood evaluation.
 """
 af.ModelPlotter(model).figure()
 

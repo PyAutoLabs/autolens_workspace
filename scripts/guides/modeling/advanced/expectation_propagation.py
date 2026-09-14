@@ -300,9 +300,8 @@ rejected every sweep, whose reported posterior is therefore the message it start
 
 The graph itself is the structure. Boxes are factors, pills are variables, and a line between them is an incidence,
 meaning this variable is one of that factor's arguments. Datasets fitted by identically shaped factors collapse into
-a dashed plate badged with how many of them it stands for, exactly as on the model figure above, and a plate never
-hides a member that departs from the aggregate: it names that member and draws it as a node of its own beside the
-plate.
+a dashed plate badged with how many of them it stands for, and a plate never hides a member that departs from the
+aggregate: it names that member and draws it as a node of its own beside the plate.
 
 The state is the overlay, and it is what `graph.info` cannot give you. Each factor carries how many updates it took
 over how many sweeps, how many sweeps ago it last moved (its update age), and its status: **working**, **converged**
