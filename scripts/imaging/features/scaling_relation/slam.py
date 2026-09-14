@@ -93,12 +93,13 @@ def luminosity_from(galaxy, pixel_scale):
     """
     The total luminosity of a galaxy's MGE bulge, summed over its Gaussians.
 
-    Raises if the total is not positive. A zero luminosity is what
-    `PYAUTO_TEST_MODE` produces — the light stage returns no usable samples, so every
-    Gaussian's `intensity` is zero. The scaling relation would then evaluate
-    `(0.0 / 0.0) ** 0.5`, and the resulting NaN surfaces much later and far away
-    (an INT_MIN index in the inversion mapper, or a NaN in autofit's identifier hash),
-    naming neither luminosity nor test mode. Fail here instead, where the cause is legible.
+    Raises if the total is not positive. A non-positive luminosity means the galaxy's Gaussians
+    were never constrained by the data: an MGE's `intensity` values are solved by linear algebra,
+    and a galaxy with no flux in the fitted frame is solved from noise alone, which
+    `use_positive_only_solver` then clamps to exactly 0.0. The scaling relation would evaluate
+    `(0.0 / 0.0) ** 0.5`, and the resulting NaN surfaces much later and far away (an INT_MIN index
+    in the inversion mapper, or a NaN in autofit's identifier hash), naming neither the luminosity
+    nor the galaxy. Fail here instead, where the cause is legible.
     """
     luminosity = (
         np.sum(
@@ -118,10 +119,12 @@ def luminosity_from(galaxy, pixel_scale):
         raise ValueError(
             f"Measured luminosity is {luminosity}, but the scaling relation needs a positive "
             f"value: it divides by the anchor's luminosity and takes a square root, so a "
-            f"non-positive input yields NaN. The light stage this is measured from produced no "
-            f"usable samples — the usual cause is running this script under PYAUTO_TEST_MODE, "
-            f"which skips or truncates the search. This script needs a real search; it is listed "
-            f"in config/build/no_run.yaml for exactly this reason."
+            f"non-positive input yields NaN. This galaxy contributed no flux to the light stage, "
+            f"so its MGE intensities were solved from noise and the positive-only solver clamped "
+            f"the result to zero. The usual cause is a capped frame: under "
+            f"`PYAUTO_SMALL_DATASETS=1` the dataset is cropped and rescaled, and companions far "
+            f"from the centre fall outside it entirely. This script declares `ENV: full_datasets` "
+            f"so that it always runs at full resolution — check that declaration is being honoured."
         )
 
     return luminosity
@@ -1039,3 +1042,25 @@ al.galaxy_table_to_csv(
     luminosities=scaling_galaxies_luminosities,
     file_path=dataset_path / "scaling_galaxies_measured.csv",
 )
+
+"""
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+This script measures the scaling tier's luminosities from a light-only fit.
+Under the SMALL_DATASETS cap the simulated 130x130 @ 0.1" frame is relabelled
+16x16 @ 0.6" (pixel centres out to ±4.5"), which puts the companions at
+(5.0, -1.0) and (-1.0, 5.0) outside the data entirely. Their MGE intensities
+are then solved from noise — measured ~7e-05 against a truth of ~1.2, four
+orders of magnitude below their in-frame peers — and `use_positive_only_solver`
+clamps a non-positive draw to exactly 0.0, tripping `luminosity_from`'s guard.
+Whether it trips is a per-run noise lottery, because the simulator seeds no
+`noise_seed` and `dataset/` is gitignored. Full resolution puts every tier far
+from the noise floor and costs ~110 s, inside the smoke budget.
+
+ENV: full_datasets
+"""
