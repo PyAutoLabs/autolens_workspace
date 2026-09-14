@@ -39,8 +39,30 @@ defaults:
 
 overrides:
   # start_here scripts load real FITS data that breaks with small datasets
+  #
+  # imaging/start_here.py additionally gets its own per-script BUILD_SCRIPT_TIMEOUT
+  # (autolens_workspace#547). It was killed at the release leg's run-wide 1800s cap
+  # in 3 of the last 8 Release Integrate runs (2026-09-09, 09-12, 09-14 run
+  # 34898325503) at 1805s, while passing runs of the same script span 586-1695s and
+  # every sibling in the leg is stable. Each kill lands inside one ~26 min XLA CPU
+  # compile of MultiStartProdigy (n_starts=48, batch_size=None) under this script's
+  # non-uniform over-sample map, BEFORE the first gradient step - a compile-time
+  # flake, not a regression. 3600s buys the compile room; worst case it adds +30 min
+  # to the single slowest leg of a ~72 min job, and only when the flake actually
+  # fires. The run-wide 1800s cap is deliberately left alone: it is the only guard on
+  # the other 84 entries in this profile.
+  #
+  # Spelled with `set:` because validate_env_profiles.ALLOWED_OVERRIDE_KEYS is
+  # {pattern, set, unset} - a `timeout:` key would be rejected. build_util.timeout_for
+  # reads it parent-side and it WINS over the workflow global (PyAutoHands#227);
+  # precedent: autolens_workspace_test/config/build/profile_smoke.yaml "jax_grad/".
+  #
+  # The real fix - an explicit batch_size or a uniform over-sample map so the compile
+  # is cheap - is tracked separately; retire this entry once that lands.
   - pattern: "imaging/start_here"
-    set: { PYAUTO_SMALL_DATASETS: "0" }
+    set:
+      PYAUTO_SMALL_DATASETS: "0"
+      BUILD_SCRIPT_TIMEOUT: "3600"
   - pattern: "interferometer/start_here"
     set: { PYAUTO_SMALL_DATASETS: "0" }
   - pattern: "group/start_here"
