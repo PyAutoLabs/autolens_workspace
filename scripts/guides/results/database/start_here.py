@@ -351,9 +351,12 @@ for model in model_gen:
     print(model.info)
 
 """
-Every fit above used the same model, so the three loaded models share one structure and drawing the last one is
-enough to see it. The figure is the **map** of that model -- which galaxy owns which profile and what state every
-parameter is in -- and the `info` printed above is its **legend**, the priors and fixed values behind it.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
+
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free,
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed
+parameter.
 """
 af.ModelPlotter(model).figure()
 

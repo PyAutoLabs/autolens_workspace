@@ -235,19 +235,12 @@ of the analysis factors and therefore datasets.
 print(factor_graph.global_prior_model.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-The map says what makes this a graphical model rather than three independent fits. Each dataset gets its own 
-numbered frame, `0`, `1` and `2`, holding that lens's `galaxies` and `cosmology` components, and `H0` is hoisted 
-out into a blue `shared across datasets` card subtitled `one value across 3 datasets`, with a line running back to 
-the `H0 ↗ shared` pill in every frame. The footer counts `1 shared across datasets` and `3 per dataset × 3 
-datasets`, which is the N=10 dimensionality described above. The `info` above can only express that sharing by 
-repeating `H0` in each frame's listing.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(factor_graph.global_prior_model).figure()
 

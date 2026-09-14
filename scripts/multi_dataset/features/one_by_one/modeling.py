@@ -308,18 +308,12 @@ model = af.Collection(
 print(model.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-This model is almost entirely fixed, and the map says so in two pills. `galaxies` is drawn as a frame holding a 
-greyed `lens` and `source` pill with no cards inside them at all, because the galaxies were passed as an instance 
-from the previous fit and have no free parameters left to draw. Beside it, `dataset_model · DatasetModel` carries 
-the free `grid_offset`, badged `2D` for its y and x components. The footer counts `2 unique sampled scalars`: the 
-offset, and nothing else.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 

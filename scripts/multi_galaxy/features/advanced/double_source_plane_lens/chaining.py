@@ -181,6 +181,16 @@ model_1 = af.Collection(
 print(model_1.info)
 
 """
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
+
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free,
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed
+parameter.
+"""
+af.ModelPlotter(model_1).figure()
+
+"""
 __Search + Analysis + Model-Fit (Search 1)__
 """
 search_1 = af.Nautilus(
@@ -273,6 +283,13 @@ model_2 = af.Collection(
 )
 
 print(model_2.info)
+
+"""
+Search 2 passed both deflectors, the shear galaxy and `source_0`'s light forward as instances, so they have no
+free parameters left. What is left free is `source_0`'s `IsothermalSph` mass and the new `source_1` at
+`redshift = 2.0`.
+"""
+af.ModelPlotter(model_2).figure()
 
 """
 __Search + Analysis + Model-Fit (Search 2)__

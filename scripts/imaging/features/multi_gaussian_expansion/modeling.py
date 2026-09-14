@@ -271,20 +271,12 @@ parameters than it looks!
 print(model.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-This is the figure that makes an MGE readable. The 60 Gaussians composed above are drawn as two dashed plates 
-badged `30 components`, subtitled `0 - 29` and `30 - 59`, one per basis, rather than as 60 cards. On each plate 
-`centre` and `ell_comps` carry blue `shared across group` badges, the second plate's `centre` reads `↗ 0.centre` 
-with a bracket joining it to the first, `sigma` reads `fixed, varies by member` (the log-spaced widths set above) 
-and `intensity · solved` is dashed. The footer totals it up as a handful of sampled scalars, dozens of fixed leaf 
-slots and `2 plates standing for 60 components` -- the same claim the prose above makes about most parameters being 
-fixed, made by the picture.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 
@@ -478,8 +470,7 @@ Printing the model info confirms the model has Gaussians for both the lens and s
 print(model.info)
 
 """
-The source frame now carries plates of its own, drawn exactly like the lens's, so the map shows an MGE 
-on both planes of the lens system.
+The source now carries an MGE of its own, so both planes of the lens system are modelled with one.
 """
 af.ModelPlotter(model).figure()
 
@@ -577,8 +568,8 @@ Printing the model info confirms the lens galaxy now has both an extended `bulge
 print(model.info)
 
 """
-The lens frame now holds two `Basis` cards, `bulge` and `point`, each with its own plate: the extended 
-MGE and the compact point-source MGE, separated on the map in the same way they are separated in the code.
+The lens now holds two bases, `bulge` and `point`: the extended MGE and the compact point-source MGE, 
+separated in the model in the same way they are separated in the code.
 """
 af.ModelPlotter(model).figure()
 
@@ -604,8 +595,8 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 print(model.info)
 
 """
-The map is unchanged from the one above, which is the point: `mge_point_model_from` composes the same 
-basis in one line as the loop composed by hand.
+`mge_point_model_from` composes the same basis in one line as the loop composed by hand, so the model is 
+unchanged from the one above.
 """
 af.ModelPlotter(model).figure()
 

@@ -239,19 +239,12 @@ parameter values the API above hided the composition of.
 print(model.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-This is where the MGE composition the helper function hid becomes visible. Its 20 Gaussians are not drawn 20 times: they collapse into a single dashed plate badged 
-`20 components` and subtitled `0 - 19`, on which `centre` and `ell_comps` carry blue `shared across group` badges 
-(one prior for the whole basis), `sigma` reads `fixed, varies by member` (each Gaussian has its own fixed width) and 
-`intensity · solved` is dashed, because the inversion solves it at every likelihood evaluation. The lens and the 
-source each get one such plate, alongside the lens's `mass · Isothermal` and `shear · ExternalShear` cards, so the 
-whole model is a handful of cards rather than the hundreds of lines `model.info` prints.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 

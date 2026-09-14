@@ -190,17 +190,12 @@ The `info` attribute shows the model in a readable format.
 print(model.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-Three frames, and their subtitles are the plane ordering: `lens · Galaxy` at `redshift = 0.5`, `source_0 · Galaxy` 
-at `redshift = 1.0` and `source_1 · Galaxy` at `redshift = 2.0`. `source_0` carries a `mass · Isothermal` card as 
-well as its `point_0 · PointSolved`, because it lenses `source_1` behind it, and every point-source card shows the 
-same dashed `centre · solved` pill -- the two parameters per source that the solved convention removes.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 
@@ -284,11 +279,8 @@ To inspect the global model the factor graph fits, print `factor_graph.global_pr
 print(factor_graph.global_prior_model.info)
 
 """
-The global model adds a frame per dataset, numbered `0`, `1` and so on, and hoists everything the 
-datasets have in common into a blue `shared across datasets` card at the top, linked back to each frame by a 
-`↗ shared` badge on the pill it came from. Because the same `model` object was passed to every `AnalysisFactor`, 
-every parameter is shared: the footer reads `0 per dataset`, which is the figure's way of saying these datasets are 
-fitted by one model rather than one model each.
+Because the same `model` object was passed to every `AnalysisFactor`, every parameter is shared across the 
+datasets: they are fitted by one model rather than one model each.
 """
 af.ModelPlotter(factor_graph.global_prior_model).figure()
 

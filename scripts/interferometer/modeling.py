@@ -197,6 +197,16 @@ appear in a notebook).]
 print(model.info)
 
 """
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
+
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Improved Lens Model__
 
 The previous model used Sérsic light profiles for the source galaxy. This makes the model API concise, readable, and 
@@ -273,6 +283,14 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 Printing the model info confirms the model has Gaussians for both the lens and source galaxies.
 """
 print(model.info)
+
+"""
+The lens is unchanged and the source's `SersicCore` has become an MGE of five Gaussians. They share one `centre` 
+and one `ell_comps`, their `sigma` values are fixed to the log-spaced widths the utility function set, and each 
+`intensity` is solved by the inversion, so the MGE costs fewer sampled parameters than the single Sersic it 
+replaced.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __Search__

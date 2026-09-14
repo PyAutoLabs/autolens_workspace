@@ -232,6 +232,16 @@ profiles but no non-linear light parameters -- their intensities are all solved 
 print(model.info)
 
 """
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
+
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free,
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed
+parameter.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Over Sampling__
 
 Over sampling at each galaxy centre (both main lens galaxies and extra galaxies) is performed to ensure the lens

@@ -144,17 +144,12 @@ The `info` attribute shows the model in a readable format.
 print(model_1.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-Search 1 fits the lens light alone, and the map shows just that: a single `lens · Galaxy` frame holding one 
-`bulge · Basis` card, with no mass, no shear and no source galaxy anywhere on the figure. Its 60 Gaussians collapse 
-into two dashed plates badged `30 components` with a shared `centre` and `ell_comps`, fixed `sigma` per member and a 
-dashed `intensity · solved`.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model_1).figure()
 
@@ -229,9 +224,9 @@ The `info` attribute shows the model, including how parameters and priors were p
 print(model_2.info)
 
 """
-The map has changed shape: the lens's plates of Gaussians are replaced by a single `bulge · Sersic` 
-card carrying a `mass_to_light_ratio` pill, and a `dark · NFW` card now sits beside it. The legend moved too -- 
-`take_attributes` passed the `centre` and `ell_comps` priors from search 1 into the new stellar profile.
+The lens's MGE is replaced by a single `Sersic` bulge carrying a `mass_to_light_ratio`, with an `NFW` dark halo 
+beside it. `take_attributes` passed the `centre` and `ell_comps` priors from search 1 into the new stellar 
+profile.
 """
 af.ModelPlotter(model_2).figure()
 

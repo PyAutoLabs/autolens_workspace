@@ -365,6 +365,16 @@ appear in a notebook).
 print(model.info)
 
 """
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
+
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free,
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed
+parameter.
+"""
+af.ModelPlotter(model).figure()
+
+"""
 __Improved Lens Model__
 
 The previous model used Sersic light profiles for the lens, source and extra galaxies. This makes the model API concise,
@@ -543,6 +553,12 @@ This shows the group scale model, with separate entries for each main lens galax
 extra galaxies.
 """
 print(model.info)
+
+"""
+The improved model has the same galaxies and profiles, but every `Sersic` is replaced by an MGE basis of
+Gaussians whose `intensity` is solved by the inversion at every likelihood evaluation.
+"""
+af.ModelPlotter(model).figure()
 
 """
 __Search__

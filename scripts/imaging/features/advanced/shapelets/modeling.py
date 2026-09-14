@@ -270,17 +270,12 @@ This confirms that the source galaxy is made of many `ShapeletPolar` profiles.
 print(model.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-The shapelet basis collapses into a single dashed plate badged with the number of shapelets it stands for, on which 
-`n` and `m` read `fixed, varies by member` (each shapelet has its own order, set in the loop above), `centre`, 
-`ell_comps` and `beta` carry blue `shared across group` badges, and `intensity · solved` is dashed. The whole 
-source is therefore three shared free parameters plus one solved intensity per shapelet.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 
@@ -549,10 +544,9 @@ model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 print(model.info)
 
 """
-The Cartesian basis collapses the same way, into one plate badged `25 components` on which `n_y` and `n_x` read 
-`fixed, varies by member` (each shapelet has its own order, set in the loop above), while `centre`, `ell_comps` and 
-`beta` carry the same blue `shared across group` badges as the polar basis and `intensity · solved` is dashed. The 
-footer reads `12 unique sampled scalars`, `5 shared priors` and `25 parameters solved during fitting`.
+The Cartesian basis works the same way as the polar one: each shapelet has its own fixed `n_y` and `n_x` order, 
+set in the loop above, whilst `centre`, `ell_comps` and `beta` are shared across the whole basis and every 
+shapelet's `intensity` is solved by the inversion.
 """
 af.ModelPlotter(model).figure()
 

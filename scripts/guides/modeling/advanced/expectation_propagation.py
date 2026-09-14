@@ -234,18 +234,12 @@ not use `global_prior_model` below when performing the fit).
 print(factor_graph.global_prior_model.info)
 
 """
-We can also draw this global model, via `af.ModelPlotter`. The figure is the **map** of a model and the `info` above
-is its **legend**: the map shows the structure, meaning which dataset gets which component and which parameters are
-shared or drawn from a common parent, whereas the `info` lists the priors and values themselves.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The hierarchical part of this model is what the map makes immediate. Each lens gets its own numbered frame holding
-its `galaxies` collection, and the parent distribution is hoisted out into a violet `HierarchicalFactor0 ·
-GaussianPrior` card carrying the `mean` and `sigma` we are inferring. A violet arrow runs from that card to the
-`slope · drawn` pill on every lens's `mass · PowerLawSph`, which is the statement that the three slopes are draws
-from one Gaussian. The footer counts the parent's `mean` and `sigma` separately as `2 hyper-parameters`.
-
-This is the model. The factor graph EP actually sweeps is a different object, with a node per factor and a node per
-prior, and it is drawn after the fit below.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free,
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed
+parameter.
 """
 af.ModelPlotter(factor_graph.global_prior_model).figure()
 
@@ -306,9 +300,8 @@ rejected every sweep, whose reported posterior is therefore the message it start
 
 The graph itself is the structure. Boxes are factors, pills are variables, and a line between them is an incidence,
 meaning this variable is one of that factor's arguments. Datasets fitted by identically shaped factors collapse into
-a dashed plate badged with how many of them it stands for, exactly as on the model figure above, and a plate never
-hides a member that departs from the aggregate: it names that member and draws it as a node of its own beside the
-plate.
+a dashed plate badged with how many of them it stands for, and a plate never hides a member that departs from the
+aggregate: it names that member and draws it as a node of its own beside the plate.
 
 The state is the overlay, and it is what `graph.info` cannot give you. Each factor carries how many updates it took
 over how many sweeps, how many sweeps ago it last moved (its update age), and its status: **working**, **converged**

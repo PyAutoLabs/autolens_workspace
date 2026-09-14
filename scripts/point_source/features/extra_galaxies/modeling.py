@@ -258,17 +258,12 @@ The `info` attribute confirms the model includes the extra galaxies we defined a
 print(model.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-The extra galaxies are drawn as a top-level frame of their own beside `galaxies`, and because they are identically 
-composed they collapse into one dashed plate badged with how many there are. On it `centre · fixed, varies by 
-member` says each companion is pinned to its measured position, while `einstein_radius` carries an `independent` 
-badge -- one free parameter per member. That is the entire cost of the tier, read off the picture.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 

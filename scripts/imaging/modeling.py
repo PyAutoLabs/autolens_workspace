@@ -298,18 +298,12 @@ appear in a notebook).
 print(model.info)
 
 """
-The same model can also be drawn as a figure, which shows its structure at a glance.
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
 
-The figure is the **map** and `model.info` is the **legend**. The map shows the shape of the model: which component 
-owns which parameter, and what state every parameter is in (free, fixed, shared with another component, related to 
-one by an expression, solved during the fit or missing from your configuration). The legend gives the numbers: the 
-prior on every parameter and the value of every fixed one.
-
-The map here is the two planes of the lens system: the `lens · Galaxy` card subtitled `redshift = 0.5` holding 
-`bulge · Sersic`, `mass · Isothermal` and `shear · ExternalShear`, and the `source · Galaxy` card subtitled 
-`redshift = 1.0` holding `bulge · SersicCore`. `centre` and `ell_comps` are badged `2D` because each is a tuple of 
-two free parameters, and the greyed `radius_break`, `gamma` and `alpha` pills on the source are fixed values, which 
-is the difference between the footer's count of sampled scalars and the number of pills drawn.
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
 """
 af.ModelPlotter(model).figure()
 
@@ -396,11 +390,10 @@ Printing the model info confirms the model has Gaussians for both the lens and s
 print(model.info)
 
 """
-The map is the same shape as the one above with the light of both galaxies swapped for an MGE: each 
-`bulge · Sersic` card is replaced by a `bulge · Basis` card holding a dashed plate of Gaussians, badged with how 
-many the basis contains. The lens's two plates share one `centre` and one `ell_comps` between all their Gaussians, 
-`sigma` is `fixed, varies by member`, and `intensity · solved` is dashed on every plate, so the footer counts only a 
-handful of sampled scalars despite the model containing dozens of light profiles.
+This model swaps the light of both galaxies for an MGE. The lens's two bases share one `centre` and one 
+`ell_comps` between all their Gaussians, each Gaussian's `sigma` is fixed to its own value, and every 
+`intensity` is solved by the inversion, so the model has only a handful of sampled parameters despite 
+containing dozens of light profiles.
 """
 af.ModelPlotter(model).figure()
 
