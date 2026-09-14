@@ -7977,8 +7977,7 @@
     "cross_refs": [
       "point_source/start_here.ipynb",
       "start.here.py",
-      "start_here.ipynb",
-      "start_here.py"
+      "start_here.ipynb"
     ],
     "notebook": "notebooks/point_source/features/time_delays.ipynb",
     "path": "scripts/point_source/features/time_delays.py",
