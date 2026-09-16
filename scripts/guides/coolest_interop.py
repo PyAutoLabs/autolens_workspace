@@ -21,6 +21,7 @@ __Contents__
 - **Import:** Reading a COOLEST template back as a `Tracer`.
 - **Round Trip:** Verifying the exported and imported models are numerically identical.
 - **NFW Profiles:** The critical surface density COOLEST's NFW normalization requires.
+- **Unsupported Profiles:** Exporting a model containing components COOLEST cannot represent.
 
 __Conventions__
 
@@ -46,6 +47,8 @@ Euclid DR1 catalogue), which depends on all profiles in the model including exte
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
 # from autolens import setup_notebook; setup_notebook()
+
+import json
 
 from os import path
 
@@ -88,12 +91,24 @@ __Export__
 Each galaxy becomes a COOLEST `Galaxy` lensing entity; `ExternalShear` and `MassSheet` profiles are written as
 COOLEST `MassField` entities, as the standard requires. The model cosmology's H0 and Om0 are stored in the
 template.
+
+COOLEST's plotting API evaluates a model on the pixel grid of the observation, so the template's `observation`
+block must record the field of view and number of pixels of the data. These are written from `shape_native`
+(the data's `(y_pixels, x_pixels)` shape) and `pixel_size` (its pixel scale in arcseconds); passing
+`dataset=dataset` instead takes both from an `al.Imaging` object directly. If neither is given the observation
+grid is written as zeros, a warning is raised and COOLEST cannot plot the template.
 """
 file_path = al.interop.coolest.to_coolest(
-    galaxies=tracer, file_path=path.join("output", "coolest_template")
+    galaxies=tracer,
+    file_path=path.join("output", "coolest_template"),
+    shape_native=(100, 100),
+    pixel_size=0.1,
 )
 
 print(f"COOLEST template written to: {file_path}")
+
+with open(file_path) as f:
+    print(f"Observation pixel grid: {json.load(f)['observation']['pixels']}")
 
 """
 __Import__
@@ -136,6 +151,47 @@ Light: `Sersic` / `SersicSph`. Mass: `Isothermal` / `IsothermalSph` (SIE), `Powe
 `NFW` / `NFWSph`, `ExternalShear` and `MassSheet` (ConvergenceSheet). Converting an unsupported profile raises
 an error naming the profile.
 
+__Unsupported Profiles__
+
+Many lens models contain components the COOLEST standard has no analytic representation for, for example a
+multi-Gaussian expansion (`Basis` of Gaussians) lens light or a pixelized source (`Pixelization`). Exporting
+such a model raises an error by default, which would make COOLEST unusable for these models.
+
+Passing `on_unsupported="skip"` instead exports everything COOLEST can represent and records what it left out
+in the template's `meta` block, under `skipped_profiles`. The template therefore still describes the mass model
+and any supported light profiles, whilst stating explicitly which components of the model it does not contain.
+"""
+lens_mge = al.Galaxy(
+    redshift=0.5,
+    bulge=al.lp_basis.Basis(
+        profile_list=[
+            al.lp.GaussianSph(intensity=1.0, sigma=0.1),
+            al.lp.GaussianSph(intensity=0.5, sigma=0.3),
+        ]
+    ),
+    mass=al.mp.Isothermal(centre=(0.0, 0.0), einstein_radius=1.6),
+)
+
+source_pixelized = al.Galaxy(
+    redshift=1.0,
+    pixelization=al.Pixelization(
+        mesh=al.mesh.Delaunay(pixels=500),
+        regularization=al.reg.Constant(coefficient=1.0),
+    ),
+)
+
+file_path_skip = al.interop.coolest.to_coolest(
+    galaxies=[lens_mge, source_pixelized],
+    file_path=path.join("output", "coolest_template_skip"),
+    shape_native=(100, 100),
+    pixel_size=0.1,
+    on_unsupported="skip",
+)
+
+with open(file_path_skip) as f:
+    print(f"Skipped profiles: {json.load(f)['meta']['skipped_profiles']}")
+
+"""
 Fin.
 
 __Env__ (Developer Only)

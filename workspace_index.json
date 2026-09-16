@@ -1597,7 +1597,8 @@
       "Export",
       "Import",
       "Round Trip",
-      "NFW Profiles"
+      "NFW Profiles",
+      "Unsupported Profiles"
     ],
     "cross_refs": [],
     "notebook": "notebooks/guides/coolest_interop.ipynb",
