@@ -6050,11 +6050,16 @@
       "Fits",
       "Combined Fit Subplot",
       "Multi Fits",
+      "Interferometer Datasets",
+      "Interferometer Fits",
+      "Combined Interferometer Fit Subplot",
       "Visualizer"
     ],
     "cross_refs": [
       "guides/plot/start_here.py",
       "scripts/imaging/plot.py",
+      "scripts/interferometer/features/datacube/modeling.py",
+      "scripts/interferometer/plot.py",
       "scripts/multi_dataset/modeling.py",
       "scripts/multi_dataset/simulator.py"
     ],

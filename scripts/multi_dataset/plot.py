@@ -10,10 +10,14 @@ multi-dataset model-fit:
 
  - `aplt.subplot_imaging_dataset_list()` — all datasets in one subplot (one row per dataset).
  - `aplt.subplot_fit_combined()` — all fits in one subplot (one row per fit).
+ - `aplt.subplot_fit_interferometer_combined()` — all interferometer fits in one subplot (one row
+   per fit, which for a datacube means one row per channel).
 
-The specific example loads a multi-wavelength imaging dataset and plots the g-band and r-band
-data and fits together. For an introduction to the plotting API refer to
-`guides/plot/start_here.py`; for single-dataset fit plotting refer to `scripts/imaging/plot.py`.
+The example works through two multi-dataset settings in turn. It first loads a multi-wavelength
+imaging dataset and plots the g-band and r-band data and fits together, then loads a multi-channel
+interferometer datacube and plots every channel's fit together. For an introduction to the plotting
+API refer to `guides/plot/start_here.py`; for single-dataset fit plotting refer to
+`scripts/imaging/plot.py` and `scripts/interferometer/plot.py`.
 
 __Contents__
 
@@ -23,6 +27,9 @@ __Contents__
 - **Fits:** Fit each waveband's dataset with a tracer using its true simulated values.
 - **Combined Fit Subplot:** Plot all fits in one subplot with `aplt.subplot_fit_combined()`.
 - **Multi Fits:** Output a list of figures to a single `.fits` file, where each image goes in each HDU.
+- **Interferometer Datasets:** Load a multi-channel interferometer datacube as a list of `Interferometer` objects.
+- **Interferometer Fits:** Fit each channel with its true simulated tracer.
+- **Combined Interferometer Fit Subplot:** Plot all interferometer fits in one subplot with `aplt.subplot_fit_interferometer_combined()`.
 - **Visualizer:** How combined figures are output automatically during a multi-dataset model-fit.
 """
 
@@ -205,6 +212,129 @@ hdu_list = hdu_list_for_output_from(
 hdu_list.writeto("dataset.fits", overwrite=True)
 
 """
+__Interferometer Datasets__
+
+Interferometer data has its own multi-dataset setting: the datacube. A datacube is a list of
+`Interferometer` objects observing the same strong lens, one per spectral channel, and it is the
+interferometer analogue of the multi-wavelength imaging list above — the same lens seen through a
+different slice of the spectrum in each entry of the list.
+
+We therefore reach into the dataset simulated by `scripts/interferometer/features/datacube/`, which
+is the workspace's list-of-`Interferometer` example and exactly the case the combined interferometer
+plotter was written for. The cube has four channels of a lensed emission line: the lens mass is
+identical in every channel, whereas the source's `intensity` follows a Gaussian emission-line
+profile across the cube and its `centre` drifts along the y axis to mimic a kinematic gradient.
+
+Every channel is masked with the same `real_space_mask`, the grid the lensed image is evaluated on
+before it is Fourier transformed to the uv-plane. The lens and source do not move with frequency, so
+masking once and reusing the mask for every channel is correct.
+"""
+real_space_mask = al.Mask2D.circular(
+    shape_native=(256, 256),
+    pixel_scales=0.1,
+    radius=3.5,
+)
+
+dataset_path = Path("dataset") / "interferometer" / "datacube" / "sim_simple"
+
+"""
+__Dataset Auto-Simulation__
+
+As with the imaging datasets above, if the cube is not already on your system it is created by
+running the corresponding simulator script.
+"""
+if al.util.dataset.should_simulate(str(dataset_path)):
+    import subprocess
+    import sys
+
+    subprocess.run(
+        [sys.executable, "scripts/interferometer/features/datacube/simulator.py"],
+        check=True,
+    )
+
+"""
+The cube is stored as one folder per channel (`channel_000/`, `channel_001/`, ...), each holding
+that channel's `data.fits`, `noise_map.fits` and `uv_wavelengths.fits`. We discover the channels by
+sorted directory listing and load each one as an `Interferometer` object, giving a plain Python list
+— there is no special datacube class.
+
+We use `al.TransformerDFT`, the direct Fourier transform, because this cube has only a few hundred
+visibilities and the DFT is the cheaper choice at that size. For real data with many more
+visibilities use `al.TransformerNUFFT`, as
+`scripts/interferometer/features/datacube/modeling.py` does.
+"""
+channel_paths = sorted(
+    p for p in dataset_path.iterdir() if p.is_dir() and p.name.startswith("channel_")
+)
+
+dataset_list = [
+    al.Interferometer.from_fits(
+        data_path=channel_path / "data.fits",
+        noise_map_path=channel_path / "noise_map.fits",
+        uv_wavelengths_path=channel_path / "uv_wavelengths.fits",
+        real_space_mask=real_space_mask,
+        transformer_class=al.TransformerDFT,
+    )
+    for channel_path in channel_paths
+]
+
+"""
+Each channel's dirty images can be plotted one-by-one with
+`aplt.subplot_interferometer_dirty_images()`, the interferometer counterpart of the per-dataset
+subplots plotted at the top of this example.
+
+The source is brightest in the central channels, where the emission line peaks, and fainter in the
+outer channels, so the lensed signal visibly strengthens and fades as you step through the cube.
+"""
+for dataset in dataset_list:
+    aplt.subplot_interferometer_dirty_images(dataset=dataset)
+
+"""
+__Interferometer Fits__
+
+To fit each channel we load the true tracer that the simulator wrote alongside that channel's data,
+in `tracer.json`, and pair it with the channel's dataset in a `FitInterferometer` object.
+
+These fits are genuinely different from one another: every channel has its own visibilities and its
+own noise realisation, and its tracer carries that channel's own source `intensity` and source
+`centre`. That distinction matters, because a `fit_list` exists to hold fits that differ — it should
+never be the same fit repeated, which would produce a subplot of identical rows that says nothing
+about the data.
+"""
+tracer_list = [
+    al.from_json(file_path=channel_path / "tracer.json")
+    for channel_path in channel_paths
+]
+
+fit_list = [
+    al.FitInterferometer(dataset=dataset, tracer=tracer)
+    for dataset, tracer in zip(dataset_list, tracer_list)
+]
+
+"""
+__Combined Interferometer Fit Subplot__
+
+The `aplt.subplot_fit_interferometer_combined()` function plots every interferometer fit in one
+subplot, with one row per fit — which for a datacube means one row per channel, in channel order.
+
+Each row has four panels: the dirty image (the data), the dirty model image with the critical curves
+overlaid, the source plane (the source-plane reconstruction), and the dirty normalized residual map.
+This is a different panel choice to the six-panel imaging layout of `aplt.subplot_fit_combined()`
+above, for a physical reason: an interferometer measures visibilities in the uv-plane, so there is
+no image to look at until the visibilities are transformed back to real space. The dirty images are
+that view, and they are where a poor fit shows itself.
+
+This is the figure to inspect when checking that one shared lens model fits every channel of a cube
+simultaneously — the residuals should be featureless in every row, while the source plane changes
+row-to-row as the emission line brightens, fades and drifts.
+
+As with the imaging equivalent, `title_prefix=` prepends a label to every panel title and
+`colormap=` sets the colormap used for all image panels. Unlike the imaging case, there is no
+`_log10` variant of this function.
+"""
+aplt.subplot_fit_interferometer_combined(fit_list=fit_list)
+
+"""
 __Visualizer__
 
 During a multi-dataset model-fit (e.g. combining analyses with `af.AnalysisFactor` as in
@@ -220,4 +350,10 @@ These appear in the fit's output folder under `image/` (e.g. `dataset_combined.p
 
 Which figures are output is controlled by `config/visualize/plots.yaml`, e.g. the
 `dataset` -> `subplot_dataset` and `fit` -> `subplot_fit` entries.
+
+The same holds for a multi-dataset interferometer fit, for example the datacube `FactorGraphModel`
+fit in `scripts/interferometer/features/datacube/modeling.py`. There the `Visualizer` writes
+`fit_combined.png` into the fit's `image/` folder via `subplot_fit_interferometer_combined`, giving
+you the row-per-channel figure above for the maximum likelihood model as the fit proceeds. It is
+controlled by the same `fit` -> `subplot_fit` entry of `config/visualize/plots.yaml`.
 """
