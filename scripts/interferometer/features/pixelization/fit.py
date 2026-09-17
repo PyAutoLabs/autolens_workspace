@@ -273,7 +273,7 @@ By plotting the fit, we see that the pixelized source does a good job at capturi
 and fitting the data to roughly the noise level.
 """
 aplt.subplot_fit_interferometer(fit=fit)
-aplt.subplot_fit_dirty_images(fit=fit)
+aplt.subplot_fit_interferometer_dirty_images(fit=fit)
 
 """
 Pixelizations have bespoke visualizations which show more details about the source-reconstruction, image-mesh

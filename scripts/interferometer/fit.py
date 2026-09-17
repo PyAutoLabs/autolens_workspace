@@ -194,7 +194,7 @@ aplt.subplot_fit_interferometer(fit=fit)
 Once again, dirty images are often easier to interpret, so we can plot a subplot of the dirty images of the data, model
 data, residuals and chi-squared.
 """
-aplt.subplot_fit_dirty_images(fit=fit)
+aplt.subplot_fit_interferometer_dirty_images(fit=fit)
 
 """
 The fit also provides us with a ``log_likelihood``, a single value quantifying how good the tracer fitted the dataset.
@@ -241,7 +241,7 @@ A new fit using this plane shows residuals, normalized residuals and chi-squared
 fit = al.FitInterferometer(dataset=dataset, tracer=tracer)
 
 aplt.subplot_fit_interferometer(fit=fit)
-aplt.subplot_fit_dirty_images(fit=fit)
+aplt.subplot_fit_interferometer_dirty_images(fit=fit)
 
 """
 We also note that its likelihood decreases.

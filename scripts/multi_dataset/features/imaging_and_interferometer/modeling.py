@@ -302,7 +302,7 @@ aplt.subplot_tracer(
 aplt.subplot_fit_imaging(fit=result_list[0].max_log_likelihood_fit)
 
 aplt.subplot_fit_interferometer(fit=result_list[1].max_log_likelihood_fit)
-aplt.subplot_fit_dirty_images(fit=result_list[1].max_log_likelihood_fit)
+aplt.subplot_fit_interferometer_dirty_images(fit=result_list[1].max_log_likelihood_fit)
 
 aplt.corner_anesthetic(samples=result_list.samples)
 
