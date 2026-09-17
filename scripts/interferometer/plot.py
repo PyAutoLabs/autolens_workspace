@@ -157,10 +157,12 @@ aplt.subplot_fit_interferometer(fit=fit)
 """
 __Fit Dirty Images Subplot__
 
-`aplt.subplot_fit_dirty_images()` collects the fit's dirty images — data, model data, residuals and
-chi-squared — into a single subplot, the fit-level counterpart of the dataset subplot above.
+`aplt.subplot_fit_interferometer_dirty_images()` collects the fit's dirty images — data, model data, residuals
+and chi-squared — into a single subplot, the fit-level counterpart of the dataset subplot above. The dirty model
+image also has the tracer's critical curves overlaid, derived automatically from the fit, showing where the
+lensed source lies relative to the mass model.
 """
-aplt.subplot_fit_dirty_images(fit=fit)
+aplt.subplot_fit_interferometer_dirty_images(fit=fit)
 
 """
 __Real Space Subplot__

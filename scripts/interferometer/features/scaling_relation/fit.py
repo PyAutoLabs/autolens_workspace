@@ -164,7 +164,7 @@ tracer = al.Tracer(galaxies=[main_lens] + scaling_galaxies + [source])
 fit = al.FitInterferometer(dataset=dataset, tracer=tracer)
 
 aplt.subplot_fit_interferometer(fit=fit)
-aplt.subplot_fit_dirty_images(fit=fit)
+aplt.subplot_fit_interferometer_dirty_images(fit=fit)
 
 print(f"Log likelihood of the truth fit: {fit.log_likelihood}")
 

@@ -174,10 +174,11 @@ the source bulge is a Basis of linear light profiles, the inversion has solved f
 aplt.subplot_fit_interferometer(fit=fit)
 
 """
-The `subplot_fit_dirty_images` provides a real-space view of the data, model and residuals via
-inverse-NUFFT of the visibility-plane quantities.
+The `subplot_fit_interferometer_dirty_images` provides a real-space view of the data, model and residuals via
+inverse-NUFFT of the visibility-plane quantities. The dirty model image also has the tracer's critical curves
+overlaid, derived automatically from the fit, showing where the lensed source lies relative to the mass model.
 """
-aplt.subplot_fit_dirty_images(fit=fit)
+aplt.subplot_fit_interferometer_dirty_images(fit=fit)
 
 """
 __Intensities__
