@@ -1,0 +1,45 @@
+{
+    "reference": "Shu et al. 2016, ApJ 820, 43 (arXiv:1602.02927)",
+    "program": 10831,
+    "obs_id": "j9qj02010",
+    "product": "j9qj02010_drc.fits",
+    "instrument": "ACS/WFC",
+    "filter": "F814W",
+    "date_obs": "2006-11-10",
+    "exptime_s": 2088.0,
+    "bunit": "ELECTRONS/S",
+    "photflam": 7.131553175e-20,
+    "pixel_scale": 0.049999999999998906,
+    "shape_native": [
+        201,
+        201
+    ],
+    "cutout_centre_ra_dec": [
+        152.87296489968864,
+        1.7231222296299236
+    ],
+    "position_angle_y_axis_deg_e_of_n": -71.1706847935856,
+    "sky_level_eps": 0.014637965708971024,
+    "sky_rms_eps": 0.009785675617824533,
+    "main_lens_centres_arcsec": [
+        [
+            0.3522428291719038,
+            -0.24033820160605757
+        ],
+        [
+            -0.35590171284282945,
+            0.24833690652923224
+        ]
+    ],
+    "main_lens_separation_arcsec": 0.8603906401724123,
+    "psf_star_ra_dec": [
+        152.87528262590993,
+        1.730432398853643
+    ],
+    "psf_star_pixel": [
+        1092,
+        1545
+    ],
+    "psf_fwhm_pixels": 2.202528079317551,
+    "prep_date": "2026-09-17"
+}

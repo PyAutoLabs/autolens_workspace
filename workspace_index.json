@@ -7625,7 +7625,7 @@
       "/slam.py",
       "group/slam.py",
       "multi_galaxy/modeling.py",
-      "multi_galaxy/simulator.py",
+      "multi_galaxy/start_here.py",
       "slam_start_here.py"
     ],
     "notebook": "notebooks/multi_galaxy/slam.ipynb",
@@ -7659,7 +7659,7 @@
       "Google Colab Setup",
       "Imports",
       "Dataset",
-      "Extra Galaxy Removal",
+      "Extra Galaxies",
       "Main Lens Galaxies",
       "Masking",
       "Model",
@@ -7667,7 +7667,7 @@
       "Iterations Per Update",
       "Live Visual Update",
       "Result",
-      "Extra Galaxy Removal GUI",
+      "Extra Galaxies GUI",
       "Model Your Own Lens",
       "Simulator",
       "Sample",
@@ -7675,13 +7675,14 @@
     ],
     "cross_refs": [
       "/multi_galaxy/simulator_sample.py",
+      "0143/prep.py",
       "autolens_workspace/scripts/multi_galaxy/modeling.py",
       "autolens_workspace/start_here.py",
       "cluster/start_here.ipynb",
       "group/start_here.ipynb",
       "imaging/start_here.ipynb",
       "multi_galaxy/modeling.py",
-      "multi_galaxy/simulator.py"
+      "prep.py"
     ],
     "notebook": "notebooks/multi_galaxy/start_here.ipynb",
     "path": "scripts/multi_galaxy/start_here.py",

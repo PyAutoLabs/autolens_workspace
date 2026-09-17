@@ -1,2 +1,9 @@
 *
 !.gitignore
+# The real, committed datasets are re-included here as well as in the root
+# .gitignore: the `*` above is the deepest matching rule, so without these
+# negations a freshly prepared dataset folder is invisible to `git add`.
+!multi_galaxy/
+!multi_galaxy/sdssj1011+0143/
+!multi_galaxy/sdssj1011+0143/**
+multi_galaxy/sdssj1011+0143/__pycache__/

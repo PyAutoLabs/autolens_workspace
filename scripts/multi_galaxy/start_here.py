@@ -36,21 +36,24 @@ If your system has one dominant lens galaxy, start with `imaging/start_here.ipyn
 
 __The Example System__
 
-We fit a simulated merging pair of lens galaxies modeled on **SDSS J1011+0143** (Shu et al. 2016, ApJ 820, 43,
-arXiv:1602.02927) — one of the cleanest co-dominant pairs known: two early-type galaxies separated by ~4.2 kpc
-(~0.9") at z=0.331, lensing a z=2.701 Lyman-alpha emitter into a wide Einstein cross of radius ~1.8". The
-published model of the real system is exactly the model this script fits: two isothermal mass profiles plus
-external shear, with an extended source. Its headline science — kiloparsec-scale offsets between each galaxy's
-mass and light, a potential probe of dark-matter self-interaction — is a measurement only a multi-deflector
-model can make.
+We fit real Hubble imaging of **SDSS J1011+0143** (Shu et al. 2016, ApJ 820, 43, arXiv:1602.02927) — one of the
+cleanest co-dominant pairs known: two early-type galaxies separated by ~4.2 kpc (~0.9") at z=0.331, lensing a
+z=2.701 Lyman-alpha emitter into a wide Einstein cross of radius ~1.8". The data are the ACS/WFC F814W frame
+Shu et al. modelled: HST programme 10831, 2088 s of exposure at the detector's native 0.05"/pixel.
+
+The published model of this system is exactly the model this script fits: two isothermal mass profiles plus
+external shear, with an extended source. Its headline science — offsets of up to ~1.7 kpc between each galaxy's
+mass and its light — is a measurement only a multi-deflector model can make; a single deflector cannot produce
+such an offset at all.
 
 __Contents__
 
 - **JAX:** JAX acceleration for fast GPU/CPU model-fitting.
 - **Google Colab Setup:** Run this example in a web browser without local installation.
 - **Imports:** Import the required Python libraries.
-- **Dataset:** Load (auto-simulating if absent) and plot the strong lens dataset.
-- **Extra Galaxy Removal:** Remove the light of a nearby galaxy that is not part of the strong lens.
+- **Dataset:** Load and plot the strong lens dataset. The dataset folder's `README.md` and `prep.py` show how
+  the archival MAST frame became the `.fits` files loaded here.
+- **Extra Galaxies:** Which of the other galaxies in the field belong in the model, and which must be removed.
 - **Main Lens Galaxies:** Every deflector in a multi-galaxy lens is a main lens galaxy.
 - **Masking:** Mask the region of the image the model is fitted to.
 - **Model:** Compose the lens model — one free light + mass model per deflector.
@@ -58,7 +61,7 @@ __Contents__
 - **Iterations Per Update:** How often the search writes the maximum likelihood model to hard-disk.
 - **Live Visual Update:** Opt-in live matplotlib window (scripts) or Jupyter cell refresh (notebooks) during the fit.
 - **Result:** Overview of the results of the model-fit.
-- **Extra Galaxy Removal GUI:** A GUI for creating the extra-galaxies mask for your own data.
+- **Extra Galaxies GUI:** A GUI for creating the extra-galaxies mask for your own data.
 - **Model Your Own Lens:** Adapting this script to your own imaging data.
 - **Simulator:** Simulate your own multi-galaxy strong lens imaging.
 - **Sample:** Pointer to simulating many multi-galaxy lenses at once.
@@ -112,21 +115,18 @@ import autolens.plot as aplt
 """
 __Dataset__
 
-Load the multi-galaxy dataset `simple`: HST-resolution (0.05"/pixel) CCD imaging of the simulated merging-pair
-lens. If the dataset is not found on disk it is simulated automatically by `multi_galaxy/simulator.py`, so this
-script runs with no manual setup.
+Load the multi-galaxy dataset `sdssj1011+0143`: a 201 x 201 pixel (10") cutout of the HST ACS/WFC F814W frame,
+at the detector's native 0.05"/pixel, in units of electrons per second. It ships with the workspace alongside
+its RMS noise-map and a PSF measured from a star in the same frame.
+
+`dataset/multi_galaxy/sdssj1011+0143/README.md` records where each of those files came from, and the `prep.py`
+beside it is the runnable script that made them: it downloads the 215 MB drizzled frame from MAST, cuts the
+stamp, subtracts the sky, builds the noise-map from the exposure-time weight map and extracts the PSF star. Read
+it as a worked example when you prepare your own data, together with
+`autolens_workspace/*/imaging/data_preparation`, which documents each step in isolation.
 """
-dataset_name = "simple"
+dataset_name = "sdssj1011+0143"
 dataset_path = Path("dataset", "multi_galaxy", dataset_name)
-
-if al.util.dataset.should_simulate(str(dataset_path)):
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [sys.executable, "scripts/multi_galaxy/simulator.py"],
-        check=True,
-    )
 
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",
@@ -138,36 +138,24 @@ dataset = al.Imaging.from_fits(
 aplt.subplot_imaging_dataset(dataset=dataset)
 
 """
-__Extra Galaxy Removal__
+__Extra Galaxies__
 
-There may be regions of an image that have signal near the lens and source that is from other galaxies not
-associated with the strong lens we are studying. The emission from these images will impact our model fitting and
-needs to be removed from the analysis.
+Real imaging usually contains signal near the lens and source that comes from other galaxies entirely. Their
+emission biases the fit and has to be removed from the analysis, by scaling the RMS noise-map to large values
+over the pixels they occupy — a `mask_extra_galaxies`. Foreground stars and reduction artefacts are handled the
+same way.
 
-In a multi-galaxy field this step carries a judgement the single-galaxy case does not: some of the other galaxies
+In a multi-galaxy field that step carries a judgement the single-galaxy case does not: some of the other galaxies
 in the image *are* part of the lens. A co-dominant deflector belongs in the model as a main lens galaxy; a
-contaminant belongs here, removed from the analysis. The test is whether it contributes significantly to the
-lensing of the source — not simply whether it is bright or nearby.
+contaminant belongs in the mask, removed from the analysis. The test is whether it contributes significantly to
+the lensing of the source — not simply whether it is bright or nearby.
 
-This `mask_extra_galaxies` is used to prevent them from impacting a fit by scaling the RMS noise map values to
-large values. This mask may also include emission from objects which are not technically galaxies, but blend with
-the galaxies we are studying in a similar way. Common examples of such objects are foreground stars or emission
-due to the data reduction process.
+For this field the judgement is easy, and the answer is that nothing needs masking. Inside the 3" we fit there
+are only the two lens galaxies and the compact lensed images of the source around them; the nearest unrelated
+galaxies are well outside the mask. The dataset therefore ships without a `mask_extra_galaxies.fits` and this
+script has no noise-scaling step. The section further down provides a GUI to draw such a mask for your own data,
+where the answer is usually less kind.
 
-After performing lens modeling to this strong lens, the script further down provides a GUI to create such a mask
-for your own data, if necessary.
-"""
-mask_extra_galaxies = al.Mask2D.from_fits(
-    file_path=dataset_path / "mask_extra_galaxies.fits",
-    pixel_scales=dataset.pixel_scales,
-    invert=True,
-)
-
-dataset = dataset.apply_noise_scaling(mask=mask_extra_galaxies)
-
-aplt.subplot_imaging_dataset(dataset=dataset)
-
-"""
 __Main Lens Galaxies__
 
 For a multi-galaxy lens, two or more galaxies' light and mass all contribute significantly to the lensing of the
@@ -176,8 +164,10 @@ regimes, there are no other tiers: no extra galaxies, no scaling relations, no h
 main lens galaxy.
 
 We load the centres of the main lens galaxies from a `.json` file in the dataset folder. These centres are used
-to initialize the model for each lens galaxy. For your own data, the centre-input GUI shown in
-`group/start_here.ipynb` writes this file from mouse clicks on the image.
+to initialize the model for each lens galaxy. For J1011+0143 they are the two F814W light peaks measured by
+`prep.py`, 0.86" apart — the ~4.2 kpc projected separation that makes this a pair rather than a lens with a
+satellite. For your own data, the centre-input GUI shown in `group/start_here.ipynb` writes this file from mouse
+clicks on the image.
 """
 main_lens_centres = al.from_json(file_path=dataset_path / "main_lens_centres.json")
 
@@ -187,6 +177,9 @@ __Masking__
 Lens modeling does not need to fit the entire image, only the region containing the lens and source light. We
 define a circular mask around the system — for a multi-galaxy lens make sure it encloses the *combined* Einstein
 ring (the lensed arcs wrap around the pair as a whole), not just one galaxy's light.
+
+The lensed images of J1011+0143's source sit 1.3-2.0" from the system centre, so a 3" mask encloses them all
+with a full arcsecond of margin, and also the lens galaxies' own extended light.
 
 We also oversample the central pixels of each galaxy, which improves modeling accuracy without adding
 unnecessary cost far from the lens.
@@ -427,7 +420,9 @@ The result also contains the maximum likelihood lens model which can be used to 
 information and fit to the data.
 
 For a multi-galaxy lens the tracer subplot is worth a close look: the critical curve is that of the *combined*
-mass distribution, so it wraps around the pair as a whole rather than encircling either galaxy.
+mass distribution, so it wraps around the pair as a whole rather than encircling either galaxy — which for
+J1011+0143 is why the lensed images ring the pair 1.3-2.0" out from its midpoint, though the two galaxies are
+only 0.86" apart.
 """
 aplt.subplot_tracer(tracer=result.max_log_likelihood_tracer, grid=result.grids.lp)
 
@@ -438,58 +433,64 @@ The result object contains pretty much everything you need to do science with yo
 of all the information it contains are beyond the scope of this introductory script. The `guides` and `result`
 packages of the workspace contain all the information you need to analyze your results yourself.
 
-__Extra Galaxy Removal GUI__
+__Extra Galaxies GUI__
 
-The model-fit above removed a region of the image to the north-east of the lens pair, which contains light from
-another galaxy not associated with the strong lens system.
-
-This GUI below provides the tool you need to produce such a mask for your own data, if necessary, with which you
-can then use the `apply_noise_scaling` function.
+J1011+0143 needed no extra-galaxies mask, but most fields do. The GUI below is the tool that draws one: you
+scribble over the contaminating light and it writes a `mask_extra_galaxies.fits` you pass to
+`dataset.apply_noise_scaling()`, exactly as the `__Extra Galaxies__` section described.
 
 Remember the multi-galaxy judgement when you use it: scribble over contaminants only. A galaxy that is deflecting
 the source belongs in `main_lens_centres.json` and gets modeled, not masked.
 
-Note that this **overwrites** `mask_extra_galaxies.fits` in the dataset folder — the same file loaded by the
-`__Extra Galaxy Removal__` step above. That is intentional: what you draw here becomes the mask every multi_galaxy
-example uses. If you would rather keep the shipped mask, change the `file_path` below or re-run
-`multi_galaxy/simulator.py` to regenerate it.
+It is off by default, because it writes a `.fits` file into whichever dataset folder you point it at. Set
+`run_extra_galaxies_gui = True` and `gui_dataset_path` to your own dataset to use it; left as it is, nothing is
+written and the committed J1011+0143 files are untouched.
 """
+run_extra_galaxies_gui = False
+gui_dataset_path = dataset_path
+
 cmap = "jet"
 
-try:
-    scribbler = al.Scribbler(
-        image=dataset.data.native,
-        cmap=cmap,
-        brush_width=0.04,
-        mask_overlay=mask,
-    )
-    mask_gui = scribbler.show_mask()
-    mask_gui = al.Mask2D(mask=mask_gui, pixel_scales=dataset.pixel_scales)
+if run_extra_galaxies_gui:
+    try:
+        scribbler = al.Scribbler(
+            image=dataset.data.native,
+            cmap=cmap,
+            brush_width=0.04,
+            mask_overlay=mask,
+        )
+        mask_gui = scribbler.show_mask()
+        mask_gui = al.Mask2D(mask=mask_gui, pixel_scales=dataset.pixel_scales)
 
-    aplt.fits_array(
-        array=mask_gui,
-        file_path=dataset_path / "mask_extra_galaxies.fits",
-        overwrite=True,
-    )
-except Exception as e:
-    print(
-        """
-        Problem loading GUI, probably an issue with TKinter or your matplotlib TKAgg backend.
+        aplt.fits_array(
+            array=mask_gui,
+            file_path=gui_dataset_path / "mask_extra_galaxies.fits",
+            overwrite=True,
+        )
+    except Exception as e:
+        print(
+            """
+            Problem loading GUI, probably an issue with TKinter or your matplotlib TKAgg backend.
 
-        You will likely need to try and fix or reinstall various GUI / visualization libraries, or try
-        running this example not via a Jupyter notebook.
+            You will likely need to try and fix or reinstall various GUI / visualization libraries, or try
+            running this example not via a Jupyter notebook.
 
-        There are also manual tools for performing this task in the workspace.
-        """
-    )
-    print()
-    print(e)
+            There are also manual tools for performing this task in the workspace.
+            """
+        )
+        print()
+        print(e)
 
 """
 __Model Your Own Lens__
 
 If you have your own multi-galaxy lens imaging data, you are now ready to model it yourself by adapting the code
 above and simply inputting the path to your own .fits files into the `Imaging.from_fits()` function.
+
+`dataset/multi_galaxy/sdssj1011+0143/prep.py` is a worked example of getting to that point: it takes an archival
+HST drizzled frame from MAST and produces exactly the three `.fits` files this script loads — cutout, RMS
+noise-map and PSF — with every assumption (units, sky, exposure-time map, star selection) written out and
+asserted.
 
 A few things to note, with full details on data preparation provided in the main workspace documentation:
 
@@ -500,15 +501,16 @@ A few things to note, with full details on data preparation provided in the main
   galaxy's own light.
 - Decide which galaxies are co-dominant deflectors and which are contaminants. Provide the centres of the
   deflectors in a `main_lens_centres.json` file (the GUI in `group/start_here.ipynb` writes this from mouse
-  clicks), and remove the contaminants with the extra galaxies mask GUI above.
+  clicks), and remove the contaminants with the extra galaxies GUI above.
 - Start with the default model — one MGE + SIE per deflector works very well for pretty much all multi-galaxy
   lenses!
 
 __Simulator__
 
-Let's now switch gears and simulate our own multi-galaxy strong lens imaging. This is a great way to:
+Let's now switch gears and simulate our own multi-galaxy strong lens imaging — a look-alike of the system we
+just fitted, written to `dataset/multi_galaxy/simulated_lens`. This is a great way to:
 
-- Practice multi-galaxy lens modeling before using real data.
+- Practice multi-galaxy lens modeling on a system whose true parameters you know.
 - Build large training sets (e.g. for machine learning).
 - Test how well a pair of deflectors can actually be disentangled at a given resolution and signal-to-noise.
 
@@ -663,14 +665,15 @@ a sample of datasets from them.
 
 __Wrap Up__
 
-This script has shown how to model a multi-galaxy strong lens: the standard extended-source imaging workflow,
-with one free light and mass model per co-dominant deflector — and how to simulate your own.
+This script has shown how to model a real multi-galaxy strong lens: the standard extended-source imaging
+workflow, with one free light and mass model per co-dominant deflector — and how to simulate your own.
 
 Where to go next:
 
 - `autolens_workspace/*/multi_galaxy/modeling`: the full modeling API and how to customize the fit, and the fit
   that returns a posterior rather than a single best-fit model.
-- `autolens_workspace/*/multi_galaxy/simulator`: how the example dataset was simulated.
+- `autolens_workspace/*/multi_galaxy/simulator`: how the simulated `simple` dataset the other examples use is
+  made.
 - `autolens_workspace/*/multi_galaxy/simulator_sample`: simulating many multi-galaxy lenses at once.
 - `autolens_workspace/*/multi_galaxy/fit`: the anatomy of a multi-galaxy fit — residuals, chi-squared, likelihood,
   and each deflector's share of the summed deflection field.
@@ -682,4 +685,16 @@ Where to go next:
   explicit modelling choice.
 - `autolens_workspace/*/cluster`: the top rung — point-source constraints, many sources, multi-plane ray tracing.
 - `autolens_workspace/guides/results`: loading and analyzing the results of your fits.
+
+__Env__ (Developer Only)
+
+Not user documentation: this section configures the automated test harness.
+The ENV line declares the environment applied when this script runs in CI
+(PyAutoHands docs/env_profile_redesign.md §10); this whole section is
+stripped from generated notebooks and markdown.
+
+start_here loads real full-resolution FITS data; SMALL_DATASETS would break
+the committed data, noise-map and PSF shapes.
+
+ENV: full_datasets
 """
