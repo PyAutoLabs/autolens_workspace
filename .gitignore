@@ -11,6 +11,7 @@ dataset/**
 !dataset/imaging/cosmos_web_ring/**
 !dataset/imaging/slacs1430+4105/**
 !dataset/group/102021990_NEG650312660474055399/**
+!dataset/multi_galaxy/sdssj1011+0143/**
 !dataset/point_source/rxj1131/**
 !dataset/cluster/a2744/**
 dataset/cluster/a2744/data.fits

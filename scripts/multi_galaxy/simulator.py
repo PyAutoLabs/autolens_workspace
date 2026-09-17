@@ -101,8 +101,9 @@ on, via the inputs:
  - `shape_native`: The (y_pixels, x_pixels) 2D shape of the grid defining the shape of the data that is simulated.
  - `pixel_scales`: The arc-second to pixel conversion factor of the grid and data.
 
-The 0.05" / pixel resolution matches Hubble Space Telescope ACS imaging, the data the real SDSS J1011+0143 pair
-was modeled with.
+The 0.05" / pixel resolution matches Hubble Space Telescope ACS imaging, so the `simple` dataset simulated here
+is a look-alike of the real SDSS J1011+0143 frame `multi_galaxy/start_here.py` fits (bundled in
+`dataset/multi_galaxy/sdssj1011+0143/`).
 """
 grid = al.Grid2D.uniform(
     shape_native=(200, 200),

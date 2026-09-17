@@ -212,8 +212,9 @@ __Mass Centres Released__
 `unfix_mass_centre=True` converts each mass centre from the fixed value set in `source_lp[1]` into a free
 parameter with a prior around it. The mass model is now good enough that the arcs can say something about where
 each deflector's mass actually is — which is exactly the measurement that produced the mass/light offsets Shu et
-al. (2016) reported for SDSS J1011+0143, the system `multi_galaxy/simulator.py` is modelled on. Keeping the
-centres fixed all the way through would make that measurement impossible by construction.
+al. (2016) reported for SDSS J1011+0143, the system the simulated `simple` dataset fitted here is modelled on
+(`multi_galaxy/start_here.py` fits the real frame). Keeping the centres fixed all the way through would make
+that measurement impossible by construction.
 
 __Adapt Image S/N Cap__
 
