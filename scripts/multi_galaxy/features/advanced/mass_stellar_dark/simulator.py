@@ -161,7 +161,7 @@ main_lens_galaxies = [lens_0, lens_1]
 """
 __External Shear__
 """
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -186,7 +186,7 @@ __Ray Tracing__
 Both deflectors are at the same redshift, so this is single-plane tracing. The deflection field now sums four
 mass profiles rather than two — a stellar and a dark component per galaxy — plus the shear.
 """
-tracer = al.Tracer(galaxies=main_lens_galaxies + [shear_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=main_lens_galaxies + [source_galaxy], fields=[field])
 
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 

@@ -200,9 +200,11 @@ mass = al.mp.Isothermal(
     ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
 )
 
-shear = al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
+field = al.MassField(
+    redshift=0.5, shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
+)
 
-lens_galaxy = al.Galaxy(redshift=0.5, mass=mass, shear=shear)
+lens_galaxy = al.Galaxy(redshift=0.5, mass=mass)
 
 """
 __Source Galaxy Pixelization and Regularization__
@@ -237,7 +239,7 @@ The function below computes the 2D deflection angles of the tracer's lens galaxi
 image-plane 2D (y,x) coordinates $\theta$ of each grid, thus ray-tracing their coordinates to the source plane to 
 compute their $\beta$ values.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 """
 The source code gets quite complex when handling grids for a pixelization, but it is all handled in
@@ -971,7 +973,7 @@ __Fit__
 
 This process to perform a likelihood function evaluation performed via the `FitInterferometer` object.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 fit = al.FitInterferometer(
     dataset=dataset,

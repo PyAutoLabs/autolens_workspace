@@ -146,12 +146,9 @@ __Main Lens & Source__
 
 Mass only for the lens, as in every interferometer example. Its `einstein_radius` is what the tier hangs off.
 """
-lens = af.Model(
-    al.Galaxy,
-    redshift=0.5,
-    mass=af.Model(al.mp.Isothermal),
-    shear=af.Model(al.mp.ExternalShear),
-)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=af.Model(al.mp.Isothermal))
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=af.Model(al.lp.SersicCore))
 
@@ -185,11 +182,13 @@ scaling_galaxies = af.Collection(scaling_galaxies_list)
 """
 __Model__
 
-Two top-level collections. `scaling_galaxies` is a first-class collection alongside `galaxies`: the analysis appends
-it to the tracer's galaxy list and the aggregator restores it when results are loaded back.
+Three top-level collections. `scaling_galaxies` is a first-class collection alongside `galaxies`: the analysis
+appends it to the tracer's galaxy list and the aggregator restores it when results are loaded back. `fields` is
+the external shear's own collection, holding the `MassField` that carries it.
 """
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
     scaling_galaxies=scaling_galaxies,
 )
 
@@ -221,6 +220,7 @@ for centre in scaling_galaxies_centres:
 
 model_free = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
     scaling_galaxies=af.Collection(scaling_galaxies_free_list),
 )
 

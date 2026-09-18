@@ -163,7 +163,7 @@ lens_1 = al.Galaxy(
     ),
 )
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -177,7 +177,7 @@ pixelization = al.Pixelization(
 
 source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-tracer = al.Tracer(galaxies=[lens_0, lens_1, shear_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_0, lens_1, source_galaxy], fields=[field])
 
 fit = al.FitImaging(dataset=dataset, tracer=tracer)
 
@@ -252,7 +252,7 @@ field, so the traced grid, the source pixel positions and the magnification all 
 
 Run this whenever you are unsure how much a given deflector matters to a source-plane quantity you are quoting.
 """
-tracer_lens_0_only = al.Tracer(galaxies=[lens_0, shear_galaxy, source_galaxy])
+tracer_lens_0_only = al.Tracer(galaxies=[lens_0, source_galaxy], fields=[field])
 
 fit_lens_0_only = al.FitImaging(dataset=dataset, tracer=tracer_lens_0_only)
 

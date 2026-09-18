@@ -216,9 +216,11 @@ source light, and a Singular Isothermal Ellipsoid (SIE) plus shear to model the 
 multi-galaxy regime changes is *how many* of them there are: **one free light and mass model per co-dominant
 deflector**, plus a single overall external shear.
 
-That shear is given its own entry in the model, at the system centre (0.0", 0.0"), rather than being attached to one
-of the deflectors as it is in the galaxy-scale examples. The shear describes the tidal field of structure outside the
-system, so it belongs to the system as a whole and there is no principled reason to hang it off a particular galaxy.
+That shear is held in an `al.MassField` — a container like a galaxy, a redshift plus a bag of mass profiles, but
+carrying no light — which lives in the model's own `fields` collection at the system centre (0.0", 0.0"), rather
+than being attached to one of the deflectors as it is in the galaxy-scale examples. The shear describes the tidal
+field of structure outside the system, so it belongs to the system as a whole and there is no principled reason to
+hang it off a particular galaxy.
 
 Full details of why this model is so good are provided in the main workspace docs, but in a nutshell it provides
 an excellent balance of being fast to fit, flexible enough to capture complex galaxy morphologies and providing
@@ -264,8 +266,8 @@ for i, centre in enumerate(main_lens_centres):
 
 # External Shear:
 
-shear_galaxy = af.Model(
-    al.Galaxy,
+field = af.Model(
+    al.MassField,
     redshift=0.5,
     shear=af.Model(al.mp.ExternalShear),
 )
@@ -284,13 +286,14 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 # Overall Lens Model:
 
 model = af.Collection(
-    galaxies=af.Collection(**lens_dict, shear_galaxy=shear_galaxy, source=source)
+    galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
 )
 
 """
 Print the model to see its free parameters — note `lens_0` and `lens_1` each carry their own free mass model,
-the signature of the multi-galaxy regime, and that the shear sits in its own `shear_galaxy` entry rather than
-inside either of them.
+the signature of the multi-galaxy regime, and that the shear sits under `fields` as a `MassField` rather
+than inside either of them.
 """
 print(model.info)
 
@@ -538,7 +541,8 @@ We now define a `Tracer` — this is the key object that combines all galaxies i
 rays are deflected.
 
 - Each lens galaxy has both light (a Sersic bulge) and mass (an isothermal profile).
-- The system's single external shear is held separately, at the system centre.
+- The system's single external shear is held separately in an `al.MassField`, at the system centre, and passed
+  to the tracer via its `fields` argument.
 - The source galaxy has its own light (a SersicCore profile).
 
 The two lens galaxies' Einstein radii (1.0" and 0.8") are deliberately comparable — that is what makes this a
@@ -591,13 +595,13 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-shear_galaxy_simulated = al.Galaxy(
+field_simulated = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
 tracer = al.Tracer(
-    galaxies=[lens_galaxy_0, lens_galaxy_1, shear_galaxy_simulated, source_galaxy]
+    galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy], fields=[field_simulated]
 )
 
 """

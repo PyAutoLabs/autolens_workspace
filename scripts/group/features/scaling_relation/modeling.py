@@ -10,7 +10,8 @@ This example demonstrates the **three-tier modeling API** used by the production
 galaxies are split into three distinct populations:
 
  - **Main lens galaxies** (`main_lens_centres.json`): the primary lens(es). Modelled with an MGE bulge + free
-   `Isothermal` mass + `ExternalShear` (on `lens_0` only). These dominate the lensing.
+   `Isothermal` mass, with one `ExternalShear` held in an `al.MassField` in `fields`. These dominate the
+   lensing.
 
  - **Extra galaxies** (`extra_galaxies_centres.json`): nearby companion galaxies modelled individually, each with its
    own MGE bulge and a tidally truncated `dPIEMassSph` mass with bounded free `sigma`. Their light is fit and their
@@ -51,7 +52,7 @@ __Contents__
 - **Centres:** Three JSON files, one per tier, loaded with `al.from_json`.
 - **Luminosities:** The scaling galaxies need a measured luminosity each; in this tutorial we hardcode them.
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
-- **Main Lens Galaxies:** MGE bulge + free `Isothermal` mass; `ExternalShear` only on `lens_0`.
+- **Main Lens Galaxies:** MGE bulge + free `Isothermal` mass; one `ExternalShear` in the `fields` collection.
 - **Extra Galaxies:** MGE bulge with fixed centre + truncated `dPIEMassSph` with bounded uniform `sigma`.
 - **Scaling Galaxies:** MGE bulge with fixed centre + truncated `dPIEMassSph` mass via shared scaling relation.
 - **Model:** Compose the lens model fitted to the data.
@@ -209,7 +210,7 @@ print(f"Scaling galaxies luminosities: {scaling_galaxies_luminosity_list}")
 """
 __Main Lens Galaxies__
 
-One MGE bulge + free `Isothermal` mass per main lens; `ExternalShear` only on `lens_0`. Mirrors `group/modeling.py`.
+One MGE bulge + free `Isothermal` mass per main lens; one `ExternalShear` in `fields`. Mirrors `group/modeling.py`.
 """
 lens_dict = {}
 
@@ -228,8 +229,11 @@ for i, centre in enumerate(main_lens_centres):
         redshift=0.5,
         bulge=bulge,
         mass=mass,
-        shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 """
 __Extra Galaxies__
@@ -346,6 +350,7 @@ appear under `galaxies`, individually-modelled companions under `extra_galaxies`
 """
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
     extra_galaxies=extra_galaxies,
     scaling_galaxies=scaling_galaxies,
 )

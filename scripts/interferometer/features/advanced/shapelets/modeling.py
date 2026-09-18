@@ -30,7 +30,7 @@ __Contents__
 - **NUFFT (nufftax):** Why shapelets-on-visibilities is now practical thanks to nufftax.
 - **Positive Negative Solver:** Why shapelets require a positive-negative solver (unlike MGE or linear
   Sersic).
-- **Model:** Compose the lens model — `Isothermal` + `ExternalShear` mass and a polar shapelet source
+- **Model:** Compose the lens model — an `Isothermal` mass, an `ExternalShear` `MassField` and a shapelet source
   bulge. Lens light omitted (interferometer convention).
 - **Mask:** Define the `real_space_mask` which sets the grid the strong lens is evaluated on.
 - **Dataset:** Load the strong lens `Interferometer` dataset using `TransformerNUFFT` (backed by `nufftax`).
@@ -110,7 +110,8 @@ This script fits an `Interferometer` dataset of a 'galaxy-scale' strong lens wit
 
  - The lens galaxy's light is omitted (and is not present in the simulated data). Interferometer
    convention.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The source galaxy's bulge is a superposition of polar `ShapeletPolar` profiles, with all shapelets
    sharing a centre, elliptical components, and a single `beta` size scale.
 
@@ -199,7 +200,8 @@ __Model__
 
 We compose a lens model where:
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField` [7 parameters].
 
  - The source galaxy's bulge is a superposition of linear `ShapeletPolar` profiles [3 parameters total].
    - All shapelets share a centre, elliptical components, and a single `beta` size scale.
@@ -215,8 +217,7 @@ https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 """
 # Lens:
 mass = af.Model(al.mp.Isothermal)
-shear = af.Model(al.mp.ExternalShear)
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source: polar shapelet basis with shared centre/ell_comps/beta.
 total_n = 10
@@ -252,7 +253,12 @@ source_bulge = af.Model(al.lp_basis.Basis, profile_list=shapelets_bulge_list)
 source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 
 # Overall Lens Model:
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 The `info` attribute shows the model in a readable format.

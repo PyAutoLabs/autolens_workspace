@@ -52,7 +52,8 @@ __Model__
 This script fits `Interferometer` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The source galaxy's light is a Multi Gaussian Expansion.
 """
 
@@ -151,7 +152,8 @@ __Model__
 We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In this 
 example our lens model is:
 
- - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField` [7 parameters].
  - An `Sersic` `LightProfile` for the source galaxy's light [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
@@ -169,9 +171,11 @@ If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that 
 
 mass = af.Model(al.mp.Isothermal)
 
-shear = af.Model(al.mp.ExternalShear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+# External Shear (a `MassField`, its own model object -- see `__External Shear__` below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Source:
 
@@ -181,9 +185,32 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
+__External Shear__
+
+The external shear describes the tidal gravitational field of everything *outside* the system being modeled, so it 
+is a property of the system rather than of any one galaxy -- which is why it is composed above as its own model 
+object. It is held in an `al.MassField`: a container built exactly like a `Galaxy` (a redshift plus a bag of mass 
+profiles -- `ExternalShear`, `MassSheet`, `ExternalPotential`, all three at one redshift belonging in one field, as 
+a bulge and a disk belong in one galaxy) that carries no light. In the model it lives in its own `fields=` 
+collection beside `galaxies=`, appears under a `fields` heading in `model.info`, and its results are read as 
+`result.instance.fields.field.shear`; the `Tracer` takes the same split via `al.Tracer(galaxies=[...], 
+fields=[field])`, where only the *planes* merge galaxies and fields by redshift, so `tracer.galaxies` never holds a 
+field and positional indexing is unaffected (several fields simply means several planes carry one). Note that 
+`ExternalShear` takes no `centre` -- it is a uniform field about the coordinate origin -- whereas `MassSheet` and 
+`ExternalPotential` do, and `al.model_util.mass_field_from(lens=lens, potential=True)` composes a field with that 
+centre tied to `lens.mass.centre` by convention. The fit is numerically identical to attaching the shear to the 
+lens galaxy (the tracer sums every deflection field), but the model is a *different* model with a new **PyAutoFit** 
+unique identifier, so it will not resume an `output` folder written by an older galaxy-attached version of this 
+script; the library still accepts `al.Galaxy(shear=...)` for your own existing scripts.
+
+__Model Info__
+
 The `info` attribute shows the model in a readable format.
 
 [The `info` below may not display optimally on your computer screen, for example the whitespace between parameter
@@ -263,9 +290,7 @@ The full MGE composition API is given in the `features/multi_gaussian_expansion`
 
 mass = af.Model(al.mp.Isothermal)
 
-shear = af.Model(al.mp.ExternalShear)
-
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source:
 
@@ -277,7 +302,12 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 Printing the model info confirms the model has Gaussians for both the lens and source galaxies.

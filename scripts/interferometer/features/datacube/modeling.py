@@ -23,7 +23,7 @@ __Contents__
 - **Sparse Operators:** Pre-compute per-channel sparse-operator matrices used by the pixelized source inversion.
 - **Settings:** Disable the positive-only solver so visibility-space inversions can take negative pixel values.
 - **Mesh Shape:** Pixelization mesh size — fixed before modeling because JAX needs static-shape arrays.
-- **Model:** Compose the shared `Isothermal + ExternalShear` lens and pixelized source.
+- **Model:** Compose the shared `Isothermal` lens, its `ExternalShear` `MassField` and the pixelized source.
 - **Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with `use_jax=True`.
 - **FactorGraph:** Wrap each analysis in an `AnalysisFactor` and combine via `af.FactorGraphModel`.
 - **Search:** Configure the `Nautilus` non-linear search.
@@ -156,7 +156,8 @@ mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 """
 __Model__
 
-The lens galaxy is a shared `Isothermal + ExternalShear`, identical across every channel. The source galaxy is
+The lens galaxy is a shared `Isothermal`, with the external shear an `ExternalShear` held in a `MassField`; both
+are identical across every channel. The source galaxy is
 a `Pixelization` with a `RectangularBilinearAdaptDensity` mesh and `Constant` regularization — the inversion runs
 independently per channel inside each `AnalysisInterferometer`, giving each channel its own source-plane
 reconstruction without adding any model parameters.
@@ -166,8 +167,7 @@ There are no per-channel free parameters: every prior in this base model is iden
 """
 # Lens:
 mass = af.Model(al.mp.Isothermal)
-shear = af.Model(al.mp.ExternalShear)
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source (pixelization, no free priors):
 mesh = af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape)
@@ -176,7 +176,12 @@ pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularizatio
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
 
 # Overall lens model:
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 print(model.info)
 

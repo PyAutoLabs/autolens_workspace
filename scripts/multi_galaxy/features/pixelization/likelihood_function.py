@@ -172,7 +172,7 @@ lens_1 = al.Galaxy(
     ),
 )
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -225,7 +225,7 @@ total_lens_blurring_image_2d = lens_0_blurring_image_2d + lens_1_blurring_image_
 """
 __Deflection Angles__
 
-Each deflector's mass profile produces its own deflection field, and the shear galaxy produces a third. The
+Each deflector's mass profile produces its own deflection field, and the shear `MassField` produces a third. The
 total deflection at each image coordinate is their sum:
 
  alpha_total = alpha_lens_0 + alpha_lens_1 + alpha_shear
@@ -235,7 +235,7 @@ mass models are used.
 """
 deflections_lens_0 = lens_0.deflections_yx_2d_from(grid=masked_dataset.grid)
 deflections_lens_1 = lens_1.deflections_yx_2d_from(grid=masked_dataset.grid)
-deflections_shear = shear_galaxy.deflections_yx_2d_from(grid=masked_dataset.grid)
+deflections_shear = field.deflections_yx_2d_from(grid=masked_dataset.grid)
 
 deflections_total = deflections_lens_0 + deflections_lens_1 + deflections_shear
 
@@ -249,7 +249,7 @@ Every image-plane coordinate is traced to the source plane by subtracting the to
 The `Tracer` does this for us. Both deflectors are at the same redshift, so this is a single-plane trace and the
 summed deflection field above is exactly what the tracer uses.
 """
-tracer = al.Tracer(galaxies=[lens_0, lens_1, shear_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_0, lens_1, source_galaxy], fields=[field])
 
 traced_grid = tracer.traced_grid_2d_list_from(grid=masked_dataset.grid)[-1]
 

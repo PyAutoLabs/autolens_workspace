@@ -13,7 +13,7 @@ configuration). Each source's multiple images are stored as a separate `PointDat
 
 The lens model below uses:
 
- - The foreground lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The foreground lens galaxy's total mass distribution is an `Isothermal`.
  - The first source `Galaxy` (at z=1.0) is itself a `Galaxy` with a mass profile and a `Point`.
  - The second source `Galaxy` (at z=2.0) is a `Point`-only galaxy.
 
@@ -29,7 +29,7 @@ intended form so the example is correct as soon as #480 lands; no script changes
 __Contents__
 
 - **Dataset Paths:** The `dataset_type` describes the type of data being simulated and `dataset_name` gives it a.
-- **Ray Tracing:** Setup the lens galaxy's mass (SIE+Shear) and source galaxy `Point` for this simulated lens.
+- **Ray Tracing:** Setup the lens galaxy's mass (SIE) and source galaxy `Point` for this simulated lens.
 - **Point Solver:** We use a `PointSolver` to locate the multiple images.
 - **Point Datasets:** Create a point-source data object and output this to a `.json` file, which is the format used to.
 - **Visualize:** Output a subplot of the simulated point source dictionary and the tracer's quantities to the.
@@ -65,8 +65,12 @@ dataset_path = Path("dataset") / dataset_type / dataset_name
 """
 __Ray Tracing__
 
-Setup the lens galaxy's mass (SIE+Shear) and source galaxy `Point` for this simulated lens. We include a
+Setup the lens galaxy's mass (SIE) and source galaxy `Point` for this simulated lens. We include a
 faint disk in the source for purely visualisation purposes to show where the multiple images appear.
+
+No external shear is simulated here. The modeling example still fits one, composed as an `ExternalShear` in a
+`MassField` in the model's `fields=` collection (see `imaging/modeling.py`), so its inferred `gamma_1` and
+`gamma_2` should be consistent with zero.
 
 For lens modeling, defining ellipticity in terms of the `ell_comps` improves the model-fitting procedure. However,
 for simulating a strong lens you may find it more intuitive to define the elliptical geometry using the

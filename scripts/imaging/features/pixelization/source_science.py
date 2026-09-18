@@ -106,6 +106,10 @@ lens_galaxy = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
@@ -119,7 +123,7 @@ pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
 
 source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 fit = al.FitImaging(
     dataset=dataset,
@@ -419,9 +423,11 @@ First, lets load `source_plane_reconstruction_0.csv` as a dictionary, using basi
 # Lens:
 
 mass = af.Model(al.mp.PowerLaw)
-shear = af.Model(al.mp.ExternalShear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+# External Shear:
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Source:
 mesh = af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape)
@@ -433,7 +439,10 @@ source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 search = af.Nautilus(
     path_prefix=Path("features"),

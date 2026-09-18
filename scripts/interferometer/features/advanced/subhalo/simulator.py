@@ -4,7 +4,8 @@ Simulator: Subhalo
 
 This script simulates `Interferometer` data of a 'galaxy-scale' strong lens where:
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The subhalo`s `MassProfile` is a `NFWSph`.
  - The source galaxy's light is an `Sersic`.
 
@@ -101,6 +102,10 @@ lens_galaxy = al.Galaxy(
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
     subhalo=al.mp.NFWTruncatedMCRLudlowSph(centre=(1.601, 0.0), mass_at_200=1.0e10),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.0),
 )
 
@@ -114,10 +119,11 @@ source_galaxy = al.Galaxy(
         sersic_index=1.0,
     ),
 )
+
 """
 Use these galaxies to setup a tracer, which will generate the image for the simulated interferometer dataset.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 """
 Lets look at the tracer`s image, this is the image we'll be simulating.

@@ -139,9 +139,11 @@ model = af.Collection(
             al.Galaxy,
             redshift=0.5,
             mass=al.mp.Isothermal,
-            shear=al.mp.ExternalShear,
         ),
         source=af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=None),
+    ),
+    fields=af.Collection(
+        field=af.Model(al.MassField, redshift=0.5, shear=al.mp.ExternalShear),
     ),
 )
 

@@ -26,7 +26,8 @@ __Model__
 This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
 
  - The lens galaxy's light profiles are an `Sersic` and `Exponential`.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`.
+ - The external shear is an `ExternalShear` held in a `MassField`.
  - The subhalo`s `MassProfile` is a `NFWSph`.
  - The source galaxy's light is an `Sersic`.
 
@@ -113,6 +114,10 @@ lens_galaxy = al.Galaxy(
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
     subhalo=al.mp.NFWTruncatedMCRLudlowSph(centre=(1.601, 0.0), mass_at_200=1.0e10),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
@@ -131,7 +136,7 @@ source_galaxy = al.Galaxy(
 """
 Use these galaxies to setup a tracer, which will generate the image for the simulated `Imaging` dataset.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 """
 Lets look at the tracer`s image, this is the image we'll be simulating.
@@ -222,10 +227,16 @@ lens_galaxy_no_subhalo = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
-tracer_no_subhalo = al.Tracer(galaxies=[lens_galaxy_no_subhalo, source_galaxy])
+tracer_no_subhalo = al.Tracer(
+    galaxies=[lens_galaxy_no_subhalo, source_galaxy], fields=[field]
+)
 
 image = tracer.image_2d_from(grid=grid)
 image_no_subhalo = tracer_no_subhalo.image_2d_from(grid=grid)
@@ -255,10 +266,14 @@ lens_galaxy = al.Galaxy(
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
     subhalo=al.mp.NFWTruncatedMCRLudlowSph(centre=(1.601, 0.0), mass_at_200=1.0e10),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 dataset = simulator.via_tracer_from(tracer=tracer, grid=grid)
 

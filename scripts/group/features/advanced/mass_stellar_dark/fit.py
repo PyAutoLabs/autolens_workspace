@@ -165,7 +165,8 @@ We compose each main lens galaxy via a `lens_dict` loop over `main_lens_centres`
 
  - a `lmp.Sersic` bulge (acts as light AND stellar mass via `mass_to_light_ratio`),
  - a `NFWSph` dark matter halo aligned with its bulge,
- - and (for the first lens galaxy only) an `ExternalShear` representing the group-wide shear field.
+ - and, beside the galaxies, an `ExternalShear` held in an `al.MassField` representing the group-wide shear
+   field (an external field is a property of the system, not of a galaxy, so it goes in `fields`).
 
 All non-linear parameters are set to the simulator's true values, so the fit visibly recovers the lensing
 configuration without a search.
@@ -203,23 +204,27 @@ for i, centre in enumerate(main_lens_centres):
         ),
     )
 
-    if i == 0:
-        galaxy_kwargs["shear"] = al.mp.ExternalShear(gamma_1=-0.02, gamma_2=0.005)
-
     lens_dict[f"lens_{i}"] = al.Galaxy(**galaxy_kwargs)
+
+# External Shear (an `al.MassField`, passed to the tracer's `fields` below):
+
+field = al.MassField(
+    redshift=0.5, shear=al.mp.ExternalShear(gamma_1=-0.02, gamma_2=0.005)
+)
 
 source = al.Galaxy(redshift=1.0, bulge=source_bulge)
 
 """
 __Tracer__
 
-The `Tracer` performs the ray-tracing. Internally it queries every mass profile attached to every galaxy in
-the lens plane and sums their deflections. For our group lens, this means each `lens_i`'s `bulge` contributes
-a stellar mass deflection (`(M/L)_i * alpha_light_i`), each `dark` halo contributes an `NFWSph` deflection,
-and `lens_0`'s `shear` contributes the external shear — all summed before mapping image-plane coordinates
-onto the source-plane.
+The `Tracer` performs the ray-tracing. Internally it merges the galaxies and the fields at each redshift into
+planes, then queries every mass profile in the lens plane and sums their deflections. For our group lens, this
+means each `lens_i`'s `bulge` contributes a stellar mass deflection (`(M/L)_i * alpha_light_i`), each `dark`
+halo contributes an `NFWSph` deflection, and the field's `shear` contributes the external shear — all summed
+before mapping image-plane coordinates onto the source-plane. Note that `tracer.galaxies` never contains the
+field: it is reached as `tracer.fields[0]`.
 """
-tracer = al.Tracer(galaxies=list(lens_dict.values()) + [source])
+tracer = al.Tracer(galaxies=list(lens_dict.values()) + [source], fields=[field])
 
 """
 __Fit__
@@ -253,7 +258,7 @@ alpha_stellar_list = [
 alpha_dark_list = [
     lens.dark.deflections_yx_2d_from(grid=grid) for lens in lens_dict.values()
 ]
-alpha_shear = lens_dict["lens_0"].shear.deflections_yx_2d_from(grid=grid)
+alpha_shear = field.shear.deflections_yx_2d_from(grid=grid)
 
 print(f"alpha_stellar[lens_0] (first coord): {alpha_stellar_list[0][0]}")
 print(f"alpha_dark   [lens_0] (first coord): {alpha_dark_list[0][0]}")
@@ -316,7 +321,8 @@ __Wrap Up__
 This script demonstrated the group-scale decomposed-mass API and the per-galaxy deflection decomposition,
 without invoking a non-linear search. Each main lens galaxy's `bulge` simultaneously acts as a light profile
 and a stellar mass profile (coupled by its own `mass_to_light_ratio`), and each separately-parameterized
-`dark` NFW halo adds an independent dark mass contribution. A single `ExternalShear` is attached to `lens_0`
+`dark` NFW halo adds an independent dark mass contribution. A single `ExternalShear`, held in an `al.MassField`
+beside the galaxies,
 representing the group-wide shear field.
 
 In a real modeling workflow:

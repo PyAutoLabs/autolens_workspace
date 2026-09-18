@@ -57,7 +57,8 @@ __Model__
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is a an MGE bulge.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The source galaxy's light is a an MGE.
 
 __Start Here Notebook__
@@ -181,7 +182,8 @@ We compose a lens model where:
 
  - The lens galaxy's light is an MGE with 1 x 20 Gaussians [6 parameters].
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField` [7 parameters].
 
  - The source galaxy's light is an MGE with 1 x 20 Gaussians [4 parameters].
 
@@ -200,7 +202,6 @@ lens = af.Model(
     redshift=0.5,
     bulge=bulge,
     mass=al.mp.Isothermal,
-    shear=al.mp.ExternalShear,
 )
 
 bulge = al.model_util.mge_model_from(
@@ -214,8 +215,12 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 dataset_model = af.Model(al.DatasetModel)
 
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
 model = af.Collection(
-    dataset_model=dataset_model, galaxies=af.Collection(lens=lens, source=source)
+    dataset_model=dataset_model,
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
 )
 
 """

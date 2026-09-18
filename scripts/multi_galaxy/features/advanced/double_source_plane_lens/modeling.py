@@ -149,7 +149,7 @@ aplt.subplot_imaging_dataset(dataset=dataset)
 __Model Composition__
 
 The standard multi-galaxy composition from `multi_galaxy/modeling.py` — one `lens_i` per deflector in a loop, the
-shear in its own `shear_galaxy` — with two source galaxies instead of one.
+shear in its own `MassField` — with two source galaxies instead of one.
 
 `source_0` carries mass as well as light. That is not optional: its mass deflects `source_1`, and omitting it
 would leave the second ring's position to be explained by the deflectors, biasing exactly the split this dataset
@@ -184,8 +184,8 @@ for i, centre in enumerate(main_lens_centres):
 
 # External Shear:
 
-shear_galaxy = af.Model(
-    al.Galaxy,
+field = af.Model(
+    al.MassField,
     redshift=0.5,
     shear=af.Model(al.mp.ExternalShear),
 )
@@ -250,10 +250,10 @@ workflow in `chaining.py` and far more than one system.
 model = af.Collection(
     galaxies=af.Collection(
         **lens_dict,
-        shear_galaxy=shear_galaxy,
         source_0=source_0,
         source_1=source_1,
     ),
+    fields=af.Collection(field=field),
     # cosmology=cosmology,
 )
 

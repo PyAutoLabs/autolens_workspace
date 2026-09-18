@@ -190,9 +190,9 @@ __Model__
 
 The cube model has two ingredients:
 
- - A shared `Isothermal + ExternalShear` lens. There are 7 free parameters (mass centre, ellipticity components,
-   einstein radius, two shear components). The lens does not change with frequency, so a single set of priors is
-   used for every channel.
+ - A shared `Isothermal` lens mass and an `ExternalShear` held in a `MassField`. There are 7 free parameters
+   (mass centre, ellipticity components, einstein radius, two shear components). Neither changes with frequency,
+   so a single set of priors is used for every channel.
  - A pixelized source: a `RectangularBilinearAdaptDensity` mesh with `Constant` regularization (1 free parameter — the
    regularization coefficient). The pixelization itself has no per-pixel priors; the source-plane fluxes are a
    linear inversion output computed by each channel's `AnalysisInterferometer` at fit time. That is what makes
@@ -202,8 +202,7 @@ The total dimensionality of the non-linear parameter space is therefore 8.
 """
 # Lens:
 mass = af.Model(al.mp.Isothermal)
-shear = af.Model(al.mp.ExternalShear)
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source (pixelization, no per-pixel priors):
 mesh = af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape)
@@ -212,7 +211,12 @@ pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularizatio
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
 
 # Overall lens model:
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 print(model.info)
 

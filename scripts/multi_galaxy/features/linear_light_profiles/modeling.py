@@ -206,7 +206,7 @@ https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 __Model Composition__
 
 The composition is that of `multi_galaxy/modeling.py` with the MGE bases replaced by single `lp_linear.Sersic`
-profiles: one `lens_i` entry per deflector built in a loop over the centres, the shear in its own `shear_galaxy`
+profiles: one `lens_i` entry per deflector built in a loop over the centres, the shear in its own `MassField`
 at the system centre, and the source separate.
 
 Note that the profiles below take no `intensity` argument. That is the whole API change — the `lp_linear` module
@@ -238,8 +238,8 @@ for i, centre in enumerate(main_lens_centres):
 
 # External Shear:
 
-shear_galaxy = af.Model(
-    al.Galaxy,
+field = af.Model(
+    al.MassField,
     redshift=0.5,
     shear=af.Model(al.mp.ExternalShear),
 )
@@ -255,7 +255,8 @@ source = af.Model(
 # Overall Lens Model:
 
 model = af.Collection(
-    galaxies=af.Collection(**lens_dict, shear_galaxy=shear_galaxy, source=source)
+    galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
 )
 
 """

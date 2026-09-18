@@ -123,7 +123,7 @@ __Model (Search 1)__
 We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In the first
 search our lens model is:
 
- - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal` [7 parameters].
  
  - an MGE with 1 x 20 Gaussians for the source galaxy's light [4 parameters].
 

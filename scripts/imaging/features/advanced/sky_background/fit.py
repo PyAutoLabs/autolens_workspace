@@ -33,7 +33,8 @@ This script fits an `Imaging` dataset of a galaxy with a model where:
 
  - The sky background is included as part of a `DatasetModel`.
  - The lens galaxy's light is a linear `Sersic` bulge.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`.
+ - The external shear is an `ExternalShear` held in a `MassField`.
  - The source galaxy's light is a linear `SersicCore`.
 
 __Start Here Notebook__
@@ -151,6 +152,10 @@ lens_galaxy = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
@@ -164,7 +169,7 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 dataset_model = al.DatasetModel(background_sky_level=5.0)
 

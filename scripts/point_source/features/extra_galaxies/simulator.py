@@ -35,10 +35,11 @@ This script simulates `PointDataset` data of a 'galaxy-scale' strong lens where:
  - The source `Galaxy` is a `PointFlux` (a point source with a flux).
  - There are two extra galaxies whose mass perturbs the multiple image positions of the source.
 
-The `ExternalShear` is not included in the mass model. As explained in `point_source/modeling.py`, a quadruply
-imaged point source provides only 8 positional data points, so an `Isothermal` + `ExternalShear` mass model (9
-parameters) is already under-constrained before any extra galaxies are added. Simulating fluxes as well as
-positions (below) is what makes room for the extra galaxies in the model.
+No external shear is simulated or modelled. As explained in `point_source/modeling.py`, a quadruply imaged point
+source provides only 8 positional data points, so an `Isothermal` plus an external shear (9 parameters) is already
+under-constrained before any extra galaxies are added. Simulating fluxes as well as positions (below) is what
+makes room for the extra galaxies in the model. Where a shear is used it is an `ExternalShear` held in an
+`al.MassField`, given to the `Tracer` via its `fields=` argument (see `imaging/modeling.py`).
 
 __Other Scripts__
 

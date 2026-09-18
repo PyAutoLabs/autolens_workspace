@@ -18,7 +18,8 @@ This example uses Euclid CCD imaging data. The model uses the group regime's **t
 signature composition of group- and cluster-scale modeling:
 
  - **Main lens galaxies** (here: 2 — the central galaxy and a bright companion just 0.4" away): the dominant
-   lenses, each with a free MGE light model, `Isothermal` mass and (on `lens_0`) an `ExternalShear`.
+   lenses, each with a free MGE light model and `Isothermal` mass. The group's one `ExternalShear` sits
+   beside them in a `fields` collection, held in an `al.MassField`.
  - **Extra galaxies** (here: 1): a nearby companion inside the mask, with its own MGE light model and a
    tidally truncated `dPIEMassSph` mass (free `sigma`, fixed truncation) at its observed centre.
  - **Scaling galaxies** (here: 5): further-out galaxies whose light sits outside the mask; mass-only
@@ -227,7 +228,10 @@ For group-scale lenses, we compose the model using a list-based API. Each main l
 over the main lens galaxy centres, and stored in a dictionary as `lens_0`, `lens_1`, etc. This API scales naturally
 to groups with any number of main lens galaxies.
 
-Only the first lens galaxy (`lens_0`) carries an `ExternalShear`, as the group system has one overall external shear.
+The group system has one overall external shear. It describes the tidal field of everything *outside* the
+modelled system, so it is a property of the system and not of any one galaxy: it is held in an `al.MassField`
+(a redshift plus a bag of mass profiles, carrying no light) which goes in the model's own `fields` collection,
+beside `galaxies`.
 
 The extra galaxies are composed the same way (`extra_0`, `extra_1`, ...), each with a small MGE for its light and a
 tidally truncated `dPIEMassSph` mass fixed at its observed centre — free `sigma` (fiducial velocity dispersion,
@@ -269,8 +273,11 @@ for i, centre in enumerate(main_lens_centres):
         redshift=0.5,
         bulge=bulge,
         mass=mass,
-        shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Extra Galaxies:
 
@@ -338,7 +345,10 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(**lens_dict, source=source))
+model = af.Collection(
+    galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 We can print the model to show the parameters that the model is composed of, which shows many of the MGE's fixed

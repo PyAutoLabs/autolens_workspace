@@ -31,7 +31,7 @@ __Contents__
 - **Sample LOS Halos:** Use ``LOSSampler`` to draw a halo population (runs in NumPy).
 - **Grid:** Define the 2D grid on which the image is evaluated and simulated.
 - **PSF:** A Gaussian PSF kernel for convolution.
-- **Lens Galaxy and Source Galaxy:** The main lens (``PowerLaw`` + ``ExternalShear``) and
+- **Lens Galaxy and Source Galaxy:** The main lens (``PowerLaw``, with its ``ExternalShear`` in a ``MassField``) and
   the background source (``SersicCore``), identical to ``simulator.py``.
 - **Convert to Padded Arrays:** Pack the ``Galaxy`` list from ``LOSSampler`` into fixed-shape
   JAX arrays with boolean masks for unused slots.
@@ -46,10 +46,11 @@ __Model__
 
 This script simulates ``Imaging`` of a galaxy-scale strong lens where:
 
- - The lens galaxy's total mass distribution is a ``PowerLaw`` and ``ExternalShear``.
+ - The lens galaxy's total mass distribution is a ``PowerLaw``.
+ - The external shear is an ``ExternalShear`` held in a ``MassField``.
  - The source galaxy's light is a ``SersicCore``.
  - Line-of-sight halos are ``NFWTruncatedSph`` profiles on multiple redshift planes.
- - Each redshift plane includes a ``MassSheet`` with negative kappa.
+ - Each line-of-sight plane includes a ``MassSheet`` with negative kappa.
 """
 
 from autolens import jax_wrapper
@@ -92,8 +93,13 @@ __Sample LOS Halos__
 
 The ``LOSSampler`` draws halo masses, positions and concentrations from a cosmological mass
 function, converts each halo to an ``NFWTruncatedSph`` profile, and adds a compensatory
-negative kappa ``MassSheet`` to each plane. See ``simulator.py`` for the full explanation
-of the sampling pipeline and the mass function coefficients.
+negative kappa ``MassSheet`` to each plane.
+
+``galaxies_and_fields_from()`` returns those two populations separately: the halos as ``Galaxy``
+objects and the sheets as ``MassField`` objects. A negative-kappa sheet is not a galaxy -- it is
+the mean-density correction of the line of sight, which is exactly the external mass a
+``MassField`` exists to hold. See ``simulator.py`` for the full explanation of the sampling
+pipeline and the mass function coefficients.
 """
 _, plane_centres = los_planes_from(
     z_lens=z_lens,
@@ -141,13 +147,9 @@ sampler = LOSSampler(
     seed=seed,
 )
 
-los_galaxies = sampler.galaxies_from()
+los_halos, los_fields = sampler.galaxies_and_fields_from()
 
-n_halos = sum(
-    1
-    for g in los_galaxies
-    if hasattr(g, "mass") and isinstance(g.mass, al.mp.NFWTruncatedSph)
-)
+n_halos = len(los_halos)
 
 print(f"Sampled {n_halos} LOS halos across {n_planes} planes.")
 
@@ -188,8 +190,9 @@ __Lens Galaxy and Source Galaxy__
 
 The lens galaxy and source galaxy are identical to those in ``simulator.py``.
 
-The lens galaxy's total mass distribution is a ``PowerLaw`` (the dominant smooth mass component)
-plus an ``ExternalShear`` that accounts for tidal perturbations from the large-scale environment.
+The lens galaxy's total mass distribution is a ``PowerLaw`` (the dominant smooth mass component). The
+``ExternalShear`` that accounts for tidal perturbations from the large-scale environment is a property of the
+system and not of the galaxy, so it is held beside it in an ``al.MassField`` (see ``imaging/modeling.py``).
 
 The source galaxy's light distribution is a ``SersicCore``, which is a Sersic profile with a
 flattened central core.
@@ -202,6 +205,10 @@ lens_galaxy = al.Galaxy(
         slope=2.264,
         einstein_radius=1.6,
     ),
+)
+
+lens_field = al.MassField(
+    redshift=z_lens,
     shear=al.mp.ExternalShear(gamma_1=0.0, gamma_2=0.0),
 )
 
@@ -229,6 +236,13 @@ truncation_radius) from every ``NFWTruncatedSph`` halo and the negative kappa fr
 ``MassSheet``, then pads each plane's halo list to a fixed maximum ``max_n``. Unused slots
 have their mask set to ``False`` so they contribute zero deflection.
 
+The sheets arrive here as ``MassField`` objects, so the halo galaxies and the sheet fields are
+concatenated into the one flat population the helper flattens. The helper reads only ``redshift``
+and ``mass_sheet`` off each object and so accepts either form -- a ``MassField`` carrying the
+sheet, or the sheet ``Galaxy`` that ``galaxies_from()`` returns -- and produces the same arrays
+from both. Nothing here builds a ``Tracer``: the population is flattened into fixed-shape arrays
+immediately, which is what lets ``jax.jit`` compile the simulation once.
+
 The full list of redshift planes includes the LOS plane centres plus the source redshift. If
 the lens redshift coincides with a LOS plane centre it is included automatically; otherwise it
 is added so that the lens galaxy's deflections are applied at the correct redshift.
@@ -238,7 +252,7 @@ plane_redshifts = sorted(set(list(plane_centres) + [z_lens, z_source]))
 max_n = 200
 
 halo_params, halo_mask, sheet_kappas = substructure_util.galaxies_to_halo_arrays(
-    galaxies=los_galaxies,
+    galaxies=los_halos + los_fields,
     plane_redshifts=plane_redshifts,
     max_n=max_n,
     profile_cls=al.mp.NFWTruncatedSph,
@@ -285,10 +299,18 @@ def lens_mass_fn(grid_raw, params):
         slope=params[4],
         einstein_radius=params[5],
     )
-    shear = al.mp.ExternalShear(gamma_1=params[6], gamma_2=params[7])
-    galaxy = al.Galaxy(redshift=z_lens, mass=power_law, shear=shear)
+    galaxy = al.Galaxy(redshift=z_lens, mass=power_law)
+    field = al.MassField(
+        redshift=z_lens,
+        shear=al.mp.ExternalShear(gamma_1=params[6], gamma_2=params[7]),
+    )
     g = aa.Grid2DIrregular(values=grid_raw, xp=jnp)
-    return galaxy.deflections_yx_2d_from(grid=g, xp=jnp).array
+    # The lens plane's deflections are the galaxy's plus the field's; the tracer sums them the
+    # same way, so which object carries a profile makes no difference to the ray-tracing.
+    return (
+        galaxy.deflections_yx_2d_from(grid=g, xp=jnp)
+        + field.deflections_yx_2d_from(grid=g, xp=jnp)
+    ).array
 
 
 lens_mass_params = jnp.array([0.0, 0.0, 0.059, -0.027, 2.264, 1.6, 0.0, 0.0])
@@ -380,7 +402,8 @@ The grid, PSF, lens galaxy, source galaxy and scaling matrix are shared across t
 the halo parameters, masks, sheet kappas and noise keys vary.
 
 ``los_realizations_to_arrays`` is a convenience helper that runs ``galaxies_to_halo_arrays``
-on each realisation and stacks the results into batch-dimensioned arrays.
+on each realisation and stacks the results into batch-dimensioned arrays. Each realisation is
+again the halo galaxies concatenated with that line of sight's sheet ``MassField``s.
 """
 batch_size = 8
 
@@ -401,7 +424,8 @@ for i in range(batch_size):
         mass_concentration_coefficients=mass_concentration_coefficients,
         seed=100 + i,
     )
-    realization_galaxies.append(sampler_i.galaxies_from())
+    realization_halos, realization_fields = sampler_i.galaxies_and_fields_from()
+    realization_galaxies.append(realization_halos + realization_fields)
 
 hp_batch, hm_batch, sk_batch = substructure_util.los_realizations_to_arrays(
     realization_galaxies=realization_galaxies,

@@ -101,13 +101,19 @@ def source_lp(
                 bulge=lens_bulge,
                 disk=None,
                 mass=af.Model(al.mp.Isothermal),
-                shear=af.Model(al.mp.ExternalShear),
             ),
             source=af.Model(
                 al.Galaxy,
                 redshift=redshift_source,
                 bulge=source_bulge,
                 disk=None,
+            ),
+        ),
+        fields=af.Collection(
+            field=af.Model(
+                al.MassField,
+                redshift=redshift_lens,
+                shear=af.Model(al.mp.ExternalShear),
             ),
         ),
     )
@@ -162,10 +168,10 @@ def light_lp(
                 bulge=lens_bulge,
                 disk=None,
                 mass=source_lp_result.instance.galaxies.lens.mass,
-                shear=source_lp_result.instance.galaxies.lens.shear,
             ),
             source=source,
         ),
+        fields=source_lp_result.instance.fields,
     )
 
     search = af.Nautilus(
@@ -220,10 +226,10 @@ def mass_total(
                 bulge=bulge,
                 disk=disk,
                 mass=mass,
-                shear=source_lp_result.model.galaxies.lens.shear,
             ),
             source=source,
         ),
+        fields=source_lp_result.model.fields,
     )
 
     search = af.Nautilus(

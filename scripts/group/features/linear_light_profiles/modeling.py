@@ -38,7 +38,8 @@ __Model__
 This script fits an ``Imaging`` dataset of a 'group-scale' strong lens where:
 
  - Each main lens galaxy's light is a linear ``Sersic`` bulge [6 parameters].
- - The first main lens galaxy's total mass distribution is an ``Isothermal`` and ``ExternalShear`` [7 parameters].
+ - Each main lens galaxy's total mass distribution is an ``Isothermal``; the group's external shear is an
+   ``ExternalShear`` held in an ``al.MassField`` [7 parameters].
  - There are two extra lens galaxies with linear ``SersicSph`` light and tidally truncated ``dPIEMassSph`` total mass
    distributions, with centres fixed to the observed centres of light [8 parameters].
  - The source galaxy's light is a linear ``SersicCore`` [5 parameters].
@@ -142,10 +143,13 @@ for i, centre in enumerate(main_lens_centres):
         redshift=0.5,
         bulge=bulge,
         mass=mass,
-        shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
 
     lens_dict[f"lens_{i}"] = lens
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Extra Galaxies:
 
@@ -188,6 +192,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
     extra_galaxies=extra_galaxies,
 )
 

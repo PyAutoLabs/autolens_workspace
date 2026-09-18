@@ -175,6 +175,12 @@ __Main Lens Galaxies__
 One MGE bulge + free `Isothermal` mass per co-dominant deflector, exactly as `multi_galaxy/modeling.py` composes
 them. The brightest galaxy's `einstein_radius` is what the tier hangs off, but it is otherwise an ordinary free
 parameter.
+
+__External Shear__
+
+The system's single `ExternalShear` is held in an `al.MassField` in its own `fields` collection, at the system
+centre, exactly as in `multi_galaxy/modeling.py` — the shear describes the tidal field of everything outside the
+system, so it belongs to no one deflector.
 """
 lens_dict = {}
 
@@ -195,8 +201,15 @@ for i, centre in enumerate(main_lens_centres):
         redshift=0.5,
         bulge=bulge,
         mass=mass,
-        shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
+
+# External Shear:
+
+field = af.Model(
+    al.MassField,
+    redshift=0.5,
+    shear=af.Model(al.mp.ExternalShear),
+)
 
 """
 __Source__
@@ -247,6 +260,7 @@ co-dominant pair and the tied population are visibly different populations.
 """
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
     scaling_galaxies=scaling_galaxies,
 )
 
@@ -278,6 +292,7 @@ for centre in scaling_galaxies_centres:
 
 model_free = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
     scaling_galaxies=af.Collection(scaling_galaxies_free_list),
 )
 

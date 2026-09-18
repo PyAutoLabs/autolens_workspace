@@ -204,6 +204,17 @@ The MGE model composition API is quite long and technical, so we simply load the
 models for the lens and source below via a utility function `mge_model_from` which 
 hides the API to make the code in this introduction example ready to read. We then 
 use the PyAutoLens Model API to compose the over lens model.
+
+__External Shear__
+
+The shear is the tidal field of everything *outside* the lens system, so it is a property 
+of the system rather than of a galaxy. It is therefore not attached to the lens below, but 
+composed in its own `al.MassField`: a container built like a `Galaxy` (a redshift plus a bag 
+of mass profiles — `ExternalShear`, `MassSheet`, `ExternalPotential`) which carries no light. 
+The field goes in its own `fields=` collection beside `galaxies=`, appears under `fields` in 
+`model.info`, and its result is read as `result.instance.fields.field.shear`. The fit is 
+numerically identical to attaching the shear to the lens, because the tracer sums every 
+deflection field at each plane. `imaging/modeling.py` describes this in full.
 """
 # Lens:
 
@@ -216,9 +227,11 @@ bulge = al.model_util.mge_model_from(
 
 mass = af.Model(al.mp.Isothermal)
 
-shear = af.Model(al.mp.ExternalShear)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+# External Shear:
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Source:
 
@@ -230,7 +243,10 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 We can print the model to show the parameters that the model is composed of, which shows many of the MGE's fixed
@@ -473,8 +489,11 @@ grid = grid.apply_over_sampling(over_sample_size=over_sample_size)
 We now define a `Tracer` — this is the key object that combines all galaxies in the system
 and computes how light rays are deflected.
 
-- The lens galaxy has both light (a Sersic bulge) and mass (an isothermal profile + shear).
+- The lens galaxy has both light (a Sersic bulge) and mass (an isothermal profile).
 - The source galaxy has its own light (a SersicCore profile).
+- The system's external shear is an `ExternalShear` held in an `al.MassField`, passed to the
+  tracer via its own `fields=` argument rather than attached to a galaxy (see the
+  `__External Shear__` discussion above).
 
 Together they define a strong lens system. The tracer will “ray-trace” our grid through
 this mass distribution and generate a lensed image.
@@ -493,6 +512,10 @@ lens_galaxy = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
@@ -507,7 +530,7 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 """
 Plotting the tracer’s image gives us a “perfect” view of the strong lens system, before

@@ -101,6 +101,10 @@ lens_galaxy = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
@@ -151,7 +155,7 @@ source_galaxy = al.Galaxy(redshift=1.0, bulge=bulge)
 """
 We now create the tracer using the lens galaxy and MGE source galaxy.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 """
 Each of the Gaussians above does not have a manually input intensity, instead their intensities are solved for via

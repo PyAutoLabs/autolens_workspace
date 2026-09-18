@@ -8,7 +8,8 @@ source_0 at z=1.0 is itself a deflector for source_1 at z=2.0 (the "double Einst
 source's multiple images are stored in their own `PointDataset`, and the two datasets are fitted jointly using
 the multi-dataset/factor-graph API:
 
- - The foreground lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The foreground lens galaxy's total mass distribution is an `Isothermal`, with the system's external shear an
+   `ExternalShear` held in a `MassField`.
  - The first source `Galaxy` (at z=1.0) is itself a `Galaxy` with a mass profile and a `Point`.
  - The second source `Galaxy` (at z=2.0) is a `Point`-only galaxy.
 
@@ -127,7 +128,8 @@ __Model__
 
 We compose a multi-plane lens model where:
 
- - The lens galaxy at z=0.5 has an `Isothermal` mass distribution with `ExternalShear` [7 parameters].
+ - The lens galaxy at z=0.5 has an `Isothermal` mass distribution, and the system's external shear is an
+   `ExternalShear` held in a `MassField` at the same redshift [7 parameters].
 
  - The first source galaxy at z=1.0 has its own `Isothermal` mass distribution and a `PointSolved` source
    [5 parameters]. The mass of this galaxy is what makes the system genuinely multi-plane: it lenses the further
@@ -160,8 +162,12 @@ lens = af.Model(
     al.Galaxy,
     redshift=0.5,
     mass=al.mp.Isothermal,
-    shear=al.mp.ExternalShear,
 )
+
+# The external shear belongs to the system, not to a galaxy, so it is composed in its own `MassField`
+# which goes in the model's `fields=` collection (see `imaging/modeling.py`).
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Source 0 (z=1.0) — itself a lens for source 1 behind it. The `PointSolved` component has no free
 # parameters: each source's source-plane centre is solved analytically per likelihood evaluation,
@@ -181,7 +187,8 @@ source_1 = af.Model(al.Galaxy, redshift=2.0, point_1=al.ps.PointSolved)
 # Overall Lens Model:
 
 model = af.Collection(
-    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1)
+    galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),
+    fields=af.Collection(field=field),
 )
 
 """

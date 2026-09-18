@@ -30,7 +30,7 @@ __Contents__
 - **Image Mesh:** Build the image-plane mesh of (y, x) points that get ray-traced and Delaunay-triangulated.
 - **Edge Zeroing:** Append a ring of edge pixels so the source-plane reconstruction zeroes at the mesh boundary.
 - **Adapt Images:** Pair the image-plane mesh with the source galaxy via `al.AdaptImages`.
-- **Model:** Compose the shared `Isothermal + ExternalShear` lens and Delaunay-pixelized source.
+- **Model:** Compose the shared `Isothermal` lens, its `ExternalShear` `MassField` and the Delaunay source.
 - **Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with shared `adapt_images` and `PositionsLH`.
 - **FactorGraph:** Wrap each analysis in an `AnalysisFactor` and combine via `af.FactorGraphModel`.
 - **Search:** Configure the `Nautilus` non-linear search.
@@ -170,13 +170,12 @@ adapt_images = al.AdaptImages(
 """
 __Model__
 
-Shared `Isothermal + ExternalShear` lens + Delaunay-pixelized source. `ConstantSplit` is the canonical Delaunay
+Shared `Isothermal` lens with an `ExternalShear` `MassField` + Delaunay-pixelized source. `ConstantSplit` is the canonical Delaunay
 regularizer (split-prior on inner-vs-edge mesh pixels). The mesh `pixels` is fixed at the number of points in
 `image_plane_mesh_grid`, which is `26*26 + 30` after the edge-ring append.
 """
 mass = af.Model(al.mp.Isothermal)
-shear = af.Model(al.mp.ExternalShear)
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 mesh = af.Model(
     al.mesh.Delaunay,
@@ -187,7 +186,12 @@ regularization = af.Model(al.reg.ConstantSplit)
 pixelization = af.Model(al.Pixelization, mesh=mesh, regularization=regularization)
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 print(model.info)
 

@@ -50,7 +50,8 @@ __Model__
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is a an MGE bulge.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The source galaxy's light is a an MGE.
 
 __Start Here Notebook__
@@ -170,7 +171,8 @@ We compose a lens model where:
  - The lens galaxy's light is an MGE with 2 x 30 Gaussians, where the `intensity` parameter of the lens galaxy
    is solved for linearly [6 parameters].
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField` [7 parameters].
 
  - The source galaxy's light is an MGE with 1 x 20 Gaussians, where the `intensity` parameter of the lens galaxy
    is solved for linearly [4 parameters].
@@ -190,7 +192,6 @@ lens = af.Model(
     redshift=0.5,
     bulge=bulge,
     mass=al.mp.Isothermal,
-    shear=al.mp.ExternalShear,
 )
 
 bulge = al.model_util.mge_model_from(
@@ -202,7 +203,12 @@ bulge = al.model_util.mge_model_from(
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 __Search__
@@ -257,10 +263,10 @@ familiar with this feature, checkout the `guides/modeling/chaining` package.
 #             redshift=result.instance.galaxies.lens.redshift,
 #             bulge=result.model.galaxies.lens.bulge,
 #             mass=result.instance.galaxies.lens.mass,
-#             shear=result.instance.galaxies.lens.shear,
 #         ),
 #         source=result.model.galaxies.source,
 #     ),
+#     fields=result.instance.fields,
 # )
 #
 # print(model.info)

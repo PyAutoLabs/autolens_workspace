@@ -93,7 +93,8 @@ __Model__
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's bulge is a super position of 60 `Gaussian` profiles.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`.
+ - The external shear is an `ExternalShear` held in a `MassField`.
  - The source galaxy's light is a linear `SersicCore`.
 
 __Start Here Notebook__
@@ -187,7 +188,8 @@ We compose a lens model where:
  - The centres and elliptical components of the Gaussians are all linked together in two groups of 30.
  - The `sigma` size of the Gaussians increases in log10 increments.
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an `ExternalShear` held
+   in a `MassField` [7 parameters].
 
  - The source galaxy's light is a linear `Sersic` [6 parameters].
 
@@ -252,13 +254,18 @@ bulge = af.Model(
 
 mass = af.Model(al.mp.Isothermal)
 
-shear = af.Model(al.mp.ExternalShear)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+# External Shear:
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
@@ -462,7 +469,10 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 Printing the model info confirms the model has Gaussians for both the lens and source galaxies.
@@ -554,13 +564,15 @@ for i, gaussian in enumerate(point_gaussian_list):
 
 point = af.Model(al.lp_basis.Basis, profile_list=point_gaussian_list)
 
-# The point-source MGE is added to the lens galaxy alongside its extended `bulge` MGE, `mass` and `shear`.
+# The point-source MGE is added to the lens galaxy alongside its extended `bulge` MGE and `mass`. The external
+# shear stays outside the galaxy, in the `field` composed above.
 
-lens = af.Model(
-    al.Galaxy, redshift=0.5, bulge=bulge, point=point, mass=mass, shear=shear
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, point=point, mass=mass)
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
 )
-
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
 
 """
 Printing the model info confirms the lens galaxy now has both an extended `bulge` MGE and a compact `point` MGE.
@@ -586,11 +598,12 @@ point = al.model_util.mge_point_model_from(
     sigma_min=dataset.pixel_scales[0] / 10.0,
 )
 
-lens = af.Model(
-    al.Galaxy, redshift=0.5, bulge=bulge, point=point, mass=mass, shear=shear
-)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, point=point, mass=mass)
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 print(model.info)
 

@@ -320,8 +320,8 @@ We compose the lens model, with one entry per co-dominant deflector:
    and the multi-galaxy regime by definition has no host halo. Truncated (dPIE) profiles enter with the
    group regime's Lenstool-style workflow (`group/features/group_halo`) and are the default at cluster
    scale.
- - The system's single `ExternalShear` is held in its own model entry at the system centre (0.0", 0.0"), rather
-   than being attached to one of the deflectors.
+ - The system's single `ExternalShear` is held in an `al.MassField`, in the model's own `fields` collection at
+   the system centre (0.0", 0.0"), rather than being attached to one of the deflectors.
  - The source galaxy's light is an MGE.
 
 An upgrade path used by published multi-deflector analyses is to swap each `Isothermal` for a `PowerLaw` (EPL),
@@ -426,21 +426,35 @@ etc. — the same list-based API the group package uses, so moving up the ladder
 __External Shear__
 
 Note that no lens galaxy is given an `ExternalShear`. The shear describes the tidal field of everything *outside*
-the system being modeled, so it is a property of the system as a whole, not of an individual galaxy. The galaxy-scale
-examples attach it to their single lens galaxy, but a multi-galaxy lens has no single galaxy to attach it to, and
-choosing one arbitrarily would misrepresent what it is.
+the system being modeled, so it is a property of the system as a whole, not of an individual galaxy. A multi-galaxy
+lens makes this unavoidable: there is no single galaxy to attach the shear to, and picking one of two co-dominant
+deflectors arbitrarily would misrepresent what it is.
 
-We therefore give it its own model entry, `shear_galaxy`, at the system centre (0.0", 0.0"). `ExternalShear` takes no
-`centre` argument because it is a uniform field defined about the coordinate origin, which for this dataset is the
-centre of the lens pair.
+The shear is therefore held in an `al.MassField`. A `MassField` is a container built like a `Galaxy` — a redshift
+plus a bag of mass profiles (`ExternalShear`, `MassSheet`, `ExternalPotential`) — except that it carries no light.
+Shear, sheet and potential at one redshift are one field, exactly as a bulge and a disk are one galaxy.
 
-This is a presentational choice, not a physical one: because the tracer sums every deflection field, a shear in its
-own galaxy is numerically identical to the same shear attached to a deflector. What it buys you is a model whose
-`info` and posterior label the shear as a property of the system, so you are never tempted to read it as a
-measurement of `lens_0`.
+In the model the field lives in its own `fields=af.Collection(field=field)` beside `galaxies=`, so the `model.info`
+printed below lists it under `fields` rather than among the galaxies, and its result is read as
+`result.instance.fields.field.shear`. In a tracer it is the `fields=[field]` argument. Only the tracer's *planes*
+merge galaxies and fields at each redshift; `tracer.galaxies` never contains a field, so anything indexing the
+galaxies positionally is unaffected. Several fields simply means several planes (line-of-sight mass sheets, say).
+
+`ExternalShear` takes no `centre` argument because it is a uniform field defined about the coordinate origin, which
+for this dataset is the centre of the lens pair. `ExternalPotential` and `MassSheet` do have a centre, and
+`al.model_util.mass_field_from(lens=lens, potential=True)` composes a field with that centre tied to
+`lens.mass.centre`, which is the convention.
+
+None of this changes the numbers: because the tracer sums every deflection field, a shear in its own field is
+identical to the same shear attached to a deflector. What it buys you is a model whose `info` and posterior label
+the shear as a property of the system, so you are never tempted to read it as a measurement of `lens_0`.
 
 Note also that giving a shear to *every* deflector would be a redundant parameterization: the shears would be
 degenerate with one another and the fit would wander along that degeneracy.
+
+If you have results from an earlier version of this script, note that it composed a different model: this one has a
+different result identifier and will not resume an `output/` folder written by the old galaxy-attached version. The
+library still accepts `al.Galaxy(shear=...)`, so your own scripts are unaffected.
 """
 # Main Lens Galaxies:
 
@@ -468,8 +482,8 @@ for i, centre in enumerate(main_lens_centres):
 
 # External Shear:
 
-shear_galaxy = af.Model(
-    al.Galaxy,
+field = af.Model(
+    al.MassField,
     redshift=0.5,
     shear=af.Model(al.mp.ExternalShear),
 )
@@ -488,13 +502,14 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 # Overall Lens Model:
 
 model = af.Collection(
-    galaxies=af.Collection(**lens_dict, shear_galaxy=shear_galaxy, source=source)
+    galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
 )
 
 """
 The `info` attribute shows the model in a readable format. Note how each lens galaxy is listed as `lens_0`,
 `lens_1`, etc., each with its own free mass model — the signature of the multi-galaxy regime — and how the
-`shear` belongs to none of them, appearing instead as its own `shear_galaxy` entry.
+`shear` belongs to none of them, appearing instead under `fields` as a `MassField`.
 
 The `info` below may not display optimally on your computer screen, for example the whitespace between parameter
 names on the left and parameter priors on the right may lead them to appear across multiple lines. This is a

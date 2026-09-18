@@ -154,7 +154,7 @@ aplt.subplot_imaging_dataset(dataset=dataset)
 __Model Composition__
 
 The standard multi-galaxy composition from `multi_galaxy/modeling.py` — one `lens_i` per deflector in a loop, the
-shear in its own `shear_galaxy` — with each deflector's single `mass` replaced by a `bulge` and a `dark`.
+shear in its own `MassField` — with each deflector's single `mass` replaced by a `bulge` and a `dark`.
 
 `al.lmp.Sersic` is the light-and-mass profile. Its light parameters are the ordinary `Sersic` ones; its
 `mass_to_light_ratio` converts that light into a mass distribution with the same shape. `al.lp_linear` has no
@@ -204,8 +204,8 @@ for i in range(1, len(lens_dict)):
 
 # External Shear:
 
-shear_galaxy = af.Model(
-    al.Galaxy,
+field = af.Model(
+    al.MassField,
     redshift=0.5,
     shear=af.Model(al.mp.ExternalShear),
 )
@@ -224,7 +224,8 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 # Overall Lens Model:
 
 model = af.Collection(
-    galaxies=af.Collection(**lens_dict, shear_galaxy=shear_galaxy, source=source)
+    galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
 )
 
 """

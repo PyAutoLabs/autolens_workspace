@@ -112,6 +112,10 @@ lens_galaxy = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
@@ -126,7 +130,7 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 """
 By plotting the image of the tracer, we confirm it looks identical to the simulated dataset but does not have

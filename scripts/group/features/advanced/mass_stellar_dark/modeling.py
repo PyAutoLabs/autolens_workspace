@@ -5,7 +5,8 @@ Modeling Features: Group Mass Stellar Dark
 A group-scale strong lens where each main lens galaxy carries a decomposed mass model: a stellar component
 tied to the galaxy's own light via a mass-to-light ratio, plus a separately-parameterized dark matter halo.
 The total lens-plane deflection is the sum, over every main lens galaxy, of stellar + dark contributions,
-plus a single external shear attached to `lens_0` representing the group-wide shear field.
+plus a single external shear, held in an `al.MassField` in the model's `fields` collection, representing the
+group-wide shear field.
 
 This script fits a group lens model where each main lens galaxy is decomposed into stellar + dark components.
 Per-galaxy decomposition is the standard tool for studying mass-to-light variation across a group environment.
@@ -52,7 +53,7 @@ This script fits an `Imaging` dataset of a 'group-scale' strong lens with a mode
 
  - Each main lens galaxy's light and stellar mass is a linear `Sersic` [7 parameters per galaxy].
  - Each main lens galaxy's dark matter mass distribution is a `NFWSph` aligned with that galaxy's bulge centre.
- - The first main lens galaxy additionally carries an `ExternalShear` [2 parameters].
+ - Beside the galaxies, one `ExternalShear` in an `al.MassField` [2 parameters].
  - The source galaxy's light is a Multi Gaussian Expansion.
 
 For two main lens galaxies, the lens-plane carries (7 + 4) * 2 = 22 free parameters, plus 2 for the shear,
@@ -168,7 +169,7 @@ We compose a lens model where:
  - Each main lens galaxy's light and stellar mass is a linear `Sersic` [7 parameters per galaxy].
  - Each main lens galaxy's dark matter mass distribution is a `NFWSph` whose centre is fixed to the bulge
    centre (i.e. that galaxy's `main_lens_centres` entry) [3 parameters per galaxy].
- - The first main lens galaxy additionally carries an `ExternalShear` [2 parameters].
+ - Beside the galaxies, one `ExternalShear` in an `al.MassField` [2 parameters].
  - The source galaxy's light is a Multi Gaussian Expansion.
 
 The bulge and dark centres are fixed (no priors) because the centres are determined externally (e.g. by the
@@ -180,8 +181,9 @@ For group-scale lenses, we compose the lens-plane model via a `for i, centre in 
 loop. Each main lens galaxy is created in a loop and stored in a dictionary as `lens_0`, `lens_1`, etc. This
 API scales naturally to groups with any number of main lens galaxies.
 
-Only the first lens galaxy (`lens_0`) carries an `ExternalShear`, as the group system has one overall external
-shear.
+The group system has one overall external shear. It is a property of the system rather than of any galaxy, so
+it is held in an `al.MassField` — a container like a `Galaxy` (a redshift plus a bag of mass profiles) which
+carries no light — placed in the model's own `fields` collection beside `galaxies`.
 """
 # Main Lens Galaxies:
 
@@ -196,10 +198,11 @@ for i, centre in enumerate(main_lens_centres):
 
     galaxy_kwargs = dict(redshift=0.5, bulge=bulge, dark=dark)
 
-    if i == 0:
-        galaxy_kwargs["shear"] = af.Model(al.mp.ExternalShear)
-
     lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, **galaxy_kwargs)
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Source:
 
@@ -214,7 +217,10 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 
 # Overall Model:
 
-model = af.Collection(galaxies=af.Collection(**lens_dict, source=source))
+model = af.Collection(
+    galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 The `info` attribute shows the model in a readable format (if this does not display clearly on your screen

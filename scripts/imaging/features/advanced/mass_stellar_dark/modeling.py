@@ -170,7 +170,7 @@ We compose a lens model where:
  - The lens galaxy's dark matter mass distribution is a `NFW` whose centre is aligned with the 
  `Sersic` bulge of the light and stellar mass model above [5 parameters].
 
- - The lens mass model also includes an `ExternalShear` [2 parameters].
+ - The system's external shear is an `ExternalShear` held in a `MassField` [2 parameters].
 
  - The source galaxy's light is a Multi Gaussian Expansion [4 parameters].
 
@@ -192,9 +192,11 @@ https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 bulge = af.Model(al.lmp.Sersic)
 dark = af.Model(al.mp.NFW)
 bulge.centre = dark.centre
-shear = af.Model(al.mp.ExternalShear)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, dark=dark)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, dark=dark, shear=shear)
+# External Shear:
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Source:
 
@@ -209,7 +211,10 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to

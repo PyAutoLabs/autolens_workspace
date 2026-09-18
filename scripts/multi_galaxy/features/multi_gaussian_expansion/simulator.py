@@ -194,9 +194,10 @@ main_lens_galaxies = [lens_0, lens_1]
 """
 __External Shear__
 
-Held in its own galaxy at the system centre (0.0", 0.0"), for the reasons given in `multi_galaxy/simulator.py`.
+Held in an `al.MassField` at the system centre (0.0", 0.0"), for the reasons given in
+`multi_galaxy/simulator.py`.
 """
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -224,7 +225,7 @@ __Ray Tracing__
 Both deflectors are at the same redshift, so this is single-plane ray tracing — their deflection fields, and the
 shear's, simply add.
 """
-tracer = al.Tracer(galaxies=main_lens_galaxies + [shear_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=main_lens_galaxies + [source_galaxy], fields=[field])
 
 """
 Lets look at the tracer`s image, this is the image we'll be simulating.

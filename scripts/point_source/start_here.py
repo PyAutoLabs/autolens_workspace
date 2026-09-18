@@ -194,8 +194,12 @@ To perform lens modeling we must define a lens model, describing the mass profil
 galaxy and point source model of the source galaxy.
 
 A brilliant lens model to start with is one which uses a Singular Isothermal
-Ellipsoid (SIE) plus shear to model the lens mass and simply assumes the source is
-a point source. The source is composed as `al.ps.PointSolved`, which has no free
+Ellipsoid (SIE) to model the lens mass and simply assumes the source is
+a point source. Unlike the imaging examples, no external shear is fitted: a quadruply
+imaged point source gives only 8 data points, which cannot constrain an `Isothermal`
+plus an `ExternalShear` (9 parameters). Where a shear *is* fitted it is an
+`ExternalShear` held in an `al.MassField` in the model's own `fields=` collection,
+never attached to the lens galaxy (see `imaging/modeling.py`). The source is composed as `al.ps.PointSolved`, which has no free
 parameters at all: its source-plane (y,x) centre is solved for analytically at every
 likelihood evaluation, rather than sampled as two free parameters. This is the
 recommended default — it shrinks parameter space and makes the likelihood much
@@ -475,7 +479,9 @@ grid = al.Grid2D.uniform(
 We now define a `Tracer` — this is the key object that combines all galaxies in the system
 and computes how light rays are deflected.
 
-- The lens galaxy has both light (a Sersic bulge) and mass (an isothermal profile + shear).
+- The lens galaxy has both light (a Sersic bulge) and mass (an isothermal profile).
+- The system's external shear is an `ExternalShear` held in an `al.MassField`, passed to the
+  tracer via its own `fields=` argument rather than attached to a galaxy.
 - The source galaxy has its own light (a SersicCore profile).
 
 Together they define a strong lens system. The tracer will “ray-trace” our grid through
@@ -490,6 +496,10 @@ lens_galaxy = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
@@ -505,7 +515,7 @@ source_galaxy = al.Galaxy(
     point_0=al.ps.PointFlux(centre=source_centre, flux=1.0),
 )
 
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 """
 Plotting the tracer’s image gives us a “perfect” view of the strong lens system, before

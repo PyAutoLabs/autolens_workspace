@@ -278,9 +278,7 @@ bulge = al.model_util.mge_model_from(
 
 mass = af.Model(al.mp.Isothermal)
 
-shear = af.Model(al.mp.ExternalShear)
-
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
 # Source:
 
@@ -296,8 +294,12 @@ dataset_model = af.Model(al.DatasetModel)
 
 # Overall Lens Model:
 
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
 model = af.Collection(
-    dataset_model=dataset_model, galaxies=af.Collection(lens=lens, source=source)
+    dataset_model=dataset_model,
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
 )
 
 """

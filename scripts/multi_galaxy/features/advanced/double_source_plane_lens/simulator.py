@@ -152,7 +152,7 @@ main_lens_galaxies = [lens_0, lens_1]
 """
 __External Shear__
 """
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -205,7 +205,7 @@ The tracer holds galaxies at three redshifts. PyAutoLens orders them internally,
 `multi_galaxy/simulator.py`'s tracer has two planes; this one has three, and that is the whole structural
 difference.
 """
-tracer = al.Tracer(galaxies=main_lens_galaxies + [shear_galaxy, source_0, source_1])
+tracer = al.Tracer(galaxies=main_lens_galaxies + [source_0, source_1], fields=[field])
 
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 

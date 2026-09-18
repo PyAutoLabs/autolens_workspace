@@ -255,12 +255,16 @@ lens = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
 source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-tracer = al.Tracer(galaxies=[lens, source])
+tracer = al.Tracer(galaxies=[lens, source], fields=[field])
 
 fit = al.FitInterferometer(
     dataset=dataset,
@@ -483,7 +487,8 @@ tracer = al.Tracer(
     galaxies=[
         lens,
         al.Galaxy(redshift=source.redshift),
-    ]
+    ],
+    fields=[field],
 )
 
 """

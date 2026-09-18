@@ -30,7 +30,8 @@ Using a SOURCE LP PIPELINE and SOURCE PIX PIPELINE, this DSPL SLaM modeling scri
 double source-plane lens (DSPL) where in the final model:
 
  - The lens galaxy's light is a bulge with MGE light profile.
- - The lens galaxy's total mass distribution is an `Isothermal` plus an `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an `ExternalShear` held in
+   a `MassField`.
  - The first source galaxy's light is a `Pixelization` and its mass is an `Isothermal`.
  - The second source galaxy's light is a `Pixelization`.
 
@@ -52,12 +53,13 @@ import autolens.plot as aplt
 __SOURCE LP PIPELINE 1__
 
 The first SOURCE LP PIPELINE search initializes a model where `source_1` is ignored and only the lens galaxy and
-`source_0` are fit. This single-plane fit provides robust initial priors for the lens light, lens mass, shear and
+`source_0` are fit. This single-plane fit provides robust initial priors for the lens light, lens mass, the shear
+field and
 `source_0` light before the more complex DSPL model is introduced.
 
 The model:
  - Lens light: MGE with 2 x 20 Gaussians.
- - Lens mass: `Isothermal` + `ExternalShear`.
+ - Lens mass: `Isothermal`, with the external shear an `ExternalShear` in a `MassField`.
  - `source_0` light: MGE with 1 x 20 Gaussians.
 """
 
@@ -93,12 +95,18 @@ def source_lp_1(
                 redshift=redshift_lens,
                 bulge=lens_bulge,
                 mass=af.Model(al.mp.Isothermal),
-                shear=af.Model(al.mp.ExternalShear),
             ),
             source_0=af.Model(
                 al.Galaxy,
                 redshift=redshift_source_0,
                 bulge=source_0_bulge,
+            ),
+        ),
+        fields=af.Collection(
+            field=af.Model(
+                al.MassField,
+                redshift=redshift_lens,
+                shear=af.Model(al.mp.ExternalShear),
             ),
         ),
     )
@@ -116,7 +124,7 @@ def source_lp_1(
 """
 __SOURCE LP PIPELINE 2__
 
-The second SOURCE LP PIPELINE search introduces the second source galaxy. The lens bulge / mass / shear and
+The second SOURCE LP PIPELINE search introduces the second source galaxy. The lens bulge / mass, the shear field and
 `source_0` light are fixed to the instance values from search 1, and we free:
 
  - `source_0`'s mass: `Isothermal` with a prior tightly centred on the origin (the first source typically sits
@@ -166,7 +174,6 @@ def source_lp_2(
                 redshift=source_lp_result_1.instance.galaxies.lens.redshift,
                 bulge=source_lp_result_1.instance.galaxies.lens.bulge,
                 mass=source_lp_result_1.instance.galaxies.lens.mass,
-                shear=source_lp_result_1.instance.galaxies.lens.shear,
             ),
             source_0=af.Model(
                 al.Galaxy,
@@ -180,6 +187,7 @@ def source_lp_2(
                 bulge=source_1_bulge,
             ),
         ),
+        fields=source_lp_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -252,7 +260,7 @@ def source_pix_1_source_0(
         mass_result=source_lp_result_2.model.galaxies.lens.mass,
         unfix_mass_centre=True,
     )
-    shear = source_lp_result_2.model.galaxies.lens.shear
+    fields = source_lp_result_2.model.fields
 
     model = af.Collection(
         galaxies=af.Collection(
@@ -261,7 +269,6 @@ def source_pix_1_source_0(
                 redshift=source_lp_result_2.instance.galaxies.lens.redshift,
                 bulge=source_lp_result_2.instance.galaxies.lens.bulge,
                 mass=mass,
-                shear=shear,
             ),
             source_0=af.Model(
                 al.Galaxy,
@@ -277,6 +284,7 @@ def source_pix_1_source_0(
                 redshift=redshift_source_1,
             ),
         ),
+        fields=fields,
     )
 
     search = af.Nautilus(
@@ -377,7 +385,6 @@ def source_pix_1_source_1(
                 redshift=source_lp_result_2.instance.galaxies.lens.redshift,
                 bulge=source_lp_result_2.instance.galaxies.lens.bulge,
                 mass=source_pix_result_1_source_0.instance.galaxies.lens.mass,
-                shear=source_pix_result_1_source_0.instance.galaxies.lens.shear,
             ),
             source_0=af.Model(
                 al.Galaxy,
@@ -394,6 +401,7 @@ def source_pix_1_source_1(
                 ),
             ),
         ),
+        fields=source_pix_result_1_source_0.instance.fields,
     )
 
     search = af.Nautilus(
@@ -410,7 +418,7 @@ def source_pix_1_source_1(
 __SOURCE PIX PIPELINE 2__
 
 The final SOURCE PIX PIPELINE search fits both source galaxies simultaneously with adaptive pixelizations.
-Lens mass, shear and `source_0`'s mass are all fixed to the maximum-likelihood instances of the previous
+Lens mass, the shear field and `source_0`'s mass are all fixed to the maximum-likelihood instances of the previous
 pixelized searches; only the pixelization regularization parameters are free.
 
 The `RectangularBilinearAdaptImage` (or equivalent) mesh uses the high-quality adapt images built up over the earlier
@@ -472,7 +480,6 @@ def source_pix_2(
                 redshift=source_lp_result_2.instance.galaxies.lens.redshift,
                 bulge=source_lp_result_2.instance.galaxies.lens.bulge,
                 mass=source_pix_result_1_source_1.instance.galaxies.lens.mass,
-                shear=source_pix_result_1_source_1.instance.galaxies.lens.shear,
             ),
             source_0=af.Model(
                 al.Galaxy,
@@ -494,6 +501,7 @@ def source_pix_2(
                 ),
             ),
         ),
+        fields=source_pix_result_1_source_1.instance.fields,
     )
 
     search = af.Nautilus(

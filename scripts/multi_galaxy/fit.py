@@ -222,8 +222,8 @@ sits at the likelihood's maximum. Note the small light/mass centre offsets on ea
 J1011+0143-style science this regime measures.
 
 Note also that the `ExternalShear` is **not** attached to either galaxy. It describes the tidal field of structure
-outside the system, so it is a property of the system as a whole, and we hold it in its own galaxy at the system
-centre (0.0", 0.0") — exactly as the simulator does. Because the tracer sums every deflection field, this is
+outside the system, so it is a property of the system as a whole, and we hold it in an `al.MassField` at the
+system centre (0.0", 0.0") — exactly as the simulator does. Because the tracer sums every deflection field, this is
 numerically identical to attaching it to a deflector; it just stops the shear being mislabelled as a property of
 `lens_0`.
 """
@@ -270,7 +270,7 @@ source = al.Galaxy(
     ),
 )
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -309,7 +309,7 @@ loaded above. It therefore produces a tracer whose image looks exactly like the 
 The tracer sums the two deflectors' deflection fields internally, so from here on nothing about the API depends on
 there being two of them.
 """
-tracer = al.Tracer(galaxies=[lens_0, lens_1, shear_galaxy, source])
+tracer = al.Tracer(galaxies=[lens_0, lens_1, source], fields=[field])
 
 """
 Because the tracer's light and mass profiles are the same used to make the dataset, its image is nearly the same as
@@ -393,7 +393,7 @@ lens_0_bad = al.Galaxy(
     ),
 )
 
-tracer_bad = al.Tracer(galaxies=[lens_0_bad, lens_1, shear_galaxy, source])
+tracer_bad = al.Tracer(galaxies=[lens_0_bad, lens_1, source], fields=[field])
 
 """
 A new fit using this tracer shows residuals, normalized residuals and chi-squared which are non-zero.

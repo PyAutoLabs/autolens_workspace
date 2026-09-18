@@ -81,7 +81,8 @@ __SOURCE LP PIPELINE__
 Fits mass + source directly. Because no galaxy has light, there is no need for a light-only stage
 (`source_lp_0` in the standard group SLaM). We go straight to fitting mass and source simultaneously.
 
-Multiple main-lens galaxies each get an `Isothermal` mass; only `lens_0` carries an `ExternalShear`.
+Multiple main-lens galaxies each get an `Isothermal` mass; the group's one `ExternalShear` is an
+`al.MassField` in the model's `fields` collection.
 Extra galaxies get tidally truncated `dPIEMassSph` profiles (the group/cluster convention) with a
 free `sigma` and fixed truncation.
 """
@@ -117,8 +118,13 @@ def source_lp(
             al.Galaxy,
             redshift=redshift_lens,
             mass=mass,
-            shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
         )
+
+    # External Shear (an `al.MassField`, in its own `fields` collection below):
+
+    field = af.Model(
+        al.MassField, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
+    )
 
     # --- extra galaxy mass models (no light) ---
     extra_mass_models = []
@@ -141,6 +147,7 @@ def source_lp(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=af.Collection(field=field),
         extra_galaxies=extra_galaxies,
     )
 
@@ -250,7 +257,6 @@ def source_pix_1(
             al.Galaxy,
             redshift=lp_lens_instance.redshift,
             mass=mass,
-            shear=lp_lens_model.shear,
         )
 
     source = af.Model(
@@ -267,6 +273,7 @@ def source_pix_1(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_lp_result.model.fields,
         extra_galaxies=source_lp_result.model.extra_galaxies,
     )
 
@@ -388,7 +395,6 @@ def source_pix_2(
             al.Galaxy,
             redshift=pix1_lens_instance.redshift,
             mass=pix1_lens_instance.mass,
-            shear=pix1_lens_instance.shear,
         )
 
     source = af.Model(
@@ -405,6 +411,7 @@ def source_pix_2(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_pix_result_1.instance.fields,
         extra_galaxies=source_pix_result_1.instance.extra_galaxies,
     )
 
@@ -495,11 +502,11 @@ def mass_total(
             al.Galaxy,
             redshift=lens_model.redshift,
             mass=mass,
-            shear=lens_model.shear,
         )
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_pix_result_1.model.fields,
         extra_galaxies=extra_galaxies,
     )
 

@@ -152,7 +152,7 @@ positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.
 __Model Composition__
 
 The standard multi-galaxy composition from `multi_galaxy/modeling.py` — one `lens_i` per deflector in a loop, the
-shear in its own `shear_galaxy` — plus one component that is not a galaxy at all.
+shear in its own `MassField` — plus one component that is not a galaxy at all.
 
 The sky is a property of the **dataset**, not of anything in the lens, so it is composed as a `DatasetModel`
 rather than added to a galaxy. It is passed to the analysis alongside the model.
@@ -187,8 +187,8 @@ for i, centre in enumerate(main_lens_centres):
 
 # External Shear:
 
-shear_galaxy = af.Model(
-    al.Galaxy,
+field = af.Model(
+    al.MassField,
     redshift=0.5,
     shear=af.Model(al.mp.ExternalShear),
 )
@@ -212,8 +212,9 @@ dataset_model.background_sky_level = af.UniformPrior(lower_limit=0.0, upper_limi
 # Overall Lens Model:
 
 model = af.Collection(
-    galaxies=af.Collection(**lens_dict, shear_galaxy=shear_galaxy, source=source),
+    galaxies=af.Collection(**lens_dict, source=source),
     dataset_model=dataset_model,
+    fields=af.Collection(field=field),
 )
 
 """

@@ -6,7 +6,8 @@ This script fits a multiple `Imaging` datasets observed at the same wavelength o
 model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The source galaxy's light is an MGE.
 
 This script demonstrates how PyAutoLens's multi-dataset modeling tools can also simultaneously analyse datasets
@@ -125,7 +126,8 @@ __Model__
 
 We compose a lens model where:
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField` [7 parameters].
 
  - The source galaxy's light is an MGE with 1 x 20 Gaussians [4 parameters].
 
@@ -134,9 +136,7 @@ The number of free parameters and therefore the dimensionality of non-linear par
 # Lens:
 
 mass = af.Model(al.mp.Isothermal)
-shear = af.Model(al.mp.ExternalShear)
-
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source:
 
@@ -151,7 +151,12 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 We now combine them using the factor analysis class, which allows us to fit the two datasets simultaneously.

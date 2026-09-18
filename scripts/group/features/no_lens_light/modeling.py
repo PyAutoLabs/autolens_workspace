@@ -40,7 +40,8 @@ __Model__
 
 This script fits an `Imaging` dataset of a 'group-scale' strong lens where:
 
- - There is a main lens galaxy whose total mass distribution is an `Isothermal` and `ExternalShear` — no light.
+ - There is a main lens galaxy whose total mass distribution is an `Isothermal` — no light — and the group's
+   external shear is an `ExternalShear` held in an `al.MassField`.
  - There are two extra lens galaxies whose total mass distributions are tidally truncated `dPIEMassSph` models — no light.
  - The source galaxy's light is a Multi Gaussian Expansion.
 
@@ -126,7 +127,8 @@ __Model__
 
 We compose a lens model where all galaxies have mass only — no light profiles:
 
- - The main lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The main lens galaxy's total mass distribution is an `Isothermal`; the group's external shear is an
+   `ExternalShear` held in a `MassField` [7 parameters].
 
  - There are two extra lens galaxies with tidally truncated `dPIEMassSph` total mass distributions, with centres fixed to
    the observed centres and bounded Einstein radii [2 parameters].
@@ -155,10 +157,13 @@ for i, centre in enumerate(main_lens_centres):
         al.Galaxy,
         redshift=0.5,
         mass=mass,
-        shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
 
     lens_dict[f"lens_{i}"] = lens
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Extra Galaxies (mass only):
 
@@ -198,6 +203,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
     extra_galaxies=extra_galaxies,
 )
 

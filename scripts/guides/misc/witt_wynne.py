@@ -863,9 +863,11 @@ def _lens_plane_mass_profile_list_from(tracer) -> list:
     Every mass profile of the **lens plane** (``tracer.planes[0]``), in order.
 
     Selection is restricted to the first plane because a mass profile or an ``ExternalShear``
-    attached to the *source* galaxy is not part of the lens this projection describes: taken
+    belonging to the *source* plane is not part of the lens this projection describes: taken
     tracer-wide it would be eligible for the vector sum's ``ell_comps`` and would be reported as
-    the lens's mass profile.
+    the lens's mass profile. A plane merges the galaxies **and** the ``MassField``s at its
+    redshift, so an external shear held in a ``fields`` entry is picked up here exactly as a
+    galaxy-attached one was.
     """
     if not tracer.planes:
         return []
@@ -1273,10 +1275,17 @@ def tracer_from(axis_ratio: float, angle: float, gamma: float, gamma_angle: floa
             ell_comps=ag.convert.ell_comps_from(axis_ratio=axis_ratio, angle=angle),
             einstein_radius=1.2,
         ),
-        shear=al.mp.ExternalShear(gamma_1=gamma_1, gamma_2=gamma_2),
     )
 
-    return al.Tracer(galaxies=[lens, al.Galaxy(redshift=z_source)], cosmology=cosmology)
+    field = al.MassField(
+        redshift=z_lens, shear=al.mp.ExternalShear(gamma_1=gamma_1, gamma_2=gamma_2)
+    )
+
+    return al.Tracer(
+        galaxies=[lens, al.Galaxy(redshift=z_source)],
+        fields=[field],
+        cosmology=cosmology,
+    )
 
 
 def caustic_of(tracer, grid) -> np.ndarray:
@@ -1678,18 +1687,22 @@ mass = al.mp.Isothermal(
 gamma_1, gamma_2 = ag.convert.shear_gamma_1_2_from(magnitude=0.05, angle=70.0)
 shear = al.mp.ExternalShear(gamma_1=gamma_1, gamma_2=gamma_2)
 
+field = al.MassField(redshift=z_lens, shear=shear)
+
 tracer_light_free = al.Tracer(
     galaxies=[
-        al.Galaxy(redshift=z_lens, mass=mass, shear=shear),
+        al.Galaxy(redshift=z_lens, mass=mass),
         al.Galaxy(redshift=z_source),
     ],
+    fields=[field],
     cosmology=cosmology,
 )
 tracer_with_light = al.Tracer(
     galaxies=[
-        al.Galaxy(redshift=z_lens, bulge=mge_light, mass=mass, shear=shear),
+        al.Galaxy(redshift=z_lens, bulge=mge_light, mass=mass),
         al.Galaxy(redshift=z_source),
     ],
+    fields=[field],
     cosmology=cosmology,
 )
 

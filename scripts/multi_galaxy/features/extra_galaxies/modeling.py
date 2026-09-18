@@ -53,7 +53,7 @@ This script fits `Imaging` of a multi-galaxy strong lens with a model where:
 
  - Each of the two co-dominant deflectors has an MGE bulge and an `Isothermal` mass with its centre fixed to the
    observed position.
- - An `ExternalShear` is carried by a single shear galaxy.
+ - An `ExternalShear` is carried by a single `MassField` in the model's `fields` collection.
  - The source is an MGE.
  - Each extra galaxy has an `ExponentialSph` light profile and an `IsothermalSph` mass, centres fixed
    [2 extra galaxies x (2 light + 1 mass) parameters].
@@ -180,7 +180,7 @@ fit with the extra galaxies noise-scaled and omitted from the model, and compare
 __Model__
 
 The co-dominant tier, exactly as in `multi_galaxy/modeling.py`: one MGE bulge and one `Isothermal` mass per
-deflector, composed in a loop over `main_lens_centres`, with a single shear galaxy carrying the external shear
+deflector, composed in a loop over `main_lens_centres`, with a single `MassField` carrying the external shear
 (giving one to each deflector would be redundant and degenerate).
 """
 # Main Lens Galaxies:
@@ -209,8 +209,8 @@ for i, centre in enumerate(main_lens_centres):
 
 # External Shear:
 
-shear_galaxy = af.Model(
-    al.Galaxy,
+field = af.Model(
+    al.MassField,
     redshift=0.5,
     shear=af.Model(al.mp.ExternalShear),
 )
@@ -282,13 +282,14 @@ extra_galaxies = af.Collection(extra_galaxies_list)
 # Overall Lens Model:
 
 model = af.Collection(
-    galaxies=af.Collection(**lens_dict, shear_galaxy=shear_galaxy, source=source),
+    galaxies=af.Collection(**lens_dict, source=source),
     extra_galaxies=extra_galaxies,
+    fields=af.Collection(field=field),
 )
 
 """
 The `info` attribute confirms all three parts: the `lens_0` / `lens_1` co-dominant tier each with free mass, the
-shear galaxy, and the `extra_galaxies` tier with fixed centres.
+shear `MassField` listed under `fields`, and the `extra_galaxies` tier with fixed centres.
 """
 print(model.info)
 

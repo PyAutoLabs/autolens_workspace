@@ -5,7 +5,8 @@ Modeling: Pixelized
 This script fits a multi-wavelength `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The source galaxy's surface-brightness is an `Inversion`.
 
 Two images are fitted, corresponding to a greener ('g' band) redder image (`r` band).
@@ -169,16 +170,15 @@ __Model__
 
 We compose a lens model where:
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField` [7 parameters].
 
  - This pixelization is regularized using a `Constant` scheme which smooths every source pixel 
  equally, where its `regularization_coefficient` varies across the datasets [2 parameter]. 
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=9.
 """
-lens = af.Model(
-    al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
-)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
 
 pixelization = af.Model(
     al.Pixelization,
@@ -188,7 +188,12 @@ pixelization = af.Model(
 
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 We now combine them using the factor analysis class, which allows us to fit the two datasets simultaneously.

@@ -148,7 +148,7 @@ lens_1 = al.Galaxy(
     dark=al.mp.NFWSph(centre=(-0.35, -0.25), kappa_s=0.06, scale_radius=15.0),
 )
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -195,7 +195,7 @@ deflections_1_dark = np.asarray(
     lens_1.dark.deflections_yx_2d_from(grid=masked_dataset.grid)
 )
 deflections_shear = np.asarray(
-    shear_galaxy.shear.deflections_yx_2d_from(grid=masked_dataset.grid)
+    field.shear.deflections_yx_2d_from(grid=masked_dataset.grid)
 )
 
 deflections_total = (
@@ -225,7 +225,7 @@ __Ray Tracing__
 
 Trace the image-plane grid to the source plane by subtracting the total deflection.
 """
-tracer = al.Tracer(galaxies=[lens_0, lens_1, shear_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_0, lens_1, source_galaxy], fields=[field])
 
 traced_grid = tracer.traced_grid_2d_list_from(grid=masked_dataset.grid)[-1]
 

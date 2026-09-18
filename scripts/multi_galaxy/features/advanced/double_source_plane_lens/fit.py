@@ -184,7 +184,7 @@ lens_galaxies = [
     for bulge, mass in zip(lens_bulge_list, lens_masses)
 ]
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -206,7 +206,7 @@ __Tracer__
 PyAutoLens orders galaxies by redshift internally, so passing them in any order produces the same three-plane
 chain: z=0.5, z=1.0, z=2.0.
 """
-tracer = al.Tracer(galaxies=lens_galaxies + [shear_galaxy, source_0, source_1])
+tracer = al.Tracer(galaxies=lens_galaxies + [source_0, source_1], fields=[field])
 
 """
 __Fit__

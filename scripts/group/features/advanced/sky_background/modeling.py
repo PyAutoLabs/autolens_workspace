@@ -31,7 +31,8 @@ This script fits an ``Imaging`` dataset of a 'group-scale' strong lens where:
 
  - The sky background is included as a ``DatasetModel`` with a free ``background_sky_level`` parameter.
  - Each main lens galaxy's light is an MGE bulge.
- - The first main lens galaxy's total mass distribution is an ``Isothermal`` and ``ExternalShear``.
+ - Each main lens galaxy's total mass distribution is an ``Isothermal``; the group's external shear is an
+   ``ExternalShear`` held in an ``al.MassField``.
  - There are two extra lens galaxies with MGE light and tidally truncated ``dPIEMassSph`` total mass distributions.
  - The source galaxy's light is an MGE.
 
@@ -139,7 +140,7 @@ We compose a group lens model that includes a sky background component:
    This is not part of the ``galaxies`` collection but is a separate model component.
 
  - The main lens galaxies use MGE light profiles and isothermal mass profiles. Only the first main lens
-   galaxy carries an ``ExternalShear``.
+   galaxies, with the group's one ``ExternalShear`` held in an ``al.MassField`` in ``fields``.
 
  - The extra galaxies use MGE light profiles with fixed centres and truncated dPIE mass profiles.
 
@@ -168,10 +169,13 @@ for i, centre in enumerate(main_lens_centres):
         redshift=0.5,
         bulge=bulge,
         mass=mass,
-        shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
 
     lens_dict[f"lens_{i}"] = lens
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Extra Galaxies:
 
@@ -230,6 +234,7 @@ dataset_model.background_sky_level = af.UniformPrior(lower_limit=0.0, upper_limi
 model = af.Collection(
     dataset_model=dataset_model,
     galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
     extra_galaxies=extra_galaxies,
 )
 

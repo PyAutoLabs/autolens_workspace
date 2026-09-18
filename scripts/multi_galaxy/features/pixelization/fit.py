@@ -139,8 +139,8 @@ __Main Lens Galaxies__
 The two co-dominant deflectors, each with its own light and mass profile, as in `multi_galaxy/fit.py`. Their
 light uses linear profiles, so their intensities are solved rather than input.
 
-The system's `ExternalShear` is held in its own `shear_galaxy` at the system centre, rather than attached to
-either deflector.
+The system's `ExternalShear` is held in an `al.MassField`, passed to the tracer via its `fields` argument
+rather than attached to either deflector.
 """
 lens_0 = al.Galaxy(
     redshift=0.5,
@@ -172,7 +172,7 @@ lens_1 = al.Galaxy(
     ),
 )
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -183,7 +183,7 @@ __Fit__
 Create a `Tracer` from the galaxies and fit the dataset with it. Both deflectors are at the same redshift, so
 their deflection fields are summed and ray tracing is single-plane.
 """
-tracer = al.Tracer(galaxies=[lens_0, lens_1, shear_galaxy, source])
+tracer = al.Tracer(galaxies=[lens_0, lens_1, source], fields=[field])
 
 fit = al.FitImaging(dataset=dataset, tracer=tracer)
 

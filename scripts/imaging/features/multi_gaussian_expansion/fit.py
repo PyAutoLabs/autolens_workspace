@@ -89,7 +89,7 @@ __Model__
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's bulge is a super position of 60 `Gaussian` profiles.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`.
  - The source galaxy's light is a Multi Gaussian Expansion.
 
 __Start Here Notebook__

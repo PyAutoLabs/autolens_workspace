@@ -12,7 +12,7 @@ The two searches break down as follows:
     photometric properties of each galaxy's bulge with a relatively small parameter space.
 
  2) Reintroduces the stellar-mass coupling by swapping each galaxy's bulge to a `lmp.Sersic` (a light+mass
-    profile), adds an `NFWSph` dark matter halo per galaxy, and adds an `ExternalShear` on `lens_0`. Priors on
+    profile), adds an `NFWSph` dark matter halo per galaxy, and adds an `ExternalShear` in a `MassField`. Priors on
     the bulge geometry (centre, ell_comps, intensity, effective_radius, sersic_index) are passed from search
     1, leaving only the `mass_to_light_ratio` and the dark halo parameters as new free parameters in search 2.
 
@@ -190,7 +190,7 @@ Search 2 reintroduces the stellar-mass coupling. For each main lens galaxy:
    `effective_radius`, `sersic_index` all transfer because they share the same names between `lp.Sersic` and
    `lmp.Sersic`. The new parameter introduced by the swap is `mass_to_light_ratio`.
  - Add an `NFWSph` dark matter halo with `centre` fixed to the bulge centre.
- - Add an `ExternalShear` on `lens_0` only.
+ - Add one `ExternalShear`, held in an `al.MassField` in the model's `fields` collection.
 
 The source MGE bulge is fixed to its `result_1.instance` value — search 2 does not re-optimise the source
 geometry, only the lens-plane mass.
@@ -207,16 +207,20 @@ for i, centre in enumerate(main_lens_centres):
 
     galaxy_kwargs = dict(redshift=0.5, bulge=bulge, dark=dark)
 
-    if i == 0:
-        galaxy_kwargs["shear"] = af.Model(al.mp.ExternalShear)
-
     lens_dict_2[f"lens_{i}"] = af.Model(al.Galaxy, **galaxy_kwargs)
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 source_2 = af.Model(
     al.Galaxy, redshift=1.0, bulge=result_1.instance.galaxies.source.bulge
 )
 
-model_2 = af.Collection(galaxies=af.Collection(**lens_dict_2, source=source_2))
+model_2 = af.Collection(
+    galaxies=af.Collection(**lens_dict_2, source=source_2),
+    fields=af.Collection(field=field),
+)
 
 print(model_2.info)
 

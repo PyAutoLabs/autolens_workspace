@@ -68,7 +68,8 @@ Using a SOURCE LP PIPELINE, SOURCE PIX PIPELINE, LIGHT LP PIPELINE and TOTAL MAS
 script  fits `Imaging` dataset  of a strong lens system where in the final model:
 
  - The lens galaxy's light is a bulge with Multiple Gaussian Expansion (MGE) light profile.
- - The lens galaxy's total mass distribution is an `PowerLaw` plus an `ExternalShear`.
+ - The lens galaxy's total mass distribution is a `PowerLaw`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The source galaxy's light is a `Pixelization`.
  - Two extra galaxies are included in the model, each with their mass as a `IsothermalSph` profile.
 
@@ -131,7 +132,6 @@ def source_lp(
                 bulge=None,
                 disk=None,
                 mass=af.Model(al.mp.Isothermal),
-                shear=af.Model(al.mp.ExternalShear),
             ),
             source=af.Model(
                 al.Galaxy,
@@ -140,6 +140,13 @@ def source_lp(
             ),
         ),
         extra_galaxies=extra_galaxies,
+        fields=af.Collection(
+            field=af.Model(
+                al.MassField,
+                redshift=redshift_lens,
+                shear=af.Model(al.mp.ExternalShear),
+            )
+        ),
     )
 
     search = af.Nautilus(
@@ -238,7 +245,6 @@ def source_pix_1(
                 bulge=None,
                 disk=None,
                 mass=mass,
-                shear=source_lp_result.model.galaxies.lens.shear,
             ),
             source=af.Model(
                 al.Galaxy,
@@ -251,6 +257,7 @@ def source_pix_1(
             ),
         ),
         extra_galaxies=extra_galaxies,
+        fields=source_lp_result.model.fields,
     )
 
     search = af.Nautilus(
@@ -326,7 +333,6 @@ def source_pix_2(
                 bulge=None,
                 disk=None,
                 mass=source_pix_result_1.instance.galaxies.lens.mass,
-                shear=source_pix_result_1.instance.galaxies.lens.shear,
             ),
             source=af.Model(
                 al.Galaxy,
@@ -339,6 +345,7 @@ def source_pix_2(
             ),
         ),
         extra_galaxies=source_pix_result_1.instance.extra_galaxies,
+        fields=source_pix_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -425,11 +432,11 @@ def mass_total(
                 bulge=None,
                 disk=None,
                 mass=mass,
-                shear=source_pix_result_1.model.galaxies.lens.shear,
             ),
             source=source,
         ),
         extra_galaxies=source_pix_result_1.model.extra_galaxies,
+        fields=source_pix_result_1.model.fields,
     )
 
     search = af.Nautilus(

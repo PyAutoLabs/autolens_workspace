@@ -171,10 +171,10 @@ main_lens_galaxies = [lens_0, lens_1]
 """
 __External Shear__
 
-The system's overall shear, in its own galaxy at the system centre rather than attached to either deflector, as
-`multi_galaxy/simulator.py` explains.
+The system's overall shear, held in an `al.MassField` at the system centre rather than attached to either
+deflector, as `multi_galaxy/simulator.py` explains.
 """
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -202,7 +202,7 @@ __Ray Tracing__
 Both deflectors are at the same redshift, so this is single-plane tracing and their deflection fields simply add.
 The point sources contribute light only — they carry no mass of their own.
 """
-tracer = al.Tracer(galaxies=main_lens_galaxies + [shear_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=main_lens_galaxies + [source_galaxy], fields=[field])
 
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 

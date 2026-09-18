@@ -288,7 +288,8 @@ __Model__
 
 We compose a lens model where:
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an `ExternalShear`
+   held in an `al.MassField` [7 parameters].
 
  - The source galaxy's light is a `SersicCore` [7 parameters].
 
@@ -297,9 +298,12 @@ The number of free parameters and therefore the dimensionality of non-linear par
 # Lens:
 
 mass = af.Model(al.mp.Isothermal)
-shear = af.Model(al.mp.ExternalShear)
 
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Source:
 
@@ -307,7 +311,10 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 __Analysis__

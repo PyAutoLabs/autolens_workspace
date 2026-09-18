@@ -21,7 +21,7 @@ MGE light profiles are constructed via `al.model_util.mge_model_from`.
 __Group-Specific Differences From Standard SLaM__
 
  - The lens-plane (z=0.5) is composed via the group `lens_dict` convention: one `af.Model(al.Galaxy)` entry per
-   main lens galaxy centre, with the `ExternalShear` attached only to `lens_0`.
+   main lens galaxy centre, with the `ExternalShear` held in an `al.MassField` in `fields`.
  - Each pipeline iterates over the main lens galaxies via `lens_{i}` keys rather than referencing a single
    `lens` attribute.
  - The MASS LIGHT DARK pipeline constructs the per-galaxy `lmp.Sersic + NFWSph` manually rather than calling
@@ -36,7 +36,7 @@ fits an `Imaging` dataset where in the final model:
  - Each main lens galaxy's stellar mass distribution is a `Sersic` tied to its OWN light via a
    `mass_to_light_ratio` (one per galaxy, free parameters).
  - Each main lens galaxy's dark matter mass distribution is an `NFWSph` aligned with the bulge centre.
- - The first main lens galaxy carries an `ExternalShear`.
+ - Beside the galaxies, one `ExternalShear` held in an `al.MassField`.
  - The source galaxy's light is a `Pixelization`.
 """
 
@@ -55,7 +55,7 @@ import autolens.plot as aplt
 __Helpers__
 
 `build_lens_dict_source_lp` constructs an `af.Model` lens_dict for the SOURCE LP pipeline: each main lens
-galaxy has an MGE bulge plus a free `Isothermal` mass profile, with `ExternalShear` on `lens_0`.
+galaxy has an MGE bulge plus a free `Isothermal` mass profile, with one `ExternalShear` in `fields`.
 
 `build_lens_dict_light_lp` constructs an `af.Model` lens_dict for the LIGHT LP pipeline: each main lens galaxy
 has a `lp_linear.Sersic` bulge (chosen because the MASS LIGHT DARK pipeline requires a `LightMassProfile`
@@ -103,8 +103,6 @@ def build_lens_dict_source_lp(
         mass.centre = (centre[0], centre[1])
 
         kwargs = dict(redshift=redshift_lens, bulge=bulge, mass=mass)
-        if i == 0:
-            kwargs["shear"] = af.Model(al.mp.ExternalShear)
 
         lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, **kwargs)
     return lens_dict
@@ -143,11 +141,18 @@ def source_lp(
         centre_prior_is_uniform=False,
     )
 
+    # External Shear (an `al.MassField`, in its own `fields` collection):
+
+    field = af.Model(
+        al.MassField, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
+    )
+
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
             source=af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge),
         ),
+        fields=af.Collection(field=field),
     )
 
     search = af.Nautilus(
@@ -226,9 +231,6 @@ def source_pix_1(
             bulge=lens_inst.bulge,
             mass=mass,
         )
-        if i == 0:
-            kwargs["shear"] = source_lp_result.model.galaxies.lens_0.shear
-
         lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, **kwargs)
 
     model = af.Collection(
@@ -244,6 +246,7 @@ def source_pix_1(
                 ),
             ),
         ),
+        fields=source_lp_result.model.fields,
     )
 
     search = af.Nautilus(
@@ -260,7 +263,7 @@ def source_pix_1(
 __SOURCE PIX PIPELINE 2__
 
 Refines the source pixelization with an adapt mesh derived from the SOURCE PIX 1 source reconstruction. Each
-main lens galaxy's bulge, mass and (for `lens_0`) shear are fixed to the SOURCE PIX 1 instance.
+main lens galaxy's bulge and mass, and the external shear field, are fixed to the SOURCE PIX 1 instance.
 """
 
 
@@ -304,9 +307,6 @@ def source_pix_2(
             bulge=lens_inst_lp.bulge,
             mass=lens_inst_pix.mass,
         )
-        if i == 0:
-            kwargs["shear"] = lens_inst_pix.shear
-
         lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, **kwargs)
 
     model = af.Collection(
@@ -322,6 +322,7 @@ def source_pix_2(
                 ),
             ),
         ),
+        fields=source_pix_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -381,16 +382,16 @@ def light_lp(
             bulge=bulge,
             mass=lens_inst.mass,
         )
-        if i == 0:
-            kwargs["shear"] = source_result_for_lens.instance.galaxies.lens_0.shear
-
         lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, **kwargs)
 
     source = al.util.chaining.source_custom_model_from(
         result=source_result_for_source, source_is_model=False
     )
 
-    model = af.Collection(galaxies=af.Collection(**lens_dict, source=source))
+    model = af.Collection(
+        galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_result_for_lens.instance.fields,
+    )
 
     search = af.Nautilus(
         name="light[1]",
@@ -468,14 +469,14 @@ def mass_light_dark(
             bulge=bulge,
             dark=dark,
         )
-        if i == 0:
-            kwargs["shear"] = source_result_for_lens.model.galaxies.lens_0.shear
-
         lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, **kwargs)
 
     source = al.util.chaining.source_from(result=source_result_for_source)
 
-    model = af.Collection(galaxies=af.Collection(**lens_dict, source=source))
+    model = af.Collection(
+        galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_result_for_lens.model.fields,
+    )
 
     search = af.Nautilus(
         name="mass_light_dark[1]",

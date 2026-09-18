@@ -89,8 +89,8 @@ generalized over any number of co-dominant deflectors. Each feature folder's `sl
 difference from that script, which in turn documents only its difference from `guides/modeling/slam_start_here`.
 
 `imaging/` has no top-level `slam.py`, because at galaxy scale the guide's composition is already the one you
-want. Here it is not: every stage loops over deflectors, carries a separate `shear_galaxy`, anchors mass centres
-before releasing them, and scales its live points with the deflector count.
+want. Here it is not: every stage loops over deflectors, carries a separate `MassField` for the shear, anchors
+mass centres before releasing them, and scales its live points with the deflector count.
 
 # Advanced
 
