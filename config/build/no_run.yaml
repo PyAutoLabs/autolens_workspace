@@ -27,6 +27,7 @@
 
 - gui/extra_galaxies_centres # GUI scripts cannot be run
 - gui/mask_extra_galaxies # GUI scripts cannot be run
+- gui/mask_extra_galaxies_multi # GUI scripts cannot be run
 - gui/lens_light_centre # GUI scripts cannot be run
 - gui/mask # GUI scripts cannot be run
 - gui/positions # GUI scripts cannot be run

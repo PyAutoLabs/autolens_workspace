@@ -2725,6 +2725,22 @@
   {
     "contents": [
       "Dataset",
+      "First Waveband",
+      "Next Waveband",
+      "Output"
+    ],
+    "cross_refs": [
+      "imaging/data_preparation/gui/mask_extra_galaxies.py",
+      "multi_dataset/start_here.py"
+    ],
+    "notebook": "notebooks/imaging/data_preparation/gui/mask_extra_galaxies_multi.ipynb",
+    "path": "scripts/imaging/data_preparation/gui/mask_extra_galaxies_multi.py",
+    "summary": "A multi-wavelength dataset needs one extra galaxies mask per waveband: what should be masked is not the same in every filter (a contaminant can be bright in one and absent in another), and the wavebands are often on different pixel grids, so a mask cannot simply be copied across.",
+    "title": "GUI Preprocessing: Extra Galaxies Mask, Multi-Wavelength (Optional)"
+  },
+  {
+    "contents": [
+      "Dataset",
       "Search Box",
       "Clicker",
       "Output"

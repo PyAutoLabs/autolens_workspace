@@ -73,6 +73,10 @@ undo the last stroke and Esc when you are finished.
 
 `mask_from()` returns everything painted green that was not painted red.
 
+If faint structure is hidden under the galaxy's light, pass `subtract_radial=True` to also show the image with its
+azimuthally-averaged radial profile subtracted, side by side with the image as observed. This changes only the
+display, not the mask, and you can paint on either panel.
+
 __Refining An Existing Mask__
 
 To adjust a mask drawn previously instead of starting from a blank image, set `refine_existing = True`. If the
