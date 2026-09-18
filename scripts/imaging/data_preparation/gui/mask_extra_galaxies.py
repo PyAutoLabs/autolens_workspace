@@ -17,6 +17,7 @@ __Contents__
 
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
 - **Scribbler:** Load the Scribbler GUI for spray painting the scaled regions of the dataset.
+- **Refining An Existing Mask:** Reopen a saved mask as a proposal and add to / erase from it.
 - **Output:** The new image is plotted for inspection.
 
 """
@@ -85,13 +86,39 @@ mask = al.Mask2D.circular(
 """
 __Scribbler__
 
-Load the Scribbler GUI for spray painting the scaled regions of the dataset. 
+Load the Scribbler GUI for spray painting the scaled regions of the dataset.
 
-Push Esc when you are finished spray painting.
+Two brushes are available: press `1` for the green brush, which ADDS pixels to the mask, and `2` for the red
+brush, which ERASES them. Press `=` / `-` to make the brush bigger / smaller (each press scales it by 1.4x), `z` to
+undo the last stroke and Esc when you are finished.
+
+`mask_from()` returns everything painted green that was not painted red.
 """
 scribbler = al.Scribbler(image=data.native, cmap=cmap, mask_overlay=mask)
-mask = scribbler.show_mask()
+mask = scribbler.mask_from()
 mask = al.Mask2D(mask=mask, pixel_scales=pixel_scales)
+
+"""
+__Refining An Existing Mask__
+
+To adjust an extra galaxies mask drawn previously instead of starting from a blank image, load it and pass it to
+the GUI as a `proposal`. Its boundary is outlined in white over the image, and `mask_from()` then returns the
+proposal plus whatever you paint green, minus whatever you paint red. Set `refine_existing = True` to use this
+instead of the blank-canvas draw above.
+
+The same route lets a mask drawn for one waveband of a multi-wavelength dataset seed the next, provided the two
+images share a pixel grid.
+"""
+refine_existing = False
+
+mask_path = Path(dataset_path, "mask_extra_galaxies.fits")
+
+if refine_existing and mask_path.exists():
+    previous = al.Mask2D.from_fits(file_path=mask_path, pixel_scales=pixel_scales)
+    scribbler = al.Scribbler(
+        image=data.native, proposal=np.asarray(previous), cmap=cmap, mask_overlay=mask
+    )
+    mask = al.Mask2D(mask=scribbler.mask_from(), pixel_scales=pixel_scales)
 
 """
 The GUI has now closed and the extra galaxies mask has been created.
