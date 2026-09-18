@@ -231,7 +231,7 @@ field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 
@@ -242,10 +242,10 @@ The external shear describes the tidal gravitational field of everything *outsid
 is a property of the system rather than of any one galaxy -- which is why it is composed above as its own model 
 object. It is held in an `al.MassField`: a container built exactly like a `Galaxy` (a redshift plus a bag of mass 
 profiles -- `ExternalShear`, `MassSheet`, `ExternalPotential`, all three at one redshift belonging in one field, as 
-a bulge and a disk belong in one galaxy) that carries no light. In the model it lives in its own `fields=` 
-collection beside `galaxies=`, appears under a `fields` heading in `model.info`, and its results are read as 
-`result.instance.fields.field.shear`. Because the model here is shared across every dataset, the field is composed 
-once and enters the shared model once; per-dataset freedom is declared against `fields.field.shear` exactly as it 
+a bulge and a disk belong in one galaxy) that carries no light. In the model it lives in the model's `fields=` 
+slot beside `galaxies=`, appears under a `fields` heading in `model.info`, and its results are read as 
+`result.instance.fields.shear`. Because the model here is shared across every dataset, the field is composed 
+once and enters the shared model once; per-dataset freedom is declared against `fields.shear` exactly as it 
 would be against `galaxies.lens.mass`. The fit is numerically identical to attaching the shear to the lens galaxy 
 (the tracer sums every deflection field, and takes fields via `al.Tracer(galaxies=[...], fields=[field])`), but the 
 model is a *different* model with a new **PyAutoFit** unique identifier, so it will not resume an `output` folder 

@@ -217,7 +217,7 @@ multi-galaxy regime changes is *how many* of them there are: **one free light an
 deflector**, plus a single overall external shear.
 
 That shear is held in an `al.MassField` — a container like a galaxy, a redshift plus a bag of mass profiles, but
-carrying no light — which lives in the model's own `fields` collection at the system centre (0.0", 0.0"), rather
+carrying no light — which lives in the model's own `fields` slot at the system centre (0.0", 0.0"), rather
 than being attached to one of the deflectors as it is in the galaxy-scale examples. The shear describes the tidal
 field of structure outside the system, so it belongs to the system as a whole and there is no principled reason to
 hang it off a particular galaxy.
@@ -287,7 +287,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """

@@ -78,7 +78,7 @@ def n_main_from(result) -> int:
     The number of co-dominant deflectors in a result's model. Identical to the helper in `multi_galaxy/slam.py`.
 
     `source` and `subhalo` do not match the `lens_` prefix and are therefore not counted. The external shear
-    is not a galaxy at all — it lives in the model's `fields` collection.
+    is not a galaxy at all — it lives in the model's `fields` slot.
     """
     return sum(1 for key in vars(result.instance.galaxies) if key.startswith("lens_"))
 
@@ -160,7 +160,7 @@ def source_lp(
             **lens_dict,
             source=af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge),
         ),
-        fields=af.Collection(field=field),
+        fields=field,
     )
 
     search = af.Nautilus(

@@ -132,7 +132,7 @@ The number of free parameters and therefore the dimensionality of non-linear par
 """
 lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
 
-# External Shear (an `al.MassField`, in its own `fields` collection below):
+# External Shear (an `al.MassField`, in the model's `fields` slot below):
 
 field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
@@ -147,7 +147,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model_1 = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """
@@ -271,7 +271,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.Sersic)
 
 model_2 = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """

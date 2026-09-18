@@ -69,7 +69,7 @@ Setup the lens galaxy's mass (SIE) and source galaxy `Point` for this simulated 
 faint disk in the source for purely visualisation purposes to show where the multiple images appear.
 
 No external shear is simulated here. The modeling example still fits one, composed as an `ExternalShear` in a
-`MassField` in the model's `fields=` collection (see `imaging/modeling.py`), so its inferred `gamma_1` and
+`MassField` in the model's `fields` slot (see `imaging/modeling.py`), so its inferred `gamma_1` and
 `gamma_2` should be consistent with zero.
 
 For lens modeling, defining ellipticity in terms of the `ell_comps` improves the model-fitting procedure. However,

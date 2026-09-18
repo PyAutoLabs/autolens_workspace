@@ -7,7 +7,7 @@ constrained independently by the data.
 The group `lens_dict` model-composition API is used throughout: one `lens_i` entry per main lens galaxy centre,
 loaded from a `main_lens_centres.json` file written by the simulator. Each `lens_i` carries an `lmp.Sersic`
 bulge (light + stellar mass coupled by `mass_to_light_ratio`) and an `NFWSph` dark matter halo. An
-`ExternalShear` is held in an `al.MassField` in the model's `fields` collection, representing the group-wide
+`ExternalShear` is held in an `al.MassField` in the model's `fields` slot, representing the group-wide
 shear field.
 
 # Files

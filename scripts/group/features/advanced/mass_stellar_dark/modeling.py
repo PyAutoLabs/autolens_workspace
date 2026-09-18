@@ -5,7 +5,7 @@ Modeling Features: Group Mass Stellar Dark
 A group-scale strong lens where each main lens galaxy carries a decomposed mass model: a stellar component
 tied to the galaxy's own light via a mass-to-light ratio, plus a separately-parameterized dark matter halo.
 The total lens-plane deflection is the sum, over every main lens galaxy, of stellar + dark contributions,
-plus a single external shear, held in an `al.MassField` in the model's `fields` collection, representing the
+plus a single external shear, held in an `al.MassField` in the model's `fields` slot, representing the
 group-wide shear field.
 
 This script fits a group lens model where each main lens galaxy is decomposed into stellar + dark components.
@@ -183,7 +183,7 @@ API scales naturally to groups with any number of main lens galaxies.
 
 The group system has one overall external shear. It is a property of the system rather than of any galaxy, so
 it is held in an `al.MassField` — a container like a `Galaxy` (a redshift plus a bag of mass profiles) which
-carries no light — placed in the model's own `fields` collection beside `galaxies`.
+carries no light — placed in the model's `fields` slot beside `galaxies`.
 """
 # Main Lens Galaxies:
 
@@ -200,7 +200,7 @@ for i, centre in enumerate(main_lens_centres):
 
     lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, **galaxy_kwargs)
 
-# External Shear (an `al.MassField`, in its own `fields` collection below):
+# External Shear (an `al.MassField`, in the model's `fields` slot below):
 
 field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
@@ -219,7 +219,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """

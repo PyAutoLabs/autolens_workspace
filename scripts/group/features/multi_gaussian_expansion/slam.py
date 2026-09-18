@@ -71,7 +71,7 @@ For group-scale lenses:
  - Each extra galaxy gets a 10-Gaussian MGE with centres fixed to the observed positions and a truncated
    `dPIEMassSph` mass.
  - The source galaxy gets a 20-Gaussian MGE with Gaussian centre priors.
- - The group's one `ExternalShear` is an `al.MassField` in the model's `fields` collection.
+ - The group's one `ExternalShear` is an `al.MassField` in the model's `fields` slot.
 
 The MGE source means the SOURCE PIX PIPELINE is not needed, significantly simplifying the overall pipeline.
 """
@@ -114,7 +114,7 @@ def source_lp(
 
         lens_dict[f"lens_{i}"] = lens
 
-    # External Shear (an `al.MassField`, in its own `fields` collection below):
+    # External Shear (an `al.MassField`, in the model's `fields` slot below):
 
     field = af.Model(
         al.MassField, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
@@ -165,7 +165,7 @@ def source_lp(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
-        fields=af.Collection(field=field),
+        fields=field,
         extra_galaxies=extra_galaxies,
     )
 

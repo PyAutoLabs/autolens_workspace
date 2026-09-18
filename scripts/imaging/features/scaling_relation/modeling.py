@@ -182,7 +182,7 @@ The main lens is the anchor: an MGE bulge and a free `Isothermal` mass. Its `ein
 tier hangs off, so it is the one Einstein radius in this model the tier depends on.
 
 The system's `ExternalShear` is not a property of the lens galaxy, so it is composed beside it in an `al.MassField`
-which goes in the model's own `fields=` collection (see `imaging/modeling.py`).
+which goes in the model's own `fields=` slot (see `imaging/modeling.py`).
 """
 lens_centre = tuple(list(main_lens_centres)[0])
 
@@ -307,7 +307,7 @@ library expects a scaling population to be expressed, and it keeps `model.info` 
 """
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
     extra_galaxies=extra_galaxies,
     scaling_galaxies=scaling_galaxies,
 )
@@ -351,7 +351,7 @@ for centre in scaling_galaxies_centres:
 
 model_free = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
     extra_galaxies=extra_galaxies,
     scaling_galaxies=af.Collection(scaling_galaxies_free_list),
 )

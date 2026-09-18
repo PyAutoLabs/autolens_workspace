@@ -190,7 +190,7 @@ Search 2 reintroduces the stellar-mass coupling. For each main lens galaxy:
    `effective_radius`, `sersic_index` all transfer because they share the same names between `lp.Sersic` and
    `lmp.Sersic`. The new parameter introduced by the swap is `mass_to_light_ratio`.
  - Add an `NFWSph` dark matter halo with `centre` fixed to the bulge centre.
- - Add one `ExternalShear`, held in an `al.MassField` in the model's `fields` collection.
+ - Add one `ExternalShear`, held in an `al.MassField` in the model's `fields` slot.
 
 The source MGE bulge is fixed to its `result_1.instance` value — search 2 does not re-optimise the source
 geometry, only the lens-plane mass.
@@ -209,7 +209,7 @@ for i, centre in enumerate(main_lens_centres):
 
     lens_dict_2[f"lens_{i}"] = af.Model(al.Galaxy, **galaxy_kwargs)
 
-# External Shear (an `al.MassField`, in its own `fields` collection below):
+# External Shear (an `al.MassField`, in the model's `fields` slot below):
 
 field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
@@ -219,7 +219,7 @@ source_2 = af.Model(
 
 model_2 = af.Collection(
     galaxies=af.Collection(**lens_dict_2, source=source_2),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 print(model_2.info)

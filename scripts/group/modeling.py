@@ -9,8 +9,8 @@ to the ray-tracing, meaning both are therefore included in the strong lens model
 This example uses a list-based model composition API, where:
 
  - Main lens galaxies are built in a loop over centres loaded from a JSON file and stored in the model as
-   `lens_0`, `lens_1`, etc. The group's one `ExternalShear` is held in an `al.MassField` in its own `fields`
-   collection, beside `galaxies`.
+   `lens_0`, `lens_1`, etc. The group's one `ExternalShear` is held in an `al.MassField` in the model's `fields`
+   slot, beside `galaxies`.
 
  - Extra galaxies are built in a loop over centres loaded from a separate JSON file and stored in an
    `extra_galaxies` collection. Their mass centres are fixed to the observed centres of light and their
@@ -192,7 +192,7 @@ For a group-scale lens, we designate there to be two types of lens galaxies in t
  - `main_galaxies`: The main lens galaxies which likely make up the majority of light and mass in the lens system.
  These are modeled individually and stored as `lens_0`, `lens_1`, etc. in the model's `galaxies` collection.
  Their centres are loaded from the `main_lens_centres.json` file. The group's one `ExternalShear` is not a
- galaxy property at all: it is held in an `al.MassField` in the model's own `fields` collection (see
+ galaxy property at all: it is held in an `al.MassField` in the model's `fields` slot (see
  `__External Shear__` below).
 
  - `extra_galaxies`: The extra galaxies which are nearby the lens system and contribute to the lensing of the source
@@ -283,18 +283,18 @@ It is held in an `al.MassField`. A field is a container built like a `Galaxy` â€
 profiles (`ExternalShear`, `MassSheet`, `ExternalPotential`) â€” which carries no light. Shear, sheet and
 potential at one redshift are one field, in the same way that a bulge and a disk are one galaxy.
 
-In the model the field lives in its own `fields=` collection beside `galaxies=`:
+In the model the field lives in the `fields=` slot beside `galaxies=`:
 
     field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
-        fields=af.Collection(field=field),
+        fields=field,
         extra_galaxies=extra_galaxies,
     )
 
 It therefore appears under `fields` in `model.info`, and its results are read as
-`result.instance.fields.field.shear`. In a `Tracer` it is the `fields=` argument. Only the tracer's *planes*
+`result.instance.fields.shear`. In a `Tracer` it is the `fields=` argument. Only the tracer's *planes*
 merge galaxies and fields at each redshift; `tracer.galaxies` never contains a field, so the list-based
 `lens_0`, `lens_1`, ... indexing used throughout this script is unaffected. Several fields means several
 planes (e.g. line-of-sight mass sheets at different redshifts).
@@ -341,7 +341,7 @@ for i, centre in enumerate(main_lens_centres):
         mass=mass,
     )
 
-# External Shear (an `al.MassField`, in its own `fields` collection below):
+# External Shear (an `al.MassField`, in the model's `fields` slot below):
 
 field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
@@ -386,7 +386,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
     extra_galaxies=extra_galaxies,
 )
 
@@ -492,7 +492,7 @@ for i, centre in enumerate(main_lens_centres):
         mass=mass,
     )
 
-# External Shear (an `al.MassField`, in its own `fields` collection below):
+# External Shear (an `al.MassField`, in the model's `fields` slot below):
 
 field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
@@ -547,7 +547,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
     extra_galaxies=extra_galaxies,
 )
 

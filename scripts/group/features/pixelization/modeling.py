@@ -134,7 +134,7 @@ __Model__
 We compose a group lens model where:
 
  - Each main lens galaxy has MGE light and Isothermal mass. The group's one `ExternalShear` is an
-   `al.MassField` in the model's `fields` collection.
+   `al.MassField` in the model's `fields` slot.
  - Each extra galaxy has MGE light and truncated dPIEMassSph mass with fixed centres and free sigma.
  - The source galaxy uses a Delaunay pixelization with ConstantSplit regularization. `ConstantSplit`
    is used for this first-pass model because adapt data (per-galaxy images from a previous search)
@@ -168,7 +168,7 @@ for i, centre in enumerate(main_lens_centres):
 
     lens_dict[f"lens_{i}"] = lens
 
-# External Shear (an `al.MassField`, in its own `fields` collection below):
+# External Shear (an `al.MassField`, in the model's `fields` slot below):
 
 field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
@@ -228,7 +228,7 @@ source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
 
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
     extra_galaxies=extra_galaxies,
 )
 

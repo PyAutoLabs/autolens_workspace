@@ -202,7 +202,7 @@ def source_lp(
     for i, analysis in enumerate(analysis_list):
         model = af.Collection(
             galaxies=af.Collection(lens=lens, source=source),
-            fields=af.Collection(field=field),
+            fields=field,
             dataset_model=dataset_model_list[i],
         )
 

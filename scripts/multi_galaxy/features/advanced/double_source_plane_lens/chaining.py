@@ -176,7 +176,7 @@ source_0 = af.Model(
 
 model_1 = af.Collection(
     galaxies=af.Collection(**lens_dict_1, source_0=source_0),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 print(model_1.info)

@@ -114,7 +114,7 @@ script fits `Imaging` dataset of a strong lens system where in the final model:
 
  - The lens galaxy's light is a bulge with Multiple Gaussian Expansion (MGE) light profile.
  - The lens galaxy's total mass distribution is a `PowerLaw`, plus an `ExternalShear` held in an
-   `al.MassField` in the model's `fields` collection.
+   `al.MassField` in the model's `fields` slot.
  - The source galaxy's light is a `Pixelization`.
 
 Each SLaM pipeline is implemented as a Python function below (e.g. `source_lp`, `source_pix_1`), with a
@@ -186,14 +186,12 @@ def source_lp(
             ),
         ),
         # The external shear is a property of the system, not of the lens galaxy: it is held in an
-        # `al.MassField` in its own `fields` collection, and chained between stages below as
+        # `al.MassField` in the model's `fields` slot, and chained between stages below as
         # `<result>.model.fields` (free) or `<result>.instance.fields` (fixed).
-        fields=af.Collection(
-            field=af.Model(
-                al.MassField,
-                redshift=redshift_lens,
-                shear=af.Model(al.mp.ExternalShear),
-            ),
+        fields=af.Model(
+            al.MassField,
+            redshift=redshift_lens,
+            shear=af.Model(al.mp.ExternalShear),
         ),
     )
 

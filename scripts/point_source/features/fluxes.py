@@ -36,7 +36,7 @@ quadruply imaged point source (8 data points) there is insufficient information 
 an external shear (9 parameters).
 
 Where a shear is fitted, it is never attached to the lens galaxy: it is an `ExternalShear` held in an
-`al.MassField`, which lives in the model's own `fields=` collection beside `galaxies=` (and in the tracer's
+`al.MassField`, which lives in the model's own `fields` slot beside `galaxies=` (and in the tracer's
 `fields=` argument). The shear describes the tidal field of everything outside the system, so it is a property of
 the system rather than of a galaxy. See `imaging/modeling.py` for the full description.
 

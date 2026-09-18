@@ -49,7 +49,7 @@ Four differences from `slam_start_here.py`, and nothing else:
 2. **The external shear is its own `MassField`** at the system centre (0.0", 0.0"), not an attribute of a
    deflector. The reasoning is in `multi_galaxy/modeling.py`: the shear describes the tidal field of everything
    outside the system, so attaching it to one of two co-dominant galaxies would misrepresent it. Practically, this
-   means each stage passes a `fields=` collection beside `galaxies=`, chaining it as a model or as an instance.
+   means each stage fills the model's `fields` slot beside `galaxies=`, chaining it as a model or as an instance.
 
 3. **Mass centres are anchored, then released.** `source_lp[1]` fixes each deflector's mass centre to its light
    centre, because with several deflectors a free centre at this stage has no idea which galaxy it belongs to.
@@ -93,7 +93,7 @@ def n_main_from(result) -> int:
     Every stage recovers this from the previous result rather than closing over a module-level constant, so the
     pipeline runs unchanged on any number of deflectors. The `lens_` prefix is the convention the whole
     multi-galaxy package uses; `source` does not match it and is therefore not counted. The external shear
-    is not a galaxy at all — it lives in the model's `fields` collection.
+    is not a galaxy at all — it lives in the model's `fields` slot.
     """
     return sum(1 for key in vars(result.instance.galaxies) if key.startswith("lens_"))
 
@@ -182,7 +182,7 @@ def source_lp(
             **lens_dict,
             source=af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge),
         ),
-        fields=af.Collection(field=field),
+        fields=field,
     )
 
     search = af.Nautilus(

@@ -291,7 +291,7 @@ source_imaging = af.Model(al.Galaxy, redshift=0.658, bulge=source_bulge)
 
 model_imaging = af.Collection(
     galaxies=af.Collection(lens=lens_imaging, source=source_imaging),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 # Point model (same mass + field objects -> same priors). The `PointSolved` source has no free
@@ -306,7 +306,7 @@ source_point = af.Model(al.Galaxy, redshift=0.658, point_0=af.Model(al.ps.PointS
 
 model_point = af.Collection(
     galaxies=af.Collection(lens=lens_point, source=source_point),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """

@@ -198,7 +198,7 @@ Ellipsoid (SIE) to model the lens mass and simply assumes the source is
 a point source. Unlike the imaging examples, no external shear is fitted: a quadruply
 imaged point source gives only 8 data points, which cannot constrain an `Isothermal`
 plus an `ExternalShear` (9 parameters). Where a shear *is* fitted it is an
-`ExternalShear` held in an `al.MassField` in the model's own `fields=` collection,
+`ExternalShear` held in an `al.MassField` in the model's own `fields` slot,
 never attached to the lens galaxy (see `imaging/modeling.py`). The source is composed as `al.ps.PointSolved`, which has no free
 parameters at all: its source-plane (y,x) centre is solved for analytically at every
 likelihood evaluation, rather than sampled as two free parameters. This is the

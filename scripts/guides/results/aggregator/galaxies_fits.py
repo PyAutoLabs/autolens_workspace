@@ -142,9 +142,7 @@ model = af.Collection(
         ),
         source=af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=None),
     ),
-    fields=af.Collection(
-        field=af.Model(al.MassField, redshift=0.5, shear=al.mp.ExternalShear),
-    ),
+    fields=af.Model(al.MassField, redshift=0.5, shear=al.mp.ExternalShear),
 )
 
 search = af.Nautilus(

@@ -192,7 +192,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model_1 = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """
@@ -502,7 +502,7 @@ source = af.Model(
 
 model_4 = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 search_4 = af.Nautilus(

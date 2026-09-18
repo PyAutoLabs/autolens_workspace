@@ -243,7 +243,7 @@ field = af.Model(al.MassField, redshift=0.299, shear=af.Model(al.mp.ExternalShea
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """

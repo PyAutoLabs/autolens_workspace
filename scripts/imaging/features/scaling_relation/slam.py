@@ -373,7 +373,7 @@ def source_lp(
             lens=lens,
             source=af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge),
         ),
-        fields=af.Collection(field=field),
+        fields=field,
         extra_galaxies=af.Collection(bounded_galaxies_list),
         scaling_galaxies=af.Collection(scaling_galaxies_list),
     )

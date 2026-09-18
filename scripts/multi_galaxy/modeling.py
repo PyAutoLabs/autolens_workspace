@@ -320,7 +320,7 @@ We compose the lens model, with one entry per co-dominant deflector:
    and the multi-galaxy regime by definition has no host halo. Truncated (dPIE) profiles enter with the
    group regime's Lenstool-style workflow (`group/features/group_halo`) and are the default at cluster
    scale.
- - The system's single `ExternalShear` is held in an `al.MassField`, in the model's own `fields` collection at
+ - The system's single `ExternalShear` is held in an `al.MassField`, in the model's own `fields` slot at
    the system centre (0.0", 0.0"), rather than being attached to one of the deflectors.
  - The source galaxy's light is an MGE.
 
@@ -434,9 +434,9 @@ The shear is therefore held in an `al.MassField`. A `MassField` is a container b
 plus a bag of mass profiles (`ExternalShear`, `MassSheet`, `ExternalPotential`) — except that it carries no light.
 Shear, sheet and potential at one redshift are one field, exactly as a bulge and a disk are one galaxy.
 
-In the model the field lives in its own `fields=af.Collection(field=field)` beside `galaxies=`, so the `model.info`
+In the model the field lives in the `fields` slot (`fields=field`) beside `galaxies=`, so the `model.info`
 printed below lists it under `fields` rather than among the galaxies, and its result is read as
-`result.instance.fields.field.shear`. In a tracer it is the `fields=[field]` argument. Only the tracer's *planes*
+`result.instance.fields.shear`. In a tracer it is the `fields=[field]` argument. Only the tracer's *planes*
 merge galaxies and fields at each redshift; `tracer.galaxies` never contains a field, so anything indexing the
 galaxies positionally is unaffected. Several fields simply means several planes (line-of-sight mass sheets, say).
 
@@ -503,7 +503,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """

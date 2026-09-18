@@ -182,7 +182,7 @@ The source is a `PointFlux` rather than a `Point`, because this dataset includes
 No external shear is included in the model. As `point_source/modeling.py` explains, a quadruply imaged point
 source does not carry enough information to constrain an `Isothermal` plus an external shear — and in this
 example the extra galaxies are already spending part of that budget. When a shear is fitted it is an
-`ExternalShear` held in an `al.MassField` in the model's own `fields=` collection, not a profile on the lens
+`ExternalShear` held in an `al.MassField` in the model's own `fields` slot, not a profile on the lens
 galaxy (see `imaging/modeling.py`); the `fields=` slot is simply left out here.
 
 A full description of model composition is provided by the model cookbook:
@@ -289,7 +289,7 @@ Three consequences follow, and they are why this example looks the way it does:
    `point_source/simulator.py` default dataset is positions-only.
 
  - **The external shear is omitted.** In the imaging examples the shear is a standard ingredient — an
-   `ExternalShear` in a `MassField`, in the model's `fields=` collection — but here it competes directly with the
+   `ExternalShear` in a `MassField`, in the model's `fields` slot — but here it competes directly with the
    extra galaxies for the same scarce constraints, so the model carries no `fields=` at all.
 
 If your own point-source system has more information — a second lensed source at a different redshift, or

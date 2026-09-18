@@ -319,7 +319,7 @@ source = af.Model(al.Galaxy, redshift=1.0, pixelization=pix)
 
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
-    fields=af.Collection(field=field_model),
+    fields=field_model,
 )
 
 print(model.info)

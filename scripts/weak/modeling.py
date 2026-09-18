@@ -107,7 +107,7 @@ project **PyAutoFit** — the identical API used by every other modeling script 
    probes of the foreground shear field, so the source's appearance is irrelevant. It is included only so the
    `Tracer` has a source-plane redshift for the lensing geometry.
 
-Note what is absent compared to `scripts/imaging/modeling.py`: no light profiles, and no `fields=` collection.
+Note what is absent compared to `scripts/imaging/modeling.py`: no light profiles, and no `fields=` entry.
 There the model carries an `ExternalShear` in an `al.MassField` beside its `galaxies=`; here the shear field *is*
 the data, so an external shear component would be degenerate with the signal at leading order for this
 single-lens dataset. The model is therefore `galaxies=` only, and the parameter space much smaller (N=5 versus

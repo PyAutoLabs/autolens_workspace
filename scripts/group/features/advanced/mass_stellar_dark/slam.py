@@ -141,7 +141,7 @@ def source_lp(
         centre_prior_is_uniform=False,
     )
 
-    # External Shear (an `al.MassField`, in its own `fields` collection):
+    # External Shear (an `al.MassField`, in the model's `fields` slot):
 
     field = af.Model(
         al.MassField, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
@@ -152,7 +152,7 @@ def source_lp(
             **lens_dict,
             source=af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge),
         ),
-        fields=af.Collection(field=field),
+        fields=field,
     )
 
     search = af.Nautilus(

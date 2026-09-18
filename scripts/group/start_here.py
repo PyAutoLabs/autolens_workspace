@@ -19,7 +19,7 @@ signature composition of group- and cluster-scale modeling:
 
  - **Main lens galaxies** (here: 2 — the central galaxy and a bright companion just 0.4" away): the dominant
    lenses, each with a free MGE light model and `Isothermal` mass. The group's one `ExternalShear` sits
-   beside them in a `fields` collection, held in an `al.MassField`.
+   beside them in the model's `fields` slot, held in an `al.MassField`.
  - **Extra galaxies** (here: 1): a nearby companion inside the mask, with its own MGE light model and a
    tidally truncated `dPIEMassSph` mass (free `sigma`, fixed truncation) at its observed centre.
  - **Scaling galaxies** (here: 5): further-out galaxies whose light sits outside the mask; mass-only
@@ -230,7 +230,7 @@ to groups with any number of main lens galaxies.
 
 The group system has one overall external shear. It describes the tidal field of everything *outside* the
 modelled system, so it is a property of the system and not of any one galaxy: it is held in an `al.MassField`
-(a redshift plus a bag of mass profiles, carrying no light) which goes in the model's own `fields` collection,
+(a redshift plus a bag of mass profiles, carrying no light) which goes in the model's `fields` slot,
 beside `galaxies`.
 
 The extra galaxies are composed the same way (`extra_0`, `extra_1`, ...), each with a small MGE for its light and a
@@ -275,7 +275,7 @@ for i, centre in enumerate(main_lens_centres):
         mass=mass,
     )
 
-# External Shear (an `al.MassField`, in its own `fields` collection below):
+# External Shear (an `al.MassField`, in the model's `fields` slot below):
 
 field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
@@ -347,7 +347,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """

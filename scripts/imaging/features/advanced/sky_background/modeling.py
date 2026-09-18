@@ -191,7 +191,7 @@ dataset_model.background_sky_level = af.UniformPrior(lower_limit=0.0, upper_limi
 model = af.Collection(
     dataset_model=dataset_model,
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """

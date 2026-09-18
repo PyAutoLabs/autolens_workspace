@@ -253,7 +253,7 @@ model = af.Collection(
         source_0=source_0,
         source_1=source_1,
     ),
-    fields=af.Collection(field=field),
+    fields=field,
     # cosmology=cosmology,
 )
 

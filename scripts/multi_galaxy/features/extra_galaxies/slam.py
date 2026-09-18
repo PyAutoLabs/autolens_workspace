@@ -191,7 +191,7 @@ def source_lp(
             extra_galaxies_centres=extra_galaxies_centres,
             redshift_lens=redshift_lens,
         ),
-        fields=af.Collection(field=field),
+        fields=field,
     )
 
     search = af.Nautilus(

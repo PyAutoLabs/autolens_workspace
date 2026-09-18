@@ -301,7 +301,7 @@ mass = af.Model(al.mp.Isothermal)
 
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
-# External Shear (an `al.MassField`, in its own `fields` collection below):
+# External Shear (an `al.MassField`, in the model's `fields` slot below):
 
 field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
@@ -313,7 +313,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp.SersicCore)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """

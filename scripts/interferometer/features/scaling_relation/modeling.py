@@ -182,13 +182,13 @@ scaling_galaxies = af.Collection(scaling_galaxies_list)
 """
 __Model__
 
-Three top-level collections. `scaling_galaxies` is a first-class collection alongside `galaxies`: the analysis
+Three top-level model entries. `scaling_galaxies` is a first-class collection alongside `galaxies`: the analysis
 appends it to the tracer's galaxy list and the aggregator restores it when results are loaded back. `fields` is
-the external shear's own collection, holding the `MassField` that carries it.
+the external shear's own slot, holding the `MassField` that carries it.
 """
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
     scaling_galaxies=scaling_galaxies,
 )
 
@@ -220,7 +220,7 @@ for centre in scaling_galaxies_centres:
 
 model_free = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
     scaling_galaxies=af.Collection(scaling_galaxies_free_list),
 )
 

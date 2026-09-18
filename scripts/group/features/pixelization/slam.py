@@ -159,7 +159,7 @@ Equivalent to `source_lp` in `slam_start_here.py`, except lens light is fixed fr
 rather than free, and mass and source are introduced here for the first time.
 
 Multiple main-lens galaxies each get an `Isothermal` mass; the group's one `ExternalShear` is an
-`al.MassField` in the model's `fields` collection.
+`al.MassField` in the model's `fields` slot.
 Extra galaxies get tidally truncated `dPIEMassSph` profiles (the group/cluster convention) whose
 `sigma` priors are bounded by a luminosity-derived limit.
 """
@@ -222,7 +222,7 @@ def source_lp_1(
             mass=mass,
         )
 
-    # External Shear (an `al.MassField`, in its own `fields` collection below):
+    # External Shear (an `al.MassField`, in the model's `fields` slot below):
 
     field = af.Model(
         al.MassField, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
@@ -268,7 +268,7 @@ def source_lp_1(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
-        fields=af.Collection(field=field),
+        fields=field,
         extra_galaxies=extra_galaxies,
     )
 
