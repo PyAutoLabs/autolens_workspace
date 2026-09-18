@@ -257,7 +257,7 @@ can be added to the .csv file using the same API as above.
 agg_csv = af.AggregateCSV(aggregator=agg)
 
 agg_csv.add_variable(
-    argument="galaxies.lens.shear.magnitude",
+    argument="fields.field.shear.magnitude",
 )
 
 agg_csv.save(path=workflow_path / "csv_example_latent.csv")

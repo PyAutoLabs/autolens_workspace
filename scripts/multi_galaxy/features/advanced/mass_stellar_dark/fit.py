@@ -149,7 +149,7 @@ lens_1 = al.Galaxy(
     dark=al.mp.NFWSph(centre=(-0.35, -0.25), kappa_s=0.06, scale_radius=15.0),
 )
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -168,7 +168,7 @@ source_galaxy = al.Galaxy(
 """
 __Tracer__
 """
-tracer = al.Tracer(galaxies=[lens_0, lens_1, shear_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_0, lens_1, source_galaxy], fields=[field])
 
 """
 __Fit__
@@ -194,7 +194,7 @@ deflections = {
     "lens_0 dark": lens_0.dark.deflections_yx_2d_from(grid=grid),
     "lens_1 stellar": lens_1.bulge.deflections_yx_2d_from(grid=grid),
     "lens_1 dark": lens_1.dark.deflections_yx_2d_from(grid=grid),
-    "shear": shear_galaxy.shear.deflections_yx_2d_from(grid=grid),
+    "shear": field.shear.deflections_yx_2d_from(grid=grid),
 }
 
 total = sum(np.asarray(d) for d in deflections.values())

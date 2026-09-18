@@ -44,7 +44,8 @@ __Model__
 This script fits an `Imaging` dataset of a 'group-scale' strong lens where:
 
  - Each main lens galaxy's light is an MGE with 20 Gaussians [~4 non-linear parameters per galaxy].
- - Each main lens galaxy's total mass distribution is an `Isothermal`, with `ExternalShear` on `lens_0` [7 parameters].
+ - Each main lens galaxy's total mass distribution is an `Isothermal`; the group's external shear is an
+   `ExternalShear` held in an `al.MassField` in `fields` [7 parameters].
  - Each extra galaxy's light is an MGE with 10 Gaussians with fixed centres [0 non-linear parameters per galaxy].
  - Each extra galaxy's total mass distribution is a tidally truncated `dPIEMassSph` with free `sigma` [1 parameter per galaxy].
  - The source galaxy's light is an MGE with 20 Gaussians [~4 non-linear parameters].
@@ -135,7 +136,7 @@ We compose a lens model where every galaxy uses an MGE for its light profile, co
 `al.model_util.mge_model_from` convenience function.
 
 For **main lens galaxies**, we use 20 Gaussians with uniform centre priors, allowing the MGE to capture
-the full morphology of the main lens light. Only `lens_0` carries an `ExternalShear`.
+the full morphology of the main lens light. The group's one `ExternalShear` is an `al.MassField` in `fields`.
 
 For **extra galaxies**, we use 10 Gaussians with centres fixed to the observed positions. This is crucial:
 because the MGE intensities are linear parameters, adding extra galaxies with fixed centres introduces
@@ -163,10 +164,13 @@ for i, centre in enumerate(main_lens_centres):
         redshift=0.5,
         bulge=bulge,
         mass=mass,
-        shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
 
     lens_dict[f"lens_{i}"] = lens
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Extra Galaxies:
 
@@ -219,6 +223,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
     extra_galaxies=extra_galaxies,
 )
 

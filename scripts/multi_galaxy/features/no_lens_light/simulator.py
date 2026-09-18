@@ -193,13 +193,14 @@ main_lens_galaxies = [lens_0, lens_1]
 __External Shear__
 
 The `ExternalShear` describes the tidal gravitational field of structure *outside* the system being simulated. It is
-a property of the system as a whole rather than of any individual galaxy, so we give it its own entry at the system
-centre (0.0", 0.0") instead of attaching it to one of the deflectors.
+a property of the system as a whole rather than of any individual galaxy, so it is held in an `al.MassField` — a
+container built like a `Galaxy` but carrying no light — and passed to the tracer via its `fields` argument, at the
+system centre (0.0", 0.0"), instead of being attached to one of the deflectors.
 
 `ExternalShear` takes no `centre` argument because it is a uniform field defined about the coordinate origin, which
 for this dataset is the centre of the lens pair.
 """
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -230,7 +231,7 @@ Because both deflectors are at the same redshift this is single-plane ray tracin
 fields, and the shear's, simply add. The simulated image contains only the lensed source emission, since no
 foreground galaxy has light.
 """
-tracer = al.Tracer(galaxies=main_lens_galaxies + [shear_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=main_lens_galaxies + [source_galaxy], fields=[field])
 
 """
 Lets look at the tracer`s image, this is the image we'll be simulating.

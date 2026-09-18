@@ -34,7 +34,7 @@ __Why A Regime Baseline Exists__
 `imaging/` has no top-level `slam.py`: its feature pipelines diff directly against
 `guides/modeling/slam_start_here`, because at galaxy scale the composition in that guide *is* the composition you
 want. That is not true here. Every stage of a multi-galaxy pipeline builds its lens entries in a loop, carries a
-separate shear galaxy, and scales its live-point count with the number of deflectors. Repeating those changes in
+separate shear `MassField`, and scales its live-point count with the number of deflectors. Repeating those changes in
 every feature's `slam.py` would mean re-deriving them five times over, so they live here once. `group/slam.py`
 plays the same role for the group package.
 
@@ -46,10 +46,10 @@ Four differences from `slam_start_here.py`, and nothing else:
    a single `lens`. Every stage does this, and every stage recovers the deflector count from the previous result
    rather than being told it, so the pipeline runs unchanged on a pair, a triple or more.
 
-2. **The external shear is its own `shear_galaxy`** at the system centre (0.0", 0.0"), not an attribute of a
+2. **The external shear is its own `MassField`** at the system centre (0.0", 0.0"), not an attribute of a
    deflector. The reasoning is in `multi_galaxy/modeling.py`: the shear describes the tidal field of everything
    outside the system, so attaching it to one of two co-dominant galaxies would misrepresent it. Practically, this
-   means each stage chains `shear_galaxy` as its own model or instance.
+   means each stage passes a `fields=` collection beside `galaxies=`, chaining it as a model or as an instance.
 
 3. **Mass centres are anchored, then released.** `source_lp[1]` fixes each deflector's mass centre to its light
    centre, because with several deflectors a free centre at this stage has no idea which galaxy it belongs to.
@@ -92,7 +92,8 @@ def n_main_from(result) -> int:
 
     Every stage recovers this from the previous result rather than closing over a module-level constant, so the
     pipeline runs unchanged on any number of deflectors. The `lens_` prefix is the convention the whole
-    multi-galaxy package uses; `shear_galaxy` and `source` do not match it and are therefore not counted.
+    multi-galaxy package uses; `source` does not match it and is therefore not counted. The external shear
+    is not a galaxy at all — it lives in the model's `fields` collection.
     """
     return sum(1 for key in vars(result.instance.galaxies) if key.startswith("lens_"))
 
@@ -105,7 +106,7 @@ light, the deflectors' light, and their mass.
 
  - Each deflector's light is an MGE with 2 x 20 Gaussians, centred on its known position.
  - Each deflector's total mass distribution is an `Isothermal`, with its centre fixed to that position.
- - The system carries one `ExternalShear`, in its own galaxy.
+ - The system carries one `ExternalShear`, in its own `MassField`.
  - The source's light is an MGE with 1 x 20 Gaussians.
 
 __Why The Mass Centres Are Fixed Here__
@@ -166,8 +167,8 @@ def source_lp(
             mass=mass,
         )
 
-    shear_galaxy = af.Model(
-        al.Galaxy,
+    field = af.Model(
+        al.MassField,
         redshift=redshift_lens,
         shear=af.Model(al.mp.ExternalShear),
     )
@@ -179,9 +180,9 @@ def source_lp(
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
-            shear_galaxy=shear_galaxy,
             source=af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge),
         ),
+        fields=af.Collection(field=field),
     )
 
     search = af.Nautilus(
@@ -282,7 +283,6 @@ def source_pix_1(
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
-            shear_galaxy=source_lp_result.model.galaxies.shear_galaxy,
             source=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.source.redshift,
@@ -293,6 +293,7 @@ def source_pix_1(
                 ),
             ),
         ),
+        fields=source_lp_result.model.fields,
     )
 
     search = af.Nautilus(
@@ -363,7 +364,6 @@ def source_pix_2(
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
-            shear_galaxy=source_pix_result_1.instance.galaxies.shear_galaxy,
             source=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.source.redshift,
@@ -374,6 +374,7 @@ def source_pix_2(
                 ),
             ),
         ),
+        fields=source_pix_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -462,11 +463,8 @@ def light_lp(
     )
 
     model = af.Collection(
-        galaxies=af.Collection(
-            **lens_dict,
-            shear_galaxy=source_result_for_lens.instance.galaxies.shear_galaxy,
-            source=source,
-        ),
+        galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_result_for_lens.instance.fields,
     )
 
     search = af.Nautilus(
@@ -558,11 +556,8 @@ def mass_total(
     source = al.util.chaining.source_from(result=source_result_for_source)
 
     model = af.Collection(
-        galaxies=af.Collection(
-            **lens_dict,
-            shear_galaxy=source_result_for_lens.model.galaxies.shear_galaxy,
-            source=source,
-        ),
+        galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_result_for_lens.model.fields,
     )
 
     search = af.Nautilus(

@@ -249,12 +249,16 @@ lens = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
 source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-tracer = al.Tracer(galaxies=[lens, source])
+tracer = al.Tracer(galaxies=[lens, source], fields=[field])
 
 adapt_images = al.AdaptImages(
     galaxy_image_plane_mesh_grid_dict={source: image_plane_mesh_grid}
@@ -300,7 +304,8 @@ adapt_images = al.AdaptImages(
 We therefore compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In the first
 search our lens model is:
 
- - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField` [7 parameters].
 
  - The source galaxy's light uses an `Overlay` image-mesh with fixed resolution 30 x 30 pixels [0 parameters].
 
@@ -310,9 +315,9 @@ search our lens model is:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=8.
 """
-lens = af.Model(
-    al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
-)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 pixelization = af.Model(
     al.Pixelization,
@@ -325,7 +330,10 @@ pixelization = af.Model(
 
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
 
-model_1 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model_1 = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 search_1 = af.Nautilus(
     path_prefix=Path("features"),
@@ -452,7 +460,8 @@ __Model (Search 2)__
 We therefore compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In 
 the second search our lens model is:
 
- - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` with fixed parameters from 
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField` with fixed parameters from 
    search 1 [0 parameters].
 
  - The source galaxy's light uses a `Hilbert` image-mesh with fixed resolution 1000 pixels [2 parameters].
@@ -479,7 +488,8 @@ source = af.Model(
 )
 
 model_2 = af.Collection(
-    galaxies=af.Collection(lens=result_1.instance.galaxies.lens, source=source)
+    galaxies=af.Collection(lens=result_1.instance.galaxies.lens, source=source),
+    fields=result_1.instance.fields,
 )
 
 """
@@ -557,13 +567,19 @@ def source_lp(
                 bulge=None,
                 disk=None,
                 mass=af.Model(al.mp.Isothermal),
-                shear=af.Model(al.mp.ExternalShear),
             ),
             source=af.Model(
                 al.Galaxy,
                 redshift=redshift_source,
                 bulge=source_bulge,
             ),
+        ),
+        fields=af.Collection(
+            field=af.Model(
+                al.MassField,
+                redshift=redshift_lens,
+                shear=af.Model(al.mp.ExternalShear),
+            )
         ),
     )
 
@@ -662,7 +678,6 @@ def source_pix_1(
                 bulge=None,
                 disk=None,
                 mass=af.Model(al.mp.Isothermal),
-                shear=af.Model(al.mp.ExternalShear),
             ),
             source=af.Model(
                 al.Galaxy,
@@ -676,6 +691,13 @@ def source_pix_1(
                     regularization=al.reg.ConstantSplit,
                 ),
             ),
+        ),
+        fields=af.Collection(
+            field=af.Model(
+                al.MassField,
+                redshift=source_lp_result.instance.galaxies.lens.redshift,
+                shear=af.Model(al.mp.ExternalShear),
+            )
         ),
     )
 
@@ -768,7 +790,6 @@ def source_pix_2(
                 bulge=None,
                 disk=None,
                 mass=source_pix_result_1.instance.galaxies.lens.mass,
-                shear=source_pix_result_1.instance.galaxies.lens.shear,
             ),
             source=af.Model(
                 al.Galaxy,
@@ -783,6 +804,7 @@ def source_pix_2(
                 ),
             ),
         ),
+        fields=source_pix_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -871,10 +893,10 @@ def mass_total(
                 bulge=None,
                 disk=None,
                 mass=mass,
-                shear=source_pix_result_1.model.galaxies.lens.shear,
             ),
             source=source,
         ),
+        fields=source_pix_result_1.model.fields,
     )
 
     search = af.Nautilus(
@@ -1020,9 +1042,11 @@ mass = al.mp.Isothermal(
     ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
 )
 
-shear = al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
+field = al.MassField(
+    redshift=0.5, shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
+)
 
-lens_galaxy = al.Galaxy(redshift=0.5, mass=mass, shear=shear)
+lens_galaxy = al.Galaxy(redshift=0.5, mass=mass)
 
 """
 __Source Galaxy Pixelization and Regularization__
@@ -1097,7 +1121,7 @@ Plotting this grid shows a sparse grid of (y,x) coordinates within the mask, whi
 
 __Ray Tracing__
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 """
 The source code gets quite complex when handling grids for a pixelization, but it is all handled in
@@ -1420,7 +1444,7 @@ __Fit__
 
 This process to perform a likelihood function evaluation performed via the `FitInterferometer` object.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 fit = al.FitInterferometer(
     dataset=dataset,

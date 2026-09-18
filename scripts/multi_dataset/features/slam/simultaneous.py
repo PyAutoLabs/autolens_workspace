@@ -49,7 +49,8 @@ Using a SOURCE LP PIPELINE, SOURCE PIX PIPELINE, LIGHT LP PIPELINE and TOTAL MAS
 script  fits `Imaging` dataset  of a strong lens system where in the final model:
 
  - The lens galaxy's light is a bulge with Multiple Gaussian Expansion (MGE) light profile.
- - The lens galaxy's total mass distribution is an `PowerLaw` plus an `ExternalShear`.
+ - The lens galaxy's total mass distribution is a `PowerLaw`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The source galaxy's light is a `Pixelization`.
 
 This modeling script uses the SLaM pipelines:
@@ -184,7 +185,10 @@ def source_lp(
         bulge=lens_bulge,
         disk=None,
         mass=mass,
-        shear=af.Model(al.mp.ExternalShear),
+    )
+
+    field = af.Model(
+        al.MassField, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
     )
 
     source = af.Model(
@@ -198,6 +202,7 @@ def source_lp(
     for i, analysis in enumerate(analysis_list):
         model = af.Collection(
             galaxies=af.Collection(lens=lens, source=source),
+            fields=af.Collection(field=field),
             dataset_model=dataset_model_list[i],
         )
 
@@ -240,8 +245,6 @@ def source_pix_1(
         if i > 0:
             mass.centre = model.galaxies.lens.mass.centre
 
-        shear = source_lp_result[i].model.galaxies.lens.shear
-
         model = af.Collection(
             galaxies=af.Collection(
                 lens=af.Model(
@@ -250,7 +253,6 @@ def source_pix_1(
                     bulge=source_lp_result[i].instance.galaxies.lens.bulge,
                     disk=source_lp_result[i].instance.galaxies.lens.disk,
                     mass=mass,
-                    shear=shear,
                 ),
                 source=af.Model(
                     al.Galaxy,
@@ -265,6 +267,7 @@ def source_pix_1(
                 ),
             ),
             dataset_model=dataset_model_list[i],
+            fields=source_lp_result[i].model.fields,
         )
 
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
@@ -306,7 +309,6 @@ def source_pix_2(
                     bulge=source_lp_result[i].instance.galaxies.lens.bulge,
                     disk=source_lp_result[i].instance.galaxies.lens.disk,
                     mass=source_pix_result_1[i].instance.galaxies.lens.mass,
-                    shear=source_pix_result_1[i].instance.galaxies.lens.shear,
                 ),
                 source=af.Model(
                     al.Galaxy,
@@ -321,6 +323,7 @@ def source_pix_2(
                 ),
             ),
             dataset_model=dataset_model_list[i],
+            fields=source_pix_result_1[i].instance.fields,
         )
 
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
@@ -366,11 +369,11 @@ def light_lp(
                     bulge=lens_bulge,
                     disk=None,
                     mass=source_result_for_lens[i].instance.galaxies.lens.mass,
-                    shear=source_result_for_lens[i].instance.galaxies.lens.shear,
                 ),
                 source=source,
             ),
             dataset_model=dataset_model_list[i],
+            fields=source_result_for_lens[i].instance.fields,
         )
 
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
@@ -425,11 +428,11 @@ def mass_total(
                     bulge=light_result[i].instance.galaxies.lens.bulge,
                     disk=light_result[i].instance.galaxies.lens.disk,
                     mass=mass_i,
-                    shear=source_result_for_lens[i].model.galaxies.lens.shear,
                 ),
                 source=source,
             ),
             dataset_model=dataset_model_list[i],
+            fields=source_result_for_lens[i].model.fields,
         )
 
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
@@ -466,6 +469,7 @@ def subhalo_no_subhalo(
 
         model = af.Collection(
             galaxies=af.Collection(lens=lens, source=source),
+            fields=mass_result[i].model.fields,
             dataset_model=dataset_model_list[i],
         )
 
@@ -520,6 +524,7 @@ def subhalo_grid_search(
 
         model = af.Collection(
             galaxies=af.Collection(lens=lens, subhalo=subhalo, source=source),
+            fields=mass_result[i].model.fields,
         )
 
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
@@ -585,6 +590,7 @@ def subhalo_refine(
                 subhalo=subhalo,
                 source=subhalo_grid_search_result_2.model.galaxies.source,
             ),
+            fields=subhalo_grid_search_result_2.model.fields,
             dataset_model=dataset_model_list[i],
         )
 

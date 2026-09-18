@@ -239,7 +239,9 @@ __Lens Galaxy Mass__
 We next define the mass profiles which represents the lens galaxy's mass, which will be used to ray-trace the 
 image-plane 2D grid of (y,x) coordinates to the source-plane so that the source model can be evaluated.
 
-In this example, we assume our lens is composed of an elliptical isothermal mass distribution and external shear.
+In this example, we assume our lens is composed of an elliptical isothermal mass distribution, plus an external 
+shear. The shear is not a property of the lens galaxy -- it is the tidal field of everything outside the system --
+so it is held in its own `al.MassField` and passed to the tracer's `fields` argument below.
 
 A mass profile is defined by its convergence $\kappa (\eta)$, which is related to
 the surface density of the mass distribution as
@@ -274,7 +276,9 @@ mass = al.mp.Isothermal(
     ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
 )
 
-shear = al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
+field = al.MassField(
+    redshift=0.5, shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
+)
 
 aplt.plot_array(array=mass.convergence_2d_from(grid=dataset.grid), title="Convergence")
 
@@ -306,7 +310,7 @@ adds them together.
 For example, for the `bulge`, when it computes their 2D images it computes each individually and then adds
 them together.
 """
-lens_galaxy = al.Galaxy(redshift=0.5, mass=mass, shear=shear)
+lens_galaxy = al.Galaxy(redshift=0.5, mass=mass)
 
 """
 __Source Galaxy Light Profile__
@@ -354,7 +358,7 @@ The function below computes the 2D deflection angles of the tracer's lens galaxi
 image-plane 2D (y,x) coordinates $\theta$ of each grid, thus ray-tracing their coordinates to the source plane to 
 compute their $\beta$ values.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 # A list of every grid (e.g. image-plane, source-plane) however we only need the source plane grid with index -1.
 traced_grid = tracer.traced_grid_2d_list_from(grid=dataset.grid)[-1]

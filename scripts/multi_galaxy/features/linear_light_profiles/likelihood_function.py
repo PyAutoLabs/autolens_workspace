@@ -115,7 +115,7 @@ aplt.subplot_imaging_dataset(dataset=masked_dataset)
 """
 __Tracer__
 
-The two co-dominant deflectors, the shear galaxy and the source, with `lp_linear` light profiles carrying no
+The two co-dominant deflectors, the shear `MassField` and the source, with `lp_linear` light profiles carrying no
 `intensity`. Every other parameter is set to the value the simulator used.
 """
 lens_0 = al.Galaxy(
@@ -148,7 +148,7 @@ lens_1 = al.Galaxy(
     ),
 )
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -163,7 +163,7 @@ source = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer(galaxies=[lens_0, lens_1, shear_galaxy, source])
+tracer = al.Tracer(galaxies=[lens_0, lens_1, source], fields=[field])
 
 """
 __Linear Object Lists__

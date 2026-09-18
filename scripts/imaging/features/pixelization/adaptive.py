@@ -52,7 +52,7 @@ __Contents__
 - **Model:** This script chains three searches to fit `Imaging` data of a 'galaxy-scale' strong lens with a model where the lens galaxy's total mass distribution is an `Isothermal` and the source galaxy's light uses an MGE followed by a pixelization.
 - **Dataset + Masking + Positions:** Load, plot and mask the `Imaging` data.
 - **Paths:** The path the results of all chained searches are output.
-- **Model (Search 1):** Search 1 fits a lens model where the lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` and the source galaxy's light is an MGE.
+- **Model (Search 1):** Search 1 fits a lens model where the lens galaxy's total mass distribution is an `Isothermal`, the external shear is an `ExternalShear` held in a `MassField` and the source galaxy's light is an MGE.
 - **Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before modeling.
 - **Analysis + Position Likelihood:** We add a penalty term to the likelihood function, which penalizes models where the brightest multiple images of the lensed source galaxy do not trace close to one another in the source plane.
 - **Brief Description:** In this example we update the positions between searches, where the positions correspond to the (y,x) locations of the lensed source's multiple images.
@@ -65,7 +65,8 @@ __Model__
 This script chains three searches to fit `Imaging` data of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is omitted.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`.
+ - The external shear is an `ExternalShear` held in a `MassField`.
  - The source galaxy's light is a multi-Gaussian expansion (MGE) in search 1 and a pixelization in searches 2 and 3.
 
 __Start Here Notebook__
@@ -164,7 +165,8 @@ __Model (Search 1)__
 
 Search 1 fits a lens model where:
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an `ExternalShear` held
+   in a `MassField` [7 parameters].
  - The source galaxy's light is an MGE with 1 x 20 Gaussians [4 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
@@ -173,9 +175,11 @@ The benefit of using an MGE in search 1 is that it is computationally fast to fi
 non-linear search to quickly converge to a reasonable lens model. This lens model is then used 
 to set up the adaptive pixelization and multiple image positions in search 2.
 """
-lens = af.Model(
-    al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
-)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
+
+# External Shear:
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
@@ -186,7 +190,10 @@ bulge = al.model_util.mge_model_from(
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
-model_1 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model_1 = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 The `info` attribute shows the model in a readable format.
@@ -244,7 +251,8 @@ perform a subsequent model-fit which adapts the analysis to the source's propert
 We therefore compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In the first
 search our lens model is:
 
- - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an `ExternalShear` held
+   in a `MassField` [7 parameters].
  
  - The source galaxy's light uses no image-mesh (only used for Delaunay meshes) [0 parameters].
  
@@ -259,6 +267,7 @@ non-linear search. We pass the `lens` as a `model`, so that we can use the mass 
 does not use any priors from the result of search 1.
 """
 lens = result_1.model.galaxies.lens
+fields = result_1.model.fields
 
 pixelization = af.Model(
     al.Pixelization,
@@ -268,7 +277,7 @@ pixelization = af.Model(
 
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
 
-model_2 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model_2 = af.Collection(galaxies=af.Collection(lens=lens, source=source), fields=fields)
 
 """
 The `info` attribute shows the model, including how parameters and priors were passed from `result_1`.
@@ -370,8 +379,8 @@ __Model (Search 3)__
 We therefore compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In 
 the second search our lens model is:
 
- - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` with fixed parameters from 
-   search 1 [0 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`, and the external shear an `ExternalShear` in a
+   `MassField`, both with fixed parameters from search 1 [0 parameters].
  
  - The source galaxy's light uses no image-mesh (only used for Delaunay meshes) [0 parameters].
  
@@ -386,6 +395,7 @@ fitted for by the non-linear search. We pass the `lens` as an `instance`, so tha
 the best-fit values of search 2. The source
 """
 lens = result_2.instance.galaxies.lens
+fields = result_2.instance.fields
 
 pixelization = af.Model(
     al.Pixelization,
@@ -399,7 +409,7 @@ source = af.Model(
     pixelization=pixelization,
 )
 
-model_3 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model_3 = af.Collection(galaxies=af.Collection(lens=lens, source=source), fields=fields)
 
 """
 __Analysis (Search 2)__
@@ -478,9 +488,11 @@ to in search 3.
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=7.
 """
-lens = af.Model(
-    al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
-)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
+
+# External Shear:
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 source = af.Model(
     al.Galaxy,
@@ -488,7 +500,10 @@ source = af.Model(
     pixelization=result_3.instance.galaxies.source.pixelization,
 )
 
-model_4 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model_4 = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 search_4 = af.Nautilus(
     path_prefix=path_prefix,

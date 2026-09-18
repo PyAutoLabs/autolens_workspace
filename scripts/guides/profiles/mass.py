@@ -28,7 +28,8 @@ __Contents__
 - **Detailed Example: Isothermal:** Build a `Grid2D`, instantiate `al.mp.Isothermal`, plot
   convergence, potential, deflection-magnitude, and the lensed source image produced when
   the isothermal mass is dropped into a `Tracer`.
-- **Mass Sheets:** `ExternalShear`, `MassSheet`, `ExternalPotential` — global perturbations
+- **Mass Sheets:** `ExternalShear`, `MassSheet`, `ExternalPotential` — global perturbations, and
+  the `al.MassField` container that holds them
   rather than parametric matter distributions.
 - **Point Mass:** `PointMass`, `SMBH`, `SMBHBinary` — delta-function-like mass for
   microlensing and supermassive black hole lensing.
@@ -310,6 +311,65 @@ A mass sheet alone produces no observable lensing — its deflections are unifor
 across the image and so are absorbed into the global astrometric solution.  Mass sheets only
 become visible *in combination* with another mass profile; their job is to perturb the
 isothermal or power-law deflections at the few-percent level.
+
+__The `MassField` Container__
+
+These three profiles describe the tidal field of everything *outside* the system being
+modelled.  That makes them properties of the *system*, not of any one galaxy, so they have a
+container of their own: `al.MassField`.
+
+A `MassField` is built exactly like a `Galaxy` — a redshift plus a bag of named mass profiles
+— but it carries no light.  Shear, sheet and potential at one redshift are **one** field, in
+the same way that a bulge and a disk are one galaxy:
+"""
+field = al.MassField(
+    redshift=0.5,
+    shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.03),
+    mass_sheet=al.mp.MassSheet(centre=(0.0, 0.0), kappa=0.1),
+)
+
+print(field.shear)
+print(field.mass_sheet)
+
+"""
+A `Tracer` takes fields through its own `fields` argument, beside `galaxies`:
+
+    tracer = al.Tracer(galaxies=[lens, source], fields=[field])
+
+Only the tracer's *planes* merge galaxies and fields at each redshift — every mass
+calculation (deflections, convergence, potential) therefore picks the field up, while every
+light calculation sees zeros from it.  `tracer.galaxies` never contains a field, so anything
+indexing galaxies positionally is unaffected, and `tracer.fields` is where they are read
+back.  Several fields means several planes, for example line-of-sight sheets at different
+redshifts.
+
+In a *model* the field has its own `fields=` slot beside `galaxies=`:
+
+    field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+    model = af.Collection(
+        galaxies=af.Collection(lens=lens, source=source),
+        fields=af.Collection(field=field),
+    )
+
+It then appears under `fields` in `model.info`, and results are read as
+`result.instance.fields.field.shear`.
+
+An `ExternalShear` takes no `centre`: it is a uniform field about the coordinate origin.  An
+`ExternalPotential` and a `MassSheet` *do* have a centre, and physically it is the centre of
+the system the field is expanded about.  `al.model_util.mass_field_from` composes the field
+model with that centre **shared** with the lens galaxy's mass centre (the same prior object,
+not a copy, so they cost no extra dimensions):
+
+    field = al.model_util.mass_field_from(lens=lens, potential=True)
+
+Its `shear`, `mass_sheet` and `potential` switches choose which components the field holds,
+and `redshift` defaults to the lens galaxy model's redshift.
+
+The galaxy-attached form — `al.Galaxy(redshift=0.5, shear=al.mp.ExternalShear(...))` — remains
+fully supported and unwarned by the library, so existing scripts of your own keep working.
+The `MassField` simply gives the external field a home of its own, rather than bolting it
+onto a galaxy whose light and mass describe something physically different.
 
 __Point Mass__
 

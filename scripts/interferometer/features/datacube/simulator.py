@@ -4,7 +4,8 @@ Simulator: Datacube
 
 This script simulates an ALMA-style spectral-line `Interferometer` datacube of a 'galaxy-scale' strong lens where:
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`, identical across all channels.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`, identical across all channels.
  - The source galaxy's light is an `Sersic`, whose `intensity` follows a Gaussian emission-line profile in the
    channel index (peaking near the cube centre and falling off at the edges).
 
@@ -23,7 +24,7 @@ __Contents__
 - **Dataset Paths:** Where the per-channel datasets, summary JSON and overview plots are written.
 - **uv_wavelengths:** Reuse the SMA `uv_wavelengths.fits` shipped with the workspace as a stand-in for ALMA coverage.
 - **Real-Space Grid:** The 2D image-plane grid each channel is evaluated on before the Fourier transform.
-- **Lens Galaxy:** Shared `Isothermal + ExternalShear` lens, identical for every channel.
+- **Lens Galaxy:** Shared `Isothermal` lens with an `ExternalShear` `MassField`, identical for every channel.
 - **Per-Channel Source:** A Gaussian emission line drives the per-channel `Sersic.intensity`; the `centre` shifts linearly along y across channels to mimic a kinematic gradient.
 - **Per-Channel Simulate:** Loop over channels: build the tracer, simulate, write FITS + tracer.json to disk.
 - **3D-FITS Cube:** Stack the per-channel arrays into single `(n_chan, n_vis, 2)` FITS files — the autolens-canonical post-polarisation-collapse shape.
@@ -102,7 +103,7 @@ grid = al.Grid2D.uniform(shape_native=(256, 256), pixel_scales=0.1)
 """
 __Lens Galaxy__
 
-The lens mass + external shear is shared across channels — the lens doesn't change with frequency.
+The lens mass and the external shear `MassField` are shared across channels — neither changes with frequency.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -111,6 +112,10 @@ lens_galaxy = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
@@ -186,7 +191,7 @@ for channel in range(N_CHANNELS):
     channel_path.mkdir(parents=True, exist_ok=True)
 
     source_galaxy = source_galaxy_for(channel)
-    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
     simulator = al.SimulatorInterferometer(
         uv_wavelengths=uv_wavelengths,

@@ -105,12 +105,18 @@ def source_lp(
                 bulge=lens_bulge,
                 disk=None,
                 mass=mass,
-                shear=af.Model(al.mp.ExternalShear),
             ),
             source=af.Model(
                 al.Galaxy,
                 redshift=redshift_source,
                 bulge=source_bulge,
+            ),
+        ),
+        fields=af.Collection(
+            field=af.Model(
+                al.MassField,
+                redshift=redshift_lens,
+                shear=af.Model(al.mp.ExternalShear),
             ),
         ),
     )
@@ -183,7 +189,6 @@ def source_pix_1(
                 bulge=source_lp_result.instance.galaxies.lens.bulge,
                 disk=source_lp_result.instance.galaxies.lens.disk,
                 mass=mass,
-                shear=source_lp_result.model.galaxies.lens.shear,
             ),
             source=af.Model(
                 al.Galaxy,
@@ -197,6 +202,7 @@ def source_pix_1(
                 ),
             ),
         ),
+        fields=source_lp_result.model.fields,
     )
 
     search = af.Nautilus(
@@ -249,7 +255,6 @@ def source_pix_2(
                 bulge=source_lp_result.instance.galaxies.lens.bulge,
                 disk=source_lp_result.instance.galaxies.lens.disk,
                 mass=source_pix_result_1.instance.galaxies.lens.mass,
-                shear=source_pix_result_1.instance.galaxies.lens.shear,
             ),
             source=af.Model(
                 al.Galaxy,
@@ -263,6 +268,7 @@ def source_pix_2(
                 ),
             ),
         ),
+        fields=source_pix_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -326,10 +332,10 @@ def light_lp(
                 bulge=lens_bulge,
                 disk=None,
                 mass=source_result_for_lens.instance.galaxies.lens.mass,
-                shear=source_result_for_lens.instance.galaxies.lens.shear,
             ),
             source=source,
         ),
+        fields=source_result_for_lens.instance.fields,
     )
 
     search = af.Nautilus(
@@ -398,10 +404,10 @@ def mass_total(
                 bulge=light_result.instance.galaxies.lens.bulge,
                 disk=light_result.instance.galaxies.lens.disk,
                 mass=mass,
-                shear=source_result_for_lens.model.galaxies.lens.shear,
             ),
             source=source,
         ),
+        fields=source_result_for_lens.model.fields,
     )
 
     search = af.Nautilus(
@@ -593,7 +599,8 @@ class SimulateImagingPixelized:
                 instance.galaxies.lens,
                 instance.perturb,
                 al.Galaxy(redshift=instance.galaxies.source.redshift),
-            ]
+            ],
+            fields=instance.fields,
         )
 
         """
@@ -938,13 +945,13 @@ def base_model_narrow_priors_from(base_model, result, stretch: float = 1.0):
             b=0.1 * stretch
         ).galaxies.lens.mass.slope
 
-    if hasattr(base_model.galaxies.lens, "shear"):
-        base_model.galaxies.lens.shear.gamma_1 = result.model_centred_max_lh_bounded(
+    if hasattr(base_model, "fields") and hasattr(base_model.fields.field, "shear"):
+        base_model.fields.field.shear.gamma_1 = result.model_centred_max_lh_bounded(
             b=0.05 * stretch
-        ).galaxies.lens.shear.gamma_1
-        base_model.galaxies.lens.shear.gamma_2 = result.model_centred_max_lh_bounded(
+        ).fields.field.shear.gamma_1
+        base_model.fields.field.shear.gamma_2 = result.model_centred_max_lh_bounded(
             b=0.05 * stretch
-        ).galaxies.lens.shear.gamma_2
+        ).fields.field.shear.gamma_2
 
     return base_model
 

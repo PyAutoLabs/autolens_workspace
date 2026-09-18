@@ -8,7 +8,9 @@ that perturb the lensed images via multi-plane ray tracing.
 LOS halos are sampled from a cosmological halo mass function within a light-cone geometry, converted
 to truncated NFW profiles, and placed on multiple redshift planes between the observer and the source.
 A compensatory negative convergence (kappa) sheet is added to each plane to maintain mass conservation,
-following the methodology of He et al. (2022, MNRAS 511, 3046).
+following the methodology of He et al. (2022, MNRAS 511, 3046). Each plane's sheet is carried by an
+``al.MassField`` -- the container for mass that belongs to the system rather than to a galaxy -- and the fields
+are passed to the ``Tracer`` via its ``fields=`` argument (see ``imaging/modeling.py``).
 
 Without the negative kappa sheets, LOS halos systematically over-lens the images because the total
 convergence is not conserved. The negative sheets account for the smooth average contribution of
@@ -24,7 +26,8 @@ __Contents__
 - **Simulator:** The simulator defines the exposure time, PSF, background sky level, and noise properties.
 - **LOS Configuration:** Parameters controlling the line-of-sight halo population.
 - **Sample LOS Halos:** The ``LOSSampler`` handles the full pipeline.
-- **Ray Tracing:** Define the main lens galaxy and source galaxy, then combine with the LOS galaxies to create a.
+- **Ray Tracing:** Define the main lens galaxy and source galaxy, then combine with the LOS galaxies and fields to
+  create a.
 - **Output:** Output the simulated dataset to .fits files.
 - **Visualize:** Output subplots and summary images as .png files for quick inspection.
 - **Tracer json:** Save the tracer as a .json file for reproducibility.
@@ -34,10 +37,11 @@ __Model__
 
 This script simulates ``Imaging`` of a galaxy-scale strong lens where:
 
- - The lens galaxy's total mass distribution is a ``PowerLaw`` and ``ExternalShear``.
+ - The lens galaxy's total mass distribution is a ``PowerLaw``.
+ - The external shear is an ``ExternalShear`` held in a ``MassField``.
  - The source galaxy's light is a ``SersicCore``.
  - Line-of-sight halos are ``NFWTruncatedSph`` profiles on multiple redshift planes.
- - Each redshift plane includes a ``MassSheet`` with negative kappa.
+ - Each line-of-sight plane carries a ``MassField`` with a negative-kappa ``MassSheet``.
 """
 
 from autolens import jax_wrapper
@@ -201,7 +205,13 @@ The ``LOSSampler`` handles the full pipeline:
  2. For each plane, samples halo masses, positions, and concentrations.
  3. Converts each halo to an ``NFWTruncatedSph`` via physical-to-lensing unit conversion.
  4. Computes the negative kappa sheet for each plane.
- 5. Returns a list of ``Galaxy`` objects ready for the ``Tracer``.
+ 5. Returns the halos as ``Galaxy`` objects and the sheets as ``MassField`` objects, ready for the ``Tracer``.
+
+A negative-kappa sheet is not a galaxy: it is the mean-density correction of the line of sight, which is exactly
+the external mass an ``al.MassField`` exists to hold. ``galaxies_and_fields_from()`` therefore returns the pair
+``(halo_galaxies, sheet_fields)`` that ``Tracer(galaxies=..., fields=...)`` takes, so each plane carries a
+``MassField`` with a negative-kappa sheet beside its halo galaxies. (``galaxies_from()`` on its own still returns
+the older galaxy-attached form and is not deprecated.)
 """
 from autogalaxy.cosmology import Planck15
 
@@ -223,33 +233,31 @@ sampler = LOSSampler(
     seed=seed,
 )
 
-los_galaxies = sampler.galaxies_from()
+los_galaxies, los_fields = sampler.galaxies_and_fields_from()
 
 n_halos = sum(
     1
     for g in los_galaxies
     if hasattr(g, "mass") and isinstance(g.mass, al.mp.NFWTruncatedSph)
 )
-n_sheets = sum(
-    1
-    for g in los_galaxies
-    if hasattr(g, "mass_sheet") and isinstance(g.mass_sheet, al.mp.MassSheet)
-)
+n_sheets = len(los_fields)
 
 print(f"Sampled {n_halos} LOS halos across {n_sheets} planes.")
 
-for g in los_galaxies:
-    if hasattr(g, "mass_sheet") and isinstance(g.mass_sheet, al.mp.MassSheet):
-        print(f"  Plane z={g.redshift:.4f}: kappa_neg = {g.mass_sheet.kappa:.6e}")
+for los_field in los_fields:
+    print(
+        f"  Plane z={los_field.redshift:.4f}: kappa_neg = {los_field.mass_sheet.kappa:.6e}"
+    )
 
 """
 __Ray Tracing__
 
-Define the main lens galaxy and source galaxy, then combine with the LOS galaxies
+Define the main lens galaxy and source galaxy, then combine with the LOS galaxies and the LOS fields
 to create a multi-plane ``Tracer``.
 
-The ``Tracer`` automatically groups galaxies by redshift into planes and performs
-multi-plane ray tracing through all of them.
+The ``Tracer`` automatically groups galaxies *and fields* by redshift into planes and performs
+multi-plane ray tracing through all of them. The system's external shear is itself a ``MassField`` at the lens
+redshift, so it joins the line-of-sight sheets in the ``fields=`` list (see ``imaging/modeling.py``).
 """
 lens_galaxy = al.Galaxy(
     redshift=z_lens,
@@ -259,6 +267,10 @@ lens_galaxy = al.Galaxy(
         slope=2.264,
         einstein_radius=1.6,
     ),
+)
+
+lens_field = al.MassField(
+    redshift=z_lens,
     shear=al.mp.ExternalShear(gamma_1=0.0, gamma_2=0.0),
 )
 
@@ -275,8 +287,9 @@ source_galaxy = al.Galaxy(
 )
 
 all_galaxies = los_galaxies + [lens_galaxy, source_galaxy]
+all_fields = los_fields + [lens_field]
 
-tracer = al.Tracer(galaxies=all_galaxies)
+tracer = al.Tracer(galaxies=all_galaxies, fields=all_fields)
 
 """
 We can plot the tracer's image to see the combined lensing effect of the main lens
@@ -353,8 +366,15 @@ for g in los_galaxies:
                 g.mass.truncation_radius,
             ]
         )
-    elif hasattr(g, "mass_sheet") and isinstance(g.mass_sheet, al.mp.MassSheet):
-        sheet_info.append([g.redshift, g.mass_sheet.kappa])
+
+# The sheets are no longer galaxies, so they are read off the tracer's fields rather than by
+# filtering the galaxy list. Every field the tracer carries is listed in `tracer.fields`.
+
+for los_field in tracer.fields:
+    if hasattr(los_field, "mass_sheet") and isinstance(
+        los_field.mass_sheet, al.mp.MassSheet
+    ):
+        sheet_info.append([los_field.redshift, los_field.mass_sheet.kappa])
 
 if len(halo_info) > 0:
     np.save(dataset_path / "los_halo_list.npy", np.array(halo_info))

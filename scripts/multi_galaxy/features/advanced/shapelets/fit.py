@@ -219,7 +219,7 @@ lens_1 = al.Galaxy(
     ),
 )
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -230,7 +230,7 @@ __Fit__
 `use_positive_only_solver=False` is required: shapelets of order `n > 0` are negative over part of their extent,
 and forcing the solve positive would prevent the basis from summing to anything but a bump.
 """
-tracer = al.Tracer(galaxies=[lens_0, lens_1, shear_galaxy, source])
+tracer = al.Tracer(galaxies=[lens_0, lens_1, source], fields=[field])
 
 fit = al.FitImaging(
     dataset=dataset,

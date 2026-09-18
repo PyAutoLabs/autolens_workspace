@@ -162,8 +162,8 @@ for i, centre in enumerate(main_lens_centres):
         mass=mass,
     )
 
-shear_galaxy = af.Model(
-    al.Galaxy,
+field = af.Model(
+    al.MassField,
     redshift=0.5,
     shear=af.Model(al.mp.ExternalShear),
 )
@@ -175,7 +175,8 @@ source_0 = af.Model(
 )
 
 model_1 = af.Collection(
-    galaxies=af.Collection(**lens_dict_1, shear_galaxy=shear_galaxy, source_0=source_0)
+    galaxies=af.Collection(**lens_dict_1, source_0=source_0),
+    fields=af.Collection(field=field),
 )
 
 print(model_1.info)
@@ -274,18 +275,14 @@ source_1 = af.Model(
 )
 
 model_2 = af.Collection(
-    galaxies=af.Collection(
-        **lens_dict_2,
-        shear_galaxy=result_1.instance.galaxies.shear_galaxy,
-        source_0=source_0_2,
-        source_1=source_1,
-    )
+    galaxies=af.Collection(**lens_dict_2, source_0=source_0_2, source_1=source_1),
+    fields=result_1.instance.fields,
 )
 
 print(model_2.info)
 
 """
-Search 2 passed both deflectors, the shear galaxy and `source_0`'s light forward as instances, so they have no
+Search 2 passed both deflectors, the shear `MassField` and `source_0`'s light forward as instances, so they have no
 free parameters left. What is left free is `source_0`'s `IsothermalSph` mass and the new `source_1` at
 `redshift = 2.0`.
 """

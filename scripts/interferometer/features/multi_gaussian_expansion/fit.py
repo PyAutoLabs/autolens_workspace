@@ -21,8 +21,8 @@ __Contents__
 
 - **Advantages & Disadvantages:** Benefits and drawbacks of an MGE source for interferometer data.
 - **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
-- **Model:** The lens model whose `intensity` values we solve for via inversion — `Isothermal +
-  ExternalShear` mass with a 30-Gaussian MGE source bulge.
+- **Model:** The lens model whose `intensity` values we solve for via inversion — an `Isothermal`
+  lens mass and an `ExternalShear` `MassField`, with a 30-Gaussian MGE source bulge.
 - **Mask:** Define the `real_space_mask` which sets the grid the strong lens is evaluated on.
 - **Dataset:** Load the strong lens `Interferometer` dataset using `TransformerNUFFT` (backed by `nufftax`).
 - **Basis:** Build the linear Gaussian basis used as the source bulge.
@@ -46,7 +46,8 @@ This script fits an `Interferometer` dataset of a 'galaxy-scale' strong lens wit
 
  - The lens galaxy's light is omitted (and is not present in the simulated data). Interferometer
    convention.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The source galaxy's bulge is a multi-Gaussian expansion of 5 linear `Gaussian` profiles, all sharing
    the same centre and `ell_comps`, with `sigma` values spanning 0.01" to the mask radius in log-spaced
    increments.
@@ -154,6 +155,10 @@ lens = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
@@ -162,7 +167,7 @@ source = al.Galaxy(
     bulge=source_bulge,
 )
 
-tracer = al.Tracer(galaxies=[lens, source])
+tracer = al.Tracer(galaxies=[lens, source], fields=[field])
 
 fit = al.FitInterferometer(dataset=dataset, tracer=tracer)
 

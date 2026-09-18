@@ -35,7 +35,8 @@ This script simulates multi-wavelength `Imaging` of a 'galaxy-scale' strong lens
 
  - The two datasets have a small offset of half the pixel scale between them.
  - The lens galaxy's light profile is an `Sersic`, which has a different `intensity` at each wavelength.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The source galaxy's light is an `Sersic`, which has a different `intensity` at each wavelength.
 
 Two images are simulated, corresponding to a greener ('g' band) redder image (`r` band).
@@ -175,10 +176,14 @@ lens_galaxy_list = [
         redshift=0.5,
         bulge=bulge,
         mass=mass,
-        shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
     )
     for bulge in bulge_list
 ]
+
+field = al.MassField(
+    redshift=0.5,
+    shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
+)
 
 """
 __Ray Tracing__
@@ -206,7 +211,7 @@ Use these galaxies to setup tracers at each waveband, which will generate each i
 dataset.
 """
 tracer_list = [
-    al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+    al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
     for lens_galaxy, source_galaxy in zip(lens_galaxy_list, source_galaxy_list)
 ]
 

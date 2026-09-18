@@ -66,7 +66,8 @@ __Model__
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is a linear `Sersic` bulge.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`.
+ - The external shear is an `ExternalShear` held in a `MassField`.
  - The source galaxy's light is a linear `Sersic`.
 
 __Start Here Notebook__
@@ -161,7 +162,8 @@ We compose a lens model where:
 
  - The lens galaxy's light is a linear `Sersic` bulge [6 parameters].
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an `ExternalShear` held
+   in a `MassField` [7 parameters].
 
  - The source galaxy's light is a linear `Sersic` [6 parameters].
 
@@ -181,9 +183,11 @@ https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 bulge = af.Model(al.lp_linear.Sersic)
 
 mass = af.Model(al.mp.Isothermal)
-shear = af.Model(al.mp.ExternalShear)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+# External Shear:
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Source:
 
@@ -193,7 +197,10 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to

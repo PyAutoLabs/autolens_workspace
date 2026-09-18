@@ -123,9 +123,11 @@ def fit():
 
     mass = af.Model(al.mp.Isothermal)
 
-    shear = af.Model(al.mp.ExternalShear)
+    lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
-    lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+    # External Shear (an `al.MassField`, in its own `fields` collection below):
+
+    field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
     # Source:
 
@@ -140,7 +142,10 @@ def fit():
 
     # Overall Lens Model:
 
-    model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+    model = af.Collection(
+        galaxies=af.Collection(lens=lens, source=source),
+        fields=af.Collection(field=field),
+    )
 
     """
     __Search__ 

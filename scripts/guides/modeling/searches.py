@@ -358,7 +358,11 @@ shear = af.Model(al.mp.ExternalShear)
 shear.gamma_1 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 shear.gamma_2 = af.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=shear)
 
 # Source:
 
@@ -368,7 +372,10 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 We now define the start point of certain parameters in the model:

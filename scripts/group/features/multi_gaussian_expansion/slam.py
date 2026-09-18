@@ -16,7 +16,8 @@ __Contents__
 
 - **Prerequisites:** Before using this SLaM pipeline, you should be familiar with.
 - **This Script:** Using a SOURCE LP PIPELINE, LIGHT LP PIPELINE and MASS TOTAL PIPELINE.
-- **SOURCE LP PIPELINE:** Fits lens light and source light using MGE, with Isothermal mass and ExternalShear.
+- **SOURCE LP PIPELINE:** Fits lens light and source light using MGE, with Isothermal mass and an
+  `ExternalShear` held in an `al.MassField`.
 - **LIGHT LP PIPELINE:** Refits lens light with a fresh MGE, mass and source fixed from SOURCE LP.
 - **MASS TOTAL PIPELINE:** Refits the mass using a PowerLaw, light and source fixed from previous stages.
 - **Dataset:** Load and plot the strong lens dataset.
@@ -70,7 +71,7 @@ For group-scale lenses:
  - Each extra galaxy gets a 10-Gaussian MGE with centres fixed to the observed positions and a truncated
    `dPIEMassSph` mass.
  - The source galaxy gets a 20-Gaussian MGE with Gaussian centre priors.
- - Only `lens_0` carries an `ExternalShear`.
+ - The group's one `ExternalShear` is an `al.MassField` in the model's `fields` collection.
 
 The MGE source means the SOURCE PIX PIPELINE is not needed, significantly simplifying the overall pipeline.
 """
@@ -109,10 +110,15 @@ def source_lp(
             redshift=redshift_lens,
             bulge=bulge,
             mass=mass,
-            shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
         )
 
         lens_dict[f"lens_{i}"] = lens
+
+    # External Shear (an `al.MassField`, in its own `fields` collection below):
+
+    field = af.Model(
+        al.MassField, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
+    )
 
     # Extra Galaxies:
 
@@ -159,6 +165,7 @@ def source_lp(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=af.Collection(field=field),
         extra_galaxies=extra_galaxies,
     )
 
@@ -221,7 +228,6 @@ def light_lp(
             redshift=lens_instance.redshift,
             bulge=bulge,
             mass=lens_instance.mass,
-            shear=lens_instance.shear,
         )
 
         lens_dict[f"lens_{i}"] = lens
@@ -263,6 +269,7 @@ def light_lp(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_lp_result.instance.fields,
         extra_galaxies=extra_galaxies,
     )
 
@@ -324,7 +331,6 @@ def mass_total(
             redshift=light_lens_instance.redshift,
             bulge=light_lens_instance.bulge,
             mass=mass,
-            shear=source_lp_result.model.galaxies.lens_0.shear if i == 0 else None,
         )
 
         lens_dict[f"lens_{i}"] = lens
@@ -371,6 +377,7 @@ def mass_total(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_lp_result.model.fields,
         extra_galaxies=extra_galaxies,
     )
 

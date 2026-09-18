@@ -16,7 +16,7 @@ __Prerequisites__
 
 - **Multi Galaxy SLaM** (`multi_galaxy/slam.py`) — the regime baseline. It establishes the four things every
   multi-galaxy pipeline does: one `lens_i` per deflector built in a loop, the external shear held in its own
-  `shear_galaxy`, mass centres fixed in `source_lp[1]` and released in `source_pix[1]`, and `n_live` scaling with
+  `MassField`, mass centres fixed in `source_lp[1]` and released in `source_pix[1]`, and `n_live` scaling with
   the deflector count. None of that is re-explained here.
 - **SLaM Start Here** (`guides/modeling/slam_start_here`) — what the five stages are for.
 - **Multi Galaxy Scaling Relation** (`multi_galaxy/features/scaling_relation/modeling`)
@@ -71,7 +71,7 @@ Using LENS LIGHT (two stages), SOURCE LP, SOURCE PIX (two stages), LIGHT LP and 
 fits `Imaging` data where in the final model:
 
  - Each co-dominant deflector has a free MGE bulge and a `PowerLaw` total mass; the system's `ExternalShear`
-   is held in its own `shear_galaxy`.
+   is held in its own `MassField`.
  - Each scaling galaxy has a free MGE bulge and an `IsothermalSph` mass tied to the brightest galaxy.
  - The source galaxy's light is a `Pixelization`.
 
@@ -166,6 +166,8 @@ def luminosities_from(result, n_main, pixel_scale):
     galaxy's.
 
     The main lenses are the first `n_main` entries because every model in this script composes `**lens_dict` first.
+    The shear `MassField` does not enter this arithmetic at all: it lives in the model's `fields` collection and the
+    analysis passes it to the tracer's `fields` argument, never into its galaxy list.
     """
     tracer = (
         result.max_log_likelihood_fit.tracer_linear_light_profiles_to_light_profiles
@@ -349,7 +351,7 @@ Equivalent to `source_lp` in `slam_start_here.py`, except all light is fixed fro
 source enter here for the first time.
 
 Each co-dominant deflector gets a free `Isothermal`, and the system's single `ExternalShear` is held in its own
-`shear_galaxy` at the system centre, exactly as in `multi_galaxy/slam.py` — the shear describes the tidal field of
+`MassField` at the system centre, exactly as in `multi_galaxy/slam.py` — the shear describes the tidal field of
 everything outside the system, so attaching it to one of several co-dominant galaxies would misrepresent it. The
 tier's Einstein radii are tied to the brightest galaxy's free `einstein_radius`, so the tier costs nothing.
 """
@@ -395,8 +397,8 @@ def source_lp(
             mass=mass,
         )
 
-    shear_galaxy = af.Model(
-        al.Galaxy,
+    field = af.Model(
+        al.MassField,
         redshift=redshift_lens,
         shear=af.Model(al.mp.ExternalShear),
     )
@@ -426,10 +428,10 @@ def source_lp(
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
-            shear_galaxy=shear_galaxy,
             source=af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge),
         ),
         scaling_galaxies=af.Collection(scaling_galaxies_list),
+        fields=af.Collection(field=field),
     )
 
     search = af.Nautilus(
@@ -516,7 +518,6 @@ def source_pix_1(
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
-            shear_galaxy=source_lp_result.model.galaxies.shear_galaxy,
             source=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.source.redshift,
@@ -530,6 +531,7 @@ def source_pix_1(
             ),
         ),
         scaling_galaxies=source_lp_result.model.scaling_galaxies,
+        fields=source_lp_result.model.fields,
     )
 
     search = af.Nautilus(
@@ -600,7 +602,6 @@ def source_pix_2(
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
-            shear_galaxy=source_pix_result_1.instance.galaxies.shear_galaxy,
             source=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.source.redshift,
@@ -614,6 +615,7 @@ def source_pix_2(
             ),
         ),
         scaling_galaxies=source_pix_result_1.instance.scaling_galaxies,
+        fields=source_pix_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -718,12 +720,9 @@ def light_lp(
     )
 
     model = af.Collection(
-        galaxies=af.Collection(
-            **lens_dict,
-            shear_galaxy=source_result_for_lens.instance.galaxies.shear_galaxy,
-            source=source,
-        ),
+        galaxies=af.Collection(**lens_dict, source=source),
         scaling_galaxies=af.Collection(scaling_galaxies_list),
+        fields=source_result_for_lens.instance.fields,
     )
 
     search = af.Nautilus(
@@ -832,12 +831,9 @@ def mass_total(
     source = al.util.chaining.source_from(result=source_result_for_source)
 
     model = af.Collection(
-        galaxies=af.Collection(
-            **lens_dict,
-            shear_galaxy=source_result_for_lens.model.galaxies.shear_galaxy,
-            source=source,
-        ),
+        galaxies=af.Collection(**lens_dict, source=source),
         scaling_galaxies=af.Collection(scaling_galaxies_list),
+        fields=source_result_for_lens.model.fields,
     )
 
     search = af.Nautilus(

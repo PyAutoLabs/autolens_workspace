@@ -43,18 +43,20 @@ at every image-plane coordinate is produced by ONE mass profile:
 
   alpha_lens(theta) = alpha_total(theta ; Isothermal parameters)
 
-For a decomposed mass model, the lens galaxy carries multiple independent mass components, and the lens-plane
+For a decomposed mass model, the lens plane carries multiple independent mass components, and the lens-plane
 deflection is their SUM:
 
-  alpha_lens(theta) = alpha_stellar(theta) + alpha_dark(theta) + alpha_shear(theta)
-                    = (M/L) * alpha_light(theta ; bulge parameters)
-                       + alpha_NFW(theta ; kappa_s, scale_radius)
-                       + alpha_shear(theta ; gamma_1, gamma_2)
+  alpha_plane(theta) = alpha_stellar(theta) + alpha_dark(theta) + alpha_shear(theta)
+                     = (M/L) * alpha_light(theta ; bulge parameters)
+                        + alpha_NFW(theta ; kappa_s, scale_radius)
+                        + alpha_shear(theta ; gamma_1, gamma_2)
 
 The stellar contribution comes from the lens galaxy's light profile, scaled by the `mass_to_light_ratio`
 parameter — i.e. the lens light is converted into a stellar surface density before being turned into a
-deflection. The dark contribution is the NFW deflection of the dark matter halo. External shear contributes
-a small uniform deflection set by the two shear components.
+deflection. The dark contribution is the NFW deflection of the dark matter halo. The external shear, which
+belongs to the system rather than to the galaxy and is therefore held in a `MassField`, contributes a small
+uniform deflection set by the two shear components. The plane sums all three regardless of which object
+carries them.
 
 Every other step of the likelihood (PSF convolution, chi-squared, noise normalization, MGE linear-algebra
 solver) is unchanged.
@@ -110,10 +112,13 @@ dataset = dataset.apply_mask(mask=mask)
 """
 __Galaxies__
 
-The two galaxies that participate in the ray-tracing:
+The two galaxies that participate in the ray-tracing, plus the external field:
 
- - `lens` (z=0.5): a linear `lmp.Sersic` bulge (acting as light + stellar mass via a single `mass_to_light_ratio`),
-   an `NFWSph` dark matter halo aligned with the bulge, and an `ExternalShear`.
+ - `lens` (z=0.5): a linear `lmp.Sersic` bulge (acting as light + stellar mass via a single `mass_to_light_ratio`)
+   and an `NFWSph` dark matter halo aligned with the bulge.
+ - `field` (z=0.5): an `ExternalShear` held in an `al.MassField`. The shear is the tidal field of everything
+   outside the system rather than a property of the lens galaxy, so it is passed to the `Tracer` via its own
+   `fields=` argument (see `imaging/modeling.py`).
  - `source` (z=1.0): an MGE light component (a simple basis of 10 linear Gaussians).
 
 The mass-profile parameters are set to the simulator's true values so the manual likelihood computation below
@@ -146,6 +151,10 @@ lens = al.Galaxy(
         mass_to_light_ratio=0.2,
     ),
     dark=al.mp.NFWSph(centre=(0.0, 0.0), kappa_s=0.1, scale_radius=20.0),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=-0.02, gamma_2=0.005),
 )
 
@@ -154,7 +163,7 @@ source = al.Galaxy(
     bulge=build_source_basis(centre=(0.0, 0.0)),
 )
 
-tracer = al.Tracer(galaxies=[lens, source])
+tracer = al.Tracer(galaxies=[lens, source], fields=[field])
 
 """
 __Decomposed Deflection__
@@ -162,6 +171,9 @@ __Decomposed Deflection__
 The single call below performs the standard image-plane → source-plane ray-tracing.
 `traced_grid_2d_list_from` returns one grid per plane: the image-plane grid (no deflection) and the
 source-plane grid (deflected by every mass profile in the lens plane, summed).
+
+The lens plane holds the lens `Galaxy` and the `MassField`, and the tracer sums across both: which object a
+profile belongs to makes no difference to the ray-tracing.
 
 To make the decomposition concrete we re-compute the same source-plane grid by hand. Each mass profile exposes
 its own `deflections_yx_2d_from` method; the SUM of those three deflection maps is what the tracer applies
@@ -171,7 +183,7 @@ masked_grid = dataset.grid
 
 deflections_stellar = lens.bulge.deflections_yx_2d_from(grid=masked_grid)
 deflections_dark = lens.dark.deflections_yx_2d_from(grid=masked_grid)
-deflections_shear = lens.shear.deflections_yx_2d_from(grid=masked_grid)
+deflections_shear = field.shear.deflections_yx_2d_from(grid=masked_grid)
 
 deflections_total = deflections_stellar + deflections_dark + deflections_shear
 
@@ -211,8 +223,8 @@ aplt.plot_array(
 """
 What `image_2d_from` does internally for our decomposed-mass lens:
 
-  1. Computes `alpha_lens(theta) = alpha_stellar + alpha_dark + alpha_shear` (the decomposition above).
-  2. Ray-traces the image-plane grid to obtain `grid_source = grid - alpha_lens`.
+  1. Computes `alpha_plane(theta) = alpha_stellar + alpha_dark + alpha_shear` (the decomposition above).
+  2. Ray-traces the image-plane grid to obtain `grid_source = grid - alpha_plane`.
   3. Evaluates the source MGE at `grid_source`, producing its image-plane contribution.
   4. (If the lens has a light component, also evaluates it at the image-plane grid and adds to the model image.)
 

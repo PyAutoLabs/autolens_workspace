@@ -37,7 +37,8 @@ This script fits an `Imaging` dataset of a galaxy with a model where:
 
  - The sky background is included as part of a `DatasetModel`.
  - The lens galaxy's light is a linear `Sersic` bulge.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`.
+ - The external shear is an `ExternalShear` held in a `MassField`.
  - The source galaxy's light is a linear `SersicCore`.
 
 __Start Here Notebook__
@@ -139,7 +140,8 @@ In this example we compose a lens model where:
 
  - The lens galaxy's light is a linear `Sersic` bulge [6 parameters].
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an `ExternalShear` held
+   in a `MassField` [7 parameters].
 
  - The source galaxy's light is a linear `SersicCore` [6 parameters].
 
@@ -164,9 +166,11 @@ bulge = al.model_util.mge_model_from(
 
 mass = af.Model(al.mp.Isothermal)
 
-shear = af.Model(al.mp.ExternalShear)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+# External Shear:
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Source:
 
@@ -185,7 +189,9 @@ dataset_model.background_sky_level = af.UniformPrior(lower_limit=0.0, upper_limi
 # Overall Lens Model:
 
 model = af.Collection(
-    dataset_model=dataset_model, galaxies=af.Collection(lens=lens, source=source)
+    dataset_model=dataset_model,
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
 )
 
 """

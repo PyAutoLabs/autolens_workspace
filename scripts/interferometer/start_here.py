@@ -230,8 +230,7 @@ use the PyAutoLens Model API to compose the over lens model.
 # Lens galaxy
 
 mass = af.Model(al.mp.Isothermal)
-shear = af.Model(al.mp.ExternalShear)
-lens = af.Model(al.Galaxy, redshift=0.299, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.299, mass=mass)
 
 # Source galaxy
 source_bulge = al.model_util.mge_model_from(
@@ -240,7 +239,12 @@ source_bulge = al.model_util.mge_model_from(
 source = af.Model(al.Galaxy, redshift=3.042, bulge=source_bulge)
 
 # Compose model
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+field = af.Model(al.MassField, redshift=0.299, shear=af.Model(al.mp.ExternalShear))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 We can print the model to show the parameters that the model is composed of, which shows many of the MGE's fixed
@@ -404,7 +408,8 @@ grid = al.Grid2D.uniform(
 We now define a `Tracer` — this is the key object that combines all galaxies in the system
 and computes how light rays are deflected.
 
-- The lens galaxy has mass (an isothermal profile + shear).
+- The lens galaxy has mass (an isothermal profile).
+- The external shear is a `MassField`, passed to the tracer's `fields` argument.
 - The source galaxy has its own light (a SersicCore profile).
 
 Together they define a strong lens system. The tracer will “ray-trace” our grid through
@@ -417,6 +422,10 @@ lens_galaxy = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
@@ -431,7 +440,7 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 """
 Plotting the tracer’s image gives us a “perfect” view of the strong lens system, before

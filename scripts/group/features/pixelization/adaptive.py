@@ -125,7 +125,7 @@ __Model (Search 1)__
 
 Search 1 fits a parametric group model to establish the lens mass model and source morphology.
 
- - Main lens galaxy: MGE light + Isothermal mass + ExternalShear.
+ - Main lens galaxy: MGE light + Isothermal mass, with the group's `ExternalShear` in a `MassField`.
  - Extra galaxies: MGE light + truncated dPIEMassSph mass (fixed centres, free sigma).
  - Source: MGE light profile.
 """
@@ -149,10 +149,13 @@ for i, centre in enumerate(main_lens_centres):
         redshift=0.5,
         bulge=bulge,
         mass=mass,
-        shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
 
     lens_dict[f"lens_{i}"] = lens
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Extra Galaxies:
 
@@ -197,6 +200,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 
 model_1 = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
     extra_galaxies=extra_galaxies,
 )
 
@@ -250,6 +254,7 @@ source_2 = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
 
 model_2 = af.Collection(
     galaxies=af.Collection(**lens_dict_2, source=source_2),
+    fields=result_1.model.fields,
     extra_galaxies=result_1.model.extra_galaxies,
 )
 
@@ -323,6 +328,7 @@ source_3 = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization_3)
 
 model_3 = af.Collection(
     galaxies=af.Collection(**lens_dict_3, source=source_3),
+    fields=result_2.instance.fields,
     extra_galaxies=result_2.instance.extra_galaxies,
 )
 
@@ -371,8 +377,11 @@ for i, _ in enumerate(main_lens_centres):
         redshift=0.5,
         bulge=bulge_i,
         mass=mass,
-        shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 extra_galaxies_4_list = []
 for centre in extra_galaxies_centres:
@@ -398,6 +407,7 @@ source_4 = af.Model(
 
 model_4 = af.Collection(
     galaxies=af.Collection(**lens_dict_4, source=source_4),
+    fields=af.Collection(field=field),
     extra_galaxies=extra_galaxies_4,
 )
 

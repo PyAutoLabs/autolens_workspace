@@ -136,7 +136,7 @@ def _random_multi_galaxy_lens():
     """
     Draw a random co-dominant pair of deflectors, an external shear and a source galaxy.
 
-    Returns the two lens galaxies, a galaxy holding the system's external shear, the source
+    Returns the two lens galaxies, an `al.MassField` holding the system's external shear, the source
     galaxy, and the list of the two lens centres (needed to build the over-sampling grid).
     """
     einstein_radius_0 = float(rng.uniform(0.6, 1.4))
@@ -186,7 +186,7 @@ def _random_multi_galaxy_lens():
         ),
     )
 
-    shear_galaxy = al.Galaxy(
+    field = al.MassField(
         redshift=0.5,
         shear=al.mp.ExternalShear(
             gamma_1=float(rng.normal(0.0, 0.05)),
@@ -208,7 +208,7 @@ def _random_multi_galaxy_lens():
     return (
         lens_galaxy_0,
         lens_galaxy_1,
-        shear_galaxy,
+        field,
         source_galaxy,
         [centre_0, centre_1],
     )
@@ -232,7 +232,7 @@ for sample_index in range(total_datasets):
     (
         lens_galaxy_0,
         lens_galaxy_1,
-        shear_galaxy,
+        field,
         source_galaxy,
         main_lens_centres,
     ) = _random_multi_galaxy_lens()
@@ -262,7 +262,7 @@ for sample_index in range(total_datasets):
     unclear.
     """
     tracer = al.Tracer(
-        galaxies=[lens_galaxy_0, lens_galaxy_1, shear_galaxy, source_galaxy]
+        galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy], fields=[field]
     )
 
     aplt.plot_array(array=tracer.image_2d_from(grid=grid_over_sampled), title="Image")

@@ -104,7 +104,6 @@ bulge = af.Model(al.lp_linear.Sersic)
 disk = af.Model(al.lp_linear.Exponential)
 
 mass = af.Model(al.mp.Isothermal)
-shear = af.Model(al.mp.ExternalShear)
 
 lens = af.Model(
     al.Galaxy,
@@ -112,8 +111,13 @@ lens = af.Model(
     bulge=bulge,
     disk=disk,
     mass=mass,
-    shear=shear,
 )
+
+# External Field:
+
+shear = af.Model(al.mp.ExternalShear)
+
+field = af.Model(al.MassField, redshift=0.5, shear=shear)
 
 # Source:
 
@@ -124,20 +128,31 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 print(model.info)
 
 """
-The lens galaxy now holds four profiles and the source galaxy two. Every linear light profile's `intensity` is 
+An external shear describes the tidal field of everything *outside* the system being modelled, so it is a
+property of the system rather than of a galaxy. It is therefore held in an `al.MassField` — a container built
+like a `Galaxy` (a redshift plus a bag of mass profiles: `ExternalShear`, `MassSheet`, `ExternalPotential`)
+which carries no light — and placed in its own `fields` collection beside `galaxies`. It appears under `fields`
+in `model.info` and is read back as `result.instance.fields.field.shear`. `tracer.galaxies` never contains a
+field, so positional indexing of galaxies is unaffected; the tracer's *planes* merge galaxies and fields at
+each redshift.
+
+The lens galaxy now holds three profiles, the field one, and the source galaxy two. Every linear light profile's `intensity` is 
 solved by the inversion rather than sampled, so this model has four solved parameters alongside its 29 sampled 
 ones.
 """
 af.ModelPlotter(model).figure()
 
 """
-The use of the words `bulge`, `disk`, `mass` and `shear` above are arbitrary. They can be replaced with any name you
-like, e.g. `bulge_0`, `bulge_1`, `mass_0`, `mass_1`, and the model will still behave in the same way.
+The use of the words `bulge`, `disk`, `mass`, `shear` and `field` above are arbitrary. They can be replaced with
+any name you like, e.g. `bulge_0`, `bulge_1`, `mass_0`, `mass_1`, and the model will still behave in the same way.
 
 The API can also be extended to compose lens models where there are multiple galaxies:
 """
@@ -211,8 +226,9 @@ lens = af.Model(
     bulge=al.lp_linear.Sersic,
     disk=al.lp_linear.Sersic,
     mass=al.mp.Isothermal,
-    shear=al.mp.ExternalShear,
 )
+
+field = af.Model(al.MassField, redshift=0.5, shear=al.mp.ExternalShear)
 
 source = af.Model(
     al.Galaxy,
@@ -221,7 +237,10 @@ source = af.Model(
     disk=al.lp_linear.ExponentialCore,
 )
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 print(model.info)
 
 """
@@ -330,8 +349,9 @@ lens = af.Model(
     bulge=bulge,
     disk=disk,
     mass=mass,
-    shear=shear,
 )
+
+field = af.Model(al.MassField, redshift=0.5, shear=shear)
 
 # Source:
 
@@ -342,7 +362,10 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 # Assert that the effective radius of the bulge is larger than that of the disk.
 # (Assertions can only be added at the end of model composition, after all components

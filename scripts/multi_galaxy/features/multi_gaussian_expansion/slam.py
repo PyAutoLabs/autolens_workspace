@@ -29,7 +29,7 @@ stages both build one basis per deflector. This pipeline differs in:
    ellipticities. One group has a single ellipticity at all radii; two let it change with radius, which is exactly
    the isophotal twist this dataset contains and a real interacting pair exhibits.
 
-Everything else — the `lens_i` loop, the `shear_galaxy`, the mass centres fixed then released, the live-point
+Everything else — the `lens_i` loop, the shear `MassField`, the mass centres fixed then released, the live-point
 scaling — is the baseline's, unchanged. The stage functions are copied rather than imported, following every other
 feature pipeline in this package; `multi_galaxy/slam.py` is a script, so importing it would execute its whole
 pipeline on the `simple` dataset as a side effect.
@@ -113,8 +113,8 @@ def source_lp(
             mass=mass,
         )
 
-    shear_galaxy = af.Model(
-        al.Galaxy, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
+    field = af.Model(
+        al.MassField, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
     )
 
     source_bulge = al.model_util.mge_model_from(
@@ -126,9 +126,9 @@ def source_lp(
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
-            shear_galaxy=shear_galaxy,
             source=af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge),
         ),
+        fields=af.Collection(field=field),
     )
 
     search = af.Nautilus(
@@ -213,7 +213,6 @@ def source_pix_1(
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
-            shear_galaxy=source_lp_result.model.galaxies.shear_galaxy,
             source=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.source.redshift,
@@ -224,6 +223,7 @@ def source_pix_1(
                 ),
             ),
         ),
+        fields=source_lp_result.model.fields,
     )
 
     search = af.Nautilus(
@@ -292,7 +292,6 @@ def source_pix_2(
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
-            shear_galaxy=source_pix_result_1.instance.galaxies.shear_galaxy,
             source=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.source.redshift,
@@ -301,6 +300,7 @@ def source_pix_2(
                 ),
             ),
         ),
+        fields=source_pix_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -376,11 +376,8 @@ def light_lp(
     )
 
     model = af.Collection(
-        galaxies=af.Collection(
-            **lens_dict,
-            shear_galaxy=source_result_for_lens.instance.galaxies.shear_galaxy,
-            source=source,
-        ),
+        galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_result_for_lens.instance.fields,
     )
 
     search = af.Nautilus(
@@ -457,11 +454,8 @@ def mass_total(
     source = al.util.chaining.source_from(result=source_result_for_source)
 
     model = af.Collection(
-        galaxies=af.Collection(
-            **lens_dict,
-            shear_galaxy=source_result_for_lens.model.galaxies.shear_galaxy,
-            source=source,
-        ),
+        galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_result_for_lens.model.fields,
     )
 
     search = af.Nautilus(

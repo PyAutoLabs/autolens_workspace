@@ -138,13 +138,19 @@ def source_lp(
                 bulge=None,
                 disk=None,
                 mass=af.Model(al.mp.Isothermal),
-                shear=af.Model(al.mp.ExternalShear),
             ),
             source=af.Model(
                 al.Galaxy,
                 redshift=redshift_source,
                 bulge=source_bulge,
             ),
+        ),
+        fields=af.Collection(
+            field=af.Model(
+                al.MassField,
+                redshift=redshift_lens,
+                shear=af.Model(al.mp.ExternalShear),
+            )
         ),
     )
 
@@ -234,7 +240,6 @@ def source_pix_1(
         mass_result=source_lp_result.model.galaxies.lens.mass,
         unfix_mass_centre=True,
     )
-    shear = source_lp_result.model.galaxies.lens.shear
 
     model = af.Collection(
         galaxies=af.Collection(
@@ -244,7 +249,6 @@ def source_pix_1(
                 bulge=None,
                 disk=None,
                 mass=mass,
-                shear=shear,
             ),
             source=af.Model(
                 al.Galaxy,
@@ -256,6 +260,7 @@ def source_pix_1(
                 ),
             ),
         ),
+        fields=source_lp_result.model.fields,
     )
 
     search = af.Nautilus(
@@ -330,7 +335,6 @@ def source_pix_2(
                 bulge=None,
                 disk=None,
                 mass=source_pix_result_1.instance.galaxies.lens.mass,
-                shear=source_pix_result_1.instance.galaxies.lens.shear,
             ),
             source=af.Model(
                 al.Galaxy,
@@ -342,6 +346,7 @@ def source_pix_2(
                 ),
             ),
         ),
+        fields=source_pix_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -425,10 +430,10 @@ def mass_total(
                 bulge=None,
                 disk=None,
                 mass=mass,
-                shear=source_pix_result_1.model.galaxies.lens.shear,
             ),
             source=source,
         ),
+        fields=source_pix_result_1.model.fields,
     )
 
     search = af.Nautilus(

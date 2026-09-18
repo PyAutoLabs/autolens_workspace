@@ -9,8 +9,8 @@ This script simulates an `Imaging` dataset of a 'group-scale' strong lens where:
 
  - There are TWO main lens galaxies at z=0.5. Each carries a `lmp.Sersic` bulge (acting as light AND stellar
    mass via `mass_to_light_ratio`) and a spherical `NFWSph` dark matter halo aligned with the bulge centre.
- - The first main lens galaxy additionally carries an `ExternalShear` representing the group-scale shear from
-   the wider environment.
+ - A single `ExternalShear`, held in an `al.MassField` and passed to the tracer's `fields`, represents the
+   group-scale shear from the wider environment.
  - The source galaxy at z=1.0 has a `SersicCore` light profile.
 
 The total deflection at every image-plane coordinate is the SUM over all main lens galaxies of the per-galaxy
@@ -115,8 +115,9 @@ __Main Lens Galaxies__
 Two galaxies at z=0.5, each with a `lmp.Sersic` bulge (coupled to its own stellar mass via `mass_to_light_ratio`)
 and an `NFWSph` dark matter halo aligned with the bulge.
 
-The first galaxy additionally carries an `ExternalShear` — a single shear field representing the wider group
-environment, conventionally attached to `lens_0` (matches the group SLaM convention in
+The wider group environment contributes a single `ExternalShear`. It is not a property of either galaxy, so it
+is held in an `al.MassField` — a container like a `Galaxy` (a redshift plus a bag of mass profiles) which
+carries no light — and passed to the tracer's `fields` argument (matches the group SLaM convention in
 `scripts/group/features/advanced/double_source_plane_lens/slam.py`).
 """
 lens_0 = al.Galaxy(
@@ -130,7 +131,6 @@ lens_0 = al.Galaxy(
         mass_to_light_ratio=0.2,
     ),
     dark=al.mp.NFWSph(centre=main_lens_centres[0], kappa_s=0.1, scale_radius=20.0),
-    shear=al.mp.ExternalShear(gamma_1=-0.02, gamma_2=0.005),
 )
 
 lens_1 = al.Galaxy(
@@ -147,6 +147,10 @@ lens_1 = al.Galaxy(
 )
 
 main_lens_galaxies = [lens_0, lens_1]
+
+field = al.MassField(
+    redshift=0.5, shear=al.mp.ExternalShear(gamma_1=-0.02, gamma_2=0.005)
+)
 
 """
 __Source Galaxy__
@@ -168,12 +172,14 @@ source = al.Galaxy(
 """
 __Ray Tracing__
 
-The tracer is composed of the two main lens galaxies followed by the source. PyAutoLens orders galaxies
-internally by redshift, so the deflection chain runs:
+The tracer is composed of the two main lens galaxies followed by the source, with the external field passed
+separately via `fields`. PyAutoLens orders galaxies and fields internally by redshift and merges them into
+planes, so the deflection chain runs:
 
-  image-plane → source-plane (deflected by both main lens galaxies' stellar + dark + shear contributions)
+  image-plane → source-plane (deflected by both main lens galaxies' stellar + dark contributions, plus the
+  field's shear)
 """
-tracer = al.Tracer(galaxies=main_lens_galaxies + [source])
+tracer = al.Tracer(galaxies=main_lens_galaxies + [source], fields=[field])
 
 aplt.plot_array(
     array=tracer.image_2d_from(grid=grid), title="Group Mass Stellar Dark Image"

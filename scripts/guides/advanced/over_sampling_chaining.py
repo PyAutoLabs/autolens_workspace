@@ -130,9 +130,11 @@ Search 1 fits a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
-lens = af.Model(
-    al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
-)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
@@ -143,7 +145,10 @@ bulge = al.model_util.mge_model_from(
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
-model_1 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model_1 = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 The `info` attribute shows the model in a readable format.
@@ -258,13 +263,16 @@ Search 1 fits a lens model where:
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 """
-lens = af.Model(
-    al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
-)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.Sersic)
 
-model_2 = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model_2 = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 The `info` attribute shows the model in a readable format.

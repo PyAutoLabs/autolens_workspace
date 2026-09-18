@@ -157,7 +157,7 @@ main_lens_galaxies = [lens_0, lens_1]
 """
 __External Shear__
 """
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -204,7 +204,9 @@ __Ray Tracing__
 The subhalo is at the same redshift as the deflectors, so this is still single-plane tracing — the deflection
 field simply has one more term.
 """
-tracer = al.Tracer(galaxies=main_lens_galaxies + [shear_galaxy, subhalo, source_galaxy])
+tracer = al.Tracer(
+    galaxies=main_lens_galaxies + [subhalo, source_galaxy], fields=[field]
+)
 
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 

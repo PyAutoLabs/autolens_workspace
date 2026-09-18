@@ -206,7 +206,7 @@ lens_1 = al.Galaxy(
     ),
 )
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -221,7 +221,7 @@ pixelization = al.Pixelization(
 
 source_galaxy = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-tracer = al.Tracer(galaxies=[lens_0, lens_1, shear_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_0, lens_1, source_galaxy], fields=[field])
 
 adapt_images = al.AdaptImages(
     galaxy_image_plane_mesh_grid_dict={source_galaxy: image_plane_mesh_grid}
@@ -263,7 +263,7 @@ print(f"Source plane mesh grid: {source_plane_mesh_grid}")
 __Model__
 
 The standard multi-galaxy composition — one `lens_i` per deflector with its mass centre fixed, the shear in its
-own `shear_galaxy` — with a Delaunay source.
+own `MassField` — with a Delaunay source.
 
 The mesh is a concrete instance rather than an `af.Model` because its `pixels` count is fixed by the image-plane
 mesh grid built above, and must stay static across samples.
@@ -298,8 +298,8 @@ for i, centre in enumerate(main_lens_centres):
 
 # External Shear:
 
-shear_galaxy_model = af.Model(
-    al.Galaxy,
+field_model = af.Model(
+    al.MassField,
     redshift=0.5,
     shear=af.Model(al.mp.ExternalShear),
 )
@@ -318,7 +318,8 @@ pix = af.Model(
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pix)
 
 model = af.Collection(
-    galaxies=af.Collection(**lens_dict, shear_galaxy=shear_galaxy_model, source=source)
+    galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field_model),
 )
 
 print(model.info)

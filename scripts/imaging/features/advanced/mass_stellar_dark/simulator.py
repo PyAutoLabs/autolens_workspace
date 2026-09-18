@@ -109,6 +109,10 @@ lens_galaxy = al.Galaxy(
         mass_to_light_ratio=0.2,
     ),
     dark=al.mp.NFWSph(centre=(0.0, 0.0), kappa_s=0.1, scale_radius=20.0),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=-0.02, gamma_2=0.005),
 )
 
@@ -126,7 +130,7 @@ source_galaxy = al.Galaxy(
 """
 Use these galaxies to setup a tracer, which will generate the image for the simulated `Imaging` dataset.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 
 """

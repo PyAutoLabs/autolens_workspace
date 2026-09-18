@@ -152,7 +152,7 @@ lens model good enough that search 2's pixelized fit starts from sensible priors
 subtract when the adapt images are built.
 
 The composition is the standard multi-galaxy one from `multi_galaxy/modeling.py`: one `lens_i` per deflector with
-its mass centre fixed to the deflector's measured centre, and the shear in its own `shear_galaxy`.
+its mass centre fixed to the deflector's measured centre, and the shear in its own `MassField`.
 """
 # Main Lens Galaxies:
 
@@ -180,8 +180,8 @@ for i, centre in enumerate(main_lens_centres):
 
 # External Shear:
 
-shear_galaxy = af.Model(
-    al.Galaxy,
+field = af.Model(
+    al.MassField,
     redshift=0.5,
     shear=af.Model(al.mp.ExternalShear),
 )
@@ -198,7 +198,8 @@ source_bulge = al.model_util.mge_model_from(
 source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 
 model_1 = af.Collection(
-    galaxies=af.Collection(**lens_dict, shear_galaxy=shear_galaxy, source=source)
+    galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
 )
 
 print(model_1.info)
@@ -258,11 +259,7 @@ pixelization_2 = af.Model(
 source_2 = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization_2)
 
 model_2 = af.Collection(
-    galaxies=af.Collection(
-        **lens_dict_2,
-        shear_galaxy=result_1.model.galaxies.shear_galaxy,
-        source=source_2,
-    )
+    galaxies=af.Collection(**lens_dict_2, source=source_2), fields=result_1.model.fields
 )
 
 search_2 = af.Nautilus(
@@ -286,9 +283,9 @@ result_2 = search_2.fit(model=model_2, analysis=analysis_2)
 """
 __Adapt Images__
 
-`galaxy_name_image_dict_via_result_from` returns one image per galaxy in the model — here `lens_0`, `lens_1`,
-`shear_galaxy` and `source` — taken from search 2's maximum log likelihood fit. `AdaptImages` wraps that
-dictionary into the object the adaptive classes read.
+`galaxy_name_image_dict_via_result_from` returns one image per galaxy in the model — here `lens_0`, `lens_1`
+and `source` — taken from search 2's maximum log likelihood fit. The shear `MassField` carries no light and is
+not a galaxy, so it has no entry. `AdaptImages` wraps that dictionary into the object the adaptive classes read.
 
 The entry the adaptive mesh and regularization use is `source`, which is the data with both deflectors' light
 models subtracted.
@@ -333,11 +330,8 @@ pixelization_3 = af.Model(
 source_3 = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization_3)
 
 model_3 = af.Collection(
-    galaxies=af.Collection(
-        **lens_dict_3,
-        shear_galaxy=result_2.instance.galaxies.shear_galaxy,
-        source=source_3,
-    )
+    galaxies=af.Collection(**lens_dict_3, source=source_3),
+    fields=result_2.instance.fields,
 )
 
 search_3 = af.Nautilus(
@@ -406,11 +400,7 @@ source_4 = af.Model(
 )
 
 model_4 = af.Collection(
-    galaxies=af.Collection(
-        **lens_dict_4,
-        shear_galaxy=result_2.model.galaxies.shear_galaxy,
-        source=source_4,
-    )
+    galaxies=af.Collection(**lens_dict_4, source=source_4), fields=result_2.model.fields
 )
 
 search_4 = af.Nautilus(

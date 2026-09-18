@@ -124,7 +124,12 @@ mass = al.mp.Isothermal(
 
 shear = al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
 
-lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass)
+
+# The external shear is a property of the system, not of a galaxy, so it is held in a
+# `MassField` given to the `Tracer` via `fields=` (see `imaging/modeling.py`).
+
+field = al.MassField(redshift=0.5, shear=shear)
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
@@ -137,7 +142,7 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 image = tracer.image_2d_from(grid=masked_dataset.grids.lp)
 
@@ -169,7 +174,12 @@ mass = al.mp.Isothermal(
 
 shear = al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
 
-lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass)
+
+# The external shear is a property of the system, not of a galaxy, so it is held in a
+# `MassField` given to the `Tracer` via `fields=` (see `imaging/modeling.py`).
+
+field = al.MassField(redshift=0.5, shear=shear)
 
 source_galaxy = al.Galaxy(
     redshift=1.0,
@@ -205,7 +215,7 @@ image_2d_source_bulge = source_galaxy.bulge.image_2d_from(grid=masked_dataset.gr
 """
 We now put them together in a `Tracer` object.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 """
 __LightProfileLinearObjFuncList__

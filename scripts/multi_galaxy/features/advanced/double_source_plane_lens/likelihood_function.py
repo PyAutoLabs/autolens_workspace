@@ -155,7 +155,7 @@ lens_1 = al.Galaxy(
     ),
 )
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -181,7 +181,7 @@ source_1 = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer(galaxies=[lens_0, lens_1, shear_galaxy, source_0, source_1])
+tracer = al.Tracer(galaxies=[lens_0, lens_1, source_0, source_1], fields=[field])
 
 """
 __Multi-Plane Ray-Tracing__

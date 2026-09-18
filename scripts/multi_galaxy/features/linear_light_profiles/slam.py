@@ -127,8 +127,8 @@ def source_lp(
             mass=mass,
         )
 
-    shear_galaxy = af.Model(
-        al.Galaxy,
+    field = af.Model(
+        al.MassField,
         redshift=redshift_lens,
         shear=af.Model(al.mp.ExternalShear),
     )
@@ -140,9 +140,9 @@ def source_lp(
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
-            shear_galaxy=shear_galaxy,
             source=af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge),
         ),
+        fields=af.Collection(field=field),
     )
 
     search = af.Nautilus(
@@ -227,7 +227,6 @@ def source_pix_1(
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
-            shear_galaxy=source_lp_result.model.galaxies.shear_galaxy,
             source=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.source.redshift,
@@ -238,6 +237,7 @@ def source_pix_1(
                 ),
             ),
         ),
+        fields=source_lp_result.model.fields,
     )
 
     search = af.Nautilus(
@@ -310,7 +310,6 @@ def source_pix_2(
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
-            shear_galaxy=source_pix_result_1.instance.galaxies.shear_galaxy,
             source=af.Model(
                 al.Galaxy,
                 redshift=source_lp_result.instance.galaxies.source.redshift,
@@ -321,6 +320,7 @@ def source_pix_2(
                 ),
             ),
         ),
+        fields=source_pix_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -388,11 +388,8 @@ def light_lp(
     )
 
     model = af.Collection(
-        galaxies=af.Collection(
-            **lens_dict,
-            shear_galaxy=source_result_for_lens.instance.galaxies.shear_galaxy,
-            source=source,
-        ),
+        galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_result_for_lens.instance.fields,
     )
 
     search = af.Nautilus(
@@ -469,11 +466,8 @@ def mass_total(
     source = al.util.chaining.source_from(result=source_result_for_source)
 
     model = af.Collection(
-        galaxies=af.Collection(
-            **lens_dict,
-            shear_galaxy=source_result_for_lens.model.galaxies.shear_galaxy,
-            source=source,
-        ),
+        galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_result_for_lens.model.fields,
     )
 
     search = af.Nautilus(

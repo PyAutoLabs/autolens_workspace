@@ -159,12 +159,14 @@ source_galaxy = al.Galaxy(
     ),
 )
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
-tracer = al.Tracer(galaxies=[lens_galaxy_0, lens_galaxy_1, shear_galaxy, source_galaxy])
+tracer = al.Tracer(
+    galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy], fields=[field]
+)
 
 """
 By plotting the image of the tracer, we confirm it looks like the simulated dataset but does not have CCD imaging
@@ -310,7 +312,7 @@ def magnification_from(mass_profiles) -> float:
 
 mass_0 = lens_galaxy_0.mass
 mass_1 = lens_galaxy_1.mass
-shear = shear_galaxy.shear
+shear = field.shear
 
 magnification_lens_0 = magnification_from(mass_profiles=[mass_0])
 magnification_lens_1 = magnification_from(mass_profiles=[mass_1])
@@ -360,7 +362,8 @@ print(f"Source Magnification via Tracer: {source_magnification}")
 
 """
 Note that `tracer.planes` groups galaxies by **redshift**, not one plane per galaxy. Both deflectors here are at
-z=0.5, so `tracer.planes[0]` contains them **both** (plus the shear galaxy) and `tracer.planes[1]` is the source.
+z=0.5, so `tracer.planes[0]` contains them **both** (plus the shear `MassField`) and `tracer.planes[1]` is the
+source.
 This is why the code above is identical to the galaxy-scale version — the source is always the last plane.
 """
 print(f"number of planes = {len(tracer.planes)}")

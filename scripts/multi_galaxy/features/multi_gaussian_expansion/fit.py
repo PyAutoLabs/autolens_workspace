@@ -148,7 +148,7 @@ masses = [
     ),
 ]
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -173,7 +173,7 @@ def log_likelihood_from(lens_light_list):
         for i in range(len(lens_light_list))
     ]
 
-    tracer = al.Tracer(galaxies=galaxies + [shear_galaxy, source])
+    tracer = al.Tracer(galaxies=galaxies + [source], fields=[field])
 
     return al.FitImaging(dataset=dataset, tracer=tracer)
 

@@ -31,7 +31,7 @@ __Contents__
 - **Dataset Loading:** Loop over the channel folders and load each as an `Interferometer` object.
 - **Positions:** Load multiple-image positions and build a shared `PositionsLH` penalty.
 - **Settings:** Default `al.Settings()` — no positive-only-solver tweak needed (no inversion).
-- **Model:** Compose the shared `Isothermal + ExternalShear` lens and `Sersic` source.
+- **Model:** Compose the shared `Isothermal` lens, its `ExternalShear` `MassField` and the `Sersic` source.
 - **Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with `use_jax=True` and the shared `PositionsLH`.
 - **FactorGraph:** Per-factor `model.copy()` with the source `intensity` prior overridden per channel.
 - **Search:** Configure the `Nautilus` non-linear search.
@@ -124,7 +124,7 @@ __Model__
 
 The cube model has two ingredients:
 
- - A shared `Isothermal + ExternalShear` lens (7 free parameters).
+ - A shared `Isothermal` lens mass and an `ExternalShear` `MassField` (7 free parameters).
  - A parametric `al.lp.Sersic` source. Its morphology — `centre`, `ell_comps`, `effective_radius`,
    `sersic_index` — is shared across channels (4 free parameters). Its `intensity` will be overridden
    per-factor below to give each channel its own free `intensity` parameter, capturing the emission-line
@@ -138,15 +138,19 @@ For the 4-channel reference cube that's 15 free parameters total — tractable f
 """
 # Lens:
 mass = af.Model(al.mp.Isothermal)
-shear = af.Model(al.mp.ExternalShear)
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source (parametric Sersic — base prior on intensity gets overridden per factor below):
 bulge = af.Model(al.lp.Sersic)
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall lens model:
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 print(model.info)
 

@@ -32,7 +32,8 @@ __Model__
 This script simulates `Interferometer` data of a 'galaxy-scale' strong lens where:
 
  - The lens galaxy's light profile is an `Sersic` bulge.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The lens galaxy has a point source of emission at its centre which is modeled as a operated `Gaussian`.
  - The source galaxy's light is an `SersicCore`.
 
@@ -90,8 +91,9 @@ simulator = al.SimulatorInterferometer(
 """
 __Ray Tracing__
 
-Setup the lens galaxy's light (elliptical Sersic bulge + operated Gaussian point source), mass (Isothermal
-and ExternalShear) and source galaxy light (cored elliptical Sersic) for this simulated lens.
+Setup the lens galaxy's light (elliptical Sersic bulge + operated Gaussian point source) and mass (Isothermal),
+the external shear (an ExternalShear in its own MassField) and the source galaxy light (cored elliptical Sersic)
+for this simulated lens.
 """
 lens_galaxy = al.Galaxy(
     redshift=0.5,
@@ -110,6 +112,10 @@ lens_galaxy = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
@@ -127,7 +133,7 @@ source_galaxy = al.Galaxy(
 """
 Use these galaxies to setup a tracer, which will generate the image for the simulated interferometer dataset.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 """
 Lets look at the tracer`s image, this is the image we'll be simulating.

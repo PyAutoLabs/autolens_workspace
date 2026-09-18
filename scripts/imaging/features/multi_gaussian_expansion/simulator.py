@@ -27,7 +27,7 @@ __Model__
 This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
 
  - The lens galaxy's light is a superposition of 14 `Gaussian` profiles.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`.
  - The source galaxy's light is an `Sersic`.
 
 The lens galaxy's light is derived from a Multi-Gaussian Expansion (MGE) fit to a massive elliptical galaxy.

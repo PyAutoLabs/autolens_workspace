@@ -335,7 +335,17 @@ adds them together.
 For example, for the `bulge`, when it computes their 2D images it computes each individually and then adds
 them together.
 """
-lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass)
+
+"""
+__External Shear__
+
+The external shear is the tidal field of everything outside the lens system, so it is not a property of a galaxy. It
+is held in an `al.MassField`: a container built like a `Galaxy` (a redshift plus a bag of mass profiles) which
+carries no light, and which is passed to the `Tracer` via its own `fields=` argument. The deflections sum over
+the plane exactly as they did when the shear was attached to the lens galaxy (see `imaging/modeling.py`).
+"""
+field = al.MassField(redshift=0.5, shear=shear)
 
 """
 __Source Galaxy Light Profile__
@@ -393,7 +403,7 @@ The function below computes the 2D deflection angles of the tracer's lens galaxi
 image-plane 2D (y,x) coordinates $\theta$ of each grid, thus ray-tracing their coordinates to the source plane to 
 compute their $\beta$ values.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 # A list of every grid (e.g. image-plane, source-plane) however we only need the source plane grid with index -1.
 traced_grid = tracer.traced_grid_2d_list_from(grid=masked_dataset.grid)[-1]

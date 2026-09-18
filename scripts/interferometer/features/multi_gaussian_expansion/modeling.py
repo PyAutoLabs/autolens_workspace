@@ -26,7 +26,7 @@ __Contents__
 - **Advantages & Disadvantages:** Benefits and drawbacks of an MGE source for interferometer data.
 - **NUFFT (nufftax):** Why MGE-on-visibilities is now practical thanks to nufftax.
 - **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
-- **Model:** Compose the lens model — `Isothermal` + `ExternalShear` lens mass and a 30-Gaussian MGE
+- **Model:** Compose the lens model — an `Isothermal` lens mass, an `ExternalShear` `MassField` and a 30-Gaussian MGE
   source bulge. Lens light omitted (interferometer convention).
 - **Mask:** Define the `real_space_mask` which sets the grid the strong lens is evaluated on.
 - **Dataset:** Load the strong lens `Interferometer` dataset using `TransformerNUFFT` (backed by `nufftax`).
@@ -101,7 +101,8 @@ This script fits an `Interferometer` dataset of a 'galaxy-scale' strong lens wit
  - The lens galaxy's light is omitted (and is not present in the simulated data). This is the standard
    convention for interferometer modeling, as the lens galaxy's optical/IR emission is typically below the
    detection threshold of mm/sub-mm interferometers.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The source galaxy's bulge is a multi-Gaussian expansion of 30 linear `Gaussian` profiles, arranged in
    two groups of 15 (each group shares a centre and ell_comps).
 
@@ -191,7 +192,8 @@ __Model__
 
 We compose a lens model where:
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField` [7 parameters].
 
  - The source galaxy's bulge is 10 linear `Gaussian` profiles [6 parameters total].
    - The centres and elliptical components of the Gaussians are linked together in two groups of 5.
@@ -248,14 +250,18 @@ source_bulge = af.Model(al.lp_basis.Basis, profile_list=bulge_gaussian_list)
 
 # Lens:
 mass = af.Model(al.mp.Isothermal)
-shear = af.Model(al.mp.ExternalShear)
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source:
 source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 
 # Overall Lens Model:
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 The `info` attribute shows the model in a readable format (if this does not display clearly on your screen

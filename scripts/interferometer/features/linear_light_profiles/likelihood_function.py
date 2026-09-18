@@ -139,9 +139,11 @@ mass = al.mp.Isothermal(
     ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
 )
 
-shear = al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
+field = al.MassField(
+    redshift=0.5, shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
+)
 
-lens_galaxy = al.Galaxy(redshift=0.5, mass=mass, shear=shear)
+lens_galaxy = al.Galaxy(redshift=0.5, mass=mass)
 
 """
 __Source Galaxy Linear Light Profile__
@@ -181,7 +183,7 @@ For interferometer data the only grid we need to ray-trace is the real-space gri
 `real_space_mask` — there is no blurring grid (that is an imaging-only concept used to account for flux
 outside the mask convolving into it via the PSF).
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 # A list of every grid (e.g. image-plane, source-plane); we only need the source-plane grid (index -1).
 traced_grid = tracer.traced_grid_2d_list_from(grid=dataset.grids.lp)[-1]

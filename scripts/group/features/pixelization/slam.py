@@ -158,7 +158,8 @@ __SOURCE LP PIPELINE 1__
 Equivalent to `source_lp` in `slam_start_here.py`, except lens light is fixed from `source_lp[0]`
 rather than free, and mass and source are introduced here for the first time.
 
-Multiple main-lens galaxies each get an `Isothermal` mass; only `lens_0` carries an `ExternalShear`.
+Multiple main-lens galaxies each get an `Isothermal` mass; the group's one `ExternalShear` is an
+`al.MassField` in the model's `fields` collection.
 Extra galaxies get tidally truncated `dPIEMassSph` profiles (the group/cluster convention) whose
 `sigma` priors are bounded by a luminosity-derived limit.
 """
@@ -219,8 +220,13 @@ def source_lp_1(
             disk=lp0_lens.disk,
             point=lp0_lens.point,
             mass=mass,
-            shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
         )
+
+    # External Shear (an `al.MassField`, in its own `fields` collection below):
+
+    field = af.Model(
+        al.MassField, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
+    )
 
     # --- extra lens galaxy models (light fixed, mass bounded by luminosity) ---
     extra_mass_models = []
@@ -262,6 +268,7 @@ def source_lp_1(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=af.Collection(field=field),
         extra_galaxies=extra_galaxies,
     )
 
@@ -364,7 +371,6 @@ def source_pix_1(
             bulge=prev_lens.bulge,
             disk=prev_lens.disk,
             mass=mass,
-            shear=source_lp_result_1.model.galaxies.lens_0.shear if i == 0 else None,
         )
 
     # Extra galaxies: carried forward as model parameters.
@@ -389,6 +395,7 @@ def source_pix_1(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_lp_result_1.model.fields,
         extra_galaxies=extra_galaxies,
     )
 
@@ -502,6 +509,7 @@ def source_pix_2(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_pix_result_1.instance.fields,
         extra_galaxies=extra_galaxies,
     )
 
@@ -562,7 +570,6 @@ def light_lp(
             redshift=redshift_lens,
             bulge=bulge,
             mass=prev_lens.mass,
-            shear=prev_lens.shear if i == 0 else None,
         )
 
     # Extra galaxies: fresh MGE light, mass fixed.
@@ -599,6 +606,7 @@ def light_lp(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_pix_result_1.instance.fields,
         extra_galaxies=extra_galaxies,
     )
 
@@ -662,7 +670,6 @@ def mass_total(
             redshift=redshift_lens,
             bulge=light_lens.bulge,
             mass=mass,
-            shear=source_pix_result_1.model.galaxies.lens_0.shear if i == 0 else None,
         )
 
     # Extra galaxies: fresh mass, light fixed from LIGHT LP.
@@ -698,6 +705,7 @@ def mass_total(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_pix_result_1.model.fields,
         extra_galaxies=extra_galaxies,
     )
 

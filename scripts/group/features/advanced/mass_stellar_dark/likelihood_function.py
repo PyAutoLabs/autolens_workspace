@@ -60,7 +60,8 @@ lens-plane deflection is the SUM of every galaxy's contribution:
 
   alpha_lens(theta) = sum_i [ (M/L)_i * alpha_light_i(theta)  +  alpha_NFW_i(theta) ]  +  alpha_shear(theta)
 
-A single `ExternalShear` is attached to `lens_0` representing the group-wide shear field. Every other step of
+A single `ExternalShear`, held in an `al.MassField` beside the galaxies, represents the group-wide shear
+field. Every other step of
 the likelihood (PSF convolution, chi-squared, noise normalization, MGE linear-algebra solver) is unchanged.
 """
 
@@ -124,8 +125,8 @@ __Galaxies__
 The main lens galaxies + the source that participate in the ray-tracing:
 
  - Each `lens_i` (z=0.5): an `lmp.Sersic` bulge (acting as light + stellar mass via a single
-   `mass_to_light_ratio`), an `NFWSph` dark matter halo aligned with the bulge. Only `lens_0` carries an
-   `ExternalShear`.
+   `mass_to_light_ratio`), an `NFWSph` dark matter halo aligned with the bulge.
+ - `field` (z=0.5): the group's one `ExternalShear`, held in an `al.MassField` beside the galaxies.
  - `source` (z=1.0): an MGE light component (a simple basis of 10 linear Gaussians).
 
 The mass-profile parameters are set to the simulator's true values so the manual likelihood computation below
@@ -180,21 +181,24 @@ for i, centre in enumerate(main_lens_centres):
         ),
     )
 
-    if i == 0:
-        galaxy_kwargs["shear"] = al.mp.ExternalShear(gamma_1=-0.02, gamma_2=0.005)
-
     lens_dict[f"lens_{i}"] = al.Galaxy(**galaxy_kwargs)
+
+# External Shear (an `al.MassField`, passed to the tracer's `fields` below):
+
+field = al.MassField(
+    redshift=0.5, shear=al.mp.ExternalShear(gamma_1=-0.02, gamma_2=0.005)
+)
 
 source = al.Galaxy(redshift=1.0, bulge=build_source_basis(centre=(0.0, 0.0)))
 
-tracer = al.Tracer(galaxies=list(lens_dict.values()) + [source])
+tracer = al.Tracer(galaxies=list(lens_dict.values()) + [source], fields=[field])
 
 """
 __Decomposed Deflection (Multi-Galaxy)__
 
 The single `Tracer.traced_grid_2d_list_from(...)` call performs the standard image-plane → source-plane
-ray-tracing. Internally it queries every mass profile on every galaxy in the lens plane and sums their
-deflections.
+ray-tracing. Internally it merges the galaxies and the fields into planes by redshift, then queries every mass
+profile in the lens plane and sums their deflections.
 
 To make the decomposition concrete we re-compute the same source-plane grid by hand. Each profile exposes its
 own `deflections_yx_2d_from`; the SUM of all per-galaxy stellar + dark contributions, plus the single external
@@ -208,7 +212,7 @@ alpha_stellar_list = [
 alpha_dark_list = [
     lens.dark.deflections_yx_2d_from(grid=masked_grid) for lens in lens_dict.values()
 ]
-alpha_shear = lens_dict["lens_0"].shear.deflections_yx_2d_from(grid=masked_grid)
+alpha_shear = field.shear.deflections_yx_2d_from(grid=masked_grid)
 
 alpha_total = sum(alpha_stellar_list) + sum(alpha_dark_list) + alpha_shear
 

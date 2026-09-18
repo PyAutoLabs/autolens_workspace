@@ -110,7 +110,7 @@ To plot a fit, we mask the dataset and fit it with a tracer whose galaxies match
 simulated values, via the `FitImaging` object.
 
 For a multi-galaxy lens, the tracer contains two co-dominant lens galaxies (`lens_0` and `lens_1`) whose
-deflection fields are summed, plus a separate galaxy holding the external shear (a property of the system
+deflection fields are summed, plus a separate `MassField` holding the external shear (a property of the system
 as a whole, not of either deflector), and the source galaxy.
 """
 mask_radius = 3.0
@@ -166,12 +166,12 @@ source = al.Galaxy(
     ),
 )
 
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
-tracer = al.Tracer(galaxies=[lens_0, lens_1, shear_galaxy, source])
+tracer = al.Tracer(galaxies=[lens_0, lens_1, source], fields=[field])
 
 fit = al.FitImaging(dataset=dataset, tracer=tracer)
 

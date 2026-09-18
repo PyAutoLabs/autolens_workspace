@@ -4,7 +4,8 @@ Features: Mass Stellar Dark Fit
 
 A decomposed mass model splits the lens galaxy's total mass into a stellar component (tied to its observed light
 via a mass-to-light ratio) and a dark matter component (typically an NFW halo). The total deflection at every
-image-plane coordinate is the sum of the deflections produced by each component, plus any external shear.
+image-plane coordinate is the sum of the deflections produced by each component, plus any external shear (which
+lives beside the galaxy in a `MassField`).
 
 This script illustrates the API for performing a fit to a decomposed-mass lens via the standard `Tracer` and
 `FitImaging` objects, without invoking a non-linear search. It is intended to make the decomposed-mass
@@ -172,7 +173,9 @@ We now compose the two galaxies that form the lens system:
 
  - `lens` (z=0.5): a linear `lmp.Sersic` `bulge` which acts as BOTH the lens light AND the stellar mass
    component, coupled by `mass_to_light_ratio`. A spherical `NFWSph` `dark` matter halo aligned with the bulge.
-   An `ExternalShear`.
+ - `field` (z=0.5): an `ExternalShear` held in an `al.MassField`. The shear is the tidal field of everything
+   outside the system, so it is not a property of the lens galaxy and is passed to the `Tracer` separately via
+   `fields=` (see `imaging/modeling.py`).
  - `source` (z=1.0): the MGE basis above.
 
 All non-linear parameters are set to the simulator's true values, so the fit visibly recovers the Einstein ring
@@ -189,6 +192,10 @@ lens = al.Galaxy(
         mass_to_light_ratio=0.2,
     ),
     dark=al.mp.NFWSph(centre=(0.0, 0.0), kappa_s=0.1, scale_radius=20.0),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=-0.02, gamma_2=0.005),
 )
 
@@ -200,13 +207,13 @@ source = al.Galaxy(
 """
 __Tracer__
 
-The `Tracer` performs the ray-tracing. Internally it queries every mass profile attached to every galaxy in the
-lens plane and sums their deflections. For our lens galaxy, this means the `bulge` contributes a stellar mass
-deflection (its `lmp.Sersic` deflection scaled by `mass_to_light_ratio`), the `dark` halo contributes the
-spherical NFW deflection, and `shear` contributes the external shear deflection — all summed before mapping
-image-plane coordinates onto the source-plane.
+The `Tracer` performs the ray-tracing. Internally it queries every mass profile of every galaxy *and every field*
+in the lens plane and sums their deflections. For our lens plane, this means the `bulge` contributes a stellar
+mass deflection (its `lmp.Sersic` deflection scaled by `mass_to_light_ratio`), the `dark` halo contributes the
+spherical NFW deflection, and the `field`'s `shear` contributes the external shear deflection — all summed before
+mapping image-plane coordinates onto the source-plane.
 """
-tracer = al.Tracer(galaxies=[lens, source])
+tracer = al.Tracer(galaxies=[lens, source], fields=[field])
 
 """
 __Fit__
@@ -225,32 +232,36 @@ aplt.subplot_fit_imaging(fit=fit)
 """
 __Decomposed Deflection__
 
-This is the section that makes the decomposed-mass fit conceptually distinct. The lens galaxy's total deflection
+This is the section that makes the decomposed-mass fit conceptually distinct. The lens plane's total deflection
 map is the SUM of three independent contributions:
 
-  alpha_lens(theta) = alpha_stellar(theta)  +  alpha_dark(theta)  +  alpha_shear(theta)
+  alpha_plane(theta) = alpha_stellar(theta)  +  alpha_dark(theta)  +  alpha_shear(theta)
 
 where `alpha_stellar` is the `lmp.Sersic` bulge deflection (scaled internally by `mass_to_light_ratio`),
 `alpha_dark` is the spherical NFW deflection, and `alpha_shear` is the external shear. Every individual
 deflection is a public method on the corresponding profile.
 
-We verify this by computing each contribution explicitly and confirming the sum equals what the full lens
-galaxy returns.
+The first two live on the lens `Galaxy` and the third on the `MassField`, and this split is exactly what the
+tracer's plane erases: the plane sums the galaxy's deflections and the field's deflections into one map. We
+verify this by computing each contribution explicitly and confirming the sum equals the galaxy's deflections
+plus the field's.
 """
 grid = dataset.grid
 
 deflections_stellar = lens.bulge.deflections_yx_2d_from(grid=grid)
 deflections_dark = lens.dark.deflections_yx_2d_from(grid=grid)
-deflections_shear = lens.shear.deflections_yx_2d_from(grid=grid)
+deflections_shear = field.shear.deflections_yx_2d_from(grid=grid)
 
 deflections_total_summed = deflections_stellar + deflections_dark + deflections_shear
-deflections_total_lens = lens.deflections_yx_2d_from(grid=grid)
+deflections_total_plane = lens.deflections_yx_2d_from(
+    grid=grid
+) + field.deflections_yx_2d_from(grid=grid)
 
 print(f"Stellar deflection (first 3): {deflections_stellar[:3]}")
 print(f"Dark    deflection (first 3): {deflections_dark[:3]}")
 print(f"Shear   deflection (first 3): {deflections_shear[:3]}")
 print(f"Summed  deflection (first 3): {deflections_total_summed[:3]}")
-print(f"Lens    deflection (first 3): {deflections_total_lens[:3]}")
+print(f"Plane   deflection (first 3): {deflections_total_plane[:3]}")
 
 """
 The same component-wise decomposition shows up in the convergence (kappa) map. Convergence is what is plotted

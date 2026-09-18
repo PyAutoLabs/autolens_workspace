@@ -178,9 +178,11 @@ dataset = dataset.apply_over_sampling(over_sample_size_lp=over_sample_size)
 """
 __Main Lens & Source__
 
-The main lens is the anchor: an MGE bulge, a free `Isothermal` mass and the system's `ExternalShear`. Its
-`einstein_radius` is what the scaling tier hangs off, so it is the one Einstein radius in this model the tier
-depends on.
+The main lens is the anchor: an MGE bulge and a free `Isothermal` mass. Its `einstein_radius` is what the scaling
+tier hangs off, so it is the one Einstein radius in this model the tier depends on.
+
+The system's `ExternalShear` is not a property of the lens galaxy, so it is composed beside it in an `al.MassField`
+which goes in the model's own `fields=` collection (see `imaging/modeling.py`).
 """
 lens_centre = tuple(list(main_lens_centres)[0])
 
@@ -197,8 +199,9 @@ lens = af.Model(
     redshift=0.5,
     bulge=lens_bulge,
     mass=af.Model(al.mp.Isothermal),
-    shear=af.Model(al.mp.ExternalShear),
 )
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 source_bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
@@ -304,6 +307,7 @@ library expects a scaling population to be expressed, and it keeps `model.info` 
 """
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
     extra_galaxies=extra_galaxies,
     scaling_galaxies=scaling_galaxies,
 )
@@ -347,6 +351,7 @@ for centre in scaling_galaxies_centres:
 
 model_free = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
     extra_galaxies=extra_galaxies,
     scaling_galaxies=af.Collection(scaling_galaxies_free_list),
 )

@@ -212,7 +212,12 @@ mass = al.mp.Isothermal(
 
 shear = al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05)
 
-lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass)
+
+# The external shear is a property of the system, not of a galaxy, so it is held in a
+# `MassField` given to the `Tracer` via `fields=` (see `imaging/modeling.py`).
+
+field = al.MassField(redshift=0.5, shear=shear)
 
 """
 __Source Galaxy Pixelization and Regularization__
@@ -284,7 +289,7 @@ The function below computes the 2D deflection angles of the tracer's lens galaxi
 image-plane 2D (y,x) coordinates $\theta$ of each grid, thus ray-tracing their coordinates to the source plane to 
 compute their $\beta$ values.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
 """
 The source code gets quite complex when handling grids for a pixelization, but it is all handled in

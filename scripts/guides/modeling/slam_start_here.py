@@ -82,7 +82,8 @@ Below are the key design considerations that determine the ordering of SLaM pipe
 - **Source First**
   Complex mass models (e.g., `PowerLaw`, or composite stellar + dark matter models) require pixelized
   source reconstruction, not simple light profiles. Therefore, SLaM begins with a source model using a
-  simpler mass profile (e.g., `Isothermal` + `ExternalShear`) to provide a stable basis for later stages.
+  simpler mass profile (e.g., `Isothermal`, plus an `ExternalShear` held in an `al.MassField`) to provide a
+  stable basis for later stages.
 
 - **Image Positions**
   Pixelized modeling needs robust multiple image-position estimates to prevent unphysical source reconstructions.
@@ -112,7 +113,8 @@ Using a SOURCE LP PIPELINE, SOURCE PIX PIPELINE, LIGHT LP PIPELINE and TOTAL MAS
 script fits `Imaging` dataset of a strong lens system where in the final model:
 
  - The lens galaxy's light is a bulge with Multiple Gaussian Expansion (MGE) light profile.
- - The lens galaxy's total mass distribution is an `PowerLaw` plus an `ExternalShear`.
+ - The lens galaxy's total mass distribution is a `PowerLaw`, plus an `ExternalShear` held in an
+   `al.MassField` in the model's `fields` collection.
  - The source galaxy's light is a `Pixelization`.
 
 Each SLaM pipeline is implemented as a Python function below (e.g. `source_lp`, `source_pix_1`), with a
@@ -138,7 +140,8 @@ The SOURCE LP PIPELINE uses one search to initialize a robust model for the sour
 this example:
 
  - Models the lens galaxy's light as an MGE with 2 x 20 Gaussians.
- - Uses an `Isothermal` model for the lens's total mass distribution with an `ExternalShear`.
+ - Uses an `Isothermal` model for the lens's total mass distribution, with an `ExternalShear` held in an
+   `al.MassField`.
  - Models the source galaxy's light as an MGE with 1 x 20 Gaussians.
 
 The mass and source models from this search initialize the SOURCE PIX PIPELINE searches that follow.
@@ -175,12 +178,21 @@ def source_lp(
                 bulge=lens_bulge,
                 disk=None,
                 mass=af.Model(al.mp.Isothermal),
-                shear=af.Model(al.mp.ExternalShear),
             ),
             source=af.Model(
                 al.Galaxy,
                 redshift=redshift_source,
                 bulge=source_bulge,
+            ),
+        ),
+        # The external shear is a property of the system, not of the lens galaxy: it is held in an
+        # `al.MassField` in its own `fields` collection, and chained between stages below as
+        # `<result>.model.fields` (free) or `<result>.instance.fields` (fixed).
+        fields=af.Collection(
+            field=af.Model(
+                al.MassField,
+                redshift=redshift_lens,
+                shear=af.Model(al.mp.ExternalShear),
             ),
         ),
     )
@@ -269,8 +281,6 @@ def source_pix_1(
         mass_result=source_lp_result.model.galaxies.lens.mass,
         unfix_mass_centre=True,
     )
-    shear = source_lp_result.model.galaxies.lens.shear
-
     model = af.Collection(
         galaxies=af.Collection(
             lens=af.Model(
@@ -279,7 +289,6 @@ def source_pix_1(
                 bulge=source_lp_result.instance.galaxies.lens.bulge,
                 disk=source_lp_result.instance.galaxies.lens.disk,
                 mass=mass,
-                shear=shear,
             ),
             source=af.Model(
                 al.Galaxy,
@@ -291,6 +300,7 @@ def source_pix_1(
                 ),
             ),
         ),
+        fields=source_lp_result.model.fields,
     )
 
     search = af.Nautilus(
@@ -350,7 +360,6 @@ def source_pix_2(
                 bulge=source_lp_result.instance.galaxies.lens.bulge,
                 disk=source_lp_result.instance.galaxies.lens.disk,
                 mass=source_pix_result_1.instance.galaxies.lens.mass,
-                shear=source_pix_result_1.instance.galaxies.lens.shear,
             ),
             source=af.Model(
                 al.Galaxy,
@@ -362,6 +371,7 @@ def source_pix_2(
                 ),
             ),
         ),
+        fields=source_pix_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -384,7 +394,8 @@ PIPELINE.
 In this example:
 
  - The lens galaxy's light is a MGE with 2 x 20 Gaussians.
- - Uses an `Isothermal` mass model with `ExternalShear` for the lens's total mass distribution [fixed from
+ - Uses an `Isothermal` mass model, with an `ExternalShear` in an `al.MassField`, for the lens's total mass
+   distribution [fixed from
    SOURCE PIX PIPELINE].
  - Uses a `Pixelization` for the source's light [fixed from SOURCE PIX PIPELINE].
 
@@ -440,10 +451,10 @@ def light_lp(
                 bulge=lens_bulge,
                 disk=None,
                 mass=source_result_for_lens.instance.galaxies.lens.mass,
-                shear=source_result_for_lens.instance.galaxies.lens.shear,
             ),
             source=source,
         ),
+        fields=source_result_for_lens.instance.fields,
     )
 
     search = af.Nautilus(
@@ -531,10 +542,10 @@ def mass_total(
                 bulge=bulge,
                 disk=disk,
                 mass=mass,
-                shear=source_result_for_lens.model.galaxies.lens.shear,
             ),
             source=source,
         ),
+        fields=source_result_for_lens.model.fields,
     )
 
     search = af.Nautilus(

@@ -42,7 +42,8 @@ This script simulates `Imaging` of a 'galaxy-scale' strong lens where:
 
  - The lens galaxy's bulge is an `Sersic` with a S/N of 50.0.
  - The lens galaxy's disk is an `Exponential` with a S/N of 20.0.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`.
+ - The external shear is an `ExternalShear` held in a `MassField`.
  - The source galaxy's light is two `Sersic`;s with S/N of 20.0 and 10.0.
 
 __Start Here Notebook__
@@ -131,6 +132,10 @@ lens_galaxy = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
@@ -160,7 +165,9 @@ source_galaxy_1 = al.Galaxy(
 """
 Use these galaxies to setup a tracer, which will generate the image for the simulated `Imaging` dataset.
 """
-tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1])
+tracer = al.Tracer(
+    galaxies=[lens_galaxy, source_galaxy_0, source_galaxy_1], fields=[field]
+)
 
 """
 Lets look at the tracer`s image, this is the image we'll be simulating.

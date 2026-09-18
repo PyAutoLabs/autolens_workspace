@@ -126,9 +126,11 @@ model = af.Collection(
             al.Galaxy,
             redshift=0.5,
             mass=al.mp.Isothermal,
-            shear=al.mp.ExternalShear,
         ),
         source=af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=None),
+    ),
+    fields=af.Collection(
+        field=af.Model(al.MassField, redshift=0.5, shear=al.mp.ExternalShear),
     ),
 )
 
@@ -544,7 +546,7 @@ print(samples.parameter_lists[0])
 samples = samples.with_paths(
     [
         ("galaxies", "lens", "mass", "einstein_radius"),
-        ("galaxies", "lens", "shear", "gamma_1"),
+        ("fields", "field", "shear", "gamma_1"),
     ]
 )
 
@@ -571,7 +573,7 @@ We can alternatively use the following API:
 samples = result.samples
 
 samples = samples.with_paths(
-    ["galaxies.lens.mass.einstein_radius", "galaxies.lens.shear.gamma_1"]
+    ["galaxies.lens.mass.einstein_radius", "fields.field.shear.gamma_1"]
 )
 
 print(

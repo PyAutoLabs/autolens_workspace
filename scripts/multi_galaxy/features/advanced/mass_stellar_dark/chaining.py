@@ -130,7 +130,7 @@ path_prefix = Path("multi_galaxy") / "features" / "advanced" / "mass_stellar_dar
 __Model (Search 1)__
 
 The standard multi-galaxy composition from `multi_galaxy/modeling.py`: an MGE per deflector for the light, one
-`Isothermal` per deflector for the total mass, the shear in its own galaxy.
+`Isothermal` per deflector for the total mass, the shear in its own `MassField`.
 
 Nothing about this search knows a decomposition is coming.
 """
@@ -156,8 +156,8 @@ for i, centre in enumerate(main_lens_centres):
         mass=mass,
     )
 
-shear_galaxy = af.Model(
-    al.Galaxy,
+field = af.Model(
+    al.MassField,
     redshift=0.5,
     shear=af.Model(al.mp.ExternalShear),
 )
@@ -171,10 +171,9 @@ source_bulge = al.model_util.mge_model_from(
 
 model_1 = af.Collection(
     galaxies=af.Collection(
-        **lens_dict_1,
-        shear_galaxy=shear_galaxy,
-        source=af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge),
-    )
+        **lens_dict_1, source=af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
+    ),
+    fields=af.Collection(field=field),
 )
 
 print(model_1.info)
@@ -240,11 +239,8 @@ for i in range(1, len(lens_dict_2)):
     ].bulge.mass_to_light_ratio
 
 model_2 = af.Collection(
-    galaxies=af.Collection(
-        **lens_dict_2,
-        shear_galaxy=result_1.model.galaxies.shear_galaxy,
-        source=result_1.instance.galaxies.source,
-    )
+    galaxies=af.Collection(**lens_dict_2, source=result_1.instance.galaxies.source),
+    fields=result_1.model.fields,
 )
 
 print(model_2.info)

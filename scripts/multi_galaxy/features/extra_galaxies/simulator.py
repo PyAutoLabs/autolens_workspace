@@ -170,10 +170,10 @@ extra_galaxies = [
 """
 __Shear / Source__
 
-The external shear is carried by a single galaxy rather than attached to every deflector, matching
+The external shear is carried by a single `al.MassField` rather than attached to every deflector, matching
 `multi_galaxy/simulator.py` — giving a shear to each would be a redundant parameterization.
 """
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.02, gamma_2=0.03),
 )
@@ -197,7 +197,7 @@ deflector is at the same redshift, the main pair's, the extra galaxies' and the 
 add.
 """
 tracer = al.Tracer(
-    galaxies=main_lens_galaxies + extra_galaxies + [shear_galaxy, source_galaxy]
+    galaxies=main_lens_galaxies + extra_galaxies + [source_galaxy], fields=[field]
 )
 
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")

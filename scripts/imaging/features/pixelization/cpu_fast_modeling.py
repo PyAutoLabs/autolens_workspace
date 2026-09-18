@@ -189,12 +189,19 @@ lens = al.Galaxy(
         einstein_radius=1.6,
         ell_comps=al.convert.ell_comps_from(axis_ratio=0.9, angle=45.0),
     ),
+)
+
+# The external shear is a property of the system, not of a galaxy, so it is held in a
+# `MassField` given to the `Tracer` via `fields=` (see `imaging/modeling.py`).
+
+field = al.MassField(
+    redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
 
 source = al.Galaxy(redshift=1.0, pixelization=pixelization)
 
-tracer = al.Tracer(galaxies=[lens, source])
+tracer = al.Tracer(galaxies=[lens, source], fields=[field])
 
 fit = al.FitImaging(
     dataset=dataset,
@@ -220,9 +227,11 @@ There are two key differences from the earlier JAX-based pixelization examples:
   In practice, this provides a speed-up of roughly half the number of CPU cores used  
   (e.g., 4 cores → ~2× speed-up, 8 cores → ~4× speed-up).
 """
-lens = af.Model(
-    al.Galaxy, redshift=0.5, mass=al.mp.Isothermal, shear=al.mp.ExternalShear
-)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
+
+# External Shear:
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 pixelization = af.Model(
     al.Pixelization,
@@ -232,7 +241,10 @@ pixelization = af.Model(
 
 source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 search = af.Nautilus(
     path_prefix=Path("features"),
@@ -293,12 +305,18 @@ def source_lp(
                 bulge=lens_bulge,
                 disk=None,
                 mass=mass,
-                shear=af.Model(al.mp.ExternalShear),
             ),
             source=af.Model(
                 al.Galaxy,
                 redshift=redshift_source,
                 bulge=source_bulge,
+            ),
+        ),
+        fields=af.Collection(
+            field=af.Model(
+                al.MassField,
+                redshift=redshift_lens,
+                shear=af.Model(al.mp.ExternalShear),
             ),
         ),
     )
@@ -339,7 +357,6 @@ def source_pix_1(
                 bulge=source_lp_result.instance.galaxies.lens.bulge,
                 disk=source_lp_result.instance.galaxies.lens.disk,
                 mass=mass,
-                shear=source_lp_result.model.galaxies.lens.shear,
             ),
             source=af.Model(
                 al.Galaxy,
@@ -353,6 +370,7 @@ def source_pix_1(
                 ),
             ),
         ),
+        fields=source_lp_result.model.fields,
     )
 
     search = af.Nautilus(
@@ -386,7 +404,6 @@ def source_pix_2(
                 bulge=source_lp_result.instance.galaxies.lens.bulge,
                 disk=source_lp_result.instance.galaxies.lens.disk,
                 mass=source_pix_result_1.instance.galaxies.lens.mass,
-                shear=source_pix_result_1.instance.galaxies.lens.shear,
             ),
             source=af.Model(
                 al.Galaxy,
@@ -400,6 +417,7 @@ def source_pix_2(
                 ),
             ),
         ),
+        fields=source_pix_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -437,10 +455,10 @@ def light_lp(
                 bulge=lens_bulge,
                 disk=None,
                 mass=source_result_for_lens.instance.galaxies.lens.mass,
-                shear=source_result_for_lens.instance.galaxies.lens.shear,
             ),
             source=source,
         ),
+        fields=source_result_for_lens.instance.fields,
     )
 
     search = af.Nautilus(
@@ -485,10 +503,10 @@ def mass_total(
                 bulge=light_result.instance.galaxies.lens.bulge,
                 disk=light_result.instance.galaxies.lens.disk,
                 mass=mass,
-                shear=source_result_for_lens.model.galaxies.lens.shear,
             ),
             source=source,
         ),
+        fields=source_result_for_lens.model.fields,
     )
 
     search = af.Nautilus(

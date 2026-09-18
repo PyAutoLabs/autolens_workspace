@@ -204,7 +204,7 @@ profiles can measure.
 
 Neither galaxy carries the external shear. In the galaxy-scale examples the shear is attached to the single lens
 galaxy, but a multi-galaxy lens has no single galaxy to attach it to, and picking one arbitrarily would misrepresent
-what it is. The shear is defined separately below, centred on the system as a whole.
+what it is. The shear is defined separately below, in an `al.MassField` centred on the system as a whole.
 """
 lens_0 = al.Galaxy(
     redshift=0.5,
@@ -244,15 +244,19 @@ main_lens_galaxies = [lens_0, lens_1]
 __External Shear__
 
 The `ExternalShear` describes the tidal gravitational field of structure *outside* the system being simulated. It is
-a property of the system as a whole rather than of any individual galaxy, so we give it its own entry at the system
-centre (0.0", 0.0") instead of attaching it to one of the deflectors.
+a property of the system as a whole rather than of any individual galaxy, so it is held in an `al.MassField` — a
+container built like a `Galaxy` (a redshift plus a bag of mass profiles) but carrying no light — instead of being
+attached to one of the deflectors.
+
+The field is passed to the tracer via its `fields` argument rather than its `galaxies` argument. Only the tracer's
+*planes* merge galaxies and fields at each redshift, so `tracer.galaxies` never contains it.
 
 `ExternalShear` takes no `centre` argument because it is a uniform field defined about the coordinate origin, which
-for this dataset is the centre of the lens pair. Holding it in its own galaxy is therefore both the physically
+for this dataset is the centre of the lens pair. Holding it in its own field is therefore both the physically
 honest description and exactly equivalent numerically to attaching it to a deflector — the tracer sums every
 deflection field either way.
 """
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -311,7 +315,7 @@ shear's, simply add. (Two deflectors at *different* redshifts is compound, multi
 package, where multi-plane tracing is the default.)
 """
 tracer = al.Tracer(
-    galaxies=main_lens_galaxies + [shear_galaxy, extra_galaxy, source_galaxy]
+    galaxies=main_lens_galaxies + [extra_galaxy, source_galaxy], fields=[field]
 )
 
 """

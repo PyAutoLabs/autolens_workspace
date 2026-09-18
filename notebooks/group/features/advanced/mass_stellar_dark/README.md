@@ -7,13 +7,14 @@ constrained independently by the data.
 The group `lens_dict` model-composition API is used throughout: one `lens_i` entry per main lens galaxy centre,
 loaded from a `main_lens_centres.json` file written by the simulator. Each `lens_i` carries an `lmp.Sersic`
 bulge (light + stellar mass coupled by `mass_to_light_ratio`) and an `NFWSph` dark matter halo. An
-`ExternalShear` is attached to `lens_0` only, representing the group-wide shear field.
+`ExternalShear` is held in an `al.MassField` in the model's `fields` collection, representing the group-wide
+shear field.
 
 # Files
 
 - `simulator`: Simulating a group-scale decomposed-mass lens system (two main lens galaxies at z=0.5, one
   source at z=1.0). Each main lens galaxy has its own `lmp.Sersic` + `NFWSph`; `lens_0` additionally carries an
-  `ExternalShear`.
+  `ExternalShear` held in an `al.MassField`.
 - `fit`: Standalone `Tracer` + `FitImaging` example without invoking a non-linear search — useful for
   understanding the per-galaxy deflection decomposition and the group `lens_dict` composition. Includes an
   assertion that the hand-summed `sum_i (alpha_stellar_i + alpha_dark_i) + alpha_shear` matches the tracer's

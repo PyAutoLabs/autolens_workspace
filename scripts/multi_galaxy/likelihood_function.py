@@ -302,7 +302,7 @@ image-plane 2D grid of (y,x) coordinates to the source-plane so that the source 
 In this example each deflector is an elliptical isothermal mass distribution. The system also has a single overall
 `ExternalShear`, defined below alongside them, which describes the tidal field of everything outside the system
 being modeled. Because it is a property of the system as a whole rather than of an individual galaxy, it is kept as
-a standalone profile here and later placed in its own galaxy at the system centre.
+a standalone profile here and later placed in an `al.MassField` at the system centre.
 
 A mass profile is defined by its convergence $\\kappa (\\eta)$, which is related to the surface density of the mass
 distribution as
@@ -380,8 +380,8 @@ Everything downstream of this summation — ray-tracing, evaluating the source, 
 completely unchanged from the galaxy-scale likelihood function. Below we compute each field and add them.
 
 The `ExternalShear` enters this sum in exactly the same way as a galaxy's mass profile: it contributes its own
-deflection field, which is added to the others. It is held in its own galaxy below, at the system centre, because it
-acts on the system as a whole rather than on any one deflector.
+deflection field, which is added to the others. It is held in an `al.MassField` below, at the system centre,
+because it acts on the system as a whole rather than on any one deflector.
 """
 deflections_0 = mass_0.deflections_yx_2d_from(grid=masked_dataset.grid)
 deflections_1 = mass_1.deflections_yx_2d_from(grid=masked_dataset.grid)
@@ -422,9 +422,10 @@ and added together. The `Tracer` built further down does the same across galaxie
 summation shown explicitly above is performed internally.
 
 Neither galaxy carries the `ExternalShear`. It describes the tidal field of structure *outside* the system and is
-therefore a property of the system as a whole, so we hold it in its own galaxy at the system centre (0.0", 0.0")
-rather than attaching it to a deflector. Its deflection field is added into the sum exactly like a galaxy's, which is
-why this is numerically identical to attaching it to `lens_0` — it is simply an honest description of what it is.
+therefore a property of the system as a whole, so we hold it in an `al.MassField` at the system centre (0.0",
+0.0") rather than attaching it to a deflector. Its deflection field is added into the sum exactly like a galaxy's,
+which is why this is numerically identical to attaching it to `lens_0` — it is simply an honest description of what
+it is.
 """
 lens_galaxy_0 = al.Galaxy(
     redshift=0.5,
@@ -500,9 +501,11 @@ The `Tracer` below computes the 2D deflection angles of all of its lens galaxies
 from the image-plane 2D (y,x) coordinates $\\theta$ of each grid, thus ray-tracing their coordinates to the source
 plane to compute their $\\beta$ values.
 """
-shear_galaxy = al.Galaxy(redshift=0.5, shear=shear)
+field = al.MassField(redshift=0.5, shear=shear)
 
-tracer = al.Tracer(galaxies=[lens_galaxy_0, lens_galaxy_1, shear_galaxy, source_galaxy])
+tracer = al.Tracer(
+    galaxies=[lens_galaxy_0, lens_galaxy_1, source_galaxy], fields=[field]
+)
 
 # A list of every grid (e.g. image-plane, source-plane) however we only need the source plane grid with index -1.
 traced_grid = tracer.traced_grid_2d_list_from(grid=masked_dataset.grid)[-1]

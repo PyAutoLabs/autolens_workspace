@@ -50,9 +50,14 @@ This script fits a `PointDataset` data of a 'galaxy-scale' strong lens with a mo
  - The lens galaxy's total mass distribution is an `Isothermal`.
  - The source `Galaxy` is a point source `PointSolved`, whose source-plane centre is solved for analytically.
 
-The `ExternalShear` is also not included in the mass model, where it is for the `imaging` and `interferometer` examples.
-For a quadruply imaged point source (8 data points) there is insufficient information to fully constain a model with
-an `Isothermal` and `ExternalShear` (9 parameters).
+No external shear is included in the model, where it is for the `imaging` and `interferometer` examples. For a
+quadruply imaged point source (8 data points) there is insufficient information to constrain an `Isothermal` plus
+an external shear (9 parameters).
+
+Where a shear is fitted, it is never attached to the lens galaxy: it is an `ExternalShear` held in an
+`al.MassField`, which lives in the model's own `fields=` collection beside `galaxies=` (and in the tracer's
+`fields=` argument). The shear describes the tidal field of everything outside the system, so it is a property of
+the system rather than of a galaxy. See `imaging/modeling.py` for the full description.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

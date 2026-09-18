@@ -153,7 +153,7 @@ main_lens_galaxies = [lens_0, lens_1]
 """
 __External Shear__
 """
-shear_galaxy = al.Galaxy(
+field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),
 )
@@ -175,7 +175,7 @@ source_galaxy = al.Galaxy(
 """
 __Ray Tracing__
 """
-tracer = al.Tracer(galaxies=main_lens_galaxies + [shear_galaxy, source_galaxy])
+tracer = al.Tracer(galaxies=main_lens_galaxies + [source_galaxy], fields=[field])
 
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 

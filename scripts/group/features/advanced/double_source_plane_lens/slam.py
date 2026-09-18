@@ -14,7 +14,7 @@ function, priors are chained via `al.util.chaining.mass_from`, image positions a
 __Group + DSPL-Specific Differences From Standard SLaM__
 
  - The lens-plane (z=0.5) is composed via the group `lens_dict` convention: one `af.Model(al.Galaxy)` entry per
-   main lens galaxy centre, with the `ExternalShear` attached only to `lens_0`.
+   main lens galaxy centre, with the `ExternalShear` held in an `al.MassField` in `fields`.
  - There are two source galaxies (`source_0` at redshift 1.0, `source_1` at redshift 2.0). `source_0` is a light
    source AND a mass deflector for `source_1`.
  - The SOURCE LP PIPELINE is split into two searches: the first fits all main lens galaxies + `source_0` only;
@@ -30,7 +30,8 @@ Using a SOURCE LP PIPELINE and SOURCE PIX PIPELINE, this DSPL group SLaM modelin
 dataset of a group-scale DSPL where in the final model:
 
  - Each main lens galaxy's light is a bulge with an MGE light profile.
- - Each main lens galaxy's total mass distribution is an `Isothermal`. `lens_0` carries an `ExternalShear`.
+ - Each main lens galaxy's total mass distribution is an `Isothermal`. The group's one `ExternalShear` is an
+   `al.MassField` in the model's `fields` collection.
  - The first source galaxy's light is a `Pixelization` and its mass is an `Isothermal`.
  - The second source galaxy's light is a `Pixelization`.
 
@@ -87,9 +88,6 @@ def build_lens_dict_model(
             bulge=bulge,
             mass=mass,
         )
-        if i == 0:
-            kwargs["shear"] = af.Model(al.mp.ExternalShear)
-
         lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, **kwargs)
     return lens_dict
 
@@ -115,11 +113,12 @@ __SOURCE LP PIPELINE 1__
 
 The first SOURCE LP PIPELINE search initializes a model where `source_1` is ignored and only the main lens
 galaxies and `source_0` are fit. This single-plane fit provides robust initial priors for each main lens
-galaxy's light, mass, the external shear on `lens_0`, and `source_0`'s light before the more complex DSPL model
+galaxy's light, mass, the external shear field, and `source_0`'s light before the more complex DSPL model
 is introduced.
 
 Model:
- - Per main lens galaxy: MGE bulge (2 x 20 Gaussians), `Isothermal` mass. `lens_0` also has an `ExternalShear`.
+ - Per main lens galaxy: MGE bulge (2 x 20 Gaussians), `Isothermal` mass. One `ExternalShear` sits beside them
+   in `fields`.
  - `source_0` light: MGE with 1 x 20 Gaussians.
  - `source_1`: absent.
 """
@@ -149,6 +148,12 @@ def source_lp_1(
         centre_prior_is_uniform=False,
     )
 
+    # External Shear (an `al.MassField`, in its own `fields` collection):
+
+    field = af.Model(
+        al.MassField, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
+    )
+
     model = af.Collection(
         galaxies=af.Collection(
             **lens_dict,
@@ -158,6 +163,7 @@ def source_lp_1(
                 bulge=source_0_bulge,
             ),
         ),
+        fields=af.Collection(field=field),
     )
 
     search = af.Nautilus(
@@ -174,7 +180,7 @@ def source_lp_1(
 __SOURCE LP PIPELINE 2__
 
 The second SOURCE LP PIPELINE search introduces `source_1`. Each main lens galaxy's bulge, mass and (for
-`lens_0`) shear are fixed to the search-1 instance values, and `source_0`'s light is also fixed. New free
+the external shear field are fixed to the search-1 instance values, and `source_0`'s light is also fixed. New free
 parameters:
 
  - `source_0`'s mass: `Isothermal` with a narrow prior centred near the origin (the first source typically sits
@@ -221,9 +227,6 @@ def source_lp_2(
             bulge=lens_inst.bulge,
             mass=lens_inst.mass,
         )
-        if i == 0:
-            kwargs["shear"] = lens_inst.shear
-
         lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, **kwargs)
 
     source_0_mass = af.Model(al.mp.Isothermal)
@@ -252,6 +255,7 @@ def source_lp_2(
                 bulge=source_1_bulge,
             ),
         ),
+        fields=source_lp_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -341,9 +345,6 @@ def source_pix_1_source_0(
             bulge=lens_inst.bulge,
             mass=mass,
         )
-        if i == 0:
-            kwargs["shear"] = source_lp_result_2.model.galaxies.lens_0.shear
-
         lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, **kwargs)
 
     model = af.Collection(
@@ -363,6 +364,7 @@ def source_pix_1_source_0(
                 redshift=redshift_source_1,
             ),
         ),
+        fields=source_lp_result_2.model.fields,
     )
 
     search = af.Nautilus(
@@ -477,9 +479,6 @@ def source_pix_1_source_1(
             bulge=lens_inst_lp.bulge,
             mass=lens_inst_pix.mass,
         )
-        if i == 0:
-            kwargs["shear"] = lens_inst_pix.shear
-
         lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, **kwargs)
 
     model = af.Collection(
@@ -500,6 +499,7 @@ def source_pix_1_source_1(
                 ),
             ),
         ),
+        fields=source_pix_result_1_source_0.instance.fields,
     )
 
     search = af.Nautilus(
@@ -516,7 +516,7 @@ def source_pix_1_source_1(
 __SOURCE PIX PIPELINE 2__
 
 The final SOURCE PIX PIPELINE search fits both source galaxies simultaneously with adaptive pixelizations.
-Per-lens mass, shear (on `lens_0`) and `source_0`'s mass are all fixed to the maximum-likelihood instances of
+Per-lens mass, the external shear field and `source_0`'s mass are all fixed to the maximum-likelihood instances of
 the previous pixelized searches; only the pixelization regularization parameters are free.
 """
 
@@ -623,9 +623,6 @@ def source_pix_2(
             bulge=lens_inst_lp.bulge,
             mass=lens_inst_pix.mass,
         )
-        if i == 0:
-            kwargs["shear"] = lens_inst_pix.shear
-
         lens_dict[f"lens_{i}"] = af.Model(al.Galaxy, **kwargs)
 
     model = af.Collection(
@@ -651,6 +648,7 @@ def source_pix_2(
                 ),
             ),
         ),
+        fields=source_pix_result_1_source_1.instance.fields,
     )
 
     search = af.Nautilus(

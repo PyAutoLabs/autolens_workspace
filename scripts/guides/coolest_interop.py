@@ -16,10 +16,11 @@ This requires the optional `coolest` package:
 __Contents__
 
 - **Conventions:** How PyAutoLens conventions map to COOLEST conventions.
-- **Lens Model:** A simple lens model (power-law + shear lens, Sersic source) to export.
+- **Lens Model:** A simple lens model (power-law lens + an external-shear `MassField`, Sersic source) to export.
 - **Export:** Writing the model to a COOLEST `.json` template.
 - **Import:** Reading a COOLEST template back as a `Tracer`.
 - **Round Trip:** Verifying the exported and imported models are numerically identical.
+- **Mass Fields:** How a PyAutoLens `MassField` maps 1:1 onto a COOLEST `MassField` entity.
 - **NFW Profiles:** The critical surface density COOLEST's NFW normalization requires.
 - **Unsupported Profiles:** Exporting a model containing components COOLEST cannot represent.
 
@@ -57,7 +58,12 @@ import autolens as al
 """
 __Lens Model__
 
-A simple lens model: a power-law mass profile with external shear lensing a Sersic source.
+A simple lens model: a power-law mass profile lensing a Sersic source, with an external shear beside them.
+
+The shear describes the tidal field of everything *outside* the modelled system, so it is not a property of the
+lens galaxy: it is held in an `al.MassField` (a redshift plus a bag of mass profiles, carrying no light) and
+passed to the `Tracer` via its `fields` argument. This mirrors COOLEST, whose standard also treats external
+fields as their own entity rather than as part of a galaxy.
 """
 lens = al.Galaxy(
     redshift=0.5,
@@ -67,7 +73,10 @@ lens = al.Galaxy(
         einstein_radius=1.6,
         slope=2.1,
     ),
-    shear=al.mp.ExternalShear(gamma_1=0.02, gamma_2=-0.03),
+)
+
+field = al.MassField(
+    redshift=0.5, shear=al.mp.ExternalShear(gamma_1=0.02, gamma_2=-0.03)
 )
 
 source = al.Galaxy(
@@ -81,16 +90,17 @@ source = al.Galaxy(
     ),
 )
 
-tracer = al.Tracer(galaxies=[lens, source])
+tracer = al.Tracer(galaxies=[lens, source], fields=[field])
 
 """
 __Export__
 
 `to_coolest` writes the model to a COOLEST `.json` template file and returns the written path.
 
-Each galaxy becomes a COOLEST `Galaxy` lensing entity; `ExternalShear` and `MassSheet` profiles are written as
-COOLEST `MassField` entities, as the standard requires. The model cosmology's H0 and Om0 are stored in the
-template.
+Each galaxy becomes a COOLEST `Galaxy` lensing entity; each `al.MassField` becomes a COOLEST `MassField`
+entity, a 1:1 mapping of the two standards' external-field containers. (An `ExternalShear` or `MassSheet` still
+attached to a galaxy is peeled off into a COOLEST `MassField` too, so the older galaxy-attached form exports
+identically.) The model cosmology's H0 and Om0 are stored in the template.
 
 COOLEST's plotting API evaluates a model on the pixel grid of the observation, so the template's `observation`
 block must record the field of view and number of pixels of the data. These are written from `shape_native`
@@ -115,10 +125,24 @@ __Import__
 
 `from_coolest` reads a COOLEST template — one written by **PyAutoLens** or by any other code — and returns a
 `Tracer` built from its profiles, with all parameters converted back to PyAutoLens conventions.
+
+Each COOLEST `Galaxy` entity comes back in `tracer.galaxies` and each COOLEST `MassField` entity comes back in
+`tracer.fields` as an `al.MassField`. The external shear therefore returns as a field, not bolted onto the lens
+galaxy — the round trip preserves *which entity* holds the shear, not only its parameter values.
+
+The COOLEST standard does not store the *names* PyAutoLens gives a profile, so a returned field's components are
+named `mass_0`, `mass_1`, ... rather than `shear` or `mass_sheet`. Select them by class instead:
 """
 tracer_via_coolest = al.interop.coolest.from_coolest(file_path=file_path)
 
 print(tracer_via_coolest.galaxies)
+print(tracer_via_coolest.fields)
+
+shear_via_coolest = tracer_via_coolest.fields[0].cls_list_from(cls=al.mp.ExternalShear)[
+    0
+]
+
+print(f"Shear returned as a field: {shear_via_coolest}")
 
 """
 __Round Trip__
@@ -135,6 +159,39 @@ print(
     "Max deflection difference: "
     f"{abs(deflections.array - deflections_via_coolest.array).max()}"
 )
+
+"""
+__Mass Fields__
+
+The mapping is 1:1 in both directions: a `Tracer` built with `fields=[...]` exports one COOLEST `MassField`
+entity per `al.MassField`, and reading that template back gives the same fields again.
+
+Below a mass sheet is added beside the shear — shear + sheet at one redshift are *one* field, exactly as a
+bulge + disk are one galaxy — and the export/import round trip is repeated to show both profiles returning in
+the single field entity.
+"""
+field_with_sheet = al.MassField(
+    redshift=0.5,
+    shear=al.mp.ExternalShear(gamma_1=0.02, gamma_2=-0.03),
+    mass_sheet=al.mp.MassSheet(centre=(0.0, 0.0), kappa=0.05),
+)
+
+tracer_with_sheet = al.Tracer(galaxies=[lens, source], fields=[field_with_sheet])
+
+file_path_field = al.interop.coolest.to_coolest(
+    galaxies=tracer_with_sheet,
+    file_path=path.join("output", "coolest_template_field"),
+    shape_native=(100, 100),
+    pixel_size=0.1,
+)
+
+tracer_field_via_coolest = al.interop.coolest.from_coolest(file_path=file_path_field)
+
+field_via_coolest = tracer_field_via_coolest.fields[0]
+
+print(f"Fields returned: {len(tracer_field_via_coolest.fields)}")
+print(f"Shear: {field_via_coolest.cls_list_from(cls=al.mp.ExternalShear)[0]}")
+print(f"Mass sheet: {field_via_coolest.cls_list_from(cls=al.mp.MassSheet)[0]}")
 
 """
 __NFW Profiles__

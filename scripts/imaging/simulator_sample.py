@@ -32,7 +32,8 @@ __Model__
 This script simulates a sample of `Imaging` data of 'galaxy-scale' strong lenses where:
 
  - The lens galaxies light profiles are `Sersic`'s.
- - The lens galaxies total mass distributions are `Isothermal` models with `ExternalShear`'s.
+ - The lens galaxies total mass distributions are `Isothermal` models, each with an `ExternalShear` held in a
+   `MassField`.
  - The source galaxies light profiles are `Sersic`'s.
 
 __Start Here Notebook__
@@ -119,7 +120,7 @@ def _clipped_ell_comp() -> float:
     return float(np.clip(rng.normal(0.0, 0.2), -1.0, 1.0))
 
 
-def _random_lens_and_source() -> tuple[al.Galaxy, al.Galaxy]:
+def _random_lens_and_source() -> tuple[al.Galaxy, al.MassField, al.Galaxy]:
     lens_bulge = al.lp_snr.Sersic(
         centre=(0.0, 0.0),
         ell_comps=(_clipped_ell_comp(), _clipped_ell_comp()),
@@ -136,7 +137,11 @@ def _random_lens_and_source() -> tuple[al.Galaxy, al.Galaxy]:
         gamma_1=float(rng.normal(0.0, 0.05)),
         gamma_2=float(rng.normal(0.0, 0.05)),
     )
-    lens = al.Galaxy(redshift=0.5, bulge=lens_bulge, mass=mass, shear=shear)
+    lens = al.Galaxy(redshift=0.5, bulge=lens_bulge, mass=mass)
+
+    # The external shear is a property of the system, not of a galaxy, so it is held in
+    # a `MassField` passed to the `Tracer` via `fields=` (see `imaging/modeling.py`).
+    field = al.MassField(redshift=0.5, shear=shear)
 
     source_bulge = al.lp_snr.Sersic(
         centre=(float(rng.normal(0.0, 0.3)), float(rng.normal(0.0, 0.3))),
@@ -147,7 +152,7 @@ def _random_lens_and_source() -> tuple[al.Galaxy, al.Galaxy]:
     )
     source = al.Galaxy(redshift=1.0, bulge=source_bulge)
 
-    return lens, source
+    return lens, field, source
 
 
 """
@@ -165,7 +170,7 @@ total_datasets = 3
 for sample_index in range(total_datasets):
     dataset_sample_path = Path(dataset_path, f"dataset_{sample_index}")
 
-    lens_galaxy, source_galaxy = _random_lens_and_source()
+    lens_galaxy, field, source_galaxy = _random_lens_and_source()
 
     """
     __Ray Tracing__
@@ -175,7 +180,7 @@ for sample_index in range(total_datasets):
 
     The steps below are expanded on in other `imaging/simulator` scripts, so check them out if anything below is unclear.
     """
-    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy])
+    tracer = al.Tracer(galaxies=[lens_galaxy, source_galaxy], fields=[field])
 
     aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 

@@ -9,7 +9,8 @@ to the ray-tracing, meaning both are therefore included in the strong lens model
 This example uses a list-based model composition API, where:
 
  - Main lens galaxies are built in a loop over centres loaded from a JSON file and stored in the model as
-   `lens_0`, `lens_1`, etc. Only the first main lens galaxy (`lens_0`) carries an `ExternalShear`.
+   `lens_0`, `lens_1`, etc. The group's one `ExternalShear` is held in an `al.MassField` in its own `fields`
+   collection, beside `galaxies`.
 
  - Extra galaxies are built in a loop over centres loaded from a separate JSON file and stored in an
    `extra_galaxies` collection. Their mass centres are fixed to the observed centres of light and their
@@ -83,7 +84,8 @@ __Example__
 This script fits an `Imaging` dataset of a 'group-scale' strong lens where
 
  - There is a main lens galaxy whose lens galaxy's light is an MGE.
- - There is a main lens galaxy whose total mass distribution is an `Isothermal` and `ExternalShear`.
+ - There is a main lens galaxy whose total mass distribution is an `Isothermal`; the group's external shear is
+   an `ExternalShear` held in an `al.MassField`.
  - There are two extra lens galaxies whose light models are `SersicSph` profiles and total mass distributions
    are tidally truncated `dPIEMassSph` models.
  - The source galaxy's light is an MGE.
@@ -189,8 +191,9 @@ For a group-scale lens, we designate there to be two types of lens galaxies in t
 
  - `main_galaxies`: The main lens galaxies which likely make up the majority of light and mass in the lens system.
  These are modeled individually and stored as `lens_0`, `lens_1`, etc. in the model's `galaxies` collection.
- Their centres are loaded from the `main_lens_centres.json` file. Only the first main lens galaxy (`lens_0`)
- carries an `ExternalShear`.
+ Their centres are loaded from the `main_lens_centres.json` file. The group's one `ExternalShear` is not a
+ galaxy property at all: it is held in an `al.MassField` in the model's own `fields` collection (see
+ `__External Shear__` below).
 
  - `extra_galaxies`: The extra galaxies which are nearby the lens system and contribute to the lensing of the source
   galaxy. These are modeled with a more restrictive model, for example with their centres fixed to the observed
@@ -238,7 +241,8 @@ We compose a lens model where:
 
   - The main lens galaxy's light is a `Sersic` light profile [7 parameters].
 
- - The main lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The main lens galaxy's total mass distribution is an `Isothermal`; the group's external shear is an
+   `ExternalShear` held in a `MassField` [7 parameters].
 
  - There are two extra lens galaxies with linear `SersicSph` light and tidally truncated `dPIEMassSph` total mass
    distributions, with centres fixed to the observed centres of light and one free `sigma` each (`r_core` and
@@ -269,6 +273,40 @@ not inherit default priors and float.
 A full description of model composition is provided by the model cookbook:
 
 https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
+
+__External Shear__
+
+A group has one overall external shear: the tidal field of everything *outside* the group being modelled. That
+makes it a property of the system, not of `lens_0` or any other member, so it does not belong on a galaxy.
+
+It is held in an `al.MassField`. A field is a container built like a `Galaxy` — a redshift plus a bag of mass
+profiles (`ExternalShear`, `MassSheet`, `ExternalPotential`) — which carries no light. Shear, sheet and
+potential at one redshift are one field, in the same way that a bulge and a disk are one galaxy.
+
+In the model the field lives in its own `fields=` collection beside `galaxies=`:
+
+    field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+    model = af.Collection(
+        galaxies=af.Collection(**lens_dict, source=source),
+        fields=af.Collection(field=field),
+        extra_galaxies=extra_galaxies,
+    )
+
+It therefore appears under `fields` in `model.info`, and its results are read as
+`result.instance.fields.field.shear`. In a `Tracer` it is the `fields=` argument. Only the tracer's *planes*
+merge galaxies and fields at each redshift; `tracer.galaxies` never contains a field, so the list-based
+`lens_0`, `lens_1`, ... indexing used throughout this script is unaffected. Several fields means several
+planes (e.g. line-of-sight mass sheets at different redshifts).
+
+An `ExternalShear` takes no `centre`: it is a uniform field about the coordinate origin. An `ExternalPotential`
+and a `MassSheet` do have a centre, and `al.model_util.mass_field_from(lens=lens, potential=True)` composes the
+field with that centre tied to `lens.mass.centre` (the convention).
+
+This is numerically identical to attaching the shear to a lens galaxy — the tracer sums every deflection field
+either way. If you have existing results, note that this script now composes a different model, so it gets a
+new result identifier and will not resume an `output/` folder produced by the old galaxy-attached version. The
+library still accepts `al.Galaxy(shear=...)`, so your own scripts do not need changing.
 
 __Coordinates__
 
@@ -301,8 +339,11 @@ for i, centre in enumerate(main_lens_centres):
         redshift=0.5,
         bulge=bulge,
         mass=mass,
-        shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Extra Galaxies:
 
@@ -345,6 +386,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
     extra_galaxies=extra_galaxies,
 )
 
@@ -448,8 +490,11 @@ for i, centre in enumerate(main_lens_centres):
         redshift=0.5,
         bulge=bulge,
         mass=mass,
-        shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
     )
+
+# External Shear (an `al.MassField`, in its own `fields` collection below):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Extra Galaxies:
 
@@ -502,6 +547,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
+    fields=af.Collection(field=field),
     extra_galaxies=extra_galaxies,
 )
 

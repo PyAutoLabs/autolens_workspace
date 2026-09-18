@@ -49,7 +49,8 @@ __This Script__
 Using LENS LIGHT, SOURCE LP, SOURCE PIX, LIGHT LP and MASS TOTAL pipelines this script fits `Imaging` data where in
 the final model:
 
- - The lens galaxy's light is an MGE bulge and its total mass is a `PowerLaw` plus `ExternalShear`.
+ - The lens galaxy's light is an MGE bulge and its total mass is a `PowerLaw`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - Each bounded companion has an MGE light profile and a luminosity-bounded free `IsothermalSph` mass.
  - Each scaling companion has a spherical MGE light profile and an `IsothermalSph` mass tied to the anchor.
  - The source galaxy's light is a `Pixelization`.
@@ -318,6 +319,11 @@ def source_lp(
         bulge=lens_instance.bulge,
         disk=None,
         mass=af.Model(al.mp.Isothermal),
+    )
+
+    field = af.Model(
+        al.MassField,
+        redshift=redshift_lens,
         shear=af.Model(al.mp.ExternalShear),
     )
 
@@ -367,6 +373,7 @@ def source_lp(
             lens=lens,
             source=af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge),
         ),
+        fields=af.Collection(field=field),
         extra_galaxies=af.Collection(bounded_galaxies_list),
         scaling_galaxies=af.Collection(scaling_galaxies_list),
     )
@@ -442,7 +449,6 @@ def source_pix_1(
                 bulge=source_lp_result.instance.galaxies.lens.bulge,
                 disk=source_lp_result.instance.galaxies.lens.disk,
                 mass=mass,
-                shear=source_lp_result.model.galaxies.lens.shear,
             ),
             source=af.Model(
                 al.Galaxy,
@@ -458,6 +464,7 @@ def source_pix_1(
         ),
         extra_galaxies=source_lp_result.model.extra_galaxies,
         scaling_galaxies=source_lp_result.model.scaling_galaxies,
+        fields=source_lp_result.model.fields,
     )
 
     search = af.Nautilus(
@@ -512,7 +519,6 @@ def source_pix_2(
                 bulge=source_lp_result.instance.galaxies.lens.bulge,
                 disk=source_lp_result.instance.galaxies.lens.disk,
                 mass=source_pix_result_1.instance.galaxies.lens.mass,
-                shear=source_pix_result_1.instance.galaxies.lens.shear,
             ),
             source=af.Model(
                 al.Galaxy,
@@ -528,6 +534,7 @@ def source_pix_2(
         ),
         extra_galaxies=source_pix_result_1.instance.extra_galaxies,
         scaling_galaxies=source_pix_result_1.instance.scaling_galaxies,
+        fields=source_pix_result_1.instance.fields,
     )
 
     search = af.Nautilus(
@@ -624,12 +631,12 @@ def light_lp(
                 bulge=lens_bulge,
                 disk=None,
                 mass=source_result_for_lens.instance.galaxies.lens.mass,
-                shear=source_result_for_lens.instance.galaxies.lens.shear,
             ),
             source=source,
         ),
         extra_galaxies=af.Collection(bounded_galaxies_list),
         scaling_galaxies=af.Collection(scaling_galaxies_list),
+        fields=source_result_for_lens.instance.fields,
     )
 
     search = af.Nautilus(
@@ -703,7 +710,6 @@ def mass_total(
         bulge=light_result.instance.galaxies.lens.bulge,
         disk=light_result.instance.galaxies.lens.disk,
         mass=mass,
-        shear=source_result_for_lens.model.galaxies.lens.shear,
     )
 
     source = al.util.chaining.source_from(result=source_result_for_source)
@@ -766,6 +772,7 @@ def mass_total(
 
     model = af.Collection(
         galaxies=af.Collection(lens=lens, source=source),
+        fields=source_result_for_lens.model.fields,
         extra_galaxies=af.Collection(bounded_galaxies_list),
         scaling_galaxies=af.Collection(scaling_galaxies_list),
     )

@@ -112,10 +112,15 @@ def source_lp(
             redshift=redshift_lens,
             bulge=lens_bulge,
             mass=af.Model(al.mp.Isothermal),
-            shear=af.Model(al.mp.ExternalShear) if i == 0 else None,
         )
 
         lens_dict[f"lens_{i}"] = lens
+
+    # External Shear (an `al.MassField`, in its own `fields` collection below):
+
+    field = af.Model(
+        al.MassField, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
+    )
 
     # Extra Galaxies:
 
@@ -163,6 +168,7 @@ def source_lp(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=af.Collection(field=field),
         extra_galaxies=extra_galaxies,
     )
 
@@ -243,7 +249,6 @@ def source_pix_1(
             redshift=lens_instance.redshift,
             bulge=lens_instance.bulge,
             mass=mass,
-            shear=lens_model.shear if i == 0 else None,
         )
 
     # Fix extra galaxies to their best-fit values.
@@ -262,6 +267,7 @@ def source_pix_1(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_lp_result.model.fields,
         extra_galaxies=extra_galaxies,
     )
 
@@ -322,7 +328,6 @@ def source_pix_2(
             redshift=lp_instance.redshift,
             bulge=lp_instance.bulge,
             mass=pix_instance.mass,
-            shear=pix_instance.shear if i == 0 else None,
         )
 
     extra_galaxies = source_pix_result_1.instance.extra_galaxies
@@ -339,6 +344,7 @@ def source_pix_2(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_pix_result_1.instance.fields,
         extra_galaxies=extra_galaxies,
     )
 
@@ -410,13 +416,13 @@ def light_lp(
             redshift=lens_instance.redshift,
             bulge=lens_bulge,
             mass=lens_instance.mass,
-            shear=lens_instance.shear if i == 0 else None,
         )
 
     extra_galaxies = source_result_for_lens.instance.extra_galaxies
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_result_for_lens.instance.fields,
         extra_galaxies=extra_galaxies,
     )
 
@@ -490,13 +496,13 @@ def mass_total(
             redshift=lens_instance.redshift,
             bulge=light_instance.bulge,
             mass=mass,
-            shear=lens_model.shear if i == 0 else None,
         )
 
     extra_galaxies = light_result.instance.extra_galaxies
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=source_result_for_lens.model.fields,
         extra_galaxies=extra_galaxies,
     )
 
@@ -556,6 +562,7 @@ def subhalo_no_subhalo(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=mass_result.model.fields,
         extra_galaxies=extra_galaxies,
     )
 
@@ -641,6 +648,7 @@ def subhalo_grid_search(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=mass_result.model.fields,
         extra_galaxies=extra_galaxies,
     )
 
@@ -735,6 +743,7 @@ def subhalo_refine(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
+        fields=subhalo_grid_search_result.model.fields,
         extra_galaxies=extra_galaxies,
     )
 

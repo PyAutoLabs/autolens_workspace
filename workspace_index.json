@@ -513,7 +513,7 @@
     ],
     "notebook": "notebooks/group/features/advanced/mass_stellar_dark/modeling.ipynb",
     "path": "scripts/group/features/advanced/mass_stellar_dark/modeling.py",
-    "summary": "A group-scale strong lens where each main lens galaxy carries a decomposed mass model: a stellar component tied to the galaxy's own light via a mass-to-light ratio, plus a separately-parameterized dark matter halo. The total lens-plane deflection is the sum, over every main lens galaxy, of stellar + dark contributions, plus a single external shear attached to `lens_0` representing the group-wide shear field.",
+    "summary": "A group-scale strong lens where each main lens galaxy carries a decomposed mass model: a stellar component tied to the galaxy's own light via a mass-to-light ratio, plus a separately-parameterized dark matter halo. The total lens-plane deflection is the sum, over every main lens galaxy, of stellar + dark contributions, plus a single external shear, held in an `al.MassField` in the model's `fields` collection, representing the group-wide shear field.",
     "title": "Modeling Features: Group Mass Stellar Dark"
   },
   {
@@ -1597,6 +1597,7 @@
       "Export",
       "Import",
       "Round Trip",
+      "Mass Fields",
       "NFW Profiles",
       "Unsupported Profiles"
     ],
@@ -2943,7 +2944,9 @@
       "Tracer json",
       "LOS Diagnostics"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "imaging/modeling.py"
+    ],
     "notebook": "notebooks/imaging/features/advanced/los_halos/simulator.ipynb",
     "path": "scripts/imaging/features/advanced/los_halos/simulator.py",
     "summary": "This script simulates a strong gravitational lens including line-of-sight (LOS) dark matter halos that perturb the lensed images via multi-plane ray tracing.",
@@ -2963,6 +2966,7 @@
       "Batched Realisations"
     ],
     "cross_refs": [
+      "imaging/modeling.py",
       "simulator.py"
     ],
     "notebook": "notebooks/imaging/features/advanced/los_halos/simulator_jax.ipynb",
@@ -3008,13 +3012,14 @@
       "autolens_workspace/scripts/imaging/features/multi_gaussian_expansion/fit.py",
       "autolens_workspace/scripts/imaging/fit.py",
       "chaining.py",
+      "imaging/modeling.py",
       "modeling.py",
       "simulator.py",
       "slam.py"
     ],
     "notebook": "notebooks/imaging/features/advanced/mass_stellar_dark/fit.ipynb",
     "path": "scripts/imaging/features/advanced/mass_stellar_dark/fit.py",
-    "summary": "A decomposed mass model splits the lens galaxy's total mass into a stellar component (tied to its observed light via a mass-to-light ratio) and a dark matter component (typically an NFW halo). The total deflection at every image-plane coordinate is the sum of the deflections produced by each component, plus any external shear.",
+    "summary": "A decomposed mass model splits the lens galaxy's total mass into a stellar component (tied to its observed light via a mass-to-light ratio) and a dark matter component (typically an NFW halo). The total deflection at every image-plane coordinate is the sum of the deflections produced by each component, plus any external shear (which lives beside the galaxy in a `MassField`).",
     "title": "Features: Mass Stellar Dark Fit"
   },
   {
@@ -3032,7 +3037,8 @@
       "autolens_workspace/scripts/imaging/features/multi_gaussian_expansion/likelihood_function.py",
       "autolens_workspace/scripts/imaging/likelihood_function.py",
       "imaging/features/multi_gaussian_expansion/likelihood_function.py",
-      "imaging/likelihood_function.py"
+      "imaging/likelihood_function.py",
+      "imaging/modeling.py"
     ],
     "notebook": "notebooks/imaging/features/advanced/mass_stellar_dark/likelihood_function.ipynb",
     "path": "scripts/imaging/features/advanced/mass_stellar_dark/likelihood_function.py",
@@ -4326,6 +4332,7 @@
       "/imaging/data_preparation/gui/mask_extra_galaxies.py",
       "contributor_guide.py",
       "data_preparation/examples/optional/mask_extra_galaxies.py",
+      "imaging/modeling.py",
       "scripts/guides/using_jax.py"
     ],
     "notebook": "notebooks/imaging/likelihood_function.ipynb",
@@ -4490,6 +4497,7 @@
       "autolens_workspace/start_here.py",
       "cluster/start_here.ipynb",
       "group/start_here.ipynb",
+      "imaging/modeling.py",
       "modeling.py",
       "scripts/imaging/simulator.py"
     ],
@@ -7765,6 +7773,7 @@
       "cluster/modeling.py",
       "features/fluxes.py",
       "group/modeling.py",
+      "imaging/modeling.py",
       "point_source/modeling.py",
       "point_source/simulator.py",
       "point_source/start_here.ipynb",
@@ -7793,6 +7802,7 @@
     "cross_refs": [
       "/imaging/data_preparation/examples/optional/extra_galaxies_centres.py",
       "/point_source/features/extra_galaxies/modeling.ipynb",
+      "imaging/modeling.py",
       "imaging/simulator.py",
       "modeling.py",
       "point_source/modeling.py",
@@ -7816,6 +7826,7 @@
     ],
     "cross_refs": [
       "guides/point_source_pairing.py",
+      "imaging/modeling.py",
       "point_source/start_here.ipynb",
       "start.here.py",
       "start_here.ipynb",
@@ -7862,6 +7873,7 @@
       "Tracer json"
     ],
     "cross_refs": [
+      "imaging/modeling.py",
       "modeling.py",
       "point_source/simulator.ipynb",
       "scripts/point_source/simulator.py"
@@ -7982,6 +7994,7 @@
       "Cosmology"
     ],
     "cross_refs": [
+      "imaging/modeling.py",
       "point_source/start_here.ipynb",
       "start.here.py",
       "start_here.ipynb"
@@ -8051,6 +8064,7 @@
     "cross_refs": [
       "/point_source/start_here.py",
       "guides/point_source_pairing.py",
+      "imaging/modeling.py",
       "start_here.py"
     ],
     "notebook": "notebooks/point_source/modeling.ipynb",
@@ -8142,6 +8156,7 @@
       "cluster/start_here.ipynb",
       "group/start_here.ipynb",
       "guides/point_source_pairing.py",
+      "imaging/modeling.py",
       "modeling.py",
       "point_source/modeling.py",
       "scripts/point_source/simulator.py",

@@ -5,7 +5,8 @@ Modeling: Mass Total + Source Parametric
 This script fits an `Interferometer` and `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is an MGE (but is invisible in the interferometer data).
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The source galaxy's light is an MGE.
 
 __Contents__
@@ -157,7 +158,8 @@ __Model__
 We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In this 
 example our lens model is:
 
- - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField` [7 parameters].
  -  with 1 x 20 Gaussians for the source galaxy's light, which is complete different for each waveband. [8 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=21.
@@ -175,7 +177,6 @@ lens = af.Model(
     redshift=0.5,
     bulge=bulge,
     mass=al.mp.Isothermal,
-    shear=al.mp.ExternalShear,
 )
 
 bulge = al.model_util.mge_model_from(
@@ -187,7 +188,12 @@ bulge = al.model_util.mge_model_from(
 
 source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 We now combine them using the factor analysis class, which allows us to fit the two datasets simultaneously.

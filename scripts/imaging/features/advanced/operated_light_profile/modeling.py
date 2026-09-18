@@ -41,7 +41,8 @@ This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a mod
 
  - The lens galaxy's light is a linear `Sersic` bulge.
  - The lens galaxy includes a linear `Gaussian` psf.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`.
+ - The external shear is an `ExternalShear` held in a `MassField`.
  - The source galaxy's light is a linear `SersicCore`.
 
 __Fit__
@@ -145,7 +146,8 @@ We compose a lens model where:
 
  - The lens galaxy's point source emission is a linear operated `Gaussian` centred on the bulge [3 parameters].
 
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an `ExternalShear` held
+   in a `MassField` [7 parameters].
 
  - The source galaxy's light is a linear `SersicCore` [6 parameters].
 
@@ -170,11 +172,18 @@ lens = af.Model(
     bulge=bulge,
     psf=psf,
     mass=al.mp.Isothermal,
-    shear=al.mp.ExternalShear,
 )
+
+# External Shear:
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
 source = af.Model(al.Galaxy, redshift=1.0, bulge=al.lp_linear.SersicCore)
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 There is also a linear variant of every operated light profile (see `linear_light_profiles.py`).
@@ -192,9 +201,11 @@ bulge.centre = psf.centre
 
 mass = af.Model(al.mp.Isothermal)
 
-shear = af.Model(al.mp.ExternalShear)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, psf=psf, mass=mass)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, psf=psf, mass=mass, shear=shear)
+# External Shear:
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Source:
 
@@ -204,7 +215,10 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=af.Collection(field=field),
+)
 
 """
 The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
