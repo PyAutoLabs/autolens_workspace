@@ -69,28 +69,6 @@ overrides:
     set: { PYAUTO_SMALL_DATASETS: "0" }
   - pattern: "multi_dataset/start_here"
     set: { PYAUTO_SMALL_DATASETS: "0" }
-  # multi_galaxy/start_here.py joined the real-FITS start_here family on
-  # 2026-09-17 (autolens_workspace#554, #549): it was swapped off the simulated
-  # `simple` look-alike onto the archival ACS/WFC F814W frame of SDSS
-  # J1011+0143. profile_release.yaml was not updated with it, so it kept the
-  # profile defaults and it timed out on the first Release Integrate run that
-  # saw the change (2026-09-18, PyAutoHeart run 35319361459 — "1 timeout:
-  # autolens multi_galaxy/start_here.py"), blocking that night's release.
-  #
-  # Treated exactly like its imaging/start_here sibling above: the cap lift is
-  # what every real-FITS start_here needs (a 15x15 grid does not fit a real
-  # frame), and the per-script BUILD_SCRIPT_TIMEOUT buys a real multi-galaxy
-  # field — several lens galaxies, a real PSF, a reduced-but-real sampler —
-  # room beyond the run-wide 1800s cap. The run-wide cap is left alone; it is
-  # still the only guard on every other entry in this profile.
-  #
-  # This is an unblock, not a verdict on the cost: the script's release-profile
-  # runtime has not been measured from a clean output tree. Profile it and
-  # retire the BUILD_SCRIPT_TIMEOUT once it fits under 1800s.
-  - pattern: "multi_galaxy/start_here"
-    set:
-      PYAUTO_SMALL_DATASETS: "0"
-      BUILD_SCRIPT_TIMEOUT: "3600"
   # Potential correction builds a dpsi mesh by subsampling the image grid, so the
   # 15x15 small-datasets cap starves it: al.pc.PairRegularDpsiMesh(dpsi_factor=2)
   # raises "The dpsi grid is too sparse" from mesh.py's get_itp_box_ctr. Both the
