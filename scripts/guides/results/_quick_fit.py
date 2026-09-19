@@ -102,9 +102,7 @@ model = af.Collection(
         ),
         source=af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=None),
     ),
-    fields=af.Collection(
-        field=af.Model(al.MassField, redshift=0.5, shear=al.mp.ExternalShear),
-    ),
+    fields=af.Model(al.MassField, redshift=0.5, shear=al.mp.ExternalShear),
 )
 
 
@@ -117,8 +115,8 @@ class LatentShear(al.Latent):
     @staticmethod
     def keys(analysis):
         return [
-            "fields.field.shear.magnitude",
-            "fields.field.shear.angle",
+            "fields.shear.magnitude",
+            "fields.shear.angle",
         ]
 
     @staticmethod
@@ -128,8 +126,8 @@ class LatentShear(al.Latent):
         import jax.numpy as jnp
 
         magnitude, angle = al.convert.shear_magnitude_and_angle_from(
-            gamma_1=instance.fields.field.shear.gamma_1,
-            gamma_2=instance.fields.field.shear.gamma_2,
+            gamma_1=instance.fields.shear.gamma_1,
+            gamma_2=instance.fields.shear.gamma_2,
             xp=jnp,
         )
 

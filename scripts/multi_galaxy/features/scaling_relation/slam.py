@@ -166,7 +166,7 @@ def luminosities_from(result, n_main, pixel_scale):
     galaxy's.
 
     The main lenses are the first `n_main` entries because every model in this script composes `**lens_dict` first.
-    The shear `MassField` does not enter this arithmetic at all: it lives in the model's `fields` collection and the
+    The shear `MassField` does not enter this arithmetic at all: it lives in the model's `fields` slot and the
     analysis passes it to the tracer's `fields` argument, never into its galaxy list.
     """
     tracer = (
@@ -431,7 +431,7 @@ def source_lp(
             source=af.Model(al.Galaxy, redshift=redshift_source, bulge=source_bulge),
         ),
         scaling_galaxies=af.Collection(scaling_galaxies_list),
-        fields=af.Collection(field=field),
+        fields=field,
     )
 
     search = af.Nautilus(

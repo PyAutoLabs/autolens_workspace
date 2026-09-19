@@ -130,7 +130,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 print(model.info)
@@ -139,8 +139,8 @@ print(model.info)
 An external shear describes the tidal field of everything *outside* the system being modelled, so it is a
 property of the system rather than of a galaxy. It is therefore held in an `al.MassField` — a container built
 like a `Galaxy` (a redshift plus a bag of mass profiles: `ExternalShear`, `MassSheet`, `ExternalPotential`)
-which carries no light — and placed in its own `fields` collection beside `galaxies`. It appears under `fields`
-in `model.info` and is read back as `result.instance.fields.field.shear`. `tracer.galaxies` never contains a
+which carries no light — and placed in the model's `fields` slot beside `galaxies`. It appears under `fields`
+in `model.info` and is read back as `result.instance.fields.shear`. `tracer.galaxies` never contains a
 field, so positional indexing of galaxies is unaffected; the tracer's *planes* merge galaxies and fields at
 each redshift.
 
@@ -239,7 +239,7 @@ source = af.Model(
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 print(model.info)
 
@@ -364,7 +364,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge, disk=disk)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 # Assert that the effective radius of the bulge is larger than that of the disk.

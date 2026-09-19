@@ -207,7 +207,7 @@ field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """
@@ -309,6 +309,7 @@ dataset_model.grid_offset.grid_offset_1 = af.UniformPrior(
 model = af.Collection(
     dataset_model=dataset_model,
     galaxies=result.instance.galaxies,
+    fields=result.instance.fields,
 )
 
 print(model.info)

@@ -153,7 +153,7 @@ for i, centre in enumerate(main_lens_centres):
 
     lens_dict[f"lens_{i}"] = lens
 
-# External Shear (an `al.MassField`, in its own `fields` collection below):
+# External Shear (an `al.MassField`, in the model's `fields` slot below):
 
 field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
@@ -200,7 +200,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=source_bulge)
 
 model_1 = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
     extra_galaxies=extra_galaxies,
 )
 
@@ -379,7 +379,7 @@ for i, _ in enumerate(main_lens_centres):
         mass=mass,
     )
 
-# External Shear (an `al.MassField`, in its own `fields` collection below):
+# External Shear (an `al.MassField`, in the model's `fields` slot below):
 
 field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
@@ -407,7 +407,7 @@ source_4 = af.Model(
 
 model_4 = af.Collection(
     galaxies=af.Collection(**lens_dict_4, source=source_4),
-    fields=af.Collection(field=field),
+    fields=field,
     extra_galaxies=extra_galaxies_4,
 )
 

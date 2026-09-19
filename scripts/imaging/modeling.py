@@ -288,7 +288,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """
@@ -313,13 +313,13 @@ bulge and a disk belong in one `Galaxy`:
         mass_sheet=af.Model(al.mp.MassSheet),
     )
 
-In the model, the field lives in its own `fields=` collection beside `galaxies=`, as composed above. This is 
+In the model, the field lives in the model's own `fields=` slot beside `galaxies=`, as composed above. This is 
 visible everywhere the model is:
 
  - `model.info` (printed below) lists the field under a `fields` heading, separate from `galaxies`.
- - Results are read as `result.instance.fields.field.shear.gamma_1`, not 
+ - Results are read as `result.instance.fields.shear.gamma_1`, not 
    `result.instance.galaxies.lens.shear.gamma_1`.
- - Database and aggregator string paths are `"fields.field.shear.magnitude"`.
+ - Database and aggregator string paths are `"fields.shear.magnitude"`.
 
 The `Tracer` takes the same split, via its own `fields=` argument:
 
@@ -450,7 +450,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """

@@ -82,7 +82,7 @@ Fits mass + source directly. Because no galaxy has light, there is no need for a
 (`source_lp_0` in the standard group SLaM). We go straight to fitting mass and source simultaneously.
 
 Multiple main-lens galaxies each get an `Isothermal` mass; the group's one `ExternalShear` is an
-`al.MassField` in the model's `fields` collection.
+`al.MassField` in the model's `fields` slot.
 Extra galaxies get tidally truncated `dPIEMassSph` profiles (the group/cluster convention) with a
 free `sigma` and fixed truncation.
 """
@@ -120,7 +120,7 @@ def source_lp(
             mass=mass,
         )
 
-    # External Shear (an `al.MassField`, in its own `fields` collection below):
+    # External Shear (an `al.MassField`, in the model's `fields` slot below):
 
     field = af.Model(
         al.MassField, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
@@ -147,7 +147,7 @@ def source_lp(
 
     model = af.Collection(
         galaxies=af.Collection(**lens_dict, source=source),
-        fields=af.Collection(field=field),
+        fields=field,
         extra_galaxies=extra_galaxies,
     )
 

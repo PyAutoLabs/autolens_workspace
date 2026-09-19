@@ -53,7 +53,7 @@ This script fits `Imaging` of a multi-galaxy strong lens with a model where:
 
  - Each of the two co-dominant deflectors has an MGE bulge and an `Isothermal` mass with its centre fixed to the
    observed position.
- - An `ExternalShear` is carried by a single `MassField` in the model's `fields` collection.
+ - An `ExternalShear` is carried by a single `MassField` in the model's `fields` slot.
  - The source is an MGE.
  - Each extra galaxy has an `ExponentialSph` light profile and an `IsothermalSph` mass, centres fixed
    [2 extra galaxies x (2 light + 1 mass) parameters].
@@ -284,7 +284,7 @@ extra_galaxies = af.Collection(extra_galaxies_list)
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
     extra_galaxies=extra_galaxies,
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """

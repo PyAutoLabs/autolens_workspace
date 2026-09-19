@@ -109,12 +109,10 @@ def source_lp(
                 disk=None,
             ),
         ),
-        fields=af.Collection(
-            field=af.Model(
-                al.MassField,
-                redshift=redshift_lens,
-                shear=af.Model(al.mp.ExternalShear),
-            ),
+        fields=af.Model(
+            al.MassField,
+            redshift=redshift_lens,
+            shear=af.Model(al.mp.ExternalShear),
         ),
     )
 
@@ -766,13 +764,13 @@ def base_model_narrow_priors_from(base_model, result, stretch: float = 1.0):
             b=0.1 * stretch
         ).galaxies.lens.mass.slope
 
-    if hasattr(base_model, "fields") and hasattr(base_model.fields.field, "shear"):
-        base_model.fields.field.shear.gamma_1 = result.model_centred_max_lh_bounded(
+    if hasattr(base_model, "fields") and hasattr(base_model.fields, "shear"):
+        base_model.fields.shear.gamma_1 = result.model_centred_max_lh_bounded(
             b=0.05 * stretch
-        ).fields.field.shear.gamma_1
-        base_model.fields.field.shear.gamma_2 = result.model_centred_max_lh_bounded(
+        ).fields.shear.gamma_1
+        base_model.fields.shear.gamma_2 = result.model_centred_max_lh_bounded(
             b=0.05 * stretch
-        ).fields.field.shear.gamma_2
+        ).fields.shear.gamma_2
 
     if hasattr(base_model.galaxies.source, "bulge"):
         base_model.galaxies.source.bulge.centre.centre_0 = (

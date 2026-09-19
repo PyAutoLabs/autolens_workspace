@@ -243,7 +243,7 @@ source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 search = af.Nautilus(
@@ -312,12 +312,10 @@ def source_lp(
                 bulge=source_bulge,
             ),
         ),
-        fields=af.Collection(
-            field=af.Model(
-                al.MassField,
-                redshift=redshift_lens,
-                shear=af.Model(al.mp.ExternalShear),
-            ),
+        fields=af.Model(
+            al.MassField,
+            redshift=redshift_lens,
+            shear=af.Model(al.mp.ExternalShear),
         ),
     )
 

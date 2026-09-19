@@ -31,7 +31,7 @@ dataset of a group-scale DSPL where in the final model:
 
  - Each main lens galaxy's light is a bulge with an MGE light profile.
  - Each main lens galaxy's total mass distribution is an `Isothermal`. The group's one `ExternalShear` is an
-   `al.MassField` in the model's `fields` collection.
+   `al.MassField` in the model's `fields` slot.
  - The first source galaxy's light is a `Pixelization` and its mass is an `Isothermal`.
  - The second source galaxy's light is a `Pixelization`.
 
@@ -148,7 +148,7 @@ def source_lp_1(
         centre_prior_is_uniform=False,
     )
 
-    # External Shear (an `al.MassField`, in its own `fields` collection):
+    # External Shear (an `al.MassField`, in the model's `fields` slot):
 
     field = af.Model(
         al.MassField, redshift=redshift_lens, shear=af.Model(al.mp.ExternalShear)
@@ -163,7 +163,7 @@ def source_lp_1(
                 bulge=source_0_bulge,
             ),
         ),
-        fields=af.Collection(field=field),
+        fields=field,
     )
 
     search = af.Nautilus(

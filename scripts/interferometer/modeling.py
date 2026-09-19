@@ -187,7 +187,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """
@@ -197,9 +197,9 @@ The external shear describes the tidal gravitational field of everything *outsid
 is a property of the system rather than of any one galaxy -- which is why it is composed above as its own model 
 object. It is held in an `al.MassField`: a container built exactly like a `Galaxy` (a redshift plus a bag of mass 
 profiles -- `ExternalShear`, `MassSheet`, `ExternalPotential`, all three at one redshift belonging in one field, as 
-a bulge and a disk belong in one galaxy) that carries no light. In the model it lives in its own `fields=` 
-collection beside `galaxies=`, appears under a `fields` heading in `model.info`, and its results are read as 
-`result.instance.fields.field.shear`; the `Tracer` takes the same split via `al.Tracer(galaxies=[...], 
+a bulge and a disk belong in one galaxy) that carries no light. In the model it lives in the `fields=` 
+slot beside `galaxies=`, appears under a `fields` heading in `model.info`, and its results are read as 
+`result.instance.fields.shear`; the `Tracer` takes the same split via `al.Tracer(galaxies=[...], 
 fields=[field])`, where only the *planes* merge galaxies and fields by redshift, so `tracer.galaxies` never holds a 
 field and positional indexing is unaffected (several fields simply means several planes carry one). Note that 
 `ExternalShear` takes no `centre` -- it is a uniform field about the coordinate origin -- whereas `MassSheet` and 
@@ -306,7 +306,7 @@ field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """

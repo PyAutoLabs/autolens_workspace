@@ -211,8 +211,8 @@ The shear is the tidal field of everything *outside* the lens system, so it is a
 of the system rather than of a galaxy. It is therefore not attached to the lens below, but 
 composed in its own `al.MassField`: a container built like a `Galaxy` (a redshift plus a bag 
 of mass profiles — `ExternalShear`, `MassSheet`, `ExternalPotential`) which carries no light. 
-The field goes in its own `fields=` collection beside `galaxies=`, appears under `fields` in 
-`model.info`, and its result is read as `result.instance.fields.field.shear`. The fit is 
+The field goes in the model's own `fields=` slot beside `galaxies=`, appears under `fields` in 
+`model.info`, and its result is read as `result.instance.fields.shear`. The fit is 
 numerically identical to attaching the shear to the lens, because the tracer sums every 
 deflection field at each plane. `imaging/modeling.py` describes this in full.
 """
@@ -245,7 +245,7 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """

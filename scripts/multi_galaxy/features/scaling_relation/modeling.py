@@ -178,7 +178,7 @@ parameter.
 
 __External Shear__
 
-The system's single `ExternalShear` is held in an `al.MassField` in its own `fields` collection, at the system
+The system's single `ExternalShear` is held in an `al.MassField` in the model's `fields` slot, at the system
 centre, exactly as in `multi_galaxy/modeling.py` — the shear describes the tidal field of everything outside the
 system, so it belongs to no one deflector.
 """
@@ -260,7 +260,7 @@ co-dominant pair and the tied population are visibly different populations.
 """
 model = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
     scaling_galaxies=scaling_galaxies,
 )
 
@@ -292,7 +292,7 @@ for centre in scaling_galaxies_centres:
 
 model_free = af.Collection(
     galaxies=af.Collection(**lens_dict, source=source),
-    fields=af.Collection(field=field),
+    fields=field,
     scaling_galaxies=af.Collection(scaling_galaxies_free_list),
 )
 

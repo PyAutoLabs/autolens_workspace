@@ -349,11 +349,11 @@ In a *model* the field has its own `fields=` slot beside `galaxies=`:
 
     model = af.Collection(
         galaxies=af.Collection(lens=lens, source=source),
-        fields=af.Collection(field=field),
+        fields=field,
     )
 
 It then appears under `fields` in `model.info`, and results are read as
-`result.instance.fields.field.shear`.
+`result.instance.fields.shear`.
 
 An `ExternalShear` takes no `centre`: it is a uniform field about the coordinate origin.  An
 `ExternalPotential` and a `MassSheet` *do* have a centre, and physically it is the centre of

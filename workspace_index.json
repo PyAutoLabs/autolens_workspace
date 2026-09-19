@@ -513,7 +513,7 @@
     ],
     "notebook": "notebooks/group/features/advanced/mass_stellar_dark/modeling.ipynb",
     "path": "scripts/group/features/advanced/mass_stellar_dark/modeling.py",
-    "summary": "A group-scale strong lens where each main lens galaxy carries a decomposed mass model: a stellar component tied to the galaxy's own light via a mass-to-light ratio, plus a separately-parameterized dark matter halo. The total lens-plane deflection is the sum, over every main lens galaxy, of stellar + dark contributions, plus a single external shear, held in an `al.MassField` in the model's `fields` collection, representing the group-wide shear field.",
+    "summary": "A group-scale strong lens where each main lens galaxy carries a decomposed mass model: a stellar component tied to the galaxy's own light via a mass-to-light ratio, plus a separately-parameterized dark matter halo. The total lens-plane deflection is the sum, over every main lens galaxy, of stellar + dark contributions, plus a single external shear, held in an `al.MassField` in the model's `fields` slot, representing the group-wide shear field.",
     "title": "Modeling Features: Group Mass Stellar Dark"
   },
   {

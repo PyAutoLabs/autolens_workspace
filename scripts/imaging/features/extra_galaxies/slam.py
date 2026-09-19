@@ -149,12 +149,10 @@ def source_lp(
             ),
         ),
         extra_galaxies=extra_galaxies,
-        fields=af.Collection(
-            field=af.Model(
-                al.MassField,
-                redshift=redshift_lens,
-                shear=af.Model(al.mp.ExternalShear),
-            ),
+        fields=af.Model(
+            al.MassField,
+            redshift=redshift_lens,
+            shear=af.Model(al.mp.ExternalShear),
         ),
     )
 

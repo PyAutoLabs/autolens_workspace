@@ -165,7 +165,7 @@ lens = af.Model(
 )
 
 # The external shear belongs to the system, not to a galaxy, so it is composed in its own `MassField`
-# which goes in the model's `fields=` collection (see `imaging/modeling.py`).
+# which goes in the model's `fields` slot (see `imaging/modeling.py`).
 
 field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
@@ -188,7 +188,7 @@ source_1 = af.Model(al.Galaxy, redshift=2.0, point_1=al.ps.PointSolved)
 
 model = af.Collection(
     galaxies=af.Collection(lens=lens, source_0=source_0, source_1=source_1),
-    fields=af.Collection(field=field),
+    fields=field,
 )
 
 """
