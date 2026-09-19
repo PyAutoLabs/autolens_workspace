@@ -176,7 +176,6 @@ One MGE bulge + free `Isothermal` mass per co-dominant deflector, exactly as `mu
 them. The brightest galaxy's `einstein_radius` is what the tier hangs off, but it is otherwise an ordinary free
 parameter.
 
-__External Shear__
 """
 lens_dict = {}
 

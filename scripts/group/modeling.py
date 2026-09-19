@@ -273,8 +273,6 @@ A full description of model composition is provided by the model cookbook:
 
 https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 
-__External Shear__
-
 __Coordinates__
 
 The model fitting default settings assume that the lens galaxy centre is near the coordinates (0.0", 0.0").

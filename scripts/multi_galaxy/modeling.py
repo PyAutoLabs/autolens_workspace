@@ -423,7 +423,6 @@ __List-Based Model Composition__
 Each main lens galaxy is created in a loop over the main lens galaxy centres and stored as `lens_0`, `lens_1`,
 etc. — the same list-based API the group package uses, so moving up the ladder later requires no re-learning.
 
-__External Shear__
 """
 # Main Lens Galaxies:
 
