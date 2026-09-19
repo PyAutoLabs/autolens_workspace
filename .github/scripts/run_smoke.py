@@ -76,8 +76,14 @@ except ModuleNotFoundError as _smoke_import_error:
             )
             # Prefer the shared resolver, but never require Brain. A bundle's
             # Brain may be a symlink to canonical; reject that foreign answer.
-            resolver_file = root / "PyAutoBrain" / "agents" / "_pyauto_root.py"
-            if resolver_file.is_file():
+            resolvers = [p for p in (
+                root / "PyAutoBrain" / "agents" / "_pyauto_root.py",
+                root / "organs" / "PyAutoBrain" / "agents" / "_pyauto_root.py",
+            ) if p.is_file()]
+            if len({p.resolve() for p in resolvers}) > 1:
+                raise RuntimeError("PyAutoBrain has distinct flat and grouped checkouts")
+            resolver_file = resolvers[0] if resolvers else None
+            if resolver_file is not None:
                 try:
                     spec = importlib.util.spec_from_file_location(
                         "_smoke_root_resolver", resolver_file
@@ -89,7 +95,11 @@ except ModuleNotFoundError as _smoke_import_error:
                         root = resolved
                 except (Exception, SystemExit):
                     pass  # Missing/broken optional resolver cannot break discovery.
-        hands = root / "PyAutoHands" / "autohands"
+        flat = root / "PyAutoHands" / "autohands"
+        grouped = root / "organs" / "PyAutoHands" / "autohands"
+        if (flat / "build_util.py").is_file() and (grouped / "build_util.py").is_file() and flat.resolve() != grouped.resolve():
+            raise RuntimeError("PyAutoHands has distinct flat and grouped checkouts")
+        hands = grouped if (grouped / "build_util.py").is_file() else flat
         if not (hands / "build_util.py").is_file():
             raise ModuleNotFoundError(
                 f"PyAutoHands not found for {WORKSPACE}; looked for "
