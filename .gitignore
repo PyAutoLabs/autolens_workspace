@@ -29,7 +29,9 @@ scripts/path/
 scripts/scripts/
 output_path/
 *.log
-.codex/
+# Keep local Codex state private; commit generated skill adapters.
+.codex/*
+!.codex/skills/
 
 # Structured smoke/validation reports (run_smoke.py --report-dir)
 test-results/
