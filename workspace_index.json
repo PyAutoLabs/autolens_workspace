@@ -4332,7 +4332,6 @@
       "/imaging/data_preparation/gui/mask_extra_galaxies.py",
       "contributor_guide.py",
       "data_preparation/examples/optional/mask_extra_galaxies.py",
-      "imaging/modeling.py",
       "scripts/guides/using_jax.py"
     ],
     "notebook": "notebooks/imaging/likelihood_function.ipynb",
@@ -4497,7 +4496,6 @@
       "autolens_workspace/start_here.py",
       "cluster/start_here.ipynb",
       "group/start_here.ipynb",
-      "imaging/modeling.py",
       "modeling.py",
       "scripts/imaging/simulator.py"
     ],

@@ -170,9 +170,6 @@ main_lens_galaxies = [lens_0, lens_1]
 
 """
 __External Shear__
-
-The system's overall shear, held in an `al.MassField` at the system centre rather than attached to either
-deflector, as `multi_galaxy/simulator.py` explains.
 """
 field = al.MassField(
     redshift=0.5,

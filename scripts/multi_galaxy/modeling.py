@@ -424,37 +424,6 @@ Each main lens galaxy is created in a loop over the main lens galaxy centres and
 etc. — the same list-based API the group package uses, so moving up the ladder later requires no re-learning.
 
 __External Shear__
-
-Note that no lens galaxy is given an `ExternalShear`. The shear describes the tidal field of everything *outside*
-the system being modeled, so it is a property of the system as a whole, not of an individual galaxy. A multi-galaxy
-lens makes this unavoidable: there is no single galaxy to attach the shear to, and picking one of two co-dominant
-deflectors arbitrarily would misrepresent what it is.
-
-The shear is therefore held in an `al.MassField`. A `MassField` is a container built like a `Galaxy` — a redshift
-plus a bag of mass profiles (`ExternalShear`, `MassSheet`, `ExternalPotential`) — except that it carries no light.
-Shear, sheet and potential at one redshift are one field, exactly as a bulge and a disk are one galaxy.
-
-In the model the field lives in the `fields` slot (`fields=field`) beside `galaxies=`, so the `model.info`
-printed below lists it under `fields` rather than among the galaxies, and its result is read as
-`result.instance.fields.shear`. In a tracer it is the `fields=[field]` argument. Only the tracer's *planes*
-merge galaxies and fields at each redshift; `tracer.galaxies` never contains a field, so anything indexing the
-galaxies positionally is unaffected. Several fields simply means several planes (line-of-sight mass sheets, say).
-
-`ExternalShear` takes no `centre` argument because it is a uniform field defined about the coordinate origin, which
-for this dataset is the centre of the lens pair. `ExternalPotential` and `MassSheet` do have a centre, and
-`al.model_util.mass_field_from(lens=lens, potential=True)` composes a field with that centre tied to
-`lens.mass.centre`, which is the convention.
-
-None of this changes the numbers: because the tracer sums every deflection field, a shear in its own field is
-identical to the same shear attached to a deflector. What it buys you is a model whose `info` and posterior label
-the shear as a property of the system, so you are never tempted to read it as a measurement of `lens_0`.
-
-Note also that giving a shear to *every* deflector would be a redundant parameterization: the shears would be
-degenerate with one another and the fit would wander along that degeneracy.
-
-If you have results from an earlier version of this script, note that it composed a different model: this one has a
-different result identifier and will not resume an `output/` folder written by the old galaxy-attached version. The
-library still accepts `al.Galaxy(shear=...)`, so your own scripts are unaffected.
 """
 # Main Lens Galaxies:
 

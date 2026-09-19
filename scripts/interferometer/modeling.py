@@ -173,7 +173,7 @@ mass = af.Model(al.mp.Isothermal)
 
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
-# External Shear (a `MassField`, its own model object -- see `__External Shear__` below):
+# External Shear (other mass profiles can be added to this field):
 
 field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
@@ -192,22 +192,6 @@ model = af.Collection(
 
 """
 __External Shear__
-
-The external shear describes the tidal gravitational field of everything *outside* the system being modeled, so it 
-is a property of the system rather than of any one galaxy -- which is why it is composed above as its own model 
-object. It is held in an `al.MassField`: a container built exactly like a `Galaxy` (a redshift plus a bag of mass 
-profiles -- `ExternalShear`, `MassSheet`, `ExternalPotential`, all three at one redshift belonging in one field, as 
-a bulge and a disk belong in one galaxy) that carries no light. In the model it lives in the `fields=` 
-slot beside `galaxies=`, appears under a `fields` heading in `model.info`, and its results are read as 
-`result.instance.fields.shear`; the `Tracer` takes the same split via `al.Tracer(galaxies=[...], 
-fields=[field])`, where only the *planes* merge galaxies and fields by redshift, so `tracer.galaxies` never holds a 
-field and positional indexing is unaffected (several fields simply means several planes carry one). Note that 
-`ExternalShear` takes no `centre` -- it is a uniform field about the coordinate origin -- whereas `MassSheet` and 
-`ExternalPotential` do, and `al.model_util.mass_field_from(lens=lens, potential=True)` composes a field with that 
-centre tied to `lens.mass.centre` by convention. The fit is numerically identical to attaching the shear to the 
-lens galaxy (the tracer sums every deflection field), but the model is a *different* model with a new **PyAutoFit** 
-unique identifier, so it will not resume an `output` folder written by an older galaxy-attached version of this 
-script; the library still accepts `al.Galaxy(shear=...)` for your own existing scripts.
 
 __Model Info__
 

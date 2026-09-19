@@ -206,15 +206,6 @@ hides the API to make the code in this introduction example ready to read. We th
 use the PyAutoLens Model API to compose the over lens model.
 
 __External Shear__
-
-The shear is the tidal field of everything *outside* the lens system, so it is a property 
-of the system rather than of a galaxy. It is therefore not attached to the lens below, but 
-composed in its own `al.MassField`: a container built like a `Galaxy` (a redshift plus a bag 
-of mass profiles — `ExternalShear`, `MassSheet`, `ExternalPotential`) which carries no light. 
-The field goes in the model's own `fields=` slot beside `galaxies=`, appears under `fields` in 
-`model.info`, and its result is read as `result.instance.fields.shear`. The fit is 
-numerically identical to attaching the shear to the lens, because the tracer sums every 
-deflection field at each plane. `imaging/modeling.py` describes this in full.
 """
 # Lens:
 

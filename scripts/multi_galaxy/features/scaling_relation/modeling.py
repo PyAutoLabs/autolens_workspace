@@ -177,10 +177,6 @@ them. The brightest galaxy's `einstein_radius` is what the tier hangs off, but i
 parameter.
 
 __External Shear__
-
-The system's single `ExternalShear` is held in an `al.MassField` in the model's `fields` slot, at the system
-centre, exactly as in `multi_galaxy/modeling.py` — the shear describes the tidal field of everything outside the
-system, so it belongs to no one deflector.
 """
 lens_dict = {}
 
