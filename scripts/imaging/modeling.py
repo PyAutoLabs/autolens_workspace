@@ -292,8 +292,6 @@ model = af.Collection(
 )
 
 """
-__External Shear__
-
 __Model Info__
 
 The `info` attribute shows the model in a readable format.

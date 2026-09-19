@@ -236,8 +236,6 @@ model = af.Collection(
 
 
 """
-__External Shear__
-
 __Analysis List__
 
 Set up two instances of the `Analysis` class object, one for each dataset.

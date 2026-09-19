@@ -197,9 +197,6 @@ lens_galaxy = al.Galaxy(
     ),
 )
 
-"""
-__External Shear__
-"""
 field = al.MassField(
     redshift=0.5,
     shear=al.mp.ExternalShear(gamma_1=0.05, gamma_2=0.05),

@@ -337,9 +337,6 @@ them together.
 """
 lens_galaxy = al.Galaxy(redshift=0.5, bulge=bulge, mass=mass)
 
-"""
-__External Shear__
-"""
 field = al.MassField(redshift=0.5, shear=shear)
 
 """

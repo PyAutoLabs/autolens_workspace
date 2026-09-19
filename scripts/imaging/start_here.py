@@ -205,7 +205,6 @@ models for the lens and source below via a utility function `mge_model_from` whi
 hides the API to make the code in this introduction example ready to read. We then 
 use the PyAutoLens Model API to compose the over lens model.
 
-__External Shear__
 """
 # Lens:
 
@@ -483,8 +482,7 @@ and computes how light rays are deflected.
 - The lens galaxy has both light (a Sersic bulge) and mass (an isothermal profile).
 - The source galaxy has its own light (a SersicCore profile).
 - The system's external shear is an `ExternalShear` held in an `al.MassField`, passed to the
-  tracer via its own `fields=` argument rather than attached to a galaxy (see the
-  `__External Shear__` discussion above).
+  tracer via its own `fields=` argument rather than attached to a galaxy.
 
 Together they define a strong lens system. The tracer will “ray-trace” our grid through
 this mass distribution and generate a lensed image.
