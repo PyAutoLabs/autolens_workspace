@@ -191,9 +191,8 @@ For a group-scale lens, we designate there to be two types of lens galaxies in t
 
  - `main_galaxies`: The main lens galaxies which likely make up the majority of light and mass in the lens system.
  These are modeled individually and stored as `lens_0`, `lens_1`, etc. in the model's `galaxies` collection.
- Their centres are loaded from the `main_lens_centres.json` file. The group's one `ExternalShear` is not a
- galaxy property at all: it is held in an `al.MassField` in the model's `fields` slot (see
- `__External Shear__` below).
+ Their centres are loaded from the `main_lens_centres.json` file. The group's one `ExternalShear` is held in an
+ `al.MassField` in the model's `fields` slot.
 
  - `extra_galaxies`: The extra galaxies which are nearby the lens system and contribute to the lensing of the source
   galaxy. These are modeled with a more restrictive model, for example with their centres fixed to the observed
@@ -275,38 +274,6 @@ A full description of model composition is provided by the model cookbook:
 https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
 
 __External Shear__
-
-A group has one overall external shear: the tidal field of everything *outside* the group being modelled. That
-makes it a property of the system, not of `lens_0` or any other member, so it does not belong on a galaxy.
-
-It is held in an `al.MassField`. A field is a container built like a `Galaxy` — a redshift plus a bag of mass
-profiles (`ExternalShear`, `MassSheet`, `ExternalPotential`) — which carries no light. Shear, sheet and
-potential at one redshift are one field, in the same way that a bulge and a disk are one galaxy.
-
-In the model the field lives in the `fields=` slot beside `galaxies=`:
-
-    field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
-
-    model = af.Collection(
-        galaxies=af.Collection(**lens_dict, source=source),
-        fields=field,
-        extra_galaxies=extra_galaxies,
-    )
-
-It therefore appears under `fields` in `model.info`, and its results are read as
-`result.instance.fields.shear`. In a `Tracer` it is the `fields=` argument. Only the tracer's *planes*
-merge galaxies and fields at each redshift; `tracer.galaxies` never contains a field, so the list-based
-`lens_0`, `lens_1`, ... indexing used throughout this script is unaffected. Several fields means several
-planes (e.g. line-of-sight mass sheets at different redshifts).
-
-An `ExternalShear` takes no `centre`: it is a uniform field about the coordinate origin. An `ExternalPotential`
-and a `MassSheet` do have a centre, and `al.model_util.mass_field_from(lens=lens, potential=True)` composes the
-field with that centre tied to `lens.mass.centre` (the convention).
-
-This is numerically identical to attaching the shear to a lens galaxy — the tracer sums every deflection field
-either way. If you have existing results, note that this script now composes a different model, so it gets a
-new result identifier and will not resume an `output/` folder produced by the old galaxy-attached version. The
-library still accepts `al.Galaxy(shear=...)`, so your own scripts do not need changing.
 
 __Coordinates__
 

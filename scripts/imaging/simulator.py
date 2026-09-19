@@ -199,17 +199,6 @@ lens_galaxy = al.Galaxy(
 
 """
 __External Shear__
-
-The external shear is the tidal field of everything *outside* the lens system, so it is a property of the system 
-and not of any galaxy. It is held in an `al.MassField`: a container built like a `Galaxy` (a redshift plus a bag of 
-mass profiles -- `ExternalShear`, `MassSheet`, `ExternalPotential`) which carries no light. Shear, sheet and 
-potential at one redshift are one field, just as a bulge and a disk are one galaxy.
-
-The field is passed to the `Tracer` via its own `fields=` argument, beside `galaxies=`. Only the tracer's planes 
-merge the two, grouping them by redshift, so `tracer.galaxies` never contains a field and anything indexing 
-galaxies positionally is unaffected. The ray-tracing is numerically identical to attaching the shear to the lens 
-galaxy, because the tracer sums every deflection field at each plane. A full description is given in 
-`imaging/modeling.py`.
 """
 field = al.MassField(
     redshift=0.5,

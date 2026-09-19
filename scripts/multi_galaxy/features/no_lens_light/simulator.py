@@ -191,14 +191,6 @@ main_lens_galaxies = [lens_0, lens_1]
 
 """
 __External Shear__
-
-The `ExternalShear` describes the tidal gravitational field of structure *outside* the system being simulated. It is
-a property of the system as a whole rather than of any individual galaxy, so it is held in an `al.MassField` — a
-container built like a `Galaxy` but carrying no light — and passed to the tracer via its `fields` argument, at the
-system centre (0.0", 0.0"), instead of being attached to one of the deflectors.
-
-`ExternalShear` takes no `centre` argument because it is a uniform field defined about the coordinate origin, which
-for this dataset is the centre of the lens pair.
 """
 field = al.MassField(
     redshift=0.5,
