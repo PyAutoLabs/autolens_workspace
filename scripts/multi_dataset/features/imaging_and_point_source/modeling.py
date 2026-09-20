@@ -50,6 +50,7 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 
 # from autolens import setup_notebook; setup_notebook()
 
+import os
 import numpy as np
 from pathlib import Path
 
@@ -102,27 +103,49 @@ def _download(url, path):
     raise RuntimeError(f"Download failed after 3 attempts: {url}") from last_error
 
 
-if not data_fits_path.exists():
-    dataset_path.mkdir(parents=True, exist_ok=True)
-    print("Downloading HST H-band image of RXJ1131 (one-off, ~160 kB) ...")
-    # Bounded and retried, as in `cluster/start_here.py` and `cluster/lenstool/data.py`:
-    # a stalled hips2fits response must not hang the script (autolens_workspace#293).
-    _download(HIPS2FITS_URL, data_fits_path)
+small_datasets = os.environ.get("PYAUTO_SMALL_DATASETS") == "1"
 
-pixel_scales = 0.06
+if small_datasets:
+    # CI / release validation must not depend on CDS availability. Build a
+    # deterministic, HST-like toy image at the already-capped resolution and
+    # then exercise exactly the same Imaging / mask / analysis path below.
+    pixel_scales = 0.75
+    shape_native = (16, 16)
+    yy, xx = np.indices(shape_native, dtype=float)
+    yy = (yy - (shape_native[0] - 1) / 2.0) * pixel_scales
+    xx = (xx - (shape_native[1] - 1) / 2.0) * pixel_scales
+    radius = np.hypot(yy, xx)
+    theta = np.arctan2(yy, xx)
 
-data = al.Array2D.from_fits(file_path=data_fits_path, pixel_scales=pixel_scales)
+    lens_light = 0.20 * np.exp(-0.5 * (radius / 0.45) ** 2)
+    host_arc = (
+        0.10
+        * np.exp(-0.5 * ((radius - 1.55) / 0.28) ** 2)
+        * (1.0 + 0.25 * np.cos(2.0 * theta))
+    )
+    # A small deterministic sky gradient keeps the border RMS strictly positive,
+    # avoiding the unphysical zero-noise map a constant synthetic image would give.
+    sky = 0.02 + 0.0015 * yy + 0.0010 * xx
 
-# hips2fits cutouts can contain NaNs at coverage edges — zero them.
-data = al.Array2D.no_mask(
-    values=np.nan_to_num(np.asarray(data.native)), pixel_scales=pixel_scales
-)
+    data = al.Array2D.no_mask(
+        values=lens_light + host_arc + sky,
+        pixel_scales=pixel_scales,
+    )
+else:
+    if not data_fits_path.exists():
+        dataset_path.mkdir(parents=True, exist_ok=True)
+        print("Downloading HST H-band image of RXJ1131 (one-off, ~160 kB) ...")
+        # Normal tutorial execution keeps the real HST hips2fits cutout; small
+        # dataset validation never reaches the network branch.
+        _download(HIPS2FITS_URL, data_fits_path)
 
-# Under PYAUTO_SMALL_DATASETS=1 (smoke/CI), centre-crop the downloaded 200x200
-# cutout to the 16x16 cap so it stays shape-consistent with the masks and grids
-# built below (which honour the same env var) — a no-op in normal runs. Returns
-# the updated pixel_scales too, so everything downstream stays consistent.
-data, pixel_scales = al.util.dataset.cap_array_2d_for_small_datasets(data, pixel_scales)
+    pixel_scales = 0.06
+    data = al.Array2D.from_fits(file_path=data_fits_path, pixel_scales=pixel_scales)
+
+    # hips2fits cutouts can contain NaNs at coverage edges — zero them.
+    data = al.Array2D.no_mask(
+        values=np.nan_to_num(np.asarray(data.native)), pixel_scales=pixel_scales
+    )
 
 """
 __Noise Map & PSF__

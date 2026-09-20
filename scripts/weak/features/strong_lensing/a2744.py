@@ -44,6 +44,7 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 
 # from autolens import setup_notebook; setup_notebook()
 
+import os
 import numpy as np
 from pathlib import Path
 
@@ -117,22 +118,43 @@ def _download(url, path):
     raise RuntimeError(f"Download failed after 3 attempts: {url}") from last_error
 
 
-if not catalogue_path.exists():
+small_datasets = os.environ.get("PYAUTO_SMALL_DATASETS") == "1"
+
+if not small_datasets and not catalogue_path.exists():
     weak_path.mkdir(parents=True, exist_ok=True)
     print("Downloading A2744 catalogue from pyRRG (one-off, ~3 MB) ...")
     _download(CATALOGUE_URL, catalogue_path)
 
-from astropy.io import fits as astropy_fits
+if small_datasets:
+    # Deterministic mock catalogue for CI / release validation.  It has a
+    # physically sensible tangential-shear pattern, finite measurement errors
+    # and enough radial leverage to exercise the real WeakDataset likelihood.
+    n_source = 64
+    angle = np.linspace(0.0, 2.0 * np.pi, n_source, endpoint=False)
+    radius_mock = np.linspace(20.0, 120.0, n_source)
+    x_mock = radius_mock * np.cos(angle)
+    y_mock = radius_mock * np.sin(angle)
 
-with astropy_fits.open(catalogue_path) as hdul:
-    table = hdul[1].data
+    ra = 3.5875 + x_mock / (np.cos(np.deg2rad(-30.3972)) * 3600.0)
+    dec = -30.3972 + y_mock / 3600.0
 
-ra = np.asarray(table["ra"], dtype=float)
-dec = np.asarray(table["dec"], dtype=float)
-e1 = np.asarray(table["e1"], dtype=float)
-e2 = np.asarray(table["e2"], dtype=float)
-e1_err = np.asarray(table["e1_err"], dtype=float)
-e2_err = np.asarray(table["e2_err"], dtype=float)
+    gamma_t = 0.09 / (1.0 + radius_mock / 55.0)
+    e1 = -gamma_t * np.cos(2.0 * angle) + 0.015 * np.sin(3.0 * angle)
+    e2 = -gamma_t * np.sin(2.0 * angle) + 0.015 * np.cos(5.0 * angle)
+    e1_err = np.full(n_source, 0.08)
+    e2_err = np.full(n_source, 0.08)
+else:
+    from astropy.io import fits as astropy_fits
+
+    with astropy_fits.open(catalogue_path) as hdul:
+        table = hdul[1].data
+
+    ra = np.asarray(table["ra"], dtype=float)
+    dec = np.asarray(table["dec"], dtype=float)
+    e1 = np.asarray(table["e1"], dtype=float)
+    e2 = np.asarray(table["e2"], dtype=float)
+    e1_err = np.asarray(table["e1_err"], dtype=float)
+    e2_err = np.asarray(table["e2_err"], dtype=float)
 
 ra_centre, dec_centre = 3.5875, -30.3972  # A2744 core — same centre as the strong CSVs
 

@@ -107,6 +107,7 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 
 # from autolens import setup_notebook; setup_notebook()
 
+import os
 import numpy as np
 from pathlib import Path
 
@@ -150,7 +151,9 @@ HIPS2FITS_URL = (
     "&width=600&height=600&fov=0.05&projection=TAN&format=fits"
 )
 
-if not data_fits_path.exists():
+small_datasets = os.environ.get("PYAUTO_SMALL_DATASETS") == "1"
+
+if not small_datasets and not data_fits_path.exists():
     import urllib.request
 
     print(
@@ -164,7 +167,7 @@ if not data_fits_path.exists():
             f"Image download failed ({e}) — continuing without it (visualization only)."
         )
 
-if data_fits_path.exists():
+if not small_datasets and data_fits_path.exists():
     # hips2fits returns 0.3"/pixel for this 0.05 deg / 600 pixel cutout.
     data = al.Array2D.from_fits(file_path=data_fits_path, pixel_scales=0.3)
 

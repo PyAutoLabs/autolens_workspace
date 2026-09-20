@@ -7,6 +7,7 @@ and selection; run from the workspace root:
 """
 
 import csv
+import os
 import re
 import urllib.request
 from pathlib import Path
@@ -29,6 +30,27 @@ def project(ra, dec):
 
 
 def fetch_tsv(table):
+    if os.environ.get("PYAUTO_SMALL_DATASETS") == "1":
+        # Tiny deterministic VizieR-shaped fixtures keep this regeneration
+        # utility network-independent when it is included in validation.
+        if table == "tablea1":
+            return [
+                ["1", "1.1a", "", "3.5866", "-30.3968", "1.8", "3"],
+                ["2", "1.1b", "", "3.5882", "-30.3970", "1.8", "3"],
+                ["3", "1.1c", "", "3.5874", "-30.3981", "1.8", "3"],
+                ["4", "2.1a", "", "3.5858", "-30.3962", "2.4", "3"],
+                ["5", "2.1b", "", "3.5890", "-30.3971", "2.4", "3"],
+                ["6", "2.1c", "", "3.5878", "-30.3990", "2.4", "3"],
+            ]
+        if table == "tableb1":
+            return [
+                ["1", "", "BCG-A", "3.5875", "-30.3972", "17.5"],
+                ["2", "", "BCG-B", "3.5880", "-30.3976", "18.0"],
+                ["3", "", "G1", "3.5900", "-30.3960", "19.5"],
+                ["4", "", "G2", "3.5845", "-30.3980", "20.0"],
+            ]
+        raise ValueError(f"Unknown synthetic VizieR table: {table}")
+
     with urllib.request.urlopen(VIZIER.format(table=table)) as response:
         text = response.read().decode()
     rows = []
