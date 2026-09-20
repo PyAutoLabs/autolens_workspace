@@ -52,6 +52,7 @@ multi_galaxy/features/advanced/subhalo/simulator.py
 imaging/features/scaling_relation/modeling.py
 # multi_dataset/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1
 multi_dataset/modeling.py
+multi_dataset/features/imaging_and_point_source/modeling.py
 multi_dataset/plot.py
 guides/galaxies.py
 guides/using_jax.py
