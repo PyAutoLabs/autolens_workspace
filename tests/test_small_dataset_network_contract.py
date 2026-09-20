@@ -39,6 +39,23 @@ def _assert_network_calls_guarded(statements, not_small_guard=False):
             _assert_network_calls_guarded(statement.orelse, else_not_small)
             continue
 
+        if isinstance(statement, (ast.For, ast.AsyncFor, ast.While)):
+            _assert_network_calls_guarded(statement.body, not_small_guard)
+            _assert_network_calls_guarded(statement.orelse, not_small_guard)
+            continue
+
+        if isinstance(statement, (ast.With, ast.AsyncWith)):
+            _assert_network_calls_guarded(statement.body, not_small_guard)
+            continue
+
+        if isinstance(statement, ast.Try):
+            _assert_network_calls_guarded(statement.body, not_small_guard)
+            for handler in statement.handlers:
+                _assert_network_calls_guarded(handler.body, not_small_guard)
+            _assert_network_calls_guarded(statement.orelse, not_small_guard)
+            _assert_network_calls_guarded(statement.finalbody, not_small_guard)
+            continue
+
         for node in ast.walk(statement):
             if isinstance(node, ast.Call):
                 call = ast.unparse(node.func)
