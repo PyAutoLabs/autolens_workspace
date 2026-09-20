@@ -75,6 +75,7 @@ parameters clean (and the multi-plane solve tractable).
 
 # from autolens import setup_notebook; setup_notebook()
 
+import os
 import re
 import urllib.request
 from pathlib import Path
@@ -119,9 +120,51 @@ KEEP_FULL_MOSAIC = False
 
 LENSTOOL_PATH.mkdir(parents=True, exist_ok=True)
 
+small_datasets = os.environ.get("PYAUTO_SMALL_DATASETS") == "1"
+
+_SMALL_LENSTOOL_FILES = {
+    "best.par": """#1.0 z:1.50 dlsds:0.7
+potential O1
+ profile 81
+ x_centre 0.0
+ y_centre 0.0
+ ellipticity 0.15
+ angle_pos 30.0
+ core_radius 0.5
+ cut_radius 80.0
+ v_disp 850.0
+ z_lens 0.39
+ end
+potential 1
+ profile 81
+ x_centre 6.0
+ y_centre -4.0
+ ellipticity 0.10
+ angle_pos 5.0
+ core_radius 0.0
+ cut_radius 8.0
+ v_disp 180.0
+ z_lens 0.39
+ end
+""",
+    "arcs.dat": """1.1 110.8275 -73.4538 1.0 0.8 0.0 1.50 24.0
+1.2 110.8260 -73.4550 1.0 0.8 0.0 1.50 24.0
+1.3 110.8280 -73.4554 1.0 0.8 0.0 1.50 24.0
+""",
+    "galcat.cat": """1 110.8272 -73.4544 1.2 0.9 20.0 19.12
+2 110.8258 -73.4550 1.1 0.8 45.0 20.00
+""",
+    "input.par": "runmode\n reference 3 110.826989 -73.454723\n end\n",
+    "README.txt": "Synthetic deterministic Lenstool fixture for PYAUTO_SMALL_DATASETS validation.\n",
+}
+
 for name in MAHLER_FILES:
     path = LENSTOOL_PATH / name
-    if not path.exists():
+    if small_datasets:
+        # Exercise the real parsers / CSV writers without depending on GitHub or
+        # STScI. The fixtures are tiny but valid Lenstool-shaped inputs.
+        path.write_text(_SMALL_LENSTOOL_FILES[name])
+    elif not path.exists():
         print(f"Downloading {name} from the Mahler et al. repository...")
         # Explicit timeout so a stalled server fails fast instead of hanging
         # indefinitely (`urlretrieve` has no timeout).
@@ -322,9 +365,7 @@ toward West). The cutout exists purely for visualization — none of the modelin
 """
 cutout_path = DATASET_PATH / "data.fits"
 
-import os
-
-if os.environ.get("PYAUTO_SMALL_DATASETS") == "1":
+if small_datasets:
     print(
         "PYAUTO_SMALL_DATASETS=1: skipping the 96 MB RELICS mosaic download / cutout "
         "(visualization-only product; the modeling data products above are complete)."
