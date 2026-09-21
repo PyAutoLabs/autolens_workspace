@@ -77,6 +77,9 @@ pixels.
 Two brushes are available: press `1` for the green brush, which ADDS pixels to the mask, and `2` for the red
 brush, which ERASES them. Press `=` / `-` to make the brush bigger / smaller, `z` to undo the last stroke and
 Esc when you are finished.
+
+If the lensed source's multiple-image positions have been marked with the `positions.py` GUI for a waveband,
+pass them as `positions=` and each is shown as a dark cross while you paint (see `gui/mask.py`).
 """
 waveband = waveband_list[0]
 data = data_dict[waveband]

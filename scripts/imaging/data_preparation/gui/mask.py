@@ -77,6 +77,10 @@ If faint structure is hidden under the galaxy's light, pass `subtract_radial=Tru
 azimuthally-averaged radial profile subtracted, side by side with the image as observed. This changes only the
 display, not the mask, and you can paint on either panel.
 
+If the multiple-image positions of the lensed source have already been marked with the `positions.py` GUI, pass
+them as `positions` and each is marked with a dark cross while you paint, so the mask is drawn around the same
+images. The crosses are display only and never enter the mask.
+
 __Refining An Existing Mask__
 
 To adjust a mask drawn previously instead of starting from a blank image, set `refine_existing = True`. If the
@@ -91,14 +95,19 @@ back to the painted region before being passed as the proposal, and the result i
 refine_existing = False
 
 mask_path = Path(dataset_path, "mask_gui.fits")
+positions_path = Path(dataset_path, "positions.json")
+
+positions = al.from_json(file_path=positions_path) if positions_path.exists() else None
 
 if refine_existing and mask_path.exists():
     previous = al.Mask2D.from_fits(file_path=mask_path, pixel_scales=pixel_scales)
     scribbler = al.Scribbler(
-        image=data.native, proposal=np.invert(np.asarray(previous))
+        image=data.native,
+        proposal=np.invert(np.asarray(previous)),
+        positions=positions,
     )
 else:
-    scribbler = al.Scribbler(image=data.native)
+    scribbler = al.Scribbler(image=data.native, positions=positions)
 
 mask = al.Mask2D(mask=np.invert(scribbler.mask_from()), pixel_scales=pixel_scales)
 

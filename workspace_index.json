@@ -2701,7 +2701,9 @@
       "Refining An Existing Mask",
       "Output"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "positions.py"
+    ],
     "notebook": "notebooks/imaging/data_preparation/gui/mask.ipynb",
     "path": "scripts/imaging/data_preparation/gui/mask.py",
     "summary": "This tool allows one to mask a bespoke mask for a given image of a strong lens using an interactive GUI. This mask can then be loaded before a pipeline is run and passed to that pipeline so as to become the default masked used by a search (if a mask function is not passed to that search).",
@@ -2730,8 +2732,10 @@
       "Output"
     ],
     "cross_refs": [
+      "gui/mask.py",
       "imaging/data_preparation/gui/mask_extra_galaxies.py",
-      "multi_dataset/start_here.py"
+      "multi_dataset/start_here.py",
+      "positions.py"
     ],
     "notebook": "notebooks/imaging/data_preparation/gui/mask_extra_galaxies_multi.ipynb",
     "path": "scripts/imaging/data_preparation/gui/mask_extra_galaxies_multi.py",
