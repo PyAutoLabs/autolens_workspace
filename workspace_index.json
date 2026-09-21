@@ -2711,6 +2711,22 @@
   },
   {
     "contents": [
+      "Dataset",
+      "Scribbler",
+      "Refining An Existing Mask",
+      "Output"
+    ],
+    "cross_refs": [
+      "mask_extra_galaxies.py",
+      "positions.py"
+    ],
+    "notebook": "notebooks/imaging/data_preparation/gui/mask_arcs.ipynb",
+    "path": "scripts/imaging/data_preparation/gui/mask_arcs.py",
+    "summary": "This tool paints the lensed ARCS and multiple images of the source, and keeps only those: everything you do not paint, lens light included, is masked. The product isolates the source, which is what a source-only fit, an arc signal-to-noise measurement or a source-plane analysis should look at.",
+    "title": "GUI Preprocessing: Arc Mask (Optional)"
+  },
+  {
+    "contents": [
       "Dataset & Mask",
       "Scribbler",
       "Refining An Existing Mask",
@@ -2783,7 +2799,9 @@
       "data_preparation/gui/extra_galaxies_centres.ipynb",
       "data_preparation/gui/lens_light_centre.ipynb",
       "data_preparation/gui/mask.ipynb",
+      "data_preparation/gui/mask_arcs.ipynb",
       "data_preparation/gui/mask_extra_galaxies.ipynb",
+      "data_preparation/gui/mask_extra_galaxies_multi.ipynb",
       "data_preparation/gui/positions.ipynb",
       "extra_galaxies_centres.py",
       "features/extra_galaxies/modeling.py",
