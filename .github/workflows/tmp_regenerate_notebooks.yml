@@ -6,10 +6,11 @@ on:
       - fix/release-fidelity-small-datasets
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   generate:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout workspace
@@ -31,18 +32,20 @@ jobs:
         run: |
           cd workspace
           PYTHONPATH=../PyAutoHands/autohands python3 ../PyAutoHands/autohands/generate.py autolens
-      - name: Capture canonical generator diff
+      - name: Commit canonical generated files
         run: |
           cd workspace
-          git diff --cached -- notebooks/cluster/lenstool/data.ipynb notebooks/weak/real_data/a2744.ipynb llms-full.txt workspace_index.json > regenerated.patch
-      - name: Upload regenerated files
-        uses: actions/upload-artifact@v4
-        with:
-          name: regenerated-notebooks-and-catalogue
-          path: |
-            workspace/notebooks/cluster/lenstool/data.ipynb
-            workspace/notebooks/weak/real_data/a2744.ipynb
-            workspace/llms-full.txt
-            workspace/workspace_index.json
-            workspace/regenerated.patch
-          retention-days: 1
+          git reset
+          git add -f \
+            notebooks/cluster/lenstool/data.ipynb \
+            notebooks/weak/real_data/a2744.ipynb \
+            llms-full.txt \
+            workspace_index.json
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Regenerate notebooks for release-fidelity fixes"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
