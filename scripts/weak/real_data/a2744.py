@@ -47,6 +47,7 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 
 # from autolens import setup_notebook; setup_notebook()
 
+import os
 from pathlib import Path
 
 import numpy as np
