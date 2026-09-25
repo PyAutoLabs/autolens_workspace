@@ -135,6 +135,50 @@ potential O1
  v_disp 850.0
  z_lens 0.39
  end
+potential O2
+ profile 81
+ x_centre 0.5
+ y_centre -0.5
+ ellipticity 0.10
+ angle_pos 10.0
+ core_radius 0.3
+ cut_radius 40.0
+ v_disp 220.0
+ z_lens 0.39
+ end
+potential O3
+ profile 81
+ x_centre 2.0
+ y_centre -1.0
+ ellipticity 0.10
+ angle_pos -20.0
+ core_radius 0.2
+ cut_radius 30.0
+ v_disp 90.0
+ z_lens 0.39
+ end
+potential O4
+ profile 81
+ x_centre -3.0
+ y_centre 4.0
+ ellipticity 0.20
+ angle_pos 15.0
+ core_radius 1.0
+ cut_radius 100.0
+ v_disp 180.0
+ z_lens 0.39
+ end
+potential O5
+ profile 81
+ x_centre 5.0
+ y_centre 3.0
+ ellipticity 0.05
+ angle_pos 40.0
+ core_radius 0.1
+ cut_radius 20.0
+ v_disp 100.0
+ z_lens 0.39
+ end
 potential 1
  profile 81
  x_centre 6.0
