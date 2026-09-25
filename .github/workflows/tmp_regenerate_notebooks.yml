@@ -34,7 +34,7 @@ jobs:
       - name: Capture canonical generator diff
         run: |
           cd workspace
-          git diff -- notebooks/cluster/lenstool/data.ipynb notebooks/weak/real_data/a2744.ipynb llms-full.txt workspace_index.json > regenerated.patch
+          git diff --cached -- notebooks/cluster/lenstool/data.ipynb notebooks/weak/real_data/a2744.ipynb llms-full.txt workspace_index.json > regenerated.patch
       - name: Upload regenerated files
         uses: actions/upload-artifact@v4
         with:
