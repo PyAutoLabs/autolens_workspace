@@ -1,0 +1,43 @@
+name: Temporary Notebook Regeneration
+
+on:
+  push:
+    branches:
+      - fix/release-fidelity-small-datasets
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout workspace
+        uses: actions/checkout@v4
+        with:
+          path: workspace
+      - name: Checkout PyAutoHands
+        uses: actions/checkout@v4
+        with:
+          repository: PyAutoLabs/PyAutoHands
+          path: PyAutoHands
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install generator dependencies
+        run: pip install --quiet ipynb-py-convert pyyaml
+      - name: Regenerate notebooks and catalogue
+        run: |
+          cd workspace
+          PYTHONPATH=../PyAutoHands/autohands python3 ../PyAutoHands/autohands/generate.py autolens
+      - name: Upload regenerated files
+        uses: actions/upload-artifact@v4
+        with:
+          name: regenerated-notebooks-and-catalogue
+          path: |
+            workspace/notebooks/cluster/lenstool/data.ipynb
+            workspace/notebooks/weak/real_data/a2744.ipynb
+            workspace/llms-full.txt
+            workspace/workspace_index.json
+          retention-days: 1
