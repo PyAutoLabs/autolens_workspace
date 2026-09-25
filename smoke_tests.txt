@@ -13,6 +13,14 @@ point_source/features/scaling_relation/modeling.py
 # group/start_here.py  # disabled: uses checked-in real data incompatible with PYAUTO_SMALL_DATASETS=1
 group/modeling.py
 group/features/group_halo/modeling.py
+
+# These release-fidelity paths use deterministic small-data fixtures and have caused
+# nightly release blocks when their fast-mode plumbing drifted. Keep them in PR smoke
+# coverage so the same failures are caught before the release mega-run.
+cluster/lenstool/data.py
+cluster/lenstool/modeling.py
+weak/real_data/a2744.py
+
 # multi_galaxy/start_here.py  # SLOW-parked for release in config/build/no_run.yaml (2026-09-18, #564); profile before restoring this smoke entry.
 multi_galaxy/modeling.py
 multi_galaxy/fit.py
