@@ -465,9 +465,10 @@ analytically. **None of the three has any counterpart in the `model.info` printe
 
 A parameter can also be *missing*, which is a different thing again: no prior or value is configured for it 
 anywhere, `model.info` prints `Prior Missing: Enter Manually or Add to Config`, and the fit cannot start without 
-it. Nothing in this cookbook is missing, because this workspace's `config/priors` covers every component used 
-here -- the `Delaunay` mesh's `areas_factor`, for example, is configured as a constant 0.5 and is therefore an 
-ordinary fixed parameter. Write your own profile class, or use one whose entry is absent from `config/priors`, 
+it. Nothing in this cookbook is missing, because the configured priors (the library's default priors, plus any 
+overrides in this workspace's `config/priors`) cover every component used here -- the `Delaunay` mesh's 
+`areas_factor`, for example, is set by the library's default priors as a constant 0.5 and is therefore an 
+ordinary fixed parameter. Write your own profile class, or use one with no entry in the configured priors, 
 and its parameters are missing: **unset configuration**, not solved and not absent from the model.
 """
 af.ModelPlotter(model).figure()

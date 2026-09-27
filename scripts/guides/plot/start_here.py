@@ -191,7 +191,7 @@ Key entries in `config/visualize/general.yaml` include:
 
  - `colormap`: The default colormap of all 2D plots.
  - `general` -> `output_format`: The default output behaviour ("show", "png", "pdf", ...).
- - `subplot_shape_to_figsize_factor`: The scaling of subplot figure sizes.
+ - `mat_plot` -> `figure` -> `subplot_shape_to_figsize_factor`: The scaling of subplot figure sizes.
  - `ticks` -> `number_of_ticks_2d`: The number of ticks on each spatial axis.
  - `colorbar` -> `labelsize`: The font size of colorbar tick labels.
  - `units` -> `cb_unit`: The unit label of the colorbar.

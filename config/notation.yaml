@@ -21,7 +21,6 @@ label:
     centre_0: y
     centre_1: x
     coefficient: \lambda
-    contribution_factor: \omega_{\rm 0}
     core_radius: C_{\rm r}
     core_radius_0: C_{rm r0}
     core_radius_1: C_{\rm r1}
@@ -61,11 +60,8 @@ label:
     redshift: z
     redshift_object: z_{\rm obj}
     redshift_source: z_{\rm src}
-    rs: r_{\rm s}
-    ra: r_{\rm a}
     scale_radius: R_{\rm s}
     scatter: \sigma
-    sigma_scale: \sigma
     separation: s
     sersic_index: n
     shape_0: y_{\rm pix}
@@ -83,9 +79,6 @@ label:
     SMBH: smbh
     Redshift: z
     Regularization: reg
-    HyperBackgroundNoise: hyper
-    HyperGalaxy: hyper
-    HyperImageSky: hyper
     InputDeflections: defl
 
 # label_format: The format certain parameters are output as in output files like the `model.results` file.
@@ -104,7 +97,6 @@ label_format:
     centre_1: '{:.4f}'
     coefficient: '{:.4f}'
     concentration: '{:.4f}'
-    contribution_factor: '{:.4f}'
     core_radius: '{:.4f}'
     core_radius_0: '{:.4f}'
     core_radius_1: '{:.4f}'
@@ -142,14 +134,12 @@ label_format:
     outer_slope: '{:.4f}'
     overdens: '{:.4f}'
     pixels: '{:.4f}'
-    ra : '{:.4f}'
     radius: '{:.4f}'
     radius_break: '{:.4f}'
     redshift: '{:.4f}'
     redshift_object: '{:.4f}'
     redshift_source: '{:.4f}'
     rho: '{:.4f}'
-    rs: '{:.4f}'
     scale_radius: '{:.4f}'
     separation: '{:.4f}'
     sersic_index: '{:.4f}'

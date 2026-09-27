@@ -1,4 +1,0 @@
-Delaunay:
-  areas_factor:
-    type: Constant
-    value: 0.5
