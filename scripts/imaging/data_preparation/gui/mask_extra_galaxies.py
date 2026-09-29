@@ -75,14 +75,15 @@ cmap = "jet"
 """
 __Mask__
 
-Create a 4.0" mask to plot over the image to guide where extra galaxy light needs its emission removed and noise scaled.
+Create a 4.0" `guide_mask` to plot over the image to guide where extra galaxy light needs its emission removed and
+noise scaled. It is only a visual guide: the extra galaxies mask itself is what you draw in the GUI.
 
 It is better to draw the extra galaxies mask over too large an area than too small: a mask can always be made
 smaller during the analysis, but making it larger will require the extra galaxies mask to be re-drawn.
 """
 mask_radius = 4.0
 
-mask = al.Mask2D.circular(
+guide_mask = al.Mask2D.circular(
     shape_native=data.shape_native, pixel_scales=data.pixel_scales, radius=mask_radius
 )
 
@@ -96,18 +97,14 @@ brush, which ERASES them. Press `=` / `-` to make the brush bigger / smaller (ea
 undo the last stroke and Esc when you are finished.
 
 `mask_from()` returns everything painted green that was not painted red.
-"""
-scribbler = al.Scribbler(image=data.native, cmap=cmap, mask_overlay=mask)
-mask = scribbler.mask_from()
-mask = al.Mask2D(mask=mask, pixel_scales=pixel_scales)
 
-"""
 __Refining An Existing Mask__
 
-To adjust an extra galaxies mask drawn previously instead of starting from a blank image, load it and pass it to
-the GUI as a `proposal`. Its boundary is outlined in white over the image, and `mask_from()` then returns the
-proposal plus whatever you paint green, minus whatever you paint red. Set `refine_existing = True` to use this
-instead of the blank-canvas draw above.
+To adjust an extra galaxies mask drawn previously instead of starting from a blank image, set
+`refine_existing = True`. If the saved mask exists it is loaded and passed to the GUI as a `proposal`, instead of
+opening a blank canvas. Its boundary is outlined in white over the image, and `mask_from()` then returns the
+proposal plus whatever you paint green, minus whatever you paint red. With `refine_existing = False` (or no saved
+mask yet) the GUI opens on the blank image.
 
 The same route lets a mask drawn for one waveband of a multi-wavelength dataset seed the next, provided the two
 images share a pixel grid.
@@ -119,9 +116,15 @@ mask_path = Path(dataset_path, "mask_extra_galaxies.fits")
 if refine_existing and mask_path.exists():
     previous = al.Mask2D.from_fits(file_path=mask_path, pixel_scales=pixel_scales)
     scribbler = al.Scribbler(
-        image=data.native, proposal=np.asarray(previous), cmap=cmap, mask_overlay=mask
+        image=data.native,
+        proposal=np.asarray(previous),
+        cmap=cmap,
+        mask_overlay=guide_mask,
     )
-    mask = al.Mask2D(mask=scribbler.mask_from(), pixel_scales=pixel_scales)
+else:
+    scribbler = al.Scribbler(image=data.native, cmap=cmap, mask_overlay=guide_mask)
+
+mask = al.Mask2D(mask=scribbler.mask_from(), pixel_scales=pixel_scales)
 
 """
 The GUI has now closed and the extra galaxies mask has been created.

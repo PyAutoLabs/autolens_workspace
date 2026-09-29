@@ -72,21 +72,17 @@ brush, which ERASES them. Press `=` / `-` to make the brush bigger / smaller (ea
 undo the last stroke and Esc when you are finished.
 
 `mask_from()` returns everything painted green that was not painted red.
-"""
-scribbler = al.Scribbler(image=data.native)
-mask = scribbler.mask_from()
-mask = al.Mask2D(mask=np.invert(mask), pixel_scales=pixel_scales)
 
-"""
 __Refining An Existing Mask__
 
-To adjust a mask drawn previously instead of starting from a blank image, load it and pass it to the GUI as a
-`proposal`. Its boundary is outlined in white over the image, and `mask_from()` then returns the proposal plus
-whatever you paint green, minus whatever you paint red.
+To adjust a mask drawn previously instead of starting from a blank image, set `refine_existing = True`. If the
+saved mask exists it is loaded and passed to the GUI as a `proposal`, instead of opening a blank canvas. Its
+boundary is outlined in white over the image, and `mask_from()` then returns the proposal plus whatever you paint
+green, minus whatever you paint red. With `refine_existing = False` (or no saved mask yet) the GUI opens on the
+blank image.
 
 The `.fits` written at the end of this script stores the region to *exclude* (`True` = masked), so it is inverted
-back to the painted region before being passed as the proposal, and inverted again afterwards. Set
-`refine_existing = True` to use this instead of the blank-canvas draw above.
+back to the painted region before being passed as the proposal, and the result is inverted again afterwards.
 """
 refine_existing = False
 
@@ -97,7 +93,10 @@ if refine_existing and mask_path.exists():
     scribbler = al.Scribbler(
         image=data.native, proposal=np.invert(np.asarray(previous))
     )
-    mask = al.Mask2D(mask=np.invert(scribbler.mask_from()), pixel_scales=pixel_scales)
+else:
+    scribbler = al.Scribbler(image=data.native)
+
+mask = al.Mask2D(mask=np.invert(scribbler.mask_from()), pixel_scales=pixel_scales)
 
 """
 __Output__
