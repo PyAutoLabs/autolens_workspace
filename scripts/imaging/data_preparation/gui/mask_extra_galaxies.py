@@ -75,9 +75,12 @@ cmap = "jet"
 """
 __Mask__
 
-Create a 3.0" mask to plot over the image to guide where extra galaxy light needs its emission removed and noise scaled.
+Create a 4.0" mask to plot over the image to guide where extra galaxy light needs its emission removed and noise scaled.
+
+It is better to draw the extra galaxies mask over too large an area than too small: a mask can always be made
+smaller during the analysis, but making it larger will require the extra galaxies mask to be re-drawn.
 """
-mask_radius = 3.0
+mask_radius = 4.0
 
 mask = al.Mask2D.circular(
     shape_native=data.shape_native, pixel_scales=data.pixel_scales, radius=mask_radius
