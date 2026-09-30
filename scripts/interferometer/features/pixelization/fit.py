@@ -287,8 +287,12 @@ The `subplot_of_mapper` function produces a comprehensive diagnostic subplot for
 `subplot_mappings` overlays colored circles in the image and source planes that map to one another, thereby
 allowing one to assess how the mass model ray-traces image-pixels and therefore to assess how the source
 reconstruction maps to the image.
+
+On the sparse-operator path the fit's likelihood inversion is built without the visibilities, which keeps its
+memory independent of their number, so diagnostics that subtract the reconstruction from the data use
+`fit.inversion_with_data`, which carries them.
 """
-inversion = fit.inversion
+inversion = fit.inversion_with_data
 
 subplot_of_mapper(inversion=inversion, mapper_index=0)
 subplot_mappings(inversion=inversion, pixelization_index=0)
