@@ -106,24 +106,14 @@ when you are finished.
 
 `mask_from()` returns the painted arc region; it is INVERTED before saving so that, like every other mask, `True`
 means excluded from the fit.
-"""
-scribbler = al.Scribbler(
-    image=data.native,
-    cmap="jet",
-    subtract_radial=True,
-    mask_overlay=mask_extra_galaxies,
-    positions=positions,
-)
 
-arc_region = scribbler.mask_from()
-mask = al.Mask2D(mask=np.invert(arc_region), pixel_scales=pixel_scales)
-
-"""
 __Refining An Existing Mask__
 
-To adjust an arc mask drawn previously, load it, invert it back to the painted arc region and pass that as a
-`proposal`: its boundary is outlined in white and `mask_from()` returns the proposal plus whatever you paint green,
-minus whatever you paint red. Set `refine_existing = True` to use this instead of the blank-canvas draw above.
+To adjust an arc mask drawn previously instead of starting from a blank image, set `refine_existing = True`. If the
+saved arc mask exists it is loaded, inverted back to the painted arc region and passed to the GUI as a `proposal`,
+instead of opening a blank canvas: its boundary is outlined in white and `mask_from()` returns the proposal plus
+whatever you paint green, minus whatever you paint red. With `refine_existing = False` (or no saved arc mask yet)
+the GUI opens on the blank image.
 """
 refine_existing = False
 
@@ -131,16 +121,21 @@ mask_arcs_path = dataset_path / "mask_arcs.fits"
 
 if refine_existing and mask_arcs_path.exists():
     previous = al.Mask2D.from_fits(file_path=mask_arcs_path, pixel_scales=pixel_scales)
-    scribbler = al.Scribbler(
-        image=data.native,
-        cmap="jet",
-        subtract_radial=True,
-        mask_overlay=mask_extra_galaxies,
-        positions=positions,
-        proposal=np.invert(np.asarray(previous)),
-    )
-    arc_region = scribbler.mask_from()
-    mask = al.Mask2D(mask=np.invert(arc_region), pixel_scales=pixel_scales)
+    proposal = np.invert(np.asarray(previous))
+else:
+    proposal = None
+
+scribbler = al.Scribbler(
+    image=data.native,
+    cmap="jet",
+    subtract_radial=True,
+    mask_overlay=mask_extra_galaxies,
+    positions=positions,
+    proposal=proposal,
+)
+
+arc_region = scribbler.mask_from()
+mask = al.Mask2D(mask=np.invert(arc_region), pixel_scales=pixel_scales)
 
 """
 __Output__
