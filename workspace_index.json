@@ -4889,7 +4889,7 @@
       "modeling_parametric.py",
       "simulator.py"
     ],
-    "notebook": null,
+    "notebook": "notebooks/interferometer/features/datacube/modeling_array_free.ipynb",
     "path": "scripts/interferometer/features/datacube/modeling_array_free.py",
     "summary": "This script fits the same datacube as `modeling.py` \u2014 a list of per-channel `Interferometer` datasets sharing one lens model through an `af.FactorGraphModel` \u2014 but builds every channel as an **array-free** dataset.",
     "title": "Modeling: Datacube (Array-Free)"
