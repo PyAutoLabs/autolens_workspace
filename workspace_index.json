@@ -4869,6 +4869,36 @@
       "Mask",
       "Dataset",
       "Dataset Auto-Simulation",
+      "Streaming Chunks",
+      "Array-Free Datasets",
+      "Positions",
+      "Settings",
+      "Mesh Shape",
+      "Model",
+      "Per-Channel Analyses",
+      "FactorGraph",
+      "Search",
+      "Model Fit",
+      "Multi-Frequency Synthesis",
+      "Phase Centre",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "data_preparation.py",
+      "modeling.py",
+      "modeling_parametric.py",
+      "simulator.py"
+    ],
+    "notebook": null,
+    "path": "scripts/interferometer/features/datacube/modeling_array_free.py",
+    "summary": "This script fits the same datacube as `modeling.py` \u2014 a list of per-channel `Interferometer` datasets sharing one lens model through an `af.FactorGraphModel` \u2014 but builds every channel as an **array-free** dataset.",
+    "title": "Modeling: Datacube (Array-Free)"
+  },
+  {
+    "contents": [
+      "Mask",
+      "Dataset",
+      "Dataset Auto-Simulation",
       "Dataset Loading",
       "Positions",
       "Settings",
