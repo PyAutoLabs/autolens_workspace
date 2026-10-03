@@ -2698,6 +2698,7 @@
     "contents": [
       "Dataset",
       "Scribbler",
+      "Refining An Existing Mask",
       "Output"
     ],
     "cross_refs": [],
@@ -2710,6 +2711,7 @@
     "contents": [
       "Dataset & Mask",
       "Scribbler",
+      "Refining An Existing Mask",
       "Output"
     ],
     "cross_refs": [
