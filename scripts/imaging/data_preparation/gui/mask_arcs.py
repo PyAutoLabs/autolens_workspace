@@ -135,6 +135,14 @@ scribbler = al.Scribbler(
 )
 
 arc_region = scribbler.mask_from()
+
+"""
+If the window was closed without painting anything there is no arc region to save (inverted, it would mask every
+pixel), so stop here rather than write an empty mask.
+"""
+if not arc_region.any():
+    raise SystemExit("No arcs were painted, so no arc mask is written.")
+
 mask = al.Mask2D(mask=np.invert(arc_region), pixel_scales=pixel_scales)
 
 """
