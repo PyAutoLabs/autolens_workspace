@@ -2698,9 +2698,12 @@
     "contents": [
       "Dataset",
       "Scribbler",
+      "Refining An Existing Mask",
       "Output"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "positions.py"
+    ],
     "notebook": "notebooks/imaging/data_preparation/gui/mask.ipynb",
     "path": "scripts/imaging/data_preparation/gui/mask.py",
     "summary": "This tool allows one to mask a bespoke mask for a given image of a strong lens using an interactive GUI. This mask can then be loaded before a pipeline is run and passed to that pipeline so as to become the default masked used by a search (if a mask function is not passed to that search).",
@@ -2708,8 +2711,25 @@
   },
   {
     "contents": [
+      "Dataset",
+      "Scribbler",
+      "Refining An Existing Mask",
+      "Output"
+    ],
+    "cross_refs": [
+      "mask_extra_galaxies.py",
+      "positions.py"
+    ],
+    "notebook": "notebooks/imaging/data_preparation/gui/mask_arcs.ipynb",
+    "path": "scripts/imaging/data_preparation/gui/mask_arcs.py",
+    "summary": "This tool paints the lensed ARCS and multiple images of the source, and keeps only those: everything you do not paint, lens light included, is masked. The product isolates the source, which is what a source-only fit, an arc signal-to-noise measurement or a source-plane analysis should look at.",
+    "title": "GUI Preprocessing: Arc Mask (Optional)"
+  },
+  {
+    "contents": [
       "Dataset & Mask",
       "Scribbler",
+      "Refining An Existing Mask",
       "Output"
     ],
     "cross_refs": [
@@ -2719,6 +2739,24 @@
     "path": "scripts/imaging/data_preparation/gui/mask_extra_galaxies.py",
     "summary": "There may be regions of an image that have signal near the lens and source that is from other galaxies not associated with the strong lenswe are studying. The emission from these images will impact our model fitting and needs to be removed from the analysis.",
     "title": "GUI Preprocessing: Extra Galaxies Mask (Optional)"
+  },
+  {
+    "contents": [
+      "Dataset",
+      "First Waveband",
+      "Next Waveband",
+      "Output"
+    ],
+    "cross_refs": [
+      "gui/mask.py",
+      "imaging/data_preparation/gui/mask_extra_galaxies.py",
+      "multi_dataset/start_here.py",
+      "positions.py"
+    ],
+    "notebook": "notebooks/imaging/data_preparation/gui/mask_extra_galaxies_multi.ipynb",
+    "path": "scripts/imaging/data_preparation/gui/mask_extra_galaxies_multi.py",
+    "summary": "A multi-wavelength dataset needs one extra galaxies mask per waveband: what should be masked is not the same in every filter (a contaminant can be bright in one and absent in another), and the wavebands are often on different pixel grids, so a mask cannot simply be copied across.",
+    "title": "GUI Preprocessing: Extra Galaxies Mask, Multi-Wavelength (Optional)"
   },
   {
     "contents": [
@@ -2761,7 +2799,9 @@
       "data_preparation/gui/extra_galaxies_centres.ipynb",
       "data_preparation/gui/lens_light_centre.ipynb",
       "data_preparation/gui/mask.ipynb",
+      "data_preparation/gui/mask_arcs.ipynb",
       "data_preparation/gui/mask_extra_galaxies.ipynb",
+      "data_preparation/gui/mask_extra_galaxies_multi.ipynb",
       "data_preparation/gui/positions.ipynb",
       "extra_galaxies_centres.py",
       "features/extra_galaxies/modeling.py",
