@@ -8,7 +8,7 @@ pixel grids, so a mask cannot simply be copied across.
 
 This script draws the mask on the first waveband and then, instead of starting the next waveband from a blank
 image, REGRIDS the first mask onto its pixel grid and opens it as a `proposal` to review there: the proposal is
-outlined over the image, and you add to it with the green brush and erase from it with the red one.
+outlined over the image, and you add to it with the white brush and erase from it with the black one.
 
 It also shows the GUI's `subtract_radial` display, which removes the galaxy's azimuthally-averaged light profile
 from the displayed image (the mask itself is unaffected) so that faint structure hidden under the galaxy is
@@ -74,7 +74,7 @@ subtracted, which lifts faint arcs and companions out from under the galaxy's li
 observed, where a contaminant's true extent is judged. You can paint on either panel, since both land on the same
 pixels.
 
-Two brushes are available: press `1` for the green brush, which ADDS pixels to the mask, and `2` for the red
+Two brushes are available: press `1` for the white brush, which ADDS pixels to the mask, and `2` for the black
 brush, which ERASES them. Press `=` / `-` to make the brush bigger / smaller, `z` to undo the last stroke and
 Esc when you are finished.
 
@@ -84,7 +84,12 @@ pass them as `positions=` and each is shown as a dark cross while you paint (see
 waveband = waveband_list[0]
 data = data_dict[waveband]
 
-scribbler = al.Scribbler(image=data.native, cmap="jet", subtract_radial=True)
+scribbler = al.Scribbler(
+    image=data.native,
+    cmap="jet",
+    subtract_radial=True,
+    title=f"Mask extra galaxies: {waveband}",
+)
 mask = al.Mask2D(mask=scribbler.mask_from(), pixel_scales=data.pixel_scales)
 
 mask_dict = {waveband: mask}
@@ -96,7 +101,7 @@ __Next Waveband__
 
 The next waveband starts from the first waveband's mask rather than a blank image, but never blindly: the mask is
 first regridded onto this waveband's pixel grid (nearest neighbour in arc-second coordinates, so it covers the
-same sky) and then opened as a `proposal`, outlined in white over the image, for you to correct with the two
+same sky) and then opened as a `proposal`, outlined in black over the image, for you to correct with the two
 brushes.
 """
 from autogalaxy.gui.display_util import mask_2d_regridded_from
@@ -112,14 +117,18 @@ proposal = mask_2d_regridded_from(
 )
 
 scribbler = al.Scribbler(
-    image=data.native, cmap="jet", subtract_radial=True, proposal=np.asarray(proposal)
+    image=data.native,
+    cmap="jet",
+    subtract_radial=True,
+    proposal=np.asarray(proposal),
+    title=f"Mask extra galaxies: {waveband}, proposing from {previous_waveband}",
 )
 
 """
 After the GUI closes, decide what to do with the reviewed proposal:
 
 - `a` (default): apply the proposal plus your edits.
-- `d`: reject the proposal and keep only what you painted green (minus red).
+- `d`: reject the proposal and keep only what you painted white (minus black).
 - `s`: skip this waveband and write nothing for it.
 """
 choice = input("[a]pply proposal + edits / [d]rawn only / [s]kip: ").strip().lower()

@@ -80,7 +80,9 @@ data = al.Array2D(
 
 """
 Load the products of the earlier steps where they exist. The contaminant mask (step 1) is shown as a `mask_overlay`,
-whose edge is scattered over the image; the positions (step 2) are shown as crosses. Neither enters the arc mask.
+whose edge is scattered over the image as black `x`s (everything inside them is masked out); the positions (step 2)
+are shown as `+` crosses. Neither enters the arc mask. The window's title names what is being masked and lists what
+each marker means, so you never have to remember which is which.
 """
 mask_extra_galaxies_path = dataset_path / "mask_extra_galaxies.fits"
 
@@ -100,7 +102,7 @@ __Scribbler__
 Paint ONLY the arcs and multiple images. The left panel has the lens galaxy's radial light profile subtracted so
 the arcs stand out; the right panel is the image as observed. Paint on either.
 
-Two brushes are available: press `1` for the green brush, which ADDS pixels to the arc region, and `2` for the red
+Two brushes are available: press `1` for the white brush, which ADDS pixels to the arc region, and `2` for the black
 brush, which ERASES them. Press `=` / `-` to make the brush bigger / smaller, `z` to undo the last stroke and Esc
 when you are finished.
 
@@ -111,8 +113,8 @@ __Refining An Existing Mask__
 
 To adjust an arc mask drawn previously instead of starting from a blank image, set `refine_existing = True`. If the
 saved arc mask exists it is loaded, inverted back to the painted arc region and passed to the GUI as a `proposal`,
-instead of opening a blank canvas: its boundary is outlined in white and `mask_from()` returns the proposal plus
-whatever you paint green, minus whatever you paint red. With `refine_existing = False` (or no saved arc mask yet)
+instead of opening a blank canvas: its boundary is outlined in black and `mask_from()` returns the proposal plus
+whatever you paint white, minus whatever you paint black. With `refine_existing = False` (or no saved arc mask yet)
 the GUI opens on the blank image.
 """
 refine_existing = False
@@ -125,6 +127,10 @@ if refine_existing and mask_arcs_path.exists():
 else:
     proposal = None
 
+title = "Mask arcs: paint the arcs to KEEP"
+if proposal is not None:
+    title += ", refining the saved arc mask"
+
 scribbler = al.Scribbler(
     image=data.native,
     cmap="jet",
@@ -132,13 +138,14 @@ scribbler = al.Scribbler(
     mask_overlay=mask_extra_galaxies,
     positions=positions,
     proposal=proposal,
+    title=title,
 )
 
 arc_region = scribbler.mask_from()
 
 """
-If the window was closed without painting anything there is no arc region to save (inverted, it would mask every
-pixel), so stop here rather than write an empty mask.
+If the window was closed without painting anything (or everything painted was erased again) there is no arc region
+to save: inverted, it would mask every pixel. Stop here rather than write such a mask.
 """
 if not arc_region.any():
     raise SystemExit("No arcs were painted, so no arc mask is written.")

@@ -68,5 +68,5 @@ saving. Positions and centres load with `al.from_json`.
 
 # Keys
 
-All painting GUIs share the same keys: `1` green brush adds, `2` red brush erases, `=` / `-` grow / shrink the
+All painting GUIs share the same keys: `1` white brush adds, `2` black brush erases, `=` / `-` grow / shrink the
 brush, `z` undoes the last stroke, `Esc` finishes.

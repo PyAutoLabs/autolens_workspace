@@ -92,18 +92,18 @@ __Scribbler__
 
 Load the Scribbler GUI for spray painting the scaled regions of the dataset.
 
-Two brushes are available: press `1` for the green brush, which ADDS pixels to the mask, and `2` for the red
+Two brushes are available: press `1` for the white brush, which ADDS pixels to the mask, and `2` for the black
 brush, which ERASES them. Press `=` / `-` to make the brush bigger / smaller (each press scales it by 1.4x), `z` to
 undo the last stroke and Esc when you are finished.
 
-`mask_from()` returns everything painted green that was not painted red.
+`mask_from()` returns everything painted white that was not painted black.
 
 __Refining An Existing Mask__
 
 To adjust an extra galaxies mask drawn previously instead of starting from a blank image, set
 `refine_existing = True`. If the saved mask exists it is loaded and passed to the GUI as a `proposal`, instead of
-opening a blank canvas. Its boundary is outlined in white over the image, and `mask_from()` then returns the
-proposal plus whatever you paint green, minus whatever you paint red. With `refine_existing = False` (or no saved
+opening a blank canvas. Its boundary is outlined in black over the image, and `mask_from()` then returns the
+proposal plus whatever you paint white, minus whatever you paint black. With `refine_existing = False` (or no saved
 mask yet) the GUI opens on the blank image.
 
 The same route lets a mask drawn for one waveband of a multi-wavelength dataset seed the next, provided the two
@@ -120,9 +120,15 @@ if refine_existing and mask_path.exists():
         proposal=np.asarray(previous),
         cmap=cmap,
         mask_overlay=guide_mask,
+        title="Mask extra galaxies, refining the saved mask",
     )
 else:
-    scribbler = al.Scribbler(image=data.native, cmap=cmap, mask_overlay=guide_mask)
+    scribbler = al.Scribbler(
+        image=data.native,
+        cmap=cmap,
+        mask_overlay=guide_mask,
+        title="Mask extra galaxies",
+    )
 
 mask = al.Mask2D(mask=scribbler.mask_from(), pixel_scales=pixel_scales)
 
