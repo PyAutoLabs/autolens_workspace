@@ -181,6 +181,20 @@ Below, we provide an overview of optional data preparation steos which prepare o
 New users are recommended to skim-read the optional steps below so they are aware of them, but to not perform them 
 and instead analyse their dataset now. You can come back to the data preparation scripts below if it becomes necessary.
 
+__Recommended Order (Optional)__
+
+If you do mark up a dataset by hand with the GUI tools, run the mask tools in this order, because each shows the
+products of the one before it:
+
+1. `data_preparation/gui/mask_extra_galaxies.ipynb`: paint the contaminants to remove.
+2. `data_preparation/gui/positions.ipynb`: click the multiple images of the lensed source.
+3. `data_preparation/gui/mask_arcs.ipynb` (optional): paint the lensed arcs to keep, guided by the outputs of 1 and 2.
+
+Every GUI reads the dataset from, and writes its product back into, the dataset's own folder
+(`dataset/imaging/<dataset_name>/`, or `.../wavebands/<waveband>/` for multi-wavelength data), next to the
+`data.fits` / `noise_map.fits` / `psf.fits` it describes; `output/` holds only model-fit results. The full file
+layout is in `data_preparation/gui/README.md`.
+
 __Mask (Optional)__
 
 The mask removes the regions of the image where the lens and source galaxy are not present, typically the edges of the 
@@ -300,6 +314,18 @@ may be a better approach.
 - `data_preparation/examples/optional/mask_extra_galaxies.py`: create the extra galaxies mask manually via a Python script.
 - `data_preparation/gui/mask_extra_galaxies.ipynb` use a Graphical User Interface (GUI) to create the extra galaxies mask.
 - `features/extra_galaxies/modeling.py` how to use the extra galaxies mask in a model-fit.
+- `data_preparation/gui/mask_extra_galaxies_multi.ipynb` draw one waveband's mask and regrid it onto the next for review.
+
+__Arc Mask (Optional)__
+
+The opposite of the extra galaxies mask: paint the lensed arcs and multiple images to KEEP, and everything else, lens
+light included, is masked. This isolates the source for a source-only fit, an arc signal-to-noise measurement or a
+source-plane analysis. It is drawn over the lens-light-subtracted image with the contaminant mask and marked
+positions shown, so it is the last of the three mask-up steps listed under "Recommended Order" above.
+
+**Links / Resources:**
+
+- `data_preparation/gui/mask_arcs.ipynb` use a Graphical User Interface (GUI) to paint the arcs.
 
 __Info (Optional)__
 
