@@ -104,13 +104,11 @@ first regridded onto this waveband's pixel grid (nearest neighbour in arc-second
 same sky) and then opened as a `proposal`, outlined in black over the image, for you to correct with the two
 brushes.
 """
-from autogalaxy.gui.display_util import mask_2d_regridded_from
-
 previous_waveband = waveband_list[0]
 waveband = waveband_list[1]
 data = data_dict[waveband]
 
-proposal = mask_2d_regridded_from(
+proposal = al.mask_2d_regridded_from(
     mask=mask_dict[previous_waveband],
     shape_native=data.shape_native,
     pixel_scales=data.pixel_scales,
@@ -156,6 +154,11 @@ __Output__
 
 Output one mask per waveband, in that waveband's folder, so a modeling script can load each with
 `al.Mask2D.from_fits` using that waveband's `pixel_scales`.
+
+Each mask is written as `mask_extra_galaxies_gui.fits`, so that it does not overwrite the
+`mask_extra_galaxies.fits` already supplied in each waveband's folder. The example `multi_dataset/start_here.py`
+loads `mask_extra_galaxies.fits` from each waveband's folder, so once you are happy with your masks either rename
+each `mask_extra_galaxies_gui.fits` to `mask_extra_galaxies.fits` or change the file name `start_here.py` loads.
 """
 for waveband, mask in mask_dict.items():
     aplt.fits_array(
