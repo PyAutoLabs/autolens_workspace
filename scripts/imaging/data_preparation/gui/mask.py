@@ -12,6 +12,7 @@ __Contents__
 
 - **Dataset:** Load and plot the strong lens dataset.
 - **Scribbler:** Load the Scribbler GUI for drawing the mask.
+- **Refining An Existing Mask:** Reopen a saved mask as a proposal and add to / erase from it.
 - **Output:** Now lets plot the image and mask, so we can check that the mask includes the regions of the image.
 
 """
@@ -64,13 +65,38 @@ data = al.Array2D.from_fits(
 """
 __Scribbler__
 
-Load the Scribbler GUI for drawing the mask. 
+Load the Scribbler GUI for drawing the mask, painting over the region of the image you want to fit.
 
-Push Esc when you are finished drawing the mask.
+Two brushes are available: press `1` for the green brush, which ADDS pixels to the painted region, and `2` for the red
+brush, which ERASES them. Press `=` / `-` to make the brush bigger / smaller (each press scales it by 1.4x), `z` to
+undo the last stroke and Esc when you are finished.
+
+`mask_from()` returns everything painted green that was not painted red.
+
+__Refining An Existing Mask__
+
+To adjust a mask drawn previously instead of starting from a blank image, set `refine_existing = True`. If the
+saved mask exists it is loaded and passed to the GUI as a `proposal`, instead of opening a blank canvas. Its
+boundary is outlined in white over the image, and `mask_from()` then returns the proposal plus whatever you paint
+green, minus whatever you paint red. With `refine_existing = False` (or no saved mask yet) the GUI opens on the
+blank image.
+
+The `.fits` written at the end of this script stores the region to *exclude* (`True` = masked), so it is inverted
+back to the painted region before being passed as the proposal, and the result is inverted again afterwards.
 """
-scribbler = al.Scribbler(image=data.native)
-mask = scribbler.show_mask()
-mask = al.Mask2D(mask=np.invert(mask), pixel_scales=pixel_scales)
+refine_existing = False
+
+mask_path = Path(dataset_path, "mask_gui.fits")
+
+if refine_existing and mask_path.exists():
+    previous = al.Mask2D.from_fits(file_path=mask_path, pixel_scales=pixel_scales)
+    scribbler = al.Scribbler(
+        image=data.native, proposal=np.invert(np.asarray(previous))
+    )
+else:
+    scribbler = al.Scribbler(image=data.native)
+
+mask = al.Mask2D(mask=np.invert(scribbler.mask_from()), pixel_scales=pixel_scales)
 
 """
 __Output__
