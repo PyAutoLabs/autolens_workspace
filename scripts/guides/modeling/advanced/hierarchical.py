@@ -129,11 +129,14 @@ dataset_list = masked_dataset_list
 __Analysis__
 
 For each dataset we now create a corresponding `AnalysisImaging` class, as we are used to doing for `Imaging` data.
+
+We use NumPy for each analysis, matching the hierarchical factor and factor graph below. Fitting the whole graph
+as one analysis requires every factor to use the same backend.
 """
 analysis_list = []
 
 for dataset in dataset_list:
-    analysis = al.AnalysisImaging(dataset=dataset)
+    analysis = al.AnalysisImaging(dataset=dataset, use_jax=False)
 
     analysis_list.append(analysis)
 
