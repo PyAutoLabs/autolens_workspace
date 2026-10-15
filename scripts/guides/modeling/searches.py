@@ -413,8 +413,9 @@ search = af.Emcee(
 """
 __Search Cookbook__
 
-There are a number of other searches supported by **PyAutoFit** and therefore which can be used, which are not 
-explictly documented here. These include LBFGS.
+There are a number of other searches supported by **PyAutoFit** and therefore which can be used, which are not
+explictly documented here. The capability matrix lists every search and what each supports (JAX, gradients,
+evidence): https://pyautofit.readthedocs.io/en/latest/searches/index.html
 
 The **PyAutoFit** search cookbook documents all searches that are available, including those not documented here,
 and provides the code you can easily copy and paste to use these methods.
