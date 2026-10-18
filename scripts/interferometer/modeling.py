@@ -578,11 +578,12 @@ light profile it belongs to) and, when the model has more than one top-level com
 corner plot in the output folder (`corner_anesthetic_<component>.png`, switched in `config/visualize/plots_search.yaml`).
 
 The parameters a model is sampled in are not always the ones it is read in: a profile's elliptical components are an
-axis ratio and a position angle, a shear's two components a magnitude and an angle. Passing `derived=True` plots
-these derived parameters instead. The same figure is written to the output folder as `corner_anesthetic_derived.png`
-when `corner_anesthetic_derived` is switched on in `config/visualize/plots_search.yaml` (off by default).
+axis ratio and a position angle, a shear's two components a magnitude and an angle. Passing `latent=True` plots
+these latent parameters instead. The same figure is written to the output folder as `corner_anesthetic_latent.png`
+when `corner_anesthetic_latent` is switched on in `config/visualize/plots_search.yaml` (off by default), once the fit
+is complete, and the latent parameters are also written to `latent.csv` with the other latent variables.
 """
-aplt.corner_anesthetic(samples=result.samples, derived=True)
+aplt.corner_anesthetic(samples=result.samples, latent=True)
 
 """
 __Source Science (Magnification, Flux and More)__
