@@ -759,8 +759,8 @@ Below, we make a corner plot of the "Probability Density Function" of every para
 The plot is labeled with short hand parameter names (e.g. `sersic_index` is mapped to the short hand
 parameter `n`). These mappings are specified in the `config/notation.yaml` file and can be customized by users.
 
-The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
-mass of the first galaxy, the names `lens_0` and `mass` defined when making the `Model` above are used).
+The superscripts of labels are the path of names each component was given in the model (e.g. for the `Isothermal`
+mass of the first galaxy, `lens_0.mass`: the names `lens_0` and `mass` defined when making the `Model` above).
 
 This is the plot to study for a multi-galaxy lens, and the reason this script uses Nautilus rather than the fast
 optimizer in `start_here.py`. Look for correlation between the two galaxies' `einstein_radius` parameters: the data
