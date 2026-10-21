@@ -17,6 +17,7 @@ __Contents__
 - **Visualize:** Output a subplot of the simulated point source dataset as a .png file.
 - **Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
 - **Imaging:** Point-source data typically comes with imaging data of the strong lens, for example showing the 4.
+- **Point Source Images:** A lensed quasar or supernova is unresolved, so each of its multiple images appears in the.
 - **Fluxes:** Another measurable quantity of a point source is its flux—the total amount of light received from.
 - **Point Dataset:** The fluxes are not input a `PointDataset` object, alongside the image-plane coordinates of the.
 - **Time Delays:** Another measurable quantity of a point source is its time delay—the time it takes for light to.
@@ -264,17 +265,56 @@ source multiple images in the first place, and is also useful for visually confi
 right place. It may also contain emission from the lens galaxy's light, which can be used to perform point-source 
 modeling.
 
-We therefore simulate imaging dataset of this point source and output it to the dataset folder in an `imaging` folder
-as .fits and .png files. 
+We therefore simulate an imaging dataset of this point source and output it to the dataset folder as .fits and .png
+files.
 
-If you are not familiar with the imaging simulator API, checkout the `imaging/simulator.py` example 
+If you are not familiar with the imaging simulator API, checkout the `imaging/simulator.py` example
 in the `autolens_workspace`.
+
+__Point Source Images__
+
+A lensed quasar or supernova is unresolved, so each of its multiple images appears in the imaging as a copy of the
+PSF centred on that image's position. We simulate this by placing one `PointSource` light profile, which puts all of
+its flux in the single pixel containing its centre, at every multiple image position and convolving with the PSF.
+
+The `PointSource` light profile is not lensed. Ray-tracing a delta function through the lens equation does not
+produce its multiple images (that is what the `PointSolver` above is for), so the point sources are instead put
+directly in the image-plane, on a galaxy at the lens galaxy's redshift, at the multiple image positions already
+solved for. We use the noisy positions written to the `PointDataset`, so that the imaging and the point dataset
+agree exactly.
+
+The flux of each image is the source's flux multiplied by the magnification at that image-plane position, the same
+calculation used to simulate the fluxes below. We use the same source flux of 1.0 as the fluxes below, so the total
+flux of each image in the imaging matches its noise-free flux in the point dataset. The images are highly magnified,
+making them clearly visible above the noise, like a bright lensed quasar observed with HST.
+"""
+point_source_flux = 1.0
+
+image_magnifications = al.LensCalc.from_tracer(
+    tracer=tracer
+).magnification_2d_via_hessian_from(grid=positions_with_noise)
+
+point_sources = {
+    f"image_{i}": al.lp.PointSource(
+        centre=tuple(position),
+        intensity=point_source_flux * float(np.abs(magnification)),
+    )
+    for i, (position, magnification) in enumerate(
+        zip(positions_with_noise, image_magnifications)
+    )
+}
+
+image_plane_galaxy = al.Galaxy(redshift=lens_galaxy.redshift, **point_sources)
+
+"""
+The PSF is a normalized Gaussian, so that the total flux of each point source is conserved by the convolution.
 """
 psf = al.Convolver.from_gaussian(
     convolve_over_sample_size=1,
     shape_native=(11, 11),
     sigma=0.1,
     pixel_scales=grid.pixel_scales,
+    normalize=True,
 )
 
 simulator = al.SimulatorImaging(
@@ -284,10 +324,9 @@ simulator = al.SimulatorImaging(
     add_poisson_noise_to_data=True,
 )
 
-imaging = simulator.via_tracer_from(tracer=tracer, grid=grid)
-
-imaging_path = dataset_path / "imaging"
-
+imaging = simulator.via_tracer_from(
+    tracer=al.Tracer(galaxies=[image_plane_galaxy]), grid=grid
+)
 
 aplt.subplot_imaging_dataset(dataset=imaging)
 
@@ -299,8 +338,16 @@ aplt.fits_imaging(
     overwrite=True,
 )
 
-aplt.subplot_imaging_dataset(dataset=imaging)
-aplt.plot_array(array=imaging.data, title="Data")
+"""
+Output the image with the multiple image positions of the `PointDataset` plotted over it, which visually confirms
+that every point source in the imaging lies on a position in the point dataset.
+"""
+aplt.plot_image_with_points(
+    image=imaging.data,
+    dataset=dataset,
+    output_path=dataset_path,
+    output_format="png",
+)
 
 """
 __Fluxes__
