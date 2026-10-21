@@ -116,20 +116,63 @@ rather than physical reasons. Rules of thumb at cluster scale:
 
 __Source-plane vs image-plane chi-squared__
 
-The source-plane chi-squared (``FitPositionsSource``, Lenstool's default) ray-traces observed
+The source-plane chi-squared (``FitPositionsSource``) ray-traces observed
 images backwards and never solves the lens equation — it is ~100x cheaper per evaluation (3 ms vs
 0.3 s on the standard cluster model, per the profiling breakdowns) and pairing is trivial because
 every observed image maps to one source. Its costs: it cannot see over-prediction *at all* (no
-forward solve, so extra images never exist), magnification weighting only approximates the
-image-plane noise mapping, and the magnification amplification gives it a documented precision
-floor on high-magnification systems (see ``autolens_workspace_test/scripts/cluster/
-likelihood_sanity.py``) — penalty terms of the image-plane policies sit far above that floor, but
-sub-percent mass perturbations do not.
+forward solve, so extra images never exist), and it is a linearised approximation of the
+image-plane chi-squared (see the weighting section below), accurate for the small residuals of a
+good model.
 
 The pragmatic workflow at cluster scale: **search with the source-plane chi-squared, validate with
 the image-plane chi-squared** — run the image-plane fit (and inspect ``n_unmatched_model_positions``
-plus the per-system image counts) on the max-likelihood model before publishing, exactly as the
-Lenstool-users example does. The solved-centre variants below sharpen this advice further.
+plus the per-system image counts) on the max-likelihood model before publishing, as the cluster
+modeling examples do. The solved-centre variants below sharpen this advice further.
+
+__Source-plane weighting: "jacobian" (default) and "magnification"__
+
+The position noise ``σᵢ`` is defined in the image plane, but the source-plane chi-squared measures
+residuals in the source plane, so it needs a rule for converting one into the other. The
+``weighting`` class attribute of ``FitPositionsSource`` and ``FitPositionsSourceSolved`` sets that
+rule.
+
+The default, ``weighting = "jacobian"``, is still the distance of each traced point ``β̂ᵢ`` from the
+source centre ``c``, but measured in the image-plane noise ellipse. The residual ``δᵢ = β̂ᵢ − c`` is
+weighted by the precision tensor
+
+    Bᵢ = Aᵢ⁻ᵀ Θᵢ Aᵢ⁻¹,        χ²ᵢ = δᵢᵀ Bᵢ δᵢ
+
+where ``Aᵢ = ∂β/∂θ`` is the lensing Jacobian at the observed image and ``Θᵢ = σᵢ⁻² I`` is the
+image-plane precision. ``Aᵢ⁻¹`` maps a small source-plane offset to the image-plane offset it
+causes, so ``χ²ᵢ`` is the image-plane chi-squared of that image to first order. This is the
+Gravity.jl source-plane likelihood (Lombardi 2024, arXiv:2406.15280, Eq. 46), and
+``FitPositionsSourceSolved`` is its form with the source centre marginalised (Eq. 58). It is the
+default because:
+
+- it is the correct linearised likelihood, the lens equation expanded to first order about each
+  observed image;
+- it stays robust near critical curves, where images are stretched very differently in the
+  tangential and radial directions and where the most constraining images sit;
+- it costs nothing extra over the magnification, which is computed from the same Jacobian.
+
+The opt-in ``weighting = "magnification"`` is the scalar ``χ²ᵢ = |δᵢ|² µᵢ²/σᵢ²`` of Jullo et al.
+(2007, Eq. 10), which treats the source-plane noise as a circle of radius ``σᵢ/|µᵢ|``. Near a
+critical curve an image is stretched by about ``µ`` tangentially and hardly at all radially, so the
+circle is right tangentially but over-weights the radial direction by about ``µ²``, which biases the
+fit. On the true model of the autolens_visualization point-source example (``σ = 5`` mas, image
+magnifications 6.7 to 102) the scalar source-plane chi-squared is 10,023, against 4.25 for the image-plane chi-squared and 5.41 for
+``"jacobian"``. Both weightings use the same model-independent normalisation
+``Σᵢ log((2π)² σᵢ⁴)``.
+
+Use ``"magnification"`` only to reproduce an analysis that used the scalar form, by passing a
+subclass as ``fit_positions_cls``:
+
+    class FitPositionsSourceMagnification(al.FitPositionsSource):
+        weighting = "magnification"
+
+Lenstool's code does not use the scalar ``µ²`` form. Its default is an image-plane chi-squared
+(``forme -1``), and among its source-plane modes the tensor mode (``forme 8``) is the same as
+``"jacobian"``.
 
 __The second axis: free vs analytically-solved source centre__
 
@@ -174,14 +217,10 @@ weighted by its precision tensor ``Wᵢ = Aᵢ⁻ᵀ Θᵢ Aᵢ⁻¹`` (``A = �
 with the likelihood analytically marginalized over the centre (a flat prior; the fit's
 ``marginalization_term`` property is the resulting log-determinant contribution).
 
-The tensor weighting is also a better error model than the scalar ``µ²/σ²`` weighting of
-``FitPositionsSource``. The eigenvalues of ``Wᵢ`` are ``λ²/σᵢ²`` with ``λ`` the linear stretch
-along each eigendirection: isotropically each stretch is ``√µ``, while near a critical curve the
-tangential stretch is ``≈ µ`` — the scalar ``µ²`` convention coincides with the tensor only in that
-near-critical tangential limit, so it over-weights images everywhere else. The
-``weighting`` class attribute selects the convention: ``"jacobian"`` (default, the tensor) or
-``"magnification"`` (the scalar, retained for comparisons with the traditional Lenstool-style
-convention).
+``Wᵢ`` is the same precision tensor ``Bᵢ`` as the default ``FitPositionsSource`` weighting, and the
+``weighting`` class attribute selects the convention in the same way: ``"jacobian"`` (default, the
+tensor) or the opt-in ``"magnification"`` scalar. See the weighting section above for why the
+tensor is the default.
 
 __Solved image-plane variants__
 
@@ -283,8 +322,8 @@ parameters per point source from the non-linear space. The recommendation for cl
 therefore to sharpen the workflow above: **search with ``FitPositionsSourceSolved`` (with
 ``al.ps.PointSolved`` sources, tensor weighting), validate with the default image-plane
 chi-squared** on the max-likelihood model. Reserve free-centre ``FitPositionsSource`` for direct
-comparisons with codes that sample the source position (its ``weighting = "magnification"`` scalar
-convention matches Lenstool's). One search-strategy caveat from the benchmarks: at cluster scale
+comparisons with codes that sample the source position (its default ``"jacobian"`` weighting matches
+Lenstool's tensor source-plane mode, ``forme 8``). One search-strategy caveat from the benchmarks: at cluster scale
 the gradient optimizer was defeated by every objective tested, converging to basins from tens to
 tens of thousands of log likelihood below truth (source-plane solved -15, image-plane solved
 -1724, source-plane tensor -11062) while Nautilus recovered each of them. **Use Nautilus for cluster-scale

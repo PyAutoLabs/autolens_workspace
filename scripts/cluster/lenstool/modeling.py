@@ -31,11 +31,11 @@ __The .par → PyAutoLens dictionary__
     ``potfile`` (member scaling)        shared priors + derived per-member parameters (below)
     ``arcs.dat``                        ``point_datasets.csv`` → ``al.PointDataset`` list
     sigposArcsec                        ``positions_noise`` column (same chi-squared)
-    source-plane optimization           ``al.FitPositionsSource`` (this script)
-                                        (``al.FitPositionsSourceSolved`` solves the source centre
-                                        analytically; its ``weighting = "magnification"`` option
-                                        matches Lenstool's scalar µ² convention — see guides)
-    image-plane optimization            ``al.FitPositionsImagePair*`` (heavier; see guides)
+    image-plane chi2, forme -1          ``al.FitPositionsImagePairRepeat`` (this script): each
+                                        observed image pairs with its nearest predicted image
+    source-plane tensor, forme 8        ``al.FitPositionsSource`` (default ``"jacobian"``
+                                        weighting); ``al.FitPositionsSourceSolved`` also solves
+                                        the source centre analytically — see guides
     ``best.par``                        the max-likelihood instance of the PyAutoLens fit
 
 __Three traps to know about__
@@ -72,9 +72,10 @@ Reconstruction + Verification I run in a couple of minutes. Verification II forw
 lens equation for 21 sources through a 149-profile multi-plane tracer (one-off JAX compile of a
 few minutes; enable with ``RUN_IMAGE_PLANE = True``), and the critical-curve figure costs ~10+
 minutes per plane in numpy (``MAKE_FIGURES = True``). The full
-refit is a production job (tens of hours on a workstation; Mahler et al. report k = 46 free
-parameters — ours is 30 mass + 42 source-position parameters with the 16 photometric source
-redshifts held at their published values). ``PYAUTO_TEST_MODE=2`` exercises the full composition
+refit is a production job: like Lenstool's ``forme -1`` it forward-solves the lens equation for
+every source at every likelihood call, so it costs far more than a source-plane fit (Mahler et al.
+report k = 46 free parameters — ours is 30 mass + 42 source-position parameters with the 16
+photometric source redshifts held at their published values). ``PYAUTO_TEST_MODE=2`` exercises the full composition
 without running the sampler.
 """
 
@@ -469,8 +470,17 @@ af.ModelPlotter(model).figure()
 """
 __Search__
 
-Source-plane chi-squared (Lenstool's default likelihood) via ``AnalysisPoint``; the factor-graph
-pattern is identical to ``scripts/cluster/modeling.py``. This is a production-scale job — run it
+Mahler et al. fit with ``forme -1``, Lenstool's default image-plane chi-squared with
+``sigposArcsec = 0.4427``: the source is traced back from the observed images, its predicted images
+are found by solving the lens equation, and each observed image is compared with its nearest
+predicted image. ``al.FitPositionsImagePairRepeat`` is the matching PyAutoLens likelihood: it
+forward-solves the model images with the ``PointSolver`` below and pairs each observed image with
+its nearest model image (repeats allowed). Lenstool's source-plane modes are the cheaper
+alternative; its tensor mode (``forme 8``) is the same as ``al.FitPositionsSource`` with its default
+``"jacobian"`` weighting (see ``guides/point_source_pairing.py``).
+
+The search goes through ``AnalysisPoint``; the factor-graph pattern is identical to
+``scripts/cluster/modeling.py``. This is a production-scale job — run it
 on real hardware, not in a tutorial session. The result's max-likelihood instance is the PyAutoLens
 equivalent of ``best.par``; compare it to Table 3 of Mahler et al. 2023 and to the reconstruction
 above.
@@ -492,7 +502,7 @@ analysis_list = [
     al.AnalysisPoint(
         dataset=dataset,
         solver=solver,
-        fit_positions_cls=al.FitPositionsSource,
+        fit_positions_cls=al.FitPositionsImagePairRepeat,
         cosmology=cosmology,
     )
     for dataset in dataset_list

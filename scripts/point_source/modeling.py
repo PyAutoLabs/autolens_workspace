@@ -384,12 +384,14 @@ modes and the stricter, tunable over-prediction policies.
 
 For a "source-plane chi-squared", the likelihood is computed in the source-plane. The analysis just ray-traces
 the observed image positions back to the source-plane and defines a chi-squared metric there. This is orders of
-magnitude faster than the image-plane chi-squared (no iterative triangle solve), and with the modern tensor
-weighting (`al.FitPositionsSourceSolved`, `weighting="jacobian"`) it is far more accurate than its traditional
-reputation: the tensor maps each image's position noise through the full lensing Jacobian, whereas the
-traditional scalar magnification weighting can catastrophically mis-rank models when one image is highly
-magnified. Truth-anchored tests show the tensor-weighted fit ranks the true model first at galaxy and cluster
-scale alike, while the scalar version preferred wrong models by thousands of log likelihood. The image-plane
+magnitude faster than the image-plane chi-squared (no iterative triangle solve). Both source-plane classes,
+`al.FitPositionsSource` and `al.FitPositionsSourceSolved`, default to `weighting = "jacobian"`, which measures each
+traced image's distance from the source centre in the image-plane noise ellipse via the lensing Jacobian. This
+makes the source-plane fit far more accurate than its traditional reputation: the traditional scalar
+magnification weighting (an opt-in, `weighting = "magnification"`) is biased near critical curves and can
+catastrophically mis-rank models when one image is highly magnified. Truth-anchored tests show the
+Jacobian-weighted fit ranks the true model first at galaxy and cluster scale alike, while the scalar version
+preferred wrong models by thousands of log likelihood (see `guides/point_source_pairing.py`). The image-plane
 chi-squared remains the most robust choice and is the demonstrated default; the tensor source-plane fit is the
 recommended fast alternative for large samples or as an initialization stage.
 

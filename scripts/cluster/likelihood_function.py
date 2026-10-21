@@ -8,8 +8,9 @@ the figure-of-merit Nautilus optimises when fitting a cluster lens model to ``po
 Cluster point-source modelling has two distinct likelihood flavours:
 
  1. **Source-plane chi²** (``FitPositionsSource``) — ray-trace every observed image-plane position
-    back through the lens, and measure the magnification-weighted scatter of the back-traced
-    positions around the source-plane centre. Cheap (no forward solve) and JAX-friendly.
+    back through the lens, and measure the scatter of the back-traced positions around the
+    source-plane centre in the image-plane noise ellipse (via the lensing Jacobian). Cheap (no
+    forward solve) and JAX-friendly.
 
  2. **Image-plane chi²** (``FitPositionsImagePair``) — forward-solve the model's image-plane
     positions for each source via the ``PointSolver``, pair each model position to the closest
@@ -51,20 +52,21 @@ __Contents__
 - **Back-Traced Source-Plane Positions:** Computing source-plane positions per multiple image.
 - **Source-Plane Centroid:** Truth Point centre vs barycenter (which to use when).
 - **Residual Map:** Source-plane distance per multiple image.
-- **Magnifications at Positions:** Hessian-derived magnification per image.
-- **Chi Squared Map (Source):** ``residual² × magnification² / noise²``.
+- **Lensing Jacobian at Positions:** Hessian-derived Jacobian (and magnification) per image.
+- **Chi Squared Map (Source):** ``δᵀ A⁻ᵀ A⁻¹ δ / noise²``, the residual in the image-plane noise ellipse.
 - **Per-Source Chi Squared:** Sum within one source's multiple-image set.
 - **Total Chi Squared (Source):** Sum across sources.
-- **Noise Normalization (Source):** ``sum log(2π × magnification^-2 × noise²)``.
+- **Noise Normalization (Source):** ``sum log((2π)² × noise⁴)``.
 - **Source-Plane Log Likelihood:** ``-0.5 × (chi² + noise_normalization)``.
 - **Source-Plane Validation:** ``al.FitPositionsSource`` matches the step-by-step result.
+- **Opt-In Magnification Weighting:** The scalar ``residual² × magnification² / noise²`` alternative.
 
 - **Image-Plane Chi Squared: Concept:** Forward-solve, pair, measure.
 - **Point Solver Setup:** Starting grid, precision, magnification threshold.
 - **Forward Solving Model Positions:** Per source, via the multi-plane-aware solver.
 - **Pairing Model to Observed:** Three pairing schemes + the too-many / too-few pathology.
 - **Image-Plane Residual Map:** Image-plane distances per pair.
-- **Chi Squared Map (Image):** ``residual² / noise²`` — no magnification weighting here.
+- **Chi Squared Map (Image):** ``residual² / noise²`` — no Jacobian weighting here.
 - **Per-Source / Total Chi Squared:** Sum across pairs and sources.
 - **Noise Normalization (Image):** ``sum log(2π × noise²)``.
 - **Image-Plane Log Likelihood:** ``-0.5 × (chi² + noise_normalization)``.
@@ -234,19 +236,20 @@ __Source-Plane Chi Squared: Concept__
 If the lens model is correct, every observed image position of a given source ought to ray-trace
 back to (approximately) the same source-plane location: the source's true centre. The figure of
 merit for the **source-plane chi²** is the scatter of those back-traced positions around the
-source-plane reference, weighted by magnification (so source-plane residuals are converted back to
-image-plane scale where the noise is defined).
+source-plane reference, measured in the image-plane noise ellipse (the lensing Jacobian converts
+each source-plane residual back to the image plane, where the noise is defined).
 
 This contrasts with the more intuitive image-plane chi² which compares observed image positions to
 the model's *forward-solved* multiple-image positions. Source-plane chi² is cheaper (no forward
 solve required, just one back-projection per image), and the math is JAX-friendly. The trade-off
-is that the magnification weighting amplifies any positional error in the back-projection: at
-cluster scale where magnifications near multi-image positions are ~100×, even sub-arcsecond
-source-plane residuals can drive chi² to 10⁶–10⁸ at the truth.
+is that it is a first-order approximation: the Jacobian linearises the lens equation about each
+observed image, which is accurate for the small residuals of a good model, and it cannot see extra
+images that a model predicts but that were not observed.
 
-This is the figure of merit used by ``al.FitPositionsSource`` and is described in detail in
-Jullo et al. 2007 ("A Bayesian approach to strong lensing modelling of galaxy clusters") and the
-references therein.
+This is the figure of merit used by ``al.FitPositionsSource``, the source-plane likelihood of
+Lombardi 2024 (arXiv:2406.15280, Eq. 46). The older scalar magnification weighting of Jullo et al.
+2007 ("A Bayesian approach to strong lensing modelling of galaxy clusters") is shown as an opt-in at
+the end of the source-plane walkthrough.
 
 __Multi-Plane Ray Tracing__
 
@@ -376,67 +379,79 @@ for i, dataset in enumerate(dataset_list):
 
 
 """
-__Magnifications at Positions__
+__Lensing Jacobian at Positions__
 
-The source-plane chi² weights each residual by the local **magnification** at that image position.
-Why: position noise is defined in the image plane (arcsec), but the residual is in the source
-plane. The magnification converts a source-plane distance back to its image-plane scale.
-Specifically the formula below uses magnification squared as a multiplicative weight.
+The position noise ``σ`` is defined in the image plane (arcsec), but the residual above is in the
+source plane. The **lensing Jacobian** ``A = ∂β/∂θ`` at each observed image converts between the
+two: a small image-plane offset ``Δθ`` moves the traced point by ``A Δθ`` in the source plane, so a
+source-plane residual ``δ`` corresponds to the image-plane offset ``A⁻¹ δ``.
 
-PyAutoLens computes magnification from the Hessian of the deflection field via
-``Tracer.magnification_2d_via_hessian_from(grid)``. Physically the Hessian gives the linear
-distortion matrix at each image position; its determinant is the magnification (signed: negative
-for parity-flipped images, but ``magnification_2d_via_hessian_from`` returns the absolute value).
-The conceptual chain is **deflection field → Hessian via finite-difference → eigenvalues
-(convergence κ and shear γ) → magnification :math:`\\mu = 1 / |(1-\\kappa)^2 - \\gamma^2|`**.
+PyAutoLens computes ``A = I − H`` from the Hessian ``H`` of the deflection field via
+``LensCalc.jacobian_from(grid)``. Its determinant is the inverse magnification,
+:math:`\\mu = 1 / \\det A = 1 / [(1-\\kappa)^2 - \\gamma^2]`, but the full matrix also carries the
+direction of the stretch: near a critical curve an image is stretched by about ``μ`` tangentially
+and hardly at all radially. Full derivation and the eigenvalue / critical-curve discussion live in
+the lens-calc guide at ``autolens_workspace/scripts/guides/lens_calc.py``.
 
-Full derivation and the eigenvalue / critical-curve discussion live in the lens-calc guide at
-``autolens_workspace/scripts/guides/lens_calc.py``.
+For multi-plane lenses the Hessian uses the full multi-plane deflection, so the Jacobian reflects
+the cumulative distortion through every intervening plane. We build one ``LensCalc`` per source so
+each Jacobian is evaluated against the correct multi-plane chain (the source's plane index).
 
-For multi-plane lenses the function uses the full multi-plane deflection in the Hessian, so the
-magnification correctly reflects the cumulative distortion through every intervening plane. The
-``LensCalc`` helper bundles the Hessian, magnification, and critical-curve calculations; we build
-one per source so each magnification is evaluated against the correct multi-plane chain (the
-source's plane index).
-
-The library wraps this with an ``abs(...)`` so the returned magnification is always positive (raw
-magnification can be negative when the image is parity-flipped; squaring it in the chi² formula
-makes the sign irrelevant anyway).
+``jacobian_from`` returns its 2x2 components in (x, y) row/column order, whereas every position
+array here is (y, x), so we re-index them into (y, x) order before using them as a matrix.
 """
-magnifications_per_source = []
+jacobians_per_source = []
 for i, dataset in enumerate(dataset_list):
     plane_index = tracer.plane_index_via_redshift_from(redshift=dataset.redshift)
     od = ag.LensCalc.from_tracer(
         tracer=tracer, use_multi_plane=True, plane_j=plane_index
     )
-    mag = abs(od.magnification_2d_via_hessian_from(grid=dataset.positions))
-    magnifications_per_source.append(mag)
+    (a_xx, a_xy), (a_yx, a_yy) = od.jacobian_from(grid=dataset.positions)
 
-    print(f"  {dataset.name}: magnifications = {np.asarray(mag)}")
+    # Shape (n_images, 2, 2), rows / columns in (y, x) order.
+    jacobian = np.stack(
+        [
+            np.stack([np.asarray(a_yy), np.asarray(a_yx)], axis=-1),
+            np.stack([np.asarray(a_xy), np.asarray(a_xx)], axis=-1),
+        ],
+        axis=-2,
+    )
+    jacobians_per_source.append(jacobian)
+
+    magnifications = 1.0 / np.abs(np.linalg.det(jacobian))
+    print(f"  {dataset.name}: magnifications = {magnifications}")
 
 
 """
 __Chi Squared Map (Source)__
 
-The per-image source-plane chi² combines the residual, the magnification, and the position noise:
+The per-image source-plane chi² measures the residual vector :math:`\\delta_{i} = \\hat\\beta_{i} - c`
+(traced position minus source centre) in the image-plane noise ellipse:
 
 .. math::
 
-    \\chi^{2}_{i} = \\frac{r_{i}^{2} \\, \\mu_{i}^{2}}{\\sigma_{i}^{2}}
+    \\chi^{2}_{i} = \\delta_{i}^{T} B_{i} \\delta_{i}, \\qquad B_{i} = A_{i}^{-T} \\Theta_{i} A_{i}^{-1}
 
-This is the formula in ``autolens/point/fit/positions/source/separations.py`` ::
+with :math:`\\Theta_{i} = \\sigma_{i}^{-2} I` the image-plane precision. Because :math:`A_{i}^{-1}
+\\delta_{i}` is the image-plane offset that the residual corresponds to, this is the image-plane
+chi² of each image to first order. It is still the distance of each traced point from the source
+centre, just measured in units of the image-plane noise.
 
-    chi_squared_map = residual_map**2 / (magnifications_at_positions.array**-2 * noise_map.array**2)
-
-which expands to ``residual² × magnification² / noise²``. (The :math:`\\mu^{-2}` in the denominator
-of the source-code form cancels the :math:`\\mu^{2}` in the numerator and leaves the form above.)
+This is the default ``weighting = "jacobian"`` of ``al.FitPositionsSource`` (see
+``autolens/point/fit/positions/source/separations.py``), the Gravity.jl source-plane likelihood of
+Lombardi 2024 (arXiv:2406.15280, Eq. 46). ``guides/point_source_pairing.py`` explains why it is the
+default and when to use the scalar alternative shown further below.
 """
 chi_squared_maps_per_source = []
 for i, dataset in enumerate(dataset_list):
-    r = np.asarray(residuals_per_source[i])
-    mu = np.asarray(magnifications_per_source[i])
+    delta = np.asarray(source_plane_positions_per_source[i]) - np.asarray(
+        source_plane_centroids[i]
+    )
+    jacobian_inv = np.linalg.inv(jacobians_per_source[i])
     sigma = np.asarray(dataset.positions_noise_map)
-    chi_sq_map = r**2 * mu**2 / sigma**2
+
+    image_plane_offsets = np.einsum("nij,nj->ni", jacobian_inv, delta)
+    chi_sq_map = np.sum(image_plane_offsets**2, axis=1) / sigma**2
     chi_squared_maps_per_source.append(chi_sq_map)
 
     print(f"  {dataset.name}: chi² per image = {chi_sq_map}")
@@ -465,22 +480,21 @@ print(f"Total source-plane chi² = {total_chi_squared_source:.4e}")
 """
 __Noise Normalization (Source)__
 
-The full Gaussian log-likelihood carries a normalisation term that depends on the noise:
+The full Gaussian log-likelihood carries a normalisation term that depends on the noise. Each
+image position is a 2D Gaussian measurement with precision :math:`\\Theta_{i}`, so:
 
 .. math::
 
-    \\mathcal{N} = \\sum_{i} \\log \\left( 2\\pi \\, \\mu_{i}^{-2} \\, \\sigma_{i}^{2} \\right)
+    \\mathcal{N} = \\sum_{i} \\log \\left( (2\\pi)^{2} \\, \\sigma_{i}^{4} \\right)
 
-The magnification factor appears here too because the chi² formula effectively treats each image
-position as having an *effective* source-plane noise of :math:`\\sigma_{i} / \\mu_{i}`. The
-normalisation matches that interpretation so the resulting expression is a well-defined Gaussian
-log-likelihood.
+This uses the image-plane noise only, so it does not depend on the lens model. A normalisation
+built from the source-plane precision :math:`B_{i}` would change with the magnification and would
+reward high-magnification models.
 """
 noise_normalizations_per_source = []
 for i, dataset in enumerate(dataset_list):
-    mu = np.asarray(magnifications_per_source[i])
     sigma = np.asarray(dataset.positions_noise_map)
-    nn = float(np.sum(np.log(2 * np.pi * (mu**-2) * sigma**2)))
+    nn = float(np.sum(np.log((2 * np.pi) ** 2 * sigma**4)))
     noise_normalizations_per_source.append(nn)
 
 total_noise_normalization_source = float(sum(noise_normalizations_per_source))
@@ -534,6 +548,52 @@ print(
 
 
 """
+__Opt-In Magnification Weighting__
+
+The older scalar weighting of Jullo et al. 2007 (Eq. 10) replaces :math:`B_{i}` with
+:math:`(\mu_{i}^{2} / \sigma_{i}^{2}) I`, i.e. :math:`\chi^{2}_{i} = r_{i}^{2} \mu_{i}^{2} /
+\sigma_{i}^{2}` with :math:`r_{i}` the residual distances computed above. It treats the
+source-plane noise as a circle of radius :math:`\sigma_{i} / \mu_{i}`, which is right along the
+tangential direction but over-weights the radial direction by about :math:`\mu^{2}` near a
+critical curve, so it biases the fit. It is available as an opt-in by subclassing with
+``weighting = "magnification"``, and uses the same noise normalisation as the default.
+"""
+
+
+class FitPositionsSourceMagnification(al.FitPositionsSource):
+    weighting = "magnification"
+
+
+chi_squared_magnification = 0.0
+sum_library_log_likelihood_magnification = 0.0
+for i, dataset in enumerate(dataset_list):
+    r = np.asarray(residuals_per_source[i])
+    mu = 1.0 / np.abs(np.linalg.det(jacobians_per_source[i]))
+    sigma = np.asarray(dataset.positions_noise_map)
+    chi_squared_magnification += float(np.sum(r**2 * mu**2 / sigma**2))
+
+    point_profile = getattr(source_galaxies[i], dataset.name)
+    fit = FitPositionsSourceMagnification(
+        name=dataset.name,
+        data=dataset.positions,
+        noise_map=dataset.positions_noise_map,
+        tracer=tracer,
+        solver=None,
+        profile=point_profile,
+    )
+    sum_library_log_likelihood_magnification += float(fit.log_likelihood)
+
+log_likelihood_magnification = -0.5 * (
+    chi_squared_magnification + total_noise_normalization_source
+)
+print(f"Magnification-weighted source-plane chi² = {chi_squared_magnification:.4e}")
+print(
+    f"Magnification-weighted log likelihood = {log_likelihood_magnification:.4e} "
+    f"(library: {sum_library_log_likelihood_magnification:.4e})"
+)
+
+
+"""
 __Image-Plane Chi Squared: Concept__
 
 The image-plane chi² takes the opposite approach. Instead of ray-tracing observed positions to
@@ -548,12 +608,11 @@ Mechanically:
  3. For each model position, find the closest observed position and pair them.
  4. The residual per pair is just the image-plane Euclidean distance.
 
-The chi² is then ``residual² / noise²`` — no magnification weighting, because the residual is
-already in the same units (arc-seconds) as the noise. This makes the absolute chi² much smaller
-than the source-plane variant at the same model: at the truth, residuals are bounded by the
+The chi² is then ``residual² / noise²`` — no Jacobian weighting, because the residual is
+already in the same units (arc-seconds) as the noise. At the truth, residuals are bounded by the
 ``PointSolver`` precision (~0.001"), so chi² ≈ (0.001 / 0.005)² × N ≈ N × 0.04, where N is the
-number of paired images. Far below the source-plane chi² which is dominated by magnification × the
-same precision floor.
+number of paired images. The Jacobian-weighted source-plane chi² above is on the same scale, because
+it is the image-plane chi² to first order; the scalar magnification weighting is not.
 
 The trade-off: image-plane chi² requires a **forward solve per evaluation**, which is slow,
 introduces solver precision as a noise floor, and carries pairing pathologies discussed below.
@@ -719,7 +778,7 @@ Image-plane chi² per pair:
 
     \\chi^{2}_{i} = \\frac{r_{i}^{2}}{\\sigma_{i}^{2}}
 
-No magnification weighting — the residual is already in image-plane arc-seconds, the same units
+No Jacobian weighting — the residual is already in image-plane arc-seconds, the same units
 as the noise.
 
 Each pair should use the noise of its paired observed position. For simplicity we use the dataset's
@@ -753,7 +812,7 @@ The Gaussian-log normalisation for image-plane chi² is the standard form:
 
     \\mathcal{N} = \\sum_{i} \\log \\left( 2\\pi \\, \\sigma_{i}^{2} \\right)
 
-No magnification factor (residuals are already in image-plane units).
+No Jacobian or magnification factor (residuals are already in image-plane units).
 """
 noise_normalizations_per_source_image = []
 for i, dataset in enumerate(dataset_list):
@@ -811,17 +870,16 @@ __Source-Plane vs Image-Plane: When to Use Which__
 | **Forward solve required?** | No | Yes (one per evaluation) |
 | **Per-evaluation cost** | Cheap (just back-projection) | Expensive (triangle refinement) |
 | **JAX-friendly?** | Yes | The solver is JAX-jitted, but each evaluation triggers a forward solve regardless |
-| **Magnification weighting** | Yes (``μ²`` in chi²) | No |
-| **Sensitive to ``PointSolver`` precision?** | Amplified by ``μ²`` at multi-image positions | Bounded by precision directly |
+| **Noise weighting** | Lensing Jacobian maps residuals to the image-plane noise ellipse | None needed |
+| **Sensitive to ``PointSolver`` precision?** | No solver used | Bounded by precision directly |
 | **Pairing pathology** | None (uses all images) | Yes (too-many / too-few; see above) |
-| **Absolute chi² scale (at truth)** | Large (~``μ²`` × precision²) | Small (~precision²) |
 | **Best for** | Fast Nautilus fits; JAX-jit'd parameter estimation | Final residual visualisation; cases where pairing is unambiguous |
 
 For most cluster fits the source-plane chi² is the right default: it's faster, JAX-compatible,
 and doesn't suffer pairing pathologies. Its solved sibling ``FitPositionsSourceSolved`` (paired
 with ``al.ps.PointSolved`` sources) sharpens this further — the source centres drop out of the
 non-linear space entirely (2 parameters per source) at timing-noise-level extra cost per call,
-and its tensor weighting is a better error model than the scalar ``μ²`` used above. The
+with the same Jacobian weighting. The
 recommended cluster workflow is therefore: **search with ``FitPositionsSourceSolved``, validate
 with the image-plane chi²** on the max-likelihood model. The image-plane chi² remains the
 diagnostic tool — visualising where predicted images sit relative to observed ones, and
@@ -830,7 +888,7 @@ cross-checking any source-plane bias.
 This is exactly what the cluster modeling scripts (``scripts/cluster/start_here.py`` and
 ``scripts/cluster/modeling.py``) demonstrate: their ``AnalysisPoint`` analyses pass
 ``fit_positions_cls=al.FitPositionsSourceSolved`` with parameter-free ``al.ps.PointSolved``
-sources (the class default remains ``FitPositionsImagePairRepeat``).
+sources (the ``AnalysisPoint`` default is the image-plane ``FitPositionsImagePairAllSolved``).
 
 __Wrap Up__
 
@@ -844,7 +902,7 @@ Next steps:
 - ``scripts/cluster/modeling.py`` — full Nautilus fit using the same likelihood function discussed
   here, with priors and ``AnalysisPoint`` configuration.
 - ``autolens_workspace_test/scripts/cluster/likelihood_sanity.py`` — perturbation sweep that
-  surfaces the ``PointSolver`` precision-floor pathology described in the source-plane section.
+  checks both chi² flavours rank the truth first and measures their numerical noise floors.
 - ``autolens_workspace/scripts/guides/advanced/multi_plane.py`` — full derivation of the recursive
   lens equation.
 - ``autolens_workspace/scripts/guides/lens_calc.py`` — Hessian / magnification /

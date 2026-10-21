@@ -48,6 +48,7 @@
     ],
     "cross_refs": [
       "data.py",
+      "guides/point_source_pairing.py",
       "scripts/cluster/modeling.py"
     ],
     "notebook": "notebooks/cluster/lenstool/modeling.ipynb",
@@ -81,13 +82,14 @@
       "Back-Traced Source-Plane Positions",
       "Source-Plane Centroid",
       "Residual Map",
-      "Magnifications at Positions",
+      "Lensing Jacobian at Positions",
       "Chi Squared Map (Source)",
       "Per-Source Chi Squared",
       "Total Chi Squared (Source)",
       "Noise Normalization (Source)",
       "Source-Plane Log Likelihood",
       "Source-Plane Validation",
+      "Opt-In Magnification Weighting",
       "Image-Plane Chi Squared: Concept",
       "Point Solver Setup",
       "Forward Solving Model Positions",
@@ -2023,7 +2025,6 @@
     "contents": [],
     "cross_refs": [
       "autolens_profiling/scripts/cluster/likelihood_breakdown/image_plane.py",
-      "likelihood_sanity.py",
       "scripts/cluster/likelihood_function.py"
     ],
     "notebook": "notebooks/guides/point_source_pairing.ipynb",
