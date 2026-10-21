@@ -121,8 +121,9 @@ load it for visualization, for example to see where the multiple images of the p
 lens galaxy.
 
 The image is also passed to the analysis further down. It is used only for visualization and does not change the
-likelihood: the point dataset's positions (and, after the fit, the model's positions and critical curves) are plotted
-over it in an `image_with_points.png` figure, making interpretation of the results straight forward.
+likelihood: `image_with_points.png` shows the data with the observed positions (before the fit) and
+`fit_image_with_points.png` adds the model positions and critical curves, making interpretation of the results
+straight forward.
 
 Loading and inputting the image of the dataset in this way is entirely optional, and if you are only interested in
 performing point-source modeling you do not need to do this.
@@ -419,7 +420,7 @@ If you don’t have a GPU locally, consider Google Colab which provides free GPU
 analysis = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    image=data,  # Used only for visualization (`image_with_points.png`), not in the likelihood.
+    image=data,  # Visualization only (`image_with_points.png`, `fit_image_with_points.png`).
     # The default fit is `al.FitPositionsImagePairAllSolved` (all-to-all image-plane chi-squared, solved
     # source centre). Pass `fit_positions_cls` to use another, e.g. `al.FitPositionsImagePairAll` for a
     # free source centre or `al.FitPositionsSourceSolved` for the fast tensor source-plane chi-squared.

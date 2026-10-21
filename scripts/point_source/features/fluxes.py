@@ -102,8 +102,9 @@ aplt.subplot_point_dataset(dataset=dataset)
 We next load an image of the dataset, because as described in the `point_source/start_here.ipynb` notebook, it is
 useful for visualizing the point source dataset.
 
-It is also passed to the analysis below, where it is used only for visualization (the positions are plotted over
-it in `image_with_points.png`) and not in the likelihood.
+It is also passed to the analysis below, where it is used only for visualization and not in the likelihood:
+`image_with_points.png` shows the data with the observed positions (before the fit) and `fit_image_with_points.png`
+adds the model positions and critical curves.
 """
 data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.05)
 
@@ -199,7 +200,7 @@ Create the `AnalysisPoint` object defining how the via Nautilus the model is fit
 analysis = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    image=data,  # Used only for visualization (`image_with_points.png`).
+    image=data,  # Visualization only (`image_with_points.png`, `fit_image_with_points.png`).
     # `PointFlux` carries a free source centre, so the solved-centre default fit cannot be used
     # (it would raise an error) — we pass the free-centre all-to-all image-plane chi-squared.
     fit_positions_cls=al.FitPositionsImagePairAll,
@@ -237,7 +238,7 @@ model_solved = af.Collection(
 analysis_solved = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    image=data,  # Used only for visualization (`image_with_points.png`).
+    image=data,  # Visualization only (`image_with_points.png`, `fit_image_with_points.png`).
     fit_positions_cls=al.FitPositionsSourceSolved,  # Solved fits pair with `PointSolved`.
     fit_flux_cls=al.FitFluxesSolved,  # Flux solved analytically, no free `flux` parameter.
 )

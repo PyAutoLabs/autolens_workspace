@@ -102,8 +102,9 @@ The accompanying imaging. For most point-source examples this is optional contex
 where the companions' centres *and* luminosities were measured, and plotting it is the quickest way to confirm the
 numbers loaded below land on actual galaxies.
 
-It is also passed to the analysis below, where it is used only for visualization (the positions are plotted over
-it in `image_with_points.png`) and not in the likelihood.
+It is also passed to the analysis below, where it is used only for visualization and not in the likelihood:
+`image_with_points.png` shows the data with the observed positions (before the fit) and `fit_image_with_points.png`
+adds the model positions and critical curves.
 """
 data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.05)
 
@@ -286,7 +287,7 @@ search = af.Nautilus(
 analysis = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    image=data,  # Used only for visualization (`image_with_points.png`).
+    image=data,  # Visualization only (`image_with_points.png`, `fit_image_with_points.png`).
     # `PointFlux` carries a free source centre (needed here because fluxes are fitted), so the
     # solved-centre default fit cannot be used — we pass the free-centre all-to-all chi-squared.
     fit_positions_cls=al.FitPositionsImagePairAll,
