@@ -103,8 +103,9 @@ aplt.subplot_point_dataset(dataset=dataset)
 We next load an image of the dataset, because as described in the `point_source/start_here.ipynb` notebook, it is
 useful for visualizing the point source dataset.
 
-It is also passed to the analysis below, where it is used only for visualization (the positions are plotted over
-it in `image_with_points.png`) and not in the likelihood.
+It is also passed to the analysis below, where it is used only for visualization and not in the likelihood:
+`image_with_points.png` shows the data with the observed positions (before the fit) and `fit_image_with_points.png`
+adds the model positions and critical curves.
 """
 data = al.Array2D.from_fits(file_path=dataset_path / "data.fits", pixel_scales=0.05)
 
@@ -201,7 +202,7 @@ Create the `AnalysisPoint` object defining how the via Nautilus the model is fit
 analysis = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    image=data,  # Used only for visualization (`image_with_points.png`).
+    image=data,  # Visualization only (`image_with_points.png`, `fit_image_with_points.png`).
     # Positions use the default `FitPositionsImagePairAllSolved` (all-to-all pairing, solved centre).
 )
 
@@ -218,7 +219,7 @@ positions fit (the model composition is unchanged):
 analysis_solved = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    image=data,  # Used only for visualization (`image_with_points.png`).
+    image=data,  # Visualization only (`image_with_points.png`, `fit_image_with_points.png`).
     fit_time_delays_cls=al.FitTimeDelaysSolved,  # Analytic reference time instead of min-subtraction.
 )
 
