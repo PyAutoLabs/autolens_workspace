@@ -27,8 +27,8 @@ The worked example is **SMACS J0723.3−7327**, the first JWST cluster, using th
 | `potfile` (`mag0`, `sigma`, `cutkpc`, `vdslope 4`, `slope 4`) | shared priors + derived parameters | σᵢ = σ\*·(L/L₀)^0.25, r_cut,ᵢ = r_cut\*·(L/L₀)^β, L/L₀ = 10^(0.4(mag0−m)) — the reference-anchored scaling relation. Lenstool's classic `slope 4` gives β = 0.5; `scripts/cluster/` now defaults to the modern tied exponent β = 1 + γ − 2α = 0.7 (γ = 0.2, Bergamini et al. 2019). |
 | `arcs.dat` | `point_datasets.csv` → `al.list_from_csv` | One `PointDataset` per system; redshifts per system. |
 | `sigposArcsec` | `positions_noise` column | Identical positional chi-squared definition. |
-| source-plane optimization | `al.FitPositionsSource` | Lenstool's default likelihood. |
-| image-plane optimization | `al.FitPositionsImagePair*` | The rigorous (and expensive) version; see `scripts/cluster/likelihood_function.py`. |
+| image-plane optimization (`forme -1`) | `al.FitPositionsImagePairRepeat` | Lenstool's default likelihood, and the one Mahler et al. used: each observed image is paired with its nearest predicted image. `modeling.py` refits with it; see `scripts/cluster/likelihood_function.py`. |
+| source-plane optimization, tensor mode (`forme 8`) | `al.FitPositionsSource` | Same likelihood as the default `"jacobian"` weighting: the residual is measured in the image-plane noise ellipse. Much cheaper (no forward solve); see `scripts/guides/point_source_pairing.py`. |
 | `best.par` | the max-likelihood instance of the fit | And `bayes.dat` ↔ the Nautilus samples. |
 | cosmology block (`H0 70`, `omegaM 0.3`) | `al.cosmo.FlatLambdaCDM(H0=70.0, Om0=0.3)` | Pass it everywhere — PyAutoLens defaults to Planck15. |
 
@@ -52,9 +52,9 @@ The worked example is **SMACS J0723.3−7327**, the first JWST cluster, using th
 - **Sources are sampled, not eliminated.** Lenstool removes source positions analytically inside
   its optimizer; PyAutoLens samples them (or, with `FitPositionsImagePair*`, solves the forward
   problem per likelihood call). You see the joint posterior, including source–mass covariances.
-- **The likelihood is yours to choose.** Source-plane χ² reproduces Lenstool; image-plane χ² with
-  proper handling of image multiplicity is one line away, and the full likelihood is documented
-  step by step (`scripts/cluster/likelihood_function.py`).
+- **The likelihood is yours to choose.** The image-plane χ² reproduces Lenstool's default; the
+  source-plane χ² (Lenstool's tensor mode) and the all-to-all image-plane χ² are one line away, and
+  the full likelihood is documented step by step (`scripts/cluster/likelihood_function.py`).
 - **Everything after the point-source fit is in the same framework**: extended-source (arc)
   modeling with pixelized sources, JAX acceleration of the point solver, Bayesian evidence for
   model comparison, and the cluster visualization tools (per-source-plane critical curves and

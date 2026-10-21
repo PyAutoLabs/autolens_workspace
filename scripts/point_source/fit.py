@@ -405,11 +405,18 @@ print(fit.positions.log_likelihood)
 
 """
 For a "source-plane chi-squared", the likelihood is computed in the source-plane. The analysis is simpler, it ray-traces
-the multiple images back to the source-plane and defines a chi-squared metric. For example, the default implementation 
-sums the Euclidean distance between the image positions and the point source centre in the source-plane.
+the multiple images back to the source-plane and measures the distance of each traced image from the point source 
+centre. 
 
-The source-plane chi-squared is significantly faster to compute than the image-plane chi-squared, however it is 
-less robust than the image-plane chi-squared and can lead to biased lens model results. 
+By default (`weighting = "jacobian"`) each distance is measured in the image-plane noise ellipse: the lensing Jacobian 
+at each image maps the source-plane residual back to the image plane, where the position noise is defined. This is 
+the correct linearised likelihood, it stays robust near critical curves and it costs no more than weighting by the 
+magnification. The older scalar weighting, `weighting = "magnification"`, is an opt-in that is biased near critical 
+curves. Both are explained in `guides/point_source_pairing.py`.
+
+The source-plane chi-squared is significantly faster to compute than the image-plane chi-squared, however it cannot 
+tell when a model predicts extra images and is only a first-order approximation to the image-plane chi-squared, so 
+it can still bias lens model results. 
 
 Here is an example of how to use the source-plane chi-squared:
 """
@@ -472,7 +479,7 @@ print(fit.positions.log_likelihood)
 
 """
 The full matrix of pairing schemes × centre treatments — including the solved flux and time-delay
-variants used below, the tensor-vs-scalar magnification weighting, and when each option is
+variants used below, the `"jacobian"` and `"magnification"` source-plane weightings, and when each option is
 preferable — is documented in `guides/point_source_pairing.py`.
 
 __Fluxes__
