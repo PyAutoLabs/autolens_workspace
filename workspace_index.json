@@ -933,9 +933,12 @@
       "Source Flux",
       "Source Magnification",
       "Impact of Extra Galaxies",
-      "Tracer"
+      "Tracer",
+      "Magnification At A Point"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/group/features/multi_gaussian_expansion/source_science.ipynb",
     "path": "scripts/group/features/multi_gaussian_expansion/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy.",
@@ -1135,9 +1138,12 @@
       "Source Magnification",
       "Impact of Extra Galaxies",
       "Interpolated Source",
-      "Parametric Comparison"
+      "Parametric Comparison",
+      "Magnification At A Point"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/group/features/pixelization/source_science.ipynb",
     "path": "scripts/group/features/pixelization/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy.",
@@ -1440,9 +1446,12 @@
       "Source Magnification",
       "Impact of Extra Galaxies",
       "Tracer",
+      "Magnification At A Point",
       "Parametric Source Models"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/group/source_science.ipynb",
     "path": "scripts/group/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).",
@@ -1689,15 +1698,20 @@
       "Convergence",
       "Shear",
       "Magnification",
+      "Magnification At A Point",
       "Critical Curves and Caustics",
       "Einstein Radius",
       "Fermat Potential",
       "Wrap Up"
     ],
     "cross_refs": [
+      "/guides/advanced/multi_plane.py",
       "/guides/data_structures.ipynb",
+      "/imaging/source_science.py",
+      "/point_source/fit.py",
       "guides/units/cosmology.ipynb",
-      "scripts/guides/using_jax.py"
+      "scripts/guides/using_jax.py",
+      "source_science.py"
     ],
     "notebook": "notebooks/guides/lens_calc.ipynb",
     "path": "scripts/guides/lens_calc.py",
@@ -3842,10 +3856,12 @@
       "Source Flux",
       "Source Magnification",
       "Tracer",
+      "Magnification At A Point",
       "Parametric Source Models",
       "Wrap Up"
     ],
     "cross_refs": [
+      "/guides/advanced/multi_plane.py",
       "/imaging/source_science.py"
     ],
     "notebook": "notebooks/imaging/features/multi_gaussian_expansion/source_science.ipynb",
@@ -4166,9 +4182,12 @@
       "Magnification",
       "Masking",
       "Magnification via Mesh",
+      "Magnification At A Point",
       "Reconstruction CSV"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/imaging/features/pixelization/source_science.ipynb",
     "path": "scripts/imaging/features/pixelization/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).",
@@ -4506,9 +4525,12 @@
       "Source Flux",
       "Source Magnification",
       "Tracer",
+      "Magnification At A Point",
       "Parametric Source Models"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/imaging/source_science.ipynb",
     "path": "scripts/imaging/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).",
@@ -5525,9 +5547,12 @@
       "Magnification",
       "Masking",
       "Magnification via Mesh",
+      "Magnification At A Point",
       "Reconstruction CSV"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/interferometer/features/pixelization/source_science.ipynb",
     "path": "scripts/interferometer/features/pixelization/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).",
@@ -5788,9 +5813,12 @@
       "Source Flux",
       "Source Magnification",
       "Tracer",
+      "Magnification At A Point",
       "Parametric Source Models"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/interferometer/source_science.ipynb",
     "path": "scripts/interferometer/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).",
@@ -7046,9 +7074,11 @@
       "The Flux Ratio",
       "Source Magnification",
       "Source Flux",
+      "Magnification At A Point",
       "Wrap Up"
     ],
     "cross_refs": [
+      "/guides/advanced/multi_plane.py",
       "fit.py",
       "imaging/features/multi_gaussian_expansion/source_science.py",
       "likelihood_function.py",
@@ -7358,9 +7388,11 @@
       "Errors",
       "Parametric Comparison",
       "Magnification via Mesh",
+      "Magnification At A Point",
       "Wrap Up"
     ],
     "cross_refs": [
+      "/guides/advanced/multi_plane.py",
       "imaging/features/pixelization/source_science.py",
       "multi_galaxy/features/pixelization/modeling.py",
       "multi_galaxy/features/pixelization/plot.py",
@@ -7725,9 +7757,11 @@
       "Source Magnification",
       "Single Deflector Comparison",
       "Tracer",
+      "Magnification At A Point",
       "Parametric Source Models"
     ],
     "cross_refs": [
+      "/guides/advanced/multi_plane.py",
       "imaging/source_science.py",
       "multi_galaxy/modeling.py"
     ],
@@ -8085,6 +8119,7 @@
       "Dataset",
       "Name Pairing",
       "Fitting",
+      "Magnification At The Multiple Images",
       "Chi Squared",
       "Solved Source Centre",
       "Fluxes",
@@ -8096,10 +8131,12 @@
       "Shape Solver"
     ],
     "cross_refs": [
+      "/guides/lens_calc.py",
       "guides/point_source_pairing.py",
       "modeling.py",
       "point_source/features/fluxes.py",
       "point_source/features/time_delays.py",
+      "point_source/modeling.py",
       "scripts/point_source/simulator.py",
       "simulator.py",
       "start_here.py"
@@ -8135,6 +8172,7 @@
       "/point_source/start_here.py",
       "guides/point_source_pairing.py",
       "imaging/modeling.py",
+      "point_source/fit.py",
       "start_here.py"
     ],
     "notebook": "notebooks/point_source/modeling.ipynb",

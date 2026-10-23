@@ -33,6 +33,7 @@ __Contents__
 - **Convergence:** The projected surface mass density normalised by the critical density.
 - **Shear:** The tidal distortion field that stretches lensed images.
 - **Magnification:** How much a lensed image is brightened (or dimmed) relative to the unlensed source.
+- **Magnification At A Point:** The signed magnification at chosen (y,x) image-plane coordinates, and its sign as image parity.
 - **Critical Curves and Caustics:** Where magnification formally diverges and how this maps to the source plane.
 - **Einstein Radius:** The characteristic angular size of a lens.
 - **Fermat Potential:** The time-delay surface whose extrema locate lensed images.
@@ -321,6 +322,38 @@ aplt.plot_array(array=magnification_array, title="Magnification (mu)")
 """
 The magnification map shows extremely high values near the critical curves, where images are stretched into
 the bright arcs that make strong lensing systems so visually striking.
+
+__Magnification At A Point__
+
+The calculation above evaluates the magnification on a uniform grid. Lens modeling codes also commonly quote the
+magnification at specific (y,x) coordinates in the image-plane, for example at the observed positions of a lensed
+quasar's multiple images, a compact clump in an arc or a transient.
+
+Because the Hessian can be computed at any coordinate, `magnification_2d_via_hessian_from` accepts a
+`Grid2DIrregular` of (y,x) coordinates and returns `mu = 1 / det(A)` at each one:
+"""
+point_grid = al.Grid2DIrregular(values=[(0.0, 1.9), (0.0, -1.4), (1.2, 1.2)])
+
+magnification_at_points = lens_calc.magnification_2d_via_hessian_from(grid=point_grid)
+
+print("Magnification at points (signed):", magnification_at_points)
+print("Magnification at points (absolute):", abs(magnification_at_points))
+
+"""
+The value is signed, and the sign is the parity of an image at that coordinate: positive for images at minima (or
+maxima) of the Fermat potential (see `__Fermat Potential__` below) and negative for saddle-point images, which are
+mirror-reversed relative to the source. Its absolute value is how much a point-like source at that location is
+magnified, which is the factor point-source flux fits use. This differs from the magnification of an extended
+source, which averages the magnification over the source's light distribution (see the `source_science.py`
+examples, e.g. `autolens_workspace/*/imaging/source_science.py`, which also compute this point magnification).
+
+Point-source fits expose the same quantity at the observed image positions via `signed_magnifications_at_positions`
+and `magnifications_at_positions` (see `autolens_workspace/*/point_source/fit.py`).
+
+For a multi-plane tracer, the magnification of a source at an intermediate redshift must be computed with
+multi-plane lensing up to that source's plane, by passing `plane_j` to `al.LensCalc.from_tracer`. Truncating the
+tracer at that plane instead gives a silently wrong answer; the `Trap (b)` section of
+`autolens_workspace/*/guides/advanced/multi_plane.py` shows why with a worked example.
 
 __Critical Curves and Caustics__
 

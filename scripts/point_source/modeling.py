@@ -558,6 +558,16 @@ print(result.max_log_likelihood_instance)
 aplt.subplot_tracer(tracer=result.max_log_likelihood_tracer, grid=result.grid)
 
 """
+The result also gives the magnification of the maximum likelihood model at every observed image position, computed
+via the Hessian. `result.signed_magnifications_at_positions` keeps the sign, which is the parity of each image
+(positive for minima and maxima of the arrival-time surface, negative for saddle points), and
+`result.magnifications_at_positions` is its absolute value. For multi-plane lenses these use the plane of the
+point source paired with the dataset. See `point_source/fit.py` for a description.
+"""
+print(result.signed_magnifications_at_positions)
+print(result.magnifications_at_positions)
+
+"""
 The result contains the full posterior information of our non-linear search, including all parameter samples, 
 log likelihood values and tools to compute the errors on the lens model. 
 
