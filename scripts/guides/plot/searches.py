@@ -118,8 +118,8 @@ Plot are labeled with short hand parameter names (e.g. the `centre` parameters a
 The mappings of every parameter to its shorthand symbol for plots is specified in the `config/notation.yaml` file 
 and can be customized.
 
-Each label also has a superscript corresponding to the model component the parameter originates from. For example,
-Gaussians are given the superscript `g`. This can also be customized in the `config/notation.yaml` file.
+Each label also has a superscript naming the model component the parameter originates from: the path of names the
+component was given in the model (e.g. `gaussian`, or `lens.mass` for a profile inside a galaxy).
 
 __Dynesty__
 

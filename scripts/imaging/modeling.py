@@ -649,10 +649,24 @@ Below, we make a corner plot of the "Probability Density Function" of every para
 The plot is labeled with short hand parameter names (e.g. `sersic_index` is mapped to the short hand 
 parameter `n`). These mappings ate specified in the `config/notation.yaml` file and can be customized by users.
 
-The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
-mass its name `mass` defined when making the `Model` above is used).
+The superscripts of labels are the path of names each component was given in the model (e.g. for the `Isothermal`
+mass, `lens.mass`: the galaxy's name `lens` and its name `mass` defined when making the `Model` above).
 """
 aplt.corner_anesthetic(samples=result.samples)
+
+
+"""
+Components of the same class are therefore told apart (every Gaussian of a basis is labelled by the galaxy and
+light profile it belongs to) and, when the model has more than one top-level component, each also gets its own
+corner plot in the output folder (`corner_anesthetic_<component>.png`, switched in `config/visualize/plots_search.yaml`).
+
+The parameters a model is sampled in are not always the ones it is read in: a profile's elliptical components are an
+axis ratio and a position angle, a shear's two components a magnitude and an angle. Passing `latent=True` plots
+these latent parameters instead. The same figure is written to the output folder as `corner_anesthetic_latent.png`
+when `corner_anesthetic_latent` is switched on in `config/visualize/plots_search.yaml` (off by default), once the fit
+is complete, and the latent parameters are also written to `latent.csv` with the other latent variables.
+"""
+aplt.corner_anesthetic(samples=result.samples, latent=True)
 
 """
 __Loading From Output Folder__

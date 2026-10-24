@@ -87,6 +87,17 @@ The raw-flux latents default to ``true`` in the library yaml — they cost essen
 universally useful column. The µJy variants and the two dimensionless latents default to ``false`` so existing
 fits and instrument-naive workflows stay unchanged on upgrade.
 
+__Profile Latent Parameters__
+
+Separately from this registry, the profile classes declare latent parameters of their own through PyAutoFit's
+`latent_parameters` class attribute: an elliptical profile's axis ratio and position angle (`axis_ratio`, `angle`)
+for its `ell_comps`, a shear's magnitude and angle (`magnitude`, `angle`) for its `gamma_1` / `gamma_2`, and a multipole's strength and phase (`k_m`, `phi_m`) for its `multipole_comps`. They need
+no fit and no `magzero`, so they are not toggled here: every fit writes them to `latent/samples.csv`,
+`latent.results` and `latent_summary.json` under the component's path (`galaxies.lens.mass.axis_ratio`), beside
+whichever registry latents are enabled. The same conversions give the latent corner plot,
+`corner_anesthetic_latent.png`, switched on by `corner_anesthetic_latent` in `config/visualize/plots_search.yaml`
+and made once the fit completes (during the fit only if `latent_during_fit` is on).
+
 __Toggling Latents__
 
 The library defaults the three raw-flux latents to ``true`` and everything else to ``false`` for the
