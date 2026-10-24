@@ -436,7 +436,7 @@ By default (`weighting = "jacobian"`) each distance is measured in the image-pla
 at each image maps the source-plane residual back to the image plane, where the position noise is defined. This is 
 the correct linearised likelihood, it stays robust near critical curves and it costs no more than weighting by the 
 magnification. The older scalar weighting, `weighting = "magnification"`, is an opt-in that is biased near critical 
-curves. Both are explained in `guides/point_source_pairing.py`.
+curves. Both are explained in `guides/point_solver/pairing.py`.
 
 The source-plane chi-squared is significantly faster to compute than the image-plane chi-squared, however it cannot 
 tell when a model predicts extra images and is only a first-order approximation to the image-plane chi-squared, so 
@@ -504,7 +504,7 @@ print(fit.positions.log_likelihood)
 """
 The full matrix of pairing schemes × centre treatments — including the solved flux and time-delay
 variants used below, the `"jacobian"` and `"magnification"` source-plane weightings, and when each option is
-preferable — is documented in `guides/point_source_pairing.py`.
+preferable — is documented in `guides/point_solver/pairing.py`.
 
 __Fluxes__
 
@@ -605,7 +605,7 @@ print(fit.flux.log_likelihood)
 """
 An analytic-flux variant also exists: `fit_flux_cls=al.FitFluxesSolved` (paired with
 `al.ps.PointSolved`) solves the source flux from the data and magnifications instead of sampling
-a `flux` parameter — see `point_source/features/fluxes.py` and `guides/point_source_pairing.py`.
+a `flux` parameter — see `point_source/features/fluxes.py` and `guides/point_solver/pairing.py`.
 
 __Time Delays__
 
@@ -694,7 +694,7 @@ print(fit.time_delays.log_likelihood)
 """
 As with fluxes, an analytic variant exists: `fit_time_delays_cls=al.FitTimeDelaysSolved` replaces
 the reference-image subtraction with a precision-weighted analytic reference time — see
-`point_source/features/time_delays.py` and `guides/point_source_pairing.py`.
+`point_source/features/time_delays.py` and `guides/point_solver/pairing.py`.
 
 __New User Wrap Up__
 

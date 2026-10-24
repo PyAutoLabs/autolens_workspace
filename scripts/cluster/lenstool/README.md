@@ -28,7 +28,7 @@ The worked example is **SMACS J0723.3−7327**, the first JWST cluster, using th
 | `arcs.dat` | `point_datasets.csv` → `al.list_from_csv` | One `PointDataset` per system; redshifts per system. |
 | `sigposArcsec` | `positions_noise` column | Identical positional chi-squared definition. |
 | image-plane optimization (`forme -1`) | `al.FitPositionsImagePairRepeat` | Lenstool's default likelihood, and the one Mahler et al. used: each observed image is paired with its nearest predicted image. `modeling.py` refits with it; see `scripts/cluster/likelihood_function.py`. |
-| source-plane optimization, tensor mode (`forme 8`) | `al.FitPositionsSource` | Same likelihood as the default `"jacobian"` weighting: the residual is measured in the image-plane noise ellipse. Much cheaper (no forward solve); see `scripts/guides/point_source_pairing.py`. |
+| source-plane optimization, tensor mode (`forme 8`) | `al.FitPositionsSource` | Same likelihood as the default `"jacobian"` weighting: the residual is measured in the image-plane noise ellipse. Much cheaper (no forward solve); see `scripts/guides/point_solver/pairing.py`. |
 | `best.par` | the max-likelihood instance of the fit | And `bayes.dat` ↔ the Nautilus samples. |
 | cosmology block (`H0 70`, `omegaM 0.3`) | `al.cosmo.FlatLambdaCDM(H0=70.0, Om0=0.3)` | Pass it everywhere — PyAutoLens defaults to Planck15. |
 
