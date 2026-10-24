@@ -2036,6 +2036,27 @@
     "title": "Plots: Visuals (Overlays)"
   },
   {
+    "contents": [
+      "The Oracle",
+      "Using The PointSolver",
+      "Assumptions",
+      "Limitations",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "PyAutoLens/test_autolens/point/triangles/test_solver_spurious_core.py",
+      "autolens/point/solver/implicit_diff.py",
+      "autolens/point/solver/shape_solver.py",
+      "autolens_profiling/scripts/cluster/image_plane/_oracle.py",
+      "autolens_workspace_test/scripts/point_source/solver/error_audit.py",
+      "guides/point_solver/pairing.py"
+    ],
+    "notebook": "notebooks/guides/point_solver/limitations.ipynb",
+    "path": "scripts/guides/point_solver/limitations.py",
+    "summary": "``PointSolver`` finds the multiple images of a point source by tiling the image plane with triangles, tracing them to the source plane, and repeatedly halving the triangles that contain the source. It is fast and works inside ``jax.jit``, but it is a numerical search, so it has limits.",
+    "title": "Point Solver: Limitations and Assumptions"
+  },
+  {
     "contents": [],
     "cross_refs": [
       "autolens_profiling/scripts/cluster/likelihood_breakdown/image_plane.py",
