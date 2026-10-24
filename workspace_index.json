@@ -48,7 +48,7 @@
     ],
     "cross_refs": [
       "data.py",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "scripts/cluster/modeling.py"
     ],
     "notebook": "notebooks/cluster/lenstool/modeling.ipynb",
@@ -107,10 +107,10 @@
       "autolens/point/fit/positions/source/separations.py",
       "autolens_workspace/scripts/guides/advanced/multi_plane.py",
       "autolens_workspace/scripts/guides/lens_calc.py",
-      "autolens_workspace/scripts/guides/point_source_pairing.py",
+      "autolens_workspace/scripts/guides/point_solver/pairing.py",
       "autolens_workspace_test/scripts/cluster/likelihood_sanity.py",
       "csv_api.py",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "modeling.py",
       "scripts/cluster/csv_api.py",
       "scripts/cluster/modeling.py",
@@ -177,7 +177,7 @@
       "autolens_workspace_test/scripts/cluster/visualization.py",
       "cluster/likelihood_function.py",
       "cluster/simulator.py",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "point_source/modeling.py",
       "point_source/start_here.py",
       "scripts/cluster/csv_api.py",
@@ -276,7 +276,7 @@
       "cluster/modeling.py",
       "csv_api.py",
       "group/start_here.ipynb",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "imaging/start_here.ipynb",
       "multi_galaxy/start_here.ipynb",
       "prep.py",
@@ -1734,7 +1734,7 @@
     ],
     "cross_refs": [
       "guides/plot/visuals.py",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "imaging/features/pixelization/fit.py",
       "imaging/source_science.py"
     ],
@@ -2041,8 +2041,8 @@
       "autolens_profiling/scripts/cluster/likelihood_breakdown/image_plane.py",
       "scripts/cluster/likelihood_function.py"
     ],
-    "notebook": "notebooks/guides/point_source_pairing.ipynb",
-    "path": "scripts/guides/point_source_pairing.py",
+    "notebook": "notebooks/guides/point_solver/pairing.ipynb",
+    "path": "scripts/guides/point_solver/pairing.py",
     "summary": "When fitting multiple-image positions \u2014 the bread and butter of group- and cluster-scale lens modeling \u2014 the model tracer will not, in general, predict exactly the images you observed. A wrong (or merely uncertain) mass model predicts *extra* images that were never detected, or fails to produce an observed image at all. What the likelihood does in those two situations decides which models a sampler rewards, and historically lensing codes have handled it with quiet conventions rather than explicit choices.",
     "title": "Guide: Point-Source Pairing, Over-Prediction and Under-Prediction"
   },
@@ -7929,7 +7929,7 @@
       "Result"
     ],
     "cross_refs": [
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "imaging/modeling.py",
       "point_source/start_here.ipynb",
       "start.here.py",
@@ -8132,7 +8132,7 @@
     ],
     "cross_refs": [
       "/guides/lens_calc.py",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "modeling.py",
       "point_source/features/fluxes.py",
       "point_source/features/time_delays.py",
@@ -8170,7 +8170,7 @@
     ],
     "cross_refs": [
       "/point_source/start_here.py",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "imaging/modeling.py",
       "point_source/fit.py",
       "start_here.py"
@@ -8264,7 +8264,7 @@
       "autolens_workspace/start_here.py",
       "cluster/start_here.ipynb",
       "group/start_here.ipynb",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "imaging/modeling.py",
       "modeling.py",
       "point_source/modeling.py",

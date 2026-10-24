@@ -216,7 +216,7 @@ also solves the source centre analytically — solved fits require it, and mixin
 `Point`/`PointFlux` raises an error), reducing the model above from N=8 to N=5.
 
 The composition is shown below (not fitted here — the model-fit in this script demonstrates the
-free-`flux` convention; see `guides/point_source_pairing.py` for when to prefer each):
+free-`flux` convention; see `guides/point_solver/pairing.py` for when to prefer each):
 
 The microlensing caveat at the top of this script applies equally to the solved flux: solving the
 source flux analytically does not make image fluxes any less affected by microlensing.

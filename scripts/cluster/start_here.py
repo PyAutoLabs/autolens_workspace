@@ -310,7 +310,7 @@ bundled into a single ``af.Collection`` model that the analysis will receive.
 Each source carries a parameter-free ``al.ps.PointSolved`` component: the solved source-plane fit
 (``al.FitPositionsSourceSolved``, passed to the analyses below) computes each centre analytically,
 the recommended cluster search-stage configuration. The free-centre alternative (``al.ps.Point`` with
-sampled centre priors, the galaxy-scale default) is described in ``guides/point_source_pairing.py``.
+sampled centre priors, the galaxy-scale default) is described in ``guides/point_solver/pairing.py``.
 """
 redshift_lens = 0.308
 source_redshifts = [dataset.redshift for dataset in dataset_list]
@@ -421,7 +421,7 @@ show it ranks the true model first where the traditional scalar magnification we
 Because it never solves the lens equation forwards, the source-plane chi-squared cannot penalize a model
 that predicts too many or too few multiple images — so the image-plane fit (whose mixture likelihood
 penalizes a missing model image quadratically and extra images via a mild Occam factor) is the validation
-diagnostic on the max-likelihood model. See ``guides/point_source_pairing.py`` for the pairing schemes,
+diagnostic on the max-likelihood model. See ``guides/point_solver/pairing.py`` for the pairing schemes,
 their image-count penalties and the benchmark evidence — it also records why this search uses Nautilus
 (gradient optimizers underperform on cluster source-plane objectives).
 
@@ -460,7 +460,7 @@ faster multi-start gradient optimizer. Cluster fits keep Nautilus: cluster analy
 posterior (the corner plot at the end of this script is built from it), and the benchmarks found
 gradient optimizers converge to basins far below the truth on every cluster-scale objective tested
 — source-plane and solved image-plane alike — while Nautilus recovers each of them. See
-``guides/point_source_pairing.py`` for those numbers.
+``guides/point_solver/pairing.py`` for those numbers.
 
 Results are written to ``autolens_workspace/output/cluster/a2744/start_here/<unique_hash>/``. The
 ``unique_hash`` is generated from the model, search settings, and dataset — re-running with the same

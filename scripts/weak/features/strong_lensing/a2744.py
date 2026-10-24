@@ -289,7 +289,7 @@ analysis_factor_list = [
         prior_model=model_strong,
         # The solved source-plane chi-squared is the cluster search convention (fast — no forward
         # lens-equation solve per likelihood call); validate the max-likelihood model with the
-        # image-plane chi-squared afterwards, per `guides/point_source_pairing.py`.
+        # image-plane chi-squared afterwards, per `guides/point_solver/pairing.py`.
         analysis=al.AnalysisPoint(
             dataset=dataset,
             solver=solver,

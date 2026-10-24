@@ -205,7 +205,7 @@ likelihood evaluation, rather than sampled as two free parameters. This is the
 recommended default — it shrinks parameter space and makes the likelihood much
 better behaved for the search. A free-centre alternative (`al.ps.Point`) exists for
 cases where the centre carries science or must be shared across datasets; see
-`point_source/modeling.py` and `guides/point_source_pairing.py`.
+`point_source/modeling.py` and `guides/point_solver/pairing.py`.
 
 __Name Pairing__
 

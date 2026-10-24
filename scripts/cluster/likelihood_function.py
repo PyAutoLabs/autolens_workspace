@@ -19,7 +19,7 @@ Cluster point-source modelling has two distinct likelihood flavours:
 
 Each flavour also has a ``*Solved`` sibling (``FitPositionsSourceSolved`` and the image-plane
 solved variants) which solves the source-plane centre analytically instead of sampling it — see
-the ``Source-Plane Centroid`` section below and ``guides/point_source_pairing.py``.
+the ``Source-Plane Centroid`` section below and ``guides/point_solver/pairing.py``.
 
 We walk through both, end to end, with the actual library formulae. The standard cluster model is
 assumed: all lens-plane galaxies at ``z = 0.5``, two background sources at *different* redshifts
@@ -344,7 +344,7 @@ The "reference point" against which we measure the source-plane scatter has two 
     §5.1), with a tensor weighting derived from the lensing Jacobian, and the likelihood is
     analytically marginalized over it. This removes 2 free parameters per source from the search —
     at cluster scale, with many sources, a substantial dimensionality reduction. See
-    ``guides/point_source_pairing.py`` for the full solved-variant matrix.
+    ``guides/point_solver/pairing.py`` for the full solved-variant matrix.
 
 Option (1) is what ``al.FitPositionsSource(profile=point_profile)`` uses and is what this
 walkthrough demonstrates, so the residuals have a well-defined physical meaning (distance from
@@ -439,7 +439,7 @@ centre, just measured in units of the image-plane noise.
 
 This is the default ``weighting = "jacobian"`` of ``al.FitPositionsSource`` (see
 ``autolens/point/fit/positions/source/separations.py``), the Gravity.jl source-plane likelihood of
-Lombardi 2024 (arXiv:2406.15280, Eq. 46). ``guides/point_source_pairing.py`` explains why it is the
+Lombardi 2024 (arXiv:2406.15280, Eq. 46). ``guides/point_solver/pairing.py`` explains why it is the
 default and when to use the scalar alternative shown further below.
 """
 chi_squared_maps_per_source = []
@@ -638,7 +638,7 @@ unphysical demagnified solutions to the observed multi-image set.
 
 A standalone walkthrough of the triangle-refinement algorithm (sub-grid traversal, magnification
 filtering, multi-plane handling, JAX-compatibility) has not yet been written. The closest reference
-is ``autolens_workspace/scripts/guides/point_source_pairing.py``, which documents the pairing
+is ``autolens_workspace/scripts/guides/point_solver/pairing.py``, which documents the pairing
 schemes and solver settings the refinement feeds.
 
 In code, the solver is constructed once and reused per evaluation:
