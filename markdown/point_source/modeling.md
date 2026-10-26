@@ -37,23 +37,30 @@ performing lens modeling using light profiles, which have parameter that describ
 galaxy's luminous emission.
 
 For point sources, for example a lensed quasar, it is invalid to model the source using light profiles, because they
-implicitly assume an extended surface brightness distribution. Point source modeling instead assumes the source
-has a (y,x) `centre` (y,x), but does not have other parameters like elliptical components or an effective radius.
+implicitly assume an extended surface brightness distribution. Point source modeling instead reduces the source to a
+single (y,x) source-plane position, with no other parameters like elliptical components or an effective radius. In
+this example even that position is not a free parameter — it is solved for analytically at every likelihood
+evaluation (see `__Solved Source Centre__` below).
 
 This changes how the ray-tracing calculations that go into point source modeling are performed. They are briefly
 touched on in this example, but for a more detailed explanation checkout the
-`autolens_workspace/*/overview/overview_8_point_sources.py` example.
+`autolens_workspace/*/point_source/start_here.py` example.
 
 __Model__
 
 This script fits a `PointDataset` data of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal`.
- - The source `Galaxy` is a point source `Point`.
+ - The source `Galaxy` is a point source `PointSolved`, whose source-plane centre is solved for analytically.
 
-The `ExternalShear` is also not included in the mass model, where it is for the `imaging` and `interferometer` examples.
-For a quadruply imaged point source (8 data points) there is insufficient information to fully constain a model with
-an `Isothermal` and `ExternalShear` (9 parameters).
+No external shear is included in the model, where it is for the `imaging` and `interferometer` examples. For a
+quadruply imaged point source (8 data points) there is insufficient information to constrain an `Isothermal` plus
+an external shear (9 parameters).
+
+Where a shear is fitted, it is never attached to the lens galaxy: it is an `ExternalShear` held in an
+`al.MassField`, which lives in the model's own `fields` slot beside `galaxies=` (and in the tracer's
+`fields=` argument). The shear describes the tidal field of everything outside the system, so it is a property of
+the system rather than of a galaxy. See `imaging/modeling.py` for the full description.
 
 
 ```python
@@ -89,7 +96,7 @@ simulator script. This ensures that all example scripts can be run without manua
 
 
 ```python
-if not dataset_path.exists():
+if al.util.dataset.should_simulate(str(dataset_path)):
     import subprocess
     import sys
 
@@ -120,9 +127,11 @@ print(dataset.info)
 
     Point Dataset Info:
     name : point_0
-    positions : Grid2DIrregular([[ 1.00599761, -0.00416196],
-           [-0.00122491,  0.99970228]])
-    positions_noise_map : ArrayIrregular([0.005, 0.005])
+    positions : Grid2DIrregular([[-1.0336089 , -1.03425643],
+           [ 0.43657468,  1.6093013 ],
+           [ 1.61179126,  0.4380069 ],
+           [ 1.17688491,  1.17841079]])
+    positions_noise_map : ArrayIrregular([0.005, 0.005, 0.005, 0.005])
     fluxes : None
     fluxes_noise_map : None
     time_delays : None
@@ -150,8 +159,10 @@ Although we are performing point-source modeling and do not use this data in the
 load it for visualization, for example to see where the multiple images of the point source are located relative to the 
 lens galaxy.
 
-The image will also be passed to the analysis further down, meaning that visualization of the point-source model
-overlaid over the image will be output making interpretation of the results straight forward.
+The image is also passed to the analysis further down. It is used only for visualization and does not change the
+likelihood: `image_with_points.png` shows the data with the observed positions (before the fit) and
+`fit_image_with_points.png` adds the model positions and critical curves, making interpretation of the results
+straight forward.
 
 Loading and inputting the image of the dataset in this way is entirely optional, and if you are only interested in
 performing point-source modeling you do not need to do this.
@@ -218,22 +229,51 @@ __Model__
 We compose a lens model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
- 
- - The source galaxy's light is a point `Point` [2 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=7.
+ - The source galaxy is a `PointSolved` point source [0 parameters].
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=5.
 
 __Model Composition__
 
-The API below for composing a lens model uses the `Model` and `Collection` objects, which are imported from 
-**PyAutoLens**'s parent project **PyAutoFit** 
+The API below for composing a lens model uses the `Model` and `Collection` objects, which are imported from
+**PyAutoLens**'s parent project **PyAutoFit**
 
 The API is fairly self explanatory and is straight forward to extend, for example adding more light profiles
 to the lens and source or using a different mass profile.
 
-A full description of model composition is provided by the model cookbook: 
+A full description of model composition is provided by the model cookbook:
 
 https://pyautolens.readthedocs.io/en/latest/general/model_cookbook.html
+
+__Solved Source Centre__
+
+The `al.ps.PointSolved` component has no free parameters: for every trial mass model, the source-plane centre
+that best fits the observed positions is solved for analytically (a precision-weighted mean of the back-traced
+positions), rather than sampled as two free parameters. This is the recommended default because:
+
+ - It removes 2 parameters per point source, which compounds quickly (a 5-source cluster drops 10 parameters).
+
+ - The analytic centre makes the likelihood far better behaved for the non-linear search: in benchmark tests
+   a gradient-based search converges on the solved likelihood but stalls below the true solution with free
+   centres, and Nautilus converges faster.
+
+ - Its posteriors on the mass parameters are not artificially narrowed by the analytic solve — in like-for-like
+   tests the solved fit's `einstein_radius` error bars were slightly wider than the free-centre fit's, not tighter.
+
+A free source centre (`al.ps.Point`, 2 extra parameters) is the right choice when the centre itself carries
+information you want to keep or share:
+
+ - Informative centre priors, e.g. from a light-profile fit of the quasar host galaxy.
+ - A centre linked across multiple datasets (bands, epochs) that must share one consistent source position.
+ - The source position is itself the science measurement.
+ - Standardizable-candle fluxes (e.g. lensed supernovae): `PointSolved` forces the analytically-solved flux
+   fit, whose flat-prior flux normalization discards a standard-candle prior on the intrinsic flux — compose
+   `al.ps.PointFlux` with free parameters instead.
+
+If you compose a centre-bearing `al.ps.Point` model, you must also pass a free-centre fit class to the
+analysis (e.g. `fit_positions_cls=al.FitPositionsImagePairAll`) — the solved default raises an error rather
+than silently ignoring the centre priors. See `guides/point_solver/pairing.py` for the full option matrix.
 
 __Name Pairing__
 
@@ -268,7 +308,7 @@ lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
 
 # Source:
 
-point_0 = af.Model(al.ps.Point)
+point_0 = af.Model(al.ps.PointSolved)
 
 source = af.Model(al.Galaxy, redshift=1.0, point_0=point_0)
 
@@ -292,14 +332,13 @@ appear in a notebook).]
 print(model.info)
 ```
 
-    Total Free Parameters = 7
+    Total Free Parameters = 5
     
-    model                                                                           Collection (N=7)
-        galaxies                                                                    Collection (N=7)
+    model                                                                           Collection (N=5)
+        galaxies                                                                    Collection (N=5)
             lens                                                                    Galaxy (N=5)
                 mass                                                                Isothermal (N=5)
-            source                                                                  Galaxy (N=2)
-                point_0                                                             Point (N=2)
+            source                                                                  Galaxy (N=0)
     
     galaxies
         lens
@@ -314,19 +353,41 @@ print(model.info)
                 einstein_radius                                                     UniformPrior [9], lower_limit = 0.0, upper_limit = 8.0
         source
             redshift                                                                1.0
-            point_0
-                centre
-                    centre_0                                                        GaussianPrior [10], mean = 0.0, sigma = 0.3
-                    centre_1                                                        GaussianPrior [11], mean = 0.0, sigma = 0.3
+
+
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
+
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
+
+
+```python
+af.ModelPlotter(model).figure()
+```
+
+
+    
+![png](modeling_files/modeling_23_0.png)
+    
 
 
 __Search__
 
-The lens model is fitted to the data using a non-linear search. 
+The lens model is fitted to the data using a non-linear search.
 
-All examples in the autolens workspace use the nested sampling algorithm 
-Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most 
+All examples in the autolens workspace use the nested sampling algorithm
+Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most
 accurate and efficient modeling results.
+
+Other data types fit their `start_here.py` with `af.MultiStartProdigy`, a much faster multi-start gradient
+optimizer, and reserve `Nautilus` for the `modeling.py` example where the full posterior is needed. The
+point-source likelihood is differentiable (the solved image positions carry an exact implicit gradient), and
+benchmark tests show `af.MultiStartProdigy` converges on the solved-centre likelihood used here — but this
+example uses `Nautilus` because the full posterior (parameter error bars) is usually the goal of a
+point-source fit. Note that gradient searches only converge reliably with the solved source centre; with a
+free centre they stall below the true solution even with many starts.
 
 Nautilus has one main setting that trades-off accuracy and computational run-time, the number of `live_points`. 
 A higher number of live points gives a more accurate result, but increases the run-time. A lower value give 
@@ -386,23 +447,45 @@ We will use an "image-plane chi-squared", which uses the `PointSolver` to determ
 source in the image-plane for the given mass model and compares the positions of these model images to the observed
 images to compute the chi-squared and likelihood.
 
-There are still many different ways the image-plane chi-squared can be computed, for example do we allow for 
-repeat image-pairs (i.e. the same multiple image being observed multiple times)? Do we pair all possible combinations
-of multiple images to observed images? This example uses the simplest approach, which is to pair each multiple image
-with the observed image that is closest to it, allowing for repeat image pairs. 
+There are still many different ways the image-plane chi-squared can be computed, differing in how the model's
+multiple images are paired to the observed positions. The default, used here, is `FitPositionsImagePairAllSolved`:
+an "all-to-all" pairing, where every model image is compared against every observed position via a smooth
+probabilistic mixture, combined with the analytically-solved source centre described above.
 
-For a "source-plane chi-squared", the likelihood is computed in the source-plane. The analysis basically just ray-traces
-the multiple images back to the source-plane and defines a chi-squared metric. For example, the default implementation 
-sums the Euclidean distance between the image positions and the point source centre in the source-plane.
+All-to-all pairing is the default because of its robustness to imperfect position data. In truth-anchored
+benchmark tests, when one true multiple image was missing from the dataset (e.g. lost under the lens galaxy's
+light or below the detection limit), the alternative "repeat" pairing — which pairs each observed position with
+its nearest model image — mis-ranked the true lens model by a log likelihood of order 10^5, because it has no
+way to leave an unobserved model image unmatched. The all-to-all mixture absorbs a missing image gracefully and
+recovered the truth cleanly on the same data. On clean data the two pairings give statistically equivalent
+results at near-identical cost, so robustness decides the default.
 
-The source-plane chi-squared is significantly faster to compute than the image-plane chi-squared, as it requires 
-only ray-tracing the ~4 observed image positions and does not require the iterative triangle ray-tracing approach
-of the image-plane chi-squared. However, the source-plane chi-squared is less robust than the image-plane chi-squared,
-and can lead to biased lens model results. If you are using the source-plane chi-squared, you should be aware of this
-and interpret the results with caution.
+The default's penalties for a mismatched image count fall straight out of its mixture likelihood, with no
+knobs to tune. If the model produces *too few* images (an observed position with no model image nearby), that
+position's penalty grows quadratically with its distance to the nearest model image — automatic and severe, as
+under-prediction should be (you *saw* the image). If the model produces *too many* images, each extra one pays
+only a mild logarithmic Occam factor — so the demagnified central image that almost every lens model predicts
+(and observations almost never detect) is tolerated by construction, but note a bright spurious predicted image
+is penalized just as gently, which is one reason to inspect the image-plane residuals of the max-likelihood
+model before trusting a fit. See `guides/point_solver/pairing.py` for the full discussion of both failure
+modes and the stricter, tunable over-prediction policies.
+
+For a "source-plane chi-squared", the likelihood is computed in the source-plane. The analysis just ray-traces
+the observed image positions back to the source-plane and defines a chi-squared metric there. This is orders of
+magnitude faster than the image-plane chi-squared (no iterative triangle solve). Both source-plane classes,
+`al.FitPositionsSource` and `al.FitPositionsSourceSolved`, default to `weighting = "jacobian"`, which measures each
+traced image's distance from the source centre in the image-plane noise ellipse via the lensing Jacobian. This
+makes the source-plane fit far more accurate than its traditional reputation: the traditional scalar
+magnification weighting (an opt-in, `weighting = "magnification"`) is biased near critical curves and can
+catastrophically mis-rank models when one image is highly magnified. Truth-anchored tests show the
+Jacobian-weighted fit ranks the true model first at galaxy and cluster scale alike, while the scalar version
+preferred wrong models by thousands of log likelihood (see `guides/point_solver/pairing.py`). The image-plane
+chi-squared remains the most robust choice and is the demonstrated default; the tensor source-plane fit is the
+recommended fast alternative for large samples or as an initialization stage.
 
 Checkout the guide `autolens_workspace/*/point_source/fit` for more details and a full illustration of the
-different ways the chi-squared can be computed.
+different ways the chi-squared can be computed, and `guides/point_solver/pairing.py` for the full option
+matrix with the benchmark evidence.
 
 __Analysis__
 
@@ -414,7 +497,7 @@ the `Imaging` dataset.
 
 It is not vital that you as a user understand the details of how the `log_likelihood_function` fits a lens model to 
 data, but interested readers can find a step-by-step guide of the likelihood 
-function at ``autolens_workspace/*/point_source/log_likelihood_function`
+function at ``autolens_workspace/*/cluster/likelihood_function``
 
 __JAX__
 
@@ -429,10 +512,16 @@ If you don’t have a GPU locally, consider Google Colab which provides free GPU
 analysis = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    fit_positions_cls=al.FitPositionsImagePairRepeat,  # Image-plane chi-squared with repeat image pairs.
+    image=data,  # Visualization only (`image_with_points.png`, `fit_image_with_points.png`).
+    # The default fit is `al.FitPositionsImagePairAllSolved` (all-to-all image-plane chi-squared, solved
+    # source centre). Pass `fit_positions_cls` to use another, e.g. `al.FitPositionsImagePairAll` for a
+    # free source centre or `al.FitPositionsSourceSolved` for the fast tensor source-plane chi-squared.
     use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 ```
+
+    2026-10-26 15:08:52,567 - autolens.point.model.analysis - INFO - PointSolver extent for dataset 'point_0' is more than 3 times the observed-position envelope on both axes, including the safety margin. At fixed initial scale, initial grid work grows with grid area. Consider a smaller grid only after checking image completeness across the model prior.
+
 
 __VRAM Use__
 
@@ -465,13 +554,7 @@ it takes about 20-30 seconds to run so you may want to comment it out once you a
 analysis.print_vram_use(model=model, batch_size=search.batch_size)
 ```
 
-    2026-07-10 20:33:50,495 - autofit.non_linear.fitness - INFO - JAX: Applying vmap and jit to likelihood function -- may take a few seconds.
-
-
-    2026-07-10 20:33:50,496 - autofit.non_linear.fitness - INFO - JAX: vmap and jit applied in 0.0015056133270263672 seconds.
-
-
-    VRAM USE = 0.173 GB
+    VRAM USE = 0.045 GB (likelihood only, batch_size=50)
 
 
 __Run Times__
@@ -520,165 +603,36 @@ result = search.fit(model=model, analysis=analysis)
 print("The search has finished run - you may now continue the notebook.")
 ```
 
-    2026-07-10 20:44:30,635 - autofit.non_linear.fitness - INFO - Performing quick update of maximum log likelihood fit image and model.results
-
-
-    2026-07-10 20:45:34,217 - autofit.non_linear.fitness - INFO - Maximum Log Likelihood                                                          7.68828170
     
+        The non-linear search has begun running.
     
+        This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
     
-    model                                                                           Collection (N=7)
-        galaxies                                                                    Collection (N=7)
-            lens                                                                    Galaxy (N=5)
-                mass                                                                Isothermal (N=5)
-            source                                                                  Galaxy (N=2)
-                point_0                                                             Point (N=2)
-    
-    
-    Maximum Log Likelihood Model:
-    
-    
-    galaxies
-        lens
-            mass
-                centre
-                    centre_0                                                        0.187
-                    centre_1                                                        0.239
-                ell_comps
-                    ell_comps_0                                                     -0.001
-                    ell_comps_1                                                     0.051
-                einstein_radius                                                     0.817
-        source
-            point_0
-                centre
-                    centre_0                                                        0.205
-                    centre_1                                                        0.218
-    
-
-
-    2026-07-10 20:45:34,219 - autofit.non_linear.fitness - INFO - Quick update complete in 63.58427047729492 seconds.
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    Finished  | 50     | 1        | 4        | 11900    | N/A    | 1009  | -29.74   
-    2026-07-10 20:47:46,528 - modeling - INFO - Fit Running: Updating results (see output folder).
-
-
+        On-the-fly updates every iterations_per_quick_update are printed to the notebook.
+        
+    2026-10-26 15:09:12,800 - autofit.non_linear.search.runtime - INFO - Starting non-linear search with JAX (CPU: cpu).
+    2026-10-26 15:09:12,801 - autofit.non_linear.search.runtime - INFO - On-the-fly updates of the maximum likelihood model every 10000 iterations.
+    2026-10-26 15:09:12,824 - modeling - INFO - The output path of this fit is autolens_workspace/output/point_source/simple/modeling/e10055ee1b2af652df8d307b10cd46cf
+    2026-10-26 15:09:12,826 - modeling - INFO - Outputting pre-fit files (e.g. model.info, visualization).
+    2026-10-26 15:09:24,630 - autofit.non_linear.jax_compile - INFO - JAX jit compiling vectorized (vmap) likelihood function, could take seconds or minutes...
+    2026-10-26 15:09:53,577 - autofit.non_linear.jax_compile - INFO - JAX jit compilation of vectorized (vmap) likelihood function: traced, lowered and compiled in 28.9 seconds; waiting for the result to materialize...
+    2026-10-26 15:09:53,587 - autofit.non_linear.jax_compile - INFO - JAX jit compilation of vectorized (vmap) likelihood function: result materialized in 0.0 seconds.
+    2026-10-26 15:09:53,590 - autofit.non_linear.jax_compile - INFO - JAX jit compilation of vectorized (vmap) likelihood function complete in 29.0 seconds.
+    2026-10-26 15:09:54,207 - autofit.non_linear.fitness - INFO - Warming up visualization (one-time JAX compilation)...
+    2026-10-26 15:09:54,214 - autofit.non_linear.fitness - WARNING - Visualization warm-up failed (non-fatal); first quick update may be slow.
+    2026-10-26 15:09:54,218 - modeling - INFO - Resuming Nautilus non-linear search (previous samples found).
+    2026-10-26 15:09:54,220 - modeling - INFO - Running search with JAX vectorization (parallelization handled by JAX).
     Starting the nautilus sampler...
     Please report issues at github.com/johannesulf/nautilus.
     Status    | Bounds | Ellipses | Networks | Calls    | f_live | N_eff | log Z    
-    Finished  | 50     | 1        | 4        | 11900    | N/A    | 1009  | -29.74   
-    2026-07-10 20:49:35,111 - modeling - INFO - Fit Running: Updating results (see output folder).
-
-
-    2026-07-10 20:49:38,090 - autofit.non_linear.samples.samples - INFO - Samples with weight less than 1e-10 removed from samples.csv.
-
-
-    2026-07-10 20:49:38,284 - autofit.non_linear.search.updater - INFO - Creating latent samples by drawing 100 from the PDF.
-
-
-    2026-07-10 20:50:20,729 - modeling - INFO - Removing search internal folder.
-
-
-    2026-07-10 20:50:20,737 - modeling - INFO - Removing all files except for .zip file
-
-
-    2026-07-10 20:50:23,305 - modeling - INFO - Search complete, returning result
-
-
+    Finished  | 33     | 1        | 4        | 5050     | N/A    | 770   | +4.98    
+    2026-10-26 15:09:56,862 - modeling - INFO - Fit Running: Updating results (see output folder).
+    2026-10-26 15:09:57,351 - autofit.non_linear.samples.samples - INFO - Samples with weight less than 1e-10 removed from samples.csv.
+    2026-10-26 15:09:57,477 - autofit.non_linear.search.updater - INFO - Creating latent samples by drawing 100 from the PDF.
+    Time to compute latent variables: 0.0007407665252685547 seconds for 100 samples.
+    2026-10-26 15:11:32,918 - modeling - INFO - Removing search internal folder.
+    2026-10-26 15:11:32,922 - modeling - INFO - Removing all files except for .zip file
+    2026-10-26 15:11:33,766 - modeling - INFO - Search complete, returning result
     The search has finished run - you may now continue the notebook.
 
 
@@ -730,28 +684,28 @@ the `model.info` attribute display optimally on your computer. This attribute al
 print(result.info)
 ```
 
-    Bayesian Evidence                                                               -29.74288080
-    Maximum Log Likelihood                                                          8.73983814
+    Bayesian Evidence                                                               4.98028390
+    Maximum Log Likelihood                                                          29.38541392
     
-    model                                                                           Collection (N=7)
-        galaxies                                                                    Collection (N=7)
+    model                                                                           Collection (N=5)
+        galaxies                                                                    Collection (N=5)
             lens                                                                    Galaxy (N=5)
                 mass                                                                Isothermal (N=5)
-            source                                                                  Galaxy (N=2)
-                point_0                                                             Point (N=2)
+            source                                                                  Galaxy (N=0)
     
-    ... [44 lines of output truncated] ...
-                    centre_0                                                        0.1831 (0.1752, 0.1894)
-                    centre_1                                                        0.2466 (0.2404, 0.2516)
-                ell_comps
-                    ell_comps_0                                                     0.0043 (-0.0010, 0.0099)
-                    ell_comps_1                                                     0.0599 (0.0512, 0.0709)
-                einstein_radius                                                     0.8201 (0.8154, 0.8243)
-        source
-            point_0
+    Maximum Log Likelihood Model:
+    ... [28 lines of output truncated] ...
+    
+    galaxies
+        lens
+            mass
                 centre
-                    centre_0                                                        0.2071 (0.2018, 0.2122)
-                    centre_1                                                        0.2218 (0.2178, 0.2257)
+                    centre_0                                                        -0.0200 (-0.0481, 0.0069)
+                    centre_1                                                        -0.0200 (-0.0485, 0.0072)
+                ell_comps
+                    ell_comps_0                                                     0.0684 (0.0499, 0.0867)
+                    ell_comps_1                                                     0.0001 (-0.0002, 0.0003)
+                einstein_radius                                                     1.6056 (1.5942, 1.6179)
     
     instances
     
@@ -773,13 +727,29 @@ print(result.max_log_likelihood_instance)
 aplt.subplot_tracer(tracer=result.max_log_likelihood_tracer, grid=result.grid)
 ```
 
-    <autofit.mapper.model.ModelInstance object at 0x7f3c02edf890>
+    <autofit.mapper.model.ModelInstance object at 0x7f854545b110>
 
 
 
     
-![png](modeling_files/modeling_33_1.png)
+![png](modeling_files/modeling_35_1.png)
     
+
+
+The result also gives the magnification of the maximum likelihood model at every observed image position, computed
+via the Hessian. `result.signed_magnifications_at_positions` keeps the sign, which is the parity of each image
+(positive for minima and maxima of the arrival-time surface, negative for saddle points), and
+`result.magnifications_at_positions` is its absolute value. For multi-plane lenses these use the plane of the
+point source paired with the dataset. See `point_source/fit.py` for a description.
+
+
+```python
+print(result.signed_magnifications_at_positions)
+print(result.magnifications_at_positions)
+```
+
+    Array([ -5.85890054,  48.76902607,  45.06945279, -83.13652941], dtype=float64)
+    Array([ 5.85890054, 48.76902607, 45.06945279, 83.13652941], dtype=float64)
 
 
 The result contains the full posterior information of our non-linear search, including all parameter samples, 
@@ -790,17 +760,42 @@ There are built in visualization tools for plotting this.
 The plot is labeled with short hand parameter names (e.g. `sersic_index` is mapped to the short hand 
 parameter `n`). These mappings ate specified in the `config/notation.yaml` file and can be customized by users.
 
-The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
-mass its name `mass` defined when making the `Model` above is used).
+The superscripts of labels are the path of names each component was given in the model (e.g. for the `Isothermal`
+mass, `lens.mass`: the galaxy's name `lens` and its name `mass` defined when making the `Model` above).
 
 
 ```python
 aplt.corner_anesthetic(samples=result.samples)
+
 ```
 
 
     
-![png](modeling_files/modeling_35_0.png)
+![png](modeling_files/modeling_39_0.png)
+    
+
+
+Components in different named galaxy or profile paths can be distinguished by their superscripts. Profiles within
+the same path, such as Gaussians in a basis, can share a superscript. When the model has more than one top-level
+component, each also gets its own
+corner plot in the output folder (`corner_anesthetic_<component>.png`, switched in `config/visualize/plots_search.yaml`).
+
+The parameters a model is sampled in are not always the ones it is read in: a profile's elliptical components are an
+axis ratio and a position angle, a shear's two components a magnitude and an angle. Passing `latent=True` plots
+these latent parameters instead. The same figure is written to the output folder as `corner_anesthetic_latent.png`
+when `corner_anesthetic_latent` is switched on in `config/visualize/plots_search.yaml` (off by default), once the fit
+is complete. With `latent_model_parameters` enabled, full-sample latent output (`latent_draw_via_pdf: false`)
+writes these columns to `files/latent/samples.csv` with the other latent variables. Periodic angles are recentred
+for the plot; saved values retain the conversion's original range.
+
+
+```python
+aplt.corner_anesthetic(samples=result.samples, latent=True)
+```
+
+
+    
+![png](modeling_files/modeling_41_0.png)
     
 
 
@@ -814,8 +809,3 @@ The folders `autolens_workspace/*/guides/modeling/searches` gives an overview of
 other than Nautilus, that can be used to fit lens models. 
 
 They also provide details on how to customize the model-fit, for example the priors.
-
-
-```python
-
-```

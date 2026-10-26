@@ -7,9 +7,10 @@
 # For example, if `centre=x`, the plot axis will be labeled 'x'.
 
 
-# superscript: the superscript used on certain plots that show the results of different model-components.
+# superscript: the class abbreviation used for priors directly on an unnamed Model.
+# Named components use their model path instead (for example lens.bulge or source.pix.reg).
 
-# For example, if `Gaussian=g`, plots where the parameters of the Gaussian model-component have superscript `g`.
+# For example, `Gaussian=g` labels an unnamed Gaussian Model with superscript `g`.
 
 label:
   label:
@@ -19,6 +20,24 @@ label:
     alpha: \alpha
     # Plot label used for the angle_binary parameter.
     angle_binary: \theta
+    # Plot label used for the axis_ratio parameter.
+    axis_ratio: q
+    # Plot label used for the angle parameter.
+    angle: \phi
+    # Plot label used for the magnitude parameter.
+    magnitude: \gamma
+    # Plot label used for the k_m parameter.
+    k_m: k_{\rm m}
+    # Plot label used for the phi_m parameter.
+    phi_m: \phi_{\rm m}
+    # Plot label used for the k_3 parameter.
+    k_3: k_{\rm 3}
+    # Plot label used for the phi_3 parameter.
+    phi_3: \phi_{\rm 3}
+    # Plot label used for the k_4 parameter.
+    k_4: k_{\rm 4}
+    # Plot label used for the phi_4 parameter.
+    phi_4: \phi_{\rm 4}
     # Plot label used for the beta parameter.
     beta: \beta
     # Plot label used for the break_radius parameter.
@@ -52,9 +71,9 @@ label:
     # Plot label used for the gamma parameter.
     gamma: \gamma
     # Plot label used for the gamma_1 parameter.
-    gamma_1: \gamma
+    gamma_1: \gamma_{\rm 1}
     # Plot label used for the gamma_2 parameter.
-    gamma_2: \gamma
+    gamma_2: \gamma_{\rm 2}
     # Plot label used for the inner_coefficient parameter.
     inner_coefficient: \lambda_{\rm 1}
     # Plot label used for the inner_slope parameter.
