@@ -1,17 +1,26 @@
+# Python logging dictionary schema version (1).
 version: 1
+# If True, disable existing non-root loggers when configuring logging.
 disable_existing_loggers: false
 
 handlers:
   console:
+    # Python handler class used to emit log records.
     class: logging.StreamHandler
+    # Minimum logging severity emitted by this handler or logger.
     level: INFO
+    # Output stream receiving console log records.
     stream: ext://sys.stdout
+    # Name of the formatter applied by this handler.
     formatter: formatter
 
 root:
+  # Minimum logging severity emitted by this handler or logger.
   level: INFO
+  # Names of handlers receiving root logger records.
   handlers: [ console ]
 
 formatters:
   formatter:
+    # Python logging format string applied to each log record.
     format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

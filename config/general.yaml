@@ -23,12 +23,18 @@ hpc:
   iterations_per_quick_update: 250000 #  Non-linear search iterations between every quick update, which just displays the maximum likelihood model fit.
   iterations_per_full_update: 1e99  # Non-linear search iterations between every full update, which outputs all visuals and result fits (e.g. model.result, search.summary), this exits the search and can be slow.
 adapt:
+  # Floor each adapt-image pixel at this fraction of that image's maximum.
   adapt_minimum_percent: 0.01
+  # Legacy adapt-noise limit; no reader found in the current library source.
   adapt_noise_limit: 100000000.0
 numba:
+  # If True, use numba-accelerated mapper and Sibson interpolation paths when eligible.
   use_numba: true
+  # If True, cache numba compiled functions on disk.
   cache: true
+  # If True, require numba compilation without the Python interpreter.
   nopython: true
+  # If True, enable numba parallel compilation.
   parallel: false
 output:
   force_pickle_overwrite: false     #   force_pickle_overwrite: false     # If True, pickle files output by a search (e.g. samples.pickle) are recreated when a new model-fit is performed.
@@ -51,6 +57,7 @@ structures:
 test:
   check_likelihood_function: true   # if True, when a search is resumed the likelihood of a previous sample is recalculated to ensure it is consistent with the previous run.
   lh_timeout_seconds:               # If a float is input, the log_likelihood_function call is timed out after this many seconds, to diagnose infinite loops. Default is None, meaning no timeout.
+  # If True, allow pixelized-source fits without a positions likelihood.
   disable_positions_lh_inversion_check: true
 version:
   python_version_check: True        # If False, bypass the PyAutoNerves Python 3.12+ recommendation (3.9/3.10/3.11 technically work but are not officially supported).
