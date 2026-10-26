@@ -26,6 +26,7 @@ __Contents__
 - **Source Magnification:** Compute the source magnification using all group galaxies.
 - **Impact of Extra Galaxies:** Show that omitting extra galaxies gives incorrect magnification.
 - **Tracer:** Using the tracer from lens modeling results.
+- **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
 
 """
 
@@ -301,6 +302,50 @@ source_magnification = total_image_plane_flux / total_source_plane_flux
 
 print(f"Source Plane Total Flux via Tracer (MGE): {total_source_plane_flux} e- s^-1")
 print(f"Source Magnification via Tracer (MGE): {source_magnification}")
+
+"""
+__Magnification At A Point__
+
+The magnifications above are the overall magnification of the source: a ratio of fluxes integrated over the
+source's full light distribution. Lens modeling codes also commonly quote the magnification at a single (y,x)
+coordinate in the image-plane, for example at a lensed image, a compact clump in an arc or a transient.
+
+This is computed from the deflection angles of the lens model via the Hessian, which gives the lensing Jacobian `A`
+at each coordinate, with the magnification `mu = 1 / det(A)`.
+
+The point magnification is signed, and its sign is the parity of the lensed image at that coordinate: positive for
+images at minima (or maxima) of the arrival-time surface and negative for saddle-point images, which are
+mirror-reversed relative to the source. Its absolute value is how much a point-like source at that location is
+magnified. It is therefore distinct from the source magnification computed above, which averages the magnification
+over the extended source and is always positive. Close to a critical curve `det(A)` goes to zero, so the point
+magnification becomes very large and changes quickly with the coordinate.
+
+For group-scale lenses, every mass profile in the tracer enters the Hessian, so the extra galaxies change the
+magnification at a point just as they change the overall magnification above. Near an extra galaxy they can even
+change the sign (parity) of the image. Below, we compute it at three (y,x) coordinates on the lensed arcs, using
+the full group and the main lens only.
+
+For a real lens, pass the `max_log_likelihood_tracer` of your lens model and coordinates measured from your data.
+For a multi-plane system (for example a cluster with sources at several redshifts), the magnification must be
+computed up to the plane of the source of interest with `plane_j`; see the `Trap (b)` section of
+`autolens_workspace/*/guides/advanced/multi_plane.py`.
+"""
+point_grid = al.Grid2DIrregular(values=[(4.4, -2.0), (-2.1, 4.5), (4.5, 2.9)])
+
+lens_calc = al.LensCalc.from_tracer(tracer=tracer)
+
+magnification_at_points = lens_calc.magnification_2d_via_hessian_from(grid=point_grid)
+
+print(f"Magnification At Points (signed): {magnification_at_points}")
+print(f"Magnification At Points (absolute): {abs(magnification_at_points)}")
+
+magnification_at_points_main_only = al.LensCalc.from_tracer(
+    tracer=tracer_main_only
+).magnification_2d_via_hessian_from(grid=point_grid)
+
+print(
+    f"Magnification At Points, main lens only (signed): {magnification_at_points_main_only}"
+)
 
 """
 __Parametric Source Models__

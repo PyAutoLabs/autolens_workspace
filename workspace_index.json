@@ -48,7 +48,7 @@
     ],
     "cross_refs": [
       "data.py",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "scripts/cluster/modeling.py"
     ],
     "notebook": "notebooks/cluster/lenstool/modeling.ipynb",
@@ -107,10 +107,10 @@
       "autolens/point/fit/positions/source/separations.py",
       "autolens_workspace/scripts/guides/advanced/multi_plane.py",
       "autolens_workspace/scripts/guides/lens_calc.py",
-      "autolens_workspace/scripts/guides/point_source_pairing.py",
+      "autolens_workspace/scripts/guides/point_solver/pairing.py",
       "autolens_workspace_test/scripts/cluster/likelihood_sanity.py",
       "csv_api.py",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "modeling.py",
       "scripts/cluster/csv_api.py",
       "scripts/cluster/modeling.py",
@@ -177,7 +177,7 @@
       "autolens_workspace_test/scripts/cluster/visualization.py",
       "cluster/likelihood_function.py",
       "cluster/simulator.py",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "point_source/modeling.py",
       "point_source/start_here.py",
       "scripts/cluster/csv_api.py",
@@ -276,7 +276,7 @@
       "cluster/modeling.py",
       "csv_api.py",
       "group/start_here.ipynb",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "imaging/start_here.ipynb",
       "multi_galaxy/start_here.ipynb",
       "prep.py",
@@ -933,9 +933,12 @@
       "Source Flux",
       "Source Magnification",
       "Impact of Extra Galaxies",
-      "Tracer"
+      "Tracer",
+      "Magnification At A Point"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/group/features/multi_gaussian_expansion/source_science.ipynb",
     "path": "scripts/group/features/multi_gaussian_expansion/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy.",
@@ -1135,9 +1138,12 @@
       "Source Magnification",
       "Impact of Extra Galaxies",
       "Interpolated Source",
-      "Parametric Comparison"
+      "Parametric Comparison",
+      "Magnification At A Point"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/group/features/pixelization/source_science.ipynb",
     "path": "scripts/group/features/pixelization/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy.",
@@ -1440,9 +1446,12 @@
       "Source Magnification",
       "Impact of Extra Galaxies",
       "Tracer",
+      "Magnification At A Point",
       "Parametric Source Models"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/group/source_science.ipynb",
     "path": "scripts/group/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).",
@@ -1689,15 +1698,20 @@
       "Convergence",
       "Shear",
       "Magnification",
+      "Magnification At A Point",
       "Critical Curves and Caustics",
       "Einstein Radius",
       "Fermat Potential",
       "Wrap Up"
     ],
     "cross_refs": [
+      "/guides/advanced/multi_plane.py",
       "/guides/data_structures.ipynb",
+      "/imaging/source_science.py",
+      "/point_source/fit.py",
       "guides/units/cosmology.ipynb",
-      "scripts/guides/using_jax.py"
+      "scripts/guides/using_jax.py",
+      "source_science.py"
     ],
     "notebook": "notebooks/guides/lens_calc.ipynb",
     "path": "scripts/guides/lens_calc.py",
@@ -1720,7 +1734,7 @@
     ],
     "cross_refs": [
       "guides/plot/visuals.py",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "imaging/features/pixelization/fit.py",
       "imaging/source_science.py"
     ],
@@ -2022,13 +2036,34 @@
     "title": "Plots: Visuals (Overlays)"
   },
   {
+    "contents": [
+      "The Oracle",
+      "Using The PointSolver",
+      "Assumptions",
+      "Limitations",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "PyAutoLens/test_autolens/point/triangles/test_solver_spurious_core.py",
+      "autolens/point/solver/implicit_diff.py",
+      "autolens/point/solver/shape_solver.py",
+      "autolens_profiling/scripts/cluster/image_plane/_oracle.py",
+      "autolens_workspace_test/scripts/point_source/solver/error_audit.py",
+      "guides/point_solver/pairing.py"
+    ],
+    "notebook": "notebooks/guides/point_solver/limitations.ipynb",
+    "path": "scripts/guides/point_solver/limitations.py",
+    "summary": "``PointSolver`` finds the multiple images of a point source by tiling the image plane with triangles, tracing them to the source plane, and repeatedly halving the triangles that contain the source. It is fast and works inside ``jax.jit``, but it is a numerical search, so it has limits.",
+    "title": "Point Solver: Limitations and Assumptions"
+  },
+  {
     "contents": [],
     "cross_refs": [
       "autolens_profiling/scripts/cluster/likelihood_breakdown/image_plane.py",
       "scripts/cluster/likelihood_function.py"
     ],
-    "notebook": "notebooks/guides/point_source_pairing.ipynb",
-    "path": "scripts/guides/point_source_pairing.py",
+    "notebook": "notebooks/guides/point_solver/pairing.ipynb",
+    "path": "scripts/guides/point_solver/pairing.py",
     "summary": "When fitting multiple-image positions \u2014 the bread and butter of group- and cluster-scale lens modeling \u2014 the model tracer will not, in general, predict exactly the images you observed. A wrong (or merely uncertain) mass model predicts *extra* images that were never detected, or fails to produce an observed image at all. What the likelihood does in those two situations decides which models a sampler rewards, and historically lensing codes have handled it with quiet conventions rather than explicit choices.",
     "title": "Guide: Point-Source Pairing, Over-Prediction and Under-Prediction"
   },
@@ -3842,10 +3877,12 @@
       "Source Flux",
       "Source Magnification",
       "Tracer",
+      "Magnification At A Point",
       "Parametric Source Models",
       "Wrap Up"
     ],
     "cross_refs": [
+      "/guides/advanced/multi_plane.py",
       "/imaging/source_science.py"
     ],
     "notebook": "notebooks/imaging/features/multi_gaussian_expansion/source_science.ipynb",
@@ -4166,9 +4203,12 @@
       "Magnification",
       "Masking",
       "Magnification via Mesh",
+      "Magnification At A Point",
       "Reconstruction CSV"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/imaging/features/pixelization/source_science.ipynb",
     "path": "scripts/imaging/features/pixelization/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).",
@@ -4506,9 +4546,12 @@
       "Source Flux",
       "Source Magnification",
       "Tracer",
+      "Magnification At A Point",
       "Parametric Source Models"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/imaging/source_science.ipynb",
     "path": "scripts/imaging/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).",
@@ -5525,9 +5568,12 @@
       "Magnification",
       "Masking",
       "Magnification via Mesh",
+      "Magnification At A Point",
       "Reconstruction CSV"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/interferometer/features/pixelization/source_science.ipynb",
     "path": "scripts/interferometer/features/pixelization/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).",
@@ -5788,9 +5834,12 @@
       "Source Flux",
       "Source Magnification",
       "Tracer",
+      "Magnification At A Point",
       "Parametric Source Models"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "/guides/advanced/multi_plane.py"
+    ],
     "notebook": "notebooks/interferometer/source_science.ipynb",
     "path": "scripts/interferometer/source_science.py",
     "summary": "Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).",
@@ -7046,9 +7095,11 @@
       "The Flux Ratio",
       "Source Magnification",
       "Source Flux",
+      "Magnification At A Point",
       "Wrap Up"
     ],
     "cross_refs": [
+      "/guides/advanced/multi_plane.py",
       "fit.py",
       "imaging/features/multi_gaussian_expansion/source_science.py",
       "likelihood_function.py",
@@ -7358,9 +7409,11 @@
       "Errors",
       "Parametric Comparison",
       "Magnification via Mesh",
+      "Magnification At A Point",
       "Wrap Up"
     ],
     "cross_refs": [
+      "/guides/advanced/multi_plane.py",
       "imaging/features/pixelization/source_science.py",
       "multi_galaxy/features/pixelization/modeling.py",
       "multi_galaxy/features/pixelization/plot.py",
@@ -7725,9 +7778,11 @@
       "Source Magnification",
       "Single Deflector Comparison",
       "Tracer",
+      "Magnification At A Point",
       "Parametric Source Models"
     ],
     "cross_refs": [
+      "/guides/advanced/multi_plane.py",
       "imaging/source_science.py",
       "multi_galaxy/modeling.py"
     ],
@@ -7895,7 +7950,7 @@
       "Result"
     ],
     "cross_refs": [
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "imaging/modeling.py",
       "point_source/start_here.ipynb",
       "start.here.py",
@@ -8085,6 +8140,7 @@
       "Dataset",
       "Name Pairing",
       "Fitting",
+      "Magnification At The Multiple Images",
       "Chi Squared",
       "Solved Source Centre",
       "Fluxes",
@@ -8096,10 +8152,12 @@
       "Shape Solver"
     ],
     "cross_refs": [
-      "guides/point_source_pairing.py",
+      "/guides/lens_calc.py",
+      "guides/point_solver/pairing.py",
       "modeling.py",
       "point_source/features/fluxes.py",
       "point_source/features/time_delays.py",
+      "point_source/modeling.py",
       "scripts/point_source/simulator.py",
       "simulator.py",
       "start_here.py"
@@ -8133,8 +8191,9 @@
     ],
     "cross_refs": [
       "/point_source/start_here.py",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "imaging/modeling.py",
+      "point_source/fit.py",
       "start_here.py"
     ],
     "notebook": "notebooks/point_source/modeling.ipynb",
@@ -8226,7 +8285,7 @@
       "autolens_workspace/start_here.py",
       "cluster/start_here.ipynb",
       "group/start_here.ipynb",
-      "guides/point_source_pairing.py",
+      "guides/point_solver/pairing.py",
       "imaging/modeling.py",
       "modeling.py",
       "point_source/modeling.py",

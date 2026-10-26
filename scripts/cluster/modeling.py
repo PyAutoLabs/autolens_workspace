@@ -475,7 +475,7 @@ the correct model component.
 A free-centre alternative exists for the sources: ``al.ps.Point`` with ``centre`` priors (e.g. a
 ``GaussianPrior`` initialised from the mean of each source's observed positions) paired with an
 image-plane or free-centre source-plane fit — the demonstrated default of the galaxy-scale
-``point_source`` examples. See ``guides/point_source_pairing.py`` for the full profile/fit matrix.
+``point_source`` examples. See ``guides/point_solver/pairing.py`` for the full profile/fit matrix.
 """
 print(model)
 
@@ -554,7 +554,7 @@ max-likelihood model with the image-plane chi-squared (the library default,
 ``al.FitPositionsImagePairAllSolved``), which penalizes a missing model image quadratically and extra
 images via a mild Occam factor, and inspect its residuals per system. The full discussion of the
 pairing schemes, their too-few/too-many-image penalties, and the benchmark evidence behind these
-recommendations is in ``guides/point_source_pairing.py`` (see also ``cluster/likelihood_function.py``
+recommendations is in ``guides/point_solver/pairing.py`` (see also ``cluster/likelihood_function.py``
 for the likelihood internals).
 
 One search-strategy note from the same benchmarks: **use Nautilus at cluster scale.** Gradient

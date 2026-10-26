@@ -655,7 +655,7 @@ __Wrap Up__
 The three routes to a mapping, and what each is for:
 
 - `PointSolver` for the image positions of a point source -- lensed quasars, supernovae, and the
-  positional likelihoods that group- and cluster-scale modeling uses (`guides/point_source_pairing.py`).
+  positional likelihoods that group- and cluster-scale modeling uses (`guides/point_solver/pairing.py`).
 - `al.mappings.source_mapping_from` for the images of a region of a parametric source, and with it
   the true magnification of the lens model.
 - `inversion.mappings_from` for the clumps of a pixelized reconstruction, where the threshold decides

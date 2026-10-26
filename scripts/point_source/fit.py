@@ -31,6 +31,7 @@ __Contents__
 - **Dataset:** Load and plot the strong lens dataset.
 - **Name Pairing:** The names of the point-source datasets have an even more important role, the names are used to pair.
 - **Fitting:** Fit the lens model to the dataset and inspect the results.
+- **Magnification At The Multiple Images:** The signed and unsigned magnification at every observed image position.
 - **Chi Squared:** For point-source modeling, there are many different ways to define the likelihood function, broadly.
 - **Solved Source Centre:** The `*Solved` fit variants solve the source-plane centre analytically instead of sampling it.
 - **Fluxes:** Another measurable quantity of a point source is its flux—the total amount of light received from.
@@ -331,6 +332,29 @@ print(fit.positions.chi_squared_map)
 print(fit.positions.log_likelihood)
 
 """
+__Magnification At The Multiple Images__
+
+The fit also gives the magnification of the tracer at every observed image position, computed via the Hessian as
+`mu = 1 / det(A)`, where `A` is the lensing Jacobian.
+
+`signed_magnifications_at_positions` keeps the sign, which is the parity of each image: positive for images at
+minima (or maxima) of the arrival-time surface and negative for saddle-point images. `magnifications_at_positions`
+is its absolute value, which is the magnification used when fitting the fluxes of the multiple images (see
+`__Flux Fitting__` below).
+
+For a multi-plane tracer, these are computed up to the plane of the point source paired with the dataset, so in a
+cluster each source gets the magnification at its own redshift. A finished model-fit gives the same quantities for
+the maximum likelihood model via `result.signed_magnifications_at_positions` and
+`result.magnifications_at_positions` (see `point_source/modeling.py`).
+
+To compute the magnification at any other (y,x) coordinates, use
+`al.LensCalc.from_tracer(tracer=tracer).magnification_2d_via_hessian_from(grid=al.Grid2DIrregular(...))`, which is
+described in `autolens_workspace/*/guides/lens_calc.py`.
+"""
+print(fit.positions.signed_magnifications_at_positions)
+print(fit.positions.magnifications_at_positions)
+
+"""
 __Chi Squared__
 
 For point-source modeling, there are many different ways to define the likelihood function, broadly referred to a
@@ -412,7 +436,7 @@ By default (`weighting = "jacobian"`) each distance is measured in the image-pla
 at each image maps the source-plane residual back to the image plane, where the position noise is defined. This is 
 the correct linearised likelihood, it stays robust near critical curves and it costs no more than weighting by the 
 magnification. The older scalar weighting, `weighting = "magnification"`, is an opt-in that is biased near critical 
-curves. Both are explained in `guides/point_source_pairing.py`.
+curves. Both are explained in `guides/point_solver/pairing.py`.
 
 The source-plane chi-squared is significantly faster to compute than the image-plane chi-squared, however it cannot 
 tell when a model predicts extra images and is only a first-order approximation to the image-plane chi-squared, so 
@@ -480,7 +504,7 @@ print(fit.positions.log_likelihood)
 """
 The full matrix of pairing schemes × centre treatments — including the solved flux and time-delay
 variants used below, the `"jacobian"` and `"magnification"` source-plane weightings, and when each option is
-preferable — is documented in `guides/point_source_pairing.py`.
+preferable — is documented in `guides/point_solver/pairing.py`.
 
 __Fluxes__
 
@@ -581,7 +605,7 @@ print(fit.flux.log_likelihood)
 """
 An analytic-flux variant also exists: `fit_flux_cls=al.FitFluxesSolved` (paired with
 `al.ps.PointSolved`) solves the source flux from the data and magnifications instead of sampling
-a `flux` parameter — see `point_source/features/fluxes.py` and `guides/point_source_pairing.py`.
+a `flux` parameter — see `point_source/features/fluxes.py` and `guides/point_solver/pairing.py`.
 
 __Time Delays__
 
@@ -670,7 +694,7 @@ print(fit.time_delays.log_likelihood)
 """
 As with fluxes, an analytic variant exists: `fit_time_delays_cls=al.FitTimeDelaysSolved` replaces
 the reference-image subtraction with a precision-weighted analytic reference time — see
-`point_source/features/time_delays.py` and `guides/point_source_pairing.py`.
+`point_source/features/time_delays.py` and `guides/point_solver/pairing.py`.
 
 __New User Wrap Up__
 

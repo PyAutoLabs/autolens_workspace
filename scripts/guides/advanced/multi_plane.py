@@ -625,6 +625,10 @@ The first image position returns 1.86 the wrong way and 27.9 the right way, and 
 factors of 6 to 10 — two of them with the sign flipped, so a parity argument would not have caught it either.
 Nothing raised, nothing warned.
 
+Point-source fits make this selection for you: `signed_magnifications_at_positions` and
+`magnifications_at_positions` on a point fit and on a `ResultPoint` use `plane_j` set to the plane of the paired
+point source, so each source in a cluster gets the magnification at its own redshift.
+
 The reason is entirely in the scaling factor. In the full system the light travelling from z=0.5 to z=1.0 carries
 $\\beta_{01} = 0.674$, because the deflections are normalized to z=2.0 and must be re-scaled down to reach the
 nearer plane. Truncate the system and z=1.0 *becomes* the final plane, so $\\beta_{01} = 1$ by construction: the

@@ -477,7 +477,7 @@ predicted image. ``al.FitPositionsImagePairRepeat`` is the matching PyAutoLens l
 forward-solves the model images with the ``PointSolver`` below and pairs each observed image with
 its nearest model image (repeats allowed). Lenstool's source-plane modes are the cheaper
 alternative; its tensor mode (``forme 8``) is the same as ``al.FitPositionsSource`` with its default
-``"jacobian"`` weighting (see ``guides/point_source_pairing.py``).
+``"jacobian"`` weighting (see ``guides/point_solver/pairing.py``).
 
 The search goes through ``AnalysisPoint``; the factor-graph pattern is identical to
 ``scripts/cluster/modeling.py``. This is a production-scale job — run it

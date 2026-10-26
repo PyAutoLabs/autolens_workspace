@@ -222,7 +222,7 @@ information you want to keep or share:
 
 If you compose a centre-bearing `al.ps.Point` model, you must also pass a free-centre fit class to the
 analysis (e.g. `fit_positions_cls=al.FitPositionsImagePairAll`) — the solved default raises an error rather
-than silently ignoring the centre priors. See `guides/point_source_pairing.py` for the full option matrix.
+than silently ignoring the centre priors. See `guides/point_solver/pairing.py` for the full option matrix.
 
 __Name Pairing__
 
@@ -379,7 +379,7 @@ under-prediction should be (you *saw* the image). If the model produces *too man
 only a mild logarithmic Occam factor — so the demagnified central image that almost every lens model predicts
 (and observations almost never detect) is tolerated by construction, but note a bright spurious predicted image
 is penalized just as gently, which is one reason to inspect the image-plane residuals of the max-likelihood
-model before trusting a fit. See `guides/point_source_pairing.py` for the full discussion of both failure
+model before trusting a fit. See `guides/point_solver/pairing.py` for the full discussion of both failure
 modes and the stricter, tunable over-prediction policies.
 
 For a "source-plane chi-squared", the likelihood is computed in the source-plane. The analysis just ray-traces
@@ -391,12 +391,12 @@ makes the source-plane fit far more accurate than its traditional reputation: th
 magnification weighting (an opt-in, `weighting = "magnification"`) is biased near critical curves and can
 catastrophically mis-rank models when one image is highly magnified. Truth-anchored tests show the
 Jacobian-weighted fit ranks the true model first at galaxy and cluster scale alike, while the scalar version
-preferred wrong models by thousands of log likelihood (see `guides/point_source_pairing.py`). The image-plane
+preferred wrong models by thousands of log likelihood (see `guides/point_solver/pairing.py`). The image-plane
 chi-squared remains the most robust choice and is the demonstrated default; the tensor source-plane fit is the
 recommended fast alternative for large samples or as an initialization stage.
 
 Checkout the guide `autolens_workspace/*/point_source/fit` for more details and a full illustration of the
-different ways the chi-squared can be computed, and `guides/point_source_pairing.py` for the full option
+different ways the chi-squared can be computed, and `guides/point_solver/pairing.py` for the full option
 matrix with the benchmark evidence.
 
 __Analysis__
@@ -556,6 +556,16 @@ Checkout `autolens_workspace/*/guides/results` for a full description of analysi
 print(result.max_log_likelihood_instance)
 
 aplt.subplot_tracer(tracer=result.max_log_likelihood_tracer, grid=result.grid)
+
+"""
+The result also gives the magnification of the maximum likelihood model at every observed image position, computed
+via the Hessian. `result.signed_magnifications_at_positions` keeps the sign, which is the parity of each image
+(positive for minima and maxima of the arrival-time surface, negative for saddle points), and
+`result.magnifications_at_positions` is its absolute value. For multi-plane lenses these use the plane of the
+point source paired with the dataset. See `point_source/fit.py` for a description.
+"""
+print(result.signed_magnifications_at_positions)
+print(result.magnifications_at_positions)
 
 """
 The result contains the full posterior information of our non-linear search, including all parameter samples, 

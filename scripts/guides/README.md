@@ -21,4 +21,5 @@ most calculations.
 - `plot`: How to plot lensing quantities and results.
 - `hpc`: How to run model-fits on high-performance computing clusters.
 - `advanced`: Advanced guides for a variety of features.
+- `point_solver`: Finding the multiple images of a point source and pairing them with the observed positions.
 - `misc`: Guides which do not fit into the other folders (e.g. Witt-Wynne / SIEP projection).
