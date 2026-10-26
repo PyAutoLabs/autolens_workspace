@@ -92,9 +92,11 @@ __Profile Latent Parameters__
 Separately from this registry, the profile classes declare latent parameters of their own through PyAutoFit's
 `latent_parameters` class attribute: an elliptical profile's axis ratio and position angle (`axis_ratio`, `angle`)
 for its `ell_comps`, a shear's magnitude and angle (`magnitude`, `angle`) for its `gamma_1` / `gamma_2`, and a multipole's strength and phase (`k_m`, `phi_m`) for its `multipole_comps`. They need
-no fit and no `magzero`, so they are not toggled here: every fit writes them to `latent/samples.csv`,
-`latent.results` and `latent_summary.json` under the component's path (`galaxies.lens.mass.axis_ratio`), beside
-whichever registry latents are enabled. The same conversions give the latent corner plot,
+no extra fit or `magzero`. They are controlled by `latent_model_parameters` in `config/output.yaml`, separately
+from this registry. With latent output enabled, full-sample mode (`latent_draw_via_pdf: false`) writes
+`files/latent/samples.csv`; summaries are written to `latent.results` and `files/latent/latent_summary.json`.
+Columns use the component's path (for example, `galaxies.lens.mass.axis_ratio`), beside the enabled registry latents.
+Saved angles retain their conversion range; only plots recentre periodic angles. The same conversions give the latent corner plot,
 `corner_anesthetic_latent.png`, switched on by `corner_anesthetic_latent` in `config/visualize/plots_search.yaml`
 and made once the fit completes (during the fit only if `latent_during_fit` is on).
 

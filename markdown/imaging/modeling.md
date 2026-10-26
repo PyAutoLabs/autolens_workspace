@@ -41,7 +41,8 @@ __Model__
 This script fits an `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is a Multi Gaussian Expansion bulge.
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`.
+ - The external shear is an `ExternalShear` held in a `MassField`.
  - The source galaxy's light is a Multi Gaussian Expansion.
 
 This lens model is simple and computationally fast to fit, and therefore acts as a good starting point for new
@@ -114,20 +115,12 @@ if al.util.dataset.should_simulate(str(dataset_path)):
         check=True,
     )
 
-# PSF convolution runs at the image resolution (sub size 1), which is the fastest
-# option and accurate for well-sampled PSFs. Supplying a PSF at a multiple of the
-# image resolution and raising this value improves blurring fidelity for
-# undersampled PSFs (e.g. HST / Euclid VIS) at extra compute cost — see
-# `guides/advanced/over_sampling.py` and the simulator's `__Oversampled PSF__` section.
-psf_convolve_over_sample_size = 1
-
 dataset = al.Imaging.from_fits(
-    convolve_over_sample_size_lp=psf_convolve_over_sample_size,
-    convolve_over_sample_size_pixelization=psf_convolve_over_sample_size,
     data_path=dataset_path / "data.fits",
     psf_path=dataset_path / "psf.fits",
     noise_map_path=dataset_path / "noise_map.fits",
     pixel_scales=0.1,
+    convolve_over_sample_size_lp=1,  # Increase for PSF Oversampling
 )
 ```
 
@@ -198,7 +191,7 @@ dataset = dataset.apply_noise_scaling(mask=mask_extra_galaxies)
 aplt.subplot_imaging_dataset(dataset=dataset)
 ```
 
-    2026-07-10 16:14:24,957 - autoarray.dataset.imaging.dataset - INFO - IMAGING - Data noise scaling applied, a total of 256 pixels were scaled to large noise values.
+    2026-10-26 14:49:49,611 - autoarray.dataset.imaging.dataset - INFO - IMAGING - Data noise scaling applied, a total of 256 pixels were scaled to large noise values.
 
 
 
@@ -226,7 +219,7 @@ mask = al.Mask2D.circular(
 dataset = dataset.apply_mask(mask=mask)
 ```
 
-    2026-07-10 16:14:27,303 - autoarray.dataset.imaging.dataset - INFO - IMAGING - Data masked, contains a total of 2828 image-pixels
+    2026-10-26 14:49:51,110 - autoarray.dataset.imaging.dataset - INFO - IMAGING - Data masked, contains a total of 2828 image-pixels
 
 
 If we plot the masked data, the mask removes the exterior regions of the image where there is no emission from the 
@@ -257,18 +250,18 @@ over sampling to ensure the lensed images are evaluated accurately.
 For a new user, the details of over-sampling are not important, therefore just be aware that calculations either:
 
  (i) use adaptive over sampling for the foregorund lens's light, which ensures high accuracy across. 
- (ii) use cored light profiles for the background source galaxy, where the core ensures low levels of over-sampling 
- produce numerically accurate but fast to compute results.
+ (ii) retain 2x2 over sampling in the outer regions of the image, where the lensed source's light appears,
+ ensuring compact source profiles (e.g. a Multi Gaussian Expansion) are evaluated accurately.
 
 
 Once you are more experienced, you should read up on over-sampling in more detail via 
-the `autolens_workspace/*/guides/over_sampling.ipynb` notebook.
+the `autolens_workspace/*/guides/advanced/over_sampling.ipynb` notebook.
 
 
 ```python
 over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
     grid=dataset.grid,
-    sub_size_list=[4, 2, 1],
+    sub_size_list=[4, 2, 2],
     radial_list=[0.3, 0.6],
     centre_list=[(0.0, 0.0)],
 )
@@ -299,7 +292,8 @@ In this example we compose a lens model where:
 
  - The lens galaxy's light is a `Sersic` bulge [7 parameters].
  
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an `ExternalShear` held in 
+   a `MassField` [7 parameters].
  
  - The source galaxy's light is a `SersicCore` bulge [7 parameters].
 
@@ -334,9 +328,11 @@ bulge = af.Model(al.lp.Sersic)
 
 mass = af.Model(al.mp.Isothermal)
 
-shear = af.Model(al.mp.ExternalShear)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+# External Shear (other mass profiles can be added to this field):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Source:
 
@@ -346,8 +342,13 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=field,
+)
 ```
+
+__Model Info__
 
 The `info` attribute shows the model in a readable format.
 
@@ -367,19 +368,18 @@ print(model.info)
     Total Free Parameters = 21
     
     model                                                                           Collection (N=21)
-        galaxies                                                                    Collection (N=21)
-            lens                                                                    Galaxy (N=14)
+        galaxies                                                                    Collection (N=19)
+            lens                                                                    Galaxy (N=12)
                 bulge                                                               Sersic (N=7)
                 mass                                                                Isothermal (N=5)
-                shear                                                               ExternalShear (N=2)
             source                                                                  Galaxy (N=7)
                 bulge                                                               SersicCore (N=7)
-    ... [20 lines of output truncated] ...
+        fields                                                                      MassField (N=2)
+    ... [24 lines of output truncated] ...
+                ell_comps
+                    ell_comps_0                                                     TruncatedGaussianPrior [9], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
                     ell_comps_1                                                     TruncatedGaussianPrior [10], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
                 einstein_radius                                                     UniformPrior [11], lower_limit = 0.0, upper_limit = 8.0
-            shear
-                gamma_1                                                             UniformPrior [12], lower_limit = -0.3, upper_limit = 0.3
-                gamma_2                                                             UniformPrior [13], lower_limit = -0.3, upper_limit = 0.3
         source
             redshift                                                                1.0
             bulge
@@ -390,10 +390,29 @@ print(model.info)
                     ell_comps_0                                                     TruncatedGaussianPrior [16], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
                     ell_comps_1                                                     TruncatedGaussianPrior [17], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
                 effective_radius                                                    UniformPrior [18], lower_limit = 0.0, upper_limit = 30.0
-                alpha - sersic_index                                                UniformPrior [19], lower_limit = 0.8, upper_limit = 5.0
+                sersic_index                                                        UniformPrior [19], lower_limit = 0.8, upper_limit = 5.0
                 radius_break                                                        0.025
                 intensity                                                           LogUniformPrior [20], lower_limit = 1e-05, upper_limit = 1000.0
                 gamma                                                               0.25
+                alpha                                                               3.0
+
+
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
+
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
+
+
+```python
+af.ModelPlotter(model).figure()
+```
+
+
+    
+![png](modeling_files/modeling_23_0.png)
+    
 
 
 __Improved Lens Model__
@@ -453,13 +472,16 @@ bulge = al.model_util.mge_model_from(
     total_gaussians=20,
     gaussian_per_basis=2,
     centre_prior_is_uniform=True,
+    sigma_min=dataset.pixel_scales[0] / 10.0,
 )
 
 mass = af.Model(al.mp.Isothermal)
 
-shear = af.Model(al.mp.ExternalShear)
+lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
 
-lens = af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass, shear=shear)
+# External Shear:
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Source:
 
@@ -471,7 +493,10 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=field,
+)
 ```
 
 Printing the model info confirms the model has Gaussians for both the lens and source galaxies.
@@ -484,14 +509,14 @@ print(model.info)
     Total Free Parameters = 17
     
     model                                                                           Collection (N=17)
-        galaxies                                                                    Collection (N=17)
-            lens                                                                    Galaxy (N=13)
+        galaxies                                                                    Collection (N=15)
+            lens                                                                    Galaxy (N=11)
                 bulge                                                               Basis (N=6)
                     profile_list                                                    Collection (N=6)
                         20 - 39                                                     Gaussian (N=4)
                 mass                                                                Isothermal (N=5)
-                shear                                                               ExternalShear (N=2)
-    ... [148 lines of output truncated] ...
+            source                                                                  Galaxy (N=4)
+    ... [151 lines of output truncated] ...
                         sigma                                                       0.02271849760758516
                     11
                         sigma                                                       0.03908567068054686
@@ -513,13 +538,34 @@ print(model.info)
                         sigma                                                       3.0
 
 
+This model swaps the light of both galaxies for an MGE. The lens's two bases share one `centre` and one 
+`ell_comps` between all their Gaussians, each Gaussian's `sigma` is fixed to its own value, and every 
+`intensity` is solved by the inversion, so the model has only a handful of sampled parameters despite 
+containing dozens of light profiles.
+
+
+```python
+af.ModelPlotter(model).figure()
+```
+
+
+    
+![png](modeling_files/modeling_29_0.png)
+    
+
+
 __Search__
 
-The lens model is fitted to the data using a non-linear search. 
+The lens model is fitted to the data using a non-linear search.
 
-All examples in the autolens workspace use the nested sampling algorithm 
-Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most 
+All examples in the autolens workspace use the nested sampling algorithm
+Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most
 accurate and efficient modeling results.
+
+This example uses `Nautilus` because it returns the **full posterior** — every parameter's errors and the
+covariances between them. The folder's `start_here.py` instead fits with `af.MultiStartProdigy`, a multi-start
+gradient optimizer which is far faster but returns only a single best-fit model with no errors at all. Use that
+one to check a model quickly, and this one when you need results you can quote.
 
 Nautilus has one main setting that trades-off accuracy and computational run-time, the number of `live_points`. 
 A higher number of live points gives a more accurate result, but increases the run-time. A lower value give 
@@ -589,7 +635,7 @@ the `Imaging` dataset.
 
 It is not vital that you as a user understand the details of how the `log_likelihood_function` fits a lens model to 
 data, but interested readers can find a step-by-step guide of the likelihood 
-function at ``autolens_workspace/*/imaging/log_likelihood_function`
+function at ``autolens_workspace/*/imaging/likelihood_function`
 
 __JAX__
 
@@ -636,13 +682,7 @@ models (e.g. pixelized sources) and higher resolution datasets it can be much hi
 analysis.print_vram_use(model=model, batch_size=search.batch_size)
 ```
 
-    2026-07-10 16:14:45,108 - autofit.non_linear.fitness - INFO - JAX: Applying vmap and jit to likelihood function -- may take a few seconds.
-
-
-    2026-07-10 16:14:45,111 - autofit.non_linear.fitness - INFO - JAX: vmap and jit applied in 0.0025408267974853516 seconds.
-
-
-    VRAM USE = 0.375 GB
+    VRAM USE = 0.533 GB (likelihood only, batch_size=50)
 
 
 __Run Times__
@@ -698,24 +738,13 @@ print("The search has finished run - you may now continue the notebook.")
     
         On-the-fly updates every iterations_per_quick_update are printed to the notebook.
         
-    2026-07-10 16:15:13,840 - autofit.non_linear.search.abstract_search - INFO - Starting non-linear search with JAX (CPU: cpu).
-
-
-    2026-07-10 16:15:14,018 - modeling - INFO - The output path of this fit is autolens_workspace/output/imaging/simple/modeling/9151c744354f643f81450f5ca36fb293
-
-
-    2026-07-10 16:15:14,620 - modeling - INFO - Fit Already Completed: skipping non-linear search.
-
-
-    2026-07-10 16:15:15,331 - modeling - INFO - Removing search internal folder.
-
-
-    2026-07-10 16:15:15,334 - modeling - INFO - Removing all files except for .zip file
-
-
-    2026-07-10 16:15:16,188 - modeling - INFO - Search complete, returning result
-
-
+    2026-10-26 14:50:05,179 - autofit.non_linear.search.runtime - INFO - Starting non-linear search with JAX (CPU: cpu).
+    2026-10-26 14:50:05,180 - autofit.non_linear.search.runtime - INFO - On-the-fly updates of the maximum likelihood model every 10000 iterations.
+    2026-10-26 14:50:05,379 - modeling - INFO - The output path of this fit is autolens_workspace/output/imaging/simple/modeling/8c3904685eab52671ab627d8adf2fe69
+    2026-10-26 14:50:05,647 - modeling - INFO - Fit Already Completed: skipping non-linear search.
+    2026-10-26 14:50:05,650 - modeling - INFO - Removing search internal folder.
+    2026-10-26 14:50:05,652 - modeling - INFO - Removing all files except for .zip file
+    2026-10-26 14:50:06,384 - modeling - INFO - Search complete, returning result
     The search has finished run - you may now continue the notebook.
 
 
@@ -771,17 +800,17 @@ the `model.info` attribute display optimally on your computer. This attribute al
 print(result.info)
 ```
 
-    Bayesian Evidence                                                               1641.18753905
-    Maximum Log Likelihood                                                          1725.39484175
+    Bayesian Evidence                                                               1648.03442880
+    Maximum Log Likelihood                                                          1731.04605788
     
     model                                                                           Collection (N=17)
-        galaxies                                                                    Collection (N=17)
-            lens                                                                    Galaxy (N=13)
+        galaxies                                                                    Collection (N=15)
+            lens                                                                    Galaxy (N=11)
                 bulge                                                               Basis (N=6)
                     profile_list                                                    Collection (N=6)
                         20 - 39                                                     Gaussian (N=4)
                 mass                                                                Isothermal (N=5)
-    ... [243 lines of output truncated] ...
+    ... [249 lines of output truncated] ...
                         sigma                                                       0.02271849760758516
                     11
                         sigma                                                       0.03908567068054686
@@ -819,18 +848,18 @@ aplt.subplot_tracer(tracer=result.max_log_likelihood_tracer, grid=result.grids.l
 aplt.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 ```
 
-    <autofit.mapper.model.ModelInstance object at 0x7ff04d787fb0>
+    <autofit.mapper.model.ModelInstance object at 0x7efc1d901100>
 
 
 
     
-![png](modeling_files/modeling_37_1.png)
+![png](modeling_files/modeling_41_1.png)
     
 
 
 
     
-![png](modeling_files/modeling_37_2.png)
+![png](modeling_files/modeling_41_2.png)
     
 
 
@@ -841,19 +870,43 @@ Below, we make a corner plot of the "Probability Density Function" of every para
 The plot is labeled with short hand parameter names (e.g. `sersic_index` is mapped to the short hand 
 parameter `n`). These mappings ate specified in the `config/notation.yaml` file and can be customized by users.
 
-The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
-mass its name `mass` defined when making the `Model` above is used).
+The superscripts of labels are the path of names each component was given in the model (e.g. for the `Isothermal`
+mass, `lens.mass`: the galaxy's name `lens` and its name `mass` defined when making the `Model` above).
 
 
 ```python
 aplt.corner_anesthetic(samples=result.samples)
+
 ```
 
-    2026-07-10 16:16:03,438 - autofit.non_linear.plot.plot_util - INFO - Unable to produce corner_anesthetic visual: posterior estimate not yet sufficient. Should succeed in a later update.
+
+    
+![png](modeling_files/modeling_43_0.png)
+    
 
 
+Components in different named galaxy or profile paths can be distinguished by their superscripts. Profiles within
+the same path, such as Gaussians in a basis, can share a superscript. When the model has more than one top-level
+component, each also gets its own
+corner plot in the output folder (`corner_anesthetic_<component>.png`, switched in `config/visualize/plots_search.yaml`).
 
-    <Figure size 6800x6800 with 0 Axes>
+The parameters a model is sampled in are not always the ones it is read in: a profile's elliptical components are an
+axis ratio and a position angle, a shear's two components a magnitude and an angle. Passing `latent=True` plots
+these latent parameters instead. The same figure is written to the output folder as `corner_anesthetic_latent.png`
+when `corner_anesthetic_latent` is switched on in `config/visualize/plots_search.yaml` (off by default), once the fit
+is complete. With `latent_model_parameters` enabled, full-sample latent output (`latent_draw_via_pdf: false`)
+writes these columns to `files/latent/samples.csv` with the other latent variables. Periodic angles are recentred
+for the plot; saved values retain the conversion's original range.
+
+
+```python
+aplt.corner_anesthetic(samples=result.samples, latent=True)
+```
+
+
+    
+![png](modeling_files/modeling_45_0.png)
+    
 
 
 __Loading From Output Folder__
@@ -873,6 +926,7 @@ result_path = search.paths.output_path  # Points at the fit's unique output fold
 if (result_path / "files" / "tracer.json").exists():
     tracer = from_json(file_path=result_path / "files" / "tracer.json")
 
+if (result_path / "image" / "tracer.fits").exists():
     tracer_fits = al.Array2D.from_fits(
         file_path=result_path / "image" / "tracer.fits", hdu=0, pixel_scales=0.1
     )
@@ -891,7 +945,7 @@ Source science focuses on studying the highly magnified properties of the backgr
 Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic 
 size of the source.
 
-The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+The example `autolens_workspace/*/imaging/source_science` gives a complete overview of how to calculate these quantities,
 including examples using a pixelized source reconstruction. 
 
 If you want to study the source galaxy after modeling has reconstructed its unlensed, then check out this example.
@@ -949,8 +1003,3 @@ The folders `autolens_workspace/*/guides/modeling/searches` gives an overview of
 other than Nautilus, that can be used to fit lens models. 
 
 They also provide details on how to customize the model-fit, for example the priors.
-
-
-```python
-
-```

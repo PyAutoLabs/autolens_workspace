@@ -55,7 +55,8 @@ __Model__
 This script fits `Interferometer` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
- - The lens galaxy's total mass distribution is an `Isothermal` and `ExternalShear`.
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField`.
  - The source galaxy's light is a Multi Gaussian Expansion.
 
 
@@ -74,6 +75,27 @@ import numpy as np
 
     Working Directory has been set to `autolens_workspace`
 
+
+__NUFFT Backend Check__
+
+Interferometer analysis uses the default `TransformerNUFFT`, backed by the
+`nufftax` NUFFT library. It ships with the `[optional]` extras and requires
+Python >= 3.12. When it is not installed (e.g. the NumPy-only CI matrix), skip
+this example gracefully rather than erroring on the data-simulation step.
+
+
+```python
+import importlib.util
+import sys
+
+if importlib.util.find_spec("nufftax") is None:
+    print(
+        "Skipping interferometer example: the `nufftax` NUFFT backend is not "
+        "installed (install with `pip install autolens[optional]`; requires "
+        "Python >= 3.12)."
+    )
+    sys.exit(0)
+```
 
 __Mask__
 
@@ -135,7 +157,7 @@ aplt.subplot_interferometer_dirty_images(dataset=dataset)
 
 
     
-![png](modeling_files/modeling_7_0.png)
+![png](modeling_files/modeling_9_0.png)
     
 
 
@@ -152,7 +174,8 @@ __Model__
 We compose our lens model using `Model` objects, which represent the galaxies we fit to our data. In this 
 example our lens model is:
 
- - The lens galaxy's total mass distribution is an `Isothermal` with `ExternalShear` [7 parameters].
+ - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
+   `ExternalShear` held in a `MassField` [7 parameters].
  - An `Sersic` `LightProfile` for the source galaxy's light [7 parameters].
 
 The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
@@ -172,9 +195,11 @@ If for your dataset the  lens is not centred at (0.0", 0.0"), we recommend that 
 
 mass = af.Model(al.mp.Isothermal)
 
-shear = af.Model(al.mp.ExternalShear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+# External Shear (other mass profiles can be added to this field):
+
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
 
 # Source:
 
@@ -184,8 +209,13 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=field,
+)
 ```
+
+__Model Info__
 
 The `info` attribute shows the model in a readable format.
 
@@ -205,28 +235,18 @@ print(model.info)
     Total Free Parameters = 14
     
     model                                                                           Collection (N=14)
-        galaxies                                                                    Collection (N=14)
-            lens - source                                                           Galaxy (N=7)
-            lens
+        galaxies                                                                    Collection (N=12)
+            lens                                                                    Galaxy (N=5)
                 mass                                                                Isothermal (N=5)
-                shear                                                               ExternalShear (N=2)
-            source
+            source                                                                  Galaxy (N=7)
                 bulge                                                               SersicCore (N=7)
-    
-    galaxies
-        lens
-            redshift                                                                0.5
-            mass
-                centre
-                    centre_0                                                        GaussianPrior [0], mean = 0.0, sigma = 0.1
-                    centre_1                                                        GaussianPrior [1], mean = 0.0, sigma = 0.1
+        fields                                                                      MassField (N=2)
+            shear                                                                   ExternalShear (N=2)
+    ... [13 lines of output truncated] ...
                 ell_comps
                     ell_comps_0                                                     TruncatedGaussianPrior [2], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
                     ell_comps_1                                                     TruncatedGaussianPrior [3], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
                 einstein_radius                                                     UniformPrior [4], lower_limit = 0.0, upper_limit = 8.0
-            shear
-                gamma_1                                                             UniformPrior [5], lower_limit = -0.3, upper_limit = 0.3
-                gamma_2                                                             UniformPrior [6], lower_limit = -0.3, upper_limit = 0.3
         source
             redshift                                                                1.0
             bulge
@@ -237,10 +257,29 @@ print(model.info)
                     ell_comps_0                                                     TruncatedGaussianPrior [9], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
                     ell_comps_1                                                     TruncatedGaussianPrior [10], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
                 effective_radius                                                    UniformPrior [11], lower_limit = 0.0, upper_limit = 30.0
-                radius_break - sersic_index                                         UniformPrior [12], lower_limit = 0.8, upper_limit = 5.0
+                sersic_index                                                        UniformPrior [12], lower_limit = 0.8, upper_limit = 5.0
+                radius_break                                                        0.025
                 intensity                                                           LogUniformPrior [13], lower_limit = 1e-05, upper_limit = 1000.0
                 gamma                                                               0.25
                 alpha                                                               3.0
+
+
+The same model can also be visualized as a figure, making its structure easier to understand at a glance.
+
+The figure shows how the model is organized: which parameters belong to each component, and whether they are free, 
+fixed, shared, linked by an expression, solved during the fit, or not configured. `model.info` provides the 
+corresponding numerical details, including the prior assigned to each free parameter and the value of each fixed 
+parameter.
+
+
+```python
+af.ModelPlotter(model).figure()
+```
+
+
+    
+![png](modeling_files/modeling_15_0.png)
+    
 
 
 __Improved Lens Model__
@@ -301,9 +340,7 @@ The full MGE composition API is given in the `features/multi_gaussian_expansion`
 
 mass = af.Model(al.mp.Isothermal)
 
-shear = af.Model(al.mp.ExternalShear)
-
-lens = af.Model(al.Galaxy, redshift=0.5, mass=mass, shear=shear)
+lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source:
 
@@ -315,7 +352,12 @@ source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
 
 # Overall Lens Model:
 
-model = af.Collection(galaxies=af.Collection(lens=lens, source=source))
+field = af.Model(al.MassField, redshift=0.5, shear=af.Model(al.mp.ExternalShear))
+
+model = af.Collection(
+    galaxies=af.Collection(lens=lens, source=source),
+    fields=field,
+)
 ```
 
 Printing the model info confirms the model has Gaussians for both the lens and source galaxies.
@@ -328,23 +370,23 @@ print(model.info)
     Total Free Parameters = 11
     
     model                                                                           Collection (N=11)
-        galaxies                                                                    Collection (N=11)
-            lens                                                                    Galaxy (N=7)
+        galaxies                                                                    Collection (N=9)
+            lens                                                                    Galaxy (N=5)
                 mass                                                                Isothermal (N=5)
-                shear                                                               ExternalShear (N=2)
             source                                                                  Galaxy (N=4)
                 bulge                                                               Basis (N=4)
                     profile_list                                                    Collection (N=4)
-    ... [18 lines of output truncated] ...
+                        0 - 4                                                       Gaussian (N=4)
+    ... [21 lines of output truncated] ...
             bulge
                 profile_list
                     0 - 4
                         centre
-                            centre_0                                                GaussianPrior [21], mean = 0.0, sigma = 0.3
-                            centre_1                                                GaussianPrior [22], mean = 0.0, sigma = 0.3
+                            centre_0                                                GaussianPrior [19], mean = 0.0, sigma = 0.3
+                            centre_1                                                GaussianPrior [20], mean = 0.0, sigma = 0.3
                         ell_comps
-                            ell_comps_0                                             TruncatedGaussianPrior [23], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
-                            ell_comps_1                                             TruncatedGaussianPrior [24], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
+                            ell_comps_0                                             TruncatedGaussianPrior [21], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
+                            ell_comps_1                                             TruncatedGaussianPrior [22], mean = 0.0, sigma = 0.3, lower_limit = -1.0, upper_limit = 1.0
                     0
                         sigma                                                       0.0001
                     1
@@ -357,13 +399,34 @@ print(model.info)
                         sigma                                                       3.5000000000000004
 
 
+The lens is unchanged and the source's `SersicCore` has become an MGE of five Gaussians. They share one `centre` 
+and one `ell_comps`, their `sigma` values are fixed to the log-spaced widths the utility function set, and each 
+`intensity` is solved by the inversion, so the MGE costs fewer sampled parameters than the single Sersic it 
+replaced.
+
+
+```python
+af.ModelPlotter(model).figure()
+```
+
+
+    
+![png](modeling_files/modeling_21_0.png)
+    
+
+
 __Search__
 
-The lens model is fitted to the data using a non-linear search. 
+The lens model is fitted to the data using a non-linear search.
 
-All examples in the autolens workspace use the nested sampling algorithm 
-Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most 
+All examples in the autolens workspace use the nested sampling algorithm
+Nautilus (https://nautilus-sampler.readthedocs.io/en/latest/), which extensive testing has revealed gives the most
 accurate and efficient modeling results.
+
+This example uses `Nautilus` because it returns the **full posterior** — every parameter's errors and the
+covariances between them. The folder's `start_here.py` instead fits with `af.MultiStartProdigy`, a multi-start
+gradient optimizer which is far faster but returns only a single best-fit model with no errors at all. Use that
+one to check a model quickly, and this one when you need results you can quote.
 
 Nautilus has one main setting that trades-off accuracy and computational run-time, the number of `live_points`. 
 A higher number of live points gives a more accurate result, but increases the run-time. A lower value give 
@@ -433,7 +496,7 @@ the `Interferometer` dataset.
 
 It is not vital that you as a user understand the details of how the `log_likelihood_function` fits a lens model to 
 data, but interested readers can find a step-by-step guide of the likelihood 
-function at ``autolens_workspace/*/interferometer/log_likelihood_function`
+function at ``autolens_workspace/*/interferometer/likelihood_function`
 
 __JAX__
 
@@ -473,31 +536,36 @@ The method below prints the VRAM usage estimate for the analysis and model with 
 it takes about 20-30 seconds to run so you may want to comment it out once you are familiar with your GPU's VRAM limits.
 
 With `TransformerNUFFT` (backed by `nufftax`), the dominant contributor to VRAM is usually the real-space image
-and its transforms inside the likelihood function, rather than the visibility count itself. VRAM does not scale
-with batch size for the persistent buffers, so if the analysis fits within VRAM for `batch_size=1` you should be
-able to push the batch size up (e.g. to 50) to maximise GPU throughput without running out of memory.
+and its transforms inside the likelihood function, rather than the visibility count itself.
+
+**A single-start measurement does not tell you a large batch will fit.** Memory splits into a fixed part (buffers
+shared by the whole batch, e.g. the dataset) and a per-evaluation part that scales with `batch_size`. Whether you
+can raise the batch size depends on which dominates, and for interferometer data under a *gradient* search the
+per-evaluation part dominates: the batched `value_and_grad` carries the whole forward tape, so it is far larger
+than the likelihood alone. A 48-start fit of the SDP.81 dataset measured ~1.79 GB *per start* — ~86 GB in total,
+which exhausted the machine even though a single start fitted comfortably. This is why
+`interferometer/start_here.py` passes `batch_size=4` rather than leaving it at `None`.
+
+So size the batch against the per-start slope, not against a single measurement. Note that `print_vram_use`
+profiles the likelihood **only** by default; pass `gradient=True` to profile the `value_and_grad` a gradient
+search (e.g. `af.MultiStartProdigy`) actually evaluates. `Nautilus`, used in this script, does not take
+gradients, so the default is the right figure here.
 
 For an MGE model with the small dataset fitted in this example, VRAM use is modest (~0.3 GB). Larger real-space
 masks (finer pixel scales) and higher visibility counts increase VRAM gradually rather than catastrophically, and
 a single GPU comfortably handles millions of visibilities with this approach.
 
-Pixelized source reconstructions (see `features/pixelization`) take a different VRAM trade-off: they keep VRAM
-use low by exploiting sparsity in the linear inversion, which makes them attractive when the real-space mask is
-very large or the source morphology requires it. They are no longer required purely because the dataset has many
-visibilities.
+The sparse-operator route (see `features/pixelization`) takes a different VRAM trade-off: it keeps VRAM use
+low by exploiting sparsity in the linear inversion, and applies to pixelizations, linear light profiles / MGE
+bases, and the two combined. This makes it attractive when the real-space mask is very large or the source
+morphology requires it. It is no longer required purely because the dataset has many visibilities.
 
 
 ```python
 analysis.print_vram_use(model=model, batch_size=search.batch_size)
 ```
 
-    2026-07-10 19:44:40,341 - autofit.non_linear.fitness - INFO - JAX: Applying vmap and jit to likelihood function -- may take a few seconds.
-
-
-    2026-07-10 19:44:40,346 - autofit.non_linear.fitness - INFO - JAX: vmap and jit applied in 0.005039215087890625 seconds.
-
-
-    VRAM USE = 1.953 GB
+    VRAM USE = 1.953 GB (likelihood only, batch_size=50)
 
 
 __Run Times__
@@ -553,215 +621,14 @@ print("The search has finished run - you may now continue the notebook.")
     
         On-the-fly updates every iterations_per_quick_update are printed to the notebook.
         
-    2026-07-10 19:44:52,280 - autofit.non_linear.search.abstract_search - INFO - Starting non-linear search with JAX (CPU: cpu).
-
-
-    2026-07-10 19:44:52,357 - modeling - INFO - The output path of this fit is autolens_workspace/output/interferometer/simple/modeling/207f825cf6bd24deca2de5e0ec8a4822
-
-
-    2026-07-10 19:44:52,360 - modeling - INFO - Outputting pre-fit files (e.g. model.info, visualization).
-
-
-    2026-07-10 19:44:54,153 - modeling - INFO - Starting new Nautilus non-linear search (no previous samples found).
-
-
-    2026-07-10 19:44:54,155 - autofit.non_linear.fitness - INFO - JAX: Applying vmap and jit to likelihood function -- may take a few seconds.
-
-
-    2026-07-10 19:44:54,161 - autofit.non_linear.fitness - INFO - JAX: vmap and jit applied in 0.006067514419555664 seconds.
-
-
-    2026-07-10 19:44:54,163 - autofit.non_linear.fitness - INFO - Warming up visualization (one-time JAX compilation)...
-
-
-    2026-07-10 19:45:16,146 - autofit.non_linear.fitness - INFO - Visualization warm-up complete.
-
-
-    2026-07-10 19:45:16,148 - modeling - INFO - Running search with JAX vectorization (parallelization handled by JAX).
-
-
-    Starting the nautilus sampler...
-    Please report issues at github.com/johannesulf/nautilus.
-    Status    | Bounds | Ellipses | Networks | Calls    | f_live | N_eff | log Z    
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    Finished  | 8      | 1        | 4        | 2950     | N/A    | 520   | -3142.40 
-    2026-07-10 19:51:22,785 - modeling - INFO - Fit Running: Updating results (see output folder).
-
-
-    2026-07-10 19:53:16,345 - autofit.non_linear.plot.plot_util - INFO - Unable to produce corner_anesthetic visual: posterior estimate not yet sufficient. Should succeed in a later update.
-
-
-    Starting the nautilus sampler...
-    Please report issues at github.com/johannesulf/nautilus.
-    Status    | Bounds | Ellipses | Networks | Calls    | f_live | N_eff | log Z    
-    Finished  | 8      | 1        | 4        | 2950     | N/A    | 520   | -3142.40 
-    2026-07-10 19:53:25,389 - modeling - INFO - Fit Running: Updating results (see output folder).
-
-
-    2026-07-10 19:53:26,441 - autofit.non_linear.samples.samples - INFO - Samples with weight less than 1e-10 removed from samples.csv.
-
-
-    2026-07-10 19:53:27,188 - autofit.non_linear.search.updater - INFO - Creating latent samples by drawing 100 from the PDF.
-
-
-    2026-07-10 19:54:57,521 - autofit.non_linear.plot.plot_util - INFO - Unable to produce corner_anesthetic visual: posterior estimate not yet sufficient. Should succeed in a later update.
-
-
-    2026-07-10 19:54:59,622 - modeling - INFO - Removing search internal folder.
-
-
-    2026-07-10 19:54:59,624 - modeling - INFO - Removing all files except for .zip file
-
-
-    2026-07-10 19:55:00,923 - modeling - INFO - Search complete, returning result
-
-
+    2026-10-26 14:49:56,302 - autofit.non_linear.search.runtime - INFO - Starting non-linear search with JAX (CPU: cpu).
+    2026-10-26 14:49:56,303 - autofit.non_linear.search.runtime - INFO - On-the-fly updates of the maximum likelihood model every 10000 iterations.
+    2026-10-26 14:49:56,402 - modeling - INFO - The output path of this fit is autolens_workspace/output/interferometer/simple/modeling/4f1d2644d74259975b7624da09c46066
+    2026-10-26 14:49:56,458 - modeling - INFO - Fit Already Completed: skipping non-linear search.
+    2026-10-26 14:49:56,459 - modeling - INFO - Removing search internal folder.
+    2026-10-26 14:49:56,461 - modeling - INFO - Removing all files except for .zip file
+    2026-10-26 14:49:56,992 - modeling - INFO - Search complete, returning result
     The search has finished run - you may now continue the notebook.
-
-
-
-    
-![png](modeling_files/modeling_23_86.png)
-    
-
-
-
-    
-![png](modeling_files/modeling_23_87.png)
-    
 
 
 __Output Folder Layout__
@@ -817,19 +684,19 @@ the `model.info` attribute display optimally on your computer. This attribute al
 print(result.info)
 ```
 
-    Bayesian Evidence                                                               -3142.39791898
-    Maximum Log Likelihood                                                          -3137.02711169
+    Bayesian Evidence                                                               -5081.36735441
+    Maximum Log Likelihood                                                          -5020.14665638
     
     model                                                                           Collection (N=11)
-        galaxies                                                                    Collection (N=11)
-            lens                                                                    Galaxy (N=7)
+        galaxies                                                                    Collection (N=9)
+            lens                                                                    Galaxy (N=5)
                 mass                                                                Isothermal (N=5)
-                shear                                                               ExternalShear (N=2)
             source                                                                  Galaxy (N=4)
                 bulge                                                               Basis (N=4)
-    ... [83 lines of output truncated] ...
-    instances
-    
+                    profile_list                                                    Collection (N=4)
+    ... [89 lines of output truncated] ...
+    fields
+        redshift                                                                    0.5
     galaxies
         lens
             redshift                                                                0.5
@@ -862,27 +729,27 @@ aplt.subplot_tracer(
 )
 
 aplt.subplot_fit_interferometer(fit=result.max_log_likelihood_fit)
-aplt.subplot_fit_dirty_images(fit=result.max_log_likelihood_fit)
+aplt.subplot_fit_interferometer_dirty_images(fit=result.max_log_likelihood_fit)
 ```
 
-    <autofit.mapper.model.ModelInstance object at 0x7fbbf338f8c0>
+    <autofit.mapper.model.ModelInstance object at 0x7f2708127e00>
 
 
 
     
-![png](modeling_files/modeling_27_1.png)
-    
-
-
-
-    
-![png](modeling_files/modeling_27_2.png)
+![png](modeling_files/modeling_33_1.png)
     
 
 
 
     
-![png](modeling_files/modeling_27_3.png)
+![png](modeling_files/modeling_33_2.png)
+    
+
+
+
+    
+![png](modeling_files/modeling_33_3.png)
     
 
 
@@ -894,20 +761,42 @@ There are built in visualization tools for plotting this.
 The plot is labeled with short hand parameter names (e.g. `sersic_index` is mapped to the short hand 
 parameter `n`). These mappings ate specified in the `config/notation.yaml` file and can be customized by users.
 
-The superscripts of labels correspond to the name each component was given in the model (e.g. for the `Isothermal`
-mass its name `mass` defined when making the `Model` above is used).
+The superscripts of labels are the path of names each component was given in the model (e.g. for the `Isothermal`
+mass, `lens.mass`: the galaxy's name `lens` and its name `mass` defined when making the `Model` above).
 
 
 ```python
 aplt.corner_anesthetic(samples=result.samples)
+
 ```
-
-    2026-07-10 19:56:11,008 - autofit.non_linear.plot.plot_util - INFO - Unable to produce corner_anesthetic visual: posterior estimate not yet sufficient. Should succeed in a later update.
-
 
 
     
-![png](modeling_files/modeling_29_1.png)
+![png](modeling_files/modeling_35_0.png)
+    
+
+
+Components in different named galaxy or profile paths can be distinguished by their superscripts. Profiles within
+the same path, such as Gaussians in a basis, can share a superscript. When the model has more than one top-level
+component, each also gets its own
+corner plot in the output folder (`corner_anesthetic_<component>.png`, switched in `config/visualize/plots_search.yaml`).
+
+The parameters a model is sampled in are not always the ones it is read in: a profile's elliptical components are an
+axis ratio and a position angle, a shear's two components a magnitude and an angle. Passing `latent=True` plots
+these latent parameters instead. The same figure is written to the output folder as `corner_anesthetic_latent.png`
+when `corner_anesthetic_latent` is switched on in `config/visualize/plots_search.yaml` (off by default), once the fit
+is complete. With `latent_model_parameters` enabled, full-sample latent output (`latent_draw_via_pdf: false`)
+writes these columns to `files/latent/samples.csv` with the other latent variables. Periodic angles are recentred
+for the plot; saved values retain the conversion's original range.
+
+
+```python
+aplt.corner_anesthetic(samples=result.samples, latent=True)
+```
+
+
+    
+![png](modeling_files/modeling_37_0.png)
     
 
 
@@ -918,7 +807,7 @@ Source science focuses on studying the highly magnified properties of the backgr
 Using the reconstructed source model, we can compute key quantities such as the magnification, total flux, and intrinsic 
 size of the source.
 
-The example `autolens_workspace/*/guides/source_science` gives a complete overview of how to calculate these quantities,
+The example `autolens_workspace/*/imaging/source_science` gives a complete overview of how to calculate these quantities,
 including examples using a pixelized source reconstruction. 
 
 If you want to study the source galaxy after modeling has reconstructed its unlensed, then check out this example.
@@ -945,7 +834,7 @@ sounds useful, but for most users you can get by without using these forms of cu
 __Data Preparation__
 
 If you are looking to fit your own interferometer data of a strong lens, checkout  
-the `autolens_workspace/*/interferometer/data_preparation/start_here.ipynb` script for an overview of how data should be 
+the `autolens_workspace/*/interferometer/data_preparation.ipynb` script for an overview of how data should be 
 prepared before being modeled.
 
 __HowToLens__
@@ -971,8 +860,3 @@ The folders `autolens_workspace/*/guides/modeling/searches` gives an overview of
 other than Nautilus, that can be used to fit lens models. 
 
 They also provide details on how to customize the model-fit, for example the priors.
-
-
-```python
-
-```

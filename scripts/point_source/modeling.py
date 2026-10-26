@@ -583,15 +583,18 @@ aplt.corner_anesthetic(samples=result.samples)
 
 
 """
-Components of the same class are therefore told apart (every Gaussian of a basis is labelled by the galaxy and
-light profile it belongs to) and, when the model has more than one top-level component, each also gets its own
+Components in different named galaxy or profile paths can be distinguished by their superscripts. Profiles within
+the same path, such as Gaussians in a basis, can share a superscript. When the model has more than one top-level
+component, each also gets its own
 corner plot in the output folder (`corner_anesthetic_<component>.png`, switched in `config/visualize/plots_search.yaml`).
 
 The parameters a model is sampled in are not always the ones it is read in: a profile's elliptical components are an
 axis ratio and a position angle, a shear's two components a magnitude and an angle. Passing `latent=True` plots
 these latent parameters instead. The same figure is written to the output folder as `corner_anesthetic_latent.png`
 when `corner_anesthetic_latent` is switched on in `config/visualize/plots_search.yaml` (off by default), once the fit
-is complete, and the latent parameters are also written to `latent.csv` with the other latent variables.
+is complete. With `latent_model_parameters` enabled, full-sample latent output (`latent_draw_via_pdf: false`)
+writes these columns to `files/latent/samples.csv` with the other latent variables. Periodic angles are recentred
+for the plot; saved values retain the conversion's original range.
 """
 aplt.corner_anesthetic(samples=result.samples, latent=True)
 
