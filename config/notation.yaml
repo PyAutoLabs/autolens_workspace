@@ -7,9 +7,10 @@
 # For example, if `centre=x`, the plot axis will be labeled 'x'.
 
 
-# superscript: the superscript used on certain plots that show the results of different model-components.
+# superscript: the class abbreviation used for priors directly on an unnamed Model.
+# Named components use their model path instead (for example lens.bulge or source.pix.reg).
 
-# For example, if `Gaussian=g`, plots where the parameters of the Gaussian model-component have superscript `g`.
+# For example, `Gaussian=g` labels an unnamed Gaussian Model with superscript `g`.
 
 label:
   label:
