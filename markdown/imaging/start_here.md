@@ -51,43 +51,15 @@ pattern, see the `__JAX Variant__` section at the end of
 
 __Google Colab Setup__
 
-The introduction `start_here` examples are available on Google Colab, which allows you to run them in a web browser
-without manual local PyAutoLens installation.
-
-The code below sets up your environment if you are using Google Colab, including installing autolens and downloading
-files required to run the notebook. If you are running this script not in Colab (e.g. locally on your own computer),
-running the code will still check correctly that your environment is set up and ready to go.
+Run this cell to install PyAutoLens and download the files needed for this notebook on Google Colab.
+If you’re running locally or in HTML, it leaves your installation unchanged.
 
 
 ```python
 
-import subprocess
-import sys
-
-try:
-    import google.colab
-
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "autonerves", "--no-deps"]
-    )
-except ImportError:
-    pass
-
-from autonerves import setup_colab
-
-setup_colab.for_autolens(
-    raise_error_if_not_gpu=False  # Switch to False for CPU Google Colab
-)
+from autolens import setup_colab
+setup_colab.for_autolens(raise_error_if_not_gpu=False)
 ```
-
-    
-                You are not running in a Google Colab environment so cannot use the setup_colab() function.
-    
-                You should therefore have PyAutoLens installed locally in your environment already (e.g. via pip or
-                conda) and can run the rest of your script normally.
-    
-                You may now continue running your script or Notebook.
-                
 
 
 __Imports__

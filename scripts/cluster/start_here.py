@@ -77,28 +77,12 @@ cluster fits you may prefer to build custom figures of the multiple-image positi
 
 __Google Colab Setup__
 
-The ``start_here`` examples are runnable on Google Colab without local PyAutoLens installation. The
-block below installs the dependencies and downloads the example dataset if you're on Colab; running it
-locally is a no-op.
+Run this cell to install PyAutoLens and download the files needed for this notebook on Google Colab.
+If you’re running locally or in HTML, it leaves your installation unchanged.
 """
 
-try:
-    import google.colab
-except ImportError:
-    from autolens import setup_colab as _setup_colab
-else:
-    import importlib
-    import subprocess
-    import sys
-
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "autonerves", "--no-deps"]
-    )
-    _setup_colab = importlib.import_module("autonerves.setup_colab")
-
-_setup_colab.for_autolens(
-    raise_error_if_not_gpu=False  # Switch to True to require GPU on Colab.
-)
+from autolens import setup_colab
+setup_colab.for_autolens(raise_error_if_not_gpu=False)
 
 """
 __Imports__
