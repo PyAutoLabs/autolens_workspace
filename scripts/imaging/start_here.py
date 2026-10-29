@@ -54,6 +54,7 @@ If you’re running locally or in HTML, it leaves your installation unchanged.
 """
 
 from autolens import setup_colab
+
 setup_colab.for_autolens(raise_error_if_not_gpu=False)
 
 """
