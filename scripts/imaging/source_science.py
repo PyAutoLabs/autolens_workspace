@@ -19,6 +19,7 @@ __Contents__
 - **Source Magnification:** The overall magnification of the source is estimated as the ratio of total surface brightness in.
 - **Tracer:** Lens modeling returns a `max_log_likelihood_tracer`, which is likely the object you have at hand to.
 - **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
+- **Area Magnification:** Each lensed image's area divided by the area of the source region it comes from.
 - **Parametric Source Models:** If your lens modeling uses a parametric source model (e.g.
 
 """
@@ -282,6 +283,64 @@ magnification_at_points = lens_calc.magnification_2d_via_hessian_from(grid=point
 print(f"Magnification At Points (signed): {magnification_at_points}")
 print(f"Magnification At Points (absolute): {abs(magnification_at_points)}")
 
+
+"""
+__Area Magnification__
+
+The magnifications above weight every part of the source by its brightness. Cluster lensing studies often quote a
+different, purely geometric quantity for each lensed image: its area magnification, the area of the image (for
+example an arc) divided by the area of the region of the source plane it comes from.
+
+Each small piece of an image, of area `dA`, comes from a piece of the source of area `dA / |mu|`, where `mu` is the
+point magnification at that location computed above. Adding these up over the image's pixels gives the source-plane
+area, and dividing the image's area by it gives the area magnification (equations 6 and 7 of the LEGGOS II paper,
+arXiv:2606.20804):
+
+    mu_area = A_image / A_source,    A_source = sum over pixels of A_pixel / |mu|
+
+This needs only the lens model and an outline of the image, not a model of the source's light, and the source-plane
+area measures the size of the part of the source that forms the image.
+
+The calculation must be done one image at a time: a mask covering several images of the same source would count the
+source once per image. `image_masks_from` splits a mask into its separate images. Images are separated by critical
+curves, across which the magnification changes sign, so the mask is split into connected regions of the same sign.
+
+Below we outline the arcs as the pixels where the lensed source is brighter than 10% of its peak, split them into
+images and compute each image's area magnification and source-plane area. For a real lens you would draw this mask on
+the data instead, for example with `autolens_workspace/*/imaging/data_preparation/gui/mask_arcs.py`, and use the
+`max_log_likelihood_tracer` of your lens model.
+"""
+arc_grid = al.Grid2D.from_mask(mask=mask)
+
+lensed_source_image = tracer.image_2d_list_from(grid=arc_grid)[-1]
+
+arc_mask = al.Mask2D(
+    mask=np.asarray(lensed_source_image.native) < 0.1 * np.max(lensed_source_image),
+    pixel_scales=mask.pixel_scales,
+)
+
+image_masks = lens_calc.image_masks_from(mask=arc_mask)
+area_magnifications = lens_calc.area_magnification_list_from(mask=arc_mask)
+
+for image_mask, area_magnification in zip(image_masks, area_magnifications):
+    source_plane_area = lens_calc.source_plane_area_from(mask=image_mask)
+
+    print(
+        f"Image of {np.sum(~np.asarray(image_mask))} pixels: "
+        f"area magnification {area_magnification:.2f}, "
+        f"source-plane area {source_plane_area:.4f} arcsec^2"
+    )
+
+"""
+Every image comes from roughly the same region of the source, so their source-plane areas are similar while their
+area magnifications differ. The area magnification also differs from the source magnification above, because it gives
+every part of an image equal weight instead of weighting it by the source's brightness.
+
+Two cautions. The magnification is evaluated at `sub_size` x `sub_size` points in every pixel (4 by default): increase
+`sub_size` if an image lies close to a critical curve, where the magnification changes rapidly. And an image only a few
+pixels wide can break into several pieces at the pixel scale, which `image_masks_from` returns as separate images:
+check the masks it returns, and combine the pieces of one image before computing its area magnification.
+"""
 
 """
 __Parametric Source Models__
