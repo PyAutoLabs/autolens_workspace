@@ -25,6 +25,7 @@ __Contents__
 - **Magnification:** The overall magnification of the source is estimated as the ratio of total surface brightness in.
 - **Masking:** Reconstructions can be imperfect, for example having faint source flux in pixels at the edge of the.
 - **Magnification via Mesh:** The magnification above used an interpolation of the source reconstruction onto a uniform grid.
+- **True Magnification:** The simulator's true magnification, to check the reconstruction against.
 - **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
 - **Reconstruction CSV:** In the results `image` folder there is a .csv file called `source_plane_reconstruction_0.csv` which.
 
@@ -102,7 +103,7 @@ mesh_pixels_yx = 28
 mesh_shape = (mesh_pixels_yx, mesh_pixels_yx)
 
 mesh = al.mesh.RectangularBilinearAdaptDensity(shape=mesh_shape)
-regularization = al.reg.Constant(coefficient=1.0)
+regularization = al.reg.Constant(coefficient=0.1)
 
 pixelization = al.Pixelization(mesh=mesh, regularization=regularization)
 
@@ -183,13 +184,19 @@ which is basically just a 2D numpy array (see the `Data Structure` section at th
 We interpolate the rectangular pixelized source reconstruction to a new uniform grid we call the `interpolation_grid`.
 This calculation can be quite slow, so to make this example run fast we use a relatively small grid, but in practice
 you may wish to use a larger grid (e.g. 100x1000 pixels or larger for actual science calculations).
+
+Interpolation grid points outside the mesh have no reconstructed source light, so `fill_value=0.0` sets them
+to zero rather than `NaN`, which would otherwise make every sum below `NaN`.
 """
 from scipy.interpolate import griddata
 
 interpolation_grid = al.Grid2D.uniform(shape_native=(200, 200), pixel_scales=0.05)
 
 interpolated_reconstruction = griddata(
-    points=source_plane_mesh_grid, values=reconstruction, xi=interpolation_grid
+    points=source_plane_mesh_grid,
+    values=reconstruction,
+    xi=interpolation_grid,
+    fill_value=0.0,
 )
 
 # As a pure 2D numpy array in case its useful for calculations
@@ -250,7 +257,10 @@ interpolation_grid_zoom = al.Grid2D.from_extent(
 )
 
 interpolated_reconstruction = griddata(
-    points=source_plane_mesh_grid, values=reconstruction, xi=interpolation_grid_zoom
+    points=source_plane_mesh_grid,
+    values=reconstruction,
+    xi=interpolation_grid_zoom,
+    fill_value=0.0,
 )
 
 
@@ -359,7 +369,10 @@ reconstruction_masked = reconstruction.copy()
 reconstruction_masked[mesh_pixel_mask] = 0.0
 
 interpolated_reconstruction_masked = griddata(
-    points=source_plane_mesh_grid, values=reconstruction_masked, xi=interpolation_grid
+    points=source_plane_mesh_grid,
+    values=reconstruction_masked,
+    xi=interpolation_grid,
+    fill_value=0.0,
 )
 
 # As a pure 2D numpy array in case its useful for calculations
@@ -402,13 +415,17 @@ computed depends on the mesh:
 - `DelaunayNN` uses the `Delaunay` areas, which approximate its natural-neighbour interpolation to within about
   0.5%.
 
-On simulated data whose true magnification is known, this calculation recovers the true magnification to within
-about 1% for nearly every mesh, and within 2% for all of them. Any remaining difference comes from the source
-reconstruction itself, not from the areas.
+On simulated data whose true magnification is known and whose source is well resolved by the mesh, this
+calculation recovers the true magnification to within about 1% for nearly every mesh, and within 2% for all of
+them. Any remaining difference comes from the source reconstruction itself, not from the areas, as the
+`__True Magnification__` section below shows for this example's compact source.
 
-Computing the magnification on the mesh is preferable to the interpolation grid for a precise number, because it
-does not depend on the resolution or extent of the grid. The interpolation grid remains useful for plotting the
-source and for inspecting it pixel by pixel.
+The mesh calculation integrates the reconstruction with exactly the interpolation the fit used, so it does not
+depend on the resolution or extent of an interpolation grid. The interpolation grid above instead joins the pixel
+centres with straight lines, a different interpolation that can give a somewhat different total: in these examples
+the two agree to within a few percent for imaging data, but differ much more for the interferometer example, whose
+reconstruction varies strongly between neighbouring pixels. Use the mesh calculation for the magnification, and the
+interpolation grid for plotting the source and inspecting it pixel by pixel.
 
 The same calculation is performed during a model-fit by the `magnification` latent variable, so its posterior can
 be estimated alongside the lens model (see `autolens_workspace/*/guides/results/latent_variables.py`).
@@ -420,6 +437,37 @@ magnification = np.sum(
 ) / np.sum(reconstruction * mesh_areas)
 
 print(f"Magnification via Mesh: {magnification}")
+
+"""
+__True Magnification__
+
+This dataset is simulated, so its true magnification is known: the simulator's tracer is stored in the dataset
+folder as `tracer.json`. We compute it the same way as above, as the total lensed source light inside the mask
+divided by the total light of the source itself, using finely sampled grids so the light profiles are integrated
+accurately.
+
+Comparing the two shows how accurate the reconstruction is. The mesh areas themselves are exact or close to it, so
+any difference comes from the reconstruction: regularization smooths the source, spreading some of its light onto
+neighbouring pixels, which makes the source look slightly larger and the magnification slightly smaller. For a real
+lens the truth is unknown, and this comparison is not possible.
+"""
+true_tracer = al.from_json(file_path=dataset_path / "tracer.json")
+
+image_grid = al.Grid2D.from_mask(mask=real_space_mask, over_sample_size=8)
+lensed_source_image = true_tracer.image_2d_list_from(grid=image_grid)[-1]
+
+source_grid = al.Grid2D.uniform(
+    shape_native=(1000, 1000), pixel_scales=0.01, over_sample_size=4
+)
+source_image = sum(
+    galaxy.image_2d_from(grid=source_grid) for galaxy in true_tracer.planes[-1]
+)
+
+true_magnification = np.sum(
+    lensed_source_image * lensed_source_image.pixel_area
+) / np.sum(source_image * source_image.pixel_area)
+
+print(f"True Magnification: {true_magnification}")
 
 """
 __Magnification At A Point__
@@ -608,4 +656,6 @@ interpolation_grid = al.Grid2D.from_extent(
     extent=(-1.0, 1.0, -1.0, 1.0), shape_native=(201, 201)
 )
 
-interpolated_array = griddata(points=points, values=values, xi=interpolation_grid)
+interpolated_array = griddata(
+    points=points, values=values, xi=interpolation_grid, fill_value=0.0
+)

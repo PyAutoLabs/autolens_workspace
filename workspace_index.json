@@ -1139,10 +1139,13 @@
       "Impact of Extra Galaxies",
       "Interpolated Source",
       "Parametric Comparison",
+      "Magnification via Mesh",
+      "True Magnification",
       "Magnification At A Point"
     ],
     "cross_refs": [
-      "/guides/advanced/multi_plane.py"
+      "/guides/advanced/multi_plane.py",
+      "imaging/features/pixelization/source_science.py"
     ],
     "notebook": "notebooks/group/features/pixelization/source_science.ipynb",
     "path": "scripts/group/features/pixelization/source_science.py",
@@ -4196,6 +4199,7 @@
   {
     "contents": [
       "Model Fit",
+      "Extra Galaxies Noise Scaling",
       "Interpolated Source",
       "Source Flux",
       "Zoom",
@@ -4203,11 +4207,14 @@
       "Magnification",
       "Masking",
       "Magnification via Mesh",
+      "True Magnification",
       "Magnification At A Point",
       "Reconstruction CSV"
     ],
     "cross_refs": [
-      "/guides/advanced/multi_plane.py"
+      "/guides/advanced/multi_plane.py",
+      "/guides/results/latent_variables.py",
+      "imaging/modeling.py"
     ],
     "notebook": "notebooks/imaging/features/pixelization/source_science.ipynb",
     "path": "scripts/imaging/features/pixelization/source_science.py",
@@ -5568,11 +5575,13 @@
       "Magnification",
       "Masking",
       "Magnification via Mesh",
+      "True Magnification",
       "Magnification At A Point",
       "Reconstruction CSV"
     ],
     "cross_refs": [
-      "/guides/advanced/multi_plane.py"
+      "/guides/advanced/multi_plane.py",
+      "/guides/results/latent_variables.py"
     ],
     "notebook": "notebooks/interferometer/features/pixelization/source_science.ipynb",
     "path": "scripts/interferometer/features/pixelization/source_science.py",
@@ -7409,6 +7418,7 @@
       "Errors",
       "Parametric Comparison",
       "Magnification via Mesh",
+      "True Magnification",
       "Magnification At A Point",
       "Wrap Up"
     ],
