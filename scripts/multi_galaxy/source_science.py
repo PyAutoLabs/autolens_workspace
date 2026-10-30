@@ -28,6 +28,7 @@ __Contents__
 - **Single Deflector Comparison:** How much of the magnification each deflector is responsible for.
 - **Tracer:** Computing these quantities from a `max_log_likelihood_tracer`.
 - **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
+- **Area Magnification:** Each lensed image's area divided by the area of the source region it comes from.
 - **Parametric Source Models:** What you need from lens modeling to do this on real data.
 """
 
@@ -404,6 +405,39 @@ magnification_at_points = lens_calc.magnification_2d_via_hessian_from(grid=point
 
 print(f"Magnification At Points (signed): {magnification_at_points}")
 print(f"Magnification At Points (absolute): {abs(magnification_at_points)}")
+
+"""
+__Area Magnification__
+
+The area magnification of each lensed image is the image's area divided by the area of the source region it comes
+from, where each small piece of the image, of area `dA`, comes from a piece of the source of area `dA / |mu|`. It needs
+only the lens model and an outline of the images, and the source-plane area measures the size of the part of the
+source that forms each image. The `imaging/source_science.py` example explains the calculation and its cautions.
+
+Below we outline the arcs as the pixels where the lensed source is brighter than 10% of its peak, split them into
+images (separated by critical curves, across which the magnification changes sign) and print each image's area
+magnification and source-plane area.
+"""
+arc_grid = al.Grid2D.from_mask(mask=mask)
+
+lensed_source_image = tracer.image_2d_list_from(grid=arc_grid)[-1]
+
+arc_mask = al.Mask2D(
+    mask=np.asarray(lensed_source_image.native) < 0.1 * np.max(lensed_source_image),
+    pixel_scales=mask.pixel_scales,
+)
+
+image_masks = lens_calc.image_masks_from(mask=arc_mask)
+area_magnifications = lens_calc.area_magnification_list_from(mask=arc_mask)
+
+for image_mask, area_magnification in zip(image_masks, area_magnifications):
+    source_plane_area = lens_calc.source_plane_area_from(mask=image_mask)
+
+    print(
+        f"Image of {np.sum(~np.asarray(image_mask))} pixels: "
+        f"area magnification {area_magnification:.2f}, "
+        f"source-plane area {source_plane_area:.4f} arcsec^2"
+    )
 
 """
 __Parametric Source Models__

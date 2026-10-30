@@ -1450,10 +1450,12 @@
       "Impact of Extra Galaxies",
       "Tracer",
       "Magnification At A Point",
+      "Area Magnification",
       "Parametric Source Models"
     ],
     "cross_refs": [
-      "/guides/advanced/multi_plane.py"
+      "/guides/advanced/multi_plane.py",
+      "imaging/source_science.py"
     ],
     "notebook": "notebooks/group/source_science.ipynb",
     "path": "scripts/group/source_science.py",
@@ -4554,10 +4556,12 @@
       "Source Magnification",
       "Tracer",
       "Magnification At A Point",
+      "Area Magnification",
       "Parametric Source Models"
     ],
     "cross_refs": [
-      "/guides/advanced/multi_plane.py"
+      "/guides/advanced/multi_plane.py",
+      "/imaging/data_preparation/gui/mask_arcs.py"
     ],
     "notebook": "notebooks/imaging/source_science.ipynb",
     "path": "scripts/imaging/source_science.py",
@@ -5844,10 +5848,12 @@
       "Source Magnification",
       "Tracer",
       "Magnification At A Point",
+      "Area Magnification",
       "Parametric Source Models"
     ],
     "cross_refs": [
-      "/guides/advanced/multi_plane.py"
+      "/guides/advanced/multi_plane.py",
+      "imaging/source_science.py"
     ],
     "notebook": "notebooks/interferometer/source_science.ipynb",
     "path": "scripts/interferometer/source_science.py",
@@ -7789,6 +7795,7 @@
       "Single Deflector Comparison",
       "Tracer",
       "Magnification At A Point",
+      "Area Magnification",
       "Parametric Source Models"
     ],
     "cross_refs": [
