@@ -24,7 +24,7 @@ __Contents__
 - **Errors:** The interpolated errors on the source reconstruction can also be computed, which will allow you to.
 - **Magnification:** The overall magnification of the source is estimated as the ratio of total surface brightness in.
 - **Masking:** Reconstructions can be imperfect, for example having faint source flux in pixels at the edge of the.
-- **Magnification via Mesh:** The calculations above used an interpolation of the source-plane reconstruction to a 2D grid of.
+- **Magnification via Mesh:** The magnification above used an interpolation of the source reconstruction onto a uniform grid.
 - **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
 - **Reconstruction CSV:** In the results `image` folder there is a .csv file called `source_plane_reconstruction_0.csv` which.
 
@@ -389,23 +389,49 @@ aplt.plot_array(array=interpolated_reconstruction_masked, title="")
 """
 __Magnification via Mesh__
 
-The calculations above used an interpolation of the source-plane reconstruction to a 2D grid of 1000 x 1000
-pixels.
+The magnification above used an interpolation of the source reconstruction onto a uniform grid. The magnification
+can also be computed directly on the mesh of the source reconstruction, without an interpolation grid.
 
-However, we can use directly the irregular rectangular mesh of the pixelized source reconstruction to compute
-quantities. This is more accurate as it does not introduce interpolation errors, but requires more care as the
-pixels are irregularly spaced and have different areas. 
+The reconstruction is a value at every mesh pixel, but the source it describes is continuous: between the pixels its
+surface brightness is filled in by interpolation. Each pixel's value therefore spreads over a small patch of the
+source plane, weighted by a function that is 1 at the pixel and falls to 0 at its neighbours (its basis function).
+The source plane area that belongs to a pixel is the integral of that function. Multiplying every pixel's value by
+its area and summing gives the total surface brightness of the interpolated source, which is the denominator of the
+magnification.
 
-We have already computed the total source flux using the mesh above, but we can also compute the magnification.
+These areas are given by the `areas_for_magnification` attribute of the mapper's mesh geometry. How they are
+computed depends on the mesh:
 
-Computed the areas of every pixel in the irregular rectangular mesh is a bit involved, therefore the values can be
-accessed from the source code via the `mesh_areas` attribute of the `Mapper` object.
+- `RectangularBilinearAdaptDensity`, used in this example, places its pixels on a grid that is regular in stretched
+  coordinates, which pack pixels more closely where more image pixels trace to in the source plane. Between pixels
+  the source is interpolated bilinearly, so each basis function is a pyramid in the stretched coordinates. Its area
+  is computed exactly by integrating it along the y and x axes through the stretching.
+- `RectangularUniform` has square pixels of equal size, so every pixel's area is the area of one pixel.
+- `Delaunay` interpolates linearly across triangles, so a pixel's area is exactly one third of the total area of the
+  triangles that have it as a corner.
+- `KNearestNeighbor` and `KNNBarycentric` integrate their own interpolation weights numerically, by evaluating them
+  on a fine grid that covers the mesh.
+- `DelaunayNN` uses the `Delaunay` areas, which approximate its natural-neighbour interpolation to within about
+  0.5%.
+
+On simulated data whose true magnification is known, this calculation recovers the true magnification to within
+about 1% for nearly every mesh, and within 2% for all of them. Any remaining difference comes from the source
+reconstruction itself, not from the areas.
+
+Computing the magnification on the mesh is preferable to the interpolation grid for a precise number, because it
+does not depend on the resolution or extent of the grid. The interpolation grid remains useful for plotting the
+source and for inspecting it pixel by pixel.
+
+The same calculation is performed during a model-fit by the `magnification` latent variable, so its posterior can
+be estimated alongside the lens model (see `autolens_workspace/*/guides/results/latent_variables.py`).
 """
 mesh_areas = mapper.mesh_geometry.areas_for_magnification
 
 magnification = np.sum(
     mapped_reconstructed_operated_data * mapped_reconstructed_operated_data.pixel_area
 ) / np.sum(reconstruction * mesh_areas)
+
+print(f"Magnification via Mesh: {magnification}")
 
 """
 __Magnification At A Point__

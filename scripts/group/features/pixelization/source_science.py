@@ -26,6 +26,7 @@ __Contents__
 - **Impact of Extra Galaxies:** Demonstrate how omitting extra galaxies affects magnification.
 - **Interpolated Source:** Interpolate the pixelized source to a uniform grid.
 - **Parametric Comparison:** Compare pixelized source flux to a parametric estimate.
+- **Magnification via Mesh:** The magnification computed directly on the mesh of the source reconstruction.
 - **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
 
 """
@@ -400,7 +401,19 @@ print(
 """
 __Magnification via Mesh__
 
-For more accurate magnification, we can use the mesh pixel areas directly rather than interpolating.
+The magnification can also be computed directly on the mesh of the source reconstruction, without an interpolation
+grid. Each mesh pixel's area, given by the `areas_for_magnification` attribute of the mapper's mesh geometry, is the
+integral of the function that interpolates the source between that pixel and its neighbours (its basis function).
+Multiplying every pixel's value by its area and summing therefore gives the total surface brightness of the
+interpolated source.
+
+For the `RectangularBilinearAdaptDensity` mesh used here, and for the other rectangular meshes and `Delaunay`, these
+areas are computed exactly. The `KNearestNeighbor` meshes compute them numerically, and `DelaunayNN` uses an
+approximation good to about 0.5%. On simulated data this calculation recovers the true magnification to within
+about 1%, and it does not depend on the resolution or extent of an interpolation grid. The same calculation is performed during a model-fit by the `magnification` latent
+variable.
+
+The `imaging/features/pixelization/source_science.py` example explains how the areas are computed for each mesh.
 """
 mesh_areas = mapper.mesh_geometry.areas_for_magnification
 
