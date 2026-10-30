@@ -70,12 +70,15 @@ column).
 
 Dimensionless lensing latents — no instrument inputs, no µJy variant.
 
- - ``magnification`` — dimensionless ratio of ``total_lensed_source_flux_mujy / total_source_flux_mujy``.
-   This is the empirical flux-amplification factor implied by the lens model and source light profile. Source-
-   plane errors propagate non-linearly here because the source brightness and the lens magnification both
-   contribute multiplicatively to the lensed flux. The empirical posterior on ``magnification`` (samples
-   transformed through the ratio) captures that non-linearity faithfully; analytic error propagation through
-   the ratio would not.
+ - ``magnification`` — dimensionless ratio of ``total_lensed_source_flux / total_source_flux``, so it needs no
+   ``magzero``, and it works for light-profile and pixelized sources. It is off by default in the library and
+   switched on by this workspace's ``config/latent.yaml``. This is the empirical flux-amplification factor implied
+   by the lens model and source light. Source-plane errors propagate non-linearly here because the source brightness
+   and the lens magnification both contribute multiplicatively to the lensed flux. The empirical posterior on
+   ``magnification`` (samples transformed through the ratio) captures that non-linearity faithfully; analytic error
+   propagation through the ratio would not. Magnifications at individual image positions, and the area magnification
+   of each lensed image, are not latents, because the number of images differs between lenses; compute their errors
+   from posterior draws of the samples instead.
 
  - ``effective_einstein_radius`` — the Einstein radius in arcseconds, computed via
    ``LensCalc.einstein_radius_jit_from`` which traces the zero-contour of the tangential eigenvalue of the
@@ -189,8 +192,8 @@ latent posterior.
 __Controlling the Cost via Config__
 
 Latents are computed by reconstructing a fit for every posterior sample, so the cost scales with the number
-of samples — and the two dimensionless lensing latents (``magnification``, ``effective_einstein_radius``) add
-a zero-contour critical-curve solve on top. Two workspace config files control this, and both are worth
+of samples — and ``effective_einstein_radius`` adds a zero-contour critical-curve solve on top. Two workspace
+config files control this, and both are worth
 knowing:
 
  - ``config/latent.yaml`` — controls *which* latents are computed (the eight toggles; this workspace enables
