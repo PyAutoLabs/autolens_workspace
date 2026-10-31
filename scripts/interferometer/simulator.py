@@ -94,7 +94,7 @@ simulate ALMA-class datasets with millions of visibilities end-to-end on a GPU.
 simulator = al.SimulatorInterferometer(
     uv_wavelengths=uv_wavelengths,
     exposure_time=300.0,
-    noise_sigma=1000.0,
+    noise_sigma=10.0,
     transformer_class=al.TransformerDFT,
 )
 
@@ -262,23 +262,29 @@ After downloading the file, place it in the directory:
 
 `autolens_workspace/dataset/interferometer/alma`
 
-You can then simulate and fit this high-resolution ALMA dataset by uncommenting the 
-line `dataset_name = "alma"` below.
+The dataset below is output to its own folder, `simple_high_resolution`, so the `simple` dataset written above,
+which the interferometer examples fit, is left unchanged. You can simulate the high-resolution ALMA dataset instead
+by uncommenting the two `alma` lines below.
+
+The image is evaluated on a grid with pixels 10 times smaller than the grid above, and the visibilities are summed
+over its pixels, so for the same galaxies they are 100 times larger; the noise is 100 times larger too, giving the
+same signal-to-noise as the `simple` dataset.
 
 This dataset is particularly useful for testing performance, memory usage, and accuracy when modeling realistic
 ALMA uv-coverage with a very large number of visibilities.
 """
 dataset_type = "interferometer"
+dataset_name = "simple_high_resolution"
+uv_wavelengths_file = Path("dataset", dataset_type, "uv_wavelengths", "sma.fits")
+
 # dataset_name = "alma"
+# uv_wavelengths_file = Path("dataset", dataset_type, "alma", "uv_wavelengths.fits")
 
 dataset_path = Path("dataset", dataset_type, dataset_name)
 
 grid = al.Grid2D.uniform(shape_native=(800, 800), pixel_scales=0.01)
 
-uv_wavelengths_path = Path("dataset", dataset_type, dataset_name)
-uv_wavelengths = al.ndarray_via_fits_from(
-    file_path=Path(uv_wavelengths_path, "uv_wavelengths.fits"), hdu=0
-)
+uv_wavelengths = al.ndarray_via_fits_from(file_path=uv_wavelengths_file, hdu=0)
 
 simulator = al.SimulatorInterferometer(
     uv_wavelengths=uv_wavelengths,
