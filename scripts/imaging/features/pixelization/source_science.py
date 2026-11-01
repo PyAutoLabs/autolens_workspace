@@ -559,7 +559,7 @@ First, lets load `source_plane_reconstruction_0.csv` as a dictionary, using basi
 """
 # Lens:
 
-mass = af.Model(al.mp.PowerLaw)
+mass = af.Model(al.mp.Isothermal)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # External Shear:
@@ -784,6 +784,8 @@ for name, values in [
 """
 ERRORS_PROSE
 
-The errors also only include the uncertainty of the model that was fitted: a different mass model (for example an
-isothermal instead of a power law), mesh or regularization can change the magnifications by more than these errors.
+The errors also only include the uncertainty of the model that was fitted: a different mass model, mesh or
+regularization can change the magnifications by more than these errors. For example, fitting this dataset with a
+power law instead of an isothermal gives a slope of about 2.2 (the true value is 2.0) and magnifications about 40% below
+the true values, far outside the errors of that fit.
 """
