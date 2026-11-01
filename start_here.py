@@ -13,6 +13,38 @@ https://www.astro.caltech.edu/~george/qsolens/
 
 This notebook gives a starting overview of **PyAutoLens**'s features and API.
 
+__Natural Language or Python__
+
+You can use **PyAutoLens** by describing what you want in natural language, or by writing Python yourself. Both routes
+use the same software, and everything in this notebook can be done either way.
+
+To use natural language, open Claude Code, Codex or another AI coding agent and paste in the prompt below. The
+[PyAutoLens AI Assistant](https://github.com/PyAutoLabs/autolens_assistant) then takes you through this notebook as a
+conversation (grids, light and mass profiles, ray-tracing, then simulating and fitting a strong lens), with you typing each request in plain English. Afterwards it helps you get started on your
+own lenses:
+
+> I want to do strong lensing science with PyAutoLens (https://github.com/PyAutoLabs/PyAutoLens) and the
+> autolens_assistant (https://github.com/PyAutoLabs/autolens_assistant). First clone that repository,
+> cd into it and follow its AGENTS.md.
+>
+> Begin the "start here" guide for a new user.
+
+Claude Code and Codex are recommended, and sustained scientific use normally needs paid access to one of them. Free
+options are listed on the [AI Options](https://github.com/PyAutoLabs/PyAutoScientist/blob/main/AI_OPTIONS.md) page.
+
+**Why natural language?** Turning a scientific idea into an analysis has always meant expressing it through the syntax
+of a programming language. That syntax was never the science: it is the interface between your ideas and the
+computer. **PyAutoLens** is designed so you can describe a lensing analysis in the language you use to think and write about it,
+while you supply the understanding, direction and judgement. The
+[PyAuto AI Policy](https://github.com/PyAutoLabs/PyAutoScientist/blob/main/AI_POLICY.md) explains this approach in
+more detail.
+
+**Python is not going anywhere.** Every **PyAutoLens** feature remains available through its Python API, and the assistant
+writes ordinary **PyAutoLens** code like the code in this notebook, which you can read, run and change. The workspace
+examples are written for people to read, and the [HowToLens](https://github.com/PyAutoLabs/HowToLens) lectures
+teach strong lensing and lens modeling from first principles. That understanding is what lets you direct an analysis with expertise,
+whether you do it in natural language or in Python. The rest of this notebook is the Python overview.
+
 __Google Colab Setup__
 
 Run this cell to install PyAutoLens and download the files needed for this notebook on Google Colab.
@@ -644,14 +676,4 @@ quickstart example fits the real JWST-era shape catalogue of Abell 2744, and str
 be combined in joint analyses of the same cluster.
 
 Checkout `autolens_workspace/*/weak/start_here.py` to fit your first weak lensing dataset.
-
-__PyAutoLens AI Assistant__
-
-The [PyAutoLens AI Assistant](https://github.com/PyAutoLabs/autolens_assistant) lets you do gravitational lensing
-science in natural language from inside an AI coding agent. You can get started simply by asking it a question about
-gravitational lensing or describing the task you would like to perform with **PyAutoLens**. See the
-[autolens_assistant GitHub page](https://github.com/PyAutoLabs/autolens_assistant) for its full scope and instructions.
-
-**The assistant runs inside an AI coding agent: Claude Code or Codex are recommended. Sustained scientific use normally needs paid access to one of them (a personal subscription, institutional access or API billing). OpenCode is an experimental alternative whose client is free but whose model access, cost and capability depend on the provider. Browser chat routes (ChatGPT or Claude with a GitHub connector) are no longer supported.**
-
 """
