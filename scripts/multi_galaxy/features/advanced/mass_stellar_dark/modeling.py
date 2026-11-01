@@ -96,17 +96,10 @@ simulator script.
 dataset_name = "mass_stellar_dark"
 dataset_path = Path("dataset", "multi_galaxy", dataset_name)
 
-if al.util.dataset.should_simulate(str(dataset_path)):
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [
-            sys.executable,
-            "scripts/multi_galaxy/features/advanced/mass_stellar_dark/simulator.py",
-        ],
-        check=True,
-    )
+al.util.dataset.simulate_if_needed(
+    dataset_path,
+    simulator="scripts/multi_galaxy/features/advanced/mass_stellar_dark/simulator.py",
+)
 
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",

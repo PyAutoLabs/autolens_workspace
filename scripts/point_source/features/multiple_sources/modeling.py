@@ -76,14 +76,10 @@ __Dataset Auto-Simulation__
 If the dataset does not already exist on your system, it is created by running the corresponding simulator script.
 This ensures that all example scripts can be run without manually simulating data first.
 """
-if al.util.dataset.should_simulate(str(dataset_path)):
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [sys.executable, "scripts/point_source/features/multiple_sources/simulator.py"],
-        check=True,
-    )
+al.util.dataset.simulate_if_needed(
+    dataset_path,
+    simulator="scripts/point_source/features/multiple_sources/simulator.py",
+)
 
 """
 We load each point-source dataset as a `PointDataset` and place them into a list. Every entry in the list is

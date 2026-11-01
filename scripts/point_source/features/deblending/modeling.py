@@ -119,14 +119,9 @@ __Dataset Auto-Simulation__
 If the dataset does not already exist on your system, it will be created by running the corresponding
 simulator script. This ensures that all example scripts can be run without manually simulating data first.
 """
-if al.util.dataset.should_simulate(str(dataset_path)):
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [sys.executable, "scripts/point_source/features/deblending/simulator.py"],
-        check=True,
-    )
+al.util.dataset.simulate_if_needed(
+    dataset_path, simulator="scripts/point_source/features/deblending/simulator.py"
+)
 
 dataset = al.Imaging.from_fits(
     data_path=Path(dataset_path) / "data.fits",
