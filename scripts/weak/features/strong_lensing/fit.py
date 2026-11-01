@@ -41,14 +41,9 @@ simulator script. This ensures that all example scripts can be run without manua
 """
 dataset_path = Path("dataset") / "weak" / "strong_lensing"
 
-if al.util.dataset.should_simulate(str(dataset_path)):
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [sys.executable, "scripts/weak/features/strong_lensing/simulator.py"],
-        check=True,
-    )
+al.util.dataset.simulate_if_needed(
+    dataset_path, simulator="scripts/weak/features/strong_lensing/simulator.py"
+)
 
 dataset_imaging = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",

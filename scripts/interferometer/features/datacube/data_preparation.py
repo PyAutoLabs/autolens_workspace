@@ -68,14 +68,9 @@ dataset_label = "datacube"
 dataset_name = "sim_simple"
 dataset_path = Path("dataset") / "interferometer" / dataset_label / dataset_name
 
-if al.util.dataset.should_simulate(str(dataset_path)):
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [sys.executable, "scripts/interferometer/features/datacube/simulator.py"],
-        check=True,
-    )
+al.util.dataset.simulate_if_needed(
+    dataset_path, simulator="scripts/interferometer/features/datacube/simulator.py"
+)
 
 visibilities_4d = al.ndarray_via_fits_from(
     file_path=dataset_path / "visibilities_4d_cube.fits", hdu=0

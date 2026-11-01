@@ -75,17 +75,10 @@ Load the DSPL dataset. The auto-simulation block mirrors the other example scrip
 dataset_name = "double_source_plane_lens"
 dataset_path = Path("dataset") / "imaging" / dataset_name
 
-if al.util.dataset.should_simulate(str(dataset_path)):
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [
-            sys.executable,
-            "scripts/imaging/features/advanced/double_source_plane_lens/simulator.py",
-        ],
-        check=True,
-    )
+al.util.dataset.simulate_if_needed(
+    dataset_path,
+    simulator="scripts/imaging/features/advanced/double_source_plane_lens/simulator.py",
+)
 
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",

@@ -61,13 +61,9 @@ conf.instance["output"]["samples_weight_threshold"] = None
 dataset_name = "simple__no_lens_light"
 dataset_path = Path("dataset") / "imaging" / dataset_name
 
-if al.util.dataset.should_simulate(str(dataset_path)):
-    import subprocess
-
-    subprocess.run(
-        [sys.executable, "scripts/imaging/features/no_lens_light/simulator.py"],
-        check=True,
-    )
+al.util.dataset.simulate_if_needed(
+    dataset_path, simulator="scripts/imaging/features/no_lens_light/simulator.py"
+)
 
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",

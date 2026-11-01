@@ -92,14 +92,10 @@ A 3.0" mask, as in `multi_galaxy/modeling.py`. The scaling galaxies lie well out
 dataset_name = "scaling_relation"
 dataset_path = Path("dataset", "multi_galaxy", dataset_name)
 
-if al.util.dataset.should_simulate(str(dataset_path)):
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [sys.executable, "scripts/multi_galaxy/features/scaling_relation/simulator.py"],
-        check=True,
-    )
+al.util.dataset.simulate_if_needed(
+    dataset_path,
+    simulator="scripts/multi_galaxy/features/scaling_relation/simulator.py",
+)
 
 dataset = al.Imaging.from_fits(
     data_path=dataset_path / "data.fits",

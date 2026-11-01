@@ -71,17 +71,10 @@ __Dataset Auto-Simulation__
 If the dataset does not already exist on your system, it will be created by running the corresponding
 simulator script. This ensures that all example scripts can be run without manually simulating data first.
 """
-if al.util.dataset.should_simulate(str(dataset_path)):
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [
-            sys.executable,
-            "scripts/multi_dataset/features/imaging_and_interferometer/simulator.py",
-        ],
-        check=True,
-    )
+al.util.dataset.simulate_if_needed(
+    dataset_path,
+    simulator="scripts/multi_dataset/features/imaging_and_interferometer/simulator.py",
+)
 
 interferometer = al.Interferometer.from_fits(
     data_path=dataset_path / "data.fits",
@@ -109,14 +102,9 @@ __Dataset Auto-Simulation__
 If the dataset does not already exist on your system, it will be created by running the corresponding
 simulator script. This ensures that all example scripts can be run without manually simulating data first.
 """
-if al.util.dataset.should_simulate(str(dataset_path)):
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [sys.executable, "scripts/multi_dataset/simulator.py"],
-        check=True,
-    )
+al.util.dataset.simulate_if_needed(
+    dataset_path, simulator="scripts/multi_dataset/simulator.py"
+)
 
 imaging = al.Imaging.from_fits(
     data_path=Path(dataset_path, "g_data.fits"),

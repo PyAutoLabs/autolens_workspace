@@ -143,14 +143,9 @@ __Dataset Auto-Simulation__
 
 If the cube isn't on disk yet, run the simulator. This makes the script runnable on a fresh checkout.
 """
-if al.util.dataset.should_simulate(str(dataset_path)):
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [sys.executable, "scripts/interferometer/features/datacube/simulator.py"],
-        check=True,
-    )
+al.util.dataset.simulate_if_needed(
+    dataset_path, simulator="scripts/interferometer/features/datacube/simulator.py"
+)
 
 channel_paths = sorted(
     p for p in dataset_path.iterdir() if p.is_dir() and p.name.startswith("channel_")

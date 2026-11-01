@@ -92,14 +92,9 @@ __Dataset Auto-Simulation__
 If the dataset does not already exist on your system, it will be created by running the corresponding
 simulator script. This ensures that all example scripts can be run without manually simulating data first.
 """
-if al.util.dataset.should_simulate(str(dataset_main_path)):
-    import subprocess
-    import sys
-
-    subprocess.run(
-        [sys.executable, "scripts/multi_dataset/simulator.py"],
-        check=True,
-    )
+al.util.dataset.simulate_if_needed(
+    dataset_main_path, simulator="scripts/multi_dataset/simulator.py"
+)
 
 
 dataset_list = []
