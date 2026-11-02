@@ -934,7 +934,8 @@
       "Source Magnification",
       "Impact of Extra Galaxies",
       "Tracer",
-      "Magnification At A Point"
+      "Magnification At A Point",
+      "Magnification Errors"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py"
@@ -1141,7 +1142,8 @@
       "Parametric Comparison",
       "Magnification via Mesh",
       "True Magnification",
-      "Magnification At A Point"
+      "Magnification At A Point",
+      "Magnification Errors"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
@@ -1451,7 +1453,8 @@
       "Tracer",
       "Magnification At A Point",
       "Area Magnification",
-      "Parametric Source Models"
+      "Parametric Source Models",
+      "Magnification Errors"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
@@ -3884,6 +3887,7 @@
       "Tracer",
       "Magnification At A Point",
       "Parametric Source Models",
+      "Magnification Errors",
       "Wrap Up"
     ],
     "cross_refs": [
@@ -4211,7 +4215,8 @@
       "Magnification via Mesh",
       "True Magnification",
       "Magnification At A Point",
-      "Reconstruction CSV"
+      "Reconstruction CSV",
+      "Magnification Errors"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
@@ -4557,7 +4562,8 @@
       "Tracer",
       "Magnification At A Point",
       "Area Magnification",
-      "Parametric Source Models"
+      "Parametric Source Models",
+      "Magnification Errors"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
@@ -5581,7 +5587,8 @@
       "Magnification via Mesh",
       "True Magnification",
       "Magnification At A Point",
-      "Reconstruction CSV"
+      "Reconstruction CSV",
+      "Magnification Errors"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
@@ -5849,7 +5856,8 @@
       "Tracer",
       "Magnification At A Point",
       "Area Magnification",
-      "Parametric Source Models"
+      "Parametric Source Models",
+      "Magnification Errors"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
@@ -7111,6 +7119,7 @@
       "Source Magnification",
       "Source Flux",
       "Magnification At A Point",
+      "Magnification Errors",
       "Wrap Up"
     ],
     "cross_refs": [
@@ -7426,6 +7435,7 @@
       "Magnification via Mesh",
       "True Magnification",
       "Magnification At A Point",
+      "Magnification Errors",
       "Wrap Up"
     ],
     "cross_refs": [
@@ -7796,7 +7806,8 @@
       "Tracer",
       "Magnification At A Point",
       "Area Magnification",
-      "Parametric Source Models"
+      "Parametric Source Models",
+      "Magnification Errors"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
