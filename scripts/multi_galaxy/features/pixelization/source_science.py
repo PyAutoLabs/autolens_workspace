@@ -520,9 +520,9 @@ each magnification for every drawn model and quote the median and the range cont
 using about 300 drawn models.
 
 This is the only part of this script that fits a lens model, which is why it comes last: everything above has already
-run. On a laptop CPU the fit takes about FIT_MINUTES minutes and the 100 draws below about DRAW_MINUTES minutes.
-The `autolens_workspace/*/guides/results` examples describe how to load results and draw from a posterior in more
-detail.
+run. On a laptop CPU the fit is slower than in the single-lens examples, because it models several galaxies, and can
+take several hours; each draw below takes a few seconds. The `autolens_workspace/*/guides/results` examples describe how
+to load results and draw from a posterior in more detail.
 
 __Model Fit__
 
@@ -654,10 +654,12 @@ for name, values in [
     print(f"    fractional error {np.round((upper - lower) / 2.0 / np.abs(median), 3)}")
 
 """
-ERRORS_PROSE
+Compare the medians with the true magnifications printed earlier in this script. The 68% intervals should contain the
+true values about two-thirds of the time if the fitted model can describe the lens; offsets larger than the errors are a
+sign that it cannot.
 
-The errors also only include the uncertainty of the model that was fitted: a different mass model (for example an
-isothermal instead of a power law), mesh or regularization can change the magnifications by more than these errors.
+The errors also only include the uncertainty of the model that was fitted: a different mass model (for example a power
+law instead of an isothermal), mesh or regularization can change the magnifications by more than these errors.
 
 __Wrap Up__
 

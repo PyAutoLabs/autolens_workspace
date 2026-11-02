@@ -321,10 +321,10 @@ drawn model and quote the median and the range containing the central 68% of the
 percentiles). This is how the LEGGOS II paper (arXiv:2606.20804) reports its magnification errors, using about 300
 drawn models.
 
-This is the only part of this script that searches for a lens model, which is why it comes last: everything above
-has already run. On a laptop CPU the fit takes about FIT_MINUTES minutes and the 100 draws below about DRAW_MINUTES
-minutes. The `autolens_workspace/*/guides/results` examples describe how to load results and draw from a posterior
-in more detail.
+This is the only part of this script that searches for a lens model, which is why it comes last: everything above has
+already run. On a laptop CPU the fit is slower than in the single-lens examples, because it models several galaxies, and
+can take several hours; each draw below takes a few seconds. The `autolens_workspace/*/guides/results` examples describe
+how to load results and draw from a posterior in more detail.
 
 __Model Fit__
 
@@ -456,7 +456,9 @@ for name, values in [
     print(f"    fractional error {np.round((upper - lower) / 2.0 / np.abs(median), 3)}")
 
 """
-ERRORS_PROSE
+Compare the medians with the true magnifications printed earlier in this script. The 68% intervals should contain the
+true values about two-thirds of the time if the fitted model can describe the lens; offsets larger than the errors are a
+sign that it cannot.
 
 These errors include only the uncertainty of the model that was fitted. As explained above, the split of light
 between the two deflectors also depends on the geometry of each galaxy's light model, which a single fitted model

@@ -668,9 +668,9 @@ each magnification for every drawn model and quote the median and the range cont
 (the 16th to 84th percentiles). This is how the LEGGOS II paper (arXiv:2606.20804) reports its magnification errors,
 using about 300 drawn models.
 
-The fit above is the slow part of this script, which is why it and these draws come last. On a laptop CPU the fit
-takes about FIT_MINUTES minutes and the draws below about DRAW_MINUTES minutes. The
-`autolens_workspace/*/guides/results` examples describe how to load results and draw from a posterior in more detail.
+The fit above is the slow part of this script, which is why it and these draws come last. On a laptop CPU the fit can
+take several hours, and each draw below takes a few seconds. The `autolens_workspace/*/guides/results` examples describe
+how to load results and draw from a posterior in more detail.
 
 __Posterior Draws__
 
@@ -745,7 +745,9 @@ for name, values in [
     print(f"    fractional error {np.round((upper - lower) / 2.0 / np.abs(median), 3)}")
 
 """
-ERRORS_PROSE
+Compare the medians with the true magnifications printed earlier in this script. The 68% intervals should contain the
+true values about two-thirds of the time if the fitted model can describe the lens; offsets larger than the errors are a
+sign that it cannot.
 
 The errors also only include the uncertainty of the model that was fitted: a different mass model (for example a
 power law instead of an isothermal, whose slope changes the magnification strongly), mesh or regularization can
