@@ -19,6 +19,7 @@ __Contents__
 - **Source Magnification:** The overall magnification of the source is estimated as the ratio of total surface brightness in.
 - **Tracer:** Lens modeling returns a `max_log_likelihood_tracer`, which is likely the object you have at hand to.
 - **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
+- **Magnification Map:** The magnification of every image-plane pixel, with contours of constant magnification.
 - **Area Magnification:** Each lensed image's area divided by the area of the source region it comes from.
 - **Parametric Source Models:** If your lens modeling uses a parametric source model (e.g.
 - **Magnification Errors:** Errors on every magnification above, from a quick lens model fit and draws from its posterior (the only slow part of the script, so it runs last).
@@ -278,6 +279,20 @@ magnification_at_points = lens_calc.magnification_2d_via_hessian_from(grid=point
 
 print(f"Magnification At Points (signed): {magnification_at_points}")
 print(f"Magnification At Points (absolute): {abs(magnification_at_points)}")
+
+"""
+__Magnification Map__
+
+The point magnification can be evaluated at every pixel of the image plane, giving a map of the magnification.
+`plot_magnification_2d` plots log10 |mu| for each pixel, because the magnification grows without limit towards the
+critical curves and a linear colour scale would show little else. Contour lines mark constant |mu| (by default 2, 5,
+10, 20, 50 and 100) and the critical curves are drawn on top, as in the magnification maps published with cluster
+lens models (e.g. LEGGOS II, arXiv:2606.20804, figure 4).
+
+The map works for any tracer, from a single galaxy to a group or cluster. For a multi-plane tracer it shows the
+magnification of a source in the last plane.
+"""
+aplt.plot_magnification_2d(mass_obj=tracer, grid=grid)
 
 
 """
