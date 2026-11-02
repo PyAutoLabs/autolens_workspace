@@ -935,10 +935,12 @@
       "Impact of Extra Galaxies",
       "Tracer",
       "Magnification At A Point",
-      "Magnification Errors"
+      "Magnification Errors",
+      "Magnification Uncertainty Map"
     ],
     "cross_refs": [
-      "/guides/advanced/multi_plane.py"
+      "/guides/advanced/multi_plane.py",
+      "imaging/source_science.py"
     ],
     "notebook": "notebooks/group/features/multi_gaussian_expansion/source_science.ipynb",
     "path": "scripts/group/features/multi_gaussian_expansion/source_science.py",
@@ -1144,11 +1146,13 @@
       "Source-Plane Magnification Map",
       "True Magnification",
       "Magnification At A Point",
-      "Magnification Errors"
+      "Magnification Errors",
+      "Magnification Uncertainty Map"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
-      "imaging/features/pixelization/source_science.py"
+      "imaging/features/pixelization/source_science.py",
+      "imaging/source_science.py"
     ],
     "notebook": "notebooks/group/features/pixelization/source_science.ipynb",
     "path": "scripts/group/features/pixelization/source_science.py",
@@ -1455,7 +1459,8 @@
       "Magnification At A Point",
       "Area Magnification",
       "Parametric Source Models",
-      "Magnification Errors"
+      "Magnification Errors",
+      "Magnification Uncertainty Map"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
@@ -3889,11 +3894,13 @@
       "Magnification At A Point",
       "Parametric Source Models",
       "Magnification Errors",
+      "Magnification Uncertainty Map",
       "Wrap Up"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
-      "/imaging/source_science.py"
+      "/imaging/source_science.py",
+      "imaging/source_science.py"
     ],
     "notebook": "notebooks/imaging/features/multi_gaussian_expansion/source_science.ipynb",
     "path": "scripts/imaging/features/multi_gaussian_expansion/source_science.py",
@@ -4218,12 +4225,14 @@
       "True Magnification",
       "Magnification At A Point",
       "Reconstruction CSV",
-      "Magnification Errors"
+      "Magnification Errors",
+      "Magnification Uncertainty Map"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
       "/guides/results/latent_variables.py",
-      "imaging/modeling.py"
+      "imaging/modeling.py",
+      "imaging/source_science.py"
     ],
     "notebook": "notebooks/imaging/features/pixelization/source_science.ipynb",
     "path": "scripts/imaging/features/pixelization/source_science.py",
@@ -4567,7 +4576,8 @@
       "Source-Plane Magnification Map",
       "Area Magnification",
       "Parametric Source Models",
-      "Magnification Errors"
+      "Magnification Errors",
+      "Magnification Uncertainty Map"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
@@ -5593,12 +5603,14 @@
       "True Magnification",
       "Magnification At A Point",
       "Reconstruction CSV",
-      "Magnification Errors"
+      "Magnification Errors",
+      "Magnification Uncertainty Map"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
       "/guides/results/latent_variables.py",
-      "imaging/features/pixelization/source_science.py"
+      "imaging/features/pixelization/source_science.py",
+      "imaging/source_science.py"
     ],
     "notebook": "notebooks/interferometer/features/pixelization/source_science.ipynb",
     "path": "scripts/interferometer/features/pixelization/source_science.py",
@@ -5863,7 +5875,8 @@
       "Magnification At A Point",
       "Area Magnification",
       "Parametric Source Models",
-      "Magnification Errors"
+      "Magnification Errors",
+      "Magnification Uncertainty Map"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
@@ -7126,12 +7139,14 @@
       "Source Flux",
       "Magnification At A Point",
       "Magnification Errors",
+      "Magnification Uncertainty Map",
       "Wrap Up"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
       "fit.py",
       "imaging/features/multi_gaussian_expansion/source_science.py",
+      "imaging/source_science.py",
       "likelihood_function.py",
       "modeling.py",
       "multi_galaxy/features/multi_gaussian_expansion/likelihood_function.py",
@@ -7443,11 +7458,13 @@
       "True Magnification",
       "Magnification At A Point",
       "Magnification Errors",
+      "Magnification Uncertainty Map",
       "Wrap Up"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
       "imaging/features/pixelization/source_science.py",
+      "imaging/source_science.py",
       "multi_galaxy/features/pixelization/modeling.py",
       "multi_galaxy/features/pixelization/plot.py",
       "multi_galaxy/modeling.py",
@@ -7814,7 +7831,8 @@
       "Magnification At A Point",
       "Area Magnification",
       "Parametric Source Models",
-      "Magnification Errors"
+      "Magnification Errors",
+      "Magnification Uncertainty Map"
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
