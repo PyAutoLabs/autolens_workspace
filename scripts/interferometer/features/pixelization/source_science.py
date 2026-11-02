@@ -28,6 +28,7 @@ __Contents__
 - **True Magnification:** The simulator's true magnification, to check the reconstruction against.
 - **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
 - **Reconstruction CSV:** In the results `image` folder there is a .csv file called `source_plane_reconstruction_0.csv` which.
+- **Magnification Errors:** Errors on the magnifications above, from draws from the posterior of the model-fit (the slow part of the script, so it runs last).
 
 """
 
@@ -529,7 +530,7 @@ First, lets load `source_plane_reconstruction_0.csv` as a dictionary, using basi
 """
 # Lens:
 
-mass = af.Model(al.mp.PowerLaw)
+mass = af.Model(al.mp.Isothermal)
 lens = af.Model(al.Galaxy, redshift=0.5, mass=mass)
 
 # Source:
@@ -654,3 +655,101 @@ interpolation_grid = al.Grid2D.from_extent(
 interpolated_array = griddata(
     points=points, values=values, xi=interpolation_grid, fill_value=0.0
 )
+
+"""
+__Magnification Errors__
+
+Every magnification above is a single number, computed from one model of the lens and one source reconstruction. For
+a real lens that model is inferred from the data and is uncertain, so every magnification computed from it has an
+error too.
+
+We estimate these errors the standard way: draw many models at random from the posterior of the fit above, recompute
+each magnification for every drawn model and quote the median and the range containing the central 68% of the values
+(the 16th to 84th percentiles). This is how the LEGGOS II paper (arXiv:2606.20804) reports its magnification errors,
+using about 300 drawn models.
+
+The fit above is the slow part of this script, which is why it and these draws come last. On a laptop CPU the fit can
+take several hours, and each draw below takes a few seconds. The `autolens_workspace/*/guides/results` examples describe
+how to load results and draw from a posterior in more detail.
+
+__Posterior Draws__
+
+For each drawn model we fit the data again, which solves for the source reconstruction of that model, and recompute
+the magnification via the mesh and the point magnification at the multiple image positions. The source reconstruction
+is therefore redone for every draw, so its uncertainty is included in the errors.
+
+The point magnification is computed for the plane at the source's redshift, which `plane_index_via_redshift_from`
+converts to the plane's index. For a system with sources at several redshifts (for example a cluster), change
+`source_redshift` to compute it for a different source.
+"""
+import time
+
+source_redshift = 1.0
+
+total_draws = 100
+
+magnification_via_mesh_list = []
+point_magnification_list = []
+
+start = time.time()
+
+for _ in range(total_draws):
+    instance = result.samples.draw_randomly_via_pdf()
+
+    fit_draw = analysis.fit_from(instance=instance)
+
+    inversion_draw = fit_draw.inversion
+    mapper_draw = inversion_draw.cls_list_from(cls=al.Mapper)[0]
+
+    mapped_reconstructed_data_draw = inversion_draw.mapped_reconstructed_data
+
+    magnification_via_mesh_list.append(
+        np.sum(
+            mapped_reconstructed_data_draw * mapped_reconstructed_data_draw.pixel_area
+        )
+        / np.sum(
+            inversion_draw.reconstruction
+            * mapper_draw.mesh_geometry.areas_for_magnification
+        )
+    )
+
+    plane_index = fit_draw.tracer.plane_index_via_redshift_from(
+        redshift=source_redshift
+    )
+
+    lens_calc = al.LensCalc.from_tracer(tracer=fit_draw.tracer, plane_j=plane_index)
+
+    point_magnification_list.append(
+        np.asarray(lens_calc.magnification_2d_via_hessian_from(grid=positions))
+    )
+
+print(
+    f"{total_draws} draws in {time.time() - start:.1f} s "
+    f"({(time.time() - start) / total_draws:.2f} s per draw)"
+)
+
+"""
+__Errors__
+
+The median and the 16th and 84th percentiles of each magnification over the draws give its value and error. The
+point magnification keeps its sign, which is the parity of each image.
+"""
+for name, values in [
+    ("Magnification via Mesh", magnification_via_mesh_list),
+    ("Point Magnification At Positions", point_magnification_list),
+]:
+    lower, median, upper = np.percentile(np.asarray(values), [16.0, 50.0, 84.0], axis=0)
+
+    print(f"{name}: median {np.round(median, 2)}")
+    print(f"    68% interval {np.round(lower, 2)} to {np.round(upper, 2)}")
+    print(f"    fractional error {np.round((upper - lower) / 2.0 / np.abs(median), 3)}")
+
+"""
+Compare the medians with the true magnifications printed earlier in this script. The 68% intervals should contain the
+true values about two-thirds of the time if the fitted model can describe the lens; offsets larger than the errors are a
+sign that it cannot.
+
+The errors also only include the uncertainty of the model that was fitted: a different mass model (for example a
+power law instead of an isothermal, whose slope changes the magnification strongly), mesh or regularization can
+change the magnifications by more than these errors.
+"""

@@ -27,6 +27,7 @@ __Contents__
 - **Magnification via Mesh:** The magnification computed directly on the mesh of the source reconstruction.
 - **True Magnification:** The simulator's true magnification, to check the reconstruction against.
 - **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
+- **Magnification Errors:** Errors on the magnifications above, from a quick lens model fit and draws from its posterior (the only slow part of the script, so it runs last).
 - **Wrap Up:** Where to go next.
 
 __What Changes For Multiple Deflectors__
@@ -508,6 +509,158 @@ print(
 )
 
 """
+__Magnification Errors__
+
+Every magnification above is a single number, computed from one model of the lens. For a real lens that model is
+inferred from the data and is uncertain, so every magnification computed from it has an error too.
+
+We estimate these errors the standard way: fit a lens model, draw many models at random from its posterior, recompute
+each magnification for every drawn model and quote the median and the range containing the central 68% of the values
+(the 16th to 84th percentiles). This is how the LEGGOS II paper (arXiv:2606.20804) reports its magnification errors,
+using about 300 drawn models.
+
+This is the only part of this script that fits a lens model, which is why it comes last: everything above has already
+run. On a laptop CPU the fit is slower than in the single-lens examples, because it models several galaxies, and can
+take several hours; each draw below takes a few seconds. The `autolens_workspace/*/guides/results` examples describe how
+to load results and draw from a posterior in more detail.
+
+__Model Fit__
+
+We fit a model of the two lens galaxies, each with Sersic light and an isothermal mass, an external shear held at
+the system centre and the source reconstructed on the same 28 x 28 `RectangularBilinearAdaptDensity` mesh used
+above, with constant regularization whose coefficient is a free parameter. The light profiles are linear, so their intensities are solved for rather than
+sampled, which keeps the number of free parameters down. The search is a quick Nautilus run with 200 live points, the
+number `multi_galaxy/modeling` uses for its two-deflector model. A positions likelihood, which requires the multiple
+images of the source to trace to the same location in the source plane, stops the fit from settling on a solution
+where the lens has the wrong Einstein radius.
+"""
+import autofit as af
+
+lens_0 = af.Model(
+    al.Galaxy, redshift=0.5, bulge=al.lp_linear.Sersic, mass=al.mp.Isothermal
+)
+lens_1 = af.Model(
+    al.Galaxy, redshift=0.5, bulge=al.lp_linear.Sersic, mass=al.mp.Isothermal
+)
+
+field = af.Model(al.MassField, redshift=0.5, shear=al.mp.ExternalShear)
+
+pixelization = af.Model(
+    al.Pixelization,
+    mesh=al.mesh.RectangularBilinearAdaptDensity(shape=mesh_shape),
+    regularization=al.reg.Constant,
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, pixelization=pixelization)
+
+model = af.Collection(
+    galaxies=af.Collection(lens_0=lens_0, lens_1=lens_1, source=source),
+    fields=field,
+)
+
+positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.json"))
+
+analysis = al.AnalysisImaging(
+    dataset=dataset,
+    positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
+    use_jax=True,
+)
+
+search = af.Nautilus(
+    path_prefix=Path("source_science"),
+    name="magnification_errors",
+    unique_tag=dataset_name,
+    n_live=200,
+)
+
+result = search.fit(model=model, analysis=analysis)
+
+"""
+__Posterior Draws__
+
+For each drawn model we fit the data again, which solves for the source reconstruction of that model, and recompute
+the magnification via the mesh and the point magnification at the multiple image positions. The source reconstruction
+is therefore redone for every draw, so its uncertainty is included in the errors.
+
+The point magnification is computed for the plane at the source's redshift, which `plane_index_via_redshift_from`
+converts to the plane's index. For a system with sources at several redshifts (for example a cluster), change
+`source_redshift` to compute it for a different source.
+"""
+import time
+
+source_redshift = 1.0
+
+total_draws = 100
+
+magnification_via_mesh_list = []
+point_magnification_list = []
+
+start = time.time()
+
+for _ in range(total_draws):
+    instance = result.samples.draw_randomly_via_pdf()
+
+    fit_draw = analysis.fit_from(instance=instance)
+
+    inversion_draw = fit_draw.inversion
+    mapper_draw = inversion_draw.cls_list_from(cls=al.Mapper)[0]
+
+    # The linear light profiles of the two deflectors are solved for alongside the source, so we take
+    # the source's part of the reconstruction and of the image it maps to.
+    mapped_reconstructed_operated_data_draw = (
+        inversion_draw.mapped_reconstructed_operated_data_dict[mapper_draw]
+    )
+
+    magnification_via_mesh_list.append(
+        np.sum(
+            mapped_reconstructed_operated_data_draw
+            * mapped_reconstructed_operated_data_draw.pixel_area
+        )
+        / np.sum(
+            inversion_draw.reconstruction_dict[mapper_draw]
+            * mapper_draw.mesh_geometry.areas_for_magnification
+        )
+    )
+
+    plane_index = fit_draw.tracer.plane_index_via_redshift_from(
+        redshift=source_redshift
+    )
+
+    lens_calc = al.LensCalc.from_tracer(tracer=fit_draw.tracer, plane_j=plane_index)
+
+    point_magnification_list.append(
+        np.asarray(lens_calc.magnification_2d_via_hessian_from(grid=positions))
+    )
+
+print(
+    f"{total_draws} draws in {time.time() - start:.1f} s "
+    f"({(time.time() - start) / total_draws:.2f} s per draw)"
+)
+
+"""
+__Errors__
+
+The median and the 16th and 84th percentiles of each magnification over the draws give its value and error. The
+point magnification keeps its sign, which is the parity of each image.
+"""
+for name, values in [
+    ("Magnification via Mesh", magnification_via_mesh_list),
+    ("Point Magnification At Positions", point_magnification_list),
+]:
+    lower, median, upper = np.percentile(np.asarray(values), [16.0, 50.0, 84.0], axis=0)
+
+    print(f"{name}: median {np.round(median, 2)}")
+    print(f"    68% interval {np.round(lower, 2)} to {np.round(upper, 2)}")
+    print(f"    fractional error {np.round((upper - lower) / 2.0 / np.abs(median), 3)}")
+
+"""
+Compare the medians with the true magnifications printed earlier in this script. The 68% intervals should contain the
+true values about two-thirds of the time if the fitted model can describe the lens; offsets larger than the errors are a
+sign that it cannot.
+
+The errors also only include the uncertainty of the model that was fitted: a different mass model (for example a power
+law instead of an isothermal), mesh or regularization can change the magnifications by more than these errors.
+
 __Wrap Up__
 
 Where to go next:

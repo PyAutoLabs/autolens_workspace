@@ -27,6 +27,7 @@ __Contents__
 - **Impact of Extra Galaxies:** Show that omitting extra galaxies gives incorrect magnification.
 - **Tracer:** Using the tracer from lens modeling results.
 - **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
+- **Magnification Errors:** Errors on the magnifications above, from a quick lens model fit and draws from its posterior (the only slow part of the script, so it runs last).
 
 """
 
@@ -352,4 +353,182 @@ as each contributes to the ray-tracing and therefore to the magnification of the
 An MGE source may give different flux and magnification estimates compared to a single Sersic source. If
 precise source science calculations are important for your analysis, we recommend comparing results from
 different source models (e.g. MGE, Sersic, pixelized reconstruction) to estimate systematic uncertainties.
+"""
+
+"""
+__Magnification Errors__
+
+Every magnification above is a single number, computed from one model of the lens. For a real lens that model is
+inferred from the data and is uncertain, so every magnification computed from it has an error too.
+
+We estimate these errors the standard way: fit a lens model, draw many models at random from its posterior, recompute
+each magnification for every drawn model and quote the median and the range containing the central 68% of the values
+(the 16th to 84th percentiles). This is how the LEGGOS II paper (arXiv:2606.20804) reports its magnification errors,
+using about 300 drawn models.
+
+This is the only part of this script that fits a lens model, which is why it comes last: everything above has already
+run. On a laptop CPU the fit is slower than in the single-lens examples, because it models several galaxies, and can
+take several hours; each draw below takes a few seconds. The `autolens_workspace/*/guides/results` examples describe how
+to load results and draw from a posterior in more detail.
+
+__Model Fit__
+
+We fit the group model used in `autolens_workspace/*/group/modeling`: the main lens galaxy with Sersic light and an
+isothermal mass, external shear, and the two extra galaxies with spherical Sersic light and a dPIE mass whose centre is
+fixed to the galaxy's observed centre and whose velocity dispersion `sigma` is its only free mass parameter. The
+source is an MGE, set up with the `mge_model_from` utility used by the modeling examples. The light profiles are linear, so their intensities are solved for rather than sampled, which
+keeps the number of free parameters down.
+
+The search is a quick Nautilus run with 150 live points, the number `group/modeling` uses for this model. A positions
+likelihood, which requires the multiple images of the source to trace to the same location in the source plane,
+stops the fit from settling on a solution where the lens has the wrong Einstein radius.
+"""
+import autofit as af
+
+main_lens_centres = al.from_json(file_path=dataset_path / "main_lens_centres.json")
+extra_galaxies_centres = al.from_json(
+    file_path=dataset_path / "extra_galaxies_centres.json"
+)
+
+lens_dict = {}
+
+for i, centre in enumerate(main_lens_centres):
+    lens_dict[f"lens_{i}"] = af.Model(
+        al.Galaxy, redshift=0.5, bulge=al.lp_linear.Sersic, mass=al.mp.Isothermal
+    )
+
+field = af.Model(al.MassField, redshift=0.5, shear=al.mp.ExternalShear)
+
+extra_galaxies_list = []
+
+for centre in extra_galaxies_centres:
+    bulge = af.Model(al.lp_linear.SersicSph)
+    bulge.centre = centre
+
+    mass = af.Model(al.mp.dPIEMassSph)
+    mass.centre = centre
+    mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=300.0)
+    mass.r_core = 0.0
+    mass.r_cut = 10.0
+    mass.redshift_object = 0.5
+    mass.redshift_source = 1.0
+    mass.H0 = 67.66
+    mass.Om0 = 0.30966
+
+    extra_galaxies_list.append(
+        af.Model(al.Galaxy, redshift=0.5, bulge=bulge, mass=mass)
+    )
+
+bulge = al.model_util.mge_model_from(
+    mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
+)
+
+source = af.Model(al.Galaxy, redshift=1.0, bulge=bulge)
+
+model = af.Collection(
+    galaxies=af.Collection(**lens_dict, source=source),
+    fields=field,
+    extra_galaxies=af.Collection(extra_galaxies_list),
+)
+
+positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.json"))
+
+analysis = al.AnalysisImaging(
+    dataset=dataset,
+    positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
+    use_jax=True,
+)
+
+search = af.Nautilus(
+    path_prefix=Path("source_science"),
+    name="magnification_errors_mge",
+    unique_tag=dataset_name,
+    n_live=150,
+)
+
+result = search.fit(model=model, analysis=analysis)
+
+"""
+__Posterior Draws__
+
+We now draw models from the posterior. For each one we rebuild the tracer, with the solved intensities of the MGE
+Gaussians included, and recompute the source magnification and the point magnification at the multiple image
+positions.
+
+The calculations are done for the plane at the source's redshift, which `plane_index_via_redshift_from` converts to
+the plane's index. For a system with sources at several redshifts (for example a cluster), change `source_redshift`
+to compute every magnification for a different source.
+
+The source magnification uses a 300 x 300 grid rather than the 1000 x 1000 grid above, which keeps each draw fast
+and changes the source magnification by less than its error.
+"""
+import time
+
+source_redshift = 1.0
+
+total_draws = 100
+
+grid = al.Grid2D.uniform(shape_native=(300, 300), pixel_scales=0.03)
+
+source_magnification_list = []
+point_magnification_list = []
+
+start = time.time()
+
+for _ in range(total_draws):
+    instance = result.samples.draw_randomly_via_pdf()
+
+    tracer_draw = analysis.fit_from(
+        instance=instance
+    ).tracer_linear_light_profiles_to_light_profiles
+
+    plane_index = tracer_draw.plane_index_via_redshift_from(redshift=source_redshift)
+    source_plane = tracer_draw.planes[plane_index]
+
+    source_plane_grid = tracer_draw.traced_grid_2d_list_from(grid=grid)[plane_index]
+
+    source_magnification_list.append(
+        np.sum(source_plane.image_2d_from(grid=source_plane_grid))
+        / np.sum(source_plane.image_2d_from(grid=grid))
+    )
+
+    lens_calc = al.LensCalc.from_tracer(tracer=tracer_draw, plane_j=plane_index)
+
+    point_magnification_list.append(
+        np.asarray(lens_calc.magnification_2d_via_hessian_from(grid=positions))
+    )
+
+print(
+    f"{total_draws} draws in {time.time() - start:.1f} s "
+    f"({(time.time() - start) / total_draws:.2f} s per draw)"
+)
+
+"""
+__Errors__
+
+The median and the 16th and 84th percentiles of each magnification over the draws give its value and error. The
+point magnification keeps its sign, which is the parity of each image.
+"""
+for name, values in [
+    ("Source Magnification", source_magnification_list),
+    ("Point Magnification At Positions", point_magnification_list),
+]:
+    lower, median, upper = np.percentile(np.asarray(values), [16.0, 50.0, 84.0], axis=0)
+
+    print(f"{name}: median {np.round(median, 2)}")
+    print(f"    68% interval {np.round(lower, 2)} to {np.round(upper, 2)}")
+    print(f"    fractional error {np.round((upper - lower) / 2.0 / np.abs(median), 3)}")
+
+"""
+Compare the medians with the true magnifications printed earlier in this script. The 68% intervals should contain the
+true values about two-thirds of the time if the fitted model can describe the lens; offsets larger than the errors are a
+sign that it cannot.
+
+These errors are typically smaller than LEGGOS II find (3% to 9%), because the dataset is simulated with a high
+signal-to-noise source. Real lenses, and especially cluster lenses with many mass components, have more complex mass
+distributions and fainter data, so their magnification errors are larger.
+
+More draws give a smoother estimate of the percentiles: LEGGOS II use about 300, and 100 is enough here because the
+errors are only used to illustrate the calculation. The errors also only include the uncertainty of the model that was
+fitted: a different mass model or source model can change the magnifications by more than these errors.
 """
