@@ -26,6 +26,7 @@ __Contents__
 - **Magnification:** The overall magnification of the source is estimated as the ratio of total surface brightness in.
 - **Masking:** Reconstructions can be imperfect, for example having faint source flux in pixels at the edge of the.
 - **Magnification via Mesh:** The magnification above used an interpolation of the source reconstruction onto a uniform grid.
+- **Source-Plane Magnification Map:** The magnification of every pixel of the source reconstruction's mesh.
 - **True Magnification:** The simulator's true magnification, to check the reconstruction against.
 - **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
 - **Reconstruction CSV:** In the results `image` folder there is a .csv file called `source_plane_reconstruction_0.csv` which.
@@ -462,6 +463,24 @@ magnification = np.sum(
 ) / np.sum(reconstruction * mesh_areas)
 
 print(f"Magnification via Mesh: {magnification}")
+
+"""
+__Source-Plane Magnification Map__
+
+The magnification above is one number for the whole source. The same areas give the magnification of every
+individual mesh pixel: the image-plane area that maps to a pixel divided by its source-plane area, which is how much
+the lens magnifies that region of the source, summed over all of its images. It is available as the mapper's
+`mesh_magnification`, and summing it times the mesh areas gives back the total area of the mask.
+
+`plot_magnification_source_plane` colours the reconstruction's mesh by this magnification, on a log scale because
+it is largest next to the caustics, which are drawn on top. Comparing it with the reconstruction shows which parts
+of the source are magnified most, for example a star-forming clump sitting on a caustic.
+"""
+mesh_magnification = mapper.mesh_magnification
+
+print(f"Largest mesh-pixel magnification: {np.max(mesh_magnification)}")
+
+aplt.plot_magnification_source_plane(mapper=mapper, mass_obj=tracer, grid=dataset.grid)
 
 """
 __True Magnification__
