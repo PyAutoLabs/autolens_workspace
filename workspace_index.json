@@ -1141,6 +1141,7 @@
       "Interpolated Source",
       "Parametric Comparison",
       "Magnification via Mesh",
+      "Source-Plane Magnification Map",
       "True Magnification",
       "Magnification At A Point",
       "Magnification Errors"
@@ -4213,6 +4214,7 @@
       "Magnification",
       "Masking",
       "Magnification via Mesh",
+      "Source-Plane Magnification Map",
       "True Magnification",
       "Magnification At A Point",
       "Reconstruction CSV",
@@ -4562,6 +4564,7 @@
       "Tracer",
       "Magnification At A Point",
       "Magnification Map",
+      "Source-Plane Magnification Map",
       "Area Magnification",
       "Parametric Source Models",
       "Magnification Errors"
@@ -5586,6 +5589,7 @@
       "Magnification",
       "Masking",
       "Magnification via Mesh",
+      "Source-Plane Magnification Map",
       "True Magnification",
       "Magnification At A Point",
       "Reconstruction CSV",
@@ -5593,7 +5597,8 @@
     ],
     "cross_refs": [
       "/guides/advanced/multi_plane.py",
-      "/guides/results/latent_variables.py"
+      "/guides/results/latent_variables.py",
+      "imaging/features/pixelization/source_science.py"
     ],
     "notebook": "notebooks/interferometer/features/pixelization/source_science.ipynb",
     "path": "scripts/interferometer/features/pixelization/source_science.py",
@@ -7434,6 +7439,7 @@
       "Errors",
       "Parametric Comparison",
       "Magnification via Mesh",
+      "Source-Plane Magnification Map",
       "True Magnification",
       "Magnification At A Point",
       "Magnification Errors",

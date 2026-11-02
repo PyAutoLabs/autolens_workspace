@@ -25,6 +25,7 @@ __Contents__
 - **Errors:** The reconstruction's noise map.
 - **Parametric Comparison:** The flux a Sersic fit to the same source gives.
 - **Magnification via Mesh:** The magnification computed directly on the mesh of the source reconstruction.
+- **Source-Plane Magnification Map:** The magnification of every pixel of the source reconstruction's mesh.
 - **True Magnification:** The simulator's true magnification, to check the reconstruction against.
 - **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
 - **Magnification Errors:** Errors on the magnifications above, from a quick lens model fit and draws from its posterior (the only slow part of the script, so it runs last).
@@ -433,6 +434,15 @@ magnification_mesh = np.sum(
 ) / np.sum(reconstruction * mesh_areas)
 
 print(f"Magnification via Mesh Areas: {magnification_mesh}")
+
+"""
+__Source-Plane Magnification Map__
+
+The magnification of every mesh pixel, the image-plane area mapping to it divided by its source-plane area, is the
+mapper's `mesh_magnification`. `plot_magnification_source_plane` colours the reconstruction's mesh by it, with the
+caustics of both deflectors drawn on top. The `imaging/features/pixelization/source_science.py` example explains the map.
+"""
+aplt.plot_magnification_source_plane(mapper=mapper, mass_obj=tracer, grid=dataset.grid)
 
 """
 __True Magnification__
