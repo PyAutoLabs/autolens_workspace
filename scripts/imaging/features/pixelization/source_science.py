@@ -31,6 +31,7 @@ __Contents__
 - **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
 - **Reconstruction CSV:** In the results `image` folder there is a .csv file called `source_plane_reconstruction_0.csv` which.
 - **Magnification Errors:** Errors on the magnifications above, from draws from the posterior of the model-fit (the slow part of the script, so it runs last).
+- **Magnification Uncertainty Map:** The error of the magnification at every image-plane pixel, from the same posterior draws.
 
 """
 
@@ -743,6 +744,9 @@ total_draws = 100
 
 magnification_via_mesh_list = []
 point_magnification_list = []
+magnification_map_list = []
+
+map_grid = dataset.grid
 
 start = time.time()
 
@@ -774,6 +778,8 @@ for _ in range(total_draws):
     )
 
     lens_calc = al.LensCalc.from_tracer(tracer=fit_draw.tracer, plane_j=plane_index)
+
+    magnification_map_list.append(lens_calc.magnification_2d_from(grid=map_grid))
 
     point_magnification_list.append(
         np.asarray(lens_calc.magnification_2d_via_hessian_from(grid=positions))
@@ -812,3 +818,24 @@ regularization can change the magnifications by more than these errors. For exam
 power law instead of an isothermal gives a slope of about 2.2 (the true value is 2.0) and magnifications about 40% below
 the true values, far outside the errors of that fit.
 """
+
+"""
+__Magnification Uncertainty Map__
+
+Each draw's magnification map was stored in the loop above, so the error of the magnification at every image-plane
+pixel can be mapped: half the 16th-84th percentile range of |mu| over the draws divided by the best-fit |mu|, with
+the best-fit contours of constant magnification on top. The `imaging/source_science.py` example explains the map.
+"""
+tracer_best = result.max_log_likelihood_tracer
+
+lens_calc_best = al.LensCalc.from_tracer(
+    tracer=tracer_best,
+    plane_j=tracer_best.plane_index_via_redshift_from(redshift=source_redshift),
+)
+
+aplt.plot_magnification_uncertainty_2d(
+    magnification_list=magnification_map_list,
+    magnification_best=lens_calc_best.magnification_2d_from(grid=map_grid),
+    grid=map_grid,
+    mass_obj=tracer_best,
+)
