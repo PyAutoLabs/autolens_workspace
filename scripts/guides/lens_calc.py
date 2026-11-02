@@ -316,12 +316,16 @@ magnification = lens_calc.magnification_2d_from(grid=grid)
 
 print("Magnification at centre:", magnification[0])
 
-magnification_array = aa.Array2D(values=magnification, mask=grid.mask)
-aplt.plot_array(array=magnification_array, title="Magnification (mu)")
+"""
+`plot_magnification_2d` plots this map as log10 |mu|, with contour lines of constant |mu| and the critical curves
+drawn on top. It takes the tracer (or any galaxies) directly and computes the magnification itself.
+"""
+aplt.plot_magnification_2d(mass_obj=tracer, grid=grid)
 
 """
 The magnification map shows extremely high values near the critical curves, where images are stretched into
-the bright arcs that make strong lensing systems so visually striking.
+the bright arcs that make strong lensing systems so visually striking. The log scale keeps the rest of the map
+visible, and the contours show how quickly the magnification rises towards the critical curves.
 
 __Magnification At A Point__
 
