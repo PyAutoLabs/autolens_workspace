@@ -1056,9 +1056,7 @@ For a Delaunay mesh, the uniform grid is instead laid over the image-plane to cr
 These are then ray-traced to the source-plane and are used as the vertexes of the Delaunay triangles.
 
 The mesh itself is created below, once that image-plane grid has been built.
-"""
 
-"""
 __Source Pixel Centre Calculation__
 
 In order to reconstruct the source galaxy using a Delaunay mesh, we need to determine the centres of the Delaunay

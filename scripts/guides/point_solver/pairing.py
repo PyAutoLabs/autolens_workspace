@@ -108,7 +108,7 @@ rather than physical reasons. Rules of thumb at cluster scale:
   perturbations produce image pairs separated by ~1", so grids much coarser than that will merge
   or miss them.
 - ``pixel_scale_precision`` sets the refinement floor; the cluster profiling scripts
-  (``autolens_profiling/scripts/cluster/likelihood_breakdown/image_plane.py``) time the cost of tightening
+  (``autolens_profiling/scripts/cluster/image_plane/likelihood_breakdown.py``) time the cost of tightening
   it (solve ~0.3 s/call at a 200x200 @ 0.7" grid and 0.01" precision, with a ~10 s one-off JAX
   compile per source plane).
 - If a fit reports under-prediction, re-solve the max-likelihood model at double resolution
@@ -256,8 +256,8 @@ galaxy-scale (quad) and cluster-scale (multi-plane, two sources) datasets, and s
 by ``delta = max_log_likelihood - truth_log_likelihood``. A small positive delta means the search
 found the truth basin; a large positive delta means the likelihood *mis-ranks* models (a wrong
 model beats truth — the failure a default must never have); a negative delta means the search
-failed to reach the basin. The result JSONs live in ``autolens_profiling/results/searches/`` with
-a written synthesis in ``autolens_profiling/results/notes/point_source_defaults_campaign.md``.
+failed to reach the basin. The written synthesis of the campaign is in
+``autolens_profiling/wiki/campaigns/point_source_defaults_campaign.md``.
 The headline numbers:
 
 - **Pairing robustness (why all-to-all is the default).** On a quad with one true image removed

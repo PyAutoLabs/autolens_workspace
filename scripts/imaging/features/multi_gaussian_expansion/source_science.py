@@ -343,9 +343,6 @@ by lens modeling.
 Therefore, you may now wish to go to your results, extract the `max_log_likelihood_tracer`, and use it to compute
 the source flux and magnification as shown above.
 
-"""
-
-"""
 __Magnification Errors__
 
 Every magnification above is a single number, computed from one model of the lens. For a real lens that model is
@@ -519,9 +516,7 @@ example illustrated in the `autolens_workspace/*/imaging/source_science.py` exam
 
 In real lenses, this is not always the case, and if you are really interested in precise source science calculations
 which estimate systematic uncertainties, you should explore how different source models impact these calculations.
-"""
 
-"""
 __Magnification Uncertainty Map__
 
 Each draw's magnification map was stored in the loop above, so the error of the magnification at every image-plane

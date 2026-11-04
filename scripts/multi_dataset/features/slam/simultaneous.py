@@ -725,7 +725,7 @@ threshold the source's signal-to-noise map at S/N 3.0 and pass the result as an 
 `over_sample_size_pixelization`: the bright lensed source gets a sub-size of 4 and the rest of the mask a
 sub-size of 2, concentrating the over-sampling where the pixelization gains accuracy from it and leaving
 the rest of the mask cheap. The sibling `independent.py` and
-`imaging/advanced/subhalo/detect/start_here.py` both fit this way.
+`imaging/features/advanced/subhalo/detect/start_here.py` both fit this way.
 
 A simultaneous fit does not, because the saving does not survive the JAX compiler. A uniform sub-size bins
 the over-sampled grid with one fixed-shape reshape and average; a non-uniform one has to bin ragged

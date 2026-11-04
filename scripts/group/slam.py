@@ -570,10 +570,7 @@ __SOURCE PIX PIPELINE 2__
 
 As `source_pix_1` above, except extra and scaling galaxy models are fixed as instances from
 `source_pix[1]`, and the pixelization over-sampling is now adaptive (see below).
-"""
 
-
-"""
 __Adaptive Pixelization Over-Sampling__
 
 From SOURCE PIX PIPELINE 2 onwards the pixelization grid is over-sampled adaptively. The source's

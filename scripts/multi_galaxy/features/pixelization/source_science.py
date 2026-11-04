@@ -687,9 +687,7 @@ Where to go next:
  - `multi_galaxy/features/pixelization/plot.py` — plotting the inversion objects used above.
  - `imaging/features/pixelization/source_science.py` — the galaxy-scale walkthrough, including its
    reconstruction CSV output.
-"""
 
-"""
 __Magnification Uncertainty Map__
 
 Each draw's magnification map was stored in the loop above, so the error of the magnification at every image-plane

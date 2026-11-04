@@ -2073,7 +2073,7 @@
   {
     "contents": [],
     "cross_refs": [
-      "autolens_profiling/scripts/cluster/likelihood_breakdown/image_plane.py",
+      "autolens_profiling/scripts/cluster/image_plane/likelihood_breakdown.py",
       "scripts/cluster/likelihood_function.py"
     ],
     "notebook": "notebooks/guides/point_solver/pairing.ipynb",
@@ -6139,7 +6139,7 @@
     ],
     "cross_refs": [
       "guides/modeling/slam_start_here.ipynb",
-      "imaging/advanced/subhalo/detect/start_here.py",
+      "imaging/features/advanced/subhalo/detect/start_here.py",
       "independent.py"
     ],
     "notebook": "notebooks/multi_dataset/features/slam/simultaneous.ipynb",

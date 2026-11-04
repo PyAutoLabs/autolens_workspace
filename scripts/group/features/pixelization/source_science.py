@@ -711,9 +711,7 @@ Key points:
  - ALL group mass profiles must be included for accurate magnification.
  - The interpolated source can be analyzed using standard image tools.
  - Pixelized reconstructions may recover more flux than parametric models for complex sources.
-"""
 
-"""
 __Magnification Uncertainty Map__
 
 Each draw's magnification map was stored in the loop above, so the error of the magnification at every image-plane

@@ -505,9 +505,7 @@ The snippet is not run here because this guide has no pixelized fit to draw a `r
 default: from SOURCE PIX PIPELINE 2 onwards the pixelization over-sampling is set this way, using the source
 signal-to-noise map of SOURCE PIX PIPELINE 1. SOURCE PIX PIPELINE 1 itself keeps the dataset's uniform
 sub-size. See `guides/modeling/slam_start_here.py` for the full pipeline.
-"""
 
-"""
 __Oversampled PSF Convolution__
 
 Everything above concerns over sampling the *evaluation* of light profiles — computing the image on a sub-grid

@@ -768,9 +768,7 @@ sign that it cannot.
 The errors also only include the uncertainty of the model that was fitted: a different mass model (for example a
 power law instead of an isothermal, whose slope changes the magnification strongly), mesh or regularization can
 change the magnifications by more than these errors.
-"""
 
-"""
 __Magnification Uncertainty Map__
 
 Each draw's magnification map was stored in the loop above, so the error of the magnification at every image-plane
