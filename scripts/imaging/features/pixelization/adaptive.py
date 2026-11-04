@@ -20,7 +20,7 @@ scheme to adapt the source reconstruction to the source galaxy's morphology (as 
 examplesw hich adapt to the mass model magnification and apply a constant regularization scheme).
 
 This script illustrates the API used for adaptive pixelizations, but does not go into the details of how they
-work. This is described in chapter 3 of the **HowToLens** lectures (tutorials 11 and 12).
+work. This is described in chapter 3 of the **HowToLens** lectures (tutorial 6, Adaptive Reconstruction).
 
 The `RectangularBilinear` meshes used here are the default (fast CPU) adaptive rectangular meshes, which warp
 the grid via the empirical rank CDF of the traced points. Their advanced counterparts `RectangularRTUAdaptDensity` /
@@ -38,7 +38,7 @@ pixelization in one search:
  parameters for the search to fit than a pixelized source, the model-fit is faster overall.
 
  - pixelizations often go to unphysical solutions where the mass model goes to high / low normalization_list and the source
- is reconstructed as a demagnified version of the image. (see Chapter 3, tutorial 7 for a complete description of
+ is reconstructed as a demagnified version of the image. (see Chapter 3, tutorial 4 (Lens Modeling) for a complete description of
  this effect). This does not occur for a linear source, therefore the mass model can be initialized using a
  parametric source, which sets up the search which fits a pixelization so as to not sample these unphysical solutions.
 

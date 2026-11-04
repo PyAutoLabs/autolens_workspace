@@ -55,7 +55,7 @@ __Contents__
 - **Mask Extra Galaxies:** There may be extra galaxies nearby the lens and source galaxies, whose emission blends with the.
 - **Wrap Up:** Summary of the script and next steps.
 - **Chaining:** Modeling with a pixelization can be made more efficient, robust, and automated using the non-linear.
-- **HowToGalaxy:** A full description of how pixelizations work—which relies heavily on linear algebra, Bayesian.
+- **HowToLens:** A full description of how pixelizations work—which relies heavily on linear algebra, Bayesian.
 
 __Advantages__
 
@@ -550,12 +550,12 @@ Modeling with a pixelization can be made more efficient, robust, and automated u
 to compose a pipeline that begins by fitting a simpler model using parametric light profiles.
 
 More information on chaining is provided in the
-`autogalaxy_workspace/notebooks/guides/modeling/chaining` folder and at the end of chapter 2 of the **HowToGalaxy** lectures (tutorials 9-10).
+`autolens_workspace/notebooks/guides/modeling/chaining.ipynb` guide and in chapter 2 of the **HowToLens** lectures (tutorial 6, Search Chaining).
 
-__HowToGalaxy__
+__HowToLens__
 
 A full description of how pixelizations work—which relies heavily on linear algebra, Bayesian statistics, and
-2D geometry—is provided in chapter 3 of the **HowToGalaxy** lectures.
+2D geometry—is provided in chapter 3 of the **HowToLens** lectures.
 
 __Future Ideas / Contributions__
 
