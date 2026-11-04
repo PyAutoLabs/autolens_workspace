@@ -547,7 +547,7 @@ print(
 )
 
 
-"""
+r"""
 __Opt-In Magnification Weighting__
 
 The older scalar weighting of Jullo et al. 2007 (Eq. 10) replaces :math:`B_{i}` with

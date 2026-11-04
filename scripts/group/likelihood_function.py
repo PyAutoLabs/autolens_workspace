@@ -1,4 +1,4 @@
-"""
+r"""
 __Log Likelihood Function: Group__
 
 This script provides a step-by-step guide of the `log_likelihood_function` which is used to fit `Imaging` data of
@@ -29,7 +29,7 @@ __Contents__
 - **Source Galaxy Light Profile:** The source galaxy is fitted using an analytic light profile, in this example a cored elliptical.
 - **Lens Light:** Compute a 2D image of each lens galaxy's light and sum them together.
 - **Lens Galaxy Mass:** We next consider the mass profiles of all galaxies in the group.
-- **Ray Tracing:** To perform lensing calculations we ray-trace every 2d (y,x) coordinate $\\theta$ from the.
+- **Ray Tracing:** To perform lensing calculations we ray-trace every 2d (y,x) coordinate $\theta$ from the.
 - **Source Image:** We pass the traced grid and blurring grid of coordinates to the source galaxy to evaluate its 2D.
 - **Convolution:** Convolve the 2D image of the lens galaxies and source above with the PSF in real-space (as opposed.
 - **Likelihood Function:** We now quantify the goodness-of-fit of our group-scale lens model.
@@ -282,7 +282,7 @@ total_lens_blurring_image_2d = (
     lens_blurring_image_2d + extra_0_blurring_image_2d + extra_1_blurring_image_2d
 )
 
-"""
+r"""
 __Lens Galaxy Mass__
 
 We next consider the mass profiles of all galaxies in the group.
@@ -306,7 +306,7 @@ Where $\theta_{\rm E}$ is the `einstein_radius`.
 From each mass profile we can compute its deflection angles, which describe how due to gravitational lensing
 image-pixels are ray-traced to the source plane:
 
-$\\vec{{\\alpha}}_{\\rm x,y} (\\vec{x}) = \\frac{1}{\\pi} \\int \\frac{\\vec{x} - \\vec{x'}}{\\left | \\vec{x} - \\vec{x'} \\right |^2} \\kappa(\\vec{x'}) d\\vec{x'} \\, ,$
+$\vec{{\alpha}}_{\rm x,y} (\vec{x}) = \frac{1}{\pi} \int \frac{\vec{x} - \vec{x'}}{\left | \vec{x} - \vec{x'} \right |^2} \kappa(\vec{x'}) d\vec{x'} \, ,$
 """
 deflections_lens = lens_galaxy.deflections_yx_2d_from(grid=masked_dataset.grid)
 deflections_extra_0 = extra_galaxy_0.deflections_yx_2d_from(grid=masked_dataset.grid)

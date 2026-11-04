@@ -37,6 +37,7 @@ per-channel terms, and a phase-centre shift applied while streaming.
 
 __Contents__
 
+- **NUFFT Backend Check:** Skip this example if the optional `nufftax` backend is unavailable.
 - **Mask:** The 2D real-space mask the sparse terms are accumulated on.
 - **Dataset:** Where the per-channel cube lives on disk.
 - **Dataset Auto-Simulation:** Run `simulator.py` automatically if the cube isn't already on disk.
@@ -59,6 +60,7 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 
 # from autolens import setup_notebook; setup_notebook()
 
+import importlib.util
 import json
 import subprocess
 import sys
@@ -69,6 +71,21 @@ from astropy.io import fits
 
 import autofit as af
 import autolens as al
+
+"""
+__NUFFT Backend Check__
+
+Array-free datasets use `TransformerNUFFT` to accumulate their sparse terms. Its `nufftax` backend
+ships with the `[optional]` extras and requires Python >= 3.12. Skip this example when the backend
+is unavailable, before creating the mask or simulating the datacube.
+"""
+if importlib.util.find_spec("nufftax") is None:
+    print(
+        "Skipping interferometer example: the `nufftax` NUFFT backend is not "
+        "installed (install with `pip install autolens[optional]`; requires "
+        "Python >= 3.12)."
+    )
+    sys.exit(0)
 
 """
 __Mask__
