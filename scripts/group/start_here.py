@@ -412,15 +412,13 @@ The code below begins the model-fit. This will take around 10 minutes with a GPU
 **Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce
 an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
 """
-print(
-    """
+print("""
     The non-linear search has begun running.
 
     This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
 
     On-the-fly updates every iterations_per_quick_update are printed to the notebook.
-    """
-)
+    """)
 
 result = search.fit(model=model, analysis=analysis)
 
@@ -478,16 +476,14 @@ try:
         obj=main_lens_centres,
     )
 except Exception as e:
-    print(
-        """
+    print("""
         Problem loading GUI, probably an issue with TKinter or your matplotlib TKAgg backend.
 
         You will likely need to try and fix or reinstall various GUI / visualization libraries, or try
         running this example not via a Jupyter notebook.
 
         There are also manual tools for performing this task in the workspace.
-        """
-    )
+        """)
     print()
     print(e)
 

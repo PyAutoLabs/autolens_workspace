@@ -280,14 +280,12 @@ hours on CPU; ALMA-scale cubes with 50+ channels need GPU acceleration to comple
 ``noise_map`` change very little channel-to-channel) is the natural follow-up that brings ALMA-scale cubes
 back inside the budget.
 """
-print(
-    """
+print("""
     The non-linear search has begun running.
 
     This Jupyter notebook cell with progress once the search has completed - this could take a while
     for a datacube fit, since per-channel inversions multiply the per-likelihood cost.
-    """
-)
+    """)
 
 result_list = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
 

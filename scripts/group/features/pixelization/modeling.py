@@ -309,13 +309,11 @@ Group-scale pixelization fits are more computationally expensive than galaxy-sca
 7.5" mask contains many more image pixels, all of which must be mapped to source pixels. GPU acceleration
 is strongly recommended.
 """
-print(
-    """
+print("""
     The non-linear search has begun running.
 
     This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
-    """
-)
+    """)
 
 result = search.fit(model=model, analysis=analysis)
 

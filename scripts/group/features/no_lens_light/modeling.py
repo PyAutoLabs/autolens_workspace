@@ -260,15 +260,13 @@ __Model-Fit__
 
 We begin the model-fit by passing the model and analysis object to the non-linear search.
 """
-print(
-    """
+print("""
     The non-linear search has begun running.
 
     This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
 
     On-the-fly updates every iterations_per_quick_update are printed to the notebook.
-    """
-)
+    """)
 
 result = search.fit(model=model, analysis=analysis)
 

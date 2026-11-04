@@ -233,14 +233,12 @@ __Model Fit__
 Run the fit. Per-channel cost is much cheaper than `modeling.py` because there is no source-plane inversion,
 just a forward Sersic evaluation per channel followed by the Fourier transform.
 """
-print(
-    """
+print("""
     The non-linear search has begun running.
 
     Parametric datacube fits are typically faster than pixelized ones — the per-likelihood cost is dominated
     by the per-channel NUFFT, with no per-channel inversion on top.
-    """
-)
+    """)
 
 result_list = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
 

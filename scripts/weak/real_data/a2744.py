@@ -279,12 +279,10 @@ search = af.Nautilus(
     iterations_per_quick_update=10000,
 )
 
-print(
-    """
+print("""
     The non-linear search has begun running — a few hundred galaxies and a 4-parameter model,
     so expect minutes, not hours.
-    """
-)
+    """)
 
 result = search.fit(model=model, analysis=analysis)
 

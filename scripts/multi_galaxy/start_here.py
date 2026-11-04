@@ -380,15 +380,13 @@ analysis = al.AnalysisImaging(
     use_jax=True,  # JAX uses GPUs for acceleration if available, else multithreaded CPUs.
 )
 
-print(
-    """
+print("""
     The non-linear search has begun running.
 
     This Jupyter notebook cell will progress once the search has completed - this could take a few minutes!
 
     On-the-fly updates every iterations_per_quick_update are printed to the notebook.
-    """
-)
+    """)
 
 result = search.fit(model=model, analysis=analysis)
 
@@ -457,16 +455,14 @@ if run_extra_galaxies_gui:
             overwrite=True,
         )
     except Exception as e:
-        print(
-            """
+        print("""
             Problem loading GUI, probably an issue with TKinter or your matplotlib TKAgg backend.
 
             You will likely need to try and fix or reinstall various GUI / visualization libraries, or try
             running this example not via a Jupyter notebook.
 
             There are also manual tools for performing this task in the workspace.
-            """
-        )
+            """)
         print()
         print(e)
 

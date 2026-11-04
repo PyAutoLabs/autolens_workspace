@@ -111,7 +111,6 @@ import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
-
 """
 __Luminosity Measurement__
 """

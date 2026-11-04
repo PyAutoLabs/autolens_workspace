@@ -718,15 +718,13 @@ for on-the-fly visualization and results).
 **Run Time Error:** On certain operating systems (e.g. Windows, Linux) and Python versions, the code below may produce
 an error. If this occurs, see the `autolens_workspace/guides/modeling/bug_fix` example for a fix.
 """
-print(
-    """
+print("""
     The non-linear search has begun running.
 
     This Jupyter notebook cell with progress once the search has completed - this could take a few minutes!
 
     On-the-fly updates every iterations_per_quick_update are printed to the notebook.
-    """
-)
+    """)
 
 result = search.fit(model=model, analysis=analysis)
 

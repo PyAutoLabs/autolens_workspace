@@ -37,7 +37,6 @@ import autolens as al
 import autolens.plot as aplt
 from autogalaxy.profiles.plot.basis_plots import subplot_image as subplot_basis_image
 
-
 """
 __Simulated Dataset__
 

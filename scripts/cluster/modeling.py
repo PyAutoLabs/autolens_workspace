@@ -633,15 +633,13 @@ Pass the factor-graph model and the factor graph itself (as the analysis) to ``s
 **Run Time Error:** On certain operating systems and Python versions, the code below may produce an
 error. If this occurs, see ``autolens_workspace/guides/modeling/bug_fix``.
 """
-print(
-    """
+print("""
     The non-linear search has begun running.
 
     This Jupyter notebook cell will progress once the search has completed — this could take a few minutes!
 
     On-the-fly updates every iterations_per_quick_update are printed to the notebook.
-    """
-)
+    """)
 
 result_list = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
 

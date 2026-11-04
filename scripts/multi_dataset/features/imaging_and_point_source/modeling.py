@@ -371,13 +371,11 @@ search = af.Nautilus(
     iterations_per_quick_update=10000,
 )
 
-print(
-    """
+print("""
     The non-linear search has begun running.
 
     This Jupyter notebook cell will progress once the search has completed — this could take some time!
-    """
-)
+    """)
 
 result_list = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
 

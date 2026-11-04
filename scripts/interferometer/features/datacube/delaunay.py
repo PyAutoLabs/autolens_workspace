@@ -254,14 +254,12 @@ Per-channel cost is dominated by the Delaunay inversion + the per-channel NUFFT 
 variant in `modeling.py`. On CPU expect this to take a few hours for the 4-channel reference cube; on GPU,
 tens of minutes.
 """
-print(
-    """
+print("""
     The non-linear search has begun running.
 
     Per-channel inversions multiply the per-likelihood cost — expect this to take longer than a single-channel
     interferometer fit.
-    """
-)
+    """)
 
 result_list = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
 

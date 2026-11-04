@@ -298,14 +298,12 @@ into every channel's `AnalysisInterferometer.log_likelihood_function` and sums t
 **Run time on CPU is dominated by the per-channel inversion.** A 4-channel SMA-scale cube finishes in a few
 hours on CPU; ALMA-scale cubes with 50+ channels need GPU acceleration to complete in reasonable time.
 """
-print(
-    """
+print("""
     The non-linear search has begun running.
 
     Per-channel inversions multiply the per-likelihood cost — expect this to take longer than a single-channel
     interferometer fit. On CPU plan for hours; on GPU, tens of minutes.
-    """
-)
+    """)
 
 result_list = search.fit(model=factor_graph.global_prior_model, analysis=factor_graph)
 

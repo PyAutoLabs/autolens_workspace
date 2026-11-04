@@ -31,11 +31,7 @@ __Contents__
 try:
     import numba
 except ModuleNotFoundError:
-    input(
-        "##################\n"
-        "##### NUMBA ######\n"
-        "##################\n\n"
-        """
+    input("##################\n" "##### NUMBA ######\n" "##################\n\n" """
         Numba is not currently installed.
 
         Numba is a library which makes PyAutoLens run a lot faster. Certain functionality is disabled without numba
@@ -54,8 +50,7 @@ except ModuleNotFoundError:
         A warning will crop up throughout your *PyAutoLens** use until you install numba, to remind you to do so.
 
         [Press Enter to continue]
-        """
-    )
+        """)
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
 
