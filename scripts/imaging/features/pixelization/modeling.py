@@ -565,9 +565,7 @@ in having a go at adding them contact me on SLACK! :)
 - More diagnostic quantities for reconstructed galaxy light.
 - Gradient calculations of the reconstructed light distribution.
 - Quantifying spatial variations in galaxy structure across the image.
-"""
 
-"""
 __Advanced: RTU Rectangular Meshes__
 
 The model fitted in this example uses the default `RectangularBilinearAdaptDensity` mesh (with

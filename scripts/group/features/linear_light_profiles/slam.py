@@ -483,10 +483,7 @@ def source_pix_1(
 __SOURCE PIX PIPELINE 2__
 
 Identical to ``group/slam.py``.
-"""
 
-
-"""
 __Adaptive Pixelization Over-Sampling__
 
 From SOURCE PIX PIPELINE 2 onwards the pixelization grid is over-sampled adaptively. The source's

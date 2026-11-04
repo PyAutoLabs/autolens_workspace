@@ -459,9 +459,7 @@ Where to go next:
 - `autolens_workspace/*/multi_galaxy/modeling`: inferring the lens model these calculations depend on.
 - `autolens_workspace/*/imaging/source_science`: the galaxy-scale version of this guide, including pixelized
   source reconstructions.
-"""
 
-"""
 __Magnification Errors__
 
 Every magnification above is a single number, computed from one model of the lens. For a real lens that model is
@@ -658,9 +656,7 @@ More draws give a smoother estimate of the percentiles: LEGGOS II use about 300,
 errors are only used to illustrate the calculation. The errors also only include the uncertainty of the model that was
 fitted: a different mass model (for example a power law instead of an isothermal) can change the magnifications by
 more than these errors.
-"""
 
-"""
 __Magnification Uncertainty Map__
 
 Each draw's magnification map was stored in the loop above, so the error of the magnification at every image-plane

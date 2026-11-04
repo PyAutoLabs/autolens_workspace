@@ -518,10 +518,7 @@ __SOURCE PIX PIPELINE 2__
 The final SOURCE PIX PIPELINE search fits both source galaxies simultaneously with adaptive pixelizations.
 Per-lens mass, the external shear field and `source_0`'s mass are all fixed to the maximum-likelihood instances of
 the previous pixelized searches; only the pixelization regularization parameters are free.
-"""
 
-
-"""
 __Adaptive Pixelization Over-Sampling__
 
 From SOURCE PIX PIPELINE 2 onwards the pixelization grid is over-sampled adaptively. The source's

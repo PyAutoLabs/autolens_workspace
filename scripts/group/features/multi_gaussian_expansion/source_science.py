@@ -354,9 +354,7 @@ as each contributes to the ray-tracing and therefore to the magnification of the
 An MGE source may give different flux and magnification estimates compared to a single Sersic source. If
 precise source science calculations are important for your analysis, we recommend comparing results from
 different source models (e.g. MGE, Sersic, pixelized reconstruction) to estimate systematic uncertainties.
-"""
 
-"""
 __Magnification Errors__
 
 Every magnification above is a single number, computed from one model of the lens. For a real lens that model is
@@ -537,9 +535,7 @@ distributions and fainter data, so their magnification errors are larger.
 More draws give a smoother estimate of the percentiles: LEGGOS II use about 300, and 100 is enough here because the
 errors are only used to illustrate the calculation. The errors also only include the uncertainty of the model that was
 fitted: a different mass model or source model can change the magnifications by more than these errors.
-"""
 
-"""
 __Magnification Uncertainty Map__
 
 Each draw's magnification map was stored in the loop above, so the error of the magnification at every image-plane

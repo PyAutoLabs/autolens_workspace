@@ -418,10 +418,7 @@ As SOURCE PIX 1 but uses the adapt data from the first pixelization stage, ensur
 mesh converges to a robust solution. The adapt image is capped at a S/N of 3.0, as in SOURCE PIX 1.
 The lens mass is fixed from SOURCE PIX 1, and the pixelization over-sampling is now adaptive (see
 below).
-"""
 
-
-"""
 __Adaptive Pixelization Over-Sampling__
 
 From SOURCE PIX PIPELINE 2 onwards the pixelization grid is over-sampled adaptively. The source's

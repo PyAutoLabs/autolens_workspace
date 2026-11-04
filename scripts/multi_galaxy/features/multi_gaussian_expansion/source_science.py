@@ -471,9 +471,7 @@ between the two deflectors also depends on the geometry of each galaxy's light m
 does not vary; comparing light models is part of estimating the flux ratio's error. LEGGOS II find fractional
 magnification errors of 3% to 9% for the lensed galaxies they study; this simulated dataset has a high
 signal-to-noise source and a simple lens, so its errors are smaller.
-"""
 
-"""
 __Magnification Uncertainty Map__
 
 Each draw's magnification map was stored in the loop above, so the error of the magnification at every image-plane

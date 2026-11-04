@@ -817,9 +817,7 @@ The errors also only include the uncertainty of the model that was fitted: a dif
 regularization can change the magnifications by more than these errors. For example, fitting this dataset with a
 power law instead of an isothermal gives a slope of about 2.2 (the true value is 2.0) and magnifications about 40% below
 the true values, far outside the errors of that fit.
-"""
 
-"""
 __Magnification Uncertainty Map__
 
 Each draw's magnification map was stored in the loop above, so the error of the magnification at every image-plane
