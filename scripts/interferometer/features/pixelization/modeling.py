@@ -525,7 +525,7 @@ Modeling using a pixelization can be more efficient, robust and automated using 
 compose a pipeline which begins by fitting a simpler model using a parametric source.
 
 More information on chaining is provided in the `autolens_workspace/notebooks/guides/modeling/chaining` folder,
-the end of chapter 2 of the **HowToLens** lectures (tutorials 9-11).
+chapter 2 of the **HowToLens** lectures (tutorial 6, Search Chaining).
 
 __HowToLens__
 

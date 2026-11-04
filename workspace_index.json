@@ -4155,10 +4155,11 @@
       "Mask Extra Galaxies",
       "Wrap Up",
       "Chaining",
-      "HowToGalaxy"
+      "HowToLens"
     ],
     "cross_refs": [
       "/imaging/data_preparation/gui/positions.py",
+      "autolens_workspace/notebooks/guides/modeling/chaining.ipynb",
       "imaging/start_here.ipynb",
       "pixelization/fit.py",
       "start.here.py",

@@ -310,7 +310,7 @@ Coordinates that are ray-traced near the mass profile centres are heavily demagn
 the source-plane. 
 
 We relocate these pixels (for both grids above) to the edge of the source-plane border (defined via the border of the 
-image-plane mask). This is detailed in **HowToLens chapter 3 tutorial 6** and figure 2 of https://arxiv.org/abs/1708.07377.
+image-plane mask). This is detailed in **HowToLens chapter 3 tutorial 3 (Borders)** and figure 2 of https://arxiv.org/abs/1708.07377.
 """
 from autoarray.inversion.mesh.border_relocator import BorderRelocator
 
@@ -922,8 +922,8 @@ These two terms therefore counteract the `chi_squared` and `regularization_term`
 `log_likelihood` to solutions which fit the data with a more smoothed and less complex source (e.g. one with a higher 
 `regularization_coefficient`).
 
-In **HowToLens** -> `chapter 3` -> `tutorial_4_bayesian_regularization` we expand on this further and give a more
-detailed description of how these different terms impact the `log_likelihood_function`. 
+In **HowToLens** -> `chapter 3` -> `tutorial_2_bayesian_regularization`, we explain how the log evidence
+balances fit quality and reconstruction complexity when choosing the regularization strength and pixelization resolution.
 """
 log_curvature_reg_matrix_term = np.linalg.slogdet(curvature_reg_matrix)[1]
 log_regularization_matrix_term = np.linalg.slogdet(regularization_matrix)[1]
