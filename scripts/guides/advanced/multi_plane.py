@@ -1260,17 +1260,30 @@ print(
 The two agree to a few parts in $10^{4}$ at the hardest position and far better at the others: an exact
 derivative and a finite-difference one, computed by different tools, on a configuration built to be difficult.
 
-__A Warning: The NumPy Hessian Step Is Too Coarse Near A Compact Deflector__
+__The NumPy Hessian Near A Compact Deflector: What Used To Fail__
 
 The oracles above have credentials, which lets them be used to make a statement about the library rather than
-only about themselves. Here is one.
+only about themselves. Here is one, from its history.
 
-`LensCalc`'s NumPy path computes its Hessian by Richardson extrapolation with a hardcoded `buffer = 0.01` arcsec
-step. That is fine almost everywhere, including at the intermediate plane of the #480 configuration where it
-agreed with the ray-traced Jacobian to a few parts in $10^{8}$ at the start of this section. It is not fine at
-the final plane of that same configuration, where the rays pass within $\\sim 4 \\times 10^{-4}$ arcsec of a
-compact isothermal centre — a step 25 times larger than the distance to the singularity samples a completely
-different deflection field.
+`LensCalc`'s NumPy path computes its Hessian by Richardson extrapolation of central finite differences. It used to
+take a single fixed `buffer = 0.01` arcsec step. That is fine almost everywhere, including at the intermediate
+plane of the #480 configuration. It was not fine at the final plane, where the rays pass within
+$\\sim 4 \\times 10^{-4}$ arcsec of a compact isothermal centre: a step 25 times larger than the distance to the
+singularity samples a different deflection field. The fixed-step Hessian returned approximately
+`[-0.00694, -0.00221, 0.00139, 0.00246]` where exact autodiff and the ray-traced Jacobian give
+`[0.04508, 0.01099, -0.08602, -0.01118]`: wrong by 100-120%, with a flipped sign at all four image positions.
+
+PyAutoGalaxy#593 made the step adaptive. Starting from `buffer`, each grid point keeps halving its step until one
+of two rules stops it:
+
+ - **Tolerance:** two successive Richardson extrapolants agree on all four Hessian components to
+   `atol + rtol * |H|` (`rtol = 1e-7`). A smooth field stops here after three evaluations.
+ - **Roundoff floor:** the change between extrapolants starts growing again while already below
+   `roundoff_guard` (`1e-4`), meaning cancellation now dominates; the estimate from before the growth is kept.
+
+Neither rule warns. Only a point that hits neither within `max_halvings` — a genuinely singular one, such as a
+point exactly on an isothermal centre — keeps its last value and raises a single `UserWarning`; nothing is
+silently accepted and nothing raises. Evaluated live on the same configuration:
 """
 magnification_hessian_last = np.asarray(
     ag.LensCalc.from_tracer(
@@ -1279,19 +1292,22 @@ magnification_hessian_last = np.asarray(
 )
 
 print(f"mu at z=2.0, LensCalc Richardson Hessian = {magnification_hessian_last}")
-print(f"mu at z=2.0, exact autodiff and ray-traced Jacobian = {magnification_jax}")
+print(f"mu at z=2.0, exact autodiff              = {magnification_jax}")
+print(f"mu at z=2.0, ray-traced Jacobian         = {magnification_traced_last}")
+print(
+    f"max relative residual, Hessian vs autodiff   = "
+    f"{np.max(np.abs(magnification_hessian_last - magnification_jax) / np.abs(magnification_jax)):.2e}"
+)
+print(
+    f"max relative residual, Hessian vs ray-traced = "
+    f"{np.max(np.abs(magnification_hessian_last - magnification_traced_last) / np.abs(magnification_traced_last)):.2e}"
+)
 
 """
-The Hessian returns approximately `[-0.00694, -0.00221, 0.00139, 0.00246]` where exact autodiff and the
-ray-traced Jacobian both give `[0.04508, 0.01099, -0.08602, -0.01118]`: wrong by 100-120%, with a flipped sign
-at all four image positions.
-
-This is **a known, filed defect, and it is not fixed** — it is pinned as a strict expected failure in the
-library's cross-validation module and tracked as
-`PyAutoMind/draft/bug/autogalaxy/lenscalc_numpy_hessian_step_is_too_coarse.md`. If your multi-plane system is
-compact — a deflector at an intermediate plane sitting close to the sightline of the images you care about — do
-not take a NumPy Hessian magnification on trust. Use the JAX path shown above, or the ray-traced Jacobian, both
-of which resolve the field at the scale the rays actually probe.
+The adaptive Hessian now agrees with both oracles, with the right sign at every image, and no warning is raised:
+these points are close to a compact centre, not on it. The fixed-step failure is still the lesson: a
+finite-difference derivative is only as good as the scale its step resolves, and an independent oracle is what
+caught it.
 
 More generally, that is what this whole section is for: every arm above is a few lines long, and running two of
 them against each other costs a second. When a multi-plane number surprises you, that is much cheaper than four
