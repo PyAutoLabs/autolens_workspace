@@ -30,7 +30,7 @@ _prompt(
     
     
     cd path/to/autolens_workspace (if you are not already in the autolens_workspace).
-    python3 scripts/imaging/modeling.py
+    python3 scripts/imaging/start_here.py
 
 
     The reasons for this are so that PyAutoLens can:

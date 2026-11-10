@@ -1,151 +1,55 @@
 # PyAutoLens Workspace
 
-[![JOSS](https://joss.theoj.org/papers/10.21105/joss.02825/status.svg)](https://doi.org/10.21105/joss.02825)
-
-[Installation Guide](https://pyautolens.readthedocs.io/en/latest/installation/overview.html) |
-[readthedocs](https://pyautolens.readthedocs.io/en/latest/index.html) |
-[Introduction on Colab](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.9.1/start_here.ipynb) |
-[Browse Examples With Images](markdown/README.md) |
-[HowToLens](https://github.com/PyAutoLabs/HowToLens)
-
 <img src="https://github.com/Jammy2211/PyAutoLogo/blob/main/gifs/pyautolens.gif?raw=true" width="900" />
 
-Welcome to the **PyAutoLens** Workspace!
+Example scripts and notebooks for modeling strong gravitational lenses with **PyAutoLens**. Start with an introductory example, then explore the tools for your own data.
 
 ## Getting Started
 
 ### Explore It Yourself
 
-Start with the installation guide, or try the examples in your browser:
+- **[Try it in your browser](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.9.1/start_here.ipynb)** — run the introductory notebook on Google Colab without installing anything.
+- **[Run it locally](https://pyautolens.readthedocs.io/en/latest/installation/overview.html)** — follow the installation guide, then open `start_here.ipynb`.
+- **[Browse examples with images](https://github.com/PyAutoLabs/autolens_workspace/blob/main/markdown/README.md)** — read worked examples and view their results directly on GitHub.
 
-- [Installation guide](https://pyautolens.readthedocs.io/): set up **PyAutoLens** on your personal computer.
-- [PyAutoLens on Google Colab](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.9.1/start_here.ipynb): try **PyAutoLens** in a web browser without installing it.
+See [Find Your Examples](#find-your-examples) below to choose where to start.
 
 ### Explore with AI
 
-The [**PyAutoLens AI Assistant**](https://github.com/PyAutoLabs/autolens_assistant) lets you do gravitational lensing science in natural language from inside an AI coding agent. You can get started simply by asking it a question about gravitational lensing or describing the task you would like to perform with **PyAutoLens**. See the [autolens_assistant GitHub page](https://github.com/PyAutoLabs/autolens_assistant) for its full scope and instructions.
+The [**PyAutoLens AI Assistant**](https://github.com/PyAutoLabs/autolens_assistant) helps you learn lensing, run examples and analyse your own data through conversation. Visit its README for setup instructions and a starting prompt.
 
-The assistant runs inside an AI coding agent. Claude Code and Codex are recommended; free options and chat use are on the [PyAutoLabs AI options page](https://github.com/PyAutoLabs/PyAutoScientist/blob/main/AI_OPTIONS.md).
+## Find Your Examples
 
-## New Users
+Examples are available as Python scripts in `scripts/` and Jupyter notebooks in `notebooks/`.
 
-New users should read the `autolens_workspace/start_here.ipynb` notebook, which will give you a concise
-overview of **PyAutoLens**'s core features and API.
+| I want to… | Start here |
+|---|---|
+| Learn the API, customise models or inspect results | [Guides](https://github.com/PyAutoLabs/autolens_workspace/tree/main/scripts/guides) |
+| Model a lens in imaging data | [Imaging](https://github.com/PyAutoLabs/autolens_workspace/tree/main/scripts/imaging) |
+| Model interferometer observations | [Interferometry](https://github.com/PyAutoLabs/autolens_workspace/tree/main/scripts/interferometer) |
+| Fit observations in multiple wavebands | [Multiple datasets](https://github.com/PyAutoLabs/autolens_workspace/tree/main/scripts/multi_dataset) |
+| Model lensed point sources | [Point sources](https://github.com/PyAutoLabs/autolens_workspace/tree/main/scripts/point_source) |
+| Model a lens with several main galaxies | [Multiple galaxies](https://github.com/PyAutoLabs/autolens_workspace/tree/main/scripts/multi_galaxy) |
+| Model a galaxy group | [Groups](https://github.com/PyAutoLabs/autolens_workspace/tree/main/scripts/group) |
+| Model a galaxy cluster | [Clusters](https://github.com/PyAutoLabs/autolens_workspace/tree/main/scripts/cluster) |
+| Explore weak lensing | [Weak lensing](https://github.com/PyAutoLabs/autolens_workspace/tree/main/scripts/weak) |
 
-This can be done via a web browser by going to the following Google Colab link:
+Each folder has a README explaining its examples. You’ll find sample data in `dataset/`; analysis results are written to `output/`.
 
-https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.9.1/start_here.ipynb
+## Learn Lensing
 
-Then checkout the [new user starting guide](https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html) to navigate the
-workspace for your science case.
+[**HowToLens**](https://github.com/PyAutoLabs/HowToLens) teaches gravitational lensing and Bayesian inference through worked notebooks. Start here if you’re new to the subject or would like more explanation alongside the workspace examples.
 
-You can also [browse a curated set of examples fully executed, with their output images](markdown/README.md),
-directly on GitHub — no installation required.
+## Community and Contributing
 
-## HowToLens
+Ask questions, suggest improvements and share your work in [PyAutoLabs Discussions](https://github.com/orgs/PyAutoLabs/discussions), or chat with us on [Slack](https://join.slack.com/t/pyautolens/shared_invite/zt-2cufp4eyf-fXfgMxRGuvg~bMrI3uOAxg).
 
-If the workspace examples move too quickly, **HowToLens** is a separate four-chapter tutorial lecture series that walks
-through strong lensing and lens modeling step by step — ideal for undergraduates, new PhD students, or anyone new to the
-field. It lives in its own repository: [PyAutoLabs/HowToLens](https://github.com/PyAutoLabs/HowToLens).
+To contribute examples or explore community projects, visit the [PyAutoLens community page](https://pyautolens.readthedocs.io/en/latest/general/community.html).
 
-## Workspace Structure
+## Citations
 
-The workspace includes the following main directories:
+If you use PyAutoLens in your research, see the [citation guide](https://github.com/PyAutoLabs/PyAutoLens/blob/main/CITATIONS.md).
 
-- `notebooks`: **PyAutoLens** examples written as Jupyter notebooks.
-- `scripts`: **PyAutoLens** examples written as Python scripts.
-- `config`: Configuration files which customize **PyAutoLens**'s behaviour.
-- `dataset`: Where data is stored, including example datasets distributed.
-- `output`: Where the **PyAutoLens** analysis and visualization are output.
-- `markdown`: Curated examples rendered with their output images, browsable on GitHub.
-- `.claude/skills`: AI agent skills (e.g. Claude, codex) for loading, inspecting and analysing workspace results with AI agents.
+## License
 
-The Source, Light and Mass (SLaM) pipelines **(Advanced)** are not a top-level
-directory: `scripts/guides/modeling/slam_start_here.py` is the canonical
-reference, and the pipelines themselves live in `features/slam/` folders within a
-given topic (e.g. `scripts/multi_dataset/features/slam/`).
-
-The examples in the `notebooks` and `scripts` folders are structured as follows:
-
-- `guides`: Guides which introduce the core features of **PyAutoLens**, including the core lensing API.
-- `imaging`: Examples for galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, Euclid).
-- `interferometer`: Examples for galaxy scale strong lenses observed with an interferometer (e.g. ALMA, JVLA), for both continuum data and spectral-line data cubes.
-- `multi_dataset`: Examples for lenses observed in multiple wavebands, modeled simultaneously.
-- `point_source`: Examples for strong lens point source datasets.
-- `multi_galaxy`: Examples for multi-galaxy strong lenses (two or more co-dominant lens galaxies, no host halo).
-- `group`: Examples for group scale strong lenses.
-- `cluster`: Examples for cluster scale strong lenses.
-- `weak`: Examples for weak lensing analysis.
-
-The tutorial lecture series is shipped as a standalone repo: [PyAutoLabs/HowToLens](https://github.com/PyAutoLabs/HowToLens).
-
-The dataset packages (e.g. `imaging`, `interferometer`, `point_source`, `group` and `cluster`) include the
-following types of examples:
-
-- `modeling`: Performing lens modeling using that type of data.
-- `simulator`: Simulating examples of that strong lens dataset type.
-- `fit`: How to fit the dataset to compute quantities like the residuals, chi squared and likelihood.
-- `data_preparation`: Preparing real datasets of that type for **PyAutoLens** analysis.
-- `source_science`: Performing source science calculations like computing the unlensed source's total flux and magnification.
-- `features`: Features for detailed modeling and analysis of strong lenses (e.g. Multi Gaussian Expansion, Pixelizations).
-- `likelihood_function`: A step-by-step guide of the likelihood function used to fit the dataset.
-
-The `guides` package contains a number of important subpackages, which include:
-
-- `results`: How to load, use and inspect the results of **lens modeling to many strong lenses** to perform scientific analysis efficiently.
-- `modeling`: Ways to customize the lens modeling procedure and build advanced automated lens modeling pipelines.
-- `plot`: How to plot lensing quantities and results.
-
-The `README.md` files distributed throughout the workspace describe what is in each folder.
-
-## Community & Contributing
-
-**PyAutoLens** is built in the open by its users: everyone is welcome to ask questions,
-share what they have made with it, and contribute.
-
-Questions, ideas and bug reports: the [PyAutoLabs Discussions](https://github.com/orgs/PyAutoLabs/discussions).
-Chat with us on [Slack](https://join.slack.com/t/pyautolens/shared_invite/zt-2cufp4eyf-fXfgMxRGuvg~bMrI3uOAxg).
-
-Community-built tools and tutorials, and how to contribute: the [**PyAutoLens** community page](https://pyautolens.readthedocs.io/en/latest/general/community.html).
-
-Tutorial notebooks are generated from the `.py` scripts in each `scripts` folder — edit those (the `# %%` marker alternates code and markdown cells), not the notebooks.
-
-## The Lensing Regime Ladder: Galaxy, Multi-Galaxy, Group and Cluster
-
-The `imaging`, `interferometer` and `point_source` packages provide scripts for modeling galaxy-scale lenses.
-Above the single-galaxy scale, **PyAutoLens** organises lenses into a ladder of three regimes, each with its own
-package. Every group and cluster is a multi-galaxy system, but not vice versa — what changes as you climb is
-first the mass model, then the entire analysis strategy:
-
-- A **galaxy-scale** lens (`imaging`, `interferometer`, `point_source`) can be modeled to high accuracy using a
-  single mass distribution for the main lens galaxy. Nearby galaxies may be added as minor perturbers via the
-  extra-galaxies API, but for many science cases this is not strictly necessary.
-
-- A **multi-galaxy** lens (`multi_galaxy`) has two or more galaxies of comparable mass which all contribute
-  significantly to the lensing — the notion of a single 'main' lens galaxy is ill-posed, and every co-dominant
-  deflector gets its own free light and mass model. There is no shared dark-matter halo. The analysis workflow
-  is unchanged from galaxy scale: one extended source, reconstructed at pixel level from the imaging.
-
-- A **group-scale** lens (`group`) adds a dominant group-scale dark-matter halo (~10^13-10^14 solar masses) as
-  an *explicit modelling choice*, with member galaxies organised into tiers (main / extra / scaling galaxies,
-  the latter tied to a luminosity scaling relation — tidally truncated dPIE members in the Lenstool-convention
-  workflow of `group/features/group_halo`, untruncated isothermals in the PyAutoLens-native default of
-  `group/features/scaling_relation`). The source modelling is unchanged:
-  one dominant extended source, fitted at pixel level.
-
-- A **cluster-scale** lens (`cluster`) shares the group's mass framework (host halo(s) + many truncated members
-  on scaling relations) but is distinguished by its **analysis strategy**: dozens of sources at different
-  redshifts are fitted as point-source multiple-image positions with multi-plane ray tracing, and the lens
-  galaxies' light is not modeled. Extended source reconstruction becomes a specialised follow-up of individual
-  systems, not the default workflow.
-
-## Build Configuration
-
-The `config/` directory contains two files used by the automated build and test system
-(CI, smoke tests, and pre-release checks). These are not relevant to normal workspace usage.
-
-- `config/build/no_run.yaml` — scripts to skip during automated runs. Each entry is a filename stem
-  or path pattern with an inline comment explaining why it is skipped.
-- `config/build/profile_smoke.yaml` — environment variables applied to each script during automated runs.
-  Defines default values (e.g. test mode, small datasets) and per-script overrides for scripts
-  that need different settings.
+See the [PyAutoLens license](https://github.com/PyAutoLabs/PyAutoLens/blob/main/LICENSE).
