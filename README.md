@@ -14,14 +14,14 @@ Welcome to the **PyAutoLens** Workspace!
 
 ## Getting Started
 
-### Human-Readable Documentation and Examples
+### Explore It Yourself
 
-The following human-readable documentation and examples are useful for new starters:
+Start with the installation guide, or try the examples in your browser:
 
 - [Installation guide](https://pyautolens.readthedocs.io/): set up **PyAutoLens** on your personal computer.
 - [PyAutoLens on Google Colab](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.9.1/start_here.ipynb): try **PyAutoLens** in a web browser without installing it.
 
-### PyAutoLens AI Assistant
+### Explore with AI
 
 The [**PyAutoLens AI Assistant**](https://github.com/PyAutoLabs/autolens_assistant) lets you do gravitational lensing science in natural language from inside an AI coding agent. You can get started simply by asking it a question about gravitational lensing or describing the task you would like to perform with **PyAutoLens**. See the [autolens_assistant GitHub page](https://github.com/PyAutoLabs/autolens_assistant) for its full scope and instructions.
 
