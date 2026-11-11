@@ -2,6 +2,8 @@
 Simulator: Multi Galaxy Extra Galaxies
 ======================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/extra_galaxies/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Simulates the dataset for the `multi_galaxy/features/extra_galaxies` feature: the co-dominant pair of
 `multi_galaxy/simulator.py`, plus two extra galaxies near the lens which have **mass as well as light**.
 

@@ -2,6 +2,8 @@
 Modeling Features (Group): Scaling Relations
 ============================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Group-scale strong lenses can have many galaxies in the foreground beyond the primary lens. As the number grows,
 modelling each galaxy individually becomes impractical: a system with 10 companions would gain 10 extra mass
 free parameters, and the data is rarely informative enough to constrain them all.

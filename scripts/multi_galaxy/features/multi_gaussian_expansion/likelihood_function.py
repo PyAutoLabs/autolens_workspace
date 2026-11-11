@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: Multi Gaussian Expansion (Multi Galaxy)__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script walks through the log likelihood function of a multi-galaxy lens fitted with **an MGE per co-dominant
 deflector**, focusing on the one structure that has no galaxy-scale equivalent: the block structure of the
 curvature matrix when two nearby galaxies each carry their own basis.

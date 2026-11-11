@@ -2,6 +2,8 @@
 SLaM (Source, Light and Mass): Linear Light Profiles (Multi Galaxy)
 ===================================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/linear_light_profiles/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The SLaM pipeline for a multi-galaxy lens using a single linear `Sersic` per deflector, instead of the MGE bases
 used by `multi_galaxy/slam.py`.
 

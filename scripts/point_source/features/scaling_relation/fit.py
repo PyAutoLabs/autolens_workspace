@@ -2,6 +2,8 @@
 Features (Point Source): Scaling Relation Fit
 =============================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Fits the point-source `scaling_relation` dataset at the simulator's truth values, so the tied tier can be inspected
 without a non-linear search in the way.
 

@@ -2,6 +2,8 @@
 Modeling Features: Shapelets (Group)
 ====================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/shapelets/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A shapelet is a basis function that is appropriate for capturing the exponential / disk-like features of a galaxy.
 It has been employed in many strong lensing studies to model the light of lensed source galaxies, because it can
 represent features of disky star forming galaxies that a single Sersic function cannot.

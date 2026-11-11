@@ -2,6 +2,8 @@
 Simulator: Datacube
 ===================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates an ALMA-style spectral-line `Interferometer` datacube of a 'galaxy-scale' strong lens where:
 
  - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an

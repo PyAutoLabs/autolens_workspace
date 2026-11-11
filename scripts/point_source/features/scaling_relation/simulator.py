@@ -2,6 +2,8 @@
 Simulator: Scaling Relation (Point Source)
 ==========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Simulates the dataset for the `point_source/features/scaling_relation` feature: a quadruply imaged point source
 behind a lens with five foreground companions whose Einstein radii are tied to the lens's own by a Faber-Jackson
 relation.

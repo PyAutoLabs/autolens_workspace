@@ -2,6 +2,8 @@
 Source Science
 ==============
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
 
 Using a source galaxy model, we can compute key quantities such as the magnification, total flux, and intrinsic
@@ -24,7 +26,6 @@ __Contents__
 - **Magnification Errors:** Errors on the magnifications above, from a quick lens model fit and draws from its posterior (the only slow part of the script, so it runs last).
 - **Magnification Uncertainty Map:** The error of the magnification at every image-plane pixel, from the same posterior draws.
 - **Wrap Up:** Summary of the script and next steps.
-
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

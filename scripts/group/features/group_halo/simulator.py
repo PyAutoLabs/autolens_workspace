@@ -2,6 +2,8 @@
 Simulator: Group Halo
 =====================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/group_halo/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates the `Imaging` dataset fitted by the `group_halo` feature tutorial: a group-scale lens
 with a genuine **group-scale dark matter halo**, a brightest group galaxy (BGG) and two tidally truncated
 member galaxies, lensing a single extended background source.

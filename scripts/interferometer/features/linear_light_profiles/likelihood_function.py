@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: Linear Light Profile (Interferometer)__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/linear_light_profiles/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script provides a step-by-step guide of the `log_likelihood_function` which is used to fit
 `Interferometer` data with a linear light profile (e.g. a linear `SersicCore` source).
 
@@ -33,7 +35,7 @@ The likelihood function of a linear light profile builds on the standard paramet
 the interferometer-specific NUFFT step, so you must read the following notebooks before this script:
 
  - `interferometer/likelihood_function.ipynb` — the standard interferometer parametric likelihood
-   function (NUFFT of a real-space image, visibility-plane $\\chi^2$).
+   function (NUFFT of a real-space image, visibility-plane $\chi^2$).
  - `imaging/features/linear_light_profiles/likelihood_function.ipynb` — the linear-inversion linear algebra
    (data vector, curvature matrix, positive-only solver) for CCD imaging.
 
@@ -59,7 +61,7 @@ __Contents__
 - **Reconstruction (Positive-Negative):** Solve $s = F^{-1} D$ via NumPy.
 - **Reconstruction (Positive Only):** Solve with the fast non-negative least squares (`fnnls`) algorithm.
 - **Visibilities Reconstruction:** Map $s$ back to visibility space.
-- **Likelihood Function:** Visibility-plane $\\chi^2$ and noise normalization.
+- **Likelihood Function:** Visibility-plane $\chi^2$ and noise normalization.
 - **Chi Squared:** Sum chi-squared contributions over real and imaginary components.
 - **Noise Normalization Term:** The fixed noise normalization term.
 - **Calculate The Log Likelihood:** Combine into the final log likelihood.

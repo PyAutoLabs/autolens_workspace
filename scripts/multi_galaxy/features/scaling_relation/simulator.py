@@ -2,6 +2,8 @@
 Simulator: Multi Galaxy Scaling Relation
 ========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Simulates the dataset for the `multi_galaxy/features/scaling_relation` feature: the co-dominant pair of
 `multi_galaxy/simulator.py`, plus five faint galaxies scattered FAR from the lens whose masses are tied to the
 **brightest** of the pair by a Faber-Jackson relation.

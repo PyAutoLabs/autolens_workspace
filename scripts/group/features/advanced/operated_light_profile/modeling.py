@@ -2,6 +2,8 @@
 Modeling Features: Operated Light Profiles (Group)
 ==================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/operated_light_profile/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Operated light profiles are light profiles which are assumed to have already been convolved with the PSF. This means
 that during the model-fitting process, these profiles are NOT convolved again with the PSF, unlike standard light
 profiles.

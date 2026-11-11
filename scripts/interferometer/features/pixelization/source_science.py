@@ -2,6 +2,8 @@
 Pixelization: Source Reconstruction
 ===================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Source science focuses on studying the highly magnified properties of the background lensed source galaxy (or galaxies).
 
 Using the reconstructed source pixelization, we can compute key quantities such as the magnification, total flux, and
@@ -31,7 +33,6 @@ __Contents__
 - **Reconstruction CSV:** In the results `image` folder there is a .csv file called `source_plane_reconstruction_0.csv` which.
 - **Magnification Errors:** Errors on the magnifications above, from draws from the posterior of the model-fit (the slow part of the script, so it runs last).
 - **Magnification Uncertainty Map:** The error of the magnification at every image-plane pixel, from the same posterior draws.
-
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

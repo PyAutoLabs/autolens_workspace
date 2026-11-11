@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: DSPL__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/double_source_plane_lens/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script describes the additional steps required to compute the `log_likelihood` for a double
 source-plane lens (DSPL) — a strong lens system with two source galaxies at different redshifts behind the
 foreground lens.

@@ -2,6 +2,8 @@
 Modeling Features (Multi Galaxy): Scaling Relation
 ==================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Extends the multi-galaxy model with a **scaling tier**: faint galaxies far from the co-dominant pair whose Einstein
 radii are tied to the brightest of the pair by a Faber-Jackson relation:
 

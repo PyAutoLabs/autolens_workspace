@@ -2,6 +2,8 @@
 Modeling Features: Sky Background (Multi Galaxy)
 ================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/sky_background/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a multi-galaxy strong lens whose data still contains the **sky background** — the diffuse
 emission from the atmosphere, zodiacal light and unresolved sources in the field.
 

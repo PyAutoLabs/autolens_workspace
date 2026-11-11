@@ -2,6 +2,8 @@
 Features: Group Scaling Relation Fit
 ====================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A group-scale strong lens often has many foreground galaxies near the line of sight to the source, on top of one
 or more primary lens galaxies. The **three-tier API** splits these galaxies into populations that the lens model
 treats differently:

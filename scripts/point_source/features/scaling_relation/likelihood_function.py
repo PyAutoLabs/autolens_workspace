@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: Scaling Relation (Point Source)__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Describes how a scaling tier anchored on the brightest galaxy enters the point-source `log_likelihood`.
 
 Point sources differ from extended sources in a way that matters for this feature. For imaging or interferometer data

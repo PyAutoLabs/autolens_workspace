@@ -2,6 +2,8 @@
 Multi Gaussian Expansion: SLaM (Interferometer)
 ===============================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for `Interferometer`
 data, using a **multi-Gaussian expansion (MGE)** for the source galaxy in the SOURCE LP stage.
 

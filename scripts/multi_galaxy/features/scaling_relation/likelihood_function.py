@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: Multi Galaxy Scaling Relation__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Describes the one step of the `log_likelihood` computation that a brightest-galaxy-anchored scaling tier changes:
 how the summed deflection field is composed when most of the deflectors' Einstein radii are not free parameters but
 derived from the brightest co-dominant galaxy's.

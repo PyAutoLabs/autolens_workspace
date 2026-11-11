@@ -2,6 +2,8 @@
 Simulator: Extra Galaxies
 =========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/extra_galaxies/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 There may be extra galaxies nearby the lens and source galaxies, whose mass may contribute to the ray-tracing and
 lens model.
 

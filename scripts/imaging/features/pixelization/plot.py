@@ -2,6 +2,8 @@
 Plots: Pixelization
 ===================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This example illustrates how to plot fits which reconstruct the source galaxy using a pixelization.
 
 Pixelized source reconstructions are plotted with the same functions as other fits (see

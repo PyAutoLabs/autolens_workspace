@@ -2,6 +2,8 @@
 Modeling Features (Group): The Group Halo — An Explicit Choice
 ==============================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/group_halo/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 **Whether a group-scale lens model includes a separate dark-matter halo for the group is a modelling
 choice, not an assumption.** Some groups genuinely require one; others are adequately described by their
 member galaxies alone. This tutorial — the signature example of the group regime — fits the SAME dataset

@@ -2,6 +2,8 @@
 SLaM (Source, Light and Mass): DSPL (Multi Galaxy)
 ==================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/double_source_plane_lens/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The SLaM pipeline for a multi-galaxy double source-plane lens.
 
 Read `multi_galaxy/slam.py` first — the multi-galaxy SLaM baseline — and `guides/modeling/slam_start_here`

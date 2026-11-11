@@ -2,6 +2,8 @@
 Modeling: Mass Total + Source Parametric
 ========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/wavelength_dependence/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a multi-wavelength `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is an MGE bulge where the `ell_comps` varies across wavelength.
@@ -38,8 +40,6 @@ of parameters across the datasets in a way that does not lead to a very complex 
 
 For example, in other scripts, a free `effective_radius` is created for every datasets, which would add 5+ free parameters
 to the model for 5+ datasets.
-
-
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

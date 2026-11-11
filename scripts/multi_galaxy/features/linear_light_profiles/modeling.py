@@ -2,6 +2,8 @@
 Modeling Features: Linear Light Profiles (Multi Galaxy)
 =======================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/linear_light_profiles/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A "linear light profile" is a variant of a standard light profile where the `intensity` parameter is solved for
 via linear algebra every time the model is fitted, rather than being sampled by the non-linear search. The solver
 always computes the `intensity` values that maximize the likelihood for the other parameters' current values.

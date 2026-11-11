@@ -2,6 +2,8 @@
 Chaining: DSPL
 ==============
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/double_source_plane_lens/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script chains two searches to fit `Imaging` data of a 'galaxy-scale' strong lens which has two source galaxies at
 two different redshifts, forming a double source-plane lens (DSPL). This fits a model where:
 

@@ -2,6 +2,8 @@
 Simulator: Extra Galaxies
 =========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/extra_galaxies/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Lensed point sources, for example a lensed quasar or supernova, frequently have small galaxies projected near the
 main lens galaxy. Unlike for extended sources, these galaxies do not blend with the source emission — a point
 source has no extended surface brightness to contaminate. What they do instead is perturb the deflection field,

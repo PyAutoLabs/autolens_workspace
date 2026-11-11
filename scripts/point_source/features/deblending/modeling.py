@@ -2,6 +2,8 @@
 Modeling Features: Deblending
 =============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/deblending/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The image-plane multiple-image positions of a lensed point source (e.g. a quasar or supernova) are used as the
 dataset in point-source modeling. For example, simulated values were input into the `PointDataset` object in the
 `point_source/start_here.ipynb` example.

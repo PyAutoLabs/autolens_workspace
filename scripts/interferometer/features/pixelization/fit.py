@@ -2,6 +2,8 @@
 Features: Pixelization
 ======================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/pixelization/start_here.ipynb) for the shared concepts, advantages and trade-offs. The example-specific choices are explained below.
+
 A pixelization reconstructs the source's light using a pixel-grid, which is regularized using a prior that forces
 the solution to have a degree of smoothness.
 
@@ -26,8 +28,7 @@ before lens modeling and saved to hard disk for fast loading before the model fi
 __Contents__
 
 - **CPU Users:** Matrices must be set up for a pixelized source reconstruction which speed up the linear algebra.
-- **Advantages & Disadvantages:** Many strongly lensed source galaxies exhibit complex, asymmetric, and irregular morphologies.
-- **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+- **Advantages:** Parameter choices specific to this example.
 - **Mask:** Define the 2D mask applied to the dataset for the model-fit.
 - **Dataset:** Load and plot the strong lens dataset.
 - **Sparse Operators:** Pixelized source modeling requires dense linear algebra operations.
@@ -65,33 +66,6 @@ For CCD imaging, a disadvantage of pixelized source reconstructions is they are 
 modeling approach. However, for interferometer datasets, the way that JAX and GPUs can exploit the sparsity in the
 linear algebra means pixelized source reconstructions are both significantly faster than other approaches (E.g.
 light profiles) and can scale to millions of visibilities.
-
-__Disadvantages__
-
-Lens modeling with pixelizations is conceptually more complex. There are additional failure modes, such as
-solutions where the source is reconstructed in a highly demagnified configuration due to an unphysical lens mass
-model (e.g. too little or too much mass). These issues are discussed in detail later in the workspace.
-
-As a result, learning to successfully fit lens models with pixelizations typically requires more time and experience
-than the simpler modeling approaches introduced elsewhere in the workspace.
-
-__Positive Only Solver__
-
-Many codes which use linear algebra typically rely on a linear algabra solver which allows for positive and negative
-values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
-
-This could be problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
-light, which is clearly unphysical. For a pixelizaiton, this often produces negative source pixels which over-fit
-the data, producing unphysical solutions.
-
-For CCD imaging datsets pixelized source reconstructions use a positive-only solver, meaning that every source-pixel
-is only allowed to reconstruct positive flux values. This ensures that the source reconstruction is physical and
-that we don't reconstruct negative flux values that don't exist in the real source galaxy (a common systematic
-solution in lens analysis).
-
-However, for interferometer datasets this positive-only solver is often disabled, because negative pixel values
-can be observed from the measurement process. All interferometer examples therefore disable the positive only solver,
-but you may want to consider if using the positive-only solver is appropriate for your dataset.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

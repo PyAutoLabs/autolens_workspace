@@ -2,6 +2,8 @@
 Modeling: Combined Imaging + Point Source
 =========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/imaging_and_point_source/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script jointly fits CCD imaging of a lensed quasar's **extended arcs** and its **point-source
 observables** (image positions and time delays) with a **single lens mass model**, using PyAutoFit's
 factor-graph API to sample the joint likelihood with one non-linear search.

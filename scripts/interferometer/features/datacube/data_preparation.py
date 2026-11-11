@@ -2,6 +2,8 @@
 Data Preparation: Datacube
 ==========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Most users come to datacube modeling with a single 4D FITS file from CASA, with shape
 ``(n_pol, n_chan, n_vis, 2)`` — for example, an ALMA observation of a CO emission line might be
 ``(2, 34, 16984, 2)``: two polarisations, 34 spectral channels, ~17k visibilities per channel, real/imag.

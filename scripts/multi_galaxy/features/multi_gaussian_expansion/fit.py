@@ -2,6 +2,8 @@
 Fits: Multi Gaussian Expansion (Multi Galaxy)
 =============================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a multi-galaxy strong lens with an MGE per co-dominant deflector **without a non-linear search**,
 so the basis can be built by hand and the MGE-versus-Sersic comparison run directly.
 

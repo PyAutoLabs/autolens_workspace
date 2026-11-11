@@ -2,6 +2,8 @@
 Simulator: Dark Matter Subhalo
 ==============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 If a low mass dark matter halo overlaps the lensed source emission, it perturbs it in a unique and observable way.
 
 This script simulates an imaging dataset which includes a dark matter subhalo, which is high enough mass to

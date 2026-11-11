@@ -2,6 +2,8 @@
 Features: Pixelization Modeling
 ===============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A pixelization reconstructs the source's light using a pixel-grid, which is regularized using a prior that forces
 the solution to have a degree of smoothness.
 

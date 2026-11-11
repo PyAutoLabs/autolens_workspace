@@ -2,6 +2,8 @@
 Adaptive Pixelization (Group)
 =============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script demonstrates how adaptive pixelization features work for group-scale strong lenses.
 
 Adaptive pixelizations adapt the mesh density and regularization strength to the source galaxy's unlensed

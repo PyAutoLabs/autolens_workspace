@@ -2,6 +2,8 @@
 Pixelization: CPU Fast Modeling
 ===============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This example demonstrates how to achieve **fast pixelization performance on a CPU without JAX**, by combining:
 
 - `numba` for optimized numerical routines, and
@@ -25,7 +27,6 @@ __Contents__
 - **SLaM Pipeline Functions:** Overview of slam pipeline functions for this example.
 - **CPU Fast SLaM Pipelines:** The SLaM pipeline is mostly identical to other examples, but via the `SettingsSearch` it uses a.
 - **Wrap Up:** Summary of the script and next steps.
-
 """
 
 try:

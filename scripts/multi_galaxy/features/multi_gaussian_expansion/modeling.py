@@ -2,6 +2,8 @@
 Modeling Features: Multi Gaussian Expansion (Multi Galaxy)
 ==========================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A Multi Gaussian Expansion (MGE) decomposes a galaxy's light into ~10-30 Gaussians whose `intensity` values are
 solved by linear algebra. This script fits a multi-galaxy strong lens giving **each co-dominant deflector its own
 MGE**.

@@ -2,6 +2,8 @@
 Modeling: Pixelized
 ===================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a multi-wavelength `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is omitted (and is not present in the simulated data).
@@ -25,7 +27,6 @@ __Contents__
 - **Model:** Compose the lens model fitted to the data.
 - **Search:** Configure the non-linear search used to fit the model.
 - **Result:** Overview of the results of the model-fit.
-
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

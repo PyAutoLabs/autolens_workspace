@@ -2,6 +2,8 @@
 SLaM (Source, Light and Mass): Pixelization (Multi Galaxy)
 ==========================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The SLaM pipeline for a multi-galaxy lens, with every pixelization choice its SOURCE PIX stages make written out.
 
 `multi_galaxy/slam.py` **already uses a pixelized source** — the SOURCE PIX stages are where it happens, and this

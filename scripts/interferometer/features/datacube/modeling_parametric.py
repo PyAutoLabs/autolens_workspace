@@ -2,6 +2,8 @@
 Modeling: Datacube — Parametric Source
 ======================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a datacube — a list of `Interferometer` channels — with a single shared lens model and a
 **parametric** source (`al.lp.Sersic`) whose morphology is shared across channels and whose `intensity` varies
 channel-to-channel. It is the parametric-fit sibling of `modeling.py`, which fits the same cube with a

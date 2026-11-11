@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: Scaling Relation (Interferometer)__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Describes the one step of the interferometer `log_likelihood` computation that a scaling relation changes: how the
 real-space deflection field is composed when most of the foreground galaxies' Einstein radii are derived from the main
 lens's rather than sampled.

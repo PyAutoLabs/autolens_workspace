@@ -2,6 +2,8 @@
 Modeling Features (Group): Fit Galaxy Luminosities for a Scaling Relation
 =========================================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The scaling-relation modeling examples (`modeling.py` in this directory and
 `scripts/imaging/features/scaling_relation/modeling.py`) need a measured **luminosity** for every galaxy that sits on
 the relation:

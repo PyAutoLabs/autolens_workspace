@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: Mass Stellar Dark__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/mass_stellar_dark/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script describes the additional steps required to compute the `log_likelihood` for a strong lens whose
 mass model decomposes the lens galaxy's mass into a stellar component (tied to its light via a mass-to-light
 ratio) and a separately-parameterized dark matter halo.

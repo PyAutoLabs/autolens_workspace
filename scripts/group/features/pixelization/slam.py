@@ -2,6 +2,8 @@
 Pixelization: Group SLaM
 ========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script uses the SLaM (Source, Light and Mass) pipelines to fit a group-scale strong lens where the
 source galaxy is reconstructed using a pixelized mesh with adaptive regularization.
 

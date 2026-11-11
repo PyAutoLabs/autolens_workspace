@@ -2,6 +2,8 @@
 CPU Fast Modeling: Pixelization (Group)
 =======================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script demonstrates how to achieve fast pixelization performance on a CPU without JAX for group-scale
 strong lenses, by combining:
 
@@ -28,7 +30,6 @@ __Contents__
 - **Sparse Operators:** Pre-compute sparse matrices for CPU-accelerated pixelization.
 - **Fit:** Fit the group lens with a pixelized source on CPU.
 - **Model:** Full model-fit with CPU parallelization.
-
 """
 
 try:

@@ -50,6 +50,16 @@ provides a meaningful speed-up via multithreading, but datacube fits are inheren
 single-channel fits because the per-channel inversion cost multiplies by the number of channels.
 
 If you don't have a GPU locally, consider Google Colab, which provides free GPUs.
+
+__Related Examples__
+
+- [modeling.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/modeling.ipynb) — Fit the model with a non-linear search.
+- [likelihood_function.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/likelihood_function.ipynb) — Follow the likelihood calculation.
+- [simulator.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/simulator.ipynb) — Generate the example dataset.
+- [data_preparation.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/data_preparation.ipynb) — Prepare the channel data.
+- [delaunay.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/delaunay.ipynb) — Use a Delaunay mesh.
+- [modeling_array_free.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/modeling_array_free.ipynb) — Explore the array-free execution route.
+- [modeling_parametric.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/modeling_parametric.ipynb) — Fit parametric emission.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

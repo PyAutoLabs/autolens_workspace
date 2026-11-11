@@ -2,6 +2,8 @@
 SLaM (Source, Light and Mass): Extra Galaxies (Multi Galaxy)
 ============================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/extra_galaxies/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The SLaM pipeline for a multi-galaxy lens with a tier of perturbing extra galaxies alongside the co-dominant
 deflectors.
 

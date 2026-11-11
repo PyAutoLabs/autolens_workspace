@@ -2,6 +2,8 @@
 Simulator: Combined Strong + Weak Lensing
 =========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/weak/features/strong_lensing/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates the two faces of the same gravitational lens: an `Imaging` dataset of its strongly
 lensed arcs, and a `WeakDataset` of the weak shear it imprints on background galaxies at larger radii.
 Both are generated from **one** `Tracer`, so the datasets share a single true mass distribution — the setup

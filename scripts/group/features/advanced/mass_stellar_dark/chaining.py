@@ -2,6 +2,8 @@
 Chaining: Group Mass Stellar Dark
 =================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/mass_stellar_dark/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script chains two searches to fit `Imaging` data of a 'group-scale' strong lens where each main lens
 galaxy is decomposed into stellar + dark matter components.
 

@@ -2,6 +2,8 @@
 Simulator: Mass Stellar Dark
 ============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/mass_stellar_dark/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The majority of example scripts simulate a mass profile which represents the _total_ mass of the lens galaxy (its stars,
 dark matter and other components combined). This typically uses an `Isothermal` or `PowerLaw` mass profile.
 

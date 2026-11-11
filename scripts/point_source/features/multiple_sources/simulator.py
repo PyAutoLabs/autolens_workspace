@@ -2,6 +2,8 @@
 Simulator: Multiple Sources
 ===========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/multiple_sources/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates `PointDataset` data of a strong lens which has multiple lensed point sources at different
 redshifts (the example below has two sources, but the same approach extends to any number).
 

@@ -2,6 +2,8 @@
 Modeling: Multiple Sources
 ==========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/multiple_sources/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a `PointDataset` of a 'galaxy-scale' strong lens with multiple lensed point sources at different
 redshifts. The lens system is multi-plane: a foreground lens at z=0.5 deflects both background sources, while
 source_0 at z=1.0 is itself a deflector for source_1 at z=2.0 (the "double Einstein cross" configuration). Each

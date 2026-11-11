@@ -2,6 +2,8 @@
 Pixelization: SLaM
 ==================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for pixelized source modeling.
 
 A full overview of SLaM is provided in `guides/modeling/slam_start_here`. You should read that

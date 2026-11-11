@@ -2,6 +2,8 @@
 Linear Light Profiles: SLaM
 ===========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines using linear light profiles
 for the lens galaxy's light.
 

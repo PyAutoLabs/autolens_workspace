@@ -2,6 +2,8 @@
 Simulator: Debelending
 ======================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/deblending/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulations a `Point` dataset of a galaxy-scale strong lens which is identical to the dataset
 simulated in the `start_here.ipynb` example, but where an image of the multiply imaged lensed point source (e.g.
 the quasar) and its lens galaxy are included.

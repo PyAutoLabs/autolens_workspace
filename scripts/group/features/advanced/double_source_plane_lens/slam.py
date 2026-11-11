@@ -2,6 +2,8 @@
 SLaM (Source, Light and Mass): Group DSPL
 =========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/double_source_plane_lens/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script adapts the SLaM (Source, Light and Mass) pipelines to a group-scale Double Source Plane Lens (DSPL)
 system, where two source galaxies at different redshifts behind multiple main lens galaxies form a double
 Einstein ring.

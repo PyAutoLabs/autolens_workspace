@@ -2,6 +2,8 @@
 Simulator: Operated Light Profiles (Group)
 ==========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/operated_light_profile/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates a group-scale strong lens where the galaxy light uses operated light profiles. Operated
 light profiles represent emission that has already been convolved with the PSF, meaning they are NOT convolved
 again during the simulation.

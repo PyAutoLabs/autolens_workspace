@@ -2,6 +2,8 @@
 Simulator: Group Mass Stellar Dark
 ==================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/mass_stellar_dark/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A group-scale strong lens where each main lens galaxy carries a decomposed mass model: a stellar component tied
 to the galaxy's own light via a mass-to-light ratio, plus a separately-parameterized dark matter halo.
 

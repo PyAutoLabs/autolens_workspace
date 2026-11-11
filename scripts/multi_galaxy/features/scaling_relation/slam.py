@@ -2,6 +2,8 @@
 Multi Galaxy Scaling Relation: SLaM
 ===================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Uses the SLaM pipelines to fit a multi-galaxy lens with a scaling tier whose Einstein radii are tied to the
 brightest co-dominant deflector.
 

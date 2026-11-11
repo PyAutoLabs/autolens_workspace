@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: Linear Light Profiles (Group)__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/linear_light_profiles/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script provides a step-by-step guide of the ``log_likelihood_function`` which is used to fit ``Imaging``
 data of a group-scale strong lens using **linear light profiles**.
 

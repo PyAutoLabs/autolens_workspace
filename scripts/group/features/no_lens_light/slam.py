@@ -2,6 +2,8 @@
 No Lens Light: Group SLaM
 =========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/no_lens_light/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script uses the SLaM pipelines to fit a group-scale strong lens where none of the lens galaxies have
 visible light emission. In the group context, "no lens light" means that **all** main lens galaxies **and**
 all extra galaxies are modeled with mass profiles only.

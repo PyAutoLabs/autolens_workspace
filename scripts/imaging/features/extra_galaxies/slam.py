@@ -2,6 +2,8 @@
 Extra Galaxies: SLaM
 ====================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/extra_galaxies/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script uses the SLaM pipelines to fit a lens dataset that includes extra galaxies
 surrounding the main lens, whose light and mass are both included in the model.
 

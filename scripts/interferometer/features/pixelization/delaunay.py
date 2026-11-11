@@ -2,6 +2,8 @@
 Pixelization: Delaunay
 ======================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The majority of pixelized source reconstructions in the workspace use a rectangular mesh to reconstruct
 the source's surface brightness.
 
@@ -84,7 +86,6 @@ __Contents__
 - **Interpolation:** Overview of interpolation for this example.
 - **Lens Modeling:** To fit a lens model to data, the likelihood function illustrated in this tutorial is sampled using.
 - **Wrap Up:** Summary of the script and next steps.
-
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

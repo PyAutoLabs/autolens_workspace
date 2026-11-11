@@ -2,6 +2,8 @@
 Features: Mass Stellar Dark Fit
 ===============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/mass_stellar_dark/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A decomposed mass model splits the lens galaxy's total mass into a stellar component (tied to its observed light
 via a mass-to-light ratio) and a dark matter component (typically an NFW halo). The total deflection at every
 image-plane coordinate is the sum of the deflections produced by each component, plus any external shear (which

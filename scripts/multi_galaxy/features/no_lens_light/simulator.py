@@ -2,6 +2,8 @@
 Simulator: No Lens Light (Multi Galaxy)
 =======================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/no_lens_light/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates `Imaging` of a 'multi-galaxy' strong lens where neither co-dominant deflector has visible
 light emission — only their mass profiles contribute to the ray-tracing. The source galaxy still has light.
 

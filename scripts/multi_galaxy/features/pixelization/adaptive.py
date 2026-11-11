@@ -2,6 +2,8 @@
 Adaptive Pixelization (Multi Galaxy)
 ====================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a multi-galaxy strong lens with an **adaptive** pixelized source, where both the mesh and the
 regularization adapt to the source's own reconstructed morphology rather than being applied uniformly.
 

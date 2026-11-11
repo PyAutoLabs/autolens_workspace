@@ -2,6 +2,8 @@
 Fits: Linear Light Profiles (Multi Galaxy)
 ==========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/linear_light_profiles/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a multi-galaxy strong lens with linear light profiles **without a non-linear search** — the model
 is composed at known values and fitted once, so the linear solve can be inspected directly.
 

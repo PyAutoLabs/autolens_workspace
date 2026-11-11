@@ -2,6 +2,8 @@
 Real Data: Combined Strong + Weak Lensing of Abell 2744
 =======================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/weak/features/strong_lensing/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script constrains a **single cluster-scale mass model** of **Abell 2744** ("Pandora's
 Cluster", z = 0.308) using both its **strong-lensing** multiple images and its **weak-lensing**
 shear catalogue — real data on both sides, fitted jointly with one non-linear search via

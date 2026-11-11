@@ -99,6 +99,11 @@ Note that the simulation procedure for a pixelized source is different to the on
 light profile source parameters are used to simulate each sensitivity mapping dataset. When pixelized sources are
 used, the source reconstruction on the mesh is used, such that the simulations capture the irregular morphologies
 of real source galaxies.
+
+__Related Examples__
+
+- [slam_source_parametric.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/slam_source_parametric.ipynb) — Use the parametric-source pipeline.
+- [slam_source_pixelized.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/slam_source_pixelized.ipynb) — Use the pixelized-source pipeline.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

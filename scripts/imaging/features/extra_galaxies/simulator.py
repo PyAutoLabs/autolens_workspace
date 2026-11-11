@@ -2,6 +2,8 @@
 Simulator: Extra Galaxies
 =========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/extra_galaxies/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Certain lenses have small galaxies within their Einstein radius, or nearby the lensed source emission.
 
 The emission of these galaxies may overlap the lensed source emission, and their mass may contribute to the lensing

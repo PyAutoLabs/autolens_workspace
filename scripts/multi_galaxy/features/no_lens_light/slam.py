@@ -2,6 +2,8 @@
 SLaM (Source, Light and Mass): No Lens Light (Multi Galaxy)
 ===========================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/no_lens_light/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The SLaM pipeline for a multi-galaxy lens whose co-dominant deflectors have no visible light.
 
 This script documents only how it differs from `multi_galaxy/slam.py`, the multi-galaxy SLaM baseline, which in

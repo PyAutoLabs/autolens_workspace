@@ -1,3 +1,22 @@
+"""
+Sensitivity
+===========
+
+Sensitivity mapping tests how an analysis responds to injected subhalos. It repeats a controlled recovery
+experiment across positions or other halo properties to characterize which signals the chosen setup can
+distinguish.
+
+__What the Map Means__
+
+Each result is conditional on the injected halo, simulated data, source description and comparison procedure.
+A map for one halo mass or noise level does not automatically describe another. It is a statement about the
+experiment's sensitivity, not a catalogue of halos in the observed system.
+
+The worked example retains the injection and recovery stages and the criterion used to compare models.
+Parametric-source and pixelized-source variants may make different assumptions; keep those choices explicit
+when comparing their results.
+"""
+
 # """
 # Feature: Sensitivity Mapping
 # ============================

@@ -2,6 +2,8 @@
 Simulator: Stellar and Dark Mass (Multi Galaxy)
 ===============================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/mass_stellar_dark/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates a multi-galaxy strong lens where **each co-dominant deflector's mass is decomposed into a
 stellar component and a dark matter halo**, rather than described by a single total mass profile.
 

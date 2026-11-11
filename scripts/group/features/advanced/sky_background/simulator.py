@@ -2,6 +2,8 @@
 Simulator: Sky Background (Group)
 =================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/sky_background/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates a group-scale strong lens dataset where the sky background is NOT subtracted from the image.
 The sky background is therefore present in the data and must be accounted for during model-fitting.
 

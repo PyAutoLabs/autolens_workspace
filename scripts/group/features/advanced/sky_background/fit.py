@@ -2,6 +2,8 @@
 Fit Features: Sky Background (Group)
 ====================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/sky_background/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The background of an image is the light that is not associated with the strong lens we are interested in. This
 script demonstrates how to include the sky background in a fit for a group-scale strong lens, without performing
 a non-linear search.

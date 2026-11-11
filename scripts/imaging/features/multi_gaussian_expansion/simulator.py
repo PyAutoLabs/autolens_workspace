@@ -2,6 +2,8 @@
 Simulator: Lens Light Asymmetric
 ================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The morphological of massive elliptical galaxies which act as strong lens are often asymmetric and irregular, with
 features such as isophotal twists or radially varying elliptical components.
 
