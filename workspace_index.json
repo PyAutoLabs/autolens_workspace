@@ -1540,29 +1540,6 @@
     "title": "Features: Scaling Relation"
   },
   {
-    "contents": [],
-    "cross_refs": [
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/double_source_plane_lens/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/mass_stellar_dark/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/operated_light_profile/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/shapelets/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/sky_background/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/subhalo/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/group_halo/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/linear_light_profiles/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/multi_gaussian_expansion/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/no_lens_light/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/scaling_relation/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/start_here.ipynb",
-      "group/start_here.ipynb"
-    ],
-    "notebook": "notebooks/group/features/start_here.ipynb",
-    "path": "scripts/group/features/start_here.py",
-    "summary": "These features build on the topic\u2019s main example. Each introduction explains the method and its trade-offs; the worked scripts retain their model choices and detailed calculations.",
-    "title": "Group Features"
-  },
-  {
     "contents": [
       "Loading Data",
       "Mask",
@@ -4965,33 +4942,6 @@
     "title": "Simulator: Manual Signal to Noise Ratio"
   },
   {
-    "contents": [],
-    "cross_refs": [
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/double_source_plane_lens/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/los_halos/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/mass_stellar_dark/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/operated_light_profile/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/potential_correction/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/shapelets/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/sky_background/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/extra_galaxies/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/no_lens_light/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/scaling_relation/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/simulator_manual_signal_to_noise_ratio.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/start_here.ipynb",
-      "imaging/start_here.ipynb",
-      "simulator_manual_signal_to_noise_ratio.py"
-    ],
-    "notebook": "notebooks/imaging/features/start_here.ipynb",
-    "path": "scripts/imaging/features/start_here.py",
-    "summary": "These features build on the topic\u2019s main example. Each introduction explains the method and its trade-offs; the worked scripts retain their model choices and detailed calculations.",
-    "title": "Imaging Features"
-  },
-  {
     "contents": [
       "Loading Data",
       "Mask",
@@ -6513,27 +6463,6 @@
     "title": "Features: Scaling Relation"
   },
   {
-    "contents": [],
-    "cross_refs": [
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/operated_light_profile/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/potential_correction/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/shapelets/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/subhalo/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/extra_galaxies/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/linear_light_profiles/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/multi_gaussian_expansion/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/pixelization/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/scaling_relation/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/start_here.ipynb",
-      "interferometer/start_here.ipynb"
-    ],
-    "notebook": "notebooks/interferometer/features/start_here.ipynb",
-    "path": "scripts/interferometer/features/start_here.py",
-    "summary": "These features build on the topic\u2019s main example. Each introduction explains the method and its trade-offs; the worked scripts retain their model choices and detailed calculations.",
-    "title": "Interferometer Features"
-  },
-  {
     "contents": [
       "Mask",
       "Loading Data",
@@ -7051,25 +6980,6 @@
     "path": "scripts/multi_dataset/features/slam/start_here.py",
     "summary": "SLaM organizes lens modeling into linked source, light and mass stages. Results from earlier stages inform the setup of later stages, allowing the model to be developed in a controlled sequence.",
     "title": "Features: Slam"
-  },
-  {
-    "contents": [],
-    "cross_refs": [
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/dataset_offsets/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/imaging_and_interferometer/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/imaging_and_point_source/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/one_by_one/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/pixelization/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/same_wavelength/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/slam/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/wavelength_dependence/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/start_here.ipynb",
-      "multi_dataset/start_here.ipynb"
-    ],
-    "notebook": "notebooks/multi_dataset/features/start_here.ipynb",
-    "path": "scripts/multi_dataset/features/start_here.py",
-    "summary": "These features build on the topic\u2019s main example. Each introduction explains the method and its trade-offs; the worked scripts retain their model choices and detailed calculations.",
-    "title": "Multi Dataset Features"
   },
   {
     "contents": [
@@ -8795,29 +8705,6 @@
     "title": "Features: Scaling Relation"
   },
   {
-    "contents": [],
-    "cross_refs": [
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/double_source_plane_lens/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/mass_stellar_dark/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/operated_light_profile/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/shapelets/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/sky_background/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/subhalo/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/extra_galaxies/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/linear_light_profiles/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/multi_gaussian_expansion/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/no_lens_light/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/pixelization/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/scaling_relation/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/start_here.ipynb",
-      "multi_galaxy/start_here.ipynb"
-    ],
-    "notebook": "notebooks/multi_galaxy/features/start_here.ipynb",
-    "path": "scripts/multi_galaxy/features/start_here.py",
-    "summary": "These features build on the topic\u2019s main example. Each introduction explains the method and its trade-offs; the worked scripts retain their model choices and detailed calculations.",
-    "title": "Multi Galaxy Features"
-  },
-  {
     "contents": [
       "Loading Data",
       "Extra Galaxies Noise Scaling",
@@ -9451,25 +9338,6 @@
     "title": "Features: Scaling Relation"
   },
   {
-    "contents": [],
-    "cross_refs": [
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/deblending/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/extra_galaxies/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/fluxes.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/multiple_sources/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/scaling_relation/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/time_delays.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/start_here.ipynb",
-      "fluxes.py",
-      "point_source/start_here.ipynb",
-      "time_delays.py"
-    ],
-    "notebook": "notebooks/point_source/features/start_here.ipynb",
-    "path": "scripts/point_source/features/start_here.py",
-    "summary": "These features build on the topic\u2019s main example. Each introduction explains the method and its trade-offs; the worked scripts retain their model choices and detailed calculations.",
-    "title": "Point Source Features"
-  },
-  {
     "contents": [
       "Model",
       "Dataset",
@@ -9658,18 +9526,6 @@
     "path": "scripts/point_source/start_here.py",
     "summary": "Strong gravitational lenses often have point sources (e.g. quasars) that are being lensed, appearing as two or four distinct point-like images. These lenses are particularly useful for measuring cosmological parameters like the Hubble constant, and for studying the small-scale properties of dark matter.",
     "title": "Start Here: Point Source"
-  },
-  {
-    "contents": [],
-    "cross_refs": [
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/weak/features/strong_lensing/start_here.ipynb",
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/weak/start_here.ipynb",
-      "weak/start_here.ipynb"
-    ],
-    "notebook": "notebooks/weak/features/start_here.ipynb",
-    "path": "scripts/weak/features/start_here.py",
-    "summary": "These features build on the topic\u2019s main example. Each introduction explains the method and its trade-offs; the worked scripts retain their model choices and detailed calculations.",
-    "title": "Weak Features"
   },
   {
     "contents": [
