@@ -2,6 +2,8 @@
 Simulator: Dataset Offsets
 ==========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/dataset_offsets/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Multi-wavelength datasets often have offsets between their images, which are due to the different telescope pointings
 during the observations.
 

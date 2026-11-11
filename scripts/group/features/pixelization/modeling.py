@@ -2,6 +2,8 @@
 Modeling Features: Pixelization (Group)
 =======================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a group-scale strong lens where the source galaxy is reconstructed using a pixelized mesh
 (Delaunay triangulation) with adaptive regularization, rather than parametric light profiles.
 

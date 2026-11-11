@@ -2,6 +2,8 @@
 SLaM (Source, Light and Mass): Multi Gaussian Expansion (Multi Galaxy)
 ======================================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The SLaM pipeline for a multi-galaxy lens whose deflectors have disturbed, twisted light — the `mge` dataset of
 this folder's `simulator.py`.
 

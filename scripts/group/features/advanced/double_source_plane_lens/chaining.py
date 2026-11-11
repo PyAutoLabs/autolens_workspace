@@ -2,6 +2,8 @@
 Chaining: Group DSPL
 ====================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/double_source_plane_lens/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script chains two non-linear searches to fit `Imaging` data of a group-scale double source-plane lens (DSPL) —
 two source galaxies at different redshifts lensed by multiple main lens galaxies at the lens-plane redshift.
 

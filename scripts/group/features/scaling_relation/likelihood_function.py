@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: Group Scaling Relation__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script describes the additional steps required to compute the `log_likelihood` for a group-scale strong
 lens whose foreground galaxy population is split across three tiers — main lens galaxies (modelled via the
 group `lens_dict` API), individually-modelled extras (tidally truncated `dPIEMassSph` profiles, each with its

@@ -2,6 +2,8 @@
 SLaM: Multi Wavelength Simultaneous
 ===================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/slam/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This example shows how to use the SLaM pipeline to fit a lens dataset at multiple wavelengths simultaneously.
 
 Simultaneous multi-dataset fits are currently built into the SLaM pipeline without user input or customization.

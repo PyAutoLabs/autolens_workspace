@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: Stellar and Dark Mass (Multi Galaxy)__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/mass_stellar_dark/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script walks through the log likelihood function of a multi-galaxy lens whose deflectors have **decomposed
 stellar and dark mass**, step by step.
 

@@ -1,5 +1,7 @@
-r"""
+"""
 __Log Likelihood Function: Potential Correction (Gravitational Imaging)__
+
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/potential_correction/start_here.ipynb) for the shared concepts and a guide to the examples.
 
 This script provides a step-by-step guide of the **PyAutoLens** potential-correction `log_likelihood_function`
 (the Bayesian evidence of `al.pc.FitDpsiSrcImaging`), which jointly inverts `Imaging` data for a pixelized source

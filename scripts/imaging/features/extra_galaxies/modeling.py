@@ -2,6 +2,8 @@
 Modeling Features: Extra Galaxies
 =================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/extra_galaxies/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 There may be extra galaxies nearby the lens and source galaxies, whose emission blends with the lens and source
 and whose mass may contribute to the ray-tracing and lens model.
 

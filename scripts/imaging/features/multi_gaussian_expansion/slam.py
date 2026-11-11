@@ -2,6 +2,8 @@
 Multi Gaussian Expansion: SLaM
 ==============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for fitting a
 lens model where the source is modeled using a Multi Gaussian Expansion (MGE).
 

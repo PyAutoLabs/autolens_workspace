@@ -2,6 +2,8 @@
 Plots: DSPL
 ===========
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/double_source_plane_lens/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This example illustrates the plotting API for double source-plane lenses (DSPLs), which have
 more than two planes at different redshifts.
 

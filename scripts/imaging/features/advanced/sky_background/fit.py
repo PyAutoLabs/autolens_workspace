@@ -2,6 +2,8 @@
 Modeling Features: Sky Background
 =================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/sky_background/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The background of an image is the light that is not associated with the strong lens we are interested in. This is due to
 light from the sky, zodiacal light, and light from other galaxies in the field of view.
 

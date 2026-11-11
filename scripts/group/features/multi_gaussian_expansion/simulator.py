@@ -2,6 +2,8 @@
 Simulator: Multi Gaussian Expansion (Group)
 ===========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates an example strong lens on the 'group' scale, where there is a single primary lens galaxy
 and two smaller extra galaxies nearby, whose mass contributes significantly to the ray-tracing and is therefore
 included in the strong lens model.
@@ -24,7 +26,6 @@ __Contents__
 - **Source Galaxy:** The source galaxy whose lensed images we simulate.
 - **Ray Tracing:** Use all galaxies to setup a tracer and simulate.
 - **Output:** Output the simulated dataset and metadata.
-
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

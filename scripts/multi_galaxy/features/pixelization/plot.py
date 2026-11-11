@@ -2,6 +2,8 @@
 Plots: Pixelization (Multi Galaxy)
 ==================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script plots a multi-galaxy fit whose source is reconstructed on a pixelized mesh.
 
 The plotting functions are the same ones used everywhere else in the workspace (see

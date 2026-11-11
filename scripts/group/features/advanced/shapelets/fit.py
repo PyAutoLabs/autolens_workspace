@@ -2,6 +2,8 @@
 Fit Features: Shapelets (Group)
 ===============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/shapelets/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A shapelet is a basis function that is appropriate for capturing the exponential / disk-like features of a galaxy.
 This script demonstrates how to create a fit using shapelet light profiles for a group-scale strong lens, without
 performing a non-linear search.

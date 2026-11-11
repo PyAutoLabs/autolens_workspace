@@ -2,6 +2,8 @@
 Fits: DSPL (Multi Galaxy)
 =========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/double_source_plane_lens/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a multi-galaxy double source-plane lens without a non-linear search, so the multi-plane tracer
 and the objects it produces can be inspected directly.
 

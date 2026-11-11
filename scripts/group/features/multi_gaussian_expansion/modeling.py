@@ -2,6 +2,8 @@
 Modeling Features: Multi Gaussian Expansion (Group)
 ===================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A Multi Gaussian Expansion (MGE) decomposes the light of each galaxy into ~10-30+ Gaussians, where the `intensity`
 of every Gaussian is solved for via linear algebra using a process called an "inversion" (see the
 `linear_light_profiles` feature for a full description of this).

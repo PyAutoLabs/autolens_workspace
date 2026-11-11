@@ -2,6 +2,8 @@
 Simulator: SIE
 ==============
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates multi-wavelength `Imaging` of a 'galaxy-scale' strong lens where:
 
  - The lens galaxy's total mass distribution is an `Isothermal`; the external shear is an
@@ -22,7 +24,6 @@ __Contents__
 - **Output:** Output each simulated dataset to the dataset path as .fits files, with a tag describing its color.
 - **Visualize:** Output a subplot of the simulated dataset, the image and the tracer's quantities to the dataset.
 - **Tracer json:** Save the `Tracer` in the dataset folder as a .json file, ensuring the true light profiles, mass.
-
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

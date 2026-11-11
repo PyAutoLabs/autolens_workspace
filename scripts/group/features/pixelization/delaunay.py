@@ -2,6 +2,8 @@
 Delaunay Pixelization (Group)
 =============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script demonstrates using a Delaunay triangulation mesh for source reconstruction in a group-scale
 strong lens, as an alternative to the rectangular mesh used in other examples.
 
@@ -29,7 +31,6 @@ __Contents__
 - **Fit:** Create a FitImaging with a Delaunay pixelized source for a group lens.
 - **Model:** Compose a group lens model with a Delaunay pixelized source for modeling.
 - **Advantages for Group Lenses:** Why Delaunay meshes are well-suited for group-scale lensing.
-
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

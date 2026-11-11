@@ -2,6 +2,8 @@
 SLaM (Source, Light and Mass): DSPL
 ===================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/double_source_plane_lens/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script adapts the SLaM (Source, Light and Mass) pipelines to a Double Source Plane Lens (DSPL) system, where
 there are two source galaxies at different redshifts behind the lens galaxy. Both source galaxies must be modeled
 simultaneously because the first source (at the intermediate redshift) acts as both a background source of the lens

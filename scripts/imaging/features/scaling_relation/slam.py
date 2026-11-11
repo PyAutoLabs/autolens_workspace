@@ -2,6 +2,8 @@
 Scaling Relation: SLaM
 ======================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Uses the SLaM pipelines to fit a lens with two tiers of foreground companions, where the scaling tier's Einstein
 radii are tied to the main lens's own Einstein radius by a Faber-Jackson relation.
 

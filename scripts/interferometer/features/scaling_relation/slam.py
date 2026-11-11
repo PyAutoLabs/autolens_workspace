@@ -2,6 +2,8 @@
 Scaling Relation: SLaM (Interferometer)
 =======================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Runs the SLaM pipelines on an interferometer dataset whose foreground companions are tied to the main lens's own
 Einstein radius by a Faber-Jackson relation.
 

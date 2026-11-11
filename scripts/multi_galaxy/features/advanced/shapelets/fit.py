@@ -2,6 +2,8 @@
 Fits: Shapelets (Multi Galaxy)
 ==============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/shapelets/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a multi-galaxy strong lens with a shapelet source, without a non-linear search, so the `Basis`
 API and the solved shapelet intensities can be inspected directly.
 

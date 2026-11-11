@@ -2,6 +2,8 @@
 Modeling Features: Shapelets (Multi Galaxy)
 ===========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/shapelets/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a multi-galaxy strong lens where the **source** is reconstructed with a basis of shapelets — a
 set of orthogonal basis functions well suited to describing irregular, asymmetric morphology with relatively few
 non-linear parameters.

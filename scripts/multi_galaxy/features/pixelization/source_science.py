@@ -2,6 +2,8 @@
 Source Science: Pixelization (Multi Galaxy)
 ===========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Source science studies the highly magnified background source rather than the deflectors. This script computes
 the quantities a pixelized reconstruction gives access to for a multi-galaxy lens:
 

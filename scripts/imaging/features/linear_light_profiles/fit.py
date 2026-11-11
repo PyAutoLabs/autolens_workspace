@@ -2,6 +2,8 @@
 Modeling Features: Linear Light Profiles Fit
 ============================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/start_here.ipynb) for the shared concepts, advantages and trade-offs. The example-specific choices are explained below.
+
 A "linear light profile" is a variant of a standard light profile where the `intensity` parameter is solved for
 via linear algebra every time the model is fitted to the data. This uses a process called an "inversion" and it
 always computes the `intensity` values that give the best fit to the data (e.g. maximize the likelihood)
@@ -12,8 +14,7 @@ light profiles!
 
 __Contents__
 
-- **Advantages & Disadvantages:** Each light profile's `intensity` parameter is therefore not a free parameter in the model-fit.
-- **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+- **Advantages:** Parameter choices specific to this example.
 - **Model:** Compose the lens model fitted to the data.
 - **Notes:** This script is identical to `imaging/start_here.py` except that the light profiles are switched to.
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
@@ -27,33 +28,6 @@ __Advantages__
 
 Each light profile's `intensity` parameter is therefore not a free parameter in the model-fit, reducing the
 dimensionality of non-linear parameter space by the number of light profiles (in this example by 2 dimensions).
-
-This also removes the degeneracies that occur between the `intensity` and other light profile parameters
-(e.g. `effective_radius`, `sersic_index`), which are difficult degeneracies for the non-linear search to map out
-accurately. This produces more reliable lens model results and the fit converges in fewer iterations, speeding up the
-overall analysis.
-
-The inversion has a relatively small computational cost, thus we reduce the model complexity without much slow-down and
-can therefore fit models more reliably and faster!
-
-__Disadvantages__
-
-Although the computation time of the inversion is small, it is not non-negligible. It is approximately 3-4x slower
-than using a standard light profile.
-
-The gains in run times due to the simpler non-linear parameter space therefore are somewhat balanced by the slower
-likelihood calculation.
-
-__Positive Only Solver__
-
-Many codes which use linear algebra typically rely on a linear algebra solver which allows for positive and negative
-values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
-
-This is problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
-light, which is clearly unphysical.
-
-**PyAutoLens** uses a positive only linear algebra solver which has been extensively optimized to ensure it is as fast
-as positive-negative solvers. This ensures that all light profile intensities are positive and therefore physical.
 
 __Model__
 

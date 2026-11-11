@@ -2,6 +2,8 @@
 Simulator: Subhalo (Multi Galaxy)
 =================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/subhalo/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates a multi-galaxy strong lens containing a **dark matter subhalo** — a compact, dark
 perturber that distorts the lensed source's arcs without producing any light of its own.
 

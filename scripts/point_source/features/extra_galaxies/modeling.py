@@ -2,6 +2,8 @@
 Modeling Features: Extra Galaxies
 =================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/extra_galaxies/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 There may be extra galaxies projected near a lensed point source, for example a faint companion beside the main
 lens galaxy of a lensed quasar, whose mass contributes to the ray-tracing and therefore to where the multiple
 images appear.

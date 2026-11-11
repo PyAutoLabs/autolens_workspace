@@ -2,6 +2,8 @@
 Simulator: Scaling Relation
 ===========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Simulates the dataset for the `imaging/features/scaling_relation` feature: a galaxy-scale lens plus two tiers of
 foreground companions.
 

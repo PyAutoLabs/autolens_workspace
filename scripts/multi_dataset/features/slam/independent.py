@@ -2,6 +2,8 @@
 SLaM: Multi Wavelength Independent
 ==================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/slam/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This example shows how to use the SLaM pipeline to fit a lens dataset at one wavelength, and then fit other data of
 the same lens at different wavelengths with the same mass model fitted to the original dataset.
 

@@ -2,6 +2,8 @@
 Modeling Features: Linear Light Profiles (Group)
 ================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/linear_light_profiles/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a group-scale strong lens using **linear light profiles**, where the ``intensity`` of every
 light profile is solved analytically via linear algebra rather than being a free parameter in the non-linear
 search.

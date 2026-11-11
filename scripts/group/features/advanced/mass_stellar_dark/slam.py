@@ -2,6 +2,8 @@
 SLaM (Source, Light and Mass): Group Mass Stellar Dark
 ======================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/mass_stellar_dark/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script adapts the SLaM (Source, Light and Mass) pipelines to a group-scale strong lens where each main
 lens galaxy is decomposed into a stellar component (tied to its light via a mass-to-light ratio) and a dark
 matter halo.

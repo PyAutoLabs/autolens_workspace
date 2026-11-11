@@ -2,6 +2,8 @@
 Simulator: DSPL
 ===============
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/double_source_plane_lens/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A double source-plane lens (DSPL) is a strong lens system where there are two source galaxies at different
 redshifts behind the lens galaxy. They appear as two distinct Einstein rings in the image-plane, and can constrain
 Cosmological parameters in a way single Einstein ring lenses cannot.

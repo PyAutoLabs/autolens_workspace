@@ -2,6 +2,8 @@
 Fit Features: Multi Gaussian Expansion (Group)
 ==============================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This guide shows how to fit data using the `FitImaging` object for group-scale strong lenses, including visualizing
 and interpreting its results.
 
@@ -25,7 +27,6 @@ __Contents__
 - **Fit Quantities:** The maximum log likelihood fit contains many 1D and 2D arrays showing the fit.
 - **Figures of Merit:** There are single valued floats which quantify the goodness of fit.
 - **MGE In Practice:** How MGE would be used in a real fit via modeling.
-
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

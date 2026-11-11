@@ -2,6 +2,8 @@
 Simulator: No Lens Light
 ========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/no_lens_light/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates `Imaging` of a 'galaxy-scale' which is identical to the `simple` simulated in the `start_here.py`
 script, but where the lens galaxy's light is omitted.
 

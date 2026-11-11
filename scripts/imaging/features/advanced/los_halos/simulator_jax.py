@@ -2,6 +2,8 @@
 Simulator: Line-of-Sight Halos (JAX)
 ====================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/los_halos/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates the same strong lens configuration as ``simulator.py`` — a galaxy-scale
 lens with line-of-sight (LOS) dark matter halos — but uses a JAX-accelerated path that compiles
 the full simulation pipeline under ``jax.jit``.

@@ -2,6 +2,8 @@
 Modeling Features: Shapelets Fit (Interferometer)
 =================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/shapelets/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A shapelet is a basis function appropriate for capturing the exponential / disk-like features of a galaxy.
 The `intensity` of every shapelet is solved for via linear algebra ("inversion") rather than being a free
 parameter of the non-linear search.

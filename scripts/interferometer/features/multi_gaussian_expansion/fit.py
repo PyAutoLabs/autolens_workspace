@@ -2,6 +2,8 @@
 Modeling Features: Multi Gaussian Expansion Fit (Interferometer)
 ================================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A multi-Gaussian expansion (MGE) decomposes a galaxy's light into ~15-100 Gaussians, where the `intensity`
 of every Gaussian is solved for via linear algebra using a process called an "inversion".
 

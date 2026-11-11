@@ -2,6 +2,8 @@
 Simulator: Group Scaling Relation
 =================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates a group-scale strong lens with three populations of galaxies in the foreground, designed to
 exercise the three-tier modeling API used by `group/features/scaling_relation/modeling.py`:
 

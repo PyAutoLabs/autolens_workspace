@@ -2,6 +2,8 @@
 Modeling Features: Pixelization (Multi Galaxy)
 ==============================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a multi-galaxy strong lens with a **pixelized source reconstruction**: the source is
 reconstructed on a mesh of pixels whose fluxes are solved by linear algebra, rather than assumed to follow an
 analytic profile.

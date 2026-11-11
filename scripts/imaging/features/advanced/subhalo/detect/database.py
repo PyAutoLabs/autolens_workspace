@@ -2,6 +2,8 @@
 Subhalo Detection: Database
 ===========================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/detect/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The example `subhalo/detect/start_here.ipynb` shows how to perform dark matter subhalo detection in strong lens
 with **PyAutoLens**, including using results to inspect and visualize the fit.
 

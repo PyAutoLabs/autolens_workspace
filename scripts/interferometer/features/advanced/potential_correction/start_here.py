@@ -31,6 +31,10 @@ __Prerequisites__
 
 - `imaging/features/advanced/potential_correction/start_here.ipynb` — the technique overview (imaging).
 - `interferometer/start_here.ipynb` — interferometer dataset basics.
+
+__Related Examples__
+
+- [likelihood_function.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/potential_correction/likelihood_function.ipynb) — Follow the likelihood calculation.
 """
 
 # from autolens import setup_notebook; setup_notebook()

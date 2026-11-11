@@ -1,5 +1,7 @@
-r"""
+"""
 __Log Likelihood Function: Multi Gaussian Expansion__
+
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
 
 This script provides a step-by-step guide of the `log_likelihood_function` which is used to fit `Imaging` data with
 a multi-Gaussian expansion (MGE), which is a superposition of multiple 2D Gaussian linear light profiles.

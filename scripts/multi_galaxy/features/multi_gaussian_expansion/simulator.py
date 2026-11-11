@@ -2,6 +2,8 @@
 Simulator: Multi Gaussian Expansion (Multi Galaxy)
 ==================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates `Imaging` of a 'multi-galaxy' strong lens whose co-dominant deflectors have **disturbed,
 asymmetric light** that a single symmetric `Sersic` cannot represent.
 

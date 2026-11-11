@@ -2,6 +2,8 @@
 Simulator: Scaling Relation (Interferometer)
 ============================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Simulates the dataset for the `interferometer/features/scaling_relation` feature: a lens plus a tier of foreground
 companions whose Einstein radii are tied to the main lens's own by a Faber-Jackson relation.
 

@@ -2,6 +2,8 @@
 Source Science: Pixelization (Group)
 ====================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Source science focuses on studying the highly magnified properties of the background lensed source galaxy.
 
 Using a pixelized source reconstruction from a group-scale lens, we can compute key quantities such as:
@@ -32,7 +34,6 @@ __Contents__
 - **Magnification At A Point:** The signed magnification `mu = 1 / det(A)` at chosen (y,x) image-plane coordinates, computed via the Hessian.
 - **Magnification Errors:** Errors on the magnifications above, from a quick lens model fit and draws from its posterior (the only slow part of the script, so it runs last).
 - **Magnification Uncertainty Map:** The error of the magnification at every image-plane pixel, from the same posterior draws.
-
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

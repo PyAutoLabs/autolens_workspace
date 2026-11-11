@@ -2,6 +2,8 @@
 Pixelization: Adaptive
 ======================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Non-linear search chaining is an advanced model-fitting approach which breaks the model-fitting procedure down into
 multiple non-linear searches, using the results of the initial searches to initialization parameter sampling in
 subsequent searches. This contrasts the `modeling` example which fits a single lens model-fit using one non-linear search.

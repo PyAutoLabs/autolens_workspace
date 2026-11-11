@@ -2,6 +2,8 @@
 Chaining: Chaining Lens Light To Mass
 =====================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/mass_stellar_dark/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script chains two searches to fit `Imaging` data of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is a bulge with an MGE.

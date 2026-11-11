@@ -2,6 +2,8 @@
 Linear Light Profiles: SLaM (Interferometer)
 ============================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/linear_light_profiles/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for `Interferometer`
 data, using a **linear light profile** in the SOURCE LP stage instead of a Multi-Gaussian Expansion (MGE).
 

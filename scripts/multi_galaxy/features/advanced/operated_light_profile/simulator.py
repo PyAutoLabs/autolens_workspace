@@ -2,6 +2,8 @@
 Simulator: Operated Light Profiles (Multi Galaxy)
 =================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/operated_light_profile/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates a multi-galaxy strong lens where **each co-dominant deflector hosts a compact nuclear
 point source** — an AGN — on top of its extended stellar light.
 

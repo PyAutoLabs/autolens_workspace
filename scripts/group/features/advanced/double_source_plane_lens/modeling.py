@@ -2,6 +2,8 @@
 Modeling Features: Group DSPL
 =============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/double_source_plane_lens/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A group-scale double source-plane lens (DSPL), where two source galaxies at different redshifts are lensed by multiple
 main lens galaxies at the lens-plane redshift.
 

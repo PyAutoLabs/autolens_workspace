@@ -2,6 +2,8 @@
 Simulator: Line-of-Sight Halos
 ==============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/los_halos/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates a strong gravitational lens including line-of-sight (LOS) dark matter halos
 that perturb the lensed images via multi-plane ray tracing.
 

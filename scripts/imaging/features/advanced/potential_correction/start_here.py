@@ -51,6 +51,10 @@ __Related Examples__
   joint source + $\delta\psi$ likelihood, building the evidence term by term.
 - `interferometer/features/advanced/potential_correction/start_here.ipynb` — the same technique in visibility
   space, via the sparse-operator (w-tilde) route.
+
+__Related Examples__
+
+- [likelihood_function.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/potential_correction/likelihood_function.ipynb) — Follow the likelihood calculation.
 """
 
 # from autolens import setup_notebook; setup_notebook()

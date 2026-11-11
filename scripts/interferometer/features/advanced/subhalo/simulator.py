@@ -1,6 +1,9 @@
-""" "
+"""
+"
 Simulator: Subhalo
 ==================
+
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/subhalo/start_here.ipynb) for the shared concepts and a guide to the examples.
 
 This script simulates `Interferometer` data of a 'galaxy-scale' strong lens where:
 

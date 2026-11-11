@@ -2,6 +2,8 @@
 Pixelization: Delaunay
 ======================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The majority of pixelized source reconstructions in the workspace use a rectangular mesh to reconstruct
 the source's surface brightness.
 
@@ -86,7 +88,6 @@ __Contents__
 - **Sub Gridding:** The calculation above uses a `Grid2D` object, with a `sub-size=1`, meaning it does not perform.
 - **Sourrce Plane Interpolation:** For the `Delaunay` mesh used in this example, every image-sub pixel maps to a single source Voronoi.
 - **Wrap Up:** Summary of the script and next steps.
-
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

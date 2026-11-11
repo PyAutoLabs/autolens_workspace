@@ -2,6 +2,8 @@
 Modeling Features: Shapelets (Interferometer)
 =============================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/shapelets/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A shapelet is a basis function appropriate for capturing the exponential / disk-like features of a galaxy.
 It has been employed in many strong lensing studies to model the light of the lensed source galaxy, because
 it can represent features of disky star-forming galaxies that a single Sersic function cannot.

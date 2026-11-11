@@ -2,6 +2,8 @@
 Pixelization: Many Visibilities Preparation
 ===========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 To perform many visibility modeling, a matrix called `nufft_precision_operator` is created and used, which encodes information
 and symmetries into the Fourier transform operation performed when modeling interferometer datasets, in a way that
 exploits the sparsity of the inversion — pixelizations, linear light profiles, or both — and means a very small

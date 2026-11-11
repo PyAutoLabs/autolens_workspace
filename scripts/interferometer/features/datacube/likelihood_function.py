@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: Datacube__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script provides a step-by-step guide of the **PyAutoLens** `log_likelihood_function` used to fit a
 **datacube** — a list of N per-channel `Interferometer` objects sharing a single lens model — with a per-channel
 pixelized source reconstruction (specifically a `RectangularBilinearAdaptDensity` mesh and `Constant` regularization

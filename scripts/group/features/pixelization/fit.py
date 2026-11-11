@@ -2,6 +2,8 @@
 Fit Features: Pixelization (Group)
 ==================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script demonstrates how to create a `FitImaging` object for a group-scale strong lens where the source
 galaxy is reconstructed using a pixelized mesh, rather than parametric light profiles.
 
@@ -19,7 +21,6 @@ __Contents__
 - **Fitting:** Create a FitImaging with a pixelized source for a group lens.
 - **Inversion:** Inspect the pixelized source reconstruction via the inversion object.
 - **Over Sampling:** Adaptive over-sampling at all galaxy centres.
-
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

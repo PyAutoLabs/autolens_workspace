@@ -1,5 +1,7 @@
-r"""
+"""
 __Log Likelihood Function: Potential Correction (Interferometer)__
+
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/potential_correction/start_here.ipynb) for the shared concepts and a guide to the examples.
 
 This script provides a step-by-step guide of the **PyAutoLens** visibility-space potential-correction
 `log_likelihood_function` (the Bayesian evidence of `al.pc.FitDpsiSrcInterferometer`), which jointly inverts

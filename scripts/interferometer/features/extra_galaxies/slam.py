@@ -2,6 +2,8 @@
 Extra Galaxies: SLaM
 ====================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/extra_galaxies/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script provides an example of the Source, (Lens) Light, and Mass (SLaM) pipelines for fitting a
 lens model where extra galaxies surrounding the lens are included in the lens model.
 

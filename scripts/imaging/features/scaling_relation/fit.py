@@ -2,6 +2,8 @@
 Features: Scaling Relation Fit
 ==============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Fits the `scaling_relation` dataset with every parameter set to the simulator's truth, so the two-tier foreground
 population can be inspected without a non-linear search in the way.
 

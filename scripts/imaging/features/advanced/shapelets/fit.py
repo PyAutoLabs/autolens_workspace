@@ -2,6 +2,8 @@
 Modeling Features: Shapelets
 ============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/shapelets/start_here.ipynb) for the shared concepts, advantages and trade-offs. The example-specific choices are explained below.
+
 A shapelet is a basis function that is appropriate for capturing the exponential / disk-like features of a galaxy. It
 has been employed in many strong lensing studies to model the light of the lensed source galaxy, because it can
 represent features of disky star forming galaxies that a single Sersic function cannot.
@@ -19,7 +21,7 @@ feature).
 
 __Contents__
 
-- **Advantages & Disadvantages:** Symmetric light profiles (e.g.
+- **Advantages:** Parameter choices specific to this example.
 - **Model:** Compose the lens model fitted to the data.
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
 - **Over Sampling:** Set up the adaptive over-sampling grid for accurate light profile evaluation.
@@ -34,29 +36,9 @@ __Contents__
 
 __Advantages__
 
-Symmetric light profiles (e.g. elliptical Sersics) may leave significant residuals, because they fail to capture
-irregular and asymmetric morphological of galaxies (e.g. isophotal twists, an ellipticity which varies radially).
-Shapelets can capture some of these features and can therefore better represent the emission of complex source galaxies.
-
 The shapelet model can be composed in a way that has fewer non-linear parameters than an elliptical Sersic. In this
 example, the ~20 shapelets which represent the `bulge` of the source are composed in a model corresponding to just
 N=3 non-linear parameters (a `bulge` comprising a linear Sersic would give N=6).
-
-Therefore, shapelets fit more complex source galaxy morphologies using fewer non-linear parameters than the standard
-light profile models.
-
-__Disadvantages__
-
-- There are many types of galaxy structure which shapelets may struggle to represent, such as a bar or asymmetric
-knots of star formation. They also rely on the galaxy having a distinct centre over which the shapelets can be
-centered, which is not the case if the galaxy is multiple merging systems or has bright companion galaxies.
-
-- The linear algebra used to solve for the `intensity` of each shapelet has to allow for negative values of intensity
-in order for shapelets to work. Negative surface brightnesses are unphysical, and are often inferred in a shapelet
-decomposition, for example if the true galaxy has structure that cannot be captured by the shapelet basis. Other
-approaches can force positive-only intensities on the solution, such as the Multi-Gaussian Expansion (MGE) or a pixelization.
-
-- Computationally slower than standard light profiles like the Sersic.
 
 __Model__
 

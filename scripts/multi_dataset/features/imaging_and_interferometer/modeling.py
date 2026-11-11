@@ -2,6 +2,8 @@
 Modeling: Mass Total + Source Parametric
 ========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/imaging_and_interferometer/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits an `Interferometer` and `Imaging` dataset of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's light is an MGE (but is invisible in the interferometer data).

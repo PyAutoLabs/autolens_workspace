@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: Multi Gaussian Expansion (Group)__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script provides a step-by-step guide of the `log_likelihood_function` which is used to fit `Imaging` data of
 a group-scale strong lens, with a focus on how Multi Gaussian Expansion (MGE) light profiles fit into the
 likelihood calculation.
@@ -27,7 +29,6 @@ __Contents__
 - **Likelihood Function:** Compute the log likelihood.
 - **MGE Likelihood:** How the likelihood changes when using MGE light profiles.
 - **Fit:** Verify using the FitImaging object.
-
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

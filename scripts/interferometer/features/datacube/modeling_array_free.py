@@ -2,6 +2,8 @@
 Modeling: Datacube (Array-Free)
 ===============================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits the same datacube as `modeling.py` — a list of per-channel `Interferometer` datasets sharing one
 lens model through an `af.FactorGraphModel` — but builds every channel as an **array-free** dataset.
 

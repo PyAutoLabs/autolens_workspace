@@ -2,6 +2,8 @@
 SLaM (Source, Light and Mass): Stellar and Dark Mass (Multi Galaxy)
 ===================================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/mass_stellar_dark/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 The SLaM pipeline for a multi-galaxy lens whose deflectors' mass is decomposed into stellar and dark components.
 
 Read `multi_galaxy/slam.py` first — the multi-galaxy SLaM baseline — and `guides/modeling/slam_start_here`

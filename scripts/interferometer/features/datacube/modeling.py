@@ -2,6 +2,8 @@
 Modeling: Datacube
 ==================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script fits a list of `Interferometer` channels — a "datacube" — with a single shared lens model and a
 per-channel pixelized source reconstruction. Each channel is an independent `Interferometer` dataset; the
 `af.FactorGraphModel` ties them together by feeding the same lens parameters into every channel's

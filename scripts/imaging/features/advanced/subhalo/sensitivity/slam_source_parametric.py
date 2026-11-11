@@ -2,6 +2,8 @@
 SLaM (Source, Light and Mass): Subhalo Source Parametric Sensitivity Mapping
 ============================================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This example illustrates how to perform DM subhalo sensitivity mapping using a SLaM pipeline for a source modeling
 using light profiles.
 

@@ -2,6 +2,8 @@
 SLaM (Source, Light and Mass): Mass Light Dark
 ==============================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/mass_stellar_dark/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This example shows how to use the SLaM pipelines to end with a mass model which decomposes the lens into its
 stars and dark matter, using a light plus dark matter mass model.
 

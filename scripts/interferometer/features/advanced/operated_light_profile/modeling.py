@@ -2,6 +2,8 @@
 Modeling Features: Operated Light Profiles (Interferometer)
 ===========================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/operated_light_profile/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 It is common for galaxies to have point-source emission, for example bright emission right at their centre due
 to an active galactic nuclei or a compact knot of star formation.
 

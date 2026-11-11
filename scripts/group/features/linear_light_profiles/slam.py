@@ -2,6 +2,8 @@
 Linear Light Profiles: Group SLaM
 =================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/linear_light_profiles/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script uses the SLaM pipelines to fit a group-scale strong lens using **linear Sersic light profiles**
 instead of Multi-Gaussian Expansion (MGE) profiles for the galaxy light.
 

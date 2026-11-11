@@ -2,6 +2,8 @@
 Modeling Features: Multi Gaussian Expansion
 ===========================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts, advantages and trade-offs. The example-specific choices are explained below.
+
 A multi Gaussian expansion (MGE) decomposes the lens light into ~15-100 Gaussians, where the `intensity` of every
 Gaussian is solved for via a linear algebra using a process called an "inversion" (see the `linear_light_profiles.py`
 feature for a full description of this).
@@ -12,8 +14,7 @@ profiles like the `Sersic`.
 
 __Contents__
 
-- **Advantages & Disadvantages:** Symmetric light profiles (e.g.
-- **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
+- **Advantages:** Parameter choices specific to this example.
 - **MGE Source Galaxy:** The MGE was designed to model the light of lens galaxies, because they are typically elliptical.
 - **Model:** Compose the lens model fitted to the data.
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
@@ -27,55 +28,15 @@ __Contents__
 
 __Advantages__
 
-Symmetric light profiles (e.g. elliptical Sersics) may leave significant residuals, because they fail to capture
-irregular and asymmetric morphological of galaxies (e.g. isophotal twists, an ellipticity which varies radially).
-An MGE fully captures these features and can therefore much better represent the emission of complex lens galaxies.
-
 The MGE model can be composed in a way that has fewer non-linear parameters than an elliptical Sersic. In this example,
 two separate groups of Gaussians are used to represent the `bulge` and `disk` of the lens, which in total correspond
 to just N=6 non-linear parameters (a `bulge` and `disk` comprising two linear Sersics has N=10 parameters).
 
-The MGE model parameterization is also composed such that neither the `intensity` parameters or any of the
-parameters controlling the size of the Gaussians (their `sigma` values) are non-linear parameters sampled by Nautilus.
-This removes the most significant degeneracies in parameter space, making the model much more reliable and efficient
-to fit.
-
-Therefore, not only does an MGE fit more complex galaxy morphologies, it does so using fewer non-linear parameters
-in a much simpler non-linear parameter space which has far less significant parameter degeneracies!
-
-__Disadvantages__
-
-To fit an MGE model to the data, the light of the ~15-75 or more Gaussian in the MGE must be evaluated and compared
-to the data. This is slower than evaluating the light of ~2-3 Sersic profiles, producing slower computational run
-times (although the simpler non-linear parameter space will speed up the fit overall).
-
-__Positive Only Solver__
-
-Many codes which use linear algebra typically rely on a linear algebra solver which allows for positive and negative
-values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
-
-This is problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
-light, which is clearly unphysical. For an MGE, this produces a positive-negative "ringing", where the
-Gaussians alternate between large positive and negative values. This is clearly undesirable and unphysical.
-
-**PyAutoLens** uses a positive only linear algebra solver which has been extensively optimized to ensure it is as fast
-as positive-negative solvers. This ensures that all light profile intensities are positive and therefore physical.
-
 __MGE Source Galaxy__
-
-The MGE was designed to model the light of lens galaxies, because they are typically elliptical galaxies whose
-morphology is better represented as many Gaussians. Their complex features (e.g. isophotal twists,
-an ellipticity which varies radially) are accurately captured by an MGE.
 
 The morphological features typically seen in source galaxies (e.g. disks, bars, clumps of star formation) are less
 suited to an MGE. The source-plane of many lenses also often have multiple galaxies, whereas the MGE fitted
 in this example assumes a single `centre`.
-
-However, despite these limitations, an MGE turns out to be an extremely powerful way to model the source galaxies
-of strong lenses. This is because, even if it struggles to capture the source's morphology, the simplification of
-non-linear parameter space and removal of degeneracies makes it much easier to obtain a reliable lens model.
-This is driven by the removal of any non-linear parameters which change the size of the source's light profile,
-which are otherwise the most degenerate with the lens's mass model.
 
 The second example in this script therefore uses an MGE source. We strongly recommend you read that example and adopt
 MGE lens light models and source models, instead of the elliptical Sersic profiles, as soon as possible!

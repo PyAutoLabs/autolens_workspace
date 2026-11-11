@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: DSPL (Multi Galaxy)__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/double_source_plane_lens/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script walks through the log likelihood function of a multi-galaxy double source-plane lens, step by step,
 so the calculation can be followed without reading the source code.
 

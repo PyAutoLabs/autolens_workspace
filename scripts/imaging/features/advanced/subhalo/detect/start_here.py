@@ -91,6 +91,10 @@ SLaM script fits `Imaging` of a strong lens system, where in the final model:
 
 Each SLaM pipeline is implemented as a Python function below, with a documentation string above each function
 describing the pipeline in detail. The full pipeline is run at the bottom of the script.
+
+__Related Examples__
+
+- [database.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/detect/database.ipynb) — Inspect stored detection results.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports

@@ -2,6 +2,8 @@
 Simulator: No Lens Light (Group)
 ================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/no_lens_light/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates `Imaging` of a 'group-scale' strong lens where none of the lens galaxies have visible
 light emission — only their mass profiles contribute to the ray-tracing. The source galaxy still has light.
 

@@ -2,6 +2,8 @@
 Source Science: Multi Gaussian Expansion (Multi Galaxy)
 =======================================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/multi_gaussian_expansion/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Science calculations on a multi-galaxy lens fitted with an MGE per co-dominant deflector: the **luminosity of each
 deflector**, the **flux ratio** between them, and the source's magnification and flux.
 

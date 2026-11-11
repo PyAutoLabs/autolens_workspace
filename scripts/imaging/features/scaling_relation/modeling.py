@@ -2,6 +2,8 @@
 Modeling Features: Scaling Relation
 ===================================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 A strong lens often has many foreground galaxies near the line of sight, and freeing an `einstein_radius` for each
 one quickly stops working: with 30 companions the parameter space is too large to sample and the data does not
 contain enough information to constrain them individually anyway.

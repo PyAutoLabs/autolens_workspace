@@ -1,6 +1,8 @@
 """
 __Log Likelihood Function: Scaling Relation__
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/scaling_relation/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 Describes the one step of the `log_likelihood` computation that a scaling relation changes: how the lens plane's
 deflection field is composed when most of the foreground galaxies' Einstein radii are not free parameters but
 derived from the main lens's.

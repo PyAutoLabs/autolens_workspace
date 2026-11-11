@@ -2,6 +2,8 @@
 Simulator: Start Here
 =====================
 
+Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/sky_background/start_here.ipynb) for the shared concepts and a guide to the examples.
+
 This script simulates `Imaging` of a strong lens where the sky background is not subtracted from the image and therefore
 appears in the dataset.
 
