@@ -538,17 +538,23 @@ Images from telescopes such as Hubble or JWST. Fit the lens light, mass and exte
 
 __Interferometer__
 
+<img src="../images/new_user_guide/interferometry.png" alt="Interferometer conceptual illustration" width="360">
+
 Radio or submillimetre observations, such as ALMA data. Fit the measured visibilities directly.
 
 [Notebook ](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/start_here.ipynb)·[Google Colab ](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/interferometer/start_here.ipynb)
 
 __Data cubes__
 
+<img src="../images/new_user_guide/data_cubes.png" alt="Data cubes conceptual illustration" width="360">
+
 Spectral-line channels, such as an ALMA CO cube. Fit the channels together with a shared lens model.
 
 [Notebook ](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb)·[Google Colab ](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/interferometer/features/datacube/start_here.ipynb)
 
 __Point sources__
+
+<img src="../images/new_user_guide/point_sources.png" alt="Point sources conceptual illustration" width="360">
 
 Multiple images of a compact source, such as a quasar or supernova. Start with the point-source example.
 
@@ -570,420 +576,123 @@ Once you have chosen an example, explore the [Features guide](https://pyautolens
 
 __Features__
 
-Here is a brief overview of the advanced features of **PyAutoLens**.
+Explore the modelling tools you can add to your analysis. Each introduction explains the scientific use cases and links to worked examples.
 
-You won't look at these for a while, you should find your relevant start_here notebook and work through that first,
-but a quick look through these will give you a sense of the breadth of **PyAutoLens**'s capabilities.
+For your first dataset and starting notebook, use the [New User Guide](https://autolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html).
 
-Brief one sentence descriptions of each feature are given, with more detailed descriptions below including
-links to the relevant workspace examples.
+<table class="feature-gallery"><tbody><tr><td width="25%"><a href="#pixelizations"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/pixelization_illustration.png" alt="Pixelizations illustration" width="220"><br>Pixelizations</a></td><td width="25%"><a href="#multi-gaussian-expansion-mge"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/mge_illustration.png" alt="Multi Gaussian Expansion (MGE) illustration" width="220"><br>MGE</a></td><td width="25%"><a href="#dark-matter-subhalos"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/subhalo_detection_illustration.png" alt="Dark Matter Subhalos illustration" width="220"><br>Dark Matter Subhalos</a></td><td width="25%"><a href="#sensitivity-mapping"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/sensitivity_mapping_illustration.png" alt="Sensitivity Mapping illustration" width="220"><br>Sensitivity Mapping</a></td></tr></tbody></table>
 
-**Pixelizations**: Reconstructing the source galaxy on a mesh of pixels, to capture irregular structures like spiral arms.
-**Point Sources**: Modeling point sources (e.g. quasars) observed in the strong lens imaging data.
-**Interferometry**: Modeling of interferometer data (e.g. ALMA, LOFAR) directly in the uv-plane.
-**Multi Gaussian Expansion (MGE)**: Flexible models for foreground lens light and the background source.
-**Groups**: Modeling group-scale strong lenses with multiple lens galaxies and multiple source galaxies.
-**Multi-Wavelength**: Simultaneous analysis of imaging and / or interferometer datasets observed at different wavelengths.
-**Ellipse Fitting**: Fitting ellipses to determine a lens galaxy's ellipticity, position angle and centre.
-**Shapelets**: Decomposing a galaxy into a set of shapelet orthogonal basis functions, capturing more complex structures than simple light profiles.
-**Operated Light Profiles**: Assuming a light profile has already been convolved with the PSF, for when the PSF is a significant effect.
-**Sky Background**: Including the background sky in the model to ensure robust fits to the outskirts of galaxies.
+*Conceptual illustrations, not measured data or guaranteed reconstructions.*
 
-__Pixelizations__
+<details class="feature-more-images"><summary>More feature illustrations</summary><table class="feature-gallery"><tbody><tr><td width="25%"><a href="#shapelets"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/shapelets_illustration.png" alt="Shapelets illustration" width="220"><br>Shapelets</a></td><td width="25%"><a href="#point-sources"><img src="../images/new_user_guide/point_sources.png" alt="Point Sources illustration" width="220"><br>Point Sources</a></td><td width="25%"><a href="#interferometry"><img src="../images/new_user_guide/interferometry.png" alt="Interferometry illustration" width="220"><br>Interferometry</a></td><td width="25%"><a href="#data-cubes"><img src="../images/new_user_guide/data_cubes.png" alt="Data Cubes illustration" width="220"><br>Data Cubes</a></td></tr><tr><td width="25%"><a href="#multi-wavelength"><img src="../images/new_user_guide/multi_wavelength.png" alt="Multi-Wavelength illustration" width="220"><br>Multi-Wavelength</a></td><td width="25%"><a href="#linear-light-profiles"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/linear_light_profiles.png" alt="Linear Light Profiles illustration" width="220"><br>Linear Light Profiles</a></td><td width="25%"><a href="#extra-galaxies"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/extra_galaxies.png" alt="Extra Galaxies illustration" width="220"><br>Extra Galaxies</a></td><td width="25%"><a href="#no-lens-light"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/no_lens_light.png" alt="No Lens Light illustration" width="220"><br>No Lens Light</a></td></tr><tr><td width="25%"><a href="#operated-light-profiles"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/operated_light_profile.png" alt="Operated Light Profiles illustration" width="220"><br>Operated Light Profiles</a></td><td width="25%"><a href="#sky-background"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/sky_background.png" alt="Sky Background illustration" width="220"><br>Sky Background</a></td><td width="25%"><a href="#stellar-dark-matter"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/stellar_dark_illustration.png" alt="Stellar + Dark Matter illustration" width="220"><br>Stellar + Dark Matter</a></td><td width="25%"><a href="#scaling-relations"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/scaling_relation.png" alt="Scaling Relations illustration" width="220"><br>Scaling Relations</a></td></tr><tr><td width="25%"><a href="#multi-galaxy-lenses-groups-and-clusters"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/group_halo.png" alt="Multi-Galaxy Lenses, Groups and Clusters illustration" width="220"><br>Multi-Galaxy Lenses, Groups and Clusters</a></td><td width="25%"><a href="#double-source-plane-lenses"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/double_source_plane_illustration.png" alt="Double Source-Plane Lenses illustration" width="220"><br>Double Source-Plane Lenses</a></td><td width="25%"><a href="#weak-lensing"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/strong_weak_lensing.png" alt="Weak Lensing illustration" width="220"><br>Weak Lensing</a></td><td width="25%"><a href="#line-of-sight-halos"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/los_halos.png" alt="Line-of-Sight Halos illustration" width="220"><br>Line-of-Sight Halos</a></td></tr><tr><td width="25%"><a href="#potential-correction"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/potential_correction_illustration.png" alt="Potential Correction illustration" width="220"><br>Potential Correction</a></td></tr></tbody></table></details>
 
-Recover the background galaxy behind the arcs. A pixelization reconstructs source light on a mesh, providing
-flexibility to describe spiral arms, star-forming clumps and irregular structure without imposing a simple
-analytic light profile.
+__Reconstruct the source__
 
-**Study the background galaxy.** Pixelized reconstructions are a key tool for source science: investigating
-galaxy structure and measuring properties such as intrinsic flux, size and lensing magnification. Start with
-[source_science.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/source_science.ipynb)
-to see how to analyse the reconstructed source, calculate flux and magnification, propagate uncertainties and
-export the reconstruction.
+<div id="pixelizations" class="feature-entry"><h3>Pixelizations</h3><p>Reconstruct the background galaxy on a mesh to study spiral arms, star-forming clumps and irregular structure. Pixelization is a key tool for <strong>source science</strong>: measuring intrinsic flux, size and magnification alongside the lens mass.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb">Start with pixelization</a>.</p>
+</div>
 
-![Pixelization: recover the galaxy behind the arcs](../images/features/pixelization_illustration.png)
+<div id="multi-gaussian-expansion-mge" class="feature-entry"><h3>Multi Gaussian Expansion (MGE)</h3><p>Model foreground lens light that overlaps the arcs, or reconstruct a flexible smooth source, using a sum of Gaussians. An MGE captures changes in shape with radius while solving component brightnesses together. Source examples include flux and magnification measurements.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/start_here.ipynb">Explore multi gaussian expansion (mge)</a>.</p>
+</div>
 
-Conceptual illustration, not observational data. The mesh and galaxy on the right show the same source
-brightness distribution; removing mesh lines adds no information. Reconstruction requires a lens mass model,
-and the recoverable detail depends on the data and modelling assumptions.
+<div id="shapelets" class="feature-entry"><h3>Shapelets</h3><p>Study source morphology or flexible foreground light with a sum of spatial basis functions. Shapelets capture structure beyond a simple smooth profile while retaining a compact description of the basis geometry. Inspect the combined light and residuals as you increase flexibility.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/shapelets/start_here.ipynb">Explore shapelets</a>.</p>
+</div>
 
-Source brightness is solved during the fit, with regularization controlling how freely neighbouring mesh pixels
-can vary. This flexibility supports both source science and lens-mass modelling; it does not remove model
-degeneracies or guarantee that fine structure is real.
+__Model foreground light and neighbours__
 
-Read the [pixelization feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb)
-for use cases, mesh choices, regularization and worked examples.
+<div id="linear-light-profiles" class="feature-entry"><h3>Linear Light Profiles</h3><p>Fit models with many light components using fewer sampled parameters. Component brightnesses are solved together at each likelihood evaluation, leaving the search to explore geometry and lens mass. Useful for lens light, source light and MGE models; solved brightnesses change with the model.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/start_here.ipynb">Explore linear light profiles</a>.</p>
+</div>
 
-For deeper teaching, see [the pixelization overview](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/overview/overview_5_pixelizations.ipynb)
-and Chapter 3 of [HowToLens](https://github.com/PyAutoLabs/HowToLens).
+<div id="extra-galaxies" class="feature-entry"><h3>Extra Galaxies</h3><p>Account for neighbours whose light blends with the arcs or whose gravity changes the lensing. Choose a light model, mass model or both for each companion. Masking its emission does not remove its gravitational effect.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/extra_galaxies/start_here.ipynb">Explore extra galaxies</a>.</p>
+</div>
 
+<div id="no-lens-light" class="feature-entry"><h3>No Lens Light</h3><p>Fit the lens mass and source when foreground light is negligible or has already been subtracted. The lens still deflects light. For subtracted images, check how residuals and subtraction uncertainty affect the result.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/no_lens_light/start_here.ipynb">Explore no lens light</a>.</p>
+</div>
 
-__Point Sources__
+<div id="operated-light-profiles" class="feature-entry"><h3>Operated Light Profiles</h3><p>Separate compact emission from extended galaxy light using a component that already includes the imaging PSF response. The surrounding galaxy still receives its appropriate instrumental response. Interferometer examples instead transform the compact sky emission into visibilities.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/operated_light_profile/start_here.ipynb">Explore operated light profiles</a>.</p>
+</div>
 
-There are many lenses where the background source is not extended but is instead a point-source, for example strongly
-lensed quasars and supernovae.
+<div id="sky-background" class="feature-entry"><h3>Sky Background</h3><p>Fit an uncertain sky level alongside faint lens light and arcs. This helps distinguish galaxy outskirts from residual background, while keeping sky photon noise in the noise model. The example fits a constant level.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/sky_background/start_here.ipynb">Explore sky background</a>.</p>
+</div>
 
-For these objects, we do not want to model the source using a light profile, which implicitly assumes an extended
-surface brightness distribution.
+**Advanced: ellipse fitting.** Measure foreground-light shape with the [ellipse introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/ellipse/start_here.ipynb), then follow the maintained PyAutoGalaxy examples.
 
-Instead, we assume that our source is a point source with a centre (y,x), and ray-trace triangles at iteratively
-higher resolutions to determine the source's exact locations in the image-plane:
+__Measure lens mass__
 
-<img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/point_0.png" width="200">
-<img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/point_1.png" width="200">
-<img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/point_2.png" width="200">
-<img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/point_3.png" width="200">
-<img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/point_4.png" width="200">
+<div id="mass-models" class="feature-entry"><h3>Mass Models</h3><p>Test how the assumed mass distribution affects the inferred lens and source. Choose total-mass profiles or separate stellar and dark components, and use multipoles to explore departures from elliptical symmetry. Angular structure can otherwise resemble a substructure signal.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/guides/profiles">Explore mass models</a>.</p>
+</div>
 
-Note that the image positions above include the fifth central image of the strong lens, which is often not seen in
-strong lens imaging data. It is easy to disable this image in the point source modeling.
+<div id="stellar-dark-matter" class="feature-entry"><h3>Stellar + Dark Matter</h3><p>Measure how stars and dark matter contribute to a lens galaxy’s mass. Combine a stellar component tied to observed light with a separate halo to infer mass-to-light ratios and aperture masses. Lensing measures their combined gravity, so the split depends on the model and priors.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/mass_stellar_dark/start_here.ipynb">Explore stellar + dark matter</a>.</p>
+</div>
 
-Checkout the`autolens_workspace/*/point_source` package to get started.
+<div id="scaling-relations" class="feature-entry"><h3>Scaling Relations</h3><p>Include a population of companion galaxies without fitting every mass independently. Tie mass normalizations to measured luminosities through a shared relation, while giving influential companions more freedom. The tied masses depend on that population assumption.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/scaling_relation/start_here.ipynb">Explore scaling relations</a>.</p>
+</div>
 
-__Interferometry__
+<div id="multi-galaxy-lenses-groups-and-clusters" class="feature-entry"><h3>Multi-Galaxy Lenses, Groups and Clusters</h3><p>Model systems with several deflectors: <strong>multi-galaxy lenses</strong> have co-dominant galaxies; <strong>groups</strong> can include a shared halo; <strong>clusters</strong> use multiple-image positions from many sources. Choose the scale and observables that match your data.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/start_here.ipynb">Explore multi-galaxy lenses, groups and clusters</a>.</p>
+</div>
 
-Modeling of interferometer data from submillimeter (e.g. ALMA) and radio (e.g. LOFAR) observatories:
+<div id="double-source-plane-lenses" class="feature-entry"><h3>Double Source-Plane Lenses</h3><p>Use two background galaxies at different redshifts to probe lens mass and reconstruct both sources. Their geometry can also constrain cosmological distance ratios. Multi-plane modelling includes the nearer source’s deflection of the farther one; the introductory fit keeps cosmology fixed.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/double_source_plane_lens/start_here.ipynb">Explore double source-plane lenses</a>.</p>
+</div>
 
-![ALMA Image](https://raw.githubusercontent.com/PyAutoLabs/PyAutoGalaxy/main/paper/almacombined.png)
+<div id="weak-lensing" class="feature-entry"><h3>Weak Lensing</h3><p>Constrain mass across a wider field using the coherent shape distortions of background galaxies. Fit shear catalogues alone or combine them with central strong-lensing constraints, preserving each dataset’s uncertainties and source-redshift information.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/weak/start_here.ipynb">Explore weak lensing</a>.</p>
+</div>
 
-Visibilities data is fitted directly in the uv-plane, circumventing issues that arise when fitting a dirty image
-such as correlated noise. This uses the non-uniform fast fourier transform algorithm
-[nufftax](https://github.com/GragasLab/nufftax) to efficiently map the galaxy model images to the uv-plane.
+__Probe dark matter and build analyses__
 
-Checkout the`autolens_workspace/*/interferometer` package to get started.
+<div id="dark-matter-subhalos" class="feature-entry"><h3>Dark Matter Subhalos</h3><p>Search for unseen halos through their perturbations to lensed arcs. Compare fits with and without a halo to identify candidates and infer their properties. Check candidates against lens-model flexibility and systematics, then use sensitivity mapping to interpret both detections and non-detections.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/start_here.ipynb">Explore dark matter subhalos</a>.</p>
+<p>Continue to <a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/detect/start_here.ipynb">subhalo detection</a> for the search workflow.</p>
+</div>
 
+<div id="line-of-sight-halos" class="feature-entry"><h3>Line-of-Sight Halos</h3><p>Simulate the combined effect of a halo population between observer and source. Multi-plane ray tracing includes halos in front of and behind the main lens, providing mock images for dark matter studies and tests of lens-redshift assumptions. These examples generate simulations, not population-inference results.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/los_halos/start_here.ipynb">Explore line-of-sight halos</a>.</p>
+</div>
 
-__Multi Gaussian Expansion (MGE)__
+<div id="sensitivity-mapping" class="feature-entry"><h3>Sensitivity Mapping</h3><p>Measure which halos your data and modelling procedure could detect. Inject a halo into simulated data, fit with and without it, and repeat across positions or masses. This calibrates non-detections as well as detections; the introductory example uses four positions at one injected mass.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb">Explore sensitivity mapping</a>.</p>
+</div>
 
-An MGE models a galaxy's light as a sum of Gaussians. In strong lensing, use it to model foreground lens light
-that overlaps the arcs, or to describe the background source whose light is distorted by the lens mass model.
+<div id="potential-correction" class="feature-entry"><h3>Potential Correction</h3><p>Investigate arc residuals by reconstructing small corrections to a smooth lensing potential alongside the source. This gravitational-imaging approach locates candidate mass structure without first choosing a halo profile. A reconstructed feature still needs physical modelling and systematic checks.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/potential_correction/start_here.ipynb">Explore potential correction</a>.</p>
+</div>
 
-![MGE: separate the foreground lens light and model the background source](../images/features/mge_illustration.png)
+<div id="automated-pipelines-slam" class="feature-entry"><h3>Automated Pipelines / SLaM</h3><p>Build complex lens models through a sequence of simpler fits. The Source, Light and Mass pipelines use earlier results to initialize later searches, progressively refining the source, foreground light and mass model.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/guides/modeling/slam_start_here.ipynb">Explore automated pipelines / slam</a>.</p>
+</div>
 
-Illustration, not observational data. Amber represents foreground lens light; cyan represents source light.
-The lens mass model connects the source to its arcs. Gaussian components are mathematical building blocks,
-not separate galaxies; the components are fitted jointly.
+<div id="graphical-models" class="feature-entry"><h3>Graphical Models</h3><p>Study populations of lenses by fitting datasets with shared parameters. Hierarchical models infer a population distribution while retaining an individual model for each lens—for example, a distribution of mass slopes or a common Hubble constant.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/guides/modeling/advanced/graphical.ipynb">Explore graphical models</a>.</p>
+</div>
 
-An MGE can capture changes in a galaxy's shape with radius that a single simple light profile misses. Its
-Gaussian intensities are solved by linear algebra during fitting, rather than all being sampled separately.
-This also provides a flexible smooth source model for measuring source flux and magnification.
+__Extend the analysis across observations__
 
-[He et al. (2024)](https://arxiv.org/abs/2403.16253) demonstrate MGE lens-light modelling on 38 HST SLACS lenses,
-combined with a pixelized source reconstruction. The workspace also includes examples using an MGE source.
+<div id="point-sources" class="feature-entry"><h3>Point Sources</h3><p>Add flux and time-delay constraints to a point-source lens model, or deblend compact images from foreground light before measuring them.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/start_here.ipynb">Point-source examples</a>.</p>
+</div>
 
-MGEs can additionally connect stellar mass models to observed light, describe compact emission alongside its
-host galaxy, and support deprojection of galaxy light from two dimensions to three, with appropriate assumptions.
+<div id="interferometry" class="feature-entry"><h3>Interferometry</h3><p>Extend radio and submillimetre modelling with flexible source light, pixelized reconstructions and source-science measurements while fitting the visibilities.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/tree/main/notebooks/interferometer/features">Interferometer features</a>.</p>
+</div>
 
-Read the [MGE feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/start_here.ipynb)
-for the scientific use cases, detailed teaching and worked examples.
+<div id="data-cubes" class="feature-entry"><h3>Data Cubes</h3><p>Map a lensed source across a spectral line by reconstructing each channel with a shared lens model. Each channel keeps its own brightness, sampling and noise. These examples reconstruct emission; a dynamical interpretation needs an additional model.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb">Explore data cubes</a>.</p>
+</div>
 
-__Groups__
+<div id="multi-wavelength" class="feature-entry"><h3>Multi-Wavelength</h3><p>Compare stellar, dust and line emission across observations while fitting a shared lens model. Keep each dataset’s brightness distribution, instrumental response and noise distinct; link only the parameters your scientific model shares.</p>
+<p><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/start_here.ipynb">Explore multi-wavelength</a>.</p>
+</div>
 
-The strong lenses we've discussed so far have just a single lens galaxy responsible for the lensing. Group-scale
-strong lenses are systems where there two or more  lens galaxies deflecting one or more background sources:
-
-![Group](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/group.png)
-
-**PyAutoLens** has built in tools for modeling group-scale lenses, with no limit on the number of
-lens and source galaxies!
-
-Overviews of group and analysis are given in `notebooks/overview/overview_9_groups.ipynb`
-The `autolens_workspace/*/group` package has example scripts for simulating datasets and lens modeling.
-
-
-__Multi-Wavelength__
-
-Modeling imaging datasets observed at different wavelengths (e.g. HST F814W and F150W) simultaneously or simultaneously
-analysing imaging and interferometer data:
-
-![g-band](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/g_image.png)
-
-![r-band](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/r_image.png)
-
-The appearance of the strong changes as a function of wavelength, therefore multi-wavelength analysis means we can learn
-more about the different components in a galaxy (e.g a redder bulge and bluer disk) or when imaging and interferometer
-data are combined, we can compare the emission from stars and dust.
-
-Checkout the `autolens_workspace/*/multi_dataset` package to get started, however combining datasets is a more advanced
-feature and it is recommended you first get to grips with the core API.
-
-
-Ellipse fitting is an [advanced imaging feature](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/ellipse/start_here.ipynb) for measuring the foreground galaxy's
-light shape and asymmetry, with worked examples maintained in PyAutoGalaxy.
-
-
-__Shapelets__
-
-Shapelets provide a flexible model of galaxy light beyond a single smooth profile. A key application is
-source science: reconstructing the resolved morphology of a background galaxy from its lensed images.
-They can also model foreground light and help test how the chosen light representation affects a lens fit.
-
-[Birrer, Amara & Refregier (2015)](https://arxiv.org/abs/1504.07629) demonstrate lens modelling with basis
-sets on RX J1131-1231. This illustrates the method rather than a PyAutoLens application.
-
-![Shapelet basis building blocks and an illustrative source model](../images/features/shapelets_illustration.png)
-
-*Conceptual illustration, not a fitted reconstruction or the exact sum of the displayed modes.*
-
-Shapelets combine localized mathematical basis functions with linearly solved coefficients. The basis
-order, scale and shared geometry control the structures a finite expansion can describe. Signed coefficients
-are valid mathematical weights; negative brightness in the combined galaxy model is the physical concern.
-Inspect the reconstructed light and residuals together, and test whether added flexibility follows signal
-rather than noise.
-
-The existing grid below shows individual polar basis functions. These patterns are mathematical building
-blocks, not separate physical components of a galaxy:
-
-![Individual polar shapelet basis functions](../images/features/shapelets_basis.png)
-
-Start with the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/shapelets/start_here.ipynb)
-for scientific uses, basis construction, signed coefficients and limitations. The fit.py and modeling.py
-examples show fixed-model fits, non-linear fitting, and alternative source and lens-light constructions.
-
-__Operated Light Profiles__
-
-An operated light profile is one where it is assumed to already be convolved with the PSF of the data, with the
-`Moffat` and `Gaussian` profiles common choices:
-
-They are used for certain scientific applications where the PSF convolution is known to be a significant effect and
-the knowledge of the PSF allows for detailed modeling abd deblending of the galaxy's light.
-
-Checkout `autogalaxy_workspace/notebooks/features/operated_light_profiles.ipynb` to learn how to use operated profiles.
-
-__Sky Background__
-
-When an image of a galaxy is observed, the background sky contributes light to the image and adds noise:
-
-For detailed studies of the outskirts of galaxies (e.g. stellar halos, faint extended disks), the sky background must be
-accounted for in the model to ensure robust and accurate fits.
-
-Checkout `autogalaxy_workspace/notebooks/features/sky_background.ipynb` to learn how to use include the sky
-background in your model.
-
-
-__Mass Models__
-
-The examples above model the lens's mass with an isothermal profile, but **PyAutoLens** supports a wide
-range of mass models:
-
-Total mass profiles (e.g. the isothermal and power-law) represent the combined mass of the lens galaxy
-with a single profile. Stellar + dark matter models, introduced below, separate these contributions.
-
-Multipole perturbations (m=1, m=3 and m=4) extend any mass model with departures from elliptical symmetry, capturing
-lopsidedness, boxiness / disciness and bar-like structures in the mass distribution. Accounting for this angular
-complexity is critical for many science cases, as unmodeled angular structure can masquerade as other signals,
-for example dark matter substructure.
-
-The following paper measures angular mass complexity alongside dark matter substructure in JWST
-strong lens imaging: https://arxiv.org/abs/2410.12987
-
-The role of the m=1 multipole (lopsidedness) is detailed in: https://arxiv.org/abs/2407.12983
-
-Checkout `autolens_workspace/scripts/guides/profiles` for the full range of mass profiles.
-
-
-__Stellar + Dark Matter__
-
-How much of a lens galaxy's mass is in stars, and how much is dark matter? Decomposed mass models combine
-the galaxy's observed light with strong lensing to infer stellar mass-to-light ratios, estimate stellar and
-dark matter masses within a chosen aperture, and investigate their relative distributions.
-
-The stellar mass follows a light model with a mass-to-light ratio; a separate halo, often described by an
-NFW profile, supplies the dark matter component. Lensing responds to their combined gravity. The inferred
-split therefore depends on the adopted light model, mass-to-light prescription, halo model and priors.
-
-[Nightingale et al. (2019)](https://arxiv.org/abs/1901.07801) used PyAutoLens to investigate stellar structures
-and inner dark matter halos in massive elliptical galaxies with this approach.
-
-![Observed lens light and inferred stellar plus dark matter components](../images/features/stellar_dark_illustration.png)
-
-The image is a conceptual illustration, not a measured decomposition. The observed arcs belong to the
-background source; the mass components describe the foreground lens galaxy.
-
-Start with the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/mass_stellar_dark/start_here.ipynb)
-for the science and modelling assumptions. The basic modeling example uses priors near the simulated truth;
-chaining.py and slam.py demonstrate staged fits that initialize the stellar mass model from lens-light fits.
-
-
-__Double Source-Plane Lenses__
-
-A double source-plane lens contains two background galaxies at different redshifts behind a foreground lens.
-Their different lensing geometries let us investigate cosmological distance ratios, probe the lens mass
-with two sets of arcs, and reconstruct both background galaxies for source science.
-
-The nearer source also acts as an additional deflector for the farther source. A multi-plane model therefore
-tracks both its light and its mass, using the galaxies' redshifts and the adopted cosmology to calculate the
-appropriate deflections for each source.
-
-[Collett & Auger (2014)](https://arxiv.org/abs/1403.5278) demonstrate the cosmological application using the
-Jackpot lens, SDSS J0946+1006. Cosmological inference remains coupled to mass-model assumptions; the basic
-modeling.py tutorial here fixes the cosmology and does not itself measure cosmological parameters.
-
-![Two sets of lensed arcs and the three redshift planes that produce them](../images/features/double_source_plane_illustration.png)
-
-*Conceptual illustration, not a ray-traced prediction. Colours distinguish the two sources. Double
-source-plane lenses can form incomplete arcs or multiple images, rather than two complete rings.*
-
-Start with the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/double_source_plane_lens/start_here.ipynb)
-for geometry, scientific uses and inference limitations. The basic modeling example initializes priors near
-the simulated truth; chaining.py and slam.py demonstrate staged fits, including the nearer source's role as
-an additional lens.
-
-
-__Automated Pipelines / SLaM__
-
-Fitting complex lens models (e.g. a decomposed mass model with a pixelized source) in one non-linear search is
-often infeasible: the parameter space is too complex for the fit to converge reliably or efficiently.
-
-Search chaining breaks the fit into a sequence of simpler searches, where the results of each search initialize
-the model of the next. The Source, Light and Mass (SLaM) pipelines are **PyAutoLens**'s pre-built implementation
-of this approach: they first build a robust model of the source, then the lens's light, and finally its mass,
-gradually increasing model complexity. The SLaM pipelines have been used in many published **PyAutoLens** analyses
-and are the recommended way to perform detailed lens modeling of large samples.
-
-Checkout `autolens_workspace/*/guides/modeling/slam_start_here.py` to get started with the SLaM pipelines.
-
-
-__Dark Matter Subhalos__
-
-Small dark matter halos can perturb the shapes of lensed arcs even when they contain too little starlight to
-be seen directly. **PyAutoLens** searches for these otherwise invisible structures by fitting lens models with
-and without an additional halo, comparing their Bayesian evidence and inferring the candidate's position and mass
-under the adopted halo model.
-
-Use this feature to search for candidate subhalos, investigate arc anomalies, and build detection results for
-population studies of dark matter. Pair it with **sensitivity mapping**: simulated halos of different masses and
-positions establish what a dataset could detect, making non-detections scientifically informative too.
-
-![An invisible subhalo perturbs a lensed arc](../images/features/subhalo_detection_illustration.png)
-
-*Conceptual illustration, not observational data. The distortion is exaggerated for clarity; the dashed marker
-represents an inferred halo position, not light emitted by dark matter.*
-
-An evidence increase is conditional on the lens and source models being compared. Candidates require checks of
-the main lens mass distribution, source reconstruction and observational systematics. A halo along the line of
-sight can also perturb an arc; this example models the perturber at the lens redshift.
-
-For a scientific application and the importance of testing lens-model flexibility, see
-[Nightingale et al., Scanning For Dark Matter Subhalos in Hubble Space Telescope Imaging of 54 Strong Lenses](https://arxiv.org/abs/2209.10566).
-
-Start with the [subhalo detection introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/detect/start_here.ipynb)
-for the SLaM workflow, grid search and evidence interpretation, then explore
-[sensitivity mapping](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb).
-
-__Line-of-Sight Halos__
-
-Line-of-sight halos contribute to strong lensing as a population: the small deflections from many halos at
-different distances combine to perturb the resolved arcs. The `los_halos` feature simulates this population
-through multi-plane ray tracing, including halos both in front of and behind the main lens.
-
-Use these mock images to investigate how the halo population affects lensing, test dark matter inference
-methods, and assess the consequences of attributing all perturbations to subhalos at the main lens redshift.
-[He et al. (2022)](https://doi.org/10.1093/mnras/stac191) demonstrate how forward modelling resolved arcs
-can constrain a cutoff in the halo mass function and, within an assumed dark matter model, the particle mass.
-
-![A population of line-of-sight halos and its combined lensing imprint](../images/features/los_halos.png)
-
-*Conceptual illustration, not a computed prediction. The halo symbols represent unseen mass; the arc
-distortions illustrate the combined population effect rather than a detection of an individual halo.*
-
-The examples sample a halo population within a light cone, place truncated NFW halos on redshift planes,
-and include compensating convergence sheets to account for the population's mean matter density. PSF
-convolution and noise turn the lensed source image into mock imaging data. Compare multiple realizations
-to distinguish population-level effects from the particular halos drawn in one simulation.
-
-Start with the [line-of-sight halo introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/los_halos/start_here.ipynb)
-for population assumptions, multi-plane geometry and mean-density compensation. It links the standard
-simulator and a JAX route for batched mock-image generation. This folder supplies simulations, not a
-complete halo-detection or population-inference workflow.
-
-__Sensitivity Mapping__
-
-**What could this lens have revealed, even when no subhalo was found?**
-
-Sensitivity mapping measures which dark matter halos a dataset and modeling procedure could detect. It injects
-halos into simulated observations, fits each simulation with and without a halo, and compares the Bayesian evidence.
-This calibrates both detections and non-detections, enabling population studies of the abundance and masses of
-small halos when combined with a halo-population model.
-
-Use it to interpret a non-detection or compare the reach of different observations. Additional simulations with
-changed noise levels or angular resolution can help assess observing strategies; the introductory example does
-not perform that comparison.
-
-![Illustrative halo recoverability around a lensed arc](../images/features/sensitivity_mapping_illustration.png)
-
-*Conceptual illustration, not a computed sensitivity map. The overlay depicts recoverability at one illustrative
-injected mass, not detected halos or the four-cell result of the introductory script.*
-
-Start with [sensitivity mapping](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb):
-a demonstration with an MGE source, four injected positions and one fixed injected halo mass. Each simulated dataset
-is fitted twice. The recovery fits allow mass to vary and use narrow position priors around each injected location.
-For calibration using reconstructed source morphology, see
-[slam_source_pixelized.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/slam_source_pixelized.ipynb).
-
-Sensitivity depends on the simulation, priors, model family and detection threshold. Calibrate it consistently with
-the detection analysis; a positive evidence difference alone is not sufficient to claim recovery. A population
-analysis needs more than this small demonstration.
-
-For the scientific connection between detection limits and substructure population constraints, see
-[Vegetti & Koopmans (2009)](https://arxiv.org/abs/0903.4752).
-
-__Potential Correction__
-
-**What mass structure is your smooth lens model missing?**
-
-Potential correction, also called gravitational imaging, reconstructs small changes to the lensing potential on a
-pixelized mesh while reconstructing the background source. Use it to investigate coherent arc residuals, locate
-candidate mass perturbations for subsequent physical modeling, and explore departures from a simple smooth lens
-model without first choosing a particular halo density profile.
-
-![Lensed arcs and an inferred correction relative to a smooth lens model](../images/features/potential_correction_illustration.png)
-
-*Conceptual illustration, not a measured mass map. Positive and negative corrections mean more or less projected
-mass relative to the smooth baseline; a negative correction does not mean negative total mass.*
-
-A reconstructed feature is not by itself a confirmed dark-matter detection. Its interpretation depends on the
-main lens model, source reconstruction, mask, mesh and regularization, as well as observational systematics.
-Potential correction reconstructs structure for the dataset being fitted; sensitivity mapping instead measures
-recovery across injected perturbations.
-
-For a scientific application, [Powell et al. (2025)](https://www.nature.com/articles/s41550-025-02651-2) uses
-very-high-resolution radio observations of JVAS B1938+666. This illustrates the method's reach, not a mass-detection
-limit promised by the introductory imaging example. The PyAutoLens implementation credits the
-[Cao et al. potential-correction software](https://github.com/caoxiaoyue/lensing_potential_correction);
-retain its [citation and reproduction materials](https://github.com/caoxiaoyue/potential_correction_paper) when using it.
-
-Start with the [potential correction introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/potential_correction/start_here.ipynb)
-for simulated imaging with a known smooth starting model, joint reconstruction, convergence corrections,
-iterative refinement and evidence sampling. Continue to the
-[likelihood walkthrough](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/potential_correction/likelihood_function.ipynb)
-or the [interferometer example](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/potential_correction/start_here.ipynb).
-
-__Graphical Models__
-
-The examples above fit each strong lens dataset one-by-one. However, many lens properties are shared across a
-sample (e.g. population-level mass distributions, cosmological parameters), and fitting lenses independently does
-not exploit this shared structure.
-
-Graphical models fit multiple datasets simultaneously, explicitly defining which parameters are unique to each
-lens and which are shared across the sample. For example, the Hubble constant can be inferred jointly from many
-time-delay lenses, with each lens having its own mass model but all sharing a single H0. Hierarchical extensions
-assume parameters are drawn from a parent distribution (e.g. the population's distribution of mass slopes), whose
-properties are inferred from the full sample, extracting significantly more information than one-by-one fitting.
-
-Checkout `autolens_workspace/*/guides/modeling/advanced/graphical.py` to learn how to fit a graphical model
-and `autolens_workspace/*/guides/modeling/advanced/hierarchical.py` for hierarchical models.
-
-
-__Weak Lensing__
-
-In the weak lensing regime, a foreground mass distribution (e.g. a galaxy cluster) subtly distorts the shapes of
-many background galaxies, coherently aligning their ellipticities, without producing the multiple images and
-giant arcs of strong lensing.
-
-**PyAutoLens** fits weak lensing shear catalogues using the same mass profiles and non-linear search tools as
-strong lensing: model-independent mass maps, parametric halo model fits and tangential shear profiles. Its
-quickstart example fits the real JWST-era shape catalogue of Abell 2744, and strong and weak lensing data can
-be combined in joint analyses of the same cluster.
-
-Checkout `autolens_workspace/*/weak/start_here.py` to fit your first weak lensing dataset.
+<section class="directory" id="directory"><h2>All workspace links</h2><p class="minor">Choose your dataset to browse every feature introduction.</p><details><summary>Group · 13 introductions</summary><ul><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/double_source_plane_lens/start_here.ipynb">Double Source Plane Lens</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/mass_stellar_dark/start_here.ipynb">Mass Stellar Dark</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/operated_light_profile/start_here.ipynb">Operated Light Profile</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/shapelets/start_here.ipynb">Shapelets</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/sky_background/start_here.ipynb">Sky Background</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/subhalo/detect/start_here.ipynb">Subhalo / Detect</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/subhalo/start_here.ipynb">Subhalo</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/group_halo/start_here.ipynb">Group Halo</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/linear_light_profiles/start_here.ipynb">Linear Light Profiles</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/multi_gaussian_expansion/start_here.ipynb">Multi Gaussian Expansion</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/no_lens_light/start_here.ipynb">No Lens Light</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb">Pixelization</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/scaling_relation/start_here.ipynb">Scaling Relation</a></li></ul></details><details><summary>Imaging · 17 introductions</summary><ul><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/double_source_plane_lens/start_here.ipynb">Double Source Plane Lens</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/ellipse/start_here.ipynb">Ellipse</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/los_halos/start_here.ipynb">Los Halos</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/mass_stellar_dark/start_here.ipynb">Mass Stellar Dark</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/operated_light_profile/start_here.ipynb">Operated Light Profile</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/potential_correction/start_here.ipynb">Potential Correction</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/shapelets/start_here.ipynb">Shapelets</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/sky_background/start_here.ipynb">Sky Background</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/detect/start_here.ipynb">Subhalo / Detect</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb">Subhalo / Sensitivity</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/start_here.ipynb">Subhalo</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/extra_galaxies/start_here.ipynb">Extra Galaxies</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/start_here.ipynb">Linear Light Profiles</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/start_here.ipynb">Multi Gaussian Expansion</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/no_lens_light/start_here.ipynb">No Lens Light</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb">Pixelization</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/scaling_relation/start_here.ipynb">Scaling Relation</a></li></ul></details><details><summary>Interferometer · 12 introductions</summary><ul><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/operated_light_profile/start_here.ipynb">Operated Light Profile</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/potential_correction/start_here.ipynb">Potential Correction</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/shapelets/start_here.ipynb">Shapelets</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/subhalo/detect/start_here.ipynb">Subhalo / Detect</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/subhalo/sensitivity/start_here.ipynb">Subhalo / Sensitivity</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/subhalo/start_here.ipynb">Subhalo</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb">Datacube</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/extra_galaxies/start_here.ipynb">Extra Galaxies</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/linear_light_profiles/start_here.ipynb">Linear Light Profiles</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/multi_gaussian_expansion/start_here.ipynb">Multi Gaussian Expansion</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/pixelization/start_here.ipynb">Pixelization</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/scaling_relation/start_here.ipynb">Scaling Relation</a></li></ul></details><details><summary>Multi dataset · 8 introductions</summary><ul><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/dataset_offsets/start_here.ipynb">Dataset Offsets</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/imaging_and_interferometer/start_here.ipynb">Imaging And Interferometer</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/imaging_and_point_source/start_here.ipynb">Imaging And Point Source</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/one_by_one/start_here.ipynb">One By One</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/pixelization/start_here.ipynb">Pixelization</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/same_wavelength/start_here.ipynb">Same Wavelength</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/slam/start_here.ipynb">Slam</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/wavelength_dependence/start_here.ipynb">Wavelength Dependence</a></li></ul></details><details><summary>Multi galaxy · 13 introductions</summary><ul><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/double_source_plane_lens/start_here.ipynb">Double Source Plane Lens</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/mass_stellar_dark/start_here.ipynb">Mass Stellar Dark</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/operated_light_profile/start_here.ipynb">Operated Light Profile</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/shapelets/start_here.ipynb">Shapelets</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/sky_background/start_here.ipynb">Sky Background</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/subhalo/detect/start_here.ipynb">Subhalo / Detect</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/subhalo/start_here.ipynb">Subhalo</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/extra_galaxies/start_here.ipynb">Extra Galaxies</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/linear_light_profiles/start_here.ipynb">Linear Light Profiles</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/multi_gaussian_expansion/start_here.ipynb">Multi Gaussian Expansion</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/no_lens_light/start_here.ipynb">No Lens Light</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/pixelization/start_here.ipynb">Pixelization</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/scaling_relation/start_here.ipynb">Scaling Relation</a></li></ul></details><details><summary>Point source · 4 introductions</summary><ul><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/deblending/start_here.ipynb">Deblending</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/extra_galaxies/start_here.ipynb">Extra Galaxies</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/multiple_sources/start_here.ipynb">Multiple Sources</a></li><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/scaling_relation/start_here.ipynb">Scaling Relation</a></li></ul></details><details><summary>Weak · 1 introductions</summary><ul><li><a href="https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/weak/features/strong_lensing/start_here.ipynb">Strong Lensing</a></li></ul></details></section>
