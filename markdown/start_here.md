@@ -708,22 +708,8 @@ Checkout the `autolens_workspace/*/multi_dataset` package to get started, howeve
 feature and it is recommended you first get to grips with the core API.
 
 
-__Ellipse Fitting__
-
-Ellipse fitting is a technique which fits many ellipses to a galaxy's emission to determine its ellipticity, position
-angle and centre, without assuming a parametric form for its light (e.g. like a Seisc profile):
-
-![ellipse](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/ellipse.png)
-
-This provides complementary information to parametric light profile fitting, for example giving insights on whether
-the ellipticity and position angle are constant with radius or if the galaxy's emission is lopsided.
-
-There are also multipole moment extensions to ellipse fitting, which determine higher order deviations from elliptical
-symmetry providing even more information on the galaxy's structure.
-
-The following paper describes the technique in detail: https://arxiv.org/html/2407.12983v1
-
-Checkout `autolens_workspace/notebooks/features/ellipse_fitting.ipynb` to learn how to use ellipse fitting.
+Ellipse fitting is an [advanced imaging feature](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/ellipse/start_here.ipynb) for measuring the foreground galaxy's
+light shape and asymmetry, with worked examples maintained in PyAutoGalaxy.
 
 
 __Shapelets__

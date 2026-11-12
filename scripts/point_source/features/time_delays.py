@@ -2,44 +2,45 @@
 Modeling: Time Delays
 =====================
 
-A measurable quantity of a point source is its time delay—the time it takes for light to travel from the source to the
-observer for each multiple image of the point source (e.g., the quasar images). This is often expressed as the relative
-time delay between each image and the image with the shortest time delay, which is often referred to as
-the "reference image."
+Use the relative arrival times of variability in multiply imaged quasars or supernovae, together with
+image positions, to constrain the lens and infer cosmological distances. Time-delay cosmography uses
+these measured delays and a lens model to constrain the Hubble constant, H0.
 
-Time delays are commonly used in strong lensing analyses, for example to measure the Hubble constant, since
-they are less affected by microlensing and can provide robust cosmological constraints.
+This example first fits positions and time delays at fixed cosmology. It then frees H0 while fixing the
+lens centre and Einstein radius, illustrating how cosmology enters the model. This simplified second fit
+is a teaching example: a cosmographic measurement must also account for uncertainty in the lens mass
+profile, the lens environment and line of sight, and the measured delays.
 
-This script describes how to perform point source lens modeling using the time delays of the point source dataset
-as additional information on top of the positions of the point source, in case you are studying the Hubble constant
-or another measureable quantity that uses time delays.
+A time delay is a difference in arrival time between images of the same source variation, not a measurement
+of the absolute light-travel time. Different path lengths and gravitational potentials produce that difference.
+Here the default fit subtracts the minimum delay from both the observed and predicted values; the analytic
+reference-time alternative is explained below. These scripts fit already measured delays, rather than extracting
+them from light curves. Microlensing and variability modeling can affect those measurements.
 
 __Contents__
 
 - **Model:** Compose the lens model fitted to the data.
 - **Dataset:** Load and plot the strong lens dataset.
-- **Point Solver:** We set up the `PointSolver`, which is used to compute the multiple images of the point source in.
+- **Point Solver:** Compute the multiple-image positions for a trial lens model.
 - **Search:** Configure the non-linear search used to fit the model.
 - **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
 - **Run Times:** Profiling the expected run time of the model-fit.
 - **Result:** Overview of the results of the model-fit.
-- **Cosmology:** Time Delay lenses allow the Hubble constant to be constrained, because the difference between the.
+- **Cosmology:** Fit H0 in a simplified lens model and understand the assumptions.
 
 __Model__
 
 This script fits a `PointDataset` data of a 'galaxy-scale' strong lens with a model where:
 
  - The lens galaxy's total mass distribution is an `Isothermal`.
- - The source `Galaxy` is a point source `Point`.
+ - The source `Galaxy` is a `PointSolved` point source whose centre is solved analytically.
 
-No external shear is included in the model, where it is for the `imaging` and `interferometer` examples. For a
-quadruply imaged point source (8 data points) there is insufficient information to constrain an `Isothermal` plus
-an external shear (9 parameters).
+This example uses an Isothermal lens without external shear to keep the demonstration simple. Whether a
+more flexible model is constrained depends on the full dataset, priors and degeneracies; positions alone,
+positions plus fluxes, and positions plus time delays carry different information.
 
-Where a shear is fitted, it is never attached to the lens galaxy: it is an `ExternalShear` held in an
-`al.MassField`, which lives in the model's own `fields` slot beside `galaxies=` (and in the tracer's
-`fields=` argument). The shear describes the tidal field of everything outside the system, so it is a property of
-the system rather than of a galaxy. See `imaging/modeling.py` for the full description.
+When needed, external shear belongs in an `al.MassField` in the model's `fields` slot. See
+`imaging/modeling.py` for that composition.
 
 __Start Here Notebook__
 
@@ -140,8 +141,8 @@ The number of free parameters and therefore the dimensionality of non-linear par
 Name pairing is used as before to pair the `PointDataset` to the `Point` in the model, which is discussed below.
 
 If you have fitted fluxes in the `fluxes` example, you will have seen that a `PointFlux` model component was used
-which had the `flux` of the point source as an additional free parameter. For time delays, there is no special
-model component or extra free parameters, because the time delays are a propety of the mass model.
+which had the `flux` of the point source as an additional free parameter. For the initial fixed-cosmology fit, adding time delays requires no new source parameter.
+The predicted delays depend on the lens potential, geometry and cosmology; the later example frees H0.
 """
 # Lens:
 
@@ -178,7 +179,7 @@ af.ModelPlotter(model).figure()
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `point_source/start_here.py` for a
 full description).
 """
 search = af.Nautilus(
@@ -192,7 +193,7 @@ search = af.Nautilus(
 """
 __Analysis__
 
-Create the `AnalysisPoint` object defining how the via Nautilus the model is fitted to the data.
+Create the `AnalysisPoint` object that evaluates the point-source likelihood for the search.
 """
 analysis = al.AnalysisPoint(
     dataset=dataset,
@@ -221,11 +222,9 @@ analysis_solved = al.AnalysisPoint(
 """
 __Run Times__
 
-For the positions-only fit, the run time of the log likelihood function was ~0.01 seconds, which is fast
-
-Evaluating the time delays does not increase this much, with a value of around ~0.01 seconds still expected.
-
-Overall modeling run times should therefore be around 20 minutes on CPU, under 5 minutes on GPU.
+Runtime depends on the point solver, model complexity, search settings and hardware. Measure the likelihood
+cost and inspect search progress for your own setup; an additional observable can change both the cost of
+one evaluation and the number of evaluations needed to explore the posterior.
 
 __Model-Fit__
 
@@ -246,18 +245,20 @@ print(result.info)
 """
 __Cosmology__
 
-Time Delay lenses allow the Hubble constant to be constrained, because the difference between the geometric
-time delay and the physical time delay is proportional to the Hubble constant.
+The delay between two images is the difference in their Fermat potentials multiplied by the time-delay
+distance and divided by the speed of light. At fixed redshifts and other cosmological parameters, the
+time-delay distance scales inversely with H0. Geometric and gravitational contributions both enter the
+Fermat potential.
 
-We therefore create a Cosmology as a `Model` object in order to make the cosmological parameter Omega_m a free 
-parameter.
+We create a `FlatLambdaCDM` model and free H0 below. Omega_m remains fixed. We also fix the lens centre
+and Einstein radius, so this demonstration does not propagate uncertainty in those lens parameters into H0.
 """
 cosmology = af.Model(al.cosmo.FlatLambdaCDM)
 
 """
 By default, all parameters of a cosmology model are initialized as fixed values based on the Planck18 cosmology.
 
-In order to make the Hubble constant, we override the default value of the Hubble constant with uniform prior.
+To make H0 a free parameter, we replace its fixed value with the uniform prior below.
 """
 cosmology.H0 = af.UniformPrior(lower_limit=0.0, upper_limit=150.0)
 
@@ -290,7 +291,7 @@ af.ModelPlotter(model).figure()
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `point_source/start_here.py` for a
 full description).
 """
 search = af.Nautilus(
@@ -311,4 +312,13 @@ result = search.fit(model=model, analysis=analysis)
 
 """
 Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
+"""
+
+"""
+__Related Geometric Guide__
+
+For a specialized approximation to point-source image geometry, see
+[Witt-Wynne and the SIEP solver](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/guides/misc/witt_wynne.ipynb).
+That guide explains its assumptions and compares its predictions with the full lens solver. Its geometric
+ellipse is a different use of ellipses from fitting a galaxy's light isophotes.
 """
