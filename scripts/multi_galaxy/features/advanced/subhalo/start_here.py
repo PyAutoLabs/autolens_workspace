@@ -2,8 +2,24 @@
 Features: Subhalo
 =================
 
-A dark matter subhalo can perturb lensed emission without supplying visible light of its own. The effect
-depends on the halo properties, its location relative to the arcs and the larger lens model.
+Investigate small dark matter halos through their perturbations of lensed emission. Separate the search for a candidate in the data from the calibration of which halos the same analysis could recover.
+
+__Scientific Use Cases__
+
+- Test whether an arc anomaly favors an additional mass component.
+- Interpret non-detections using appropriately matched injection-and-recovery experiments.
+- Prepare detection and selection information for a separate halo-population analysis.
+
+__This Dataset and Lens Regime__
+
+This folder treats imaging with multiple important deflectors. Include all of them in the ray tracing and
+keep their light separate from their mass contributions. The combined deflection can be better constrained
+than the allocation of mass between galaxies; examine that allocation when interpreting source properties
+or small residual structures.
+
+![subhalo](../../../../../images/features/subhalo_detection_illustration.png)
+
+Conceptual illustration. The local perturbation is exaggerated, and the marker indicates an inferred halo position rather than light emitted by dark matter. The schematic illustrates the feature; retain all deflectors in this multi-galaxy example.
 
 __Detection and Sensitivity Ask Different Questions__
 
@@ -23,11 +39,6 @@ stages and comparison settings in its own start-here example.
 Read the appropriate workflow before interpreting a search map or evidence difference. Its result is
 conditional on the model alternatives and data treatment used in that analysis.
 
-__In This Folder__
-
-The examples contain multiple main lens galaxies, rather than a single dominant deflector with only small
-companions. Follow how the feature is applied to each galaxy and which parameters are shared. A group halo is
-not implicit in this setup.
 
 __Choose An Example__
 

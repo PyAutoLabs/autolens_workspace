@@ -2,8 +2,27 @@
 Features: Pixelization
 ======================
 
-A pixelization represents light using a mesh whose brightness values are solved during the fit. It provides a
-flexible alternative to describing all of the emission with a small collection of analytic profiles.
+Reconstruct the background galaxy on a source-plane mesh when simple light profiles do not capture its morphology. Pixelization is a key source-science feature: it supports measurements of irregular emission while the lens model maps that emission into the observed data.
+
+__Scientific Use Cases__
+
+- Reconstruct extended or clumpy source morphology without specifying a small set of analytic components.
+- Measure source brightness and spatial structure while accounting for lensing and the instrumental response.
+- Test lens mass models using the detailed structure of the lensed emission, with mesh and regularization choices kept explicit.
+
+For source-science measurements, continue to [source_science.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/pixelization/source_science.ipynb).
+Interpret the combined reconstructed light together with the lens and reconstruction assumptions.
+
+__This Dataset and Lens Regime__
+
+These examples fit complex visibilities: the lensed sky prediction is Fourier transformed and compared at
+the measured baseline coordinates with the supplied noise. A dirty or reconstructed image is useful for
+inspection, but does not replace this likelihood. Interpret source structure in the context of visibility
+coverage and the assumptions used to model the sky.
+
+![pixelization](../../../../images/features/pixelization_illustration.png)
+
+Conceptual illustration. The mesh and source are illustrative; recoverable structure depends on the lens model, response, sampling and regularization. The scene illustrates sky/source structure; the fit here is to visibilities, not the displayed image.
 
 __From a Mesh to the Data__
 
@@ -40,11 +59,6 @@ Check the fit in the space where the data were measured as well as inspecting th
 plausible reconstruction can still accompany an inadequate PSF, an unsuitable mask or an incomplete physical
 model. Fine structure should be interpreted in light of the resolution and assumptions of the full analysis.
 
-__In This Folder__
-
-These examples fit visibilities. The image-plane light prediction is transformed into the measured
-Fourier-domain quantities; a dirty image is an inspection product, not a substitute for that likelihood. Keep
-the visibility sampling, noise and model-specific response choices in view when adapting an imaging example.
 
 __Disadvantages__
 
@@ -57,21 +71,13 @@ than the simpler modeling approaches introduced elsewhere in the workspace.
 
 __Positive Only Solver__
 
-Many codes which use linear algebra typically rely on a linear algabra solver which allows for positive and negative
-values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
+The supplied fit and modeling examples explicitly disable the positive-only source solver. This is a solver
+choice, not a consequence of negative visibility components: real and imaginary Fourier components can have
+either sign even when the sky brightness is everywhere non-negative.
 
-This could be problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
-light, which is clearly unphysical. For a pixelizaiton, this often produces negative source pixels which over-fit
-the data, producing unphysical solutions.
-
-For CCD imaging datsets pixelized source reconstructions use a positive-only solver, meaning that every source-pixel
-is only allowed to reconstruct positive flux values. This ensures that the source reconstruction is physical and
-that we don't reconstruct negative flux values that don't exist in the real source galaxy (a common systematic
-solution in lens analysis).
-
-However, for interferometer datasets this positive-only solver is often disabled, because negative pixel values
-can be observed from the measurement process. All interferometer examples therefore disable the positive only solver,
-but you may want to consider if using the positive-only solver is appropriate for your dataset.
+An unconstrained inversion can return negative source pixels. Inspect their significance and the effects of
+noise, regularization and incomplete sampling. Where a non-negative solve is appropriate and supported by the
+chosen calculation, compare its behavior; a positivity constraint alone does not guarantee a correct lens or source model.
 
 __Choose An Example__
 

@@ -2,9 +2,24 @@
 Features: Shapelets
 ===================
 
-Shapelets describe light as a weighted combination of basis functions. Unlike a single smooth light profile,
-the basis contains functions with different spatial structures, allowing their sum to describe more
-complicated galaxy morphology.
+Describe structured source or galaxy light with a flexible basis of shapelets. This offers an alternative to a small set of smooth profiles when morphology matters to the lens fit and to the science inferred from the source.
+
+__Scientific Use Cases__
+
+- Represent departures from smooth, single-component light profiles.
+- Compare source structure and lens inference across different light-model families.
+- Explore how basis order and spatial scale affect the recovered morphology and residuals.
+
+__This Dataset and Lens Regime__
+
+This folder treats group-scale imaging with individual member galaxies. Distinguish the main deflectors,
+additional members and any explicit common group halo. The light decomposition and the split of mass among
+components can affect the inferred source; a good combined fit does not guarantee that each component is
+independently constrained.
+
+![shapelets](../../../../../images/features/shapelets_illustration.png)
+
+Conceptual illustration. The basis represents a combined light distribution; individual functions need not correspond to separate physical components. The schematic illustrates the feature; retain all deflectors in this group example.
 
 __Basis Functions and Their Sum__
 
@@ -16,6 +31,10 @@ The basis order and scale determine the range of structures that can be represen
 functions adds flexibility and computational work; it does not by itself establish that the additional
 structure is constrained by the data.
 
+![Individual shapelet basis functions](../../../../../images/features/shapelets_basis.png)
+
+The existing basis grid is retained as a teaching figure; the fitted light is the sum of the functions.
+
 __What the Examples Teach__
 
 The direct-fit example introduces the basis and its coefficients. The modeling example shows how the basis is
@@ -25,11 +44,6 @@ constraints and any regularization in view when interpreting the result.
 As with other flexible light models, inspect the residuals and the reconstructed image together. A useful
 basis should describe the signal without introducing structure solely to follow noise.
 
-__In This Folder__
-
-The examples contain a group-scale lens with several galaxy components. A shared group halo, where present, is
-an explicit model choice. Keep the individual deflectors, companion population and source components distinct
-when following the recipe.
 
 __Choose An Example__
 

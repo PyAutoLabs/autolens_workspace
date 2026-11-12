@@ -2,18 +2,32 @@
 Features: Operated Light Profile
 ================================
 
-An operated light profile describes emission after an instrumental operation has already been included in the
-profile. For imaging, the common example is a profile that already describes the PSF-blurred appearance of
-compact emission.
+Model compact emission alongside extended light in an interferometer fit. The operated profile still contributes a sky brightness distribution that must be transformed into visibilities; the imaging meaning of an already PSF-blurred profile should not be transferred to a synthesized beam.
+
+__Scientific Use Cases__
+
+- Describe a compact emitting component without forcing it into the extended host profile.
+- Assess how separating compact and extended emission changes the inferred lens and source.
+- Use compatible light-model components across imaging and visibility analyses while preserving their different instrumental responses.
+
+__This Dataset and Lens Regime__
+
+For this visibility fit, the compact component is an image-plane emission profile that is Fourier
+transformed like the other light profiles. The synthesized beam describes an image formed from visibilities;
+it is not a second convolution to apply before fitting them. The operated class does not remove the need to
+predict the measured visibilities, and its width should not be identified with an imaging PSF by default.
+
+![operated light profile](../../../../../images/new_user_guide/dataset_types.png)
+
+Reused new-user-guide schematic. The interferometer panel shows sampling locations, not visibility amplitudes or phases; cube slices are spectral channels. These are conceptual dataset representations, not measurements.
 
 __Avoid Applying the Same Response Twice__
 
-Ordinary intrinsic light profiles are passed through the instrumental response before comparison with the
-data. An operated profile is already defined at that stage for the relevant operation. Applying the same PSF
-convolution again would broaden it a second time.
+In imaging, an operated profile bypasses a PSF convolution because its shape already describes that operation.
+In this interferometer example there is no image-plane PSF convolution in the visibility prediction to bypass:
+the component image is Fourier transformed at the measured baseline coordinates.
 
-This distinction is about the meaning of the profile, not simply whether a source is small. Decide whether
-your parameters describe intrinsic emission or its observed appearance before choosing the profile class.
+This distinction concerns the response represented by the model, not simply how small the component is.
 
 __Compact Emission and Extended Light__
 
@@ -25,11 +39,6 @@ Read the simulator and modeling example together. Imaging and interferometer res
 retain the data-type-specific explanation in the recipe rather than applying an imaging PSF assumption to
 every dataset.
 
-__In This Folder__
-
-These examples fit visibilities. The image-plane light prediction is transformed into the measured
-Fourier-domain quantities; a dirty image is an inspection product, not a substitute for that likelihood. Keep
-the visibility sampling, noise and model-specific response choices in view when adapting an imaging example.
 
 __Choose An Example__
 

@@ -2,9 +2,24 @@
 Features: Imaging And Point Source
 ==================================
 
-Extended arcs and point-source measurements provide different constraints on a shared lens model. A joint
-analysis connects them through the mass distribution while retaining the appropriate likelihood for each
-observable.
+Combine extended lensed emission with compact-source measurements to constrain a common lens mass model. Arcs, point-image positions and available time delays supply different information about the same system.
+
+__Scientific Use Cases__
+
+- Analyse a lensed compact source together with the extended host emission.
+- Test whether one mass model explains both resolved arcs and compact-image observables.
+- Build joint models for time-delay science when delays are supplied, keeping the delay reference and cosmological assumptions explicit.
+
+__This Dataset and Lens Regime__
+
+The supplied example combines RXJ1131 imaging with a point dataset containing time delays. It shares the
+mass model while constructing the extended-light and point-source descriptions separately. Inferences about
+cosmology require explicit choices for distances, line-of-sight effects and other relevant systematics; fitting
+this example alone is not a complete cosmographic analysis.
+
+![imaging and point source](../../../../images/new_user_guide/dataset_types.png)
+
+Reused new-user-guide schematic. The interferometer panel shows sampling locations, not visibility amplitudes or phases; cube slices are spectral channels. These are conceptual dataset representations, not measurements.
 
 __Keep the Observables Distinct__
 
@@ -18,11 +33,6 @@ Keep image identities, coordinate conventions and the time-delay reference expli
 Inspect both the extended-light fit and the point-source predictions. Agreement with one part of the data does
 not guarantee that the shared model describes the other.
 
-__In This Folder__
-
-These examples connect several observations. Read which parameters are shared, which are dataset-specific and
-whether the fits are simultaneous or sequential. The per-dataset likelihoods still retain their own response
-and noise treatment.
 
 __Choose An Example__
 

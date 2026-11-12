@@ -2,12 +2,27 @@
 Features: Multi Gaussian Expansion
 ==================================
 
-A multi Gaussian expansion (MGE) represents a galaxy's light as the sum of many Gaussian profiles. Each
-Gaussian describes emission on a particular spatial scale; together, they can provide a flexible model of the
-galaxy.
+Use a multi-Gaussian expansion (MGE) to describe foreground galaxy light flexibly and to model the lensed background source. Many Gaussian components provide a range of spatial scales while their intensities can be solved during each likelihood evaluation.
 
-This introduction explains how an MGE works, why it can be useful, and what to consider before using one. The
-neighbouring examples show how to construct an MGE, fit it to data and inspect the results.
+__Scientific Use Cases__
+
+- Separate complex foreground light from overlapping arcs without forcing each galaxy into one Sersic profile.
+- Model source structure and derive source-science quantities from the combined emission, rather than interpreting each Gaussian as a separate object.
+- Test whether a more flexible light model changes the inferred lens mass or source properties.
+
+For source-science measurements, continue to [source_science.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/multi_gaussian_expansion/source_science.ipynb).
+Interpret the combined reconstructed light together with the lens and reconstruction assumptions.
+
+__This Dataset and Lens Regime__
+
+This folder treats imaging with multiple important deflectors. Include all of them in the ray tracing and
+keep their light separate from their mass contributions. The combined deflection can be better constrained
+than the allocation of mass between galaxies; examine that allocation when interpreting source properties
+or small residual structures.
+
+![multi gaussian expansion](../../../../images/features/mge_illustration.png)
+
+Conceptual illustration. The Gaussian components are mathematical building blocks, not individually identified physical structures. The schematic illustrates the feature; retain all deflectors in this multi-galaxy example.
 
 __Why Use Many Gaussians?__
 
@@ -91,11 +106,6 @@ An MGE is also less directly interpretable than a single Sersic profile. An indi
 component of the mathematical description, rather than a separate physical structure in the galaxy. Quantities
 such as total luminosity or a half-light radius should be derived from the combined light distribution.
 
-__In This Folder__
-
-The examples contain multiple main lens galaxies, rather than a single dominant deflector with only small
-companions. Follow how the feature is applied to each galaxy and which parameters are shared. A group halo is
-not implicit in this setup.
 
 __Choose An Example__
 

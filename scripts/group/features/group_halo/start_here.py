@@ -2,9 +2,24 @@
 Features: Group Halo
 ====================
 
-A group-scale lens may be described by the mass of its individual galaxies, by those galaxies plus a shared
-group halo, or by other suitable mass components. A shared halo is a modelling choice rather than a
-requirement imposed by the name “group”.
+Test whether a group-scale lens requires a common mass component in addition to its member galaxies. The aim is to distinguish alternative allocations of the total lensing mass, not to add a halo simply because the system is called a group.
+
+__Scientific Use Cases__
+
+- Explain image configurations probing mass across the group rather than around one member.
+- Compare member-only and member-plus-halo models using the same data and a justified model-comparison procedure.
+- Assess degeneracy between the group-scale component and individual galaxy masses.
+
+__This Dataset and Lens Regime__
+
+The neighboring modeling script compares a member-only composition with a member-plus-group-halo
+composition. Its simulated demonstration includes the common halo; that controlled result is not evidence
+that every observed group requires one. Arcs probing different radii and additional observations can help
+assess how well member and common-halo contributions are distinguished.
+
+![group halo](../../../../images/features/group_halo.png)
+
+Conceptual illustration. Dashed outlines distinguish member and common mass components; they are neither visible dark matter nor measured halo boundaries.
 
 __Individual Galaxies and Shared Mass__
 
@@ -21,11 +36,6 @@ The simulator and modeling example show an explicit halo parameterization and it
 galaxies. Their priors and fixed parameters are retained beside the code. Use the example to understand the
 construction before deciding whether that mass description is appropriate for another group.
 
-__In This Folder__
-
-The examples contain a group-scale lens with several galaxy components. A shared group halo, where present, is
-an explicit model choice. Keep the individual deflectors, companion population and source components distinct
-when following the recipe.
 
 __Choose An Example__
 

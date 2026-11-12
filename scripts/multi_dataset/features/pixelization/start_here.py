@@ -2,8 +2,28 @@
 Features: Pixelization
 ======================
 
-A pixelization represents light using a mesh whose brightness values are solved during the fit. It provides a
-flexible alternative to describing all of the emission with a small collection of analytic profiles.
+Reconstruct the background galaxy on a source-plane mesh when simple light profiles do not capture its morphology. Pixelization is a key source-science feature: it supports measurements of irregular emission while the lens model maps that emission into the observed data.
+
+__Scientific Use Cases__
+
+- Reconstruct extended or clumpy source morphology without specifying a small set of analytic components.
+- Measure source brightness and spatial structure while accounting for lensing and the instrumental response.
+- Test lens mass models using the detailed structure of the lensed emission, with mesh and regularization choices kept explicit.
+
+For source-science measurements, continue to [source_science.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/source_science.ipynb).
+Interpret the combined reconstructed light together with the lens and reconstruction assumptions.
+
+__This Dataset and Lens Regime__
+
+A shared source mesh supplies comparable spatial coordinates across datasets; its brightness reconstruction
+can still differ between them. This is useful for source morphology and colour comparisons, provided the
+shared lens geometry, relative alignment and different instrumental responses are modeled consistently.
+Avoid interpreting different apparent detail in two reconstructions as a physical difference before checking
+their resolution and regularization.
+
+![pixelization](../../../../images/features/pixelization_illustration.png)
+
+Conceptual illustration. The mesh and source are illustrative; recoverable structure depends on the lens model, response, sampling and regularization.
 
 __From a Mesh to the Data__
 
@@ -40,11 +60,6 @@ Check the fit in the space where the data were measured as well as inspecting th
 plausible reconstruction can still accompany an inadequate PSF, an unsuitable mask or an incomplete physical
 model. Fine structure should be interpreted in light of the resolution and assumptions of the full analysis.
 
-__In This Folder__
-
-These examples connect several observations. Read which parameters are shared, which are dataset-specific and
-whether the fits are simultaneous or sequential. The per-dataset likelihoods still retain their own response
-and noise treatment.
 
 __Choose An Example__
 

@@ -2,8 +2,24 @@
 Features: Mass Stellar Dark
 ===========================
 
-A decomposed mass model separates the mass associated with stellar light from a dark-halo contribution. It
-provides an alternative to describing the total mass with a single profile.
+Investigate how the lensing mass is divided between stars and dark matter by linking a stellar mass component to the observed light and fitting an additional dark-halo component. The lensing constraints act on their combined deflection.
+
+__Scientific Use Cases__
+
+- Infer a stellar mass-to-light normalization under an explicit light and halo model.
+- Explore the stellar and dark contributions over the radii constrained by the lensed images.
+- Compare decomposed models with total-mass descriptions and test sensitivity to priors and light modeling.
+
+__This Dataset and Lens Regime__
+
+This folder treats group-scale imaging with individual member galaxies. Distinguish the main deflectors,
+additional members and any explicit common group halo. The light decomposition and the split of mass among
+components can affect the inferred source; a good combined fit does not guarantee that each component is
+independently constrained.
+
+![mass stellar dark](../../../../../images/features/stellar_dark_illustration.png)
+
+Conceptual illustration. The stellar and dark components are a model decomposition; lensing responds to their combined mass. The schematic illustrates the feature; retain all deflectors in this group example.
 
 __From Light to Stellar Mass__
 
@@ -25,11 +41,6 @@ Use the direct fit to inspect the components, then follow the modeling or chaini
 decomposition together with its priors and assumptions rather than treating each fitted component as an
 independent measurement.
 
-__In This Folder__
-
-The examples contain a group-scale lens with several galaxy components. A shared group halo, where present, is
-an explicit model choice. Keep the individual deflectors, companion population and source components distinct
-when following the recipe.
 
 __Choose An Example__
 

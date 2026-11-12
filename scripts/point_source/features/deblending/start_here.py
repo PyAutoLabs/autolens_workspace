@@ -2,8 +2,24 @@
 Features: Deblending
 ====================
 
-Compact lensed images can overlap the foreground galaxy or other extended light. Deblending fits their
-contributions so the point-image positions and other relevant quantities can be measured.
+Measure the positions and fluxes of compact lensed images that overlap foreground galaxy light. This is an image-fitting step that prepares the observables for subsequent point-source lens modeling.
+
+__Scientific Use Cases__
+
+- Measure lensed quasar or supernova image positions with an explicit PSF and foreground-light model.
+- Separate compact-image flux from extended galaxy emission.
+- Assess how measurement uncertainties and blending affect the point-source lens analysis that follows.
+
+__This Dataset and Lens Regime__
+
+Although this feature lives under point_source, its measurement step fits an Imaging dataset. The compact
+profiles and the extended foreground model jointly determine image centres and fluxes. A subsequent
+PointDataset is a summary of those measurements; preserve their labels and uncertainty treatment through
+that handoff. Estimating a centre more precisely than a pixel does not mean resolving intrinsic source structure.
+
+![deblending](../../../../images/features/deblending.png)
+
+Conceptual illustration. The markers indicate fitted image centres; the illustration does not claim to remove the PSF or improve angular resolution.
 
 __Image Fitting Comes Before the Point Dataset__
 
@@ -20,10 +36,6 @@ The simulator makes the components visible in a controlled setting. The modeling
 and the quantities passed to the subsequent point-source analysis. Keep the image labels and uncertainty
 treatment consistent across that handoff.
 
-__In This Folder__
-
-These examples use point-source observables and their associated image identities. The relevant script states
-which positions, fluxes or time delays enter the fit; do not assume every observable is used in every example.
 
 __Choose An Example__
 

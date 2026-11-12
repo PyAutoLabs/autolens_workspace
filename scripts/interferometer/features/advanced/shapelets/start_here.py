@@ -2,9 +2,24 @@
 Features: Shapelets
 ===================
 
-Shapelets describe light as a weighted combination of basis functions. Unlike a single smooth light profile,
-the basis contains functions with different spatial structures, allowing their sum to describe more
-complicated galaxy morphology.
+Describe structured source or galaxy light with a flexible basis of shapelets. This offers an alternative to a small set of smooth profiles when morphology matters to the lens fit and to the science inferred from the source.
+
+__Scientific Use Cases__
+
+- Represent departures from smooth, single-component light profiles.
+- Compare source structure and lens inference across different light-model families.
+- Explore how basis order and spatial scale affect the recovered morphology and residuals.
+
+__This Dataset and Lens Regime__
+
+These examples fit complex visibilities: the lensed sky prediction is Fourier transformed and compared at
+the measured baseline coordinates with the supplied noise. A dirty or reconstructed image is useful for
+inspection, but does not replace this likelihood. Interpret source structure in the context of visibility
+coverage and the assumptions used to model the sky.
+
+![shapelets](../../../../../images/features/shapelets_illustration.png)
+
+Conceptual illustration. The basis represents a combined light distribution; individual functions need not correspond to separate physical components. The scene illustrates sky/source structure; the fit here is to visibilities, not the displayed image.
 
 __Basis Functions and Their Sum__
 
@@ -16,6 +31,10 @@ The basis order and scale determine the range of structures that can be represen
 functions adds flexibility and computational work; it does not by itself establish that the additional
 structure is constrained by the data.
 
+![Individual shapelet basis functions](../../../../../images/features/shapelets_basis.png)
+
+The existing basis grid is retained as a teaching figure; the fitted light is the sum of the functions.
+
 __What the Examples Teach__
 
 The direct-fit example introduces the basis and its coefficients. The modeling example shows how the basis is
@@ -25,11 +44,6 @@ constraints and any regularization in view when interpreting the result.
 As with other flexible light models, inspect the residuals and the reconstructed image together. A useful
 basis should describe the signal without introducing structure solely to follow noise.
 
-__In This Folder__
-
-These examples fit visibilities. The image-plane light prediction is transformed into the measured
-Fourier-domain quantities; a dirty image is an inspection product, not a substitute for that likelihood. Keep
-the visibility sampling, noise and model-specific response choices in view when adapting an imaging example.
 
 __Choose An Example__
 

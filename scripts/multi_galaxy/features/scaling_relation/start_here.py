@@ -2,9 +2,25 @@
 Features: Scaling Relation
 ==========================
 
-A scaling relation connects the properties of a galaxy population through a shared rule, rather than giving
-every member a completely independent model. In these lensing examples, member luminosities help determine
-their mass normalizations.
+Represent a companion population through a luminosity-based mass prescription when the lensing data cannot constrain every galaxy independently. The relation reduces independent freedom by adding an explicit population assumption.
+
+__Scientific Use Cases__
+
+- Include the collective deflection of numerous faint companions.
+- Reserve individual mass freedom for influential galaxies while tying weaker contributors to a shared relation.
+- Test how population assumptions affect lens mass and source inference, rather than interpreting every tied mass as an independent measurement.
+
+__This Dataset and Lens Regime__
+
+Here the brightest main deflector anchors the companion relation:
+einstein_radius_i = einstein_radius_brightest * (L_i/L_brightest)**0.5.
+The other main deflectors retain their own masses. This is a relation for the companion tier, not a rule that
+forces every dominant galaxy to share one mass-to-light prescription. Fixed luminosity ratios and slope do
+not propagate luminosity errors or intrinsic population scatter automatically.
+
+![scaling relation](../../../../images/features/scaling_relation.png)
+
+Conceptual illustration. The mass symbols describe an assumed population relation, not measured halo boundaries or independent mass detections. The schematic illustrates the feature; retain all deflectors in this multi-galaxy example.
 
 __Why Share a Relation?__
 
@@ -25,11 +41,6 @@ luminosity-fitting example is provided, it explains how the input light measurem
 Check whether a particularly influential companion needs its own treatment rather than forcing it to follow
 the same population relation.
 
-__In This Folder__
-
-The examples contain multiple main lens galaxies, rather than a single dominant deflector with only small
-companions. Follow how the feature is applied to each galaxy and which parameters are shared. A group halo is
-not implicit in this setup.
 
 __Choose An Example__
 

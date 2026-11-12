@@ -2,8 +2,24 @@
 Features: Linear Light Profiles
 ===============================
 
-A linear light profile has the same spatial form as an ordinary light profile, but its intensity is solved
-during each likelihood evaluation instead of being sampled by the non-linear search.
+Solve component brightnesses during the fit instead of asking the non-linear search to sample a separate intensity for every light profile. Brightness is recalculated at every trial lens and light geometry: solved does not mean fixed.
+
+__Scientific Use Cases__
+
+- Simplify a model with many foreground or source light components by reducing its sampled dimensions.
+- Let component brightnesses respond together as the lens mass and light-profile shapes change.
+- Build flexible light descriptions, including MGEs, without sampling every basis coefficient.
+
+__This Dataset and Lens Regime__
+
+This folder treats imaging with multiple important deflectors. Include all of them in the ray tracing and
+keep their light separate from their mass contributions. The combined deflection can be better constrained
+than the allocation of mass between galaxies; examine that allocation when interpreting source properties
+or small residual structures.
+
+![linear light profiles](../../../../images/features/linear_light_profiles.png)
+
+Conceptual illustration. The search diagrams are conceptual, not measured likelihood surfaces or a timing benchmark. The schematic illustrates the feature; retain all deflectors in this multi-galaxy example.
 
 __What Is Linear About It?__
 
@@ -31,11 +47,6 @@ Start with the direct fit to see how the solved intensities are retrieved. Then 
 see which parameters remain in the non-linear model. The likelihood example explains the underlying
 calculation in more detail.
 
-__In This Folder__
-
-The examples contain multiple main lens galaxies, rather than a single dominant deflector with only small
-companions. Follow how the feature is applied to each galaxy and which parameters are shared. A group halo is
-not implicit in this setup.
 
 __Choose An Example__
 

@@ -2,13 +2,24 @@
 Subhalo Detection: Group
 ========================
 
-Strong gravitational lenses can be used to detect the presence of small-scale dark matter (DM) subhalos. This occurs
-when the DM subhalo overlaps the lensed source emission, and therefore gravitationally perturbs the observed image of
-the lensed source galaxy.
+Search for a dark matter halo through its effect on lensed emission, rather than through visible starlight. Compare a carefully constructed smooth lens/source model with alternatives containing a perturber, then assess whether a candidate survives changes to the baseline model.
 
-This script extends the standard DM subhalo detection pipeline to group-scale lenses. The key adaptation is that the
-lens model includes ALL group galaxies (main lens galaxies + extra galaxies) with their mass profiles, alongside
-the dark matter subhalo.
+__Scientific Use Cases__
+
+- Investigate localized arc anomalies using an explicit model comparison.
+- Infer a candidate halo position and mass under the chosen profile and redshift assumptions.
+- Build a detection sample that can later be combined with sensitivity calibration for population studies.
+
+__This Dataset and Lens Regime__
+
+All relevant group members belong in the baseline comparison. An omitted member, an unsuitable mass
+allocation or an unmodeled group-scale contribution can mimic the benefit of adding a perturber. The search
+region should be chosen for the actual arc coverage and scientific question, not widened solely because the
+system is called a group.
+
+![subhalo — detect](../../../../../../images/features/subhalo_detection_illustration.png)
+
+Conceptual illustration. The local perturbation is exaggerated, and the marker indicates an inferred halo position rather than light emitted by dark matter. The schematic illustrates the feature; retain all deflectors in this group example.
 
 __Contents__
 
@@ -37,8 +48,8 @@ For group-scale lenses, the key differences from galaxy-scale subhalo detection 
 
  - The lens model includes all main lens galaxies and extra galaxies with their mass profiles.
  - The subhalo is added as an additional galaxy in the model alongside the group galaxies.
- - The larger field of view and more complex mass distribution mean the subhalo must be searched
-   across a wider area.
+ - Choose the search area for the observed arcs and the scientific question; group membership alone
+   does not prescribe a larger grid.
 
 __Model__
 

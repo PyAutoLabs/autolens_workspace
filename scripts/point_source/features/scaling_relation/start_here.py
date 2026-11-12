@@ -2,9 +2,24 @@
 Features: Scaling Relation
 ==========================
 
-A scaling relation connects the properties of a galaxy population through a shared rule, rather than giving
-every member a completely independent model. In these lensing examples, member luminosities help determine
-their mass normalizations.
+Represent a companion population through a luminosity-based mass prescription when the lensing data cannot constrain every galaxy independently. The relation reduces independent freedom by adding an explicit population assumption.
+
+__Scientific Use Cases__
+
+- Include the collective deflection of numerous faint companions.
+- Reserve individual mass freedom for influential galaxies while tying weaker contributors to a shared relation.
+- Test how population assumptions affect lens mass and source inference, rather than interpreting every tied mass as an independent measurement.
+
+__This Dataset and Lens Regime__
+
+The recipe takes companion luminosities from supporting imaging and ties their Einstein radii to the
+main-lens anchor through (L_i/L_anchor)**0.5. The point dataset cannot measure the foreground luminosity
+ratios itself. Positions and any included fluxes provide limited constraints, so compare the tied population
+with individually fitted companions only where the data justify that freedom.
+
+![scaling relation](../../../../images/features/scaling_relation.png)
+
+Conceptual illustration. The mass symbols describe an assumed population relation, not measured halo boundaries or independent mass detections.
 
 __Why Share a Relation?__
 
@@ -25,10 +40,6 @@ luminosity-fitting example is provided, it explains how the input light measurem
 Check whether a particularly influential companion needs its own treatment rather than forcing it to follow
 the same population relation.
 
-__In This Folder__
-
-These examples use point-source observables and their associated image identities. The relevant script states
-which positions, fluxes or time delays enter the fit; do not assume every observable is used in every example.
 
 __Choose An Example__
 

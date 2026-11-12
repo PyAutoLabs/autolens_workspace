@@ -2,8 +2,23 @@
 Features: Imaging And Interferometer
 ====================================
 
-Imaging and interferometer observations can be fitted together using the parameters that their physical models
-share. Each dataset still requires the forward calculation appropriate to its measurement.
+Combine resolved imaging with interferometer visibilities to constrain one lens while allowing the observed emission to differ. Optical or near-infrared light and radio or submillimetre emission can reveal complementary source structure.
+
+__Scientific Use Cases__
+
+- Compare the stellar-light and dust or gas-emission morphology of a lensed galaxy.
+- Constrain shared lens mass with observations that probe different parts of the source.
+- Use the relevant measurement process for each dataset instead of treating a reconstructed interferometer image as another CCD exposure.
+
+__This Dataset and Lens Regime__
+
+Decide explicitly which parameters are shared, which vary by dataset and whether the fits are simultaneous
+or sequential. Each dataset retains its own response and uncertainty treatment. Inspect individual residuals
+alongside the combined result; sharing a lens does not require identical emission in every observation.
+
+![imaging and interferometer](../../../../images/new_user_guide/dataset_types.png)
+
+Reused new-user-guide schematic. The interferometer panel shows sampling locations, not visibility amplitudes or phases; cube slices are spectral channels. These are conceptual dataset representations, not measurements.
 
 __Two Measurements of a Shared System__
 
@@ -20,11 +35,6 @@ Follow the construction of each dataset's analysis and then their combination. T
 shared parameters, light components and instrumental settings. Inspect the fit to each dataset separately: an
 acceptable joint score can conceal a poor description of one observation.
 
-__In This Folder__
-
-These examples connect several observations. Read which parameters are shared, which are dataset-specific and
-whether the fits are simultaneous or sequential. The per-dataset likelihoods still retain their own response
-and noise treatment.
 
 __Choose An Example__
 

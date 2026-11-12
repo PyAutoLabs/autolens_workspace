@@ -2,9 +2,25 @@
 Features: Scaling Relation
 ==========================
 
-A scaling relation connects the properties of a galaxy population through a shared rule, rather than giving
-every member a completely independent model. In these lensing examples, member luminosities help determine
-their mass normalizations.
+Represent a companion population through a luminosity-based mass prescription when the lensing data cannot constrain every galaxy independently. The relation reduces independent freedom by adding an explicit population assumption.
+
+__Scientific Use Cases__
+
+- Include the collective deflection of numerous faint companions.
+- Reserve individual mass freedom for influential galaxies while tying weaker contributors to a shared relation.
+- Test how population assumptions affect lens mass and source inference, rather than interpreting every tied mass as an independent measurement.
+
+__This Dataset and Lens Regime__
+
+The group recipe uses truncated dPIE member profiles. Its scaling tier fits a reference velocity-dispersion
+normalization rather than anchoring every companion directly to the main galaxy's fitted Einstein radius.
+In the current recipe, sigma scales as (L/L_ref)**0.25 and r_cut as (L/L_ref)**0.7, with fixed reference
+truncation radius and zero core radius. These exponents and truncation choices are assumptions, not values
+that every group must obey. The individually bounded tier and the scaling tier remain distinct.
+
+![scaling relation](../../../../images/features/scaling_relation.png)
+
+Conceptual illustration. The mass symbols describe an assumed population relation, not measured halo boundaries or independent mass detections. The schematic illustrates the feature; retain all deflectors in this group example.
 
 __Why Share a Relation?__
 
@@ -18,18 +34,13 @@ different parameter count from one that fits its normalization or slope.
 
 __Read the Local Parameterization__
 
-The examples explain which galaxy anchors the relation and how each companion is tied to it. Keep those
-details in the modeling recipe: different lens scales do not necessarily use the same anchor. Where a
-luminosity-fitting example is provided, it explains how the input light measurements are obtained.
+Read the reference luminosity, fitted velocity-dispersion normalization and fixed truncation scaling in the
+local recipe. The luminosity-fitting example explains how the population inputs are obtained. This group
+parameterization differs from a main-galaxy Einstein-radius anchor.
 
 Check whether a particularly influential companion needs its own treatment rather than forcing it to follow
 the same population relation.
 
-__In This Folder__
-
-The examples contain a group-scale lens with several galaxy components. A shared group halo, where present, is
-an explicit model choice. Keep the individual deflectors, companion population and source components distinct
-when following the recipe.
 
 __Choose An Example__
 

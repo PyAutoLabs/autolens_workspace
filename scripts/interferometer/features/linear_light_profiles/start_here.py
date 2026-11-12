@@ -2,8 +2,24 @@
 Features: Linear Light Profiles
 ===============================
 
-A linear light profile has the same spatial form as an ordinary light profile, but its intensity is solved
-during each likelihood evaluation instead of being sampled by the non-linear search.
+Solve component brightnesses during the fit instead of asking the non-linear search to sample a separate intensity for every light profile. Brightness is recalculated at every trial lens and light geometry: solved does not mean fixed.
+
+__Scientific Use Cases__
+
+- Simplify a model with many foreground or source light components by reducing its sampled dimensions.
+- Let component brightnesses respond together as the lens mass and light-profile shapes change.
+- Build flexible light descriptions, including MGEs, without sampling every basis coefficient.
+
+__This Dataset and Lens Regime__
+
+These examples fit complex visibilities: the lensed sky prediction is Fourier transformed and compared at
+the measured baseline coordinates with the supplied noise. A dirty or reconstructed image is useful for
+inspection, but does not replace this likelihood. Interpret source structure in the context of visibility
+coverage and the assumptions used to model the sky.
+
+![linear light profiles](../../../../images/features/linear_light_profiles.png)
+
+Conceptual illustration. The search diagrams are conceptual, not measured likelihood surfaces or a timing benchmark. The scene illustrates sky/source structure; the fit here is to visibilities, not the displayed image.
 
 __What Is Linear About It?__
 
@@ -31,11 +47,6 @@ Start with the direct fit to see how the solved intensities are retrieved. Then 
 see which parameters remain in the non-linear model. The likelihood example explains the underlying
 calculation in more detail.
 
-__In This Folder__
-
-These examples fit visibilities. The image-plane light prediction is transformed into the measured
-Fourier-domain quantities; a dirty image is an inspection product, not a substitute for that likelihood. Keep
-the visibility sampling, noise and model-specific response choices in view when adapting an imaging example.
 
 __Choose An Example__
 

@@ -2,9 +2,29 @@
 Features: Scaling Relation
 ==========================
 
-A scaling relation connects the properties of a galaxy population through a shared rule, rather than giving
-every member a completely independent model. In these lensing examples, member luminosities help determine
-their mass normalizations.
+Represent a companion population through a luminosity-based mass prescription when the lensing data cannot constrain every galaxy independently. The relation reduces independent freedom by adding an explicit population assumption.
+
+__Scientific Use Cases__
+
+- Include the collective deflection of numerous faint companions.
+- Reserve individual mass freedom for influential galaxies while tying weaker contributors to a shared relation.
+- Test how population assumptions affect lens mass and source inference, rather than interpreting every tied mass as an independent measurement.
+
+__This Dataset and Lens Regime__
+
+The companion luminosities come from supporting imaging, not from an assumption that foreground stellar
+light is visible in the interferometer band. The recipe ties companion Einstein radii to the main-lens
+anchor through (L_i/L_anchor)**0.5. Their gravitational effect remains even when their emission is negligible
+in the visibilities. Check whether any bright radio or submillimetre companion also needs an emission model.
+
+These examples fit complex visibilities: the lensed sky prediction is Fourier transformed and compared at
+the measured baseline coordinates with the supplied noise. A dirty or reconstructed image is useful for
+inspection, but does not replace this likelihood. Interpret source structure in the context of visibility
+coverage and the assumptions used to model the sky.
+
+![scaling relation](../../../../images/features/scaling_relation.png)
+
+Conceptual illustration. The mass symbols describe an assumed population relation, not measured halo boundaries or independent mass detections. The scene illustrates sky/source structure; the fit here is to visibilities, not the displayed image.
 
 __Why Share a Relation?__
 
@@ -25,11 +45,6 @@ luminosity-fitting example is provided, it explains how the input light measurem
 Check whether a particularly influential companion needs its own treatment rather than forcing it to follow
 the same population relation.
 
-__In This Folder__
-
-These examples fit visibilities. The image-plane light prediction is transformed into the measured
-Fourier-domain quantities; a dirty image is an inspection product, not a substitute for that likelihood. Keep
-the visibility sampling, noise and model-specific response choices in view when adapting an imaging example.
 
 __Choose An Example__
 
