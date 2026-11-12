@@ -4075,7 +4075,7 @@
     ],
     "notebook": "notebooks/imaging/features/extra_galaxies/start_here.ipynb",
     "path": "scripts/imaging/features/extra_galaxies/start_here.py",
-    "summary": "A target rarely occupies an otherwise empty field. Nearby galaxies may contribute light inside the region being fitted, and a lensing model may also need to account for their deflection of the light rays.",
+    "summary": "Nearby galaxies can affect a strong-lens analysis in two distinct ways: their light can overlap the arcs, and their mass can contribute to the deflection of the background source. The `extra_galaxies` feature lets you account for these neighbours when reconstructing the source and inferring the main lens's mass distribution.",
     "title": "Features: Extra Galaxies"
   },
   {
