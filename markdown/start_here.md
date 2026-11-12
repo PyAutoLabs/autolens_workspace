@@ -26,6 +26,12 @@ If you use AI, the [PyAutoLens AI Assistant](https://github.com/PyAutoLabs/autol
 
 See [AI Options](https://github.com/PyAutoLabs/PyAutoScientist/blob/main/AI_OPTIONS.md) for tools and setup guidance.
 
+**Experiment with Gemini in Colab.** This notebook includes dedicated instructions from the
+[PyAutoLens AI Assistant](https://github.com/PyAutoLabs/autolens_assistant) to help Gemini explain the examples
+and suggest changes using the notebook's API. Try the prompts below, run the changed cells and inspect the results.
+For your own lensing project, the full assistant provides dedicated lensing workflows and scientific guidance;
+use the starting prompt above to work with it.
+
 __Google Colab Setup__
 
 Run this cell to install PyAutoLens and download the files needed for this notebook on Google Colab.
@@ -37,6 +43,15 @@ If you’re running locally or in HTML, it leaves your installation unchanged.
 from autolens import setup_colab
 setup_colab.for_autolens(raise_error_if_not_gpu=False)
 ```
+
+
+                You are not running in a Google Colab environment so cannot use the setup_colab() function.
+
+                You should therefore have PyAutoLens installed locally in your environment already (e.g. via pip or
+                conda) and can run the rest of your script normally.
+
+                You may now continue running your script or Notebook.
+
 
 
 __Imports__
@@ -55,15 +70,36 @@ import autoarray as aa
 import autolens.plot as aplt
 ```
 
-Lets illustrate a simple gravitational lensing calculation, creating an an image of a lensed galaxy using a 
+Lets illustrate a simple gravitational lensing calculation, creating an an image of a lensed galaxy using a
 light profile and mass profile.
 
 __Grid__
 
-The emission of light from a source galaxy, which is gravitationally lensed around the lens galaxy, is described 
+The emission of light from a source galaxy, which is gravitationally lensed around the lens galaxy, is described
 using the `Grid2D` data structure, which is two-dimensional Cartesian grids of (y,x) coordinates.
 
-We make and plot a uniform Cartesian grid:
+We first plot a coarse grid so you can distinguish its individual coordinates on screen:
+
+
+```python
+grid_for_plot = al.Grid2D.uniform(shape_native=(30, 30), pixel_scales=0.25)
+
+fig, ax = plt.subplots()
+aplt.plot_grid(grid=grid_for_plot, title="", ax=ax)
+ax.set(xlabel="", ylabel="")
+plt.show()
+```
+
+
+
+![png](start_here_files/start_here_5_0.png)
+
+
+
+For the light and mass calculations below, we use a finer grid covering the same 7.5 arcsecond field of view.
+
+**Try asking Gemini:** "Explain how shape_native and pixel_scales set the field of view. Show me a coarser
+display grid that covers the same area, keeping the calculation grid unchanged."
 
 
 ```python
@@ -71,15 +107,7 @@ grid = al.Grid2D.uniform(
     shape_native=(150, 150),  # The [pixels x pixels] shape of the grid in 2D.
     pixel_scales=0.05,  # The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
-
-aplt.plot_grid(grid=grid, title="")
 ```
-
-
-    
-![png](start_here_files/start_here_5_0.png)
-    
-
 
 __Light Profiles__
 
@@ -105,7 +133,7 @@ sersic_light_profile = al.lp.Sersic(
 )
 ```
 
-By passing the light profile the `grid`, we evaluate the light emitted at every (y,x) coordinate and therefore create 
+By passing the light profile the `grid`, we evaluate the light emitted at every (y,x) coordinate and therefore create
 an image of the Sersic light profile.
 
 
@@ -118,14 +146,14 @@ plt.imshow(image.native.array)  # Dont worry about the use of .native.array for 
 
 
 
-    <matplotlib.image.AxesImage at 0x7fdec3be9c40>
+    <matplotlib.image.AxesImage at 0x72ca9a75bc80>
 
 
 
 
-    
-![png](start_here_files/start_here_9_1.png)
-    
+
+![png](start_here_files/start_here_11_1.png)
+
 
 
 __Plotting__
@@ -133,7 +161,7 @@ __Plotting__
 In-built plotting methods are provided for plotting objects and their properties, like the image of
 a light profile we just created.
 
-By using a `aplt.plot_array` to plot the light profile's image, the figured is improved. 
+By using a `aplt.plot_array` to plot the light profile's image, the figured is improved.
 
 Its axis units are scaled to arc-seconds, a color-bar is added, its given a descriptive labels, etc.
 
@@ -146,16 +174,19 @@ aplt.plot_array(array=sersic_light_profile.image_2d_from(grid=grid), title="Imag
 ```
 
 
-    
-![png](start_here_files/start_here_11_0.png)
-    
 
+![png](start_here_files/start_here_13_0.png)
+
+
+
+**Try asking Gemini:** "Help me change the Sersic effective_radius, one value at a time. Which cells should
+I rerun, and what change should I look for in the image?"
 
 __Mass Profiles__
 
 PyAutoLens uses MassProfile objects to represent a galaxy’s mass distribution and perform ray-tracing calculations.
 
-Below we create an elliptical isothermal MassProfile and compute its deflection angles on our Cartesian grid, where 
+Below we create an elliptical isothermal MassProfile and compute its deflection angles on our Cartesian grid, where
 the deflection angles describe how the lens galaxy’s mass bends the source’s light:
 
 
@@ -193,27 +224,27 @@ aplt.plot_array(
 ```
 
 
-    
-![png](start_here_files/start_here_15_0.png)
-    
+
+![png](start_here_files/start_here_17_0.png)
 
 
 
-    
-![png](start_here_files/start_here_15_1.png)
-    
+
+
+![png](start_here_files/start_here_17_1.png)
 
 
 
-    
-![png](start_here_files/start_here_15_2.png)
-    
+
+
+![png](start_here_files/start_here_17_2.png)
 
 
 
-    
-![png](start_here_files/start_here_15_3.png)
-    
+
+
+![png](start_here_files/start_here_17_3.png)
+
 
 
 __Galaxy__
@@ -259,23 +290,23 @@ aplt.plot_array(
 ```
 
 
-    
-![png](start_here_files/start_here_19_0.png)
-    
+
+![png](start_here_files/start_here_21_0.png)
 
 
 
-    
-![png](start_here_files/start_here_19_1.png)
-    
+
+
+![png](start_here_files/start_here_21_1.png)
+
 
 
 __Tracer__
 
-The `Tracer` object is a collection of galaxies at different redshifts (often referred to as planes). 
+The `Tracer` object is a collection of galaxies at different redshifts (often referred to as planes).
 
 It uses these galaxies to perform ray-tracing, using the mass profiles of the galaxies to bend the light of the source
-galaxy(s) into the multiple images we observe in a strong lens system. 
+galaxy(s) into the multiple images we observe in a strong lens system.
 
 This is shown below, where the image of the tracer shows a distinct Einstein ring of the source galaxy.
 
@@ -289,10 +320,16 @@ aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 ```
 
 
-    
-![png](start_here_files/start_here_21_0.png)
-    
 
+![png](start_here_files/start_here_23_0.png)
+
+
+
+**Try asking Gemini:** "Help me move the source galaxy's centre and rerun the tracer image. Explain how
+the arcs change as the source moves away from alignment with the lens."
+
+You can explore these examples with Gemini here. For dedicated help turning them into an analysis of your own
+data, continue with the [PyAutoLens AI Assistant](https://github.com/PyAutoLabs/autolens_assistant).
 
 __JAX__
 
@@ -323,7 +360,7 @@ of arc-seconds. To convert these to physical units (e.g. kiloparsecs), we use th
 galaxies and an input cosmology. A run through of all normal unit conversions is given in guides in the workspace
 outlined below.
 
-The use of angles in arc-seconds has an important property, it means that for a two-plane strong lens system 
+The use of angles in arc-seconds has an important property, it means that for a two-plane strong lens system
 (e.g. a lens galaxy at one redshift and source galaxy at another redshift) lensing calculations are independent of
 the galaxies' redshifts and the input cosmology. This has a number of benefits, for example it makes it straight
 forward to compare the lensing properties of different strong lens systems even when the redshifts of the galaxies
@@ -335,7 +372,7 @@ calculations that depend on them.
 
 __Extensibility__
 
-All of the objects we've introduced so far are highly extensible, for example a tracer can be made of many galaxies, a 
+All of the objects we've introduced so far are highly extensible, for example a tracer can be made of many galaxies, a
 galaxy can be made up of any number of light profiles and many galaxy objects can be combined into a galaxies object.
 
 Below, wecreate a `Tracer` with 3 galaxies at 3 different redshifts, forming a system with two distinct Einstein
@@ -394,9 +431,9 @@ aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 ```
 
 
-    
-![png](start_here_files/start_here_23_0.png)
-    
+
+![png](start_here_files/start_here_25_0.png)
+
 
 
 __Lens Modeling__
@@ -425,7 +462,7 @@ Simulating strong lenses is often essential, for example to:
 - Generate large training sets (e.g. for machine learning).
 - Test lensing theory in a fully controlled environment.
 
-The next documentation page guides you through how to simulate lenses for different types of strong 
+The next documentation page guides you through how to simulate lenses for different types of strong
 lenses (e.g. galaxy–galaxy lenses, cluster-scale lenses) and different types of data (e.g. CCD imaging, interferometer data).
 
 __Wrap Up__
@@ -533,18 +570,18 @@ Once you have chosen an example, explore the [Features guide](https://pyautolens
 
 __Features__
 
-Here is a brief overview of the advanced features of **PyAutoLens**. 
+Here is a brief overview of the advanced features of **PyAutoLens**.
 
 You won't look at these for a while, you should find your relevant start_here notebook and work through that first,
 but a quick look through these will give you a sense of the breadth of **PyAutoLens**'s capabilities.
 
-Brief one sentence descriptions of each feature are given, with more detailed descriptions below including 
+Brief one sentence descriptions of each feature are given, with more detailed descriptions below including
 links to the relevant workspace examples.
 
 **Pixelizations**: Reconstructing the source galaxy on a mesh of pixels, to capture irregular structures like spiral arms.
 **Point Sources**: Modeling point sources (e.g. quasars) observed in the strong lens imaging data.
 **Interferometry**: Modeling of interferometer data (e.g. ALMA, LOFAR) directly in the uv-plane.
-**Multi Gaussian Expansion (MGE)**: Decomposing the lens galaxy into hundreds of Gaussians, for a clean lens subtraction.
+**Multi Gaussian Expansion (MGE)**: Flexible models for foreground lens light and the background source.
 **Groups**: Modeling group-scale strong lenses with multiple lens galaxies and multiple source galaxies.
 **Multi-Wavelength**: Simultaneous analysis of imaging and / or interferometer datasets observed at different wavelengths.
 **Ellipse Fitting**: Fitting ellipses to determine a lens galaxy's ellipticity, position angle and centre.
@@ -554,20 +591,32 @@ links to the relevant workspace examples.
 
 __Pixelizations__
 
-pixelizations reconstruct the source galaxy's light on a pixel-grid. Unlike `LightProfile`'s, they are able to
-reconstruct the light of non-symmetric, irregular and clumpy sources.
+Recover the background galaxy behind the arcs. A pixelization reconstructs source light on a mesh, providing
+flexibility to describe spiral arms, star-forming clumps and irregular structure without imposing a simple
+analytic light profile.
 
-The image below shows a pixelized source reconstruction of the strong lens SLACS1430+4105, where the source is
-reconstructed on a Voronoi mesh adapted to the source morphology, revealing it to be a grand-design face on spiral
-galaxy:
+**Study the background galaxy.** Pixelized reconstructions are a key tool for source science: investigating
+galaxy structure and measuring properties such as intrinsic flux, size and lensing magnification. Start with
+[source_science.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/source_science.ipynb)
+to see how to analyse the reconstructed source, calculate flux and magnification, propagate uncertainties and
+export the reconstruction.
 
-![Pixelized Source](https://github.com/PyAutoLabs/PyAutoLens/blob/main/files/imageaxis.png?raw=true)
+![Pixelization: recover the galaxy behind the arcs](../images/features/pixelization_illustration.png)
 
-A complete overview of pixelized source reconstructions can be found
-at `notebooks/overview/overview_5_pixelizations.ipynb`.
+Conceptual illustration, not observational data. The mesh and galaxy on the right show the same source
+brightness distribution; removing mesh lines adds no information. Reconstruction requires a lens mass model,
+and the recoverable detail depends on the data and modelling assumptions.
 
-Chapter 4 of lectures describes pixelizations in detail and teaches users how they can be used to 
-perform lens modeling.
+Source brightness is solved during the fit, with regularization controlling how freely neighbouring mesh pixels
+can vary. This flexibility supports both source science and lens-mass modelling; it does not remove model
+degeneracies or guarantee that fine structure is real.
+
+Read the [pixelization feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb)
+for use cases, mesh choices, regularization and worked examples.
+
+For deeper teaching, see [the pixelization overview](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/overview/overview_5_pixelizations.ipynb)
+and Chapter 3 of [HowToLens](https://github.com/PyAutoLabs/HowToLens).
+
 
 __Point Sources__
 
@@ -575,7 +624,7 @@ There are many lenses where the background source is not extended but is instead
 lensed quasars and supernovae.
 
 For these objects, we do not want to model the source using a light profile, which implicitly assumes an extended
-surface brightness distribution. 
+surface brightness distribution.
 
 Instead, we assume that our source is a point source with a centre (y,x), and ray-trace triangles at iteratively
 higher resolutions to determine the source's exact locations in the image-plane:
@@ -586,7 +635,7 @@ higher resolutions to determine the source's exact locations in the image-plane:
 <img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/point_3.png" width="200">
 <img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/point_4.png" width="200">
 
-Note that the image positions above include the fifth central image of the strong lens, which is often not seen in 
+Note that the image positions above include the fifth central image of the strong lens, which is often not seen in
 strong lens imaging data. It is easy to disable this image in the point source modeling.
 
 Checkout the`autolens_workspace/*/point_source` package to get started.
@@ -606,24 +655,27 @@ Checkout the`autolens_workspace/*/interferometer` package to get started.
 
 __Multi Gaussian Expansion (MGE)__
 
-An MGE decomposes the light of a galaxy into tens or hundreds of two dimensional Gaussians:
+An MGE models a galaxy's light as a sum of Gaussians. In strong lensing, use it to model foreground lens light
+that overlaps the arcs, or to describe the background source whose light is distorted by the lens mass model.
 
-![MGE](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/mge.png)
+![MGE: separate the foreground lens light and model the background source](../images/features/mge_illustration.png)
 
-In the image above, 30 Gaussians are shown, where their sizes go from below the pixel scale (in order to resolve
-point emission) to beyond the size of the galaxy (to capture its extended emission).
+Illustration, not observational data. Amber represents foreground lens light; cyan represents source light.
+The lens mass model connects the source to its arcs. Gaussian components are mathematical building blocks,
+not separate galaxies; the components are fitted jointly.
 
-It is an extremely powerful way to model and subtract the light of the foreground lens galaxy in strong lens imaging,
-and makes it possible to model the stellar mass of the lens galaxy in a way that is tied to its light.
+An MGE can capture changes in a galaxy's shape with radius that a single simple light profile misses. Its
+Gaussian intensities are solved by linear algebra during fitting, rather than all being sampled separately.
+This also provides a flexible smooth source model for measuring source flux and magnification.
 
-Scientific Applications include capturing departures from elliptical symmetry in the light of galaxies, providing a 
-flexible model to deblend the emission of point sources (e.g. quasars) from the emission of their host galaxy and 
-deprojecting the light of a galaxy from 2D to 3D.
+[He et al. (2024)](https://arxiv.org/abs/2403.16253) demonstrate MGE lens-light modelling on 38 HST SLACS lenses,
+combined with a pixelized source reconstruction. The workspace also includes examples using an MGE source.
 
-The following paper gives a detailed overview of MGEs and their applications in strong lensing: https://arxiv.org/abs/2403.16253
+MGEs can additionally connect stellar mass models to observed light, describe compact emission alongside its
+host galaxy, and support deprojection of galaxy light from two dimensions to three, with appropriate assumptions.
 
-Checkout `autolens_workspace/notebooks/features/multi_gaussian_expansion.ipynb` to learn how to use an MGE.
-
+Read the [MGE feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/start_here.ipynb)
+for the scientific use cases, detailed teaching and worked examples.
 
 __Groups__
 
@@ -664,9 +716,9 @@ angle and centre, without assuming a parametric form for its light (e.g. like a 
 ![ellipse](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/ellipse.png)
 
 This provides complementary information to parametric light profile fitting, for example giving insights on whether
-the ellipticity and position angle are constant with radius or if the galaxy's emission is lopsided. 
+the ellipticity and position angle are constant with radius or if the galaxy's emission is lopsided.
 
-There are also multipole moment extensions to ellipse fitting, which determine higher order deviations from elliptical 
+There are also multipole moment extensions to ellipse fitting, which determine higher order deviations from elliptical
 symmetry providing even more information on the galaxy's structure.
 
 The following paper describes the technique in detail: https://arxiv.org/html/2407.12983v1
@@ -676,17 +728,35 @@ Checkout `autolens_workspace/notebooks/features/ellipse_fitting.ipynb` to learn 
 
 __Shapelets__
 
-Shapelets are a set of orthogonal basis functions that can be combined the represent galaxy structures:
+Shapelets provide a flexible model of galaxy light beyond a single smooth profile. A key application is
+source science: reconstructing the resolved morphology of a background galaxy from its lensed images.
+They can also model foreground light and help test how the chosen light representation affects a lens fit.
 
-Scientific Applications include capturing symmetric structures in a galaxy which are more complex than a Sersic profile,
-irregular and asymmetric structures in a galaxy like spiral arms and providing a flexible model to deblend the emission 
-of point sources (e.g. quasars) from the emission of their host galaxy.
+[Birrer, Amara & Refregier (2015)](https://arxiv.org/abs/1504.07629) demonstrate lens modelling with basis
+sets on RX J1131-1231. This illustrates the method rather than a PyAutoLens application.
 
-Checkout `autolens_workspace/notebooks/features/shapelets.ipynb` to learn how to use shapelets.
+![Shapelet basis building blocks and an illustrative source model](../images/features/shapelets_illustration.png)
+
+*Conceptual illustration, not a fitted reconstruction or the exact sum of the displayed modes.*
+
+Shapelets combine localized mathematical basis functions with linearly solved coefficients. The basis
+order, scale and shared geometry control the structures a finite expansion can describe. Signed coefficients
+are valid mathematical weights; negative brightness in the combined galaxy model is the physical concern.
+Inspect the reconstructed light and residuals together, and test whether added flexibility follows signal
+rather than noise.
+
+The existing grid below shows individual polar basis functions. These patterns are mathematical building
+blocks, not separate physical components of a galaxy:
+
+![Individual polar shapelet basis functions](../images/features/shapelets_basis.png)
+
+Start with the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/shapelets/start_here.ipynb)
+for scientific uses, basis construction, signed coefficients and limitations. The fit.py and modeling.py
+examples show fixed-model fits, non-linear fitting, and alternative source and lens-light constructions.
 
 __Operated Light Profiles__
 
-An operated light profile is one where it is assumed to already be convolved with the PSF of the data, with the 
+An operated light profile is one where it is assumed to already be convolved with the PSF of the data, with the
 `Moffat` and `Gaussian` profiles common choices:
 
 They are used for certain scientific applications where the PSF convolution is known to be a significant effect and
@@ -710,10 +780,8 @@ __Mass Models__
 The examples above model the lens's mass with an isothermal profile, but **PyAutoLens** supports a wide
 range of mass models:
 
-Total mass profiles (e.g. the isothermal and power-law) represent the combined stellar and dark matter mass of the
-lens galaxy with a single profile. Decomposed mass models fit the stellar and dark matter separately, tying the
-stellar mass to the light (e.g. via an MGE) and adding an NFW dark matter halo, directly measuring the balance of
-stellar and dark matter in the galaxy.
+Total mass profiles (e.g. the isothermal and power-law) represent the combined mass of the lens galaxy
+with a single profile. Stellar + dark matter models, introduced below, separate these contributions.
 
 Multipole perturbations (m=1, m=3 and m=4) extend any mass model with departures from elliptical symmetry, capturing
 lopsidedness, boxiness / disciness and bar-like structures in the mass distribution. Accounting for this angular
@@ -725,9 +793,55 @@ strong lens imaging: https://arxiv.org/abs/2410.12987
 
 The role of the m=1 multipole (lopsidedness) is detailed in: https://arxiv.org/abs/2407.12983
 
-Checkout `autolens_workspace/*/guides/profiles` for the full range of mass profiles
-and `autolens_workspace/*/imaging/features/advanced/mass_stellar_dark` for decomposed stellar + dark matter
-modeling.
+Checkout `autolens_workspace/scripts/guides/profiles` for the full range of mass profiles.
+
+
+__Stellar + Dark Matter__
+
+How much of a lens galaxy's mass is in stars, and how much is dark matter? Decomposed mass models combine
+the galaxy's observed light with strong lensing to infer stellar mass-to-light ratios, estimate stellar and
+dark matter masses within a chosen aperture, and investigate their relative distributions.
+
+The stellar mass follows a light model with a mass-to-light ratio; a separate halo, often described by an
+NFW profile, supplies the dark matter component. Lensing responds to their combined gravity. The inferred
+split therefore depends on the adopted light model, mass-to-light prescription, halo model and priors.
+
+[Nightingale et al. (2019)](https://arxiv.org/abs/1901.07801) used PyAutoLens to investigate stellar structures
+and inner dark matter halos in massive elliptical galaxies with this approach.
+
+![Observed lens light and inferred stellar plus dark matter components](../images/features/stellar_dark_illustration.png)
+
+The image is a conceptual illustration, not a measured decomposition. The observed arcs belong to the
+background source; the mass components describe the foreground lens galaxy.
+
+Start with the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/mass_stellar_dark/start_here.ipynb)
+for the science and modelling assumptions. The basic modeling example uses priors near the simulated truth;
+chaining.py and slam.py demonstrate staged fits that initialize the stellar mass model from lens-light fits.
+
+
+__Double Source-Plane Lenses__
+
+A double source-plane lens contains two background galaxies at different redshifts behind a foreground lens.
+Their different lensing geometries let us investigate cosmological distance ratios, probe the lens mass
+with two sets of arcs, and reconstruct both background galaxies for source science.
+
+The nearer source also acts as an additional deflector for the farther source. A multi-plane model therefore
+tracks both its light and its mass, using the galaxies' redshifts and the adopted cosmology to calculate the
+appropriate deflections for each source.
+
+[Collett & Auger (2014)](https://arxiv.org/abs/1403.5278) demonstrate the cosmological application using the
+Jackpot lens, SDSS J0946+1006. Cosmological inference remains coupled to mass-model assumptions; the basic
+modeling.py tutorial here fixes the cosmology and does not itself measure cosmological parameters.
+
+![Two sets of lensed arcs and the three redshift planes that produce them](../images/features/double_source_plane_illustration.png)
+
+*Conceptual illustration, not a ray-traced prediction. Colours distinguish the two sources. Double
+source-plane lenses can form incomplete arcs or multiple images, rather than two complete rings.*
+
+Start with the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/double_source_plane_lens/start_here.ipynb)
+for geometry, scientific uses and inference limitations. The basic modeling example initializes priors near
+the simulated truth; chaining.py and slam.py demonstrate staged fits, including the nearer source's role as
+an additional lens.
 
 
 __Automated Pipelines / SLaM__
@@ -746,21 +860,118 @@ Checkout `autolens_workspace/*/guides/modeling/slam_start_here.py` to get starte
 
 __Dark Matter Subhalos__
 
-The dark matter model predicts that galaxies are surrounded by many low-mass dark matter subhalos, which host no
-stars and are therefore invisible to ordinary observations. Strong lensing is one of the only probes which can
-detect them, via the small perturbations they imprint on a lensed source's light, testing the nature of
-dark matter (e.g. cold, warm or self-interacting).
+Small dark matter halos can perturb the shapes of lensed arcs even when they contain too little starlight to
+be seen directly. **PyAutoLens** searches for these otherwise invisible structures by fitting lens models with
+and without an additional halo, comparing their Bayesian evidence and inferring the candidate's position and mass
+under the adopted halo model.
 
-**PyAutoLens** provides a complete dark matter subhalo analysis: lens models with and without a subhalo are fitted
-and compared via their Bayesian evidence, quantifying whether the data favors the subhalo's presence. Sensitivity
-mapping then simulates subhalos of different masses at different locations in the data, quantifying which
-subhalos a given dataset could actually detect.
+Use this feature to search for candidate subhalos, investigate arc anomalies, and build detection results for
+population studies of dark matter. Pair it with **sensitivity mapping**: simulated halos of different masses and
+positions establish what a dataset could detect, making non-detections scientifically informative too.
 
-The following paper performs this analysis on a sample of HST strong lenses: https://arxiv.org/abs/2209.10566
+![An invisible subhalo perturbs a lensed arc](../images/features/subhalo_detection_illustration.png)
 
-Checkout `autolens_workspace/*/imaging/features/advanced/subhalo/detect` for subhalo detection
-and `autolens_workspace/*/imaging/features/advanced/subhalo/sensitivity` for sensitivity mapping.
+*Conceptual illustration, not observational data. The distortion is exaggerated for clarity; the dashed marker
+represents an inferred halo position, not light emitted by dark matter.*
 
+An evidence increase is conditional on the lens and source models being compared. Candidates require checks of
+the main lens mass distribution, source reconstruction and observational systematics. A halo along the line of
+sight can also perturb an arc; this example models the perturber at the lens redshift.
+
+For a scientific application and the importance of testing lens-model flexibility, see
+[Nightingale et al., Scanning For Dark Matter Subhalos in Hubble Space Telescope Imaging of 54 Strong Lenses](https://arxiv.org/abs/2209.10566).
+
+Start with the [subhalo detection introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/detect/start_here.ipynb)
+for the SLaM workflow, grid search and evidence interpretation, then explore
+[sensitivity mapping](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb).
+
+__Line-of-Sight Halos__
+
+Line-of-sight halos contribute to strong lensing as a population: the small deflections from many halos at
+different distances combine to perturb the resolved arcs. The `los_halos` feature simulates this population
+through multi-plane ray tracing, including halos both in front of and behind the main lens.
+
+Use these mock images to investigate how the halo population affects lensing, test dark matter inference
+methods, and assess the consequences of attributing all perturbations to subhalos at the main lens redshift.
+[He et al. (2022)](https://doi.org/10.1093/mnras/stac191) demonstrate how forward modelling resolved arcs
+can constrain a cutoff in the halo mass function and, within an assumed dark matter model, the particle mass.
+
+![A population of line-of-sight halos and its combined lensing imprint](../images/features/los_halos.png)
+
+*Conceptual illustration, not a computed prediction. The halo symbols represent unseen mass; the arc
+distortions illustrate the combined population effect rather than a detection of an individual halo.*
+
+The examples sample a halo population within a light cone, place truncated NFW halos on redshift planes,
+and include compensating convergence sheets to account for the population's mean matter density. PSF
+convolution and noise turn the lensed source image into mock imaging data. Compare multiple realizations
+to distinguish population-level effects from the particular halos drawn in one simulation.
+
+Start with the [line-of-sight halo introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/los_halos/start_here.ipynb)
+for population assumptions, multi-plane geometry and mean-density compensation. It links the standard
+simulator and a JAX route for batched mock-image generation. This folder supplies simulations, not a
+complete halo-detection or population-inference workflow.
+
+__Sensitivity Mapping__
+
+**What could this lens have revealed, even when no subhalo was found?**
+
+Sensitivity mapping measures which dark matter halos a dataset and modeling procedure could detect. It injects
+halos into simulated observations, fits each simulation with and without a halo, and compares the Bayesian evidence.
+This calibrates both detections and non-detections, enabling population studies of the abundance and masses of
+small halos when combined with a halo-population model.
+
+Use it to interpret a non-detection or compare the reach of different observations. Additional simulations with
+changed noise levels or angular resolution can help assess observing strategies; the introductory example does
+not perform that comparison.
+
+![Illustrative halo recoverability around a lensed arc](../images/features/sensitivity_mapping_illustration.png)
+
+*Conceptual illustration, not a computed sensitivity map. The overlay depicts recoverability at one illustrative
+injected mass, not detected halos or the four-cell result of the introductory script.*
+
+Start with [sensitivity mapping](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb):
+a demonstration with an MGE source, four injected positions and one fixed injected halo mass. Each simulated dataset
+is fitted twice. The recovery fits allow mass to vary and use narrow position priors around each injected location.
+For calibration using reconstructed source morphology, see
+[slam_source_pixelized.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/slam_source_pixelized.ipynb).
+
+Sensitivity depends on the simulation, priors, model family and detection threshold. Calibrate it consistently with
+the detection analysis; a positive evidence difference alone is not sufficient to claim recovery. A population
+analysis needs more than this small demonstration.
+
+For the scientific connection between detection limits and substructure population constraints, see
+[Vegetti & Koopmans (2009)](https://arxiv.org/abs/0903.4752).
+
+__Potential Correction__
+
+**What mass structure is your smooth lens model missing?**
+
+Potential correction, also called gravitational imaging, reconstructs small changes to the lensing potential on a
+pixelized mesh while reconstructing the background source. Use it to investigate coherent arc residuals, locate
+candidate mass perturbations for subsequent physical modeling, and explore departures from a simple smooth lens
+model without first choosing a particular halo density profile.
+
+![Lensed arcs and an inferred correction relative to a smooth lens model](../images/features/potential_correction_illustration.png)
+
+*Conceptual illustration, not a measured mass map. Positive and negative corrections mean more or less projected
+mass relative to the smooth baseline; a negative correction does not mean negative total mass.*
+
+A reconstructed feature is not by itself a confirmed dark-matter detection. Its interpretation depends on the
+main lens model, source reconstruction, mask, mesh and regularization, as well as observational systematics.
+Potential correction reconstructs structure for the dataset being fitted; sensitivity mapping instead measures
+recovery across injected perturbations.
+
+For a scientific application, [Powell et al. (2025)](https://www.nature.com/articles/s41550-025-02651-2) uses
+very-high-resolution radio observations of JVAS B1938+666. This illustrates the method's reach, not a mass-detection
+limit promised by the introductory imaging example. The PyAutoLens implementation credits the
+[Cao et al. potential-correction software](https://github.com/caoxiaoyue/lensing_potential_correction);
+retain its [citation and reproduction materials](https://github.com/caoxiaoyue/potential_correction_paper) when using it.
+
+Start with the [potential correction introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/potential_correction/start_here.ipynb)
+for simulated imaging with a known smooth starting model, joint reconstruction, convergence corrections,
+iterative refinement and evidence sampling. Continue to the
+[likelihood walkthrough](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/potential_correction/likelihood_function.ipynb)
+or the [interferometer example](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/potential_correction/start_here.ipynb).
 
 __Graphical Models__
 

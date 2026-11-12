@@ -23,6 +23,12 @@ If you use AI, the [PyAutoLens AI Assistant](https://github.com/PyAutoLabs/autol
 
 See [AI Options](https://github.com/PyAutoLabs/PyAutoScientist/blob/main/AI_OPTIONS.md) for tools and setup guidance.
 
+**Experiment with Gemini in Colab.** This notebook includes dedicated instructions from the
+[PyAutoLens AI Assistant](https://github.com/PyAutoLabs/autolens_assistant) to help Gemini explain the examples
+and suggest changes using the notebook's API. Try the prompts below, run the changed cells and inspect the results.
+For your own lensing project, the full assistant provides dedicated lensing workflows and scientific guidance;
+use the starting prompt above to work with it.
+
 __Google Colab Setup__
 
 Run this cell to install PyAutoLens and download the files needed for this notebook on Google Colab.
@@ -55,14 +61,25 @@ __Grid__
 The emission of light from a source galaxy, which is gravitationally lensed around the lens galaxy, is described 
 using the `Grid2D` data structure, which is two-dimensional Cartesian grids of (y,x) coordinates.
 
-We make and plot a uniform Cartesian grid:
+We first plot a coarse grid so you can distinguish its individual coordinates on screen:
+"""
+grid_for_plot = al.Grid2D.uniform(shape_native=(30, 30), pixel_scales=0.25)
+
+fig, ax = plt.subplots()
+aplt.plot_grid(grid=grid_for_plot, title="", ax=ax)
+ax.set(xlabel="", ylabel="")
+plt.show()
+
+"""
+For the light and mass calculations below, we use a finer grid covering the same 7.5 arcsecond field of view.
+
+**Try asking Gemini:** "Explain how shape_native and pixel_scales set the field of view. Show me a coarser
+display grid that covers the same area, keeping the calculation grid unchanged."
 """
 grid = al.Grid2D.uniform(
     shape_native=(150, 150),  # The [pixels x pixels] shape of the grid in 2D.
     pixel_scales=0.05,  # The pixel-scale describes the conversion from pixel units to arc-seconds.
 )
-
-aplt.plot_grid(grid=grid, title="")
 
 """
 __Light Profiles__
@@ -110,6 +127,9 @@ for fits to large datasets.
 aplt.plot_array(array=sersic_light_profile.image_2d_from(grid=grid), title="Image")
 
 """
+**Try asking Gemini:** "Help me change the Sersic effective_radius, one value at a time. Which cells should
+I rerun, and what change should I look for in the image?"
+
 __Mass Profiles__
 
 PyAutoLens uses MassProfile objects to represent a galaxy’s mass distribution and perform ray-tracing calculations.
@@ -201,6 +221,12 @@ image = tracer.image_2d_from(grid=grid)
 aplt.plot_array(array=tracer.image_2d_from(grid=grid), title="Image")
 
 """
+**Try asking Gemini:** "Help me move the source galaxy's centre and rerun the tracer image. Explain how
+the arcs change as the source moves away from alignment with the lens."
+
+You can explore these examples with Gemini here. For dedicated help turning them into an analysis of your own
+data, continue with the [PyAutoLens AI Assistant](https://github.com/PyAutoLabs/autolens_assistant).
+
 __JAX__
 
 **PyAutoLens** runs on either **NumPy** (the default) or **JAX** (Google's
