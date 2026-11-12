@@ -2,12 +2,64 @@
 Features: Multi Gaussian Expansion
 ==================================
 
+In a strong-lens image, light from two galaxies is superimposed: the foreground lens galaxy and the distant
+source, stretched into arcs by gravitational lensing. Modelling their light helps us separate the two and
+infer the properties of the lens and source.
+
 A multi Gaussian expansion (MGE) represents a galaxy's light as the sum of many Gaussian profiles. Each
 Gaussian describes emission on a particular spatial scale; together, they can provide a flexible model of the
 galaxy.
 
-This introduction explains how an MGE works, why it can be useful, and what to consider before using one. The
-neighbouring examples show how to construct an MGE, fit it to data and inspect the results.
+In PyAutoLens, there are two main reasons to use an MGE:
+
+- **Model the foreground lens light:** capture structure that a simple light profile misses, helping separate
+  bright foreground emission from overlapping lensed arcs.
+- **Model the background source:** describe its unlensed light distribution, predict the arcs through a lens
+  mass model, and measure quantities such as source flux and magnification.
+
+![MGE illustration: separate foreground lens light and model the background source](../../../../images/features/mge_illustration.png)
+
+Illustration, not observational data or a fitted result. Amber represents foreground lens light and cyan
+represents source light. The source model is mapped into arcs by the lens mass model; subtracting foreground
+light alone does not reconstruct the unlensed source. Gaussian components are mathematical building blocks,
+not separate physical galaxies. The components are fitted jointly; the arrows illustrate their relationship.
+
+__Foreground Lens Light__
+
+In strong-lens imaging, foreground galaxy light can overlap the lensed arcs. Residuals from an inadequate
+foreground model can then interfere with the reconstruction of the background source.
+
+An MGE provides a flexible description of the foreground light. This can help separate it from the arcs,
+particularly when a simpler light profile leaves coherent residuals.
+
+For a scientific application, see [He et al. (2024), Unveiling Lens Light Complexity with A Novel
+Multi-Gaussian Expansion Approach for Strong Gravitational Lensing](https://arxiv.org/abs/2403.16253).
+They apply an MGE lens-light model to 38 HST SLACS lenses, combining it with a pixelized source reconstruction.
+This is an example of using MGE for the foreground light; it does not require the source to use an MGE too.
+
+The lens and source should still be considered together. A flexible foreground model can absorb emission that
+belongs to the source, so the quality of the total fit alone is not enough: inspect how the model allocates
+light between the components.
+
+__Source Light__
+
+An MGE can also describe a lensed source. Solving its intensities and fixing a suitable range of Gaussian
+widths can reduce the number of parameters explored by the non-linear search.
+
+Here the MGE describes the source before lensing. The lens mass model maps that light into the image plane,
+where the predicted arcs are compared with the data. This provides a flexible smooth source model without
+requiring a separate non-linear intensity parameter for every Gaussian.
+
+The second model in `modeling.py` demonstrates an MGE source. The `source_science.py` example uses one to
+calculate source flux and magnification, and explores how changing the assumed source light profile affects
+those measurements. These quantities therefore depend on the source model as well as the lens mass model.
+
+However, the same modelling restrictions apply. A common-centre MGE may be poorly suited to separated
+star-forming clumps or multiple background galaxies. Changing the basis can add flexibility, but it also
+changes the model you are asking the data to constrain.
+
+If your aim is to reconstruct detailed, irregular source morphology, read the pixelization introduction as
+well. Follow the available source examples below to see how an MGE source is constructed.
 
 __Why Use Many Gaussians?__
 
@@ -57,30 +109,6 @@ Non-negative intensities avoid this cancellation. They do not, however, guarante
 you should still inspect the residuals and consider whether the chosen components can describe the observed
 structure.
 
-__Foreground Lens Light__
-
-In strong-lens imaging, foreground galaxy light can overlap the lensed arcs. Residuals from an inadequate
-foreground model can then interfere with the reconstruction of the background source.
-
-An MGE provides a flexible description of the foreground light. This can help separate it from the arcs,
-particularly when a simpler light profile leaves coherent residuals.
-
-The lens and source should still be considered together. A flexible foreground model can absorb emission that
-belongs to the source, so the quality of the total fit alone is not enough: inspect how the model allocates
-light between the components.
-
-__Source Light__
-
-An MGE can also describe a lensed source. Solving its intensities and fixing a suitable range of Gaussian
-widths can reduce the number of parameters explored by the non-linear search.
-
-However, the same modelling restrictions apply. A common-centre MGE may be poorly suited to separated
-star-forming clumps or multiple background galaxies. Changing the basis can add flexibility, but it also
-changes the model you are asking the data to constrain.
-
-If your aim is to reconstruct detailed, irregular source morphology, read the pixelization introduction as
-well. Follow the available source examples below to see how an MGE source is constructed.
-
 __Computational and Scientific Trade-offs__
 
 Evaluating many Gaussian components and solving their intensities adds work to each likelihood calculation. On
@@ -100,11 +128,11 @@ choices stated in each recipe.
 __Choose An Example__
 
 - [fit.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/fit.ipynb) — Apply a fixed model and inspect the fit.
-- [modeling.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/modeling.ipynb) — Fit the model with a non-linear search.
+- [modeling.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/modeling.ipynb) — Fit MGE lens light, then explore the MGE source example.
 - [likelihood_function.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/likelihood_function.ipynb) — Follow the likelihood calculation.
 - [simulator.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/simulator.ipynb) — Generate the example dataset.
 - [slam.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/slam.ipynb) — Follow the staged SLaM fit.
-- [source_science.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/source_science.ipynb) — Measure quantities from the reconstructed source.
+- [source_science.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/source_science.ipynb) — Calculate MGE source flux and magnification and examine model dependence.
 
 The links open notebook versions. The corresponding Python scripts are in this folder; run them from the workspace root.
 """
