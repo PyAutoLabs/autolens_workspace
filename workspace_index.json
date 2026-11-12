@@ -3541,8 +3541,8 @@
     ],
     "notebook": "notebooks/imaging/features/advanced/mass_stellar_dark/start_here.ipynb",
     "path": "scripts/imaging/features/advanced/mass_stellar_dark/start_here.py",
-    "summary": "A decomposed mass model separates the mass associated with stellar light from a dark-halo contribution. It provides an alternative to describing the total mass with a single profile.",
-    "title": "Features: Mass Stellar Dark"
+    "summary": "How much of a lens galaxy's mass is in stars, and how much is dark matter? A decomposed mass model combines the galaxy's observed light with the gravitational lensing of a background source to investigate that split.",
+    "title": "Features: Stellar + Dark Matter Mass Models"
   },
   {
     "contents": [
