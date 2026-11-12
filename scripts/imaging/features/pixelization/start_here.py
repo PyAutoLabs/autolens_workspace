@@ -2,8 +2,57 @@
 Features: Pixelization
 ======================
 
+Strong gravitational lensing stretches a background galaxy into arcs and multiple images. A pixelized source
+reconstruction uses those observations, together with a lens mass model, to infer what the galaxy looks like
+before lensing. It is particularly useful when the source has spiral arms, star-forming clumps or irregular
+structure that a simple smooth light profile struggles to describe.
+
+**Study the background galaxy.** Pixelized reconstructions are a key tool for source science: investigating
+galaxy structure and measuring properties such as intrinsic flux, size and lensing magnification. Start with
+[source_science.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/source_science.ipynb)
+to see how to analyse the reconstructed source, calculate flux and magnification, propagate uncertainties and
+export the reconstruction.
+
+Use a pixelization when you want to:
+
+- **Reconstruct the structure of a distant galaxy.** Describe extended, asymmetric or clumpy emission without
+  prescribing a Sersic profile or a common-centre Gaussian model. A suitable mesh can also describe spatially
+  separated components; sources at different redshifts require the appropriate separate source planes.
+- **Fit the lens mass with a flexible source model.** Reconstruct the source while testing lens mass models,
+  so an unnecessarily restrictive source shape does not have to account for the observed arcs. Flexibility
+  does not remove lens-model degeneracies or guarantee that the inferred mass is correct.
+- **Measure the source's properties.** Use the reconstructed brightness to estimate source flux, size and
+  magnification. The `source_science.py` example explains flux and magnification calculations, uncertainties
+  and exporting the reconstruction for further analysis.
+
+![Pixelization illustration: recover the galaxy behind the arcs](../../../../images/features/pixelization_illustration.png)
+
+Conceptual illustration, not observational data or a fitted reconstruction. The mesh and the galaxy on the
+right represent the same source brightness distribution; removing the mesh overlay does not add information.
+The spiral is one possible source morphology, and the detail recoverable from real data depends on the lensing
+geometry, instrumental resolution, noise and modelling assumptions.
+
+__A Scientific Example__
+
+[Nightingale, Dye & Massey (2018), AutoLens: automated modeling of a strong lens's light, mass, and
+source](https://doi.org/10.1093/mnras/sty1264) describes simultaneous lens-light and mass modelling with an
+adaptive pixelized source reconstruction, tested on simulated strong-lens images. It provides a scientific
+starting point for understanding how the source reconstruction and lens model are inferred together.
+
+__How the Source Is Reconstructed__
+
 A pixelization represents light using a mesh whose brightness values are solved during the fit. It provides a
 flexible alternative to describing all of the emission with a small collection of analytic profiles.
+
+For a trial lens mass model, the source mesh is mapped through gravitational lensing and the instrumental
+response to predict the data. A regularized linear inversion solves for the source brightness values. The
+non-linear search explores the model's remaining parameters, including the lens mass and, where free, the
+regularization parameters. The source is therefore reconstructed as part of lens modelling, rather than by
+applying a fixed image-unwarping filter after the fit.
+
+A smooth source may be adequately described by a Sersic profile or an MGE. Pixelization offers greater freedom
+for complex morphology, at the cost of choosing a mesh and regularization and solving a larger reconstruction
+problem. The following sections explain those choices and how to judge the result.
 
 __From a Mesh to the Data__
 
