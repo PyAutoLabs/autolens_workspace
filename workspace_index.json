@@ -3603,7 +3603,7 @@
     ],
     "notebook": "notebooks/imaging/features/advanced/operated_light_profile/start_here.ipynb",
     "path": "scripts/imaging/features/advanced/operated_light_profile/start_here.py",
-    "summary": "An operated light profile describes emission after an instrumental operation has already been included in the profile. For imaging, the common example is a profile that already describes the PSF-blurred appearance of compact emission.",
+    "summary": "Separate compact nuclear emission from the extended light of a lens galaxy. A bright unresolved nucleus can appear as a PSF-shaped feature spread across several pixels, overlapping the galaxy light that you need to model accurately. Operated light profiles describe that observed compact component directly, while ordinary extended light profiles continue to be convolved with the point-spread function (PSF).",
     "title": "Features: Operated Light Profile"
   },
   {
@@ -4198,7 +4198,7 @@
     ],
     "notebook": "notebooks/imaging/features/linear_light_profiles/start_here.ipynb",
     "path": "scripts/imaging/features/linear_light_profiles/start_here.py",
-    "summary": "A linear light profile has the same spatial form as an ordinary light profile, but its intensity is solved during each likelihood evaluation instead of being sampled by the non-linear search.",
+    "summary": "Linear light profiles simplify lens modeling by removing each light profile's intensity from the parameters explored by the non-linear search. Instead, the best-fitting intensities are solved together at every likelihood evaluation, conditional on the current lens model and light-profile shapes.",
     "title": "Features: Linear Light Profiles"
   },
   {
@@ -4920,7 +4920,7 @@
     ],
     "notebook": "notebooks/imaging/features/scaling_relation/start_here.ipynb",
     "path": "scripts/imaging/features/scaling_relation/start_here.py",
-    "summary": "A scaling relation connects the properties of a galaxy population through a shared rule, rather than giving every member a completely independent model. In these lensing examples, member luminosities help determine their mass normalizations.",
+    "summary": "A strong-lens model may need the collective gravitational contribution of many companion galaxies even when the data cannot constrain every companion mass independently. Scaling relations connect their mass normalizations to measured luminosities, representing the population through shared assumptions instead of a separate unconstrained mass for every member.",
     "title": "Features: Scaling Relation"
   },
   {
