@@ -2,40 +2,73 @@
 Subhalo Detection: Start Here
 =============================
 
-Strong gravitational lenses can be used to detect the presence of small-scale dark matter (DM) subhalos. This occurs
-when the DM subhalo overlaps the lensed source emission, and therefore gravitationally perturbs the observed image of
-the lensed source galaxy.
+**Search for dark matter through the distortions it leaves in lensed galaxies.**
 
-When a DM subhalo is not included in the lens model, residuals will be present in the fit to the data in the lensed
-source regions near the subhalo. By adding a DM subhalo to the lens model, these residuals can be reduced. Bayesian
-model comparison can then be used to quantify whether or not the improvement to the fit is significant enough to
-claim the detection of a DM subhalo.
+Small dark matter (DM) halos can perturb the shapes of strongly lensed arcs even when they contain too little
+starlight to be seen directly. **PyAutoLens** fits models with and without an additional halo to test whether the
+imaging favors its presence, and to infer its position and mass under the adopted halo model.
 
-The example illustrates DM subhalo detection with **PyAutoLens**.
+Use subhalo detection to:
+
+- **Search for otherwise invisible structure:** find candidate dark matter subhalos through their gravitational
+  effects on resolved arcs and Einstein rings.
+- **Investigate an arc anomaly:** test whether an apparent perturbation favors an additional mass component,
+  then assess whether that preference survives changes to the main lens and source models.
+- **Build a dark matter sample:** combine detections and calibrated non-detections with population modeling to
+  investigate the abundance of small halos and test dark matter models.
+
+For the last use case, pair detection with
+[sensitivity mapping](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb).
+Finding no subhalo becomes informative when you know which masses and positions the dataset could have detected.
+This detection script alone does not infer a dark matter particle model.
+
+**A scientific example:** [Nightingale et al., Scanning For Dark Matter Subhalos in Hubble Space Telescope Imaging
+of 54 Strong Lenses](https://arxiv.org/abs/2209.10566) applies this approach to a lens sample and demonstrates why
+flexibility in the main lens mass distribution matters when assessing candidates.
+
+![Conceptual illustration of a subhalo perturbing a lensed arc](../../../../../../images/features/subhalo_detection_illustration.png)
+
+*Conceptual illustration, not observational data. The local distortion is exaggerated for clarity. The dashed
+marker represents an inferred halo position; it is not light emitted by dark matter.*
+
+__From An Arc Perturbation To A Candidate__
+
+If a smooth lens model cannot reproduce a local perturbation, coherent residuals may remain near the affected
+arc. Adding a subhalo can improve the fit. Bayesian model comparison tests whether the data favor this additional
+component after accounting for the parameter space allowed by the priors.
+
+This example uses a pixelized source within the Source, (lens) Light and Mass (SLaM) pipelines. It fits the main
+lens and source, searches a grid of possible subhalo positions, then refines the preferred candidate. The sections
+below explain each stage and how to interpret the results.
+
+An evidence increase is conditional on the models being compared. A convincing dark matter interpretation also
+requires checks of the main lens mass distribution, source reconstruction and observational systematics. This
+example places the perturber at the lens redshift; halos elsewhere along the line of sight require a separate
+model and physical interpretation.
 
 __Contents__
 
-- **SLaM Pipelines:** The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pipelines which.
-- **Grid Search:** The second stage of the SUBHALO PIPELINE uses a grid-search of non-linear searches to determine the.
-- **Pixelized Source:** Detecting a DM subhalo requires the lens model to be sufficiently accurate that the residuals of.
-- **Model:** Compose the lens model fitted to the data.
-- **SOURCE LP PIPELINE:** Identical to `slam_start_here.py`, except.
-- **SOURCE PIX PIPELINE 1:** Identical to `slam_start_here.py`.
-- **SOURCE PIX PIPELINE 2:** Identical to `slam_start_here.py`.
-- **LIGHT LP PIPELINE:** Identical to `slam_start_here.py`, except.
-- **MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`.
-- **Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
-- **Redshifts:** The redshifts of the lens and source galaxies.
-- **Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
-- **SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
-- **Bayesian Evidence:** To determine if a DM subhalo was detected by the pipeline, we can compare the log of the Bayesian.
-- **Log Likelihood:** Different metrics can be used to inspect whether a DM subhalo was detected.
-- **Grid Search Result:** The grid search results have attributes which can be used to inspect the results of the DM subhalo.
+- **SLaM Pipelines:** Fit the main lens and source, search for a subhalo, and refine the candidate.
+- **Grid Search:** Explore possible subhalo positions and map the evidence preference.
+- **Pixelized Source:** Reconstruct complex source structure while testing small lensing perturbations.
+- **Model:** Identify the light, mass, subhalo and source components fitted in this example.
+- **SOURCE LP PIPELINE:** Initialize the lens and source using light profiles.
+- **SOURCE PIX PIPELINE 1:** Build the initial pixelized reconstruction and adapt image.
+- **SOURCE PIX PIPELINE 2:** Refine the pixelized source model.
+- **LIGHT LP PIPELINE:** Refine the lens light with the reconstructed source.
+- **MASS TOTAL PIPELINE:** Fit the main lens mass distribution.
+- **Settings AutoFit:** Configure searches, output paths and parallelization.
+- **Redshifts:** Specify the lens and source redshifts.
+- **Mesh Shape:** Set the source mesh resolution before modeling.
+- **SLaM Pipeline:** Run the stages in sequence.
+- **Bayesian Evidence:** Compare models with and without the subhalo.
+- **Log Likelihood:** Inspect the improvement in fit quality alongside the evidence.
+- **Grid Search Result:** Inspect evidence, mass and position information across the search grid.
 
 __SLaM Pipelines__
 
 The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pipelines which automate the fitting
-of complex lens models. The SLaM pipelines are used for all DM subhalo detection analyses. Therefore
+of complex lens models. This example uses the SLaM pipelines for DM subhalo detection. Therefore
 you should be familiar with the SLaM pipelines before performing DM subhalo detection yourself. If you are unfamiliar
 with the SLaM pipelines, checkout the
 example `autolens_workspace/notebooks/guides/modeling/slam_start_here`.
@@ -59,11 +92,11 @@ The second stage of the SUBHALO PIPELINE uses a grid-search of non-linear search
 evidence model with a DM subhalo. This grid search confines each DM subhalo in the lens model to a small 2D section
 of the image plane via priors on its (y,x) centre. The reasons for this are as follows:
 
- - Lens models including a DM subhalo often have a multi-model parameter space. This means there are multiple lens
+ - Lens models including a DM subhalo often have a multi-modal parameter space. This means there are multiple lens
    models with high likelihood solutions, each of which place the DM subhalo in different (y,x) image-plane location.
-   Multi-modal parameter spaces are synonomously difficult for non-linear searches to fit, and often produce
-   incorrect or inefficient fitting. The grid search breaks the multi-modal parameter space into many single-peaked
-   parameter spaces, making the model-fitting faster and more reliable.
+   Multi-modal parameter spaces can be difficult for non-linear searches to fit, and often produce
+   incorrect or inefficient fitting. The grid search divides this problem into smaller spatial regions, helping the searches explore competing
+   solutions more reliably. Individual cells can still contain multiple solutions.
 
  - By inferring how placing a DM subhalo at different locations in the image-plane changes the Bayesian evidence, we
    map out spatial information on where a DM subhalo is detected. This can help our interpretation of the DM subhalo
@@ -74,10 +107,11 @@ __Pixelized Source__
 Detecting a DM subhalo requires the lens model to be sufficiently accurate that the residuals of the source's light
 are at a level where the subhalo's perturbing lensing effects can be detected.
 
-This requires the source reconstruction to be performed using a pixelized source, as this provides a more detailed
-reconstruction of the source's light than fits using light profiles.
+For resolved sources with complex structure, a pixelized reconstruction can capture details that a simple
+light-profile model misses. This reduces the risk of attributing source-model mismatch to a subhalo. Pixelization
+and regularization choices must still be tested; a flexible source model does not by itself establish a detection.
 
-This example therefore using a pixelized source and the corresponding SLaM pipelines.
+This example therefore uses a pixelized source and the corresponding SLaM pipelines.
 
 __Model__
 
@@ -833,14 +867,15 @@ __Bayesian Evidence__
 To determine if a DM subhalo was detected by the pipeline, we can compare the log of the Bayesian evidences of the
 model-fits performed with and without a subhalo.
 
-The following scale describes how different log evidence increases correspond to difference detection significances:
+The following scale is a practical guide to the preference between these models, not a universal detection
+significance or a conversion to Gaussian sigma. Its interpretation depends on the model choices and priors:
 
  - Negative log evidence increase: No detection.
  - Log evidence increase between 0 and 3: No detection.
  - Log evidence increase between 3 and 5: Weak evidence, should consider it a non-detection.
  - Log evidence increase between 5 and 10: Medium evidence, but still inconclusive.
- - Log evidence increase between 10 and 20: Strong evidence, consider it a detection.
- - Log evidence increase > 20: Very strong evidence, definitive detection.
+ - Log evidence increase between 10 and 20: Strong preference for the subhalo model; investigate robustness.
+ - Log evidence increase > 20: Very strong preference for the subhalo model; systematic checks remain necessary.
 
 Lets inspect the log evidence increase for the model-fit performed in this example:
 """
@@ -856,13 +891,16 @@ __Log Likelihood__
 
 Different metrics can be used to inspect whether a DM subhalo was detected.
 
-The Bayesian evidence is the most rigorous because it penalizes models based on their complexity. An alternative
+The Bayesian evidence averages the likelihood over the parameter priors, accounting for fit quality and the
+volume of parameter space that achieves it. An alternative
 goodness of fit is the `log_likelihood`, which is directly related to the residuals of the model or the chi-squared
 value.
 
 The benefit of the log likelihood is it is a straight forward value indicating how well a model fitted the data.
-The `log_likelihood` of the lens model without a subhalo must always be less than the model with a subhalo. If
-this is not the case, something must have gone wrong with one of the model-fits.
+If the subhalo model contains the smooth model as a limiting case and all other settings are identical, its
+maximum likelihood cannot be lower in principle. Finite searches, restricted priors and differences between
+pipeline stages can affect the comparison in practice. A lower recovered likelihood warrants checking convergence
+and model settings; an improvement alone does not establish a subhalo detection.
 """
 log_likelihood_no_subhalo = mass_result.samples.log_likelihood
 log_likelihood_with_subhalo = result_with_subhalo.samples.log_likelihood
