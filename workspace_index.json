@@ -3939,7 +3939,7 @@
     ],
     "notebook": "notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb",
     "path": "scripts/imaging/features/advanced/subhalo/sensitivity/start_here.py",
-    "summary": "Bayesian model comparison allows us to take a dataset, fit it with multiple models and use the Bayesian evidence to quantify which model objectively gives the best-fit following the principles of Occam's Razor.",
+    "summary": "**What could this lens have revealed, even when no subhalo was found?**",
     "title": "Sensitivity Mapping: Start Here"
   },
   {
