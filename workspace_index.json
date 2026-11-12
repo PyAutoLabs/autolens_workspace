@@ -3734,7 +3734,7 @@
     ],
     "notebook": "notebooks/imaging/features/advanced/shapelets/start_here.ipynb",
     "path": "scripts/imaging/features/advanced/shapelets/start_here.py",
-    "summary": "Shapelets describe light as a weighted combination of basis functions. Unlike a single smooth light profile, the basis contains functions with different spatial structures, allowing their sum to describe more complicated galaxy morphology.",
+    "summary": "Shapelets provide a flexible model of galaxy light when a single smooth profile cannot describe the structure seen in the data. In strong lensing, a key use is source science: reconstructing the background galaxy from its distorted, magnified images to investigate its resolved morphology.",
     "title": "Features: Shapelets"
   },
   {
