@@ -3374,8 +3374,8 @@
     ],
     "notebook": "notebooks/imaging/features/advanced/los_halos/start_here.ipynb",
     "path": "scripts/imaging/features/advanced/los_halos/start_here.py",
-    "summary": "Matter along the line of sight can perturb a strong lens even when it is not at the main lens redshift. These simulations include a population of halos on different planes and trace the source light through the resulting geometry.",
-    "title": "Features: Los Halos"
+    "summary": "Strong gravitational lenses can reveal small dark matter halos through the distortions they produce in resolved arcs and Einstein rings, even when those halos contain no visible stars. Some halos orbit the main lens galaxy; others lie elsewhere between us and the background source. The `los_halos` feature simulates this second population and its effect on lensed images.",
+    "title": "Features: Line-of-Sight Halos"
   },
   {
     "contents": [
