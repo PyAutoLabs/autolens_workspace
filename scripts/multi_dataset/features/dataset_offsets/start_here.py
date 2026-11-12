@@ -2,8 +2,23 @@
 Features: Dataset Offsets
 =========================
 
-Observations of the same object may have small relative coordinate offsets. Joint modeling can account for
-those offsets while fitting the physical model shared by the datasets.
+Fit relative astrometric shifts when several observations of the same lens are not perfectly registered. This helps prevent a small alignment mismatch from being interpreted as a change in source structure or lens geometry.
+
+__Scientific Use Cases__
+
+- Combine observations taken with different instruments or at different epochs.
+- Test whether apparent inter-band source displacements persist after accounting for alignment uncertainty.
+- Retain per-dataset coordinate corrections while fitting a shared physical model.
+
+__This Dataset and Lens Regime__
+
+Decide explicitly which parameters are shared, which vary by dataset and whether the fits are simultaneous
+or sequential. Each dataset retains its own response and uncertainty treatment. Inspect individual residuals
+alongside the combined result; sharing a lens does not require identical emission in every observation.
+
+![dataset offsets](../../../../images/new_user_guide/dataset_types.png)
+
+Reused new-user-guide schematic. The interferometer panel shows sampling locations, not visibility amplitudes or phases; cube slices are spectral channels. These are conceptual dataset representations, not measurements.
 
 __Relative Alignment__
 
@@ -19,11 +34,6 @@ The simulator establishes a known offset and the modeling example shows which da
 and which offsets are fitted. Retain the coordinate order, units and priors alongside the code. After fitting,
 inspect each dataset in its own coordinates as well as considering the joint result.
 
-__In This Folder__
-
-These examples connect several observations. Read which parameters are shared, which are dataset-specific and
-whether the fits are simultaneous or sequential. The per-dataset likelihoods still retain their own response
-and noise treatment.
 
 __Choose An Example__
 

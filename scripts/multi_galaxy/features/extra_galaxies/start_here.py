@@ -2,8 +2,24 @@
 Features: Extra Galaxies
 ========================
 
-A target rarely occupies an otherwise empty field. Nearby galaxies may contribute light inside the region
-being fitted, and a lensing model may also need to account for their deflection of the light rays.
+Include neighbouring galaxies whose mass or emission affects the lens analysis. A companion can alter the inferred source and main lens even when its own mass is poorly constrained; deciding which contributions matter is part of building the scientific model.
+
+__Scientific Use Cases__
+
+- Account for companion deflections near informative arcs or multiple images.
+- Separate contaminating light where the fitted observable contains that light.
+- Test the stability of lens and source inference when the surrounding galaxy population is represented explicitly.
+
+__This Dataset and Lens Regime__
+
+This folder treats imaging with multiple important deflectors. Include all of them in the ray tracing and
+keep their light separate from their mass contributions. The combined deflection can be better constrained
+than the allocation of mass between galaxies; examine that allocation when interpreting source properties
+or small residual structures.
+
+![extra galaxies](../../../../images/features/extra_galaxies.png)
+
+Conceptual illustration. Visible companions and schematic mass contributions are illustrative; a companion is not a mass detection merely because it appears in the image. The schematic illustrates the feature; retain all deflectors in this multi-galaxy example.
 
 __Deciding What to Include__
 
@@ -25,11 +41,6 @@ parameters can help constrain a fit, but also introduces assumptions about the c
 Use the simulator to understand the example field, then follow the modeling example to add the neighbours
 explicitly. In larger lens systems, distinguish the main deflectors from the additional companion population.
 
-__In This Folder__
-
-The examples contain multiple main lens galaxies, rather than a single dominant deflector with only small
-companions. Follow how the feature is applied to each galaxy and which parameters are shared. A group halo is
-not implicit in this setup.
 
 __Choose An Example__
 

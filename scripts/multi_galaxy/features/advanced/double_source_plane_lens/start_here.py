@@ -2,8 +2,24 @@
 Features: Double Source Plane Lens
 ==================================
 
-A double source-plane lens contains background sources at two different redshifts behind the foreground
-deflectors. Their light is traced through the relevant sequence of planes to predict the observed image.
+Use sources at different redshifts to constrain one foreground lens system through more than one lensing geometry. Modeling the planes together lets the nearer source also act as a deflector when it carries mass.
+
+__Scientific Use Cases__
+
+- Reconstruct two background sources without assigning their arcs to the same redshift plane.
+- Test a mass model against multiple source-plane constraints.
+- Build the multi-plane model needed for applications that study geometry or cosmology; a cosmological inference is an additional analysis, not an automatic output of this example.
+
+__This Dataset and Lens Regime__
+
+This folder treats imaging with multiple important deflectors. Include all of them in the ray tracing and
+keep their light separate from their mass contributions. The combined deflection can be better constrained
+than the allocation of mass between galaxies; examine that allocation when interpreting source properties
+or small residual structures.
+
+![double source plane lens](../../../../../images/features/double_source_plane_illustration.png)
+
+Conceptual illustration. The geometry is schematic, not to scale; the example's actual redshifts and mass assignments determine the ray tracing. The schematic illustrates the feature; retain all deflectors in this multi-galaxy example.
 
 __Keep the Planes Distinct__
 
@@ -23,11 +39,6 @@ they do not replace the need to check the plane assignments.
 Multiple deflectors in group or multi-galaxy examples add components within this geometry. Preserve those
 distinctions when adapting a single-deflector example.
 
-__In This Folder__
-
-The examples contain multiple main lens galaxies, rather than a single dominant deflector with only small
-companions. Follow how the feature is applied to each galaxy and which parameters are shared. A group halo is
-not implicit in this setup.
 
 __Choose An Example__
 

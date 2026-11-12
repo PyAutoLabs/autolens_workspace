@@ -2,8 +2,23 @@
 Features: Strong Lensing
 ========================
 
-Strong and weak lensing probe different parts of a mass distribution. A combined analysis connects central
-strongly lensed features with the wider weak-lensing field through a shared mass model.
+Connect central strong-lensing constraints with the wider weak-lensing field to study a mass distribution over a larger range of radii. Each observable retains its own uncertainty model while constraining shared mass components.
+
+__Scientific Use Cases__
+
+- Investigate the radial mass distribution from central arcs to larger angular scales.
+- Test whether a common mass model can explain both strong and weak lensing.
+- Build toward analyses of observed cluster fields, including the separate A2744 workflow supplied here.
+
+__This Dataset and Lens Regime__
+
+The controlled simulation and the observed A2744 example have different preparation requirements. Follow
+each script's coordinate conventions, background-source selection, uncertainty treatment and mass assumptions;
+the simulation is not a complete model of a real cluster field.
+
+![strong lensing](../../../../images/features/strong_weak_lensing.png)
+
+Conceptual illustration. The panels illustrate different angular scales. Weak-lensing information is statistical, and the dashed mass contours are schematic.
 
 __Different Data, Shared Mass__
 
@@ -22,10 +37,6 @@ and assumptions.
 Keep the real-data preparation and dataset-specific reasoning in that example. A model suitable for the
 controlled simulation is not automatically a complete description of a real cluster field.
 
-__In This Folder__
-
-The simulated examples and the observed-system example have different data-preparation requirements. Follow
-the specific script’s coordinate conventions, data selection and model assumptions.
 
 __Choose An Example__
 

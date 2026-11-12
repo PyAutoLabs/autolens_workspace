@@ -439,7 +439,7 @@
     ],
     "notebook": "notebooks/group/features/advanced/double_source_plane_lens/start_here.ipynb",
     "path": "scripts/group/features/advanced/double_source_plane_lens/start_here.py",
-    "summary": "A double source-plane lens contains background sources at two different redshifts behind the foreground deflectors. Their light is traced through the relevant sequence of planes to predict the observed image.",
+    "summary": "Use sources at different redshifts to constrain one foreground lens system through more than one lensing geometry. Modeling the planes together lets the nearer source also act as a deflector when it carries mass.",
     "title": "Features: Double Source Plane Lens"
   },
   {
@@ -606,7 +606,7 @@
     ],
     "notebook": "notebooks/group/features/advanced/mass_stellar_dark/start_here.ipynb",
     "path": "scripts/group/features/advanced/mass_stellar_dark/start_here.py",
-    "summary": "A decomposed mass model separates the mass associated with stellar light from a dark-halo contribution. It provides an alternative to describing the total mass with a single profile.",
+    "summary": "Investigate how the lensing mass is divided between stars and dark matter by linking a stellar mass component to the observed light and fitting an additional dark-halo component. The lensing constraints act on their combined deflection.",
     "title": "Features: Mass Stellar Dark"
   },
   {
@@ -658,7 +658,7 @@
     ],
     "notebook": "notebooks/group/features/advanced/operated_light_profile/start_here.ipynb",
     "path": "scripts/group/features/advanced/operated_light_profile/start_here.py",
-    "summary": "An operated light profile describes emission after an instrumental operation has already been included in the profile. For imaging, the common example is a profile that already describes the PSF-blurred appearance of compact emission.",
+    "summary": "Separate compact emission from the extended light around it using a profile whose instrumental meaning is explicit. For imaging, an operated profile describes a component that already includes PSF blurring; this is separate from whether its intensity is solved linearly.",
     "title": "Features: Operated Light Profile"
   },
   {
@@ -706,7 +706,7 @@
     ],
     "notebook": "notebooks/group/features/advanced/shapelets/start_here.ipynb",
     "path": "scripts/group/features/advanced/shapelets/start_here.py",
-    "summary": "Shapelets describe light as a weighted combination of basis functions. Unlike a single smooth light profile, the basis contains functions with different spatial structures, allowing their sum to describe more complicated galaxy morphology.",
+    "summary": "Describe structured source or galaxy light with a flexible basis of shapelets. This offers an alternative to a small set of smooth profiles when morphology matters to the lens fit and to the science inferred from the source.",
     "title": "Features: Shapelets"
   },
   {
@@ -776,7 +776,7 @@
     ],
     "notebook": "notebooks/group/features/advanced/sky_background/start_here.ipynb",
     "path": "scripts/group/features/advanced/sky_background/start_here.py",
-    "summary": "The background contributes light across an image in addition to the galaxy or lens being studied. If a background contribution remains in the data, it can be included in the model rather than attributed to the target's emission.",
+    "summary": "Fit an uncertain sky level alongside the galaxies and lensed source, especially when faint extended light is important. The background and galaxy outskirts can trade off, affecting inferred sizes, profile shapes and total light.",
     "title": "Features: Sky Background"
   },
   {
@@ -794,7 +794,7 @@
     "cross_refs": [],
     "notebook": "notebooks/group/features/advanced/subhalo/detect/start_here.ipynb",
     "path": "scripts/group/features/advanced/subhalo/detect/start_here.py",
-    "summary": "Strong gravitational lenses can be used to detect the presence of small-scale dark matter (DM) subhalos. This occurs when the DM subhalo overlaps the lensed source emission, and therefore gravitationally perturbs the observed image of the lensed source galaxy.",
+    "summary": "Search for a dark matter halo through its effect on lensed emission, rather than through visible starlight. Compare a carefully constructed smooth lens/source model with alternatives containing a perturber, then assess whether a candidate survives changes to the baseline model.",
     "title": "Subhalo Detection: Group"
   },
   {
@@ -828,7 +828,7 @@
     ],
     "notebook": "notebooks/group/features/advanced/subhalo/start_here.ipynb",
     "path": "scripts/group/features/advanced/subhalo/start_here.py",
-    "summary": "A dark matter subhalo can perturb lensed emission without supplying visible light of its own. The effect depends on the halo properties, its location relative to the arcs and the larger lens model.",
+    "summary": "Investigate small dark matter halos through their perturbations of lensed emission. Separate the search for a candidate in the data from the calibration of which halos the same analysis could recover.",
     "title": "Features: Subhalo"
   },
   {
@@ -884,7 +884,7 @@
     ],
     "notebook": "notebooks/group/features/group_halo/start_here.ipynb",
     "path": "scripts/group/features/group_halo/start_here.py",
-    "summary": "A group-scale lens may be described by the mass of its individual galaxies, by those galaxies plus a shared group halo, or by other suitable mass components. A shared halo is a modelling choice rather than a requirement imposed by the name \u201cgroup\u201d.",
+    "summary": "Test whether a group-scale lens requires a common mass component in addition to its member galaxies. The aim is to distinguish alternative allocations of the total lensing mass, not to add a halo simply because the system is called a group.",
     "title": "Features: Group Halo"
   },
   {
@@ -983,7 +983,7 @@
     ],
     "notebook": "notebooks/group/features/linear_light_profiles/start_here.ipynb",
     "path": "scripts/group/features/linear_light_profiles/start_here.py",
-    "summary": "A linear light profile has the same spatial form as an ordinary light profile, but its intensity is solved during each likelihood evaluation instead of being sampled by the non-linear search.",
+    "summary": "Solve component brightnesses during the fit instead of asking the non-linear search to sample a separate intensity for every light profile. Brightness is recalculated at every trial lens and light geometry: solved does not mean fixed.",
     "title": "Features: Linear Light Profiles"
   },
   {
@@ -1133,7 +1133,7 @@
     ],
     "notebook": "notebooks/group/features/multi_gaussian_expansion/start_here.ipynb",
     "path": "scripts/group/features/multi_gaussian_expansion/start_here.py",
-    "summary": "A multi Gaussian expansion (MGE) represents a galaxy's light as the sum of many Gaussian profiles. Each Gaussian describes emission on a particular spatial scale; together, they can provide a flexible model of the galaxy.",
+    "summary": "Use a multi-Gaussian expansion (MGE) to describe foreground galaxy light flexibly and to model the lensed background source. Many Gaussian components provide a range of spatial scales while their intensities can be solved during each likelihood evaluation.",
     "title": "Features: Multi Gaussian Expansion"
   },
   {
@@ -1213,13 +1213,15 @@
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/no_lens_light/modeling.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/no_lens_light/simulator.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/no_lens_light/slam.ipynb",
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/source_science.ipynb",
       "modeling.py",
       "simulator.py",
-      "slam.py"
+      "slam.py",
+      "source_science.py"
     ],
     "notebook": "notebooks/group/features/no_lens_light/start_here.ipynb",
     "path": "scripts/group/features/no_lens_light/start_here.py",
-    "summary": "Some lensing datasets contain no visible foreground lens light. This may be a property of the observation or a consequence of subtracting a foreground-light model before the lens analysis.",
+    "summary": "Fit the lens mass and background source when foreground galaxy emission is negligible in the fitted pixels or has already been subtracted. Omitting foreground light leaves all required gravitational deflectors in the model.",
     "title": "Features: No Lens Light"
   },
   {
@@ -1399,7 +1401,7 @@
     ],
     "notebook": "notebooks/group/features/pixelization/start_here.ipynb",
     "path": "scripts/group/features/pixelization/start_here.py",
-    "summary": "A pixelization represents light using a mesh whose brightness values are solved during the fit. It provides a flexible alternative to describing all of the emission with a small collection of analytic profiles.",
+    "summary": "Reconstruct the background galaxy on a source-plane mesh when simple light profiles do not capture its morphology. Pixelization is a key source-science feature: it supports measurements of irregular emission while the lens model maps that emission into the observed data.",
     "title": "Features: Pixelization"
   },
   {
@@ -1536,7 +1538,7 @@
     ],
     "notebook": "notebooks/group/features/scaling_relation/start_here.ipynb",
     "path": "scripts/group/features/scaling_relation/start_here.py",
-    "summary": "A scaling relation connects the properties of a galaxy population through a shared rule, rather than giving every member a completely independent model. In these lensing examples, member luminosities help determine their mass normalizations.",
+    "summary": "Represent a companion population through a luminosity-based mass prescription when the lensing data cannot constrain every galaxy independently. The relation reduces independent freedom by adding an explicit population assumption.",
     "title": "Features: Scaling Relation"
   },
   {
@@ -5293,7 +5295,7 @@
     ],
     "notebook": "notebooks/interferometer/features/advanced/operated_light_profile/start_here.ipynb",
     "path": "scripts/interferometer/features/advanced/operated_light_profile/start_here.py",
-    "summary": "An operated light profile describes emission after an instrumental operation has already been included in the profile. For imaging, the common example is a profile that already describes the PSF-blurred appearance of compact emission.",
+    "summary": "Model compact emission alongside extended light in an interferometer fit. The operated profile still contributes a sky brightness distribution that must be transformed into visibilities; the imaging meaning of an already PSF-blurred profile should not be transferred to a synthesized beam.",
     "title": "Features: Operated Light Profile"
   },
   {
@@ -5339,7 +5341,7 @@
     ],
     "notebook": "notebooks/interferometer/features/advanced/potential_correction/start_here.ipynb",
     "path": "scripts/interferometer/features/advanced/potential_correction/start_here.py",
-    "summary": "This example performs gravitational imaging on interferometer data: pixelized corrections $\\delta\\psi$ to the lensing potential are reconstructed jointly with the pixelized source, revealing mass structure (e.g. dark subhaloes) the smooth lens model omits, as a convergence-correction map $\\delta\\kappa = \\frac{1}{2}\\nabla^2\\delta\\psi$.",
+    "summary": "Investigate mass structure omitted by a smooth lens model by reconstructing pixelized corrections to its potential alongside the source. For interferometer data, the comparison is made in visibility space.",
     "title": "Feature: Potential Correction (Gravitational Imaging)"
   },
   {
@@ -5405,7 +5407,7 @@
     ],
     "notebook": "notebooks/interferometer/features/advanced/shapelets/start_here.ipynb",
     "path": "scripts/interferometer/features/advanced/shapelets/start_here.py",
-    "summary": "Shapelets describe light as a weighted combination of basis functions. Unlike a single smooth light profile, the basis contains functions with different spatial structures, allowing their sum to describe more complicated galaxy morphology.",
+    "summary": "Describe structured source or galaxy light with a flexible basis of shapelets. This offers an alternative to a small set of smooth profiles when morphology matters to the lens fit and to the science inferred from the source.",
     "title": "Features: Shapelets"
   },
   {
@@ -5431,15 +5433,18 @@
     ],
     "notebook": "notebooks/interferometer/features/advanced/subhalo/detect/start_here.ipynb",
     "path": "scripts/interferometer/features/advanced/subhalo/detect/start_here.py",
-    "summary": "Strong gravitational lenses can be used to detect the presence of small-scale dark matter (DM) subhalos. This occurs when the DM subhalo overlaps the lensed source emission, and therefore gravitationally perturbs the observed image of the lensed source galaxy.",
+    "summary": "Search for a dark matter halo through its effect on lensed emission, rather than through visible starlight. Compare a carefully constructed smooth lens/source model with alternatives containing a perturber, then assess whether a candidate survives changes to the baseline model.",
     "title": "Subhalo Detection: Start Here"
   },
   {
     "contents": [],
-    "cross_refs": [],
+    "cross_refs": [
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb",
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/subhalo/detect/start_here.ipynb"
+    ],
     "notebook": "notebooks/interferometer/features/advanced/subhalo/sensitivity/start_here.ipynb",
     "path": "scripts/interferometer/features/advanced/subhalo/sensitivity/start_here.py",
-    "summary": "Sensitivity mapping tests how an analysis responds to injected subhalos. It repeats a controlled recovery experiment across positions or other halo properties to characterize which signals the chosen setup can distinguish.",
+    "summary": "Calibrate which dark matter halos an interferometer dataset and analysis could recover. Injection-and-recovery experiments give the context needed to interpret a non-detection or to construct selection information for halo-population science.",
     "title": "Sensitivity"
   },
   {
@@ -5470,7 +5475,7 @@
     ],
     "notebook": "notebooks/interferometer/features/advanced/subhalo/start_here.ipynb",
     "path": "scripts/interferometer/features/advanced/subhalo/start_here.py",
-    "summary": "A dark matter subhalo can perturb lensed emission without supplying visible light of its own. The effect depends on the halo properties, its location relative to the arcs and the larger lens model.",
+    "summary": "Investigate small dark matter halos through their perturbations of lensed emission. Separate the search for a candidate in the data from the calibration of which halos the same analysis could recover.",
     "title": "Features: Subhalo"
   },
   {
@@ -5703,7 +5708,6 @@
       "autolens_workspace/scripts/multi_dataset/modeling.py",
       "data_preparation.py",
       "delaunay.py",
-      "interferometer/start_here.py",
       "likelihood_function.py",
       "modeling.py",
       "modeling_array_free.py",
@@ -5713,7 +5717,7 @@
     ],
     "notebook": "notebooks/interferometer/features/datacube/start_here.ipynb",
     "path": "scripts/interferometer/features/datacube/start_here.py",
-    "summary": "A datacube is a stack of interferometer observations of the same lens taken across many spectral channels \u2014 for example, an ALMA observation of a CO emission line in a high-redshift lensed galaxy, where each channel records visibilities at a slightly different frequency. The lens galaxy is the same in every channel, but the source's emission-line morphology varies across the cube: bright in channels close to the line peak, faint in channels at the line wings, and shifting in shape if the source has internal velocity structure.",
+    "summary": "Reconstruct a lensed galaxy across a spectral line while fitting a shared foreground lens. Different channels can trace different emitting regions, making datacube modeling useful for source science of molecular gas and other line-emitting material.",
     "title": "Start Here: Datacube"
   },
   {
@@ -5809,7 +5813,7 @@
     ],
     "notebook": "notebooks/interferometer/features/extra_galaxies/start_here.ipynb",
     "path": "scripts/interferometer/features/extra_galaxies/start_here.py",
-    "summary": "A target rarely occupies an otherwise empty field. Nearby galaxies may contribute light inside the region being fitted, and a lensing model may also need to account for their deflection of the light rays.",
+    "summary": "Include neighbouring galaxies whose mass or emission affects the lens analysis. A companion can alter the inferred source and main lens even when its own mass is poorly constrained; deciding which contributions matter is part of building the scientific model.",
     "title": "Features: Extra Galaxies"
   },
   {
@@ -5942,7 +5946,7 @@
     ],
     "notebook": "notebooks/interferometer/features/linear_light_profiles/start_here.ipynb",
     "path": "scripts/interferometer/features/linear_light_profiles/start_here.py",
-    "summary": "A linear light profile has the same spatial form as an ordinary light profile, but its intensity is solved during each likelihood evaluation instead of being sampled by the non-linear search.",
+    "summary": "Solve component brightnesses during the fit instead of asking the non-linear search to sample a separate intensity for every light profile. Brightness is recalculated at every trial lens and light geometry: solved does not mean fixed.",
     "title": "Features: Linear Light Profiles"
   },
   {
@@ -6069,14 +6073,16 @@
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/multi_gaussian_expansion/likelihood_function.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/multi_gaussian_expansion/modeling.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/multi_gaussian_expansion/slam.ipynb",
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/source_science.ipynb",
       "fit.py",
       "likelihood_function.py",
       "modeling.py",
-      "slam.py"
+      "slam.py",
+      "source_science.py"
     ],
     "notebook": "notebooks/interferometer/features/multi_gaussian_expansion/start_here.ipynb",
     "path": "scripts/interferometer/features/multi_gaussian_expansion/start_here.py",
-    "summary": "A multi Gaussian expansion (MGE) represents a galaxy's light as the sum of many Gaussian profiles. Each Gaussian describes emission on a particular spatial scale; together, they can provide a flexible model of the galaxy.",
+    "summary": "Use a multi-Gaussian expansion (MGE) to describe foreground galaxy light flexibly and to model the lensed background source. Many Gaussian components provide a range of spatial scales while their intensities can be solved during each likelihood evaluation.",
     "title": "Features: Multi Gaussian Expansion"
   },
   {
@@ -6325,7 +6331,7 @@
     ],
     "notebook": "notebooks/interferometer/features/pixelization/start_here.ipynb",
     "path": "scripts/interferometer/features/pixelization/start_here.py",
-    "summary": "A pixelization represents light using a mesh whose brightness values are solved during the fit. It provides a flexible alternative to describing all of the emission with a small collection of analytic profiles.",
+    "summary": "Reconstruct the background galaxy on a source-plane mesh when simple light profiles do not capture its morphology. Pixelization is a key source-science feature: it supports measurements of irregular emission while the lens model maps that emission into the observed data.",
     "title": "Features: Pixelization"
   },
   {
@@ -6461,7 +6467,7 @@
     ],
     "notebook": "notebooks/interferometer/features/scaling_relation/start_here.ipynb",
     "path": "scripts/interferometer/features/scaling_relation/start_here.py",
-    "summary": "A scaling relation connects the properties of a galaxy population through a shared rule, rather than giving every member a completely independent model. In these lensing examples, member luminosities help determine their mass normalizations.",
+    "summary": "Represent a companion population through a luminosity-based mass prescription when the lensing data cannot constrain every galaxy independently. The relation reduces independent freedom by adding an explicit population assumption.",
     "title": "Features: Scaling Relation"
   },
   {
@@ -6704,7 +6710,7 @@
     ],
     "notebook": "notebooks/multi_dataset/features/dataset_offsets/start_here.ipynb",
     "path": "scripts/multi_dataset/features/dataset_offsets/start_here.py",
-    "summary": "Observations of the same object may have small relative coordinate offsets. Joint modeling can account for those offsets while fitting the physical model shared by the datasets.",
+    "summary": "Fit relative astrometric shifts when several observations of the same lens are not perfectly registered. This helps prevent a small alignment mismatch from being interpreted as a change in source structure or lens geometry.",
     "title": "Features: Dataset Offsets"
   },
   {
@@ -6757,7 +6763,7 @@
     ],
     "notebook": "notebooks/multi_dataset/features/imaging_and_interferometer/start_here.ipynb",
     "path": "scripts/multi_dataset/features/imaging_and_interferometer/start_here.py",
-    "summary": "Imaging and interferometer observations can be fitted together using the parameters that their physical models share. Each dataset still requires the forward calculation appropriate to its measurement.",
+    "summary": "Combine resolved imaging with interferometer visibilities to constrain one lens while allowing the observed emission to differ. Optical or near-infrared light and radio or submillimetre emission can reveal complementary source structure.",
     "title": "Features: Imaging And Interferometer"
   },
   {
@@ -6787,7 +6793,7 @@
     ],
     "notebook": "notebooks/multi_dataset/features/imaging_and_point_source/start_here.ipynb",
     "path": "scripts/multi_dataset/features/imaging_and_point_source/start_here.py",
-    "summary": "Extended arcs and point-source measurements provide different constraints on a shared lens model. A joint analysis connects them through the mass distribution while retaining the appropriate likelihood for each observable.",
+    "summary": "Combine extended lensed emission with compact-source measurements to constrain a common lens mass model. Arcs, point-image positions and available time delays supply different information about the same system.",
     "title": "Features: Imaging And Point Source"
   },
   {
@@ -6819,7 +6825,7 @@
     ],
     "notebook": "notebooks/multi_dataset/features/one_by_one/start_here.ipynb",
     "path": "scripts/multi_dataset/features/one_by_one/start_here.py",
-    "summary": "Multi-dataset modeling does not always require fitting every observation simultaneously. A sequential approach fits one dataset first, then uses the result to guide the analysis of another.",
+    "summary": "Use one observation to initialize the analysis of another, or compare datasets through separate fits before a joint analysis. Sequential modeling is useful for organizing multi-band lens and source inference, provided the transferred information is made explicit.",
     "title": "Features: One By One"
   },
   {
@@ -6865,14 +6871,16 @@
   {
     "contents": [],
     "cross_refs": [
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/source_science.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/pixelization/modeling.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/pixelization/simulator.ipynb",
       "modeling.py",
-      "simulator.py"
+      "simulator.py",
+      "source_science.py"
     ],
     "notebook": "notebooks/multi_dataset/features/pixelization/start_here.ipynb",
     "path": "scripts/multi_dataset/features/pixelization/start_here.py",
-    "summary": "A pixelization represents light using a mesh whose brightness values are solved during the fit. It provides a flexible alternative to describing all of the emission with a small collection of analytic profiles.",
+    "summary": "Reconstruct the background galaxy on a source-plane mesh when simple light profiles do not capture its morphology. Pixelization is a key source-science feature: it supports measurements of irregular emission while the lens model maps that emission into the observed data.",
     "title": "Features: Pixelization"
   },
   {
@@ -6921,7 +6929,7 @@
     ],
     "notebook": "notebooks/multi_dataset/features/same_wavelength/start_here.ipynb",
     "path": "scripts/multi_dataset/features/same_wavelength/start_here.py",
-    "summary": "Repeated observations at the same wavelength can constrain a common light model while retaining their individual instrumental responses and noise properties.",
+    "summary": "Constrain a common lens and light distribution with repeated observations in the same band, retaining each exposure's response and noise. Joint fitting can use the information from different resolutions or signal-to-noise levels without first forcing every image onto one measurement model.",
     "title": "Features: Same Wavelength"
   },
   {
@@ -6980,8 +6988,8 @@
     ],
     "notebook": "notebooks/multi_dataset/features/slam/start_here.ipynb",
     "path": "scripts/multi_dataset/features/slam/start_here.py",
-    "summary": "SLaM organizes lens modeling into linked source, light and mass stages. Results from earlier stages inform the setup of later stages, allowing the model to be developed in a controlled sequence.",
-    "title": "Features: Slam"
+    "summary": "Organize multi-dataset lens modeling into source, foreground-light and mass stages. Use the workflow to build a tractable analysis while choosing whether datasets inform each other through a joint fit or through transferred earlier results.",
+    "title": "Features: SLaM"
   },
   {
     "contents": [
@@ -7036,7 +7044,7 @@
     ],
     "notebook": "notebooks/multi_dataset/features/wavelength_dependence/start_here.ipynb",
     "path": "scripts/multi_dataset/features/wavelength_dependence/start_here.py",
-    "summary": "A wavelength-dependent model describes how specified galaxy properties change across bands. It links observations through a chosen relationship rather than treating every parameter in every band independently.",
+    "summary": "Measure how galaxy and source morphology changes with wavelength by linking selected parameters through a specified relation. This can stabilize weak bands while keeping the scientific assumption about colour-dependent structure explicit.",
     "title": "Features: Wavelength Dependence"
   },
   {
@@ -7320,7 +7328,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/advanced/double_source_plane_lens/start_here.ipynb",
     "path": "scripts/multi_galaxy/features/advanced/double_source_plane_lens/start_here.py",
-    "summary": "A double source-plane lens contains background sources at two different redshifts behind the foreground deflectors. Their light is traced through the relevant sequence of planes to predict the observed image.",
+    "summary": "Use sources at different redshifts to constrain one foreground lens system through more than one lensing geometry. Modeling the planes together lets the nearer source also act as a deflector when it carries mass.",
     "title": "Features: Double Source Plane Lens"
   },
   {
@@ -7498,7 +7506,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/advanced/mass_stellar_dark/start_here.ipynb",
     "path": "scripts/multi_galaxy/features/advanced/mass_stellar_dark/start_here.py",
-    "summary": "A decomposed mass model separates the mass associated with stellar light from a dark-halo contribution. It provides an alternative to describing the total mass with a single profile.",
+    "summary": "Investigate how the lensing mass is divided between stars and dark matter by linking a stellar mass component to the observed light and fitting an additional dark-halo component. The lensing constraints act on their combined deflection.",
     "title": "Features: Mass Stellar Dark"
   },
   {
@@ -7566,7 +7574,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/advanced/operated_light_profile/start_here.ipynb",
     "path": "scripts/multi_galaxy/features/advanced/operated_light_profile/start_here.py",
-    "summary": "An operated light profile describes emission after an instrumental operation has already been included in the profile. For imaging, the common example is a profile that already describes the PSF-blurred appearance of compact emission.",
+    "summary": "Separate compact emission from the extended light around it using a profile whose instrumental meaning is explicit. For imaging, an operated profile describes a component that already includes PSF blurring; this is separate from whether its intensity is solved linearly.",
     "title": "Features: Operated Light Profile"
   },
   {
@@ -7635,7 +7643,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/advanced/shapelets/start_here.ipynb",
     "path": "scripts/multi_galaxy/features/advanced/shapelets/start_here.py",
-    "summary": "Shapelets describe light as a weighted combination of basis functions. Unlike a single smooth light profile, the basis contains functions with different spatial structures, allowing their sum to describe more complicated galaxy morphology.",
+    "summary": "Describe structured source or galaxy light with a flexible basis of shapelets. This offers an alternative to a small set of smooth profiles when morphology matters to the lens fit and to the science inferred from the source.",
     "title": "Features: Shapelets"
   },
   {
@@ -7728,7 +7736,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/advanced/sky_background/start_here.ipynb",
     "path": "scripts/multi_galaxy/features/advanced/sky_background/start_here.py",
-    "summary": "The background contributes light across an image in addition to the galaxy or lens being studied. If a background contribution remains in the data, it can be included in the model rather than attributed to the target's emission.",
+    "summary": "Fit an uncertain sky level alongside the galaxies and lensed source, especially when faint extended light is important. The background and galaxy outskirts can trade off, affecting inferred sizes, profile shapes and total light.",
     "title": "Features: Sky Background"
   },
   {
@@ -7752,7 +7760,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/advanced/subhalo/detect/start_here.ipynb",
     "path": "scripts/multi_galaxy/features/advanced/subhalo/detect/start_here.py",
-    "summary": "This script runs the full SLaM pipeline followed by the three SUBHALO stages, to detect a dark matter subhalo in a multi-galaxy strong lens.",
+    "summary": "Search for a dark matter halo through its effect on lensed emission, rather than through visible starlight. Compare a carefully constructed smooth lens/source model with alternatives containing a perturber, then assess whether a candidate survives changes to the baseline model.",
     "title": "Subhalo Detection: Multi Galaxy"
   },
   {
@@ -7793,7 +7801,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/advanced/subhalo/start_here.ipynb",
     "path": "scripts/multi_galaxy/features/advanced/subhalo/start_here.py",
-    "summary": "A dark matter subhalo can perturb lensed emission without supplying visible light of its own. The effect depends on the halo properties, its location relative to the arcs and the larger lens model.",
+    "summary": "Investigate small dark matter halos through their perturbations of lensed emission. Separate the search for a candidate in the data from the calibration of which halos the same analysis could recover.",
     "title": "Features: Subhalo"
   },
   {
@@ -7881,7 +7889,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/extra_galaxies/start_here.ipynb",
     "path": "scripts/multi_galaxy/features/extra_galaxies/start_here.py",
-    "summary": "A target rarely occupies an otherwise empty field. Nearby galaxies may contribute light inside the region being fitted, and a lensing model may also need to account for their deflection of the light rays.",
+    "summary": "Include neighbouring galaxies whose mass or emission affects the lens analysis. A companion can alter the inferred source and main lens even when its own mass is poorly constrained; deciding which contributions matter is part of building the scientific model.",
     "title": "Features: Extra Galaxies"
   },
   {
@@ -8004,7 +8012,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/linear_light_profiles/start_here.ipynb",
     "path": "scripts/multi_galaxy/features/linear_light_profiles/start_here.py",
-    "summary": "A linear light profile has the same spatial form as an ordinary light profile, but its intensity is solved during each likelihood evaluation instead of being sampled by the non-linear search.",
+    "summary": "Solve component brightnesses during the fit instead of asking the non-linear search to sample a separate intensity for every light profile. Brightness is recalculated at every trial lens and light geometry: solved does not mean fixed.",
     "title": "Features: Linear Light Profiles"
   },
   {
@@ -8192,7 +8200,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/multi_gaussian_expansion/start_here.ipynb",
     "path": "scripts/multi_galaxy/features/multi_gaussian_expansion/start_here.py",
-    "summary": "A multi Gaussian expansion (MGE) represents a galaxy's light as the sum of many Gaussian profiles. Each Gaussian describes emission on a particular spatial scale; together, they can provide a flexible model of the galaxy.",
+    "summary": "Use a multi-Gaussian expansion (MGE) to describe foreground galaxy light flexibly and to model the lensed background source. Many Gaussian components provide a range of spatial scales while their intensities can be solved during each likelihood evaluation.",
     "title": "Features: Multi Gaussian Expansion"
   },
   {
@@ -8280,13 +8288,15 @@
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/no_lens_light/modeling.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/no_lens_light/simulator.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/no_lens_light/slam.ipynb",
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/source_science.ipynb",
       "modeling.py",
       "simulator.py",
-      "slam.py"
+      "slam.py",
+      "source_science.py"
     ],
     "notebook": "notebooks/multi_galaxy/features/no_lens_light/start_here.ipynb",
     "path": "scripts/multi_galaxy/features/no_lens_light/start_here.py",
-    "summary": "Some lensing datasets contain no visible foreground lens light. This may be a property of the observation or a consequence of subtracting a foreground-light model before the lens analysis.",
+    "summary": "Fit the lens mass and background source when foreground galaxy emission is negligible in the fitted pixels or has already been subtracted. Omitting foreground light leaves all required gravitational deflectors in the model.",
     "title": "Features: No Lens Light"
   },
   {
@@ -8562,7 +8572,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/pixelization/start_here.ipynb",
     "path": "scripts/multi_galaxy/features/pixelization/start_here.py",
-    "summary": "A pixelization represents light using a mesh whose brightness values are solved during the fit. It provides a flexible alternative to describing all of the emission with a small collection of analytic profiles.",
+    "summary": "Reconstruct the background galaxy on a source-plane mesh when simple light profiles do not capture its morphology. Pixelization is a key source-science feature: it supports measurements of irregular emission while the lens model maps that emission into the observed data.",
     "title": "Features: Pixelization"
   },
   {
@@ -8703,7 +8713,7 @@
     ],
     "notebook": "notebooks/multi_galaxy/features/scaling_relation/start_here.ipynb",
     "path": "scripts/multi_galaxy/features/scaling_relation/start_here.py",
-    "summary": "A scaling relation connects the properties of a galaxy population through a shared rule, rather than giving every member a completely independent model. In these lensing examples, member luminosities help determine their mass normalizations.",
+    "summary": "Represent a companion population through a luminosity-based mass prescription when the lensing data cannot constrain every galaxy independently. The relation reduces independent freedom by adding an explicit population assumption.",
     "title": "Features: Scaling Relation"
   },
   {
@@ -9054,7 +9064,7 @@
     ],
     "notebook": "notebooks/point_source/features/deblending/start_here.ipynb",
     "path": "scripts/point_source/features/deblending/start_here.py",
-    "summary": "Compact lensed images can overlap the foreground galaxy or other extended light. Deblending fits their contributions so the point-image positions and other relevant quantities can be measured.",
+    "summary": "Measure the positions and fluxes of compact lensed images that overlap foreground galaxy light. This is an image-fitting step that prepares the observables for subsequent point-source lens modeling.",
     "title": "Features: Deblending"
   },
   {
@@ -9132,7 +9142,7 @@
     ],
     "notebook": "notebooks/point_source/features/extra_galaxies/start_here.ipynb",
     "path": "scripts/point_source/features/extra_galaxies/start_here.py",
-    "summary": "A target rarely occupies an otherwise empty field. Nearby galaxies may contribute light inside the region being fitted, and a lensing model may also need to account for their deflection of the light rays.",
+    "summary": "Include neighbouring galaxies whose mass or emission affects the lens analysis. A companion can alter the inferred source and main lens even when its own mass is poorly constrained; deciding which contributions matter is part of building the scientific model.",
     "title": "Features: Extra Galaxies"
   },
   {
@@ -9216,7 +9226,7 @@
     ],
     "notebook": "notebooks/point_source/features/multiple_sources/start_here.ipynb",
     "path": "scripts/point_source/features/multiple_sources/start_here.py",
-    "summary": "Several background point sources can be lensed by the same foreground system. Their multiple images must be associated with the correct source, and sources at different redshifts require the corresponding lensing geometry.",
+    "summary": "Fit several families of compact lensed images through a shared foreground mass model. Source identities and redshifts determine which images belong together and which deflecting planes their light crosses.",
     "title": "Features: Multiple Sources"
   },
   {
@@ -9336,7 +9346,7 @@
     ],
     "notebook": "notebooks/point_source/features/scaling_relation/start_here.ipynb",
     "path": "scripts/point_source/features/scaling_relation/start_here.py",
-    "summary": "A scaling relation connects the properties of a galaxy population through a shared rule, rather than giving every member a completely independent model. In these lensing examples, member luminosities help determine their mass normalizations.",
+    "summary": "Represent a companion population through a luminosity-based mass prescription when the lensing data cannot constrain every galaxy independently. The relation reduces independent freedom by adding an explicit population assumption.",
     "title": "Features: Scaling Relation"
   },
   {
@@ -9620,7 +9630,7 @@
     ],
     "notebook": "notebooks/weak/features/strong_lensing/start_here.ipynb",
     "path": "scripts/weak/features/strong_lensing/start_here.py",
-    "summary": "Strong and weak lensing probe different parts of a mass distribution. A combined analysis connects central strongly lensed features with the wider weak-lensing field through a shared mass model.",
+    "summary": "Connect central strong-lensing constraints with the wider weak-lensing field to study a mass distribution over a larger range of radii. Each observable retains its own uncertainty model while constraining shared mass components.",
     "title": "Features: Strong Lensing"
   },
   {

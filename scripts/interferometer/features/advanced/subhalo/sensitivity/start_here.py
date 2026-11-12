@@ -2,9 +2,32 @@
 Sensitivity
 ===========
 
-Sensitivity mapping tests how an analysis responds to injected subhalos. It repeats a controlled recovery
-experiment across positions or other halo properties to characterize which signals the chosen setup can
-distinguish.
+Calibrate which dark matter halos an interferometer dataset and analysis could recover. Injection-and-recovery experiments give the context needed to interpret a non-detection or to construct selection information for halo-population science.
+
+__Scientific Use Cases__
+
+- Measure sensitivity as a function of halo position and mass under specified assumptions.
+- Assess how visibility coverage, noise and source morphology affect recoverability.
+- Match sensitivity calibration to the detection statistic and model choices used for the scientific sample.
+
+__This Dataset and Lens Regime__
+
+__Example Status__
+
+The implementation below the introductory text is commented out. This file currently explains the intended
+experiment; running it does not perform sensitivity mapping. Keep the sketch for reference, and validate an
+active visibility-space injection/recovery implementation before using this route for scientific calibration.
+The imaging sensitivity introduction teaches the experiment design, but its imaging likelihood is not a
+substitute for an interferometer calculation.
+
+These examples fit complex visibilities: the lensed sky prediction is Fourier transformed and compared at
+the measured baseline coordinates with the supplied noise. A dirty or reconstructed image is useful for
+inspection, but does not replace this likelihood. Interpret source structure in the context of visibility
+coverage and the assumptions used to model the sky.
+
+![subhalo — sensitivity](../../../../../../images/features/sensitivity_mapping_illustration.png)
+
+Conceptual illustration. The overlay represents recoverability for an illustrative injected mass, not detected halos or a computed result from this file. The scene illustrates sky/source structure; the fit here is to visibilities, not the displayed image.
 
 __What the Map Means__
 
@@ -15,6 +38,12 @@ experiment's sensitivity, not a catalogue of halos in the observed system.
 The worked example retains the injection and recovery stages and the criterion used to compare models.
 Parametric-source and pixelized-source variants may make different assumptions; keep those choices explicit
 when comparing their results.
+
+__Choose a Route__
+
+Read [the visibility-space detection example](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/subhalo/detect/start_here.ipynb) for candidate searches, and [the imaging sensitivity introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb) for injection/recovery concepts.
+A sensitivity calibration needs a justified recovery threshold and, where relevant, repeated noise realizations.
+A positive evidence difference by itself is not a universal detection criterion.
 """
 
 # """
@@ -44,8 +73,8 @@ when comparing their results.
 #
 # To answer these questions, we must perform sensitivity mapping, where we simulate many thousands of datasets,
 # each of which include a dark matter subhalo at a given (y,x) coordinate at a given mass. We then fit each dataset twice,
-# once with a lens model which does not include a subhalo and once with a lens model that does. If the Bayesian evidence
-# of the model which includes a subhalo is higher than that which does not, then it means a subhalo was detectable!
+# once with a lens model which does not include a subhalo and once with a lens model that does. The Bayesian evidence
+# comparison must meet a justified recovery criterion; a positive evidence difference alone is not sufficient.
 # """
 # from autolens import jax_wrapper # Ensures JAX environment variables are set before other imports
 

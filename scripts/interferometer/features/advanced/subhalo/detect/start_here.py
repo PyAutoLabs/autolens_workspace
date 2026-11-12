@@ -2,16 +2,24 @@
 Subhalo Detection: Start Here
 =============================
 
-Strong gravitational lenses can be used to detect the presence of small-scale dark matter (DM) subhalos. This occurs
-when the DM subhalo overlaps the lensed source emission, and therefore gravitationally perturbs the observed image of
-the lensed source galaxy.
+Search for a dark matter halo through its effect on lensed emission, rather than through visible starlight. Compare a carefully constructed smooth lens/source model with alternatives containing a perturber, then assess whether a candidate survives changes to the baseline model.
 
-When a DM subhalo is not included in the lens model, residuals will be present in the fit to the data in the lensed
-source regions near the subhalo. By adding a DM subhalo to the lens model, these residuals can be reduced. Bayesian
-model comparison can then be used to quantify whether or not the improvement to the fit is significant enough to
-claim the detection of a DM subhalo.
+__Scientific Use Cases__
 
-The example illustrates DM subhalo detection with **PyAutoLens**.
+- Investigate localized arc anomalies using an explicit model comparison.
+- Infer a candidate halo position and mass under the chosen profile and redshift assumptions.
+- Build a detection sample that can later be combined with sensitivity calibration for population studies.
+
+__This Dataset and Lens Regime__
+
+The candidate comparison must be made with the visibility-space likelihood. Small structures in a dirty
+image alone are not a halo detection, because sampling and calibration can also affect their appearance.
+The pipeline below retains the source and mass stages, the no-subhalo baseline, the spatial search and the
+candidate refinement. Validate the smooth model and the data treatment before interpreting its evidence differences.
+
+![subhalo — detect](../../../../../../images/features/subhalo_detection_illustration.png)
+
+Conceptual illustration. The local perturbation is exaggerated, and the marker indicates an inferred halo position rather than light emitted by dark matter. The scene illustrates sky/source structure; the fit here is to visibilities, not the displayed image.
 
 __Contents__
 

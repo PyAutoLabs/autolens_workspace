@@ -2,8 +2,24 @@
 Features: Wavelength Dependence
 ===============================
 
-A wavelength-dependent model describes how specified galaxy properties change across bands. It links
-observations through a chosen relationship rather than treating every parameter in every band independently.
+Measure how galaxy and source morphology changes with wavelength by linking selected parameters through a specified relation. This can stabilize weak bands while keeping the scientific assumption about colour-dependent structure explicit.
+
+__Scientific Use Cases__
+
+- Study wavelength-dependent sizes or other chosen morphology parameters.
+- Connect multi-band measurements without requiring all bands to look identical.
+- Compare a smooth wavelength relation against more independent band-by-band descriptions.
+
+__This Dataset and Lens Regime__
+
+The parametric example links lens and source effective radii to wavelength through fitted straight-line
+relations. This is a chosen morphology model, not a law that galaxy sizes must obey. The source-mesh discussion
+also distinguishes shared geometry from band-dependent brightness: using a common mesh does not require
+identical source colours or identical intensities in every band.
+
+![wavelength dependence](../../../../images/new_user_guide/dataset_types.png)
+
+Reused new-user-guide schematic. The interferometer panel shows sampling locations, not visibility amplitudes or phases; cube slices are spectral channels. These are conceptual dataset representations, not measurements.
 
 __A Relationship Is a Model Assumption__
 
@@ -23,11 +39,6 @@ Inspect the predicted morphology and residuals in every band. Differences betwee
 distribution, instrumental response or an inadequate relationship, and the fit should be interpreted
 accordingly.
 
-__In This Folder__
-
-These examples connect several observations. Read which parameters are shared, which are dataset-specific and
-whether the fits are simultaneous or sequential. The per-dataset likelihoods still retain their own response
-and noise treatment.
 
 __Choose An Example__
 

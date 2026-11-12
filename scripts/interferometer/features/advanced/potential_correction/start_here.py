@@ -1,31 +1,45 @@
-r"""
+"""
 Feature: Potential Correction (Gravitational Imaging)
 =====================================================
 
-This example performs gravitational imaging on interferometer data: pixelized corrections $\delta\psi$ to the
-lensing potential are reconstructed jointly with the pixelized source, revealing mass structure (e.g. dark
-subhaloes) the smooth lens model omits, as a convergence-correction map $\delta\kappa = \frac{1}{2}\nabla^2\delta\psi$.
+Investigate mass structure omitted by a smooth lens model by reconstructing pixelized corrections to its potential alongside the source. For interferometer data, the comparison is made in visibility space.
 
-The visibility-space implementation uses the **sparse-operator (w-tilde) route**, whose cost scales with the
-number of real-space mask pixels — independent of the number of visibilities — making it the path for real
-datasets (ALMA / VLBI scale). This is the regime of the technique's benchmark detections: the ~$10^6 M_\odot$
-object in JVAS B1938+666 (Powell et al. 2025, Nat. Astron. 9, 1714; Vegetti et al. 2026).
+__Scientific Use Cases__
 
-The workflow below is the configuration certified by the PyAutoLens validation campaign, which on this exact
-setup recovers the simulated $10^{10} M_\odot$ subhalo with dkappa correlation ~0.83 against the truth, the
-peak ~0.15" from the true position and ~6 sigma significance over the field:
+- Localize residual deflection structure without first assigning every perturbation a parametric halo.
+- Test whether a source-plus-potential model explains coherent discrepancies in the visibilities.
+- Identify mass-structure candidates for further modeling while assessing source, calibration and smooth-lens alternatives.
 
- 1. verify the smooth-model source fit reaches $\chi^2$/dof ~ 1-3 (the "regime gate" — corrections only
-    measure residual mass structure once the source model fits the data to near the noise);
- 2. run the one-shot joint inversion (`FitDpsiSrcInterferometer`) with an arc-restricted `dpsi_mask`;
- 3. refine with the iterative engine **warm-started from the one-shot**, with the regularization strengths
-    re-optimized by Bayesian evidence at every step (the Koopmans 2005 / Vegetti & Koopmans 2009 scheme).
+__This Dataset and Lens Regime__
 
-If you use this functionality in your research, please cite Cao et al. 2025, whose `potential_correction`
-package (https://github.com/caoxiaoyue/lensing_potential_correction) the implementation is ported from;
-citation materials are provided at https://github.com/caoxiaoyue/potential_correction_paper.
+These examples fit complex visibilities: the lensed sky prediction is Fourier transformed and compared at
+the measured baseline coordinates with the supplied noise. A dirty or reconstructed image is useful for
+inspection, but does not replace this likelihood. Interpret source structure in the context of visibility
+coverage and the assumptions used to model the sky.
 
-This script takes a few minutes to run (the one-off sparse-operator precomputation dominates).
+![potential correction](../../../../../images/features/potential_correction_illustration.png)
+
+Conceptual illustration. The correction is conceptual, not an observed mass map or a unique halo interpretation. The scene illustrates sky/source structure; the fit here is to visibilities, not the displayed image.
+
+__From Potential to Mass Structure__
+
+A correction to the lensing potential changes the predicted deflections. Its Laplacian gives the convergence
+correction: delta_kappa = 0.5 * Laplacian(delta_psi). The source and potential are reconstructed together, so
+regularization and the smooth-model starting point affect the result. A localized correction motivates further
+investigation; it does not uniquely identify a dark halo or establish a detection significance on its own.
+
+__Workflow__
+
+1. Inspect whether the smooth lens and source describe the visibility data adequately before assigning residuals to mass corrections.
+2. Run the one-shot joint source/potential inversion with the chosen correction mask.
+3. Use that result to initialize the iterative refinement, inspecting evidence-selected regularization and residual behavior.
+
+The sparse-operator route reduces repeated work involving the visibility data, but constructing the operator
+and storing the real-space calculation still have costs. Resolution, mask size and dataset size matter; this
+introduction does not promise a universal runtime or visibility-independent end-to-end cost.
+
+The implementation is ported from Cao and collaborators' potential-correction work. Retain the citation
+materials linked by the example: https://github.com/caoxiaoyue/potential_correction_paper.
 
 __Prerequisites__
 

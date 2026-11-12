@@ -2,9 +2,31 @@
 Features: Multiple Sources
 ==========================
 
-Several background point sources can be lensed by the same foreground system. Their multiple images must be
-associated with the correct source, and sources at different redshifts require the corresponding lensing
-geometry.
+Fit several families of compact lensed images through a shared foreground mass model. Source identities and redshifts determine which images belong together and which deflecting planes their light crosses.
+
+__Scientific Use Cases__
+
+- Use multiple compact background sources to constrain the same foreground lens.
+- Represent image families at different redshifts with the appropriate multi-plane geometry.
+- Include deflection by a nearer source galaxy when modeling a more distant source.
+
+__This Dataset and Lens Regime__
+
+The example assigns a separate point dataset to each source family. Its foreground lens is at redshift 0.5;
+the nearer source at redshift 1.0 also carries mass and deflects the farther source at redshift 2.0.
+These values define the demonstration, not a general restriction on multiple-source models.
+
+__Example Status__
+
+The simulator and modeling scripts remain listed in `config/build/no_run.yaml`. Their comments cite
+[PyAutoLens #480](https://github.com/PyAutoLabs/PyAutoLens/issues/480), which is now closed. That stale exclusion
+is not proof that the current example fails, but this documentation review has not validated it end to end.
+Read it as a worked model construction pending a separate execution check; do not infer runnable status from
+the resolved issue alone.
+
+![multiple sources](../../../../images/new_user_guide/dataset_types.png)
+
+Reused new-user-guide schematic. The interferometer panel shows sampling locations, not visibility amplitudes or phases; cube slices are spectral channels. These are conceptual dataset representations, not measurements.
 
 __Image Families__
 
@@ -21,10 +43,6 @@ Start by inspecting the simulated image families. Then trace how they become poi
 analyses share the foreground model. Keep family labels, coordinates and uncertainties explicit when replacing
 the simulated inputs with measurements.
 
-__In This Folder__
-
-These examples use point-source observables and their associated image identities. The relevant script states
-which positions, fluxes or time delays enter the fit; do not assume every observable is used in every example.
 
 __Choose An Example__
 

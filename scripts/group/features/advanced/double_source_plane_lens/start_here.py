@@ -2,8 +2,24 @@
 Features: Double Source Plane Lens
 ==================================
 
-A double source-plane lens contains background sources at two different redshifts behind the foreground
-deflectors. Their light is traced through the relevant sequence of planes to predict the observed image.
+Use sources at different redshifts to constrain one foreground lens system through more than one lensing geometry. Modeling the planes together lets the nearer source also act as a deflector when it carries mass.
+
+__Scientific Use Cases__
+
+- Reconstruct two background sources without assigning their arcs to the same redshift plane.
+- Test a mass model against multiple source-plane constraints.
+- Build the multi-plane model needed for applications that study geometry or cosmology; a cosmological inference is an additional analysis, not an automatic output of this example.
+
+__This Dataset and Lens Regime__
+
+This folder treats group-scale imaging with individual member galaxies. Distinguish the main deflectors,
+additional members and any explicit common group halo. The light decomposition and the split of mass among
+components can affect the inferred source; a good combined fit does not guarantee that each component is
+independently constrained.
+
+![double source plane lens](../../../../../images/features/double_source_plane_illustration.png)
+
+Conceptual illustration. The geometry is schematic, not to scale; the example's actual redshifts and mass assignments determine the ray tracing. The schematic illustrates the feature; retain all deflectors in this group example.
 
 __Keep the Planes Distinct__
 
@@ -23,11 +39,6 @@ they do not replace the need to check the plane assignments.
 Multiple deflectors in group or multi-galaxy examples add components within this geometry. Preserve those
 distinctions when adapting a single-deflector example.
 
-__In This Folder__
-
-The examples contain a group-scale lens with several galaxy components. A shared group halo, where present, is
-an explicit model choice. Keep the individual deflectors, companion population and source components distinct
-when following the recipe.
 
 __Choose An Example__
 

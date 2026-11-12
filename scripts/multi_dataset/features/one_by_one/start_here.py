@@ -2,8 +2,23 @@
 Features: One By One
 ====================
 
-Multi-dataset modeling does not always require fitting every observation simultaneously. A sequential approach
-fits one dataset first, then uses the result to guide the analysis of another.
+Use one observation to initialize the analysis of another, or compare datasets through separate fits before a joint analysis. Sequential modeling is useful for organizing multi-band lens and source inference, provided the transferred information is made explicit.
+
+__Scientific Use Cases__
+
+- Initialize a difficult fit from a dataset that constrains useful starting values.
+- Measure emission in a weaker band conditional on a chosen earlier lens model.
+- Diagnose disagreements between datasets before deciding which parameters to share in a simultaneous fit.
+
+__This Dataset and Lens Regime__
+
+Decide explicitly which parameters are shared, which vary by dataset and whether the fits are simultaneous
+or sequential. Each dataset retains its own response and uncertainty treatment. Inspect individual residuals
+alongside the combined result; sharing a lens does not require identical emission in every observation.
+
+![one by one](../../../../images/new_user_guide/dataset_types.png)
+
+Reused new-user-guide schematic. The interferometer panel shows sampling locations, not visibility amplitudes or phases; cube slices are spectral channels. These are conceptual dataset representations, not measurements.
 
 __What Is Carried Forward?__
 
@@ -22,11 +37,6 @@ simultaneous analysis may be needed to represent that information together.
 The modeling script keeps its transfer and refitting steps explicit so you can follow how the later result
 depends on the earlier one.
 
-__In This Folder__
-
-These examples connect several observations. Read which parameters are shared, which are dataset-specific and
-whether the fits are simultaneous or sequential. The per-dataset likelihoods still retain their own response
-and noise treatment.
 
 __Choose An Example__
 

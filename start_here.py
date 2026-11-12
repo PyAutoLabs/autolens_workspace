@@ -514,6 +514,10 @@ and Chapter 3 of [HowToLens](https://github.com/PyAutoLabs/HowToLens).
 
 __Point Sources__
 
+Use compact lensed images to constrain the lens mass from measured positions and, where appropriate,
+fluxes and time delays. Quasars and supernovae are important examples; the measurements and their
+uncertainties must be prepared before the point-source lens fit.
+
 There are many lenses where the background source is not extended but is instead a point-source, for example strongly
 lensed quasars and supernovae.
 
@@ -534,9 +538,18 @@ strong lens imaging data. It is easy to disable this image in the point source m
 
 Checkout the`autolens_workspace/*/point_source` package to get started.
 
+For blended observations, start with [deblending](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/deblending/start_here.ipynb): fit the compact images and foreground galaxy light together to measure positions and fluxes.
+This step fits an imaging dataset, then supplies observables for the point-source lens analysis.
+
+![Compact images blended with foreground light, with fitted image centres indicated](images/features/deblending.png)
+
+Conceptual illustration: the markers indicate measured centres, not improved angular resolution or PSF removal.
+
+
 __Interferometry__
 
-Modeling of interferometer data from submillimeter (e.g. ALMA) and radio (e.g. LOFAR) observatories:
+Reconstruct the emission of lensed sources observed with submillimeter and radio interferometers, such as ALMA
+and LOFAR. Fit the measured complex visibilities to study source morphology and constrain the deflecting mass:
 
 ![ALMA Image](https://raw.githubusercontent.com/PyAutoLabs/PyAutoGalaxy/main/paper/almacombined.png)
 
@@ -546,6 +559,29 @@ such as correlated noise. This uses the non-uniform fast fourier transform algor
 
 Checkout the`autolens_workspace/*/interferometer` package to get started.
 
+
+For source science, start with [pixelization](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/pixelization/start_here.ipynb) or [multi-Gaussian expansion](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/multi_gaussian_expansion/start_here.ipynb).
+Their introductions link to source_science.py and explain the reconstruction choices. The likelihood fits
+visibilities; a dirty image is a visualization of those data, not the fitted image-plane dataset.
+
+
+__Data Cubes__
+
+Study how a lensed source's emission changes across a spectral line by reconstructing its individual channels
+with one shared lens mass model. The resulting channel maps support source science, including the spatial
+structure of line emission; a dynamical interpretation requires additional modeling.
+
+![Imaging, interferometer sampling, spectral channels and point-source data](images/new_user_guide/dataset_types.png)
+
+Reused new-user-guide schematic, not measured data. The interferometer panel shows sampling locations;
+cube slices represent spectral channels.
+
+The example combines one Interferometer dataset and source reconstruction per channel. It shares the lens
+parameters and prepares the sparse operator for each channel; it does not fit a dynamical model or assume
+that every channel has identical sampling and noise.
+
+Read the [datacube introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb) for the channel-by-channel construction,
+regularization and data-preparation route. Keep channels, coordinates and uncertainty conventions aligned.
 
 __No Lens Light__
 
@@ -649,8 +685,9 @@ scatter assumptions and the different normalization used in the group and cluste
 
 __Groups__
 
-The strong lenses we've discussed so far have just a single lens galaxy responsible for the lensing. Group-scale
-strong lenses are systems where there two or more  lens galaxies deflecting one or more background sources:
+Model systems in which several galaxies contribute appreciably to the deflection. Multi-galaxy examples fit
+co-dominant deflectors without a shared halo; group examples allow a shared group halo and scaling relations
+for fainter members. Choose the regime from the mass model and available constraints, not galaxy count alone:
 
 ![Group](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/group.png)
 
@@ -661,21 +698,33 @@ Overviews of group and analysis are given in `notebooks/overview/overview_9_grou
 The `autolens_workspace/*/group` package has example scripts for simulating datasets and lens modeling.
 
 
+To investigate a shared halo, compare the member-only and member-plus-halo models in the [group halo introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/group_halo/start_here.ipynb). The simulated example contains a group halo; this does not establish that every group needs one.
+
+![Member galaxies alone and the same galaxies with a shared group halo](images/features/group_halo.png)
+
+Conceptual illustration: the shared contour represents a model mass component, not visible emission.
+
+
 __Multi-Wavelength__
 
-Modeling imaging datasets observed at different wavelengths (e.g. HST F814W and F150W) simultaneously or simultaneously
-analysing imaging and interferometer data:
+Compare the source's stellar, dust or line emission across observations while fitting a shared lens model.
+Joint datasets can constrain different components of the source and lens; their brightness distributions,
+instrumental responses and noise remain dataset-specific.
 
 ![g-band](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/g_image.png)
 
 ![r-band](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/r_image.png)
 
-The appearance of the strong changes as a function of wavelength, therefore multi-wavelength analysis means we can learn
+The appearance of the source changes with wavelength, so multi-wavelength analysis can teach us
 more about the different components in a galaxy (e.g a redder bulge and bluer disk) or when imaging and interferometer
 data are combined, we can compare the emission from stars and dust.
 
 Checkout the `autolens_workspace/*/multi_dataset` package to get started, however combining datasets is a more advanced
 feature and it is recommended you first get to grips with the core API.
+
+
+Choose [wavelength dependence](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/wavelength_dependence/start_here.ipynb) for explicit wavelength-linked profiles, [imaging and interferometer](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/imaging_and_interferometer/start_here.ipynb) for complementary emission, or [imaging and point source](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/imaging_and_point_source/start_here.ipynb) to combine extended-image constraints with compact-image observables. The latter example includes time delays;
+cosmographic interpretation needs additional assumptions. For multi-band source science, see [pixelization](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/pixelization/start_here.ipynb).
 
 
 __Ellipse Fitting__
@@ -985,4 +1034,107 @@ quickstart example fits the real JWST-era shape catalogue of Abell 2744, and str
 be combined in joint analyses of the same cluster.
 
 Checkout `autolens_workspace/*/weak/start_here.py` to fit your first weak lensing dataset.
+
+Combine strong-lensing constraints in a cluster's inner region with weak-lensing shear across a wider field
+to study its mass distribution on complementary scales. The two datasets retain distinct observables,
+uncertainties and source-redshift information within the shared model.
+
+![Inner strong-lensing arcs and a wider field of weakly distorted galaxies](images/features/strong_weak_lensing.png)
+
+Conceptual illustration: the panels cover different angular scales; dashed contours illustrate a mass model,
+not a direct measurement from individual galaxy shapes.
+
+Read the [strong and weak lensing introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/weak/features/strong_lensing/start_here.ipynb) for the joint construction and the separate simulated and Abell 2744 examples.
+
+__Choose a Non-Imaging Feature__
+
+Start from your scientific question and dataset. Each introduction below explains its use cases, assumptions
+and example routes; shared feature names do not imply identical models across these regimes.
+
+![Galaxy, multi-galaxy, group and cluster lens regimes](images/new_user_guide/lens_scales.png)
+
+Reused new-user-guide schematic. The panels illustrate different lens regimes and angular scales; they are not
+a controlled comparison of one observed system.
+
+**Multi-galaxy lenses**
+
+Separate the masses and light of co-dominant deflectors and reconstruct the background source.
+
+- [Double Source Plane Lens](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/double_source_plane_lens/start_here.ipynb)
+- [Mass Stellar Dark](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/mass_stellar_dark/start_here.ipynb)
+- [Operated Light Profile](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/operated_light_profile/start_here.ipynb)
+- [Shapelets](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/shapelets/start_here.ipynb)
+- [Sky Background](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/sky_background/start_here.ipynb)
+- [Subhalo Detect](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/subhalo/detect/start_here.ipynb)
+- [Subhalo](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/subhalo/start_here.ipynb)
+- [Extra Galaxies](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/extra_galaxies/start_here.ipynb)
+- [Linear Light Profiles](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/linear_light_profiles/start_here.ipynb)
+- [Multi Gaussian Expansion](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/multi_gaussian_expansion/start_here.ipynb)
+- [No Lens Light](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/no_lens_light/start_here.ipynb)
+- [Pixelization](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/pixelization/start_here.ipynb)
+- [Scaling Relation](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/scaling_relation/start_here.ipynb)
+
+**Group-scale lenses**
+
+Compare member-galaxy masses and a possible shared halo while retaining the lensing constraints from extended arcs.
+
+- [Double Source Plane Lens](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/double_source_plane_lens/start_here.ipynb)
+- [Mass Stellar Dark](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/mass_stellar_dark/start_here.ipynb)
+- [Operated Light Profile](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/operated_light_profile/start_here.ipynb)
+- [Shapelets](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/shapelets/start_here.ipynb)
+- [Sky Background](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/sky_background/start_here.ipynb)
+- [Subhalo Detect](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/subhalo/detect/start_here.ipynb)
+- [Subhalo](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/subhalo/start_here.ipynb)
+- [Group Halo](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/group_halo/start_here.ipynb)
+- [Linear Light Profiles](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/linear_light_profiles/start_here.ipynb)
+- [Multi Gaussian Expansion](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/multi_gaussian_expansion/start_here.ipynb)
+- [No Lens Light](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/no_lens_light/start_here.ipynb)
+- [Pixelization](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb)
+- [Scaling Relation](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/scaling_relation/start_here.ipynb)
+
+**Interferometer data**
+
+Reconstruct radio and submillimeter source emission and test the lens mass directly against complex visibilities.
+
+- [Operated Light Profile](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/operated_light_profile/start_here.ipynb)
+- [Feature: Potential Correction (Gravitational Imaging)](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/potential_correction/start_here.ipynb)
+- [Shapelets](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/shapelets/start_here.ipynb)
+- [Subhalo Detect](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/subhalo/detect/start_here.ipynb)
+- [Subhalo Sensitivity](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/subhalo/sensitivity/start_here.ipynb)
+- [Subhalo](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/subhalo/start_here.ipynb)
+- [Start Here: Datacube](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb)
+- [Extra Galaxies](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/extra_galaxies/start_here.ipynb)
+- [Linear Light Profiles](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/linear_light_profiles/start_here.ipynb)
+- [Multi Gaussian Expansion](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/multi_gaussian_expansion/start_here.ipynb)
+- [Pixelization](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/pixelization/start_here.ipynb)
+- [Scaling Relation](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/scaling_relation/start_here.ipynb)
+
+**Multiple datasets**
+
+Combine complementary observations with shared lens parameters and explicit dataset-specific quantities.
+
+- [Dataset Offsets](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/dataset_offsets/start_here.ipynb)
+- [Imaging And Interferometer](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/imaging_and_interferometer/start_here.ipynb)
+- [Imaging And Point Source](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/imaging_and_point_source/start_here.ipynb)
+- [One By One](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/one_by_one/start_here.ipynb)
+- [Pixelization](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/pixelization/start_here.ipynb)
+- [Same Wavelength](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/same_wavelength/start_here.ipynb)
+- [SLaM](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/slam/start_here.ipynb)
+- [Wavelength Dependence](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/wavelength_dependence/start_here.ipynb)
+
+**Point-source data**
+
+Prepare compact-image measurements and model their deflections, additional galaxies and source planes.
+
+- [Deblending](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/deblending/start_here.ipynb)
+- [Extra Galaxies](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/extra_galaxies/start_here.ipynb)
+- [Multiple Sources](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/multiple_sources/start_here.ipynb)
+- [Scaling Relation](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/features/scaling_relation/start_here.ipynb)
+
+**Strong and weak lensing**
+
+Constrain the mass distribution from central multiple images and wider-field shear.
+
+- [Strong Lensing](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/weak/features/strong_lensing/start_here.ipynb)
+
 """

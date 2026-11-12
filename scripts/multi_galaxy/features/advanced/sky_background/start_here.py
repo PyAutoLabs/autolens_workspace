@@ -2,9 +2,24 @@
 Features: Sky Background
 ========================
 
-The background contributes light across an image in addition to the galaxy or lens being studied. If a
-background contribution remains in the data, it can be included in the model rather than attributed to the
-target's emission.
+Fit an uncertain sky level alongside the galaxies and lensed source, especially when faint extended light is important. The background and galaxy outskirts can trade off, affecting inferred sizes, profile shapes and total light.
+
+__Scientific Use Cases__
+
+- Account for a residual offset after sky subtraction.
+- Measure extended galaxy light while allowing uncertainty in the background level.
+- Fit simulated or observed imaging that retains an additive sky component.
+
+__This Dataset and Lens Regime__
+
+This folder treats imaging with multiple important deflectors. Include all of them in the ray tracing and
+keep their light separate from their mass contributions. The combined deflection can be better constrained
+than the allocation of mass between galaxies; examine that allocation when interpreting source properties
+or small residual structures.
+
+![sky background](../../../../../images/features/sky_background.png)
+
+Conceptual illustration. The layers are additive model components, not physical planes. Removing the mean background does not remove sky photon noise. The schematic illustrates the feature; retain all deflectors in this multi-galaxy example.
 
 __Why the Outskirts Are Sensitive__
 
@@ -25,11 +40,6 @@ Inspect residuals across the fitted region and consider how strongly the availab
 the sky. The example's chosen prior and field of view are part of its setup, not universal choices for every
 image.
 
-__In This Folder__
-
-The examples contain multiple main lens galaxies, rather than a single dominant deflector with only small
-companions. Follow how the feature is applied to each galaxy and which parameters are shared. A group halo is
-not implicit in this setup.
 
 __Choose An Example__
 

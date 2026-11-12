@@ -2,12 +2,32 @@
 Features: Multi Gaussian Expansion
 ==================================
 
-A multi Gaussian expansion (MGE) represents a galaxy's light as the sum of many Gaussian profiles. Each
-Gaussian describes emission on a particular spatial scale; together, they can provide a flexible model of the
-galaxy.
+Use a multi-Gaussian expansion (MGE) to describe foreground galaxy light flexibly and to model the lensed background source. Many Gaussian components provide a range of spatial scales while their intensities can be solved during each likelihood evaluation.
 
-This introduction explains how an MGE works, why it can be useful, and what to consider before using one. The
-neighbouring examples show how to construct an MGE, fit it to data and inspect the results.
+__Scientific Use Cases__
+
+- Describe extended radio or submillimetre source emission with a flexible Gaussian basis.
+- Model source structure and derive source-science quantities from the combined emission, rather than interpreting each Gaussian as a separate object.
+- Test how basis choices and any foreground emission affect the visibility fit and inferred source.
+
+For source-science measurements, continue to [source_science.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/source_science.ipynb).
+Interpret the combined reconstructed light together with the lens and reconstruction assumptions.
+
+__This Dataset and Lens Regime__
+
+For radio or submillimetre source science, an MGE provides a compact description of extended emission whose
+intensities are solved through the visibility response. Include foreground emission only if it contributes
+in the fitted band; the presence of a foreground stellar galaxy in optical imaging does not by itself require
+an emission component in the visibility fit.
+
+These examples fit complex visibilities: the lensed sky prediction is Fourier transformed and compared at
+the measured baseline coordinates with the supplied noise. A dirty or reconstructed image is useful for
+inspection, but does not replace this likelihood. Interpret source structure in the context of visibility
+coverage and the assumptions used to model the sky.
+
+![multi gaussian expansion](../../../../images/features/mge_illustration.png)
+
+Conceptual illustration. The Gaussian components are mathematical building blocks, not individually identified physical structures. The scene illustrates sky/source structure; the fit here is to visibilities, not the displayed image.
 
 __Why Use Many Gaussians?__
 
@@ -79,11 +99,6 @@ An MGE is also less directly interpretable than a single Sersic profile. An indi
 component of the mathematical description, rather than a separate physical structure in the galaxy. Quantities
 such as total luminosity or a half-light radius should be derived from the combined light distribution.
 
-__In This Folder__
-
-These examples fit visibilities. The image-plane light prediction is transformed into the measured
-Fourier-domain quantities; a dirty image is an inspection product, not a substitute for that likelihood. Keep
-the visibility sampling, noise and model-specific response choices in view when adapting an imaging example.
 
 __Choose An Example__
 

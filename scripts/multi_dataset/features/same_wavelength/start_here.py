@@ -2,8 +2,23 @@
 Features: Same Wavelength
 =========================
 
-Repeated observations at the same wavelength can constrain a common light model while retaining their
-individual instrumental responses and noise properties.
+Constrain a common lens and light distribution with repeated observations in the same band, retaining each exposure's response and noise. Joint fitting can use the information from different resolutions or signal-to-noise levels without first forcing every image onto one measurement model.
+
+__Scientific Use Cases__
+
+- Combine repeat exposures or observations with different PSFs and sampling.
+- Infer shared physical parameters while forward-modeling each observation separately.
+- Check consistency between observations through their individual residuals.
+
+__This Dataset and Lens Regime__
+
+Decide explicitly which parameters are shared, which vary by dataset and whether the fits are simultaneous
+or sequential. Each dataset retains its own response and uncertainty treatment. Inspect individual residuals
+alongside the combined result; sharing a lens does not require identical emission in every observation.
+
+![same wavelength](../../../../images/new_user_guide/dataset_types.png)
+
+Reused new-user-guide schematic. The interferometer panel shows sampling locations, not visibility amplitudes or phases; cube slices are spectral channels. These are conceptual dataset representations, not measurements.
 
 __One Model, Several Forward Calculations__
 
@@ -22,11 +37,6 @@ observation. An instrumental mismatch in one exposure may otherwise be hidden by
 Use the simulator to see the differences introduced between the observations, then follow how those
 differences are handled in the modeling script.
 
-__In This Folder__
-
-These examples connect several observations. Read which parameters are shared, which are dataset-specific and
-whether the fits are simultaneous or sequential. The per-dataset likelihoods still retain their own response
-and noise treatment.
 
 __Choose An Example__
 

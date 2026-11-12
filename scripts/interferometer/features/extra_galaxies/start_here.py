@@ -2,8 +2,24 @@
 Features: Extra Galaxies
 ========================
 
-A target rarely occupies an otherwise empty field. Nearby galaxies may contribute light inside the region
-being fitted, and a lensing model may also need to account for their deflection of the light rays.
+Include neighbouring galaxies whose mass or emission affects the lens analysis. A companion can alter the inferred source and main lens even when its own mass is poorly constrained; deciding which contributions matter is part of building the scientific model.
+
+__Scientific Use Cases__
+
+- Account for companion deflections near informative arcs or multiple images.
+- Separate contaminating light where the fitted observable contains that light.
+- Test the stability of lens and source inference when the surrounding galaxy population is represented explicitly.
+
+__This Dataset and Lens Regime__
+
+These examples fit complex visibilities: the lensed sky prediction is Fourier transformed and compared at
+the measured baseline coordinates with the supplied noise. A dirty or reconstructed image is useful for
+inspection, but does not replace this likelihood. Interpret source structure in the context of visibility
+coverage and the assumptions used to model the sky.
+
+![extra galaxies](../../../../images/features/extra_galaxies.png)
+
+Conceptual illustration. Visible companions and schematic mass contributions are illustrative; a companion is not a mass detection merely because it appears in the image. The scene illustrates sky/source structure; the fit here is to visibilities, not the displayed image.
 
 __Deciding What to Include__
 
@@ -25,11 +41,6 @@ parameters can help constrain a fit, but also introduces assumptions about the c
 Use the simulator to understand the example field, then follow the modeling example to add the neighbours
 explicitly. In larger lens systems, distinguish the main deflectors from the additional companion population.
 
-__In This Folder__
-
-These examples fit visibilities. The image-plane light prediction is transformed into the measured
-Fourier-domain quantities; a dirty image is an inspection product, not a substitute for that likelihood. Keep
-the visibility sampling, noise and model-specific response choices in view when adapting an imaging example.
 
 __Choose An Example__
 

@@ -2,33 +2,36 @@
 Features: Extra Galaxies
 ========================
 
-A target rarely occupies an otherwise empty field. Nearby galaxies may contribute light inside the region
-being fitted, and a lensing model may also need to account for their deflection of the light rays.
+Include neighbouring galaxies whose mass or emission affects the lens analysis. A companion can alter the inferred source and main lens even when its own mass is poorly constrained; deciding which contributions matter is part of building the scientific model.
+
+__Scientific Use Cases__
+
+- Account for companion deflections near informative arcs or multiple images.
+- Keep companion mass effects separate from blending errors in the measured compact-image observables.
+- Test the stability of lens and source inference when the surrounding galaxy population is represented explicitly.
+
+__This Dataset and Lens Regime__
+
+Point-image constraints are finite, so prioritize companions that can materially change the lensing predictions.
+
+![extra galaxies](../../../../images/features/extra_galaxies.png)
+
+Conceptual illustration. Visible companions and schematic mass contributions are illustrative; a companion is not a mass detection merely because it appears in the image.
 
 __Deciding What to Include__
 
-There are two separate questions: does a neighbour contribute significant light to the fitted data, and does
-its mass matter for the lensing calculation? Masking a galaxy's visible emission does not remove its
-gravitational effect. In a galaxy-light analysis, the concern is instead how overlapping emission affects the
-decomposition of the target.
+Here the main scientific effect of companions is their deflection of the compact images. Foreground light
+is not directly fitted by a positional or flux likelihood; blends matter when extracting the input image
+positions and fluxes. Supporting imaging supplies companion locations and, when needed, luminosity information.
 
-The examples make the relevant choice for their data type. They retain the positions, light profiles, mass
-components and parameter constraints beside the model-building code; these should not be transferred to a
-different field without inspection.
+Use supporting imaging to establish companion positions. Decide which companions need independent mass
+parameters and which can be tied through a population prescription.
 
 __Separate the Contributions__
 
-A good fit to the combined image does not guarantee that the light has been assigned correctly to each galaxy.
-Inspect individual model components and residuals, especially where their emission overlaps. Fixing or sharing
-parameters can help constrain a fit, but also introduces assumptions about the components.
-
-Use the simulator to understand the example field, then follow the modeling example to add the neighbours
-explicitly. In larger lens systems, distinguish the main deflectors from the additional companion population.
-
-__In This Folder__
-
-These examples use point-source observables and their associated image identities. The relevant script states
-which positions, fluxes or time delays enter the fit; do not assume every observable is used in every example.
+Inspect predicted image positions and any fitted fluxes separately. If the measurements came from blended
+imaging, assess that upstream decomposition as well; a point-source likelihood does not re-fit foreground
+light. Masking visible emission in the preparation stage does not remove a companion's deflection.
 
 __Choose An Example__
 

@@ -2,9 +2,24 @@
 Features: Operated Light Profile
 ================================
 
-An operated light profile describes emission after an instrumental operation has already been included in the
-profile. For imaging, the common example is a profile that already describes the PSF-blurred appearance of
-compact emission.
+Separate compact emission from the extended light around it using a profile whose instrumental meaning is explicit. For imaging, an operated profile describes a component that already includes PSF blurring; this is separate from whether its intensity is solved linearly.
+
+__Scientific Use Cases__
+
+- Model a compact nuclear component alongside extended galaxy emission.
+- Assess how allocating central light changes the foreground decomposition and inferred source.
+- Keep intrinsic light, observed profile shape and instrumental response distinct when constructing a model.
+
+__This Dataset and Lens Regime__
+
+This folder treats imaging with multiple important deflectors. Include all of them in the ray tracing and
+keep their light separate from their mass contributions. The combined deflection can be better constrained
+than the allocation of mass between galaxies; examine that allocation when interpreting source properties
+or small residual structures.
+
+![operated light profile](../../../../../images/features/operated_light_profile.png)
+
+Conceptual illustration. The PSF illustration refers to imaging: an already blurred component is not convolved a second time. The schematic illustrates the feature; retain all deflectors in this multi-galaxy example.
 
 __Avoid Applying the Same Response Twice__
 
@@ -25,11 +40,6 @@ Read the simulator and modeling example together. Imaging and interferometer res
 retain the data-type-specific explanation in the recipe rather than applying an imaging PSF assumption to
 every dataset.
 
-__In This Folder__
-
-The examples contain multiple main lens galaxies, rather than a single dominant deflector with only small
-companions. Follow how the feature is applied to each galaxy and which parameters are shared. A group halo is
-not implicit in this setup.
 
 __Choose An Example__
 

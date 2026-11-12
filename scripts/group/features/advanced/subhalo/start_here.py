@@ -2,8 +2,24 @@
 Features: Subhalo
 =================
 
-A dark matter subhalo can perturb lensed emission without supplying visible light of its own. The effect
-depends on the halo properties, its location relative to the arcs and the larger lens model.
+Investigate small dark matter halos through their perturbations of lensed emission. Separate the search for a candidate in the data from the calibration of which halos the same analysis could recover.
+
+__Scientific Use Cases__
+
+- Test whether an arc anomaly favors an additional mass component.
+- Interpret non-detections using appropriately matched injection-and-recovery experiments.
+- Prepare detection and selection information for a separate halo-population analysis.
+
+__This Dataset and Lens Regime__
+
+This folder treats group-scale imaging with individual member galaxies. Distinguish the main deflectors,
+additional members and any explicit common group halo. The light decomposition and the split of mass among
+components can affect the inferred source; a good combined fit does not guarantee that each component is
+independently constrained.
+
+![subhalo](../../../../../images/features/subhalo_detection_illustration.png)
+
+Conceptual illustration. The local perturbation is exaggerated, and the marker indicates an inferred halo position rather than light emitted by dark matter. The schematic illustrates the feature; retain all deflectors in this group example.
 
 __Detection and Sensitivity Ask Different Questions__
 
@@ -23,11 +39,6 @@ stages and comparison settings in its own start-here example.
 Read the appropriate workflow before interpreting a search map or evidence difference. Its result is
 conditional on the model alternatives and data treatment used in that analysis.
 
-__In This Folder__
-
-The examples contain a group-scale lens with several galaxy components. A shared group halo, where present, is
-an explicit model choice. Keep the individual deflectors, companion population and source components distinct
-when following the recipe.
 
 __Choose An Example__
 

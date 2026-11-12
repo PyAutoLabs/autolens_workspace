@@ -2,8 +2,24 @@
 Features: Mass Stellar Dark
 ===========================
 
-A decomposed mass model separates the mass associated with stellar light from a dark-halo contribution. It
-provides an alternative to describing the total mass with a single profile.
+Investigate how the lensing mass is divided between stars and dark matter by linking a stellar mass component to the observed light and fitting an additional dark-halo component. The lensing constraints act on their combined deflection.
+
+__Scientific Use Cases__
+
+- Infer a stellar mass-to-light normalization under an explicit light and halo model.
+- Explore the stellar and dark contributions over the radii constrained by the lensed images.
+- Compare decomposed models with total-mass descriptions and test sensitivity to priors and light modeling.
+
+__This Dataset and Lens Regime__
+
+This folder treats imaging with multiple important deflectors. Include all of them in the ray tracing and
+keep their light separate from their mass contributions. The combined deflection can be better constrained
+than the allocation of mass between galaxies; examine that allocation when interpreting source properties
+or small residual structures.
+
+![mass stellar dark](../../../../../images/features/stellar_dark_illustration.png)
+
+Conceptual illustration. The stellar and dark components are a model decomposition; lensing responds to their combined mass. The schematic illustrates the feature; retain all deflectors in this multi-galaxy example.
 
 __From Light to Stellar Mass__
 
@@ -25,11 +41,6 @@ Use the direct fit to inspect the components, then follow the modeling or chaini
 decomposition together with its priors and assumptions rather than treating each fitted component as an
 independent measurement.
 
-__In This Folder__
-
-The examples contain multiple main lens galaxies, rather than a single dominant deflector with only small
-companions. Follow how the feature is applied to each galaxy and which parameters are shared. A group halo is
-not implicit in this setup.
 
 __Choose An Example__
 

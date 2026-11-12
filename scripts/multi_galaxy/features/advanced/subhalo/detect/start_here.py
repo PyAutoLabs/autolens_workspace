@@ -2,12 +2,23 @@
 Subhalo Detection: Multi Galaxy
 ===============================
 
-This script runs the full SLaM pipeline followed by the three SUBHALO stages, to detect a dark matter subhalo
-in a multi-galaxy strong lens.
+Search for a dark matter halo through its effect on lensed emission, rather than through visible starlight. Compare a carefully constructed smooth lens/source model with alternatives containing a perturber, then assess whether a candidate survives changes to the baseline model.
 
-Read `multi_galaxy/slam.py` first — the multi-galaxy SLaM baseline — and `guides/modeling/slam_start_here`
-before it. The five SLaM stages here are copied from that baseline unchanged; what this script adds is the
-subhalo search on top of them.
+__Scientific Use Cases__
+
+- Investigate localized arc anomalies using an explicit model comparison.
+- Infer a candidate halo position and mass under the chosen profile and redshift assumptions.
+- Build a detection sample that can later be combined with sensitivity calibration for population studies.
+
+__This Dataset and Lens Regime__
+
+Read the multi-galaxy SLaM baseline first. The key additional test is whether a compact perturber is favored
+after all dominant deflectors have been included and their mass allocation examined. The teaching sections
+below retain the baseline, grid search, refinement and the specific mass-split false-positive discussion.
+
+![subhalo — detect](../../../../../../images/features/subhalo_detection_illustration.png)
+
+Conceptual illustration. The local perturbation is exaggerated, and the marker indicates an inferred halo position rather than light emitted by dark matter. The schematic illustrates the feature; retain all deflectors in this multi-galaxy example.
 
 __Contents__
 
@@ -42,10 +53,9 @@ Detection is a comparison against the smooth model, so the detection floor is se
 is constrained. In the multi-galaxy regime the smooth model has a known weak spot: the split of mass between
 the co-dominant deflectors is far less well constrained than their total (`multi_galaxy/modeling.py`).
 
-**A wrong mass split produces residuals that look like a subhalo.** They are compact, they sit on the arcs, and
-they are of the same character a perturber produces — this was checked directly rather than assumed, and a
-mis-split of roughly one percent of the total Einstein radius is enough to produce residual power comparable to
-a 10^10 solar mass subhalo. If anything the mis-split residual is the more concentrated of the two.
+**An incorrect mass split can produce residuals that mimic a subhalo.** Changes in the deflectors can leave
+localized structure near the arcs. The amplitude and appearance depend on the lens geometry, source and data;
+there is no universal mass-split error that corresponds to a particular halo mass.
 
 Two practical consequences, both of which this script acts on:
 

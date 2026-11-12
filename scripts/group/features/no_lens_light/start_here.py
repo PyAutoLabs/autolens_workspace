@@ -2,8 +2,27 @@
 Features: No Lens Light
 =======================
 
-Some lensing datasets contain no visible foreground lens light. This may be a property of the observation or a
-consequence of subtracting a foreground-light model before the lens analysis.
+Fit the lens mass and background source when foreground galaxy emission is negligible in the fitted pixels or has already been subtracted. Omitting foreground light leaves all required gravitational deflectors in the model.
+
+__Scientific Use Cases__
+
+- Analyse foreground-faint observations without introducing unnecessary light components.
+- Model prepared lens-light-subtracted data while testing sensitivity to subtraction residuals.
+- Concentrate on source morphology and lens mass when foreground emission is adequately accounted for.
+
+For source-science measurements, continue to [source_science.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/source_science.ipynb).
+Interpret the combined reconstructed light together with the lens and reconstruction assumptions.
+
+__This Dataset and Lens Regime__
+
+This folder treats group-scale imaging with individual member galaxies. Distinguish the main deflectors,
+additional members and any explicit common group halo. The light decomposition and the split of mass among
+components can affect the inferred source; a good combined fit does not guarantee that each component is
+independently constrained.
+
+![no lens light](../../../../images/features/no_lens_light.png)
+
+Conceptual illustration. The dashed contours represent an assumed deflecting mass, not visible light or a measured mass map. The schematic illustrates the feature; retain all deflectors in this group example.
 
 __Light and Mass Are Different Parts of the Model__
 
@@ -21,11 +40,6 @@ The simulator defines the example's emission and deflectors. The modeling exampl
 source-light model, while any SLaM example carries the same premise through its stages. The omission of
 foreground light remains explicit in each recipe so that the script can still be understood on its own.
 
-__In This Folder__
-
-The examples contain a group-scale lens with several galaxy components. A shared group halo, where present, is
-an explicit model choice. Keep the individual deflectors, companion population and source components distinct
-when following the recipe.
 
 __Choose An Example__
 

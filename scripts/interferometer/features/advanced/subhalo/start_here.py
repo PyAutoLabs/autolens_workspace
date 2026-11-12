@@ -2,8 +2,24 @@
 Features: Subhalo
 =================
 
-A dark matter subhalo can perturb lensed emission without supplying visible light of its own. The effect
-depends on the halo properties, its location relative to the arcs and the larger lens model.
+Investigate small dark matter halos through their perturbations of lensed emission. Separate the search for a candidate in the data from the calibration of which halos the same analysis could recover.
+
+__Scientific Use Cases__
+
+- Test whether an arc anomaly favors an additional mass component.
+- Interpret non-detections using appropriately matched injection-and-recovery experiments.
+- Prepare detection and selection information for a separate halo-population analysis.
+
+__This Dataset and Lens Regime__
+
+These examples fit complex visibilities: the lensed sky prediction is Fourier transformed and compared at
+the measured baseline coordinates with the supplied noise. A dirty or reconstructed image is useful for
+inspection, but does not replace this likelihood. Interpret source structure in the context of visibility
+coverage and the assumptions used to model the sky.
+
+![subhalo](../../../../../images/features/subhalo_detection_illustration.png)
+
+Conceptual illustration. The local perturbation is exaggerated, and the marker indicates an inferred halo position rather than light emitted by dark matter. The scene illustrates sky/source structure; the fit here is to visibilities, not the displayed image.
 
 __Detection and Sensitivity Ask Different Questions__
 
@@ -23,11 +39,6 @@ stages and comparison settings in its own start-here example.
 Read the appropriate workflow before interpreting a search map or evidence difference. Its result is
 conditional on the model alternatives and data treatment used in that analysis.
 
-__In This Folder__
-
-These examples fit visibilities. The image-plane light prediction is transformed into the measured
-Fourier-domain quantities; a dirty image is an inspection product, not a substitute for that likelihood. Keep
-the visibility sampling, noise and model-specific response choices in view when adapting an imaging example.
 
 __Choose An Example__
 

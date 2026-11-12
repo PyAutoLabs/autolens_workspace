@@ -2,25 +2,34 @@
 Start Here: Datacube
 ====================
 
-A datacube is a stack of interferometer observations of the same lens taken across many spectral channels — for
-example, an ALMA observation of a CO emission line in a high-redshift lensed galaxy, where each channel records
-visibilities at a slightly different frequency. The lens galaxy is the same in every channel, but the source's
-emission-line morphology varies across the cube: bright in channels close to the line peak, faint in channels at
-the line wings, and shifting in shape if the source has internal velocity structure.
+Reconstruct a lensed galaxy across a spectral line while fitting a shared foreground lens. Different channels can trace different emitting regions, making datacube modeling useful for source science of molecular gas and other line-emitting material.
 
-This script shows how to model such a cube in PyAutoLens by treating it as exactly that — a Python list of
-`Interferometer` objects, one per channel — and tying them together with `af.FactorGraphModel`. The lens model is
-shared across every channel, and each channel reconstructs its own pixelized source. The result is a per-channel
-sequence of source-plane reconstructions whose combined likelihood drives a single, global lens model fit.
+__Scientific Use Cases__
 
-This is Phase 1 of datacube modeling. It deliberately runs each channel's NUFFT and source inversion
-independently, because reusing existing single-channel code is the fastest path to a working end-to-end
-demonstration. The faster shared-`Lᵀ W̃ L` design — which exploits the fact that `uv_wavelengths` and
-`noise_map` change very little across an emission line — is a follow-up that lands once this prototype is proven.
+- Reconstruct how source emission changes across spectral channels.
+- Combine channel information to constrain the common lens mass.
+- Prepare source-plane channel maps for subsequent line-profile or kinematic analysis; this example does not itself fit a dynamical model.
 
-If you've already read `interferometer/start_here.py`, the bulk of this script will look familiar. The new
-ingredients are the loop that loads each channel, the `AnalysisFactor` per channel, and the `FactorGraphModel`
-that sums them.
+__This Dataset and Lens Regime__
+
+Each spectral channel has an Interferometer dataset and its own source inversion. The factor graph shares
+the lens model while the source-pixel brightnesses are solved from each channel's data. Shared lens geometry
+does not impose a rotating disk or other dynamical model on those brightnesses.
+
+![datacube](../../../../images/new_user_guide/dataset_types.png)
+
+Reused new-user-guide schematic. The interferometer panel shows sampling locations, not visibility amplitudes or phases; cube slices are spectral channels. These are conceptual dataset representations, not measurements.
+
+__How the Channels Are Combined__
+
+The script loads a list of Interferometer datasets and constructs an analysis factor for each channel.
+Each factor evaluates the shared lens against its own measurements and solves its source brightnesses.
+The combined objective brings those factors together. In this script the sparse operator is prepared per
+channel; channel-shared optimizations shown elsewhere should not be assumed to run here.
+
+Inspect source-plane channel maps alongside each channel's fit. Inferences about velocity structure also
+need spectral calibration, resolution and noise to be considered, rather than interpreting colour in the
+illustration as a fitted velocity field.
 
 __Contents__
 
@@ -32,7 +41,7 @@ __Contents__
 - **Dataset Loading:** Loop over channel folders to build a `dataset_list` of `Interferometer` objects.
 - **Sparse Operators:** Per-channel sparse-operator pre-compute used by the pixelized source inversion.
 - **Positions:** Load the cube's multiple-image positions and build a shared `PositionsLH` penalty.
-- **Settings:** Disable the positive-only solver (visibility inversions can take negative pixel values).
+- **Settings:** Use the explicitly selected unconstrained source solver; Fourier signs do not require negative sky brightness.
 - **Mesh Shape:** The pixelization mesh shape — fixed before modeling because JAX needs static shapes.
 - **Model:** Shared lens galaxy + pixelized source. The same model is reused unchanged across every channel.
 - **Per-Channel Analyses:** One `AnalysisInterferometer` per channel, all sharing the same `PositionsLH`.
@@ -44,12 +53,9 @@ __Contents__
 
 __JAX__
 
-PyAutoLens uses JAX under the hood for fast GPU/CPU acceleration. If JAX is installed with GPU support, your
-fits will run much faster (tens of minutes instead of several hours for a 4-channel cube). On CPU, JAX still
-provides a meaningful speed-up via multithreading, but datacube fits are inherently more expensive than
-single-channel fits because the per-channel inversion cost multiplies by the number of channels.
-
-If you don't have a GPU locally, consider Google Colab, which provides free GPUs.
+JAX can accelerate the calculation on compatible CPU or GPU setups. Runtime depends on the channels,
+visibility counts, mask and mesh sizes, compilation, hardware and search behavior. Benchmark the actual
+configuration rather than assuming a fixed GPU speed-up or a particular hosted-compute allocation.
 
 __Related Examples__
 
@@ -175,9 +181,9 @@ positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 """
 __Settings__
 
-Interferometer pixelizations disable the positive-only inversion solver. The visibility measurement process
-can produce genuinely negative dirty-image pixel values, so the source-plane reconstruction must be allowed to
-go negative — forcing positivity here would create unphysical bias.
+This example disables the positive-only source solver. Negative dirty-image pixels or signed visibility
+components do not require negative intrinsic source brightness. Inspect the unconstrained reconstruction
+and compare solver assumptions where appropriate; the measurement-space sign is not a positivity argument.
 """
 settings = al.Settings(use_positive_only_solver=False)
 
@@ -340,6 +346,7 @@ This script walks through the full datacube modeling pipeline. For deeper dives:
    per-channel log-evidences are built and summed inside the FactorGraph, with an explicit eager-vs-JIT
    correctness check.
 
-Phase 2 work — the shared-`Lᵀ W̃ L` optimisation that exploits channel-invariant `uv_wavelengths` and
-`noise_map` to bring ALMA-scale cubes inside CPU runtime budgets — is a separate follow-up issue.
+Other datacube implementations may share calculations across channels when their sampling and noise
+assumptions permit it. This script prepares its sparse operators per channel; compare the actual routes
+and benchmark the chosen dataset before making runtime claims.
 """

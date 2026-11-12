@@ -2,8 +2,27 @@
 Features: Pixelization
 ======================
 
-A pixelization represents light using a mesh whose brightness values are solved during the fit. It provides a
-flexible alternative to describing all of the emission with a small collection of analytic profiles.
+Reconstruct the background galaxy on a source-plane mesh when simple light profiles do not capture its morphology. Pixelization is a key source-science feature: it supports measurements of irregular emission while the lens model maps that emission into the observed data.
+
+__Scientific Use Cases__
+
+- Reconstruct extended or clumpy source morphology without specifying a small set of analytic components.
+- Measure source brightness and spatial structure while accounting for lensing and the instrumental response.
+- Test lens mass models using the detailed structure of the lensed emission, with mesh and regularization choices kept explicit.
+
+For source-science measurements, continue to [source_science.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/source_science.ipynb).
+Interpret the combined reconstructed light together with the lens and reconstruction assumptions.
+
+__This Dataset and Lens Regime__
+
+This folder treats group-scale imaging with individual member galaxies. Distinguish the main deflectors,
+additional members and any explicit common group halo. The light decomposition and the split of mass among
+components can affect the inferred source; a good combined fit does not guarantee that each component is
+independently constrained.
+
+![pixelization](../../../../images/features/pixelization_illustration.png)
+
+Conceptual illustration. The mesh and source are illustrative; recoverable structure depends on the lens model, response, sampling and regularization. The schematic illustrates the feature; retain all deflectors in this group example.
 
 __From a Mesh to the Data__
 
@@ -40,11 +59,6 @@ Check the fit in the space where the data were measured as well as inspecting th
 plausible reconstruction can still accompany an inadequate PSF, an unsuitable mask or an incomplete physical
 model. Fine structure should be interpreted in light of the resolution and assumptions of the full analysis.
 
-__In This Folder__
-
-The examples contain a group-scale lens with several galaxy components. A shared group halo, where present, is
-an explicit model choice. Keep the individual deflectors, companion population and source components distinct
-when following the recipe.
 
 __Choose An Example__
 
