@@ -3810,7 +3810,7 @@
     ],
     "notebook": "notebooks/imaging/features/advanced/sky_background/start_here.ipynb",
     "path": "scripts/imaging/features/advanced/sky_background/start_here.py",
-    "summary": "The background contributes light across an image in addition to the galaxy or lens being studied. If a background contribution remains in the data, it can be included in the model rather than attributed to the target's emission.",
+    "summary": "Fit the sky background alongside the lens and source light so that an uncertain background level is not mistaken for faint galaxy emission. This matters especially when measuring the extended outskirts of the foreground galaxy, where a small sky offset can change its inferred size, profile shape and total light.",
     "title": "Features: Sky Background"
   },
   {
@@ -3965,6 +3965,7 @@
   {
     "contents": [],
     "cross_refs": [
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/los_halos/start_here.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/detect/start_here.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/simulator.ipynb",
@@ -3972,7 +3973,7 @@
     ],
     "notebook": "notebooks/imaging/features/advanced/subhalo/start_here.ipynb",
     "path": "scripts/imaging/features/advanced/subhalo/start_here.py",
-    "summary": "A dark matter subhalo can perturb lensed emission without supplying visible light of its own. The effect depends on the halo properties, its location relative to the arcs and the larger lens model.",
+    "summary": "Use the distortions of strongly lensed arcs to investigate small dark matter halos that may be too faint to see through their own starlight. This feature connects two scientific tasks: searching for a halo in an observed lens, and measuring which halos that observation and analysis could have detected.",
     "title": "Features: Subhalo"
   },
   {
@@ -4462,13 +4463,14 @@
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/no_lens_light/modeling.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/no_lens_light/simulator.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/no_lens_light/slam.ipynb",
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/source_science.ipynb",
       "modeling.py",
       "simulator.py",
       "slam.py"
     ],
     "notebook": "notebooks/imaging/features/no_lens_light/start_here.ipynb",
     "path": "scripts/imaging/features/no_lens_light/start_here.py",
-    "summary": "Some lensing datasets contain no visible foreground lens light. This may be a property of the observation or a consequence of subtracting a foreground-light model before the lens analysis.",
+    "summary": "Model the lens mass and reconstruct the background source when foreground lens light is negligible in your image, or has already been subtracted. This feature keeps the gravitational lens model while omitting its foreground light component, so the fit concentrates on the lensed source emission.",
     "title": "Features: No Lens Light"
   },
   {
