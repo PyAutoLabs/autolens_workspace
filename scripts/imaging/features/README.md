@@ -17,9 +17,12 @@ The following example scripts illustrating lens modeling where:
 - `scaling_relation`: Use scaling relations, for example relating light and mass, to compose lens models with few parameters for many galaxies.
 - `advanced`: Advanced features for expert users, for example modeling with multiple datasets simultaneously.
 
+For foreground light morphology, see the advanced [ellipse fitting introduction](advanced/ellipse/start_here.py),
+which links to PyAutoGalaxy's dedicated examples.
+
 # Files
 
-- `simulator_manual_signal_to_noise`: Simulate imaging data where the input is not galaxy intensities but their output S/N.
+- `simulator_manual_signal_to_noise_ratio`: Simulate imaging data where the input is not galaxy intensities but their output S/N.
 
 # Notes
 

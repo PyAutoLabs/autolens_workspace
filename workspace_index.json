@@ -3319,6 +3319,19 @@
     "title": "Features: Double Source-Plane Lenses"
   },
   {
+    "contents": [],
+    "cross_refs": [
+      "//github.com/PyAutoLabs/autogalaxy_workspace/blob/main/notebooks/ellipse/fit.ipynb",
+      "//github.com/PyAutoLabs/autogalaxy_workspace/blob/main/notebooks/ellipse/modeling.ipynb",
+      "//github.com/PyAutoLabs/autogalaxy_workspace/blob/main/notebooks/ellipse/multipoles.ipynb",
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/guides/misc/witt_wynne.ipynb"
+    ],
+    "notebook": "notebooks/imaging/features/advanced/ellipse/start_here.ipynb",
+    "path": "scripts/imaging/features/advanced/ellipse/start_here.py",
+    "summary": "Measure the foreground lens galaxy's light morphology before choosing a lens-light model. Ellipse fitting traces how the ellipticity, position angle and centre of its isophotes change with radius, revealing twists, centre shifts and departures from elliptical symmetry that a single Sersic profile may not capture.",
+    "title": "Advanced Features: Ellipse Fitting"
+  },
+  {
     "contents": [
       "Model",
       "Dataset Paths",
@@ -4942,7 +4955,7 @@
     ],
     "notebook": "notebooks/imaging/features/simulator_manual_signal_to_noise_ratio.ipynb",
     "path": "scripts/imaging/features/simulator_manual_signal_to_noise_ratio.py",
-    "summary": "When simulating `Imaging` of a strong lens, one is often not concerned with the actual units of the light (e.g. electrons per second, counts, etc.) but instead simple wants the data to correspond to a certain signal to noise value.",
+    "summary": "Build controlled imaging simulations to test lens-light subtraction and recovery of faint lensed sources as data quality changes. The `lp_snr` profiles let you request a signal-to-noise ratio instead of manually tuning each profile's intensity. This is useful for comparing model recovery across a range of brightnesses at fixed observing conditions.",
     "title": "Simulator: Manual Signal to Noise Ratio"
   },
   {
@@ -9156,16 +9169,17 @@
       "Result"
     ],
     "cross_refs": [
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/guides/misc/witt_wynne.ipynb",
       "guides/point_solver/pairing.py",
       "imaging/modeling.py",
       "point_source/start_here.ipynb",
-      "start.here.py",
+      "point_source/start_here.py",
       "start_here.ipynb",
       "start_here.py"
     ],
     "notebook": "notebooks/point_source/features/fluxes.ipynb",
     "path": "scripts/point_source/features/fluxes.py",
-    "summary": "A measurable quantity of a point source is its flux\u2014the total amount of light received from each multiple image of the point source (e.g., the quasar images).",
+    "summary": "Use the brightnesses of multiply imaged quasars or supernovae alongside their positions to constrain a lens model and the intrinsic source flux. This is useful for controlled simulations and for observations where image fluxes can be interpreted with an appropriate model of the relevant astrophysics.",
     "title": "Modeling: Fluxes"
   },
   {
@@ -9361,14 +9375,15 @@
       "Cosmology"
     ],
     "cross_refs": [
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/guides/misc/witt_wynne.ipynb",
       "imaging/modeling.py",
       "point_source/start_here.ipynb",
-      "start.here.py",
+      "point_source/start_here.py",
       "start_here.ipynb"
     ],
     "notebook": "notebooks/point_source/features/time_delays.ipynb",
     "path": "scripts/point_source/features/time_delays.py",
-    "summary": "A measurable quantity of a point source is its time delay\u2014the time it takes for light to travel from the source to the observer for each multiple image of the point source (e.g., the quasar images). This is often expressed as the relative time delay between each image and the image with the shortest time delay, which is often referred to as the \"reference image.\"",
+    "summary": "Use the relative arrival times of variability in multiply imaged quasars or supernovae, together with image positions, to constrain the lens and infer cosmological distances. Time-delay cosmography uses these measured delays and a lens model to constrain the Hubble constant, H0.",
     "title": "Modeling: Time Delays"
   },
   {

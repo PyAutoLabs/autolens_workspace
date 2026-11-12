@@ -13,6 +13,8 @@ for specific scientific topics.The following example scripts illustrating lens m
 - `potential_correction`: Gravitational imaging — pixelized corrections to the lensing potential reconstructed jointly with the source.
 - `los_halos`: Simulating a lens with line-of-sight (LOS) dark matter halos on multiple redshift planes, sampled from a cosmological halo mass function and ray-traced with multi-plane lensing.
 
+- [`ellipse`](ellipse/start_here.ipynb): Measure foreground lens-light isophotes with the maintained PyAutoGalaxy examples.
+
 # Notes
 
 These scripts only give a brief overview of how to analyse and interpret the results a lens model fit.

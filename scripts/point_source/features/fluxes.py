@@ -2,23 +2,24 @@
 Modeling: Fluxes
 ================
 
-A measurable quantity of a point source is its flux—the total amount of light received from each multiple image
-of the point source (e.g., the quasar images).
+Use the brightnesses of multiply imaged quasars or supernovae alongside their positions to constrain a lens
+model and the intrinsic source flux. This is useful for controlled simulations and for observations where
+image fluxes can be interpreted with an appropriate model of the relevant astrophysics.
 
-In practice, fluxes are often measured but not used directly when analyzing lensed point sources such as quasars or
-supernovae. This is because fluxes can be significantly affected by microlensing, which many lens models do not
-accurately capture. However, in this simulation, microlensing is not included, so the fluxes can be simulated and
-fitted reliably.
+This example fits a smooth lens model to simulated positions and fluxes. It samples the intrinsic flux
+with `PointFlux`, then shows an alternative composition that solves the source flux analytically. Keeping
+flux as a sampled parameter lets you place an informative prior on it, as needed when using a standardized
+supernova luminosity. The solved-flux alternative and its flat-prior assumption are explained below.
 
-Nevertheless, this script describes how to perform point source lens modeling using the fluxes of the point source
-dataset as additional information on top of the positions of the point source, in case you are studying microlensing
-or confident the fluxes are not affected by it.
+Observed image fluxes need care: microlensing, extinction, intrinsic variability combined with time delays,
+and small-scale mass structure can change their ratios. This script does not model those effects, so it is
+not itself a microlensing or flux-ratio-anomaly analysis. Its simulated dataset omits those complications.
 
 __Contents__
 
 - **Model:** Compose the lens model fitted to the data.
 - **Dataset:** Load and plot the strong lens dataset.
-- **Point Solver:** We set up the `PointSolver`, which is used to compute the multiple images of the point source in.
+- **Point Solver:** Compute the multiple-image positions for a trial lens model.
 - **Search:** Configure the non-linear search used to fit the model.
 - **Analysis:** Create the Analysis object that defines how the model is fitted to the data.
 - **Run Times:** Profiling the expected run time of the model-fit.
@@ -31,14 +32,12 @@ This script fits a `PointDataset` data of a 'galaxy-scale' strong lens with a mo
  - The lens galaxy's total mass distribution is an `Isothermal`.
  - The source `Galaxy` is a point source with flux, a `PointFlux`.
 
-No external shear is included in the model, where it is for the `imaging` and `interferometer` examples. For a
-quadruply imaged point source (8 data points) there is insufficient information to constrain an `Isothermal` plus
-an external shear (9 parameters).
+This example uses an Isothermal lens without external shear to keep the demonstration simple. Whether a
+more flexible model is constrained depends on the full dataset, priors and degeneracies; positions alone,
+positions plus fluxes, and positions plus time delays carry different information.
 
-Where a shear is fitted, it is never attached to the lens galaxy: it is an `ExternalShear` held in an
-`al.MassField`, which lives in the model's own `fields` slot beside `galaxies=` (and in the tracer's
-`fields=` argument). The shear describes the tidal field of everything outside the system, so it is a property of
-the system rather than of a galaxy. See `imaging/modeling.py` for the full description.
+When needed, external shear belongs in an `al.MassField` in the model's `fields` slot. See
+`imaging/modeling.py` for that composition.
 
 __Start Here Notebook__
 
@@ -173,7 +172,7 @@ af.ModelPlotter(model).figure()
 """
 __Search__
 
-The model is fitted to the data using the nested sampling algorithm Nautilus (see `start.here.py` for a 
+The model is fitted to the data using the nested sampling algorithm Nautilus (see `point_source/start_here.py` for a
 full description).
 
 In the `start_here.py` example 100 live points (`n_live=100`) were used to sample parameter space. We increase this
@@ -190,7 +189,7 @@ search = af.Nautilus(
 """
 __Analysis__
 
-Create the `AnalysisPoint` object defining how the via Nautilus the model is fitted to the data.
+Create the `AnalysisPoint` object that evaluates the point-source likelihood for the search.
 """
 analysis = al.AnalysisPoint(
     dataset=dataset,
@@ -249,11 +248,9 @@ af.ModelPlotter(model_solved).figure()
 """
 __Run Times__
 
-For the positions-only fit, the run time of the log likelihood function was ~0.01 seconds, which is a modest run-time.
-
-Evaluating the time delays does not increase this much, with a value of around ~0.01 seconds still expected.
-
-Overall modeling run times should therefore be around 20 minutes on CPU, under 5 minutes on GPU.
+Runtime depends on the point solver, model complexity, search settings and hardware. Measure the likelihood
+cost and inspect search progress for your own setup; an additional observable can change both the cost of
+one evaluation and the number of evaluations needed to explore the posterior.
 
 __Model-Fit__
 
@@ -268,10 +265,19 @@ __Result__
 The `info` attribute shows the model in a readable format (if this does not display clearly on your screen refer to
 `start_here.ipynb` for a description of how to fix this).
 
-This confirms that `flux` parameters of the source is inferred by the fit.
+This confirms that the intrinsic source `flux` is inferred by the fit.
 """
 print(result.info)
 
 """
 Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
+"""
+
+"""
+__Related Geometric Guide__
+
+For a specialized approximation to point-source image geometry, see
+[Witt-Wynne and the SIEP solver](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/guides/misc/witt_wynne.ipynb).
+That guide explains its assumptions and compares its predictions with the full lens solver. Its geometric
+ellipse is a different use of ellipses from fitting a galaxy's light isophotes.
 """
