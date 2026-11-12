@@ -22,6 +22,28 @@ The [**PyAutoLens AI Assistant**](https://github.com/PyAutoLabs/autolens_assista
 
 Examples are available as Python scripts in `scripts/` and Jupyter notebooks in `notebooks/`.
 
+### Lens Scale
+
+![Galaxy, multi-galaxy, group and cluster lenses, with indicative Einstein radii.](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/lens_scales.png)
+
+For a single lens galaxy, choose your data type below. For larger systems, start with [multi_galaxy/](scripts/multi_galaxy), [group/](scripts/group) or [cluster/](scripts/cluster).
+
+### Dataset Type
+
+![Imaging, interferometer sampling, multi-band imaging, spectral data cubes and lensed point sources.](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/dataset_types.png)
+
+Match your observations to [imaging/](scripts/imaging), [interferometer/](scripts/interferometer), [multi_dataset/](scripts/multi_dataset) for multiple wavebands, [data cubes](scripts/interferometer/features/datacube) or [point_source/](scripts/point_source). Each has a `start_here` example to get you going.
+
+### Weak Lensing
+
+![Strong-lensing arcs near a cluster centre and weakly distorted background galaxies across a wider field.](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/strong_weak_lensing.png)
+
+To model the subtle distortions of many background galaxies, start with [weak/](scripts/weak). You can also combine weak and strong lensing to study a cluster across both scales.
+
+*AI-generated illustrations, not observations. Lens panels use different angular scales; dashed contours represent a model. See the [new user guide](https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html) for details.*
+
+### Browse All Examples
+
 | I want to… | Start here |
 |---|---|
 | Learn the API, customise models or inspect results | [Guides](https://github.com/PyAutoLabs/autolens_workspace/tree/main/scripts/guides) |
