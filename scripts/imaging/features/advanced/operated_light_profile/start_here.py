@@ -2,39 +2,90 @@
 Features: Operated Light Profile
 ================================
 
-An operated light profile describes emission after an instrumental operation has already been included in the
-profile. For imaging, the common example is a profile that already describes the PSF-blurred appearance of
-compact emission.
+Separate compact nuclear emission from the extended light of a lens galaxy. A bright unresolved nucleus can
+appear as a PSF-shaped feature spread across several pixels, overlapping the galaxy light that you need to
+model accurately. Operated light profiles describe that observed compact component directly, while ordinary
+extended light profiles continue to be convolved with the point-spread function (PSF).
 
-__Avoid Applying the Same Response Twice__
+__Scientific Use Cases__
 
-Ordinary intrinsic light profiles are passed through the instrumental response before comparison with the
-data. An operated profile is already defined at that stage for the relevant operation. Applying the same PSF
-convolution again would broaden it a second time.
+Use an operated profile when an appropriate model of the observed compact emission helps separate it from
+the host galaxy: for example, when a bright nuclear component would otherwise be absorbed into the extended
+light profile. This can improve the description of foreground light used in a lens fit and help assess how
+its decomposition affects the inferred lens and source.
 
-This distinction is about the meaning of the profile, not simply whether a source is small. Decide whether
-your parameters describe intrinsic emission or its observed appearance before choosing the profile class.
+The worked example places compact emission at the centre of the foreground lens galaxy. It models that
+component with an operated Gaussian alongside extended lens light and a lensed background source. This is
+not a complete workflow for multiply imaged quasars or a method for resolving structure below the PSF scale.
 
-__Compact Emission and Extended Light__
+![Compact nuclear emission and extended galaxy light](../../../../../images/features/operated_light_profile.png)
 
-Compact nuclear emission can overlap an extended host galaxy. The examples show how those components are
-combined and which instrumental response is already represented. Their decomposition depends on the adopted
-compact-profile shape as well as the host model.
+Conceptual illustration: the left panel shows a schematic Gaussian PSF. The compact component in the right
+panel already includes that blur; it is not convolved with the PSF a second time. This does not recover
+intrinsic nuclear structure or improve angular resolution.
 
-Read the simulator and modeling example together. Imaging and interferometer responses are different, so
-retain the data-type-specific explanation in the recipe rather than applying an imaging PSF assumption to
-every dataset.
+__What Does Operated Mean?__
 
-__In This Folder__
+An ordinary light profile describes intrinsic emission. For imaging, the model is convolved with the PSF
+before comparison with the observed pixels. An operated profile is defined after that operation: its shape
+already represents the observed, PSF-blurred light.
 
-These examples fit imaging data, so the model is compared with image pixels after accounting for the PSF. The
-foreground light, deflecting mass and background source play different roles; retain the particular component
-choices stated in each recipe.
+The distinction is about what the parameters mean, not simply whether a component is small. A narrow intrinsic
+Gaussian still needs the appropriate convolution. An operated Gaussian instead describes an already blurred
+component and bypasses that convolution. Its width must be interpreted accordingly.
+
+__Convolve Each Component Once__
+
+The compact and extended components can coexist in one model. The extended galaxy and lensed source undergo
+the normal imaging response; the operated component is added in its already operated form. Convolving that
+component again would broaden it twice and change the predicted central surface brightness.
+
+By describing the observed footprint directly, an operated profile can also avoid representing an unresolved
+source as an extremely narrow intrinsic profile on the image grid before convolution. It is not a replacement
+for checking image sampling or for using an appropriate PSF model.
+
+__Separate the Nucleus and Host__
+
+The example uses a Gaussian for the compact component and shares its centre with the lens galaxy's extended
+light profile. This is a specific assumption about the nucleus and host, not a requirement that every compact
+component in real data must be concentric with a galaxy.
+
+The script also shows the linear-operated form, in which the compact component's intensity is solved during
+each likelihood evaluation. These are separate choices: operated determines whether the profile already
+includes the instrumental operation, while linear determines how its intensity is fitted.
+
+Inspect the compact component, extended light and residuals individually. A plausible total image can still
+hide an incorrect allocation of central light. Test whether the host model is absorbing PSF mismatch or whether
+the compact component is compensating for an inadequate extended profile.
+
+__The Adopted PSF Shape Matters__
+
+An operated Gaussian is an analytic description of the observed light, not automatic knowledge of the true
+telescope PSF. Its suitability depends on how well that shape captures the compact emission, including any
+important wings or asymmetry. Other profile choices require the same scientific justification.
+
+An unresolved component's fitted width should not be reported as an intrinsic physical size without accounting
+for the instrumental response. Likewise, uncertainty in its shape and normalization can affect the inferred
+host light. Use an appropriate PSF characterization and assess the stability of the decomposition when those
+choices matter for the scientific result.
+
+__Reading the Examples__
+
+Read the simulator alongside the modeling script to see how the compact and extended components enter the
+mock image and the fit. Check which components are operated, which are linear, and which still receive PSF
+convolution. The simulation provides a controlled example, not evidence that a Gaussian is adequate for all data.
+
+This introduction concerns imaging. Other data types have different instrumental operations; bypassing imaging
+PSF convolution does not mean that an arbitrary component can bypass every response in an interferometer model.
 
 __Choose An Example__
 
-- [modeling.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/operated_light_profile/modeling.ipynb) — Fit the model with a non-linear search.
-- [simulator.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/operated_light_profile/simulator.ipynb) — Generate the example dataset.
+- [modeling.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/operated_light_profile/modeling.ipynb) — Fit compact foreground emission alongside extended lens light and the lensed source, including the linear-operated construction.
+- [simulator.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/operated_light_profile/simulator.ipynb) — Inspect how the example represents compact and extended light in a mock imaging dataset.
 
-The links open notebook versions. The corresponding Python scripts are in this folder; run them from the workspace root.
+There is no separate direct-fit script in this folder. For that workflow, use an imaging fit example and adapt
+the profile construction as demonstrated in the modeling script.
+
+The links open notebook versions. The corresponding Python scripts are in this folder; run them from the
+workspace root.
 """

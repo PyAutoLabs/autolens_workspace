@@ -2,79 +2,90 @@
 Features: Linear Light Profiles
 ===============================
 
-A linear light profile has the same spatial form as an ordinary light profile, but its intensity is solved
-during each likelihood evaluation instead of being sampled by the non-linear search.
+Linear light profiles simplify lens modeling by removing each light profile's intensity from the parameters
+explored by the non-linear search. Instead, the best-fitting intensities are solved together at every
+likelihood evaluation, conditional on the current lens model and light-profile shapes.
+
+Solved does not mean fixed: the brightnesses change as the model changes. The search can concentrate on
+quantities such as galaxy size, shape and lens mass without separately exploring the correlated intensity
+directions. This can make fitting more efficient, especially for models with many light components, although
+the underlying physical degeneracies remain.
+
+__Scientific Use Cases__
+
+Use linear profiles when fitting foreground lens light and parametric source light, or when combining many
+components in a flexible light model. They are particularly useful for multi-Gaussian expansions, where
+sampling a separate intensity for every Gaussian would enlarge the non-linear search substantially.
+
+For lens-light subtraction and source science, the component brightnesses must respond to changes in both
+the light profiles and the lensing geometry. Solving them together provides that adjustment at every trial
+model. It does not establish that the chosen components are a physically unique decomposition of the data.
+
+![Brightness sampled versus brightness solved](../../../../images/features/linear_light_profiles.png)
+
+Conceptual illustration: both panels represent the same lens and source. The search diagrams illustrate
+removing brightness from the sampled parameters; they are not measured likelihood surfaces or a timing benchmark.
+
+__Solved at Every Step, Not Fixed in Advance__
+
+For ordinary light profiles, intensity is a parameter sampled alongside properties such as effective radius
+and Sersic index. For linear profiles, the search proposes the remaining parameters and the fit solves the
+intensities that best match the data under the adopted constraints. The process repeats at the next proposal.
+
+The example fits linear Sersic light profiles for both the lens and source. Two intensity parameters therefore
+leave the non-linear search. Their values still depend on the proposed shapes, lens mass and the other model
+components: the light has not been assigned a single brightness before fitting begins.
+
+Removing an explicit search direction does not remove the information limits in the data. Brightness and size
+can still trade off across the fitted models, and uncertain lensing geometry can still affect source properties.
 
 __What Is Linear About It?__
 
-Once a profile's centre, shape and size are specified, changing its intensity simply scales its image. The
-image of several profiles is a weighted sum of their individual images. This allows their intensities to be
-determined together by linear algebra, accounting for the data and noise.
+Once the profile geometry and lens model are specified, changing a profile's intensity scales its image.
+Several profiles contribute a weighted sum of images. In imaging fits, those images include the appropriate
+lensing and PSF convolution before their intensities are solved using the data and noise weights.
 
-The other model parameters still need to be fitted. At each proposed geometry, the profile images are
-recalculated and their intensities are solved again. Solving brightness therefore does not mean fixing it, and
-the best intensities depend on the rest of the model.
+This is the linear part of the calculation. Centres, shapes, sizes and mass parameters generally remain
+non-linear because changing them changes the component images themselves. Recomputing those images and solving
+new intensities are both part of each likelihood evaluation.
 
-__Why This Changes the Search__
+__Non-Negative Intensities__
 
-With ordinary profiles, the search explores brightness as well as shape. With linear profiles, brightness is
-determined conditionally at every step, reducing the number of sampled parameters. This is especially useful
-when a model contains many light components.
+An unconstrained linear solve can assign negative coefficients, allowing one light component to cancel another.
+For these physical light-profile components, PyAutoLens uses a non-negative solver: intensities may be positive
+or zero, but not negative. A component that is not needed can therefore receive zero intensity.
 
-The calculation still has a cost, and the total run time depends on both the likelihood calculation and the
-search. The examples show the construction and solved intensities so that you can inspect what changed, rather
-than treating the linear solve as a black box.
+This constraint prevents negative component light; it does not guarantee that the adopted profile family
+accurately describes the galaxy. Inspect residuals and individual components as well as the overall fit.
 
-__Reading the Examples__
+__Search Efficiency and Computational Cost__
 
-Start with the direct fit to see how the solved intensities are retrieved. Then read the modeling example to
-see which parameters remain in the non-linear model. The likelihood example explains the underlying
-calculation in more detail.
+The benefit is a smaller non-linear search, with the intensity adjustment handled conditionally at every step.
+The cost is an additional linear calculation. Total run time depends on the number of components, image size,
+implementation and how difficult the remaining search is; there is no universal speed-up or fixed likelihood
+slow-down factor for every model.
 
-__In This Folder__
+Compare complete fits when evaluating efficiency. A slightly slower likelihood can still lead to a faster
+analysis if the search needs fewer evaluations. Conversely, adding many poorly constrained components is not
+made scientifically useful merely by solving their intensities linearly.
 
-These examples fit imaging data, so the model is compared with image pixels after accounting for the PSF. The
-foreground light, deflecting mass and background source play different roles; retain the particular component
-choices stated in each recipe.
+__Inspecting the Results__
 
-__Advantages__
+Solved intensities are obtained from the fit rather than read as ordinary sampled intensity parameters.
+Start with the direct-fit example to see how to retrieve them and construct profiles for visualization, then
+follow the modeling example to inspect what remains in the non-linear model.
 
-Each light profile's `intensity` parameter is therefore not a free parameter in the model-fit, reducing the
-dimensionality of non-linear parameter space by the number of light profiles (in this example by 2 dimensions).
-
-This also removes the degeneracies that occur between the `intensity` and other light profile parameters
-(e.g. `effective_radius`, `sersic_index`), which are difficult degeneracies for the non-linear search to map out
-accurately. This produces more reliable lens model results and the fit converges in fewer iterations, speeding up the
-overall analysis.
-
-The inversion has a relatively small computational cost, thus we reduce the model complexity without much slow-down and
-can therefore fit models more reliably and faster!
-
-__Disadvantages__
-
-Although the computation time of the inversion is small, it is not non-negligible. It is approximately 3-4x slower
-than using a standard light profile.
-
-The gains in run times due to the simpler non-linear parameter space therefore are somewhat balanced by the slower
-likelihood calculation.
-
-__Positive Only Solver__
-
-Many codes which use linear algebra typically rely on a linear algebra solver which allows for positive and negative
-values of the solution (e.g. `np.linalg.solve`), because they are computationally fast.
-
-This is problematic, as it means that negative surface brightnesses values can be computed to represent a galaxy's
-light, which is clearly unphysical.
-
-**PyAutoLens** uses a positive only linear algebra solver which has been extensively optimized to ensure it is as fast
-as positive-negative solvers. This ensures that all light profile intensities are positive and therefore physical.
+An intensity from the best-fitting model is conditional on that model. It is not, by itself, a full uncertainty
+estimate for luminosity. For derived light measurements, account for uncertainty in the model geometry and
+use an uncertainty treatment appropriate to the linear solution.
 
 __Choose An Example__
 
-- [fit.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/fit.ipynb) — Apply a fixed model and inspect the fit.
-- [modeling.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/modeling.ipynb) — Fit the model with a non-linear search.
-- [likelihood_function.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/likelihood_function.ipynb) — Follow the likelihood calculation.
-- [slam.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/slam.ipynb) — Follow the staged SLaM fit.
+- [fit.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/fit.ipynb) — Specify the non-linear model properties, solve the intensities and inspect the resulting fit.
+- [modeling.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/modeling.ipynb) — Fit lens and source profiles while solving their intensities at every likelihood evaluation.
+- [likelihood_function.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/likelihood_function.ipynb) — Follow the component-image calculation, linear system and non-negative solution.
+- [slam.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/slam.ipynb) — Use linear light profiles within staged source, light and mass modeling.
 
-The links open notebook versions. The corresponding Python scripts are in this folder; run them from the workspace root.
+The links open notebook versions. The corresponding Python scripts are in this folder; run them from the
+workspace root.
 """
