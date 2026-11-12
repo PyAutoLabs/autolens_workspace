@@ -3313,8 +3313,8 @@
     ],
     "notebook": "notebooks/imaging/features/advanced/double_source_plane_lens/start_here.ipynb",
     "path": "scripts/imaging/features/advanced/double_source_plane_lens/start_here.py",
-    "summary": "A double source-plane lens contains background sources at two different redshifts behind the foreground deflectors. Their light is traced through the relevant sequence of planes to predict the observed image.",
-    "title": "Features: Double Source Plane Lens"
+    "summary": "A single foreground galaxy can lens two background galaxies at different redshifts. A double source-plane lens lets us study the same foreground mass through two different lensing geometries, while reconstructing the light of both background sources.",
+    "title": "Features: Double Source-Plane Lenses"
   },
   {
     "contents": [
