@@ -435,66 +435,101 @@ lens modeling, and data simulation.
 
 __Where To Next__
 
-**PyAutoLens** can analyse strong lens systems across a range of physical scales (e.g. galaxy, group, and cluster) and for 
-different types of data (e.g. imaging, interferometer, and point-source observations). Depending on the scientific 
-questions you are interested in, the analysis you perform may differ significantly.
+This guide helps you choose a **PyAutoLens example notebook** for your observations. Start with the scale of your lens, then choose your data type. Each example includes Python code you can read, run and adapt.
 
-The autolens_workspace contains a suite of example Jupyter Notebooks, organised by lens scale and dataset type.
+If you use AI, describe your lens and observations to the [PyAutoLens AI Assistant](https://github.com/PyAutoLabs/autolens_assistant). It can help you choose an example and work through it interactively.
 
-__What Scale Lens?__
+__What scale lens?__
 
-What size and scale of strong lens system are you expecting to work with? 
+Choose the example that matches the galaxies contributing to the lensing. The distinction is the mass model and fitting approach, not a strict galaxy-count threshold.
 
-There are three scales to choose from:
+![Four conceptual lensing scenes: one dominant galaxy, a comparable-mass galaxy pair, a small group and a rich cluster. Gold marks foreground galaxies and blue marks lensed background light. Indicative Einstein radii: galaxy approximately 1 arcsecond; multi-galaxy 1–3 arcseconds; group 3–10 arcseconds; cluster 10–50 arcseconds.](https://raw.githubusercontent.com/PyAutoLabs/autolens_workspace/main/images/new_user_guide/lens_scales.png)
 
-- **Galaxy Scale**: Made up of a single lens galaxy lensing a single source galaxy, the simplest strong lens you can get!
-  If you're interested in galaxy scale lenses, go to the question below called "What Data Type?".
-  
-- **Group Scale**: Strong Lens Groups contains 2-10 lens galaxies, normally with one main large galaxy responsible for the majority of lensing.
-  They also typically lens just one source galaxy. If you are interested in groups, go to the `group/start_here.ipynb` notebook.
-  
-- **Cluster Scale**: Strong Lens Galaxy clusters often contained 20-50, or more, lens galaxies, lensing 10, or more, sources galaxies.
-  If you are interested in clusters, go to `cluster/start_here.ipynb` notebook.
+*AI-generated conceptual illustration, not observations or a calculated lens model. Panels are not shown at the same angular scale.*
 
-__What Data Type?__
+__Galaxy__
 
-If you are interested in galaxy-scale strong lenses, you now need to decide what type of strong lens data you are
-interested in:
+Indicative θ_E_: ~1″
 
-- **CDD Imaging**: For image data from telescopes like Hubble and James Webb, go to `imaging/start_here.ipynb`.
+One galaxy dominates the lensing. Start with your data type below.
 
-- **Interferometer**: For radio / sub-mm interferometer from instruments like ALMA, go to `interferometer/start_here.ipynb`.
+[Choose your data type below](#what-dataset-type)
 
-- **Point Sources**: For strongly lensed point sources (e.g. lensed quasars, supernovae), go to `point_source/start_here.ipynb`.
+__Multi-galaxy__
 
-__Google Colab__
+Indicative θ_E_: ~1–3″
 
-You can also open and run each notebook directly in Google Colab, which provides a free cloud computing
-environment with all the required dependencies already installed. 
+Several galaxies contribute significantly to the lensing, without a dominant shared halo. Model their light and mass together and reconstruct an extended background source.
 
-This is a great way to get started quickly without needing to install **PyAutoLens** on your own machine,
-so you can check its the right software for you before going through the installation process:
+[Notebook ](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/start_here.ipynb)·[Google Colab ](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/multi_galaxy/start_here.ipynb)
 
- - [imaging/start_here.ipynb](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/imaging/start_here.ipynb): Galaxy scale strong lenses observed with CCD imaging (e.g. Hubble, James Webb).
- - [interferometer/start_here.ipynb](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/interferometer/start_here.ipynb): Galaxy scale strong lenses observed with interferometer data (e.g. ALMA).
- - [point_source/start_here.ipynb](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/point_source/start_here.ipynb): Galaxy scale strong lenses with a lensed point source (e.g. lensed quasars).
- - [group/start_here.ipynb](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/group/start_here.ipynb): Group scale strong lenses where there are 2-10 lens galaxies.
- - [cluster/start_here.ipynb](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/cluster/start_here.ipynb): Cluster scale strong lenses with 2+ lenses and 5+ source galaxies.
+__Group__
 
-__Still Unsure?__
+Indicative θ_E_: ~3–10″
 
-Each notebook is short and self-contained, and can be completed and adapted quickly to your particular task. 
-Therefore, if you're unsure exactly which scale of lensing applies to you, or quite what data you want to use, you 
-should just read through a few different notebooks and go from there.
+A group of galaxies lenses an extended background source. The example introduces an optional shared dark-matter halo and ways to model fainter members.
 
-__HowToLens Lectures__
+[Notebook ](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/start_here.ipynb)·[Google Colab ](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/group/start_here.ipynb)
 
-If the start_here examples move too quickly — or you want a slower, more detailed grounding in strong lensing and lens
-modeling — **HowToLens** is a separate four-chapter tutorial lecture series written for undergraduates, new PhD
-students, or anyone new to the field. It lives in its own repository: https://github.com/PyAutoLabs/HowToLens.
+__Cluster__
 
-The recommendation is you first look at the start_here example relevant to your science, then go through the lectures
-to understand the concepts in more detail.
+Indicative θ_E_: ~10–50″
+
+Many member galaxies lens multiple background sources at different redshifts. This example fits their multiple-image positions; it does not fit the lens galaxies’ light.
+
+[Notebook ](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/cluster/start_here.ipynb)·[Google Colab ](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/cluster/start_here.ipynb)
+
+**Einstein radius (θE)** is a characteristic angular scale of strong lensing, approximately the ring radius for an aligned source and a symmetric lens. These values are rough guides in arcseconds (″), not category boundaries; they depend on the mass distribution and lens/source distances. Complex lenses can have several critical curves.
+
+<details class="sources"><summary>About these scale estimates</summary><p>These are illustrative ranges, not survey limits or predicted radii for the artwork. Multi-galaxy systems overlap galaxy and group scales. The workspace’s lensing guide uses order-one arcsecond galaxy lenses, few-arcsecond multi-galaxy/group lenses and tens-of-arcseconds cluster lenses.</p><p>Examples grounding the scale: <a href="https://www.aanda.org/articles/aa/pdf/2025/05/aa51868-24.pdf">Euclid galaxy-scale lenses</a>; <a href="https://doi.org/10.1051/0004-6361/200811473">SL2S groups with 3–8″ Einstein radii</a>; <a href="https://doi.org/10.1051/0004-6361/202349060">a cluster lens with an effective Einstein radius around 43″</a>. For a complex lens, an effective Einstein radius is often defined from the area enclosed by its tangential critical curve for a specified source redshift.</p></details>
+
+<a id="what-dataset-type"></a>
+
+__What dataset type?__
+
+For galaxy-scale lenses, choose the example for your observations. For multi-galaxy, group or cluster systems, begin with the scale-specific guide above.
+
+![Four conceptual dataset representations: a pixelated lensed image, samples in the interferometer u–v plane, stacked spectral-channel images, and four compact quasar images around a lens galaxy.](https://raw.githubusercontent.com/PyAutoLabs/autolens_workspace/main/images/new_user_guide/dataset_types.png)
+
+*AI-generated schematic, not measured data. The interferometer panel shows where visibilities are sampled, not their amplitudes or phases; cube slices represent different spectral channels.*
+
+__Imaging__
+
+Images from telescopes such as Hubble or JWST. Fit the lens light, mass and extended source.
+
+[Notebook ](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/start_here.ipynb)·[Google Colab ](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/imaging/start_here.ipynb)
+
+__Interferometer__
+
+Radio or submillimetre observations, such as ALMA data. Fit the measured visibilities directly.
+
+[Notebook ](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/start_here.ipynb)·[Google Colab ](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/interferometer/start_here.ipynb)
+
+__Data cubes__
+
+Spectral-line channels, such as an ALMA CO cube. Fit the channels together with a shared lens model.
+
+[Notebook ](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb)·[Google Colab ](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/interferometer/features/datacube/start_here.ipynb)
+
+__Point sources__
+
+Multiple images of a compact source, such as a quasar or supernova. Start with the point-source example.
+
+[Notebook ](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/point_source/start_here.ipynb)·[Google Colab ](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/notebooks/point_source/start_here.ipynb)
+
+Read each notebook on GitHub, open it locally, or use its Google Colab link to run it in your browser. In Colab, run the setup cell first to install the software and prepare the example.
+
+__Still unsure?__
+
+Tell the [AI Assistant](https://github.com/PyAutoLabs/autolens_assistant) what objects are in your field and what observations you have. It can help you identify a starting example.
+
+__Learn the science__
+
+[HowToLens](https://github.com/PyAutoLabs/HowToLens) teaches gravitational lensing and Bayesian modelling through worked notebooks. Use it for a slower explanation of the concepts behind these examples.
+
+__Next steps__
+
+Once you have chosen an example, explore the [Features guide](https://pyautolens.readthedocs.io/en/latest/overview/overview_3_features.html) to find the modelling tools relevant to your science.
 
 __Features__
 
