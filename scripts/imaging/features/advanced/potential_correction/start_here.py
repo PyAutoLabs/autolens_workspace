@@ -2,24 +2,59 @@ r"""
 Potential Correction: Start Here
 ================================
 
-Parametric lens mass models (e.g. the `PowerLaw` used throughout the workspace) are smooth: their convergence and
-deflection angles vary gradually across the image plane. Real lens galaxies are not perfectly smooth. They contain
-substructure — dark matter subhaloes, globular clusters, satellite galaxies — and their large-scale mass
-distributions can depart from ellipsoidal symmetry in ways no simple parametric profile captures.
+**What mass structure is your smooth lens model missing?**
 
-Gravitational imaging, also called the potential correction method, reconstructs these departures directly. Small
-pixelized corrections $\delta\psi$ to the lensing potential are defined on a coarse regular mesh over the image
-plane, and solved for linearly alongside the pixelized source, by maximising the Bayesian evidence. Wherever the
-smooth model fails to fit the lensed arcs, the corrections absorb the discrepancy — and their curvature
-$\delta\kappa = \frac{1}{2}\nabla^2 \delta\psi$ maps the missing (or excess) convergence, revealing substructure
-without assuming its form.
+Potential correction, also called gravitational imaging, reconstructs small changes to the lensing potential on
+a pixelized mesh while reconstructing the background source. It lets the resolved arcs guide where the lens
+model needs additional structure, without first choosing an NFW halo or another particular perturber profile.
 
-This technique detected a $\sim 10^6 \, M_\odot$ object at cosmological distance in the VLBI imaging of
-JVAS B1938+666 (Powell et al. 2025, Nature Astronomy 9, 1714; Vegetti et al. 2026, Nature Astronomy), the smallest
-dark object ever found by lensing. The implementation in **PyAutoLens** (`al.pc`) is ported from the
-`potential_correction` package of Cao et al. 2025 (https://github.com/caoxiaoyue/lensing_potential_correction).
-If you use it in your research, please cite Cao et al. 2025 — citation materials are at
-https://github.com/caoxiaoyue/potential_correction_paper.
+Use potential correction to:
+
+- **Investigate coherent arc residuals:** explore whether changes to the lensing potential can explain structure
+  left by a smooth model while allowing the reconstructed source to change too.
+- **Locate candidate mass perturbations:** identify features for subsequent physical modeling and robustness tests,
+  including possible subhalos or other departures from a smooth mass distribution.
+- **Explore lens-model flexibility:** investigate localized or extended corrections beyond a simple ellipsoidal
+  profile, within the resolution and assumptions of the reconstruction.
+
+Unlike a parametric subhalo search, this reconstruction does not begin with a particular halo density profile.
+Unlike sensitivity mapping, it reconstructs corrections for the dataset being fitted rather than measuring recovery
+across a set of injected halos. A correction is not by itself a confirmed dark-matter detection: the main lens
+model, source structure and observational systematics must also be tested.
+
+**Scientific example:** [Powell et al. (2025), A million-solar-mass object detected at a cosmological distance using
+gravitational imaging](https://www.nature.com/articles/s41550-025-02651-2) applies gravitational imaging to
+very-high-resolution radio observations of JVAS B1938+666. This illustrates the method's scientific reach, not a
+mass-detection limit promised by the imaging example below.
+
+**Implementation and citation:** the **PyAutoLens** `al.pc` implementation is ported from the
+[potential_correction package of Cao et al.](https://github.com/caoxiaoyue/lensing_potential_correction).
+If you use it in research, retain the Cao et al. citation alongside PyAutoLens; citation and reproduction materials
+are available [here](https://github.com/caoxiaoyue/potential_correction_paper).
+
+**What this script demonstrates:** simulated imaging with a $10^{10}\,M_\odot$ NFW halo and a two-knot source.
+To isolate the method, the starting point uses the known smooth mass component and analytic source from the
+simulation, rather than inferring them from scratch. It then demonstrates joint source/potential reconstruction,
+a convergence-correction map, iterative refinement, and how to infer regularization settings.
+
+![Conceptual illustration of a correction relative to a smooth lens model](../../../../../images/features/potential_correction_illustration.png)
+
+*Conceptual illustration, not a measured mass map or a numerical result from this script. Positive and negative
+convergence corrections mean more or less projected mass relative to the baseline; negative correction does not
+mean negative total mass. The source and potential are reconstructed jointly, not as independent steps.*
+
+__From A Smooth Model To A Correction__
+
+Simple parametric mass models, such as the power-law profiles used throughout the workspace, describe a smooth
+baseline. Real galaxies can contain localized structure and departures from an ellipsoidal mass distribution that
+a simple baseline does not capture.
+
+Small potential corrections $\delta\psi$ are defined on a coarse image-plane mesh. For a fixed linearization and
+regularization choice they can be solved jointly with the pixelized source. Their curvature,
+$\delta\kappa = \frac{1}{2}\nabla^2\delta\psi$, describes a convergence correction relative to the baseline.
+A localized feature can motivate a physical perturber model, but its interpretation depends on the mask, mesh,
+regularization and starting model. The arcs constrain the corrections through informative source-brightness
+gradients; a well-resolved map across the entire image plane is not guaranteed.
 
 __Overview__
 
@@ -32,14 +67,16 @@ image pixel, and $D_\psi$ interpolates the coarse $\delta\psi$ mesh onto the ima
 gradients. Intuitively: a small change to the potential deflects a ray slightly, which samples the source at a
 slightly different position, which changes the observed brightness in proportion to the source's local gradient.
 
-Both the source and $\delta\psi$ are regularized, and the strengths of both regularizations are set objectively by
-maximising the Bayesian evidence — no manual tuning, following Cao et al. 2025 (building on Koopmans 2005;
-Vegetti & Koopmans 2009; Suyu et al. 2009; Vernardos & Koopmans 2022).
+Both the source and $\delta\psi$ are regularized. The Bayesian evidence can guide the strengths and scales of
+the chosen regularizations, following Cao et al. 2025 (building on Koopmans 2005; Vegetti & Koopmans 2009;
+Suyu et al. 2009; Vernardos & Koopmans 2022). The first joint fit below uses illustrative fixed settings;
+`Evidence Sampling` shows how to infer them. Mesh design, regularization family and baseline-model choices
+remain assumptions whose influence should be tested.
 
 __Contents__
 
 - **Simulate:** Simulate strong lens imaging whose mass distribution contains a dark subhalo the smooth model omits.
-- **Smooth Model Fit:** Fit the data with the smooth (subhalo-free) mass model, whose residuals localize the subhalo.
+- **Smooth Model Fit:** Initialize from the known smooth model and source in this controlled simulation.
 - **Joint Fit:** Reconstruct the source and potential corrections jointly with `FitDpsiSrcImaging`.
 - **Dkappa Map:** Convert the corrections to a convergence map and compare to the true subhalo.
 - **Iterative Fit:** Refine the corrections with the iterative Levenberg-Marquardt engine `IterFitDpsiSrcImaging`.
@@ -47,14 +84,8 @@ __Contents__
 
 __Related Examples__
 
-- `imaging/features/advanced/potential_correction/likelihood_function.ipynb` — a step-by-step walkthrough of the
-  joint source + $\delta\psi$ likelihood, building the evidence term by term.
-- `interferometer/features/advanced/potential_correction/start_here.ipynb` — the same technique in visibility
-  space, via the sparse-operator (w-tilde) route.
-
-__Related Examples__
-
-- [likelihood_function.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/potential_correction/likelihood_function.ipynb) — Follow the likelihood calculation.
+- [likelihood_function.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/potential_correction/likelihood_function.ipynb) — Build the joint source/potential likelihood and evidence term by term.
+- [Interferometer potential correction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/potential_correction/start_here.ipynb) — Apply the method in visibility space using the sparse-operator route.
 """
 
 # from autolens import setup_notebook; setup_notebook()
@@ -151,7 +182,7 @@ The starting point of a potential-correction analysis is the best smooth-model f
 of a standard lens-modeling pipeline. Its residuals concentrate near the subhalo, because the smooth model cannot
 bend the arcs the way the subhalo does.
 
-Here we cheat and use the true smooth mass model (the `Isothermal` without the subhalo) and the true source, which
+Here we deliberately use the true smooth mass model (the `Isothermal` without the subhalo) and the true source, which
 isolates the technique itself; a real analysis would use the maximum-likelihood parametric model.
 
 The source enters the correction operator through an `al.pc.SrcFactory`, which evaluates the source's brightness and
@@ -210,8 +241,9 @@ as a convergence correction, obtained by applying the mesh's Laplacian operator:
 
 $\delta\kappa = \frac{1}{2} \nabla^2 \delta\psi$
 
-A dark subhalo the smooth model omits appears as a positive $\delta\kappa$ peak at its position — compare the map
-below to the true subhalo at (y, x) = (1.41", 0.0").
+In this controlled simulation, look for a positive $\delta\kappa$ feature near the omitted subhalo and compare
+it with the injected position (y, x) = (1.41", 0.0"). Finite resolution, regularization and degeneracies can shift
+or spread a reconstructed peak. A peak in a real-data reconstruction is a candidate feature, not proof of a halo.
 
 The nine-panel summary figure shows the data, model, residuals, the $\delta\psi$ and $\delta\kappa$ maps and the
 source reconstruction.
@@ -238,7 +270,7 @@ through the corrected lens** (the smooth model plus an `InputPotential` mass pro
 corrections). The corrections thus feed back into the source mapping, capturing compact perturbers more faithfully
 than a single linearization.
 
-`gauge_constraints=True` removes the degeneracies inherent to potential corrections — a constant $\delta\psi$ and
+`gauge_constraints=True` fixes the constant and linear gauge modes of potential corrections — a constant $\delta\psi$ and
 linear gradients (which just shift the source) are unconstrained by the data — by enforcing
 $\langle\delta\psi, 1\rangle = \langle\delta\psi, x\rangle = \langle\delta\psi, y\rangle = 0$ at every step.
 
@@ -292,8 +324,9 @@ sampled with a non-linear search, using the inversion's Bayesian evidence as the
     search = af.Nautilus(name="potential_correction", n_live=100)
     result = search.fit(model=dpsi_model, analysis=analysis)
 
-This recovers both localised subhaloes and extended perturbations (e.g. Gaussian-random-field departures — see
-`ag.mp.GaussianRandomField` for simulating them) with the regularization set objectively by the data.
+This framework can represent both localized and extended perturbations, including Gaussian-random-field
+departures. Evidence-based inference selects regularization settings within the chosen model family; recovery
+and physical interpretation still require validation with simulations and alternative modeling assumptions.
 
 __Interferometer__
 
@@ -332,14 +365,16 @@ $10^{10} M_\odot$ subhalo at ~9$\sigma$ with the dkappa peak 0.34" from the trut
 
 Two practices matter, both mirroring the published pipelines: **warm-start the iterative engine from the
 one-shot solution** (it then refines inside the right basin instead of searching from zero), and let the
-**evidence control the regularization strengths** (`reg_optimize_every`) rather than fixing them — the Bayesian
-evidence consistently ranks over-fit or degenerate solutions below the recovering ones, so evidence-driven
-selection self-protects. Always check first that your smooth-model source fit reaches chi-squared per degree of
-freedom near ~1-3: outside that regime the corrections absorb source-model error rather than real structure.
+**evidence control the regularization strengths** (`reg_optimize_every`) rather than fixing them — evidence-based
+selection balances fit quality and the adopted regularization assumptions, but is not a guarantee against
+model mismatch. Inspect the smooth-model source fit and residual morphology before interpreting corrections.
+A poor source or noise model can drive spurious corrections, and a favorable reduced chi-squared alone does
+not establish a reliable mass reconstruction.
 
 __Wrap Up__
 
-Gravitational imaging turns the residuals of a smooth lens model into a map of the missing mass. The `al.pc`
+Gravitational imaging uses lensed-arc information to infer potential corrections relative to a smooth model.
+The resulting convergence corrections help investigate mass structure, subject to source and lens-model assumptions. The `al.pc`
 subpackage provides the one-shot joint inversion, the iterative LM engine, and the analysis classes to sample their
 hyper-parameters — with all linear algebra available under numpy or JAX through the `xp` API.
 

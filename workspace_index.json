@@ -3652,13 +3652,12 @@
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/potential_correction/likelihood_function.ipynb",
-      "imaging/features/advanced/potential_correction/likelihood_function.ipynb",
-      "interferometer/features/advanced/potential_correction/start_here.ipynb",
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/advanced/potential_correction/start_here.ipynb",
       "likelihood_function.py"
     ],
     "notebook": "notebooks/imaging/features/advanced/potential_correction/start_here.ipynb",
     "path": "scripts/imaging/features/advanced/potential_correction/start_here.py",
-    "summary": "Parametric lens mass models (e.g. the `PowerLaw` used throughout the workspace) are smooth: their convergence and deflection angles vary gradually across the image plane. Real lens galaxies are not perfectly smooth. They contain substructure \u2014 dark matter subhaloes, globular clusters, satellite galaxies \u2014 and their large-scale mass distributions can depart from ellipsoidal symmetry in ways no simple parametric profile captures.",
+    "summary": "**What mass structure is your smooth lens model missing?**",
     "title": "Potential Correction: Start Here"
   },
   {
