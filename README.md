@@ -30,9 +30,41 @@ For a single lens galaxy, choose your data type below. For larger systems, start
 
 ### Dataset Type
 
-![Imaging, interferometer sampling, multi-band imaging, spectral data cubes and lensed point sources.](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/dataset_types.png)
+Choose the example for your observations. Each folder has a `start_here` example to get you going.
 
-Match your observations to [imaging/](scripts/imaging), [interferometer/](scripts/interferometer), [multi_dataset/](scripts/multi_dataset) for multiple wavebands, [data cubes](scripts/interferometer/features/datacube) or [point_source/](scripts/point_source). Each has a `start_here` example to get you going.
+<table>
+<tr>
+<td colspan="2" align="center">
+<strong>Imaging</strong><br>
+<a href="scripts/imaging"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/imaging.png" alt="A pixelated telescope image of a foreground galaxy surrounded by extended lensed arcs." width="440"></a><br>
+Fit images from Hubble, JWST and other telescopes with <a href="scripts/imaging">imaging/</a>.
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<strong>Interferometry</strong><br>
+<a href="scripts/interferometer"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/interferometry.png" alt="Radio dishes observing emission from a lensed galaxy." width="440"></a><br>
+Fit radio and submillimetre observations with <a href="scripts/interferometer">interferometer/</a>.
+</td>
+<td width="50%" valign="top">
+<strong>Multi-band Imaging</strong><br>
+<a href="scripts/multi_dataset"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/multi_wavelength.png" alt="The same lens in three wavebands, with different relative brightness of the lens galaxy and arcs." width="440"></a><br>
+Fit several wavebands together with <a href="scripts/multi_dataset">multi_dataset/</a>.
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<strong>Data Cubes</strong><br>
+<a href="scripts/interferometer/features/datacube"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/data_cubes.png" alt="Separate spectral-channel images showing different parts of a lensed arc." width="440"></a><br>
+Fit spectral channels together with <a href="scripts/interferometer/features/datacube">interferometer/features/datacube/</a>.
+</td>
+<td width="50%" valign="top">
+<strong>Point Sources</strong><br>
+<a href="scripts/point_source"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/point_sources.png" alt="Four compact lensed images around a foreground galaxy, with faint host-galaxy arcs." width="440"></a><br>
+Model lensed quasars and supernovae with <a href="scripts/point_source">point_source/</a>.
+</td>
+</tr>
+</table>
 
 ### Weak Lensing
 
