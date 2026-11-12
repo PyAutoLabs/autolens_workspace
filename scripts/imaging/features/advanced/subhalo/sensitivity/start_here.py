@@ -2,46 +2,69 @@
 Sensitivity Mapping: Start Here
 ===============================
 
-Bayesian model comparison allows us to take a dataset, fit it with multiple models and use the Bayesian evidence to
-quantify which model objectively gives the best-fit following the principles of Occam's Razor.
+**What could this lens have revealed, even when no subhalo was found?**
 
-However, a complex model may not be favoured by model comparison not because it is the 'wrong' model, but simply
-because the dataset being fitted is not of a sufficient quality for the more complex model to be favoured. Sensitivity
-mapping addresses what quality of data would be needed for the more complex model to be favoured.
+Sensitivity mapping measures which dark matter halos a particular dataset and modeling procedure could detect.
+It injects halos into simulated observations, fits each simulation with and without a halo, and compares the
+Bayesian evidence. This calibrates the interpretation of both detections and non-detections.
 
-In order to do this, sensitivity mapping involves us writing a function that uses the model(s) to simulate a dataset.
-We then use this function to simulate many datasets, for many different models, and fit each dataset to quantify
-how much the change in the model led to a measurable change in the data. This is called computing the sensitivity.
+Use sensitivity mapping to:
 
-How we compute the sensitivity is chosen by us, the user. In this example, we will perform multiple model-fits
-with a nested sampling search, and therefore perform Bayesian model comparison to compute the sensitivity. This allows
-us to infer how much of a Bayesian evidence increase we should expect for datasets of varying quality and / or models
-with different parameters.
+- **Interpret a non-detection:** establish which halo masses and positions your analysis could have recovered.
+- **Build population constraints:** combine sensitivity-calibrated lens samples with a halo-population model to
+  investigate the abundance and mass distribution of small halos, and test dark matter models.
+- **Compare observing strategies:** repeat the simulations with different noise levels or angular resolution to
+  assess how detectability changes. This requires additional simulation scenarios, not run by this example.
+
+**Scientific context:** [Vegetti & Koopmans (2009), Statistics of mass substructure from strong gravitational
+lensing](https://arxiv.org/abs/0903.4752) explains how detection limits and sample size enter inference of the
+substructure mass fraction and mass function.
+
+**What this script demonstrates:** four injected halo positions at one fixed mass of `1e10` solar masses, with an
+MGE source. Each simulated dataset is fitted twice. This is a small demonstration, not a converged sensitivity map
+or a dark matter population analysis. For calibration using reconstructed source morphology, continue to
+[slam_source_pixelized.py](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/slam_source_pixelized.ipynb).
+
+![Conceptual illustration of sensitivity around lensed arcs](../../../../../../images/features/sensitivity_mapping_illustration.png)
+
+*Conceptual illustration, not a computed sensitivity map. The overlay represents recoverability at one illustrative
+injected mass, not the presence of detected halos. It does not depict the four-cell result of this script.*
+
+__How Sensitivity Is Measured__
+
+Bayesian model comparison weighs the support for each model by averaging its likelihood over its parameter priors.
+A model with an extra halo may not be favored because the data cannot distinguish it, even when a halo is present.
+Sensitivity mapping explores this by simulating known perturbations and measuring how strongly they are recovered.
+
+We define a function that simulates a dataset from the main lens/source model plus an injected halo. For each trial,
+we fit the same simulated dataset with a base model and with a model that includes the halo. This example uses
+nested sampling and the difference in log Bayesian evidence as its recovery statistic. Other statistics can be
+chosen, but the calibration must use the detection criterion intended for the scientific analysis.
+
+A sensitivity map is conditional on the simulation, source and lens models, priors and noise assumptions. A positive
+evidence difference alone is not a detection criterion: choose and justify a threshold. Repeated noise realizations
+and tests of model assumptions may be needed to measure recovery probabilities and robustness.
 
 __Contents__
 
-- **Subhalo Detection Discussion:** For strong lensing, this process is crucial for dark matter substructure detection, as discussed in.
-- **Subhalo Sensitivity Mapping:** Sensitivity mapping is a process where we simulate many thousands of strong lens images.
-- **SLaM Pipelines:** The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pipelines which.
-- **Pixelized Source:** Detecting a DM subhalo requires the lens model to be sufficiently accurate that the residuals of.
-- **Base Model:** We now define the `base_model` that we use to perform sensitivity mapping.
-- **Perturb Model:** We now define the `perturb_model`, which is the model component whose parameters we iterate over to.
-- **Mapping Grid:** Sensitivity mapping is typically performed over a large range of parameters.
-- **Perturb Model Prior Func:** The default priors on the `perturb_model` are `UniformPrior`'s bounded around each sensitivity grid.
-- **Simulation Instance:** We are performing sensitivity mapping to determine where a subhalo is detectable.
-- **Simulate Function Class:** We now write the `simulate_cls`, which takes the `simulation_instance` of our model (defined above).
-- **Base Fit:** We have defined a `Simulate` class that will be used to simulate every dataset simulated by the.
-- **Perturb Fit:** We now define a `PerturbFit` class, which defines how the `perturb_model` is fitted to each.
-- **Results:** You should now look at the results of the sensitivity mapping in the folder.
+- **Subhalo Detection Discussion:** Distinguish a detection search from its sensitivity calibration.
+- **Subhalo Sensitivity Mapping:** Inject halos and compare paired fits to map recoverability.
+- **SLaM Pipelines:** Connect this self-contained example to the fuller analysis pipelines.
+- **Pixelized Source:** Simulate and fit complex source morphology consistently.
+- **Base Model:** Fit the smooth lens and source used to initialize the simulations.
+- **Perturb Model:** Define the injected halo and the extra fitted component.
+- **Mapping Grid:** Inject one fixed halo mass at four image-plane positions.
+- **Perturb Model Prior Func:** Set the recovery-fit priors separately from injected values.
+- **Simulation Instance:** Use the fitted main lens/source instance in the simulations.
+- **Simulate Function Class:** Create mock observations for each injected halo.
+- **Base Fit:** Fit each simulated observation without a halo.
+- **Perturb Fit:** Fit the same observation with an additional halo.
+- **Results:** Inspect the evidence differences from the four paired fits.
 
 __Subhalo Detection Discussion__
 
-For strong lensing, this process is crucial for dark matter substructure detection, as discussed in the following paper:
-
-https://arxiv.org/abs/0903.4752
-
-In subhalo detection, our strong lens modeling informs us of whether there is a dark matter subhalo at a given (y,x)
-image-plane location of the strong lens. We determine this by fitting a lens models which includes a subhalo. However,
+In subhalo detection, our strong lens modeling tests whether the data favor a dark matter subhalo at a given (y,x)
+image-plane location of the strong lens. We determine this by comparing lens models with and without a subhalo. However,
 we are only able to detect dark matter subhalos with (y,x) locations near the lensed source light, and when the
 subhalo is massive enough to perturb its light in an observable way.
 
@@ -50,19 +73,20 @@ we must perform sensitivity mapping.
 
 __Subhalo Sensitivity Mapping__
 
-Sensitivity mapping is a process where we simulate many thousands of strong lens images. Each simulated image includes a
+A detailed sensitivity study can require many simulated strong lens images; this example uses four. Each simulated image includes a
 dark matter subhalo at a given (y,x) coordinate and at a given mass. We fit each simulated dataset twice,
 with a lens model which does not include a subhalo and with a lens model that does.
 
-If the Bayesian evidence of the lens model including a subhalo is higher than the model which does not, a subhalo at t
-hat (y,x) location and mass is therefore detectable.
+A trial is classified as recovered when the evidence difference exceeds the chosen detection threshold.
+The threshold and recovery-fit assumptions must be consistent with the analysis being calibrated.
 
 For many simulated datasets, we will find the evidence does not increase when we include a subhalo in the model-fit,
-informing us that regions of the image-plane away from the lensed source are not sensitive to subhalos.
+showing weak sensitivity to that injected mass and position under the adopted assumptions. Sensitivity is often
+strongest near resolved arcs, but depends on the lens geometry and data quality.
 
-The sensitivity map is performed over a three dimensional (or higher) grid of subhalo (y,x) and mass. Thus, once
-sensitivity mapping is complete, we have a complete map of where in the image-plane subhalos of what mass are
-detectable. We can plot 2D plots of this grid to visualize where we are sensitive to dark matter subhalos.
+A full position-and-mass study samples a three-dimensional (or higher) grid of subhalo (y,x) and mass. Here we
+calculate a coarse two-dimensional slice at one injected mass. Repeating this over mass and refining the spatial
+grid builds a more detailed map; 2D slices visualize how recoverability varies across the image plane.
 
 The information provided by a sensitivity map is ultimately required to turn dark matter subhalo detections into
 constraints on the dark matter subhalo mass function, which is the primary goal of subhalo detection. Thus, it is
@@ -71,7 +95,7 @@ necessary to make statements about the nature of dark matter: cold, warm, fuzzy,
 __SLaM Pipelines__
 
 The Source, (lens) Light and Mass (SLaM) pipelines are advanced lens modeling pipelines which automate the fitting
-of complex lens models. The SLaM pipelines are used for all DM subhalo detection analyses.
+of complex lens models. The SLaM pipelines provide workflows for detailed DM subhalo analyses.
 
 This example script does not use a SLaM pipeline, to keep the sensitivity mapping self contained. However, it is
 anticipated that any user performing sensitivity mapping on real data will use the SLaM pipelines, which in the
@@ -86,11 +110,10 @@ __Pixelized Source__
 Detecting a DM subhalo requires the lens model to be sufficiently accurate that the residuals of the source's light
 are at a level where the subhalo's perturbing lensing effects can be detected.
 
-This requires the source reconstruction to be performed using a pixelized source, as this provides a more detailed
-reconstruction of the source's light than fits using light profiles.
-
-Therefore, the corresponding sensitivity mapping should also be performed using pixelized sources. This example
-sticks to light profile sources, to provide faster run times illustrative purposes.
+For complex resolved sources, a pixelized reconstruction can capture structure that simple light profiles miss.
+The sensitivity calibration should reproduce the source treatment used by the detection analysis. This example
+uses an MGE light-profile source to keep the demonstration manageable; the pixelized-source example below
+shows the corresponding workflow for irregular reconstructed sources.
 
 The example `subhalo/sensitivity/slam_source_pixelized.ipynb` extends the SLaM pipelines with pixelized sources
 and therefore shows how to perform sensitivity mapping using pixelized sources.
@@ -216,7 +239,7 @@ __Perturb Model__
 
 We now define the `perturb_model`, which is the model component whose parameters we iterate over to perform 
 sensitivity mapping. In this case, this model is a `NFWMCRLudlowSph` model and we will iterate over its
-`centre` and `mass_at_200`. We set it up as a `Model` so it has an associated redshift and can be directly
+`centre` at fixed injected `mass_at_200` in this example. A larger study can vary both. We set it up as a `Model` so it has an associated redshift and can be directly
 passed to the tracer in the simulate function below.
 
 Many instances of the `perturb_model` are created and used to simulate the many strong lens datasets that we fit. 
@@ -226,18 +249,29 @@ determine if the subhalo was detectable.
 
 By fitting both models to every simulated lens, we therefore infer the Bayesian evidence of every model to every 
 dataset. Sensitivity mapping therefore maps out for what values of `centre` and `mass_at_200` in the dark matter 
-subhalo the model-fit including a subhalo provide higher values of Bayesian evidence than the simpler model-fit (and
-therefore when it is detectable!).
+subhalo the model-fit including a subhalo provides an evidence increase over the simpler model-fit. Compare
+these differences with the chosen detection threshold to classify recovery.
 """
 perturb_model = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.NFWMCRLudlowSph)
 
 """
 __Mapping Grid__
 
-Sensitivity mapping is typically performed over a large range of parameters. However, to make this demonstration quick
-and clear we are going to fix the `centre` of the subhalo to a value near the Einstein ring of (1.6, 0.0). We will 
-iterate over just two `mass_at_200` values corresponding to subhalos of mass 1e6 and 1e13, of which only the latter
-will be shown to be detectable.
+This demonstration fixes the injected `mass_at_200` to `1e10` solar masses and varies both centre coordinates.
+Each coordinate spans -3.0 to +3.0 arcsec. With `number_of_steps=2` below, the two bin centres per coordinate
+are -1.5 and +1.5 arcsec, giving four injected (y,x) positions:
+
+ - (-1.5, -1.5)
+ - (-1.5, +1.5)
+ - (+1.5, -1.5)
+ - (+1.5, +1.5)
+
+Each position generates one simulated dataset and two model fits: eight recovery fits in total, in addition to
+the initial main lens/source fit. This coarse grid illustrates the workflow; it does not determine a minimum
+detectable halo mass. That requires additional injected masses, adequate spatial sampling and a detection criterion.
+
+The injected mass and position are distinct from the parameters allowed to vary during recovery. The next section
+uses `perturb_model_prior_func` to set those recovery priors.
 """
 grid_dimension_arcsec = 3.0
 
@@ -256,13 +290,13 @@ __Perturb Model Prior Func__
 
 The default priors on the `perturb_model` are `UniformPrior`'s bounded around each sensitivity grid cell.
 
-For example, the first simulated dark matter subhalo is at location (1.5, -1.5) and its priors are:  
+For example, a simulated dark matter subhalo can be at location (1.5, -1.5) and its priors are:
 
 - y is `UniformPrior(lower_limit=0.0, upper_limit=3.0)`.
 - x is `UniformPrior(lower_limit=-3.0, upper_limit=0.0)`.
 
-The `mass_at_200` is fixed to a value of 1e10 in the `perturb_model` above, which is the fixed value used by
-the model fit.
+The `mass_at_200` is fixed to `1e10` for injection. Without the callback below it would also remain fixed
+in the recovery model; the callback instead frees it during fitting.
 
 By passing a `perturb_model_prior_func` to the sensitivity mapper, we can manually overwrite the priors on 
 the `perturb_model` which are used instead for the fit.
@@ -272,8 +306,12 @@ Below, we update the priors as follows:
 - The y and x priors are trimmed to much narrower bounded priors, confined to regions 0.05" each side of the 
   true DM subhalo.
 
-- The `mass_at_200` is made a free parameter with `LogUniformPrior(lower_limit=1e6, 1e12)`. This is a large range, 
-  but ensures there are solutions where the DM subhalo can go to lower masses.    
+- The `mass_at_200` is made a free parameter with `LogUniformPrior(lower_limit=1e6, upper_limit=1e12)`. This is a large range,
+  but allows the recovery fit to explore lower and higher halo masses.
+
+These narrow position priors use the known injected location. This is a targeted recovery experiment, not a blind
+search of the entire image. Priors affect the Bayesian evidence, so its thresholds cannot automatically be
+transferred to a detection search with broader position priors.
 """
 
 
@@ -811,10 +849,10 @@ You should now look at the results of the sensitivity mapping in the folder `out
 You will note the following 4 sets of x2 model-fits have been performed:
 
  - The `base_model` is fitted to a simulated dataset where a subhalo is included at the (y,x) 
-   coorindates [(-1.5, -1.5), (-1.5, 1.5), (1.5, -1.5), (1.5, 1.5)].
+   coordinates [(-1.5, -1.5), (-1.5, 1.5), (1.5, -1.5), (1.5, 1.5)].
 
  - The `base_model` + `perturb_model` is fitted to a simulated dataset where a subhalo is included at the (y,x) 
-   coorindates [(-1.5, -1.5), (-1.5, 1.5), (1.5, -1.5), (1.5, 1.5)].
+   coordinates [(-1.5, -1.5), (-1.5, 1.5), (1.5, -1.5), (1.5, 1.5)].
 
 The fit produces a `sensitivity_result`. 
 
