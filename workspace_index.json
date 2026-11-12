@@ -3854,12 +3854,13 @@
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/detect/database.ipynb",
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb",
       "database.py",
       "slam_start_here.py"
     ],
     "notebook": "notebooks/imaging/features/advanced/subhalo/detect/start_here.ipynb",
     "path": "scripts/imaging/features/advanced/subhalo/detect/start_here.py",
-    "summary": "Strong gravitational lenses can be used to detect the presence of small-scale dark matter (DM) subhalos. This occurs when the DM subhalo overlaps the lensed source emission, and therefore gravitationally perturbs the observed image of the lensed source galaxy.",
+    "summary": "**Search for dark matter through the distortions it leaves in lensed galaxies.**",
     "title": "Subhalo Detection: Start Here"
   },
   {
