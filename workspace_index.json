@@ -4379,7 +4379,7 @@
     ],
     "notebook": "notebooks/imaging/features/multi_gaussian_expansion/start_here.ipynb",
     "path": "scripts/imaging/features/multi_gaussian_expansion/start_here.py",
-    "summary": "A multi Gaussian expansion (MGE) represents a galaxy's light as the sum of many Gaussian profiles. Each Gaussian describes emission on a particular spatial scale; together, they can provide a flexible model of the galaxy.",
+    "summary": "In a strong-lens image, light from two galaxies is superimposed: the foreground lens galaxy and the distant source, stretched into arcs by gravitational lensing. Modelling their light helps us separate the two and infer the properties of the lens and source.",
     "title": "Features: Multi Gaussian Expansion"
   },
   {
