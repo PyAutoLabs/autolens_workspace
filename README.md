@@ -8,7 +8,7 @@ Example scripts and notebooks for modeling strong gravitational lenses with **Py
 
 ### Explore It Yourself
 
-- **[Try it in your browser](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.12.1/start_here.ipynb)** — run the introductory notebook on Google Colab without installing anything.
+- **[Try it in your browser](https://colab.research.google.com/github/PyAutoLabs/autolens_workspace/blob/2026.11.13.1/start_here.ipynb)** — run the introductory notebook on Google Colab without installing anything.
 - **[Run it locally](https://pyautolens.readthedocs.io/en/latest/installation/overview.html)** — follow the installation guide, then open `start_here.ipynb`.
 - **[Browse examples with images](https://github.com/PyAutoLabs/autolens_workspace/blob/main/markdown/README.md)** — read worked examples and view their results directly on GitHub.
 
