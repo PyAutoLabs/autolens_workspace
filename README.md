@@ -34,45 +34,44 @@ Choose the example for your observations. Each folder has a `start_here` example
 
 <table>
 <tr>
-<td colspan="2" align="center">
+<td width="50%" valign="top">
 <strong>Imaging</strong><br>
 <a href="scripts/imaging"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/imaging.png" alt="A pixelated telescope image of a foreground galaxy surrounded by extended lensed arcs." width="440"></a><br>
 Fit images from Hubble, JWST and other telescopes with <a href="scripts/imaging">imaging/</a>.
 </td>
-</tr>
-<tr>
 <td width="50%" valign="top">
 <strong>Interferometry</strong><br>
 <a href="scripts/interferometer"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/interferometry.png" alt="Radio dishes observing emission from a lensed galaxy." width="440"></a><br>
 Fit radio and submillimetre observations with <a href="scripts/interferometer">interferometer/</a>.
 </td>
+</tr>
+<tr>
 <td width="50%" valign="top">
 <strong>Multi-band Imaging</strong><br>
 <a href="scripts/multi_dataset"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/multi_wavelength.png" alt="The same lens in three wavebands, with different relative brightness of the lens galaxy and arcs." width="440"></a><br>
 Fit several wavebands together with <a href="scripts/multi_dataset">multi_dataset/</a>.
 </td>
-</tr>
-<tr>
 <td width="50%" valign="top">
 <strong>Data Cubes</strong><br>
 <a href="scripts/interferometer/features/datacube"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/data_cubes.png" alt="Separate spectral-channel images showing different parts of a lensed arc." width="440"></a><br>
 Fit spectral channels together with <a href="scripts/interferometer/features/datacube">interferometer/features/datacube/</a>.
 </td>
+</tr>
+<tr>
 <td width="50%" valign="top">
 <strong>Point Sources</strong><br>
 <a href="scripts/point_source"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/point_sources.png" alt="Four compact lensed images around a foreground galaxy, with faint host-galaxy arcs." width="440"></a><br>
 Model lensed quasars and supernovae with <a href="scripts/point_source">point_source/</a>.
 </td>
+<td width="50%" valign="top">
+<strong>Weak Lensing</strong><br>
+<a href="scripts/weak"><img src="https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_2/weak_lensing.png" alt="A galaxy cluster with strong-lensing arcs near its centre and background galaxies tangentially stretched across the wider field." width="440"></a><br>
+Model the subtle shape distortions of many background galaxies, alone or combined with strong lensing, with <a href="scripts/weak">weak/</a>.
+</td>
 </tr>
 </table>
 
-### Weak Lensing
-
-![Strong-lensing arcs near a cluster centre and weakly distorted background galaxies across a wider field.](https://raw.githubusercontent.com/PyAutoLabs/PyAutoLens/main/docs/overview/images/overview_3/strong_weak_lensing.png)
-
-To model the subtle distortions of many background galaxies, start with [weak/](scripts/weak). You can also combine weak and strong lensing to study a cluster across both scales.
-
-*AI-generated illustrations, not observations. Lens panels use different angular scales; dashed contours represent a model. See the [new user guide](https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html) for details.*
+*AI-generated illustrations (weak lensing rendered procedurally), not observations. Lens panels use different angular scales. See the [new user guide](https://pyautolens.readthedocs.io/en/latest/overview/overview_2_new_user_guide.html) for details.*
 
 ### Browse All Examples
 
