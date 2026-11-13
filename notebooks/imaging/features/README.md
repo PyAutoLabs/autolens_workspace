@@ -17,7 +17,7 @@ The following example scripts illustrating lens modeling where:
 - `scaling_relation`: Use scaling relations, for example relating light and mass, to compose lens models with few parameters for many galaxies.
 - `advanced`: Advanced features for expert users, for example modeling with multiple datasets simultaneously.
 
-For foreground light morphology, see the advanced [ellipse fitting introduction](advanced/ellipse/start_here.ipynb),
+For foreground light morphology, see the advanced [ellipse fitting introduction](advanced/ellipse/start_here.py),
 which links to PyAutoGalaxy's dedicated examples.
 
 # Files
