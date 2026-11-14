@@ -28,6 +28,30 @@ New users should read the `start_here` example, which gives an overview of all e
 
 - `lenstool`: A worked example for Lenstool users — a published cluster model (SMACS J0723) converted, reconstructed and refit in PyAutoLens.
 
+# Extended Sources
+
+Extended-source reconstruction of an individual cluster arc (imaging and a pixelized source, starting from
+the point-source cluster mass model) is the specialised follow-up analysis. It is planned as
+`features/extended_source` and is not yet in this package. Until then, the group- and galaxy-scale source
+machinery (`group/`, `imaging/`) shows how extended sources are modelled.
+
+# Literature and Benchmark Systems
+
+- `start_here` fits Abell 2744 with the **pre-JWST** spectroscopic gold sample of Bergamini et al. (2023,
+  A&A 670, A60) by design. JWST-era models of Abell 2744 (e.g. Furtak et al. 2023; Bergamini et al. 2023b)
+  use roughly 135–150 multiple images, and the same workflow scales to them.
+- Abell 2744 is a complex merging cluster. **Abell S1063 (AS1063)** is the natural "simplest relaxed
+  cluster" counterpoint (e.g. Caminha et al. 2016).
+- The Hubble Frontier Fields and CLASH programmes set the modern benchmarks. Meneghetti et al. (2017)
+  compare cluster lens-modelling methods on simulated clusters.
+- Candidate future example systems:
+  - **MACS J0416.1-2403**: the largest spectroscopic multiple-image sample (e.g. Bergamini et al. 2021), for
+    scaling up.
+  - **SMACS J0723.3-7327**: a mid-size, JWST-iconic cluster (see the `lenstool` folder).
+  - **MACS J1149.5+2223**: hosts SN Refsdal (Kelly et al. 2015), for time-delay cosmography (e.g. Grillo et
+    al. 2018).
+  - **SDSS J1004+4112**: a cluster-lensed quasar (Inada et al. 2003), the bridge for `point_source` users.
+
 # Results
 
 The `modeling` example performs lens modeling but only give a brief overview of how to analyse and interpret the
