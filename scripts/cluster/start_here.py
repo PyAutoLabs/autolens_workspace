@@ -5,7 +5,7 @@ Start Here: Cluster
 Cluster-scale strong lenses are made of:
 
  - One or more **Brightest Cluster Galaxies (BCGs)** and bright satellites, modelled individually with
-   their own light and mass profiles.
+   their own mass profiles (their observed light centres fix their positions).
  - **Tens to hundreds of lower-mass member galaxies**, whose collective mass perturbs the deflection
    field non-trivially but whose individual contributions are too weak to constrain on their own. These
    are modelled jointly on a luminosity-mass scaling relation, so the entire population shares a single
@@ -23,7 +23,7 @@ et al. 2023 (A&A 670, A60): we fit the 7 "gold" source systems (25 multiple imag
 ``z = 1.7`` to ``z = 5.7`` — a genuinely multi-plane problem) with 2 individually-modelled BCGs,
 188 scaling-tier members, and an NFW host halo.
 
-The gold sample is the **pre-JWST** spectroscopic subset, used by design: it is small enough to fit
+The gold systems are a subset of the **pre-JWST** spectroscopic catalogue, chosen by design: small enough to fit
 quickly while remaining a genuine multi-plane problem. JWST-era models of Abell 2744 (e.g. Furtak et al.
 2023; Bergamini et al. 2023b) use roughly 135–150 multiple images; the same workflow scales to them
 by adding rows to ``point_datasets.csv``.
