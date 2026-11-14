@@ -5,7 +5,7 @@ Start Here: Cluster
 Cluster-scale strong lenses are made of:
 
  - One or more **Brightest Cluster Galaxies (BCGs)** and bright satellites, modelled individually with
-   their own light and mass profiles.
+   their own mass profiles (their observed light centres fix their positions).
  - **Tens to hundreds of lower-mass member galaxies**, whose collective mass perturbs the deflection
    field non-trivially but whose individual contributions are too weak to constrain on their own. These
    are modelled jointly on a luminosity-mass scaling relation, so the entire population shares a single
@@ -22,6 +22,17 @@ redshifts, and the cluster-member catalogue, come from the published lens-model 
 et al. 2023 (A&A 670, A60): we fit the 7 "gold" source systems (25 multiple images, sources from
 ``z = 1.7`` to ``z = 5.7`` — a genuinely multi-plane problem) with 2 individually-modelled BCGs,
 188 scaling-tier members, and an NFW host halo.
+
+The gold systems are a subset of the **pre-JWST** spectroscopic catalogue, chosen by design: small enough to fit
+quickly while remaining a genuine multi-plane problem. JWST-era models of Abell 2744 (e.g. Furtak et al.
+2023; Bergamini et al. 2023b) use roughly 135–150 multiple images; the same workflow scales to them
+by adding rows to ``point_datasets.csv``.
+
+The cluster package shares its mass framework (host halo(s) plus truncated members on scaling relations)
+with ``group/``. What sets clusters apart is the source strategy: with many sources over a wide redshift
+range, the default fit uses multiple-image **positions** rather than pixel-level extended sources, and the
+lens light is not modelled. Extended-source reconstruction of an individual arc is a specialised follow-up
+analysis (see ``cluster/README.md``).
 
 For galaxy-scale lenses (a single dominant lens and a single source), start with
 ``imaging/start_here.ipynb`` instead; for 2+ co-dominant lens galaxies with no host halo see
@@ -525,6 +536,11 @@ Next steps:
   including the scaling-relation truth values used here.
 - ``autolens_workspace/scripts/group/features/scaling_relation/modeling.py``: galaxy-scale (extended
   imaging) counterpart of the scaling-relation tier.
+- ``autolens_workspace/scripts/cluster/mass_parameterizations.py``: the standard Lenstool model, and
+  how to go beyond it — e.g. swapping the dPIE host halo for an NFW or generalized NFW (gNFW) while
+  keeping the dPIE members.
+- ``autolens_workspace/scripts/cluster/README.md``: the literature behind this package and candidate
+  benchmark clusters beyond Abell 2744 (AS1063, MACS J0416, SMACS J0723, MACS J1149, SDSS J1004+4112).
 - ``autolens_workspace/guides``: API reference, lensing-calculation guides, results interpretation.
 
 **Modeling your own cluster.** Replace the dataset files in
