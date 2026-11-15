@@ -13,9 +13,10 @@ else
   pip install ./PyAutoNerves ./PyAutoFit ./PyAutoArray ./PyAutoGalaxy ./PyAutoLens
   pip install numba nufftax
 fi
-# NOTE: do NOT `pip install tensorflow-probability==0.25.0` here. The stable
-# release crashes at import under the resolved modern JAX
-# (`jax.interpreters.xla.pytype_aval_mappings` was removed), which broke the
-# JAX Matern-kernel (delaunay_mge) likelihood path. The working modified-Bessel
-# dependency is `tfp-nightly`, pinned by `PyAutoArray[optional]` above.
+# NOTE: tensorflow-probability is no longer a dependency at all. The JAX
+# Matern-kernel path's modified-Bessel `bessel_kve` is vendored in PyAutoArray
+# (autoarray/inversion/regularization/bessel.py, PyAutoArray#694), replacing
+# the former `tfp-nightly` pin. Do NOT `pip install tensorflow-probability`
+# here: the stable 0.25.0 release crashes at import under modern JAX
+# (`jax.interpreters.xla.pytype_aval_mappings` was removed) and nothing needs it.
 pip install jupyter nbconvert ipynb-py-convert
