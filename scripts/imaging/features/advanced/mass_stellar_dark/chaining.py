@@ -8,8 +8,8 @@ This script chains two searches to fit `Imaging` data of a 'galaxy-scale' strong
 
  - The lens galaxy's light is a bulge with an MGE.
  - The lens galaxy's stellar mass distribution is a bulge tied to the light model above.
- - The lens galaxy's dark matter mass distribution is a `NFWSph`.
- - The source galaxy's light is an MGE.
+ - The lens galaxy's dark matter mass distribution is a `NFW`.
+ - A source galaxy MGE is built, but `model_2` does not currently fit it.
 
 The two searches break down as follows:
 
@@ -17,7 +17,8 @@ The two searches break down as follows:
  omitted.
 
  2) Models the lens galaxy's mass using a stellar mass distriubtion which is initialized using the bulge light
- models inferred by search 1, alongside a dark matter profile. The source is again modeled using an MGE
+ models inferred by search 1, alongside a dark matter profile. A source MGE is built, but `model_2` does not
+ currently include it, so the source is not fitted.
 
 __Why Chain?__
 
@@ -181,8 +182,7 @@ __Model (Search 2)__
 
 We use the results of search 1 to create the lens model fitted in search 2, where:
 
- - The lens galaxy's light and stellar mass is a `Sersic` light and mass profile, whose `centre` and `ell_comps`
-   priors are initialized from the MGE bulge of search 1 [8 parameters].
+ - The lens galaxy's light and stellar mass is a `Sersic` light and mass profile [8 parameters].
  - The lens galaxy's dark matter mass distribution is an `NFW` [6 parameters].
 
 A source MGE with 1 x 20 Gaussians is composed below, but `model_2` does not include it, so search 2 fits the
