@@ -177,9 +177,16 @@ galaxy and point source model of the source galaxy.
 
 A brilliant lens model to start with is one which uses a Singular Isothermal
 Ellipsoid (SIE) to model the lens mass and simply assumes the source is
-a point source. Unlike the imaging examples, no external shear is fitted: a quadruply
-imaged point source gives only 8 data points, which cannot constrain an `Isothermal`
-plus an `ExternalShear` (9 parameters). Where a shear *is* fitted it is an
+a point source:
+
+ - The lens galaxy's total mass distribution is an `Isothermal` [5 parameters].
+ - The source galaxy is a `PointSolved` point source [0 parameters].
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=5.
+
+Unlike the imaging examples, no external shear is fitted: a quadruply imaged point source
+gives only 8 data points, which cannot constrain an `Isothermal` (5 parameters), an
+`ExternalShear` (2) and the source's (y,x) centre (2), 9 unknowns in all. Where a shear *is* fitted it is an
 `ExternalShear` held in an `al.MassField` in the model's own `fields` slot,
 never attached to the lens galaxy (see `imaging/modeling.py`). The source is composed as `al.ps.PointSolved`, which has no free
 parameters at all: its source-plane (y,x) centre is solved for analytically at every
