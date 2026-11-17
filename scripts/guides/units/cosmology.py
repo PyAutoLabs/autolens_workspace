@@ -70,6 +70,9 @@ not required in order to compose the lens model.
 
 By assuming redshifts for the lens and source galaxies we can convert their quantities from arcseconds to kiloparsecs.
 
+If you are wondering why changing the redshifts does not change a lensed image in the first place, the guide
+`guides/units/redshifts_and_angles.py` explains it, with figures.
+
 Below, we compute the effective radii of the source in kiloparsecs. To do this, we assume a cosmology which 
 allows us to compute the conversion factor `kpc_per_arcsec`.
 """

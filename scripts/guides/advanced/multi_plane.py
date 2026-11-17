@@ -304,6 +304,9 @@ The ray-tracing above used dimensionless angular units: the grid was in arc-seco
 (e.g. the `einstein_radius`) were angles in arc-seconds. Understanding why PyAutoLens (and galaxy-scale lens modeling
 in general) works this way — and when it stops being convenient — is the key to using multi-plane systems correctly.
 
+For a gentler introduction to this topic, with figures and without the multi-plane detail, see the guide
+`guides/units/redshifts_and_angles.py`.
+
 Gravitational lensing does not measure mass directly; it measures the dimensionless convergence
 
 $\\kappa(\\theta) = \\Sigma(\\theta) / \\Sigma_{\\rm crit}(z_{\\rm l}, z_{\\rm s})$
