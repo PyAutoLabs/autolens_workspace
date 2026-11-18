@@ -8,8 +8,8 @@ the **analysis strategy**: with many sources spanning a wide redshift range, the
 point-source multiple-image positions (multi-plane, per-source redshifts) rather than reconstructing extended
 sources at pixel level, and the lens galaxies' light is not modeled. Extended-source reconstruction of
 individual systems (imaging and a pixelized source, starting from the point-source cluster mass model) is a
-specialised follow-up analysis. It is planned as `features/extended_source` and is not yet in this package;
-until then, `group/` and `imaging/` show how extended sources are modeled.
+specialised follow-up analysis that this package does not yet cover; `group/` and `imaging/` show how
+extended sources are modeled.
 
 # Start Here
 
