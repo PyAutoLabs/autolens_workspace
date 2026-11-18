@@ -8,8 +8,8 @@ This script chains two searches to fit `Imaging` data of a 'galaxy-scale' strong
 
  - The lens galaxy's light is a bulge with an MGE.
  - The lens galaxy's stellar mass distribution is a bulge tied to the light model above.
- - The lens galaxy's dark matter mass distribution is a `NFWSph`.
- - The source galaxy's light is an MGE.
+ - The lens galaxy's dark matter mass distribution is a `NFW`.
+ - A source galaxy MGE is built, but `model_2` does not currently fit it.
 
 The two searches break down as follows:
 
@@ -17,7 +17,8 @@ The two searches break down as follows:
  omitted.
 
  2) Models the lens galaxy's mass using a stellar mass distriubtion which is initialized using the bulge light
- models inferred by search 1, alongside a dark matter profile. The source is again modeled using an MGE
+ models inferred by search 1, alongside a dark matter profile. A source MGE is built, but `model_2` does not
+ currently include it, so the source is not fitted.
 
 __Why Chain?__
 
@@ -25,9 +26,9 @@ For many strong lenses the lens galaxy's light is distinct from the source galax
 approach to first subtract the lens's light and then focus on fitting the lens mass model and source's light. This
 provides the following benefits:
 
- - The non-linear parameter space defined by a bulge (N=7), stellar and dark mass (N=5) and parametric source (N=7)
- has N=27 dimensions. By splitting the model-fit into two searches, we fit parameter spaces of dimensions N=11 and then
- N=27, with many priors initialized. These are more efficient to sample and less like to infer a local maxima or
+ - The non-linear parameter space defined by the lens's stellar light and mass (N=8) and dark matter (N=6) has N=14
+ dimensions. By splitting the model-fit into two searches, we fit parameter spaces of dimensions N=6 and then
+ N=14, with many priors initialized. These are more efficient to sample and less like to infer a local maxima or
  unphysical solution.
 
  - The lens galaxy's light traces its mass, so we can use the lens light model inferred in search 1 to initialize
@@ -121,7 +122,7 @@ Search 1 fits a lens model where:
  - The lens galaxy's light is an MGE bulge with 2 x 30 Gaussians [6 parameters].
  - The lens galaxy's mass and source galaxy are omitted.
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=11.
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=6.
 """
 bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius,
@@ -181,14 +182,13 @@ __Model (Search 2)__
 
 We use the results of search 1 to create the lens model fitted in search 2, where:
 
- - The lens galaxy's light and stellar mass is a MGE bulge with 2 x 30 Gaussians  [6 parameters: priors initialized from 
-   search 1].
- - The lens galaxy's dark matter mass distribution is a `NFW` whose centre is aligned with the 
- MGE bulge and stellar mass model above [5 parameters].
- - The lens mass model also includes an `ExternalShear` [2 parameters].
- - The source galaxy's light is an MGE with 1 x 20 Gaussians [4 parameters].
+ - The lens galaxy's light and stellar mass is a `Sersic` light and mass profile [8 parameters].
+ - The lens galaxy's dark matter mass distribution is an `NFW` [6 parameters].
 
-The number of free parameters and therefore the dimensionality of non-linear parameter space is N=22.
+A source MGE with 1 x 20 Gaussians is composed below, but `model_2` does not include it, so search 2 fits the
+lens galaxy alone.
+
+The number of free parameters and therefore the dimensionality of non-linear parameter space is N=14.
 
 We use the `take_attributes` method to pass the priors of the bulge. The reason we use this method is because
 the bulge above use a `LightProfile` (e.g. via `al.lp`), whereas the model below gives a `LightAndMassProfile` 

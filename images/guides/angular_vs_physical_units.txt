@@ -1,0 +1,253 @@
+Conceptual illustration generated with matplotlib and PyAutoLens, 2026-11-17, for guides/units/redshifts_and_angles.py. The flow diagram is schematic. The six lensed images are real PyAutoLens ray-tracing of an Isothermal lens: the top row holds einstein_radius = 1.6" fixed at three redshift pairs; the bottom row holds the velocity dispersion fixed (sigma = 360 km/s, chosen to give 1.6" at z_lens = 0.5, z_source = 1.0) and converts it to an Einstein radius with the singular isothermal sphere relation theta_E = 4 pi (sigma/c)^2 D_ls/D_s (Planck15), giving 1.60", 3.15" and 0.97". To regenerate, save the producer script below as a .py file and run it from the autolens_workspace root.
+
+Producer script:
+
+"""
+Producer for images/guides/angular_vs_physical_units.png.
+
+Run from the autolens_workspace root: python <this script>
+"""
+
+import numpy as np
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.patches import FancyBboxPatch
+import autolens as al
+
+out = "images/guides/angular_vs_physical_units.png"
+
+cosmology = al.cosmo.Planck15()
+grid = al.Grid2D.uniform(shape_native=(120, 120), pixel_scales=0.05)
+C_KM_S, ARCSEC_PER_RAD = 299792.458, 206264.806
+pairs = [(0.5, 1.0), (0.2, 2.0), (0.8, 1.2)]
+
+
+def einstein_radius_from_sigma(sigma, z_lens, z_source):
+    """Singular isothermal sphere: theta_E = 4 pi (sigma / c)^2 D_ls / D_s."""
+    d_ls = cosmology.angular_diameter_distance_between_redshifts_in_kpc_from(
+        redshift_0=z_lens, redshift_1=z_source
+    )
+    d_s = cosmology.angular_diameter_distance_to_earth_in_kpc_from(redshift=z_source)
+    return 4 * np.pi * (sigma / C_KM_S) ** 2 * d_ls / d_s * ARCSEC_PER_RAD
+
+
+# Choose sigma so that the first redshift pair gives the same 1.6" ring as the angular model.
+sigma = C_KM_S * np.sqrt(1.6 / einstein_radius_from_sigma(C_KM_S, *pairs[0]))
+
+
+def image_from(einstein_radius, z_lens, z_source):
+    galaxies = [
+        al.Galaxy(
+            redshift=z_lens,
+            mass=al.mp.Isothermal(
+                centre=(0.0, 0.0), ell_comps=(0.1, 0.0), einstein_radius=einstein_radius
+            ),
+        ),
+        al.Galaxy(
+            redshift=z_source,
+            bulge=al.lp.SersicCore(
+                centre=(0.1, 0.1),
+                ell_comps=(0.1, 0.0),
+                intensity=1.0,
+                effective_radius=0.3,
+                sersic_index=1.0,
+            ),
+        ),
+    ]
+    return np.asarray(al.Tracer(galaxies=galaxies).image_2d_from(grid=grid).native)
+
+
+fig = plt.figure(figsize=(13, 13.5))
+gs = fig.add_gridspec(
+    3,
+    3,
+    height_ratios=[1.15, 1, 1],
+    hspace=0.55,
+    wspace=0.12,
+    left=0.06,
+    right=0.98,
+    top=0.93,
+    bottom=0.105,
+)
+
+# ---------- top: the two routes into one ray-tracing engine ----------
+ax = fig.add_subplot(gs[0, :])
+ax.set_xlim(0, 100)
+ax.set_ylim(0, 52)
+ax.axis("off")
+
+
+def box(x, y, w, h, lines, fc, fs=12.5):
+    """Rounded box with its lines centred at a fixed baseline spacing (mathtext-safe)."""
+    ax.add_patch(
+        FancyBboxPatch(
+            (x, y), w, h, boxstyle="round,pad=0.5", fc=fc, ec="0.3", lw=1.2
+        )
+    )
+    step = 1.45 * fs  # points between baselines
+    first = 0.5 * step * (len(lines) - 1) - 0.35 * fs
+    for i, line in enumerate(lines):
+        ax.annotate(
+            line,
+            xy=(x + w / 2, y + h / 2),
+            xytext=(0, first - i * step),
+            textcoords="offset points",
+            ha="center",
+            va="baseline",
+            fontsize=fs,
+        )
+
+
+def arrow(x0, y0, x1, y1, text=None, colour="0.2"):
+    ax.annotate(
+        "",
+        xy=(x1, y1),
+        xytext=(x0, y0),
+        arrowprops=dict(arrowstyle="-|>", lw=2.0, color=colour),
+    )
+    if text:  # label sits just above the arrow, rotated to run along it
+        ax.annotate(
+            text,
+            xy=((x0 + x1) / 2, (y0 + y1) / 2),
+            xytext=(0, 5),
+            textcoords="offset points",
+            ha="center",
+            va="bottom",
+            fontsize=11.5,
+            color=colour,
+            style="italic",
+            rotation=np.degrees(np.arctan2(y1 - y0, x1 - x0)),
+            rotation_mode="anchor",
+            transform_rotates_text=True,
+        )
+
+
+blue, red, grey, gold = "#dbe9f6", "#f8dcdc", "#eeeeee", "#fff2c6"
+
+ax.text(
+    0,
+    51,
+    "Galaxy scale (PyAutoLens default): you choose an ANGLE",
+    fontsize=14,
+    color="#1f77b4",
+    fontweight="bold",
+    va="top",
+)
+box(1.5, 36, 22, 9, ["einstein_radius = 1.6″"], blue)
+arrow(25, 40.5, 61, 33, "no redshifts needed")
+
+ax.text(
+    0,
+    26,
+    "Cluster scale (e.g. Lenstool): you choose a PHYSICAL MASS",
+    fontsize=14,
+    color="#d62728",
+    fontweight="bold",
+    va="top",
+)
+box(1.5, 6, 22, 11, [f"σ = {sigma:.0f} km/s", "(or M200, c)"], red)
+arrow(25, 11.5, 29, 11.5)
+box(
+    30.5,
+    2,
+    25,
+    19,
+    [
+        "+ z_lens, z_source, cosmology",
+        r"→ distances $D_{\rm l}$, $D_{\rm s}$, $D_{\rm ls}$",
+        r"→ $\Sigma_{\rm crit}(z_{\rm l}, z_{\rm s})$",
+        "→ mass becomes an angle",
+    ],
+    gold,
+    fs=12,
+)
+arrow(57, 15, 61, 23)
+
+box(
+    62.5,
+    22,
+    17,
+    15,
+    ["One ray-tracing", "engine, in angles", r"$\beta = \theta - \alpha(\theta)$"],
+    grey,
+)
+arrow(81.5, 29.5, 84, 29.5)
+box(85.5, 22, 13.5, 15, ["Lensed image", "(arcsec)"], grey)
+
+ax.text(
+    62,
+    15,
+    "Redshifts only enter in the yellow box.\n"
+    "Hold the angle fixed: the image cannot change.\n"
+    "Hold the mass fixed: the image changes.",
+    ha="left",
+    va="top",
+    fontsize=12,
+    color="0.15",
+    linespacing=1.45,
+)
+
+# ---------- bottom: the experiment ----------
+rows = [
+    ("Hold the ANGLE fixed (einstein_radius = 1.6″)", lambda zl, zs: 1.6, "#1f77b4"),
+    (
+        f"Hold the MASS fixed (σ = {sigma:.0f} km/s)",
+        lambda zl, zs: einstein_radius_from_sigma(sigma, zl, zs),
+        "#d62728",
+    ),
+]
+
+for r, (label, einstein_radius_fn, colour) in enumerate(rows):
+    for k, (z_lens, z_source) in enumerate(pairs):
+        einstein_radius = einstein_radius_fn(z_lens, z_source)
+        a = fig.add_subplot(gs[r + 1, k])
+        a.imshow(
+            image_from(einstein_radius, z_lens, z_source),
+            cmap="inferno",
+            extent=[-3, 3, -3, 3],
+            origin="lower",
+        )
+        a.add_patch(plt.Circle((0, 0), 1.6, fill=False, ls=":", lw=1.2, color="w"))
+        a.set_title(
+            f"z_lens = {z_lens}, z_source = {z_source}\nEinstein radius = {einstein_radius:.2f}″",
+            fontsize=12.5,
+            color=colour,
+        )
+        a.set_xticks([-2, 0, 2])
+        a.set_yticks([-2, 0, 2])
+        a.tick_params(labelsize=11)
+        if r == 1:
+            a.set_xlabel("x (arcsec)", fontsize=11)
+        if k == 0:
+            a.set_ylabel("y (arcsec)", fontsize=11, labelpad=2)
+            bbox = a.get_position()
+    fig.text(
+        0.06,
+        bbox.y1 + 0.043,
+        label,
+        ha="left",
+        va="bottom",
+        fontsize=14,
+        color=colour,
+        fontweight="bold",
+    )
+
+fig.suptitle(
+    "Why the redshift does not change the image in PyAutoLens, but does in a cluster code",
+    fontsize=16,
+    fontweight="bold",
+    y=0.985,
+)
+fig.text(
+    0.025,
+    0.022,
+    "White dotted circle: 1.6″ for reference. The physical-mass row uses a singular isothermal sphere,\n"
+    r"$\theta_{\rm E} = 4\pi\,(\sigma/c)^2\,D_{\rm ls}/D_{\rm s}$ (Planck15).",
+    fontsize=10,
+    color="0.35",
+    linespacing=1.6,
+)
+fig.savefig(out, dpi=140)
+print(out, sigma)
