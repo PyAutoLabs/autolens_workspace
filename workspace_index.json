@@ -269,6 +269,7 @@
       "Wrap Up"
     ],
     "cross_refs": [
+      "autolens_workspace/scripts/cluster/mass_parameterizations.py",
       "autolens_workspace/scripts/cluster/modeling.py",
       "autolens_workspace/scripts/cluster/simulator.py",
       "autolens_workspace/scripts/group/features/scaling_relation/modeling.py",
