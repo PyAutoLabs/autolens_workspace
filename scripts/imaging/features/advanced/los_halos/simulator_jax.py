@@ -389,7 +389,23 @@ the halo parameters, masks, sheet kappas and noise keys vary.
 ``los_realizations_to_arrays`` is a convenience helper that runs ``galaxies_to_halo_arrays``
 on each realisation and stacks the results into batch-dimensioned arrays. Each realisation is
 again the halo galaxies concatenated with that line of sight's sheet ``MassField``s.
+
+Every realisation shares the same planes, so the mass-function and mass-concentration coefficients
+are computed once with ``colossus`` and passed to each ``LOSSampler``, rather than refitted for
+every seed.
 """
+from autolens.lens.los import mass_concentration_ab_from, mass_function_ab_from
+
+mass_function_coefficients = np.array(
+    [mass_function_ab_from(redshift=z, cosmology_name="planck15") for z in plane_centres]
+)
+mass_concentration_coefficients = np.array(
+    [
+        mass_concentration_ab_from(redshift=z, cosmology_name="planck15")
+        for z in plane_centres
+    ]
+)
+
 batch_size = 8
 
 realization_galaxies = []
