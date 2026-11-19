@@ -238,6 +238,12 @@ truncation_radius) from every ``NFWTruncatedSph`` halo and the negative kappa fr
 ``MassSheet``, then pads each plane's halo list to a fixed maximum ``max_n``. Unused slots
 have their mask set to ``False`` so they contribute zero deflection.
 
+``max_n=None`` sizes the arrays to the fullest plane, so every halo is kept. With the settings
+above the fullest plane holds a few hundred halos, and lowering ``m_min`` raises that quickly.
+An integer ``max_n`` gives a fixed array shape, which avoids recompiling when a new population
+is drawn, but a plane holding more halos than ``max_n`` raises an error rather than silently
+dropping halos whose mass the negative sheets still remove.
+
 The sheets arrive here as ``MassField`` objects, so the halo galaxies and the sheet fields are
 concatenated into the one flat population the helper flattens. The helper reads only ``redshift``
 and ``mass_sheet`` off each object and so accepts either form -- a ``MassField`` carrying the
@@ -251,7 +257,7 @@ is added so that the lens galaxy's deflections are applied at the correct redshi
 """
 plane_redshifts = sorted(set(list(plane_centres) + [z_lens, z_source]))
 
-max_n = 200
+max_n = None
 
 halo_params, halo_mask, sheet_kappas = substructure_util.galaxies_to_halo_arrays(
     galaxies=los_halos + los_fields,
@@ -261,7 +267,9 @@ halo_params, halo_mask, sheet_kappas = substructure_util.galaxies_to_halo_arrays
 )
 
 n_active = int(halo_mask.sum())
-print(f"Padded to max_n={max_n} per plane ({n_active} active slots across all planes).")
+print(
+    f"Padded to {halo_params.shape[1]} slots per plane ({n_active} active slots across all planes)."
+)
 
 """
 __Scaling Matrix__
