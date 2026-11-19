@@ -48,7 +48,7 @@ dark matter by the shared group potential (`r_core = 0`, truncation fixed at a f
 galaxy scale, with no host environment, extra galaxies are untruncated `Isothermal` profiles). Each
 galaxy's free `sigma` prior is bounded by a value derived from the galaxy's luminosity:
 
-    einstein_radius_upper = min(5 * 0.5 * total_luminosity^0.6, 5.0)
+    einstein_radius_upper = min(5 * 0.5 * total_luminosity^0.6, 5.0)   (5.0 when the luminosity is not positive)
     sigma_upper = 287 * einstein_radius_upper^0.5   (the SIS-equivalent dispersion at z_l=0.5, z_s=1.0)
 
 This luminosity-informed bound prevents unphysically large mass assignments while keeping the mass
@@ -322,7 +322,10 @@ def source_lp_1(
             for g in tracer.galaxies[n_main + i].bulge.profile_list
         ]
         total_luminosity = np.sum(luminosity_per_gaussian_list) / pixel_scale**2
-        einstein_radius_upper = min(5 * 0.5 * total_luminosity**0.6, 5.0)
+        # A fit whose MGE intensities sum to zero (e.g. under test mode) would give a bound
+        # of 0 and an invalid prior, so a non-positive luminosity falls back to the 5.0 cap.
+        luminosity_cap = 5 * 0.5 * total_luminosity**0.6
+        einstein_radius_upper = min(luminosity_cap, 5.0) if luminosity_cap > 0 else 5.0
         # SIS-equivalent dispersion of the luminosity-derived Einstein-radius bound at the
         # script's redshifts (z_l=0.5, z_s=1.0), carrying the bound over to the dPIE's sigma.
         sigma_upper = 287.0 * einstein_radius_upper**0.5
@@ -862,7 +865,9 @@ def mass_total(
             for g in light_extra.bulge.profile_list
         ]
         total_luminosity = np.sum(luminosity_per_gaussian_list) / pixel_scale**2
-        einstein_radius_upper = min(5 * 0.5 * total_luminosity**0.6, 5.0)
+        luminosity_cap = 5 * 0.5 * total_luminosity**0.6
+        # Non-positive luminosity (a zero-light fit) falls back to the 5.0 cap, as in source_lp_1.
+        einstein_radius_upper = min(luminosity_cap, 5.0) if luminosity_cap > 0 else 5.0
         sigma_upper = 287.0 * einstein_radius_upper**0.5  # SIS-equivalent bound
         mass.sigma = af.UniformPrior(lower_limit=0.0, upper_limit=sigma_upper)
         mass.r_core = 0.0  # vanishing core — fixed; the dPIE is analytic at r_core = 0
