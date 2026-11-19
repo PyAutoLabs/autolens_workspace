@@ -101,7 +101,8 @@ negative kappa ``MassSheet`` to each plane.
 objects and the sheets as ``MassField`` objects. A negative-kappa sheet is not a galaxy -- it is
 the mean-density correction of the line of sight, which is exactly the external mass a
 ``MassField`` exists to hold. See ``simulator.py`` for the full explanation of the sampling
-pipeline and the mass function coefficients.
+pipeline and the mass function coefficients, which are computed with the optional
+``colossus`` library (``pip install colossus``).
 """
 _, plane_centres = los_planes_from(
     z_lens=z_lens,
@@ -111,23 +112,6 @@ _, plane_centres = los_planes_from(
 )
 
 n_planes = len(plane_centres)
-
-try:
-    from autolens.lens.los import mass_function_ab_from, mass_concentration_ab_from
-    from astropy.cosmology import Planck15 as astropy_planck15
-
-    mass_function_coefficients = np.zeros((n_planes, 2))
-    mass_concentration_coefficients = np.zeros((n_planes, 2))
-
-    for i, z in enumerate(plane_centres):
-        mass_function_coefficients[i] = mass_function_ab_from(
-            redshift=z, cosmology_astropy=astropy_planck15
-        )
-        mass_concentration_coefficients[i] = mass_concentration_ab_from(redshift=z)
-
-except ImportError:
-    mass_function_coefficients = np.tile([-1.9, 8.0], (n_planes, 1))
-    mass_concentration_coefficients = np.tile([-3.0, 40.0], (n_planes, 1))
 
 from autogalaxy.cosmology import Planck15
 
@@ -144,8 +128,7 @@ sampler = LOSSampler(
     c_scatter=c_scatter,
     truncation_factor=truncation_factor,
     cosmology=cosmology,
-    mass_function_coefficients=mass_function_coefficients,
-    mass_concentration_coefficients=mass_concentration_coefficients,
+    cosmology_name_colossus="planck15",
     seed=seed,
 )
 

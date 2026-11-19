@@ -149,19 +149,20 @@ seed = 42
 """
 __Mass Function and Mass-Concentration Coefficients__
 
-The ``LOSSampler`` can compute these from the ``hmf`` and ``colossus`` libraries, but here we
-provide pre-computed values for each plane to avoid those dependencies.
+For each plane the ``LOSSampler`` needs two fits, each a row ``[A, B]``:
 
-Each row contains ``[A, B]`` where:
+ - The Sheth-Tormen halo mass function: ``log10(dn/dm) = A * log10(m) + B``.
+ - The Ludlow+16 concentration-mass relation: ``c(m) = A * log10(m) + B``.
 
- - For the mass function: ``log10(dn/dm) = A * log10(m) + B``
- - For the mass-concentration relation: ``c(m) = A * log10(m) + B``
+Both are computed from the ``colossus`` library at the redshift of each plane centre, for the
+Planck15 cosmology (``cosmology_name_colossus``). ``colossus`` is an optional dependency of
+PyAutoLens: install it with ``pip install colossus`` (or ``pip install autolens[los]``). Without
+it, the ``LOSSampler`` stops with a message saying so; it never falls back to approximate values.
 
-These coefficients were computed using the Sheth-Mo-Tormen mass function and the Ludlow+16
-concentration-mass relation for Planck15 cosmology at the redshift of each plane centre.
-
-If you have ``hmf`` and ``colossus`` installed, you can pass ``cosmology_astropy`` and
-``cosmology_name_colossus`` to ``LOSSampler`` instead, and it will compute these automatically.
+You can also pass precomputed coefficient arrays of shape ``(n_planes, 2)`` through
+``mass_function_coefficients`` and ``mass_concentration_coefficients``, for example to reuse the
+same fits across many simulations. ``mass_function_ab_from`` and ``mass_concentration_ab_from`` in
+``autolens.lens.los`` compute them.
 """
 _, plane_centres = los_planes_from(
     z_lens=z_lens,
@@ -174,29 +175,6 @@ n_planes = len(plane_centres)
 
 print(f"Number of LOS planes: {n_planes}")
 print(f"Plane centres: {plane_centres}")
-
-try:
-    from autolens.lens.los import mass_function_ab_from, mass_concentration_ab_from
-    from astropy.cosmology import Planck15 as astropy_planck15
-
-    mass_function_coefficients = np.zeros((n_planes, 2))
-    mass_concentration_coefficients = np.zeros((n_planes, 2))
-
-    for i, z in enumerate(plane_centres):
-        mass_function_coefficients[i] = mass_function_ab_from(
-            redshift=z, cosmology_astropy=astropy_planck15
-        )
-        mass_concentration_coefficients[i] = mass_concentration_ab_from(redshift=z)
-
-    print(
-        "Computed mass function and mass-concentration coefficients from hmf/colossus."
-    )
-
-except ImportError:
-    print("hmf/colossus not available, using approximate pre-computed coefficients.")
-
-    mass_function_coefficients = np.tile([-1.9, 8.0], (n_planes, 1))
-    mass_concentration_coefficients = np.tile([-3.0, 40.0], (n_planes, 1))
 
 """
 __Sample LOS Halos__
@@ -230,8 +208,7 @@ sampler = LOSSampler(
     c_scatter=c_scatter,
     truncation_factor=truncation_factor,
     cosmology=cosmology,
-    mass_function_coefficients=mass_function_coefficients,
-    mass_concentration_coefficients=mass_concentration_coefficients,
+    cosmology_name_colossus="planck15",
     seed=seed,
 )
 
