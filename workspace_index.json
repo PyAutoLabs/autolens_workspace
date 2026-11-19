@@ -2848,7 +2848,7 @@
       "guides/advanced/multi_plane.py",
       "guides/units/cosmology.py"
     ],
-    "notebook": null,
+    "notebook": "notebooks/guides/units/redshifts_and_angles.ipynb",
     "path": "scripts/guides/units/redshifts_and_angles.py",
     "summary": "A question we are asked a lot: \"Why doesn't changing the lens or source redshift change my lensed image?\"",
     "title": "Units: Redshifts and Angles"
