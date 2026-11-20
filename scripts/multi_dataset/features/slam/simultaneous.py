@@ -491,6 +491,7 @@ def subhalo_grid_search(
     mass_result,
     subhalo_result_1,
     subhalo_mass,
+    dataset_model_list,
     grid_dimension_arcsec=3.0,
     number_of_steps=2,
     n_batch=20,
@@ -522,10 +523,13 @@ def subhalo_grid_search(
         model = af.Collection(
             galaxies=af.Collection(lens=lens, subhalo=subhalo, source=source),
             fields=mass_result[i].model.fields,
+            dataset_model=dataset_model_list[i],
         )
 
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
         analysis_factor_list.append(analysis_factor)
+
+    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
 
     search = af.Nautilus(
         name="subhalo[2]_[search_lens_plane]",
@@ -540,11 +544,11 @@ def subhalo_grid_search(
     )
 
     return subhalo_grid_search.fit(
-        model=model,
-        analysis=analysis,
+        model=factor_graph.global_prior_model,
+        analysis=factor_graph,
         grid_priors=[
-            model.galaxies.subhalo.mass.centre_1,
-            model.galaxies.subhalo.mass.centre_0,
+            subhalo.mass.centre_1,
+            subhalo.mass.centre_0,
         ],
         info=settings_search.info,
     )
@@ -572,10 +576,10 @@ def subhalo_refine(
     subhalo.redshift = subhalo_result_1[0].instance.galaxies.lens.redshift
     subhalo.mass.redshift_object = subhalo_result_1[0].instance.galaxies.lens.redshift
     subhalo.mass.mass_at_200 = af.LogUniformPrior(lower_limit=1.0e6, upper_limit=1.0e11)
-    subhalo.mass.centre = subhalo_grid_search_result_2.model_centred_absolute(
-        a=1.0
-    ).galaxies.subhalo.mass.centre
-    subhalo.redshift = subhalo_grid_search_result_2.model.galaxies.subhalo.redshift
+    subhalo.mass.centre = subhalo_grid_search_result_2.model_centred_absolute(a=1.0)[
+        0
+    ].galaxies.subhalo.mass.centre
+    subhalo.redshift = subhalo_grid_search_result_2.model[0].galaxies.subhalo.redshift
     subhalo.mass.redshift_object = subhalo.redshift
 
     analysis_factor_list = []
@@ -583,11 +587,11 @@ def subhalo_refine(
     for i, analysis in enumerate(analysis_list):
         model = af.Collection(
             galaxies=af.Collection(
-                lens=subhalo_grid_search_result_2.model.galaxies.lens,
+                lens=subhalo_grid_search_result_2.model[i].galaxies.lens,
                 subhalo=subhalo,
-                source=subhalo_grid_search_result_2.model.galaxies.source,
+                source=subhalo_grid_search_result_2.model[i].galaxies.source,
             ),
-            fields=subhalo_grid_search_result_2.model.fields,
+            fields=subhalo_grid_search_result_2.model[i].fields,
             dataset_model=dataset_model_list[i],
         )
 
@@ -835,6 +839,7 @@ subhalo_grid_search_result_2 = subhalo_grid_search(
     mass_result=mass_result,
     subhalo_result_1=subhalo_result_1,
     subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
+    dataset_model_list=dataset_model_list,
     grid_dimension_arcsec=3.0,
     number_of_steps=2,
 )
