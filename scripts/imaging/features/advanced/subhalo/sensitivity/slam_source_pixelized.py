@@ -57,6 +57,7 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 # from autolens import setup_notebook; setup_notebook()
 
 import numpy as np
+from scipy.interpolate import griddata
 import os
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
@@ -558,14 +559,21 @@ class SimulateImagingPixelized:
 
         mapper = self.inversion.cls_list_from(cls=al.Mapper)[0]
 
-        mapper_valued = al.MapperValued(
-            mapper=mapper,
-            values=self.inversion.reconstruction_dict[mapper],
-        )
-
-        source_image = mapper_valued.interpolated_array_from(
+        # Sample from -2 to +2 arcsec along each axis at the requested resolution.
+        interpolation_grid = al.Grid2D.uniform(
             shape_native=self.interpolated_pixelized_shape,
-            extent=(-2.0, 2.0, -2.0, 2.0),
+            pixel_scales=tuple(4.0 / (n - 1) for n in self.interpolated_pixelized_shape),
+            over_sample_size=1,
+        )
+        source_values = griddata(
+            points=mapper.source_plane_mesh_grid,
+            values=self.inversion.reconstruction_dict[mapper],
+            xi=interpolation_grid,
+            fill_value=0.0,
+        )
+        source_image = al.Array2D.no_mask(
+            values=source_values.reshape(interpolation_grid.shape_native),
+            pixel_scales=interpolation_grid.pixel_scales,
         )
 
         """
