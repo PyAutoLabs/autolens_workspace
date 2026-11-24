@@ -32,6 +32,7 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 
 import numpy as np
 from pathlib import Path
+import sys
 import autolens as al
 import autolens.plot as aplt
 
@@ -51,10 +52,12 @@ dataset_path = Path("dataset") / "cluster" / dataset_name
 data_fits_path = dataset_path / "data.fits"
 
 data = None
-pixel_scales = 0.3  # hips2fits returns 0.3"/pixel for this cutout.
 
 if data_fits_path.exists():
-    data = al.Array2D.from_fits(file_path=data_fits_path, pixel_scales=pixel_scales)
+    sys.path.insert(0, str(dataset_path.resolve()))
+    from pandora_image import image_from_fits
+
+    data = image_from_fits(data_fits_path)
 
     aplt.plot_array(array=data, title="Abell 2744")
 
@@ -94,7 +97,6 @@ positions_list = [dataset.positions for dataset in dataset_list]
 aplt.plot_positions_overlay(
     positions_list=positions_list,
     image=data,
-    pixel_scales=pixel_scales,
 )
 
 """
@@ -113,7 +115,6 @@ if data is not None:
     aplt.plot_image_group_zooms(
         positions_list=positions_list,
         image=data,
-        pixel_scales=pixel_scales,
         zoom_arcsec=6.0,
     )
 
@@ -126,7 +127,6 @@ multi-panel subplot.
 aplt.subplot_cluster_dataset(
     positions_list=positions_list,
     image=data,
-    pixel_scales=pixel_scales,
 )
 
 """
@@ -177,7 +177,6 @@ aplt.plot_critical_curves(
     tracer,
     grid=grid,
     image=data,
-    pixel_scales=pixel_scales,
     plane_indices=plane_indices,
 )
 

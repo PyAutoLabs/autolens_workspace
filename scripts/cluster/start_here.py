@@ -19,7 +19,7 @@ This script gets you fitting a real cluster-scale lens system in roughly 15 minu
 data**: **Abell 2744** ("Pandora's Cluster", z = 0.308), a Hubble Frontier Fields cluster and one of
 the most powerful gravitational lenses known. The multiple-image positions and spectroscopic
 redshifts, and the cluster-member catalogue, come from the published lens-model inputs of Bergamini
-et al. 2023 (A&A 670, A60): we fit the 7 "gold" source systems (25 multiple images, sources from
+et al. 2023 (A&A 670, A60): we fit the 7 "gold" source systems (24 multiple images, sources from
 ``z = 1.7`` to ``z = 5.7`` — a genuinely multi-plane problem) with 2 individually-modelled BCGs,
 188 scaling-tier members, and an NFW host halo.
 
@@ -106,6 +106,7 @@ from autolens import jax_wrapper  # Sets JAX environment before other imports
 import os
 import numpy as np
 from pathlib import Path
+import sys
 
 import autofit as af
 import autolens as al
@@ -117,7 +118,7 @@ __Dataset__
 We load the real Abell 2744 dataset. The dataset folder contains:
 
  - ``point_datasets.csv`` — one row per observed multiple image, grouped by source ``name``, with a
-   ``redshift`` column per source. These are the Bergamini et al. 2023 gold systems: 25 images with
+   ``redshift`` column per source. These are the Bergamini et al. 2023 gold systems: 24 images with
    spectroscopic redshifts, as (y, x) arc-second offsets about the projected cluster core (the same
    centre used by the weak-lensing examples in ``scripts/weak/``, so strong- and weak-lensing
    constraints on this cluster share a coordinate frame).
@@ -163,11 +164,12 @@ if not small_datasets and not data_fits_path.exists():
             f"Image download failed ({e}) — continuing without it (visualization only)."
         )
 
+data = None
 if not small_datasets and data_fits_path.exists():
-    # hips2fits returns 0.3"/pixel for this 0.05 deg / 600 pixel cutout.
-    data = al.Array2D.from_fits(file_path=data_fits_path, pixel_scales=0.3)
+    sys.path.insert(0, str(dataset_path.resolve()))
+    from pandora_image import image_from_fits
 
-    aplt.plot_array(array=data, title="")
+    data = image_from_fits(data_fits_path)
 
 """
 __Point Datasets__
@@ -181,6 +183,9 @@ from your own imaging (e.g. via PSF-fitting). The CSV is spreadsheet-editable: p
 redshifts can be tweaked without touching Python.
 """
 dataset_list = al.list_from_csv(file_path=dataset_path / "point_datasets.csv")
+
+if data is not None:
+    aplt.plot_image_with_points(image=data, datasets=dataset_list, title_prefix="Pandora")
 
 for dataset in dataset_list:
     print("Point Dataset Info:")
@@ -429,6 +434,7 @@ analysis_list = [
     al.AnalysisPoint(
         dataset=dataset,
         solver=solver,
+        image=data,
         fit_positions_cls=al.FitPositionsSourceSolved,
         use_jax=True,
     )
