@@ -7,7 +7,7 @@ VizieR catalogue `J/A+A/670/A60`:
 
 - `point_datasets.csv` — multiple-image positions and spectroscopic redshifts.
   From table A1, keeping the 7 "gold" systems (≥3 images, all quality flag 3;
-  one knot per source family): 25 images of sources at z = 1.688 to 5.662.
+  one knot per source family): 24 images of sources at z = 1.688 to 5.662.
   Positions are (y, x) arc-second offsets about the projected cluster core
   (RA, Dec) = (3.5875, -30.3972) — the same centre used by the weak-lensing
   examples (`scripts/weak/`), so strong and weak constraints share a frame.
@@ -21,8 +21,10 @@ VizieR catalogue `J/A+A/670/A60`:
   centred on the BCG, and one `Point` per source (centres initialised at the
   mean of each system's observed images).
 - `data.fits` — not committed; `scripts/cluster/start_here.py` downloads an
-  HST H-band cutout from the CDS hips2fits service on first run, for
-  visualization only.
+  HST H-band cutout from the pinned gallery copy on first run. This CDS hips2fits image is for
+  visualization only. The catalogue uses east-positive x and north-positive y.
+  `pandora_image.py` uses the FITS WCS to orient the pixels and place the
+  catalogue origin at the reference pixel.
 
 `prep.py` regenerates the CSVs from VizieR. The multiple-image and member
 catalogues are © the original authors; cite Bergamini et al. 2023 (and for
