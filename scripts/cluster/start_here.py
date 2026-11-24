@@ -111,6 +111,7 @@ import sys
 import autofit as af
 import autolens as al
 import autolens.plot as aplt
+from autolens.point.plot.multi_source_plots import plot_image_with_points
 
 """
 __Dataset__
@@ -184,7 +185,7 @@ redshifts can be tweaked without touching Python.
 dataset_list = al.list_from_csv(file_path=dataset_path / "point_datasets.csv")
 
 if data is not None:
-    aplt.plot_image_with_points(image=data, datasets=dataset_list, title_prefix="Pandora")
+    plot_image_with_points(image=data, datasets=dataset_list, title_prefix="Pandora")
 
 for dataset in dataset_list:
     print("Point Dataset Info:")
