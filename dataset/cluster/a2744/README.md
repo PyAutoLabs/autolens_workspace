@@ -21,7 +21,7 @@ VizieR catalogue `J/A+A/670/A60`:
   centred on the BCG, and one `Point` per source (centres initialised at the
   mean of each system's observed images).
 - `data.fits` — not committed; `scripts/cluster/start_here.py` downloads an
-  HST H-band cutout from the CDS hips2fits service on first run, for
+  HST H-band cutout from the pinned gallery copy on first run. This CDS hips2fits image is for
   visualization only. The catalogue uses east-positive x and north-positive y.
   `pandora_image.py` uses the FITS WCS to orient the pixels and place the
   catalogue origin at the reference pixel.

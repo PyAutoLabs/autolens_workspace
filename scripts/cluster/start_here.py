@@ -130,10 +130,10 @@ We load the real Abell 2744 dataset. The dataset folder contains:
    BCG, and one point source per system (see ``csv_api.py`` for the schema, and the dataset
    folder's ``README.md`` + ``prep.py`` for full provenance).
 
-For visualization we also download an HST H-band image cutout of the cluster from the CDS
-hips2fits service on the first run (~1.4 MB, cached). The image is only used for plotting — the
+For visualization we also download the gallery copy of the CDS hips2fits HST H-band cutout
+on the first run (~1.4 MB, cached). The image is only used for plotting — the
 model is fitted to the multiple-image positions. The download uses an explicit timeout because
-``urlretrieve`` has none, so a stalled hips2fits response would hang the script indefinitely (in CI
+``urlretrieve`` has none, so a stalled response would hang the script indefinitely (in CI
 this blocked until the build-script timeout); on any failure the script simply continues without
 the image.
 """
@@ -142,10 +142,9 @@ dataset_path = Path("dataset") / "cluster" / dataset_name
 
 data_fits_path = dataset_path / "data.fits"
 
-HIPS2FITS_URL = (
-    "https://alasky.cds.unistra.fr/hips-image-services/hips2fits"
-    "?hips=CDS%2FP%2FHST%2FH&ra=3.5875&dec=-30.3972"
-    "&width=600&height=600&fov=0.05&projection=TAN&format=fits"
+HST_CUTOUT_URL = (
+    "https://raw.githubusercontent.com/PyAutoLabs/autolens_visualization/"
+    "5d19bddcfe28af68d748e1079b031a7ae29c9e82/dataset/cluster/a2744/data.fits"
 )
 
 small_datasets = os.environ.get("PYAUTO_SMALL_DATASETS") == "1"
@@ -157,7 +156,7 @@ if not small_datasets and not data_fits_path.exists():
         "Downloading HST H-band image of Abell 2744 for visualization (one-off, ~1.4 MB) ..."
     )
     try:
-        with urllib.request.urlopen(HIPS2FITS_URL, timeout=30) as response:
+        with urllib.request.urlopen(HST_CUTOUT_URL, timeout=30) as response:
             data_fits_path.write_bytes(response.read())
     except Exception as e:
         print(
