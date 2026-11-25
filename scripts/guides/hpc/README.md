@@ -341,7 +341,8 @@ key SLURM directives are:
 
 - `--partition=cpu` — submit to the CPU partition (name varies by HPC)
 - `--cpus-per-task=8` — number of CPU cores per job; increase for faster
-  Nautilus sampling
+  Nautilus sampling. `number_of_cores="auto"` in the Python script reads
+  this value, so the script does not change when you change it
 - `--mem=64gb` — memory per job; increase for large pixelized source reconstructions
 - `--time=18:00:00` — wall-clock time limit; job is killed if it overruns
 - `--array=0-0` — launch one job per dataset; SLURM sets
@@ -363,19 +364,32 @@ This is the standard pattern for fitting many lenses simultaneously: each
 array job is independent, runs on its own CPU allocation, and fits a
 different dataset.
 
-### JAX and thread pinning
+### Choosing how each job computes
 
-Two environment variables tell JAX to use the CPU backend and prevent it
-from attempting to use a GPU that is not allocated to this job:
+The example script passes `setup="auto"` to the analysis and
+`number_of_cores="auto"` to the search. Each job checks the hardware it was
+given and picks how to compute the likelihood: for a pixelized source, numba
+with one likelihood per allocated core on a CPU node, and JAX on a GPU node.
+The same Python script therefore runs on both kinds of node. The job's log
+shows the setup it chose, the number of workers and a run-time estimate. See
+`scripts/guides/advanced/auto_setup.py` for the details and how to override
+the choice.
+
+### JAX and thread pinning (optional)
+
+The CPU script also sets two environment variables that tell JAX to use the
+CPU backend, so it does not look for a GPU that was not allocated. With them
+set, `setup="auto"` also chooses a CPU setup:
 
 ```
 export JAX_PLATFORM_NAME=cpu
 export JAX_PLATFORMS=cpu
 ```
 
-The thread-pinning block sets every linear-algebra library to use exactly
-the number of CPUs SLURM allocated, preventing threads from overloading
-the node:
+Its thread-pinning block limits every linear-algebra library to the number
+of CPUs SLURM allocated, so array jobs sharing a node do not overload it.
+`setup="auto"` already limits numba and the linear-algebra libraries to the
+allocated cores, so this block is a safeguard rather than a requirement:
 
 ```
 THREADS=$SLURM_CPUS_PER_TASK
@@ -398,7 +412,8 @@ Key differences from the CPU script:
   parallelism
 - `--mem=32gb` — GPU jobs typically need less host memory than large
   multi-CPU jobs
-- No `JAX_PLATFORM_NAME` override — JAX auto-detects and uses the GPU
+- No `JAX_PLATFORMS` override — JAX detects the GPU, `setup="auto"`
+  chooses a JAX GPU setup and `number_of_cores="auto"` uses one worker
 - No CPU thread-pinning block — not needed when a GPU is doing the work
 - `nvidia-smi` — prints GPU information to the log at job start, useful
   for confirming the correct GPU was allocated
@@ -413,9 +428,9 @@ sbatch scripts/guides/hpc/batch_gpu/submit
 ```{eval-rst}
 .. note::
 
-   GPU jobs use JAX with ``use_jax=True`` in the analysis object, which is
-   already the default in PyAutoLens. No code changes are required to switch
-   from CPU to GPU — only the batch script changes.
+   The analysis in the example script uses ``setup="auto"``, which chooses a
+   JAX GPU setup on a GPU node and a CPU setup on a CPU node. No code changes
+   are required to switch from CPU to GPU: only the batch script changes.
 ```
 
 ## Monitoring Jobs

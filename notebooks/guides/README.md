@@ -9,6 +9,7 @@ most calculations.
 
 - `data_structures`: How the NumPy arrays containing results are structured and the API for using them.
 - `using_jax`: How JAX acceleration works — auto-enabled modeling, disabling it, and writing `@jax.jit` yourself.
+- `advanced/auto_setup`: How `setup="auto"` picks JAX or numba, CPU or GPU and the number of cores for each model-fit, and how to override it.
 - `tracer` Performing ray-tracing and lensing calculations.
 - `galaxies` Creating and using galaxies and their mass and light profiles.
 - `coolest_interop` Exporting / importing lens models via the COOLEST standard for exchange with other lens modeling codes.

@@ -138,7 +138,11 @@ using an alternative mathematical approach called the **sparse linear algebra fo
 You do not need to understand the full details of the method, but the key point is:
 
 - It exploits the **sparsity** of the matrices used in pixelized source reconstruction, reducing memory usage.
-- This leads to a **significant speed-up on GPU or CPU**, using JAX to perform the linear algebra calculations.
+- This leads to a **significant speed-up on GPU or CPU**.
+
+In a model-fit, `setup="auto"` builds this operator for you: it is the designated setup for pixelized
+interferometer fits on both a CPU (with numba) and a GPU (with JAX), see `guides/advanced/auto_setup.py`. This
+script builds it explicitly so you can see the step and its cost.
 
 To enable this feature, we call `apply_sparse_operator()` on the dataset. This computes and stores a NUFFT operator 
 matrix.

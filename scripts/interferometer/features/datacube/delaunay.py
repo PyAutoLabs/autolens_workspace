@@ -102,6 +102,9 @@ dataset_list = [
 
 """
 __Sparse Operators__
+
+One sparse operator per channel, as in `modeling.py`. Passing `setup="auto"` to every channel's analysis builds it
+for you instead (see `guides/advanced/auto_setup.py`).
 """
 dataset_list = [
     dataset.apply_sparse_operator(use_jax=True, show_progress=False)

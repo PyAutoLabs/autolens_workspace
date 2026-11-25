@@ -152,6 +152,8 @@ dataset = al.Interferometer.from_fits(
     transformer_class=al.TransformerNUFFT,
 )
 
+# The sparse operator speeds up pixelized fits (see `pixelization/modeling.py`). In a model-fit, setup="auto"
+# builds it for you (see guides/advanced/auto_setup.py).
 dataset = dataset.apply_sparse_operator(use_jax=True, show_progress=True)
 
 positions = al.Grid2DIrregular(

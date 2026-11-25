@@ -286,6 +286,12 @@ compiled trace.
 Force NumPy with `use_jax=False` (or `PYAUTO_DISABLE_JAX=1`) when
 debugging — NumPy stack traces are easier to read than JAX traces.
 
+To let **PyAutoLens** choose how each likelihood is computed (JAX or numba,
+CPU or GPU, and how many cores), pass `setup="auto"` to the analysis and
+`number_of_cores="auto"` to the search. This matters most for pixelized
+sources, where numba on many CPU cores can beat JAX on a CPU. See
+`scripts/guides/advanced/auto_setup.py`.
+
 __Iterations Per Update__
 
 Every `iterations_per_quick_update`, the non-linear search outputs the maximum likelihood model and its best fit

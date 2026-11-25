@@ -153,6 +153,10 @@ Pixelized source modeling uses sparse linear algebra to keep memory and runtime 
 sparse-operator matrix per channel — `apply_sparse_operator()` does this work in seconds for SMA-scale data and
 in minutes per channel on CPU for ALMA-scale data. For very large cubes you'll want to compute these once and
 cache them; see `pixelization/many_visibilities_preparation.py` for the pattern.
+
+Passing `setup="auto"` to every channel's analysis builds this operator for you instead. On a CPU the designated
+datacube setup is `numba_cpu_sparse_fp64_wtilde`, and every channel of the factor graph resolves the same setup.
+`guides/advanced/auto_setup.py` explains the automatic setup; this script builds the operator explicitly.
 """
 dataset_list = [
     dataset.apply_sparse_operator(use_jax=True, show_progress=False)

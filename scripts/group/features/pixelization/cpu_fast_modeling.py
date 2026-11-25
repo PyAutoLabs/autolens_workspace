@@ -4,32 +4,32 @@ CPU Fast Modeling: Pixelization (Group)
 
 Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
 
-This script demonstrates how to achieve fast pixelization performance on a CPU without JAX for group-scale
-strong lenses, by combining:
+This script shows how to override the automatic compute setup for a group-scale strong lens with a pixelized
+source, by choosing the setup yourself:
 
- - `numba` for optimized numerical routines.
- - Python `multiprocessing` to exploit multiple CPU cores.
- - Sparse operator formalism for efficient linear algebra.
+ - `numba` for the likelihood, instead of JAX.
+ - The sparse operator formalism for the inversion's linear algebra.
+ - Python `multiprocessing` to run likelihoods on several CPU cores at once.
 
-For group-scale lenses, the larger 7.5" mask means significantly more image pixels than galaxy-scale
-lenses, which increases the size of the matrices used in the pixelized source reconstruction. CPU
-optimization is therefore even more important for group lenses, as the matrix operations scale with
-the number of image pixels.
+You usually do not need to do this. Passing `setup="auto"` to the analysis and `number_of_cores="auto"` to the
+search already picks this setup, `numba_cpu_sparse_fp64` with one worker per core, for a pixelized source on a CPU.
+On an A100 GPU it picks `jax_gpu_dense_fp64` instead, and for MGE or parametric sources it picks JAX on both. The
+`guides/advanced/auto_setup.py` guide explains the automatic setup and lists the setup it picks for every dataset.
 
-On machines with many CPU cores (e.g. HPC clusters with >10 CPUs), this method can outperform JAX GPU
-acceleration for pixelized source modeling, because pixelizations rely on sparse linear algebra which
-is not currently optimized in JAX.
+Override it when you want the same setup on every machine, for example to compare run times, or when the automatic
+choice is not the one you want.
 
-> Note: This performance advantage applies only to pixelized sources. For parametric sources or
-> multi-Gaussian models, JAX (especially with a GPU) is significantly faster.
+Group-scale lenses use a larger 7.5" mask, so there are many more image pixels than for a galaxy-scale lens and the
+matrices of the pixelized source reconstruction are larger. Each likelihood evaluation therefore costs more, and the
+choice of setup matters more.
 
 __Contents__
 
 - **Dataset & Mask:** Standard set up of the group dataset and 7.5" mask.
 - **Galaxy Centres:** Load centres for main lens and extra galaxies.
-- **Sparse Operators:** Pre-compute sparse matrices for CPU-accelerated pixelization.
+- **Compute Setup:** Choose the numba sparse setup, which attaches the sparse operator to the dataset.
 - **Fit:** Fit the group lens with a pixelized source on CPU.
-- **Model:** Full model-fit with CPU parallelization.
+- **Model:** Full model-fit, with the setup passed to the analysis and the search parallelized over cores.
 """
 
 try:
@@ -123,18 +123,19 @@ dataset = dataset.apply_over_sampling(
 aplt.subplot_imaging_dataset(dataset=dataset)
 
 """
-__Sparse Operators__
+__Compute Setup__
 
-Pixelized source modeling requires dense linear algebra operations. These calculations can be greatly
-accelerated using the sparse operator formalism.
+The sparse operator formalism speeds up the linear algebra of a pixelized source reconstruction. For group-scale
+lenses this matters more, because the 7.5" mask contains many more pixels than a typical galaxy-scale 3.0" mask.
 
-For group-scale lenses, this is especially important because the 7.5" mask contains many more pixels
-than a typical galaxy-scale 3.0" mask, making the matrices much larger.
-
-Computing the operator matrices takes anywhere from a few seconds to a few minutes, depending on the
-dataset size. After it is computed once, every model-fit using pixelization becomes substantially faster.
+A setup is named by a setup id, `<backend>_<device>_<operator>_<precision>`. Applying `numba_cpu_sparse_fp64` to the
+dataset builds the numba sparse operator once, which takes a few seconds to a few minutes depending on the dataset
+size, and every fit below reuses it. The analysis below is given the same setup; it sees the operator is already
+attached and does not rebuild it.
 """
-dataset = dataset.apply_sparse_operator_cpu()
+setup = "numba_cpu_sparse_fp64"
+
+dataset = dataset.apply_setup(setup=setup)
 
 """
 __Mesh Shape__
@@ -205,16 +206,13 @@ print(f"Log Likelihood: {fit.log_likelihood}")
 """
 __Model__
 
-We now perform a full model-fit using the sparse operator formalism on the CPU.
+We now perform a full model-fit with the setup chosen by hand. Two inputs set it:
 
-There are two key differences from JAX-based pixelization examples:
+ - **The setup:** `AnalysisImaging` is given `setup="numba_cpu_sparse_fp64"` instead of `setup="auto"`.
+ - **The number of cores:** the search is given `number_of_cores=2` instead of `number_of_cores="auto"` (which
+   would use every detected core). Each core runs one likelihood at a time, through Python's `multiprocessing`.
 
- - **JAX is disabled**: The `AnalysisImaging` class is created with `use_jax=False`.
- - **CPU parallelization**: The non-linear search uses `number_of_cores` to parallelize likelihood
-   evaluations using Python's `multiprocessing`.
-
-For group-scale lenses, CPU parallelization is especially beneficial because each likelihood evaluation
-is more expensive (due to the larger mask and more galaxies).
+When the fit starts, it prints `Compute setup (set explicitly by setup=...):` followed by the setup it used.
 """
 # Main Lens Galaxies:
 
@@ -295,13 +293,13 @@ search = af.Nautilus(
     name="cpu_fast_modeling",
     unique_tag=dataset_name,
     n_live=100,
-    number_of_cores=2,  # CPU specific: parallelize likelihood evaluations
+    number_of_cores=2,  # Override: "auto" uses every detected core for a numba setup
     live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    use_jax=False,  # CPU specific: disable JAX compilation
+    setup=setup,  # Override: setup="auto" picks this setup on a CPU
 )
 
 result = search.fit(model=model, analysis=analysis)
@@ -316,12 +314,10 @@ aplt.subplot_fit_imaging(fit=result.max_log_likelihood_fit)
 """
 __Wrap Up__
 
-This script demonstrated CPU-optimized pixelization modeling for group-scale lenses.
+This script fitted a group-scale lens with the compute setup chosen by hand.
 
-Key points for group lenses:
- - The larger 7.5" mask means more image pixels, making sparse operators especially valuable.
- - CPU parallelization via `number_of_cores` provides significant speedup for the expensive likelihood
-   evaluations of group-scale fits.
- - On HPC clusters with many cores, this approach can outperform JAX GPU acceleration for pixelized sources.
- - For parametric sources (MGE, Sersic), JAX with GPU remains faster.
+ - `setup="numba_cpu_sparse_fp64"` and `number_of_cores` override the automatic setup.
+ - `setup="auto"` with `number_of_cores="auto"` picks the same setup on a CPU, and `jax_gpu_dense_fp64` on an A100
+   GPU, without changing the script.
+ - `guides/advanced/auto_setup.py` explains the automatic setup, and `guides/hpc` covers running fits on a cluster.
 """
