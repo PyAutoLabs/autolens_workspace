@@ -30,9 +30,8 @@ The SOURCE LP stage uses `TransformerNUFFT` (backed by JAX-native `nufftax`,
 https://github.com/GragasLab/nufftax). Linear light profile fits to visibilities are now practical at any
 visibility count because the per-iteration NUFFT of each linear basis component is fast on the GPU.
 
-The SOURCE PIX and MASS TOTAL stages switch to `TransformerNUFFT` combined with the pre-computed sparse
-operator, which makes the inversion cost independent of visibility count (the sparse operator supports linear
-light profiles as well as pixelizations, so a single sparse dataset can serve every stage).
+The SOURCE PIX and MASS TOTAL stages fit the same dataset, and the `setup` each of them resolves reuses the
+w-tilde sparse operator built once up front, which makes the inversion cost independent of visibility count.
 
 __Contents__
 
@@ -43,12 +42,12 @@ __Contents__
 - **SOURCE PIX PIPELINE 2:** Improves the pixelized source using adapt images from `source_pix_result_1`.
 - **MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`, except no lens light model is included
   (interferometer data).
-- **Two Datasets:** Build one Interferometer with `TransformerNUFFT` (source_lp) and one with
-  `TransformerNUFFT` + sparse operator (source_pix onwards).
-- **Sparse Operators:** Pre-compute the sparse operator for the pixelized stages.
+- **One Dataset:** Load one Interferometer with `TransformerNUFFT`, passed to every stage.
+- **Sparse Operator:** Build the w-tilde sparse operator once, up front; the pixelized stages' setup reuses it.
 - **Settings:** Disable the positive-only solver so the pixelized source reconstruction can have negative
   pixel values.
 - **Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database
+- **Compute Setup:** One compute setup input, `"auto"`, passed to every stage, which picks its own fastest setup.
   use, etc.
 - **Redshifts:** The redshifts of the lens and source galaxies.
 - **Mesh Shape:** As discussed in `features/pixelization/modeling`, the mesh shape is fixed before modeling.
@@ -108,9 +107,9 @@ The linear `SersicCore` has its `intensity` solved for analytically via the line
 a free parameter of the non-linear search. This makes the SOURCE LP search faster and more reliable: the
 intensity-shape degeneracies (between `intensity` and `effective_radius` / `sersic_index`) are eliminated.
 
-This stage uses the `dataset_nufft` Interferometer (built with `TransformerNUFFT`, backed by `nufftax`),
-which makes the per-iteration NUFFT of the linear basis component fast even for ALMA-class datasets with
-millions of visibilities.
+This stage fits the dataset with its `TransformerNUFFT` (backed by `nufftax`) and no sparse operator, which
+makes the per-iteration NUFFT of the linear basis component fast even for ALMA-class datasets with millions of
+visibilities.
 
 The mass and source models from this search initialize the SOURCE PIX PIPELINE searches that follow, and
 the result also provides the adapt image and position likelihood used by those later stages.
@@ -122,12 +121,13 @@ Note that no lens light is fitted: interferometer data does not contain lens lig
 
 def source_lp(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     redshift_lens: float,
     redshift_source: float,
     n_batch: int = 50,
 ) -> af.Result:
-    analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisInterferometer(dataset=dataset, setup=setup)
 
     source_bulge = af.Model(al.lp_linear.SersicCore)
 
@@ -173,10 +173,9 @@ The first search fits a pixelization whose purpose is to generate a high-quality
 search 2. It uses the adapt image computed from the SOURCE LP result and the position likelihood is also
 derived automatically from the SOURCE LP result — no manual positions input is required.
 
-This stage uses the `dataset_sparse` Interferometer (built with `TransformerNUFFT` +
-`apply_sparse_operator`). The NUFFT keeps the one-time dirty-image setup tractable at ALMA-scale
-visibility counts, and the precomputed sparse operator makes per-likelihood curvature assembly use the
-FFT-based W̃ precision matrix instead of the dense `transformed_mapping_matrix`.
+This stage's setup reuses the w-tilde sparse operator built up front. The NUFFT keeps the one-time
+dirty-image setup tractable at ALMA-scale visibility counts, and the sparse operator makes per-likelihood
+curvature assembly use the FFT-based W̃ precision matrix instead of the dense `transformed_mapping_matrix`.
 
 __Adapt Image S/N Cap (Interferometer)__
 
@@ -192,6 +191,7 @@ adaptive mesh and regularization weights.
 
 def source_pix_1(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_lp_result: af.Result,
     mesh_init,
@@ -233,6 +233,7 @@ def source_pix_1(
             )
         ],
         settings=settings,
+        setup=setup,
     )
 
     mass = al.util.chaining.mass_from(
@@ -282,12 +283,13 @@ pixelization and regularization.
 Note that the LIGHT LP PIPELINE from `slam_start_here.py` is omitted here, as interferometer data does not
 contain lens light emission.
 
-Like SOURCE PIX PIPELINE 1, this stage uses the `dataset_sparse` Interferometer.
+Like SOURCE PIX PIPELINE 1, this stage's setup reuses the w-tilde sparse operator built up front.
 """
 
 
 def source_pix_2(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_lp_result: af.Result,
     source_pix_result_1: af.Result,
@@ -325,6 +327,7 @@ def source_pix_2(
         dataset=dataset,
         adapt_images=adapt_images,
         settings=settings,
+        setup=setup,
     )
 
     model = af.Collection(
@@ -369,6 +372,7 @@ contain lens light emission.
 
 def mass_total(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_pix_result_1: af.Result,
     source_pix_result_2: af.Result,
@@ -412,6 +416,7 @@ def mass_total(
             )
         ],
         settings=settings,
+        setup=setup,
     )
 
     mass = al.util.chaining.mass_from(
@@ -482,28 +487,12 @@ al.util.dataset.simulate_if_needed(
 
 
 """
-__Two Datasets__
+__One Dataset__
 
-The SLaM pipeline runs in two phases that prefer different transformers:
-
-- `dataset_nufft` uses `TransformerNUFFT` (backed by JAX-native `nufftax`) for the `source_lp` stage. With
-  the linear `SersicCore` source bulge this is the fast path at any visibility count.
-- `dataset_sparse` uses `TransformerNUFFT` combined with `apply_sparse_operator(...)` for
-  `source_pix_1`, `source_pix_2`, and `mass_total`. The sparse operator makes the inversion cost independent
-  of visibility count; it also supports linear light profiles, so it may be applied to the `source_lp` stage
-  as well.
-
-Both datasets are built from the same FITS files; only the transformer (and sparse-operator preload) differ.
+One `Interferometer` is loaded with `TransformerNUFFT` (backed by JAX-native `nufftax`) and passed, with the same
+`setup`, to every stage.
 """
-dataset_nufft = al.Interferometer.from_fits(
-    data_path=dataset_path / "data.fits",
-    noise_map_path=dataset_path / "noise_map.fits",
-    uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
-    real_space_mask=real_space_mask,
-    transformer_class=al.TransformerNUFFT,
-)
-
-dataset_sparse = al.Interferometer.from_fits(
+dataset = al.Interferometer.from_fits(
     data_path=dataset_path / "data.fits",
     noise_map_path=dataset_path / "noise_map.fits",
     uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
@@ -512,17 +501,15 @@ dataset_sparse = al.Interferometer.from_fits(
 )
 
 """
-__Sparse Operators__
+__Sparse Operator__
 
-The `pixelization/modeling` example describes how the sparse operator formalism speeds up interferometer
-pixelized source modeling, especially for many visibilities.
+The w-tilde sparse operator makes the inversion cost of the pixelized stages independent of the visibility
+count, but building it is expensive for large datasets, so it is built once here, up front, and attached to the
+dataset. It is loaded from `nufft_precision_operator.npy` when that file exists (e.g. made by the
+`many_visibilities_preparation` example) and computed here otherwise.
 
-We use a try / except to load the pre-computed curvature preload, which is necessary to use the sparse
-operator formalism. If this file does not exist (e.g. you have not made it manually via the
-`many_visibilities_preparation` example) it is made here.
-
-The sparse operator is applied only to `dataset_sparse` here; `source_lp` can also be run on a sparse dataset
-if you prefer a single dataset for the whole pipeline.
+The `setup` of each pixelized stage reuses this operator rather than building its own. The light-profile
+`source_lp` stage chooses a dense NUFFT setup and simply does not use it.
 """
 try:
     nufft_precision_operator = np.load(
@@ -531,7 +518,7 @@ try:
 except FileNotFoundError:
     nufft_precision_operator = None
 
-dataset_sparse = dataset_sparse.apply_sparse_operator(
+dataset = dataset.apply_sparse_operator(
     nufft_precision_operator=nufft_precision_operator, use_jax=True, show_progress=True
 )
 
@@ -554,7 +541,23 @@ settings_search = af.SettingsSearch(
     unique_tag=dataset_name,
     info=None,
     session=None,
+    number_of_cores="auto",
 )
+
+"""
+__Compute Setup__
+
+The same compute setup input, `setup = "auto"`, is passed to the analysis of every stage below, and each
+stage picks the fastest setup for its own model and your hardware, including the Fourier transform and
+operator it applies to the dataset. On a CPU, the stages that fit a light-profile source use JAX with a
+NUFFT and the stages with a pixelized source use numba with the w-tilde sparse operator; on a GPU every
+stage uses JAX. Each stage prints the setup it chose when its fit starts. To override it, set `setup` to a
+setup_id string or set the `PYAUTO_SETUP` environment variable; see `guides/advanced/auto_setup.py`.
+
+`settings_search` also sets `number_of_cores="auto"`, so each stage runs as many parallel workers as its
+setup suits: every core for a numba stage and one for a JAX stage.
+"""
+setup = "auto"
 
 """
 __Redshifts__
@@ -578,19 +581,21 @@ __SLaM Pipeline__
 The code below calls the full SLaM PIPELINE. See the documentation string above each Python function for a
 description of each pipeline step.
 
-Note the transformer split: `source_lp` is passed `dataset_nufft` (TransformerNUFFT), while every later
-stage is passed `dataset_sparse` (TransformerNUFFT + sparse operator).
+Every stage is passed the same `dataset` and `setup`; the pixelized stages' setup reuses the sparse operator
+built up front.
 """
 source_lp_result = source_lp(
     settings_search=settings_search,
-    dataset=dataset_nufft,
+    setup=setup,
+    dataset=dataset,
     redshift_lens=redshift_lens,
     redshift_source=redshift_source,
 )
 
 source_pix_result_1 = source_pix_1(
     settings_search=settings_search,
-    dataset=dataset_sparse,
+    setup=setup,
+    dataset=dataset,
     source_lp_result=source_lp_result,
     mesh_init=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.Adapt,
@@ -599,7 +604,8 @@ source_pix_result_1 = source_pix_1(
 
 source_pix_result_2 = source_pix_2(
     settings_search=settings_search,
-    dataset=dataset_sparse,
+    setup=setup,
+    dataset=dataset,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
     mesh=af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape),
@@ -609,7 +615,8 @@ source_pix_result_2 = source_pix_2(
 
 mass_result = mass_total(
     settings_search=settings_search,
-    dataset=dataset_sparse,
+    setup=setup,
+    dataset=dataset,
     source_pix_result_1=source_pix_result_1,
     source_pix_result_2=source_pix_result_2,
     settings=settings,

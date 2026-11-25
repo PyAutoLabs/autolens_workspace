@@ -34,6 +34,7 @@ __Contents__
 - **This Script:** Using a SOURCE LP PIPELINE, SOURCE PIX PIPELINE, LIGHT LP PIPELINE and TOTAL MASS PIPELINE this.
 - **Dataset:** Load and plot the strong lens dataset.
 - **Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+- **Compute Setup:** One compute setup input, `"auto"`, passed to every stage, which picks its own fastest setup.
 - **Redshifts:** The redshifts of the lens and source galaxies.
 - **SLaM Pipeline Functions:** Overview of slam pipeline functions for this example.
 - **SLaM Pipeline:** Overview of slam pipeline for this example.
@@ -140,7 +141,26 @@ settings_search = af.SettingsSearch(
     unique_tag=dataset_name,
     info=None,
     session=None,
+    number_of_cores="auto",
 )
+
+"""
+__Compute Setup__
+
+The same compute setup input, `setup = "auto"`, is passed to the analysis of every stage below, and each
+stage picks the fastest setup for its own model and your hardware. On a CPU, the stages that fit a
+light-profile source use JAX and the stages with a pixelized source use numba with a sparse operator; on a
+GPU every stage uses JAX. Each stage prints the setup it chose when its fit starts. To override it, set
+`setup` to a setup_id string (e.g. `"numba_cpu_sparse_fp64"`) or set the `PYAUTO_SETUP` environment
+variable; see `guides/advanced/auto_setup.py`.
+
+In each stage every band's `AnalysisImaging` gets the same `setup`, and the factor graph requires all of them
+to resolve the same setup. They do, because every band is an imaging dataset fitted with the same model type.
+
+`settings_search` also sets `number_of_cores="auto"`, so each stage runs as many parallel workers as its
+setup suits: every core for a numba stage and one for a JAX stage.
+"""
+setup = "auto"
 
 """
 __Redshifts__
@@ -206,7 +226,7 @@ def source_lp(
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list)
 
     search = af.Nautilus(
         name="source_lp[1]",
@@ -270,7 +290,7 @@ def source_pix_1(
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list)
 
     search = af.Nautilus(
         name="source_pix[1]",
@@ -326,7 +346,7 @@ def source_pix_2(
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list)
 
     search = af.Nautilus(
         name="source_pix[2]",
@@ -376,7 +396,7 @@ def light_lp(
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list)
 
     search = af.Nautilus(
         name="light[1]",
@@ -435,7 +455,7 @@ def mass_total(
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list)
 
     search = af.Nautilus(
         name="mass_total[1]",
@@ -473,7 +493,7 @@ def subhalo_no_subhalo(
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list)
 
     search = af.Nautilus(
         name="subhalo[1]",
@@ -529,7 +549,7 @@ def subhalo_grid_search(
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list)
 
     search = af.Nautilus(
         name="subhalo[2]_[search_lens_plane]",
@@ -598,7 +618,7 @@ def subhalo_refine(
         analysis_factor = af.AnalysisFactor(prior_model=model, analysis=analysis)
         analysis_factor_list.append(analysis_factor)
 
-    factor_graph = af.FactorGraphModel(*analysis_factor_list, use_jax=True)
+    factor_graph = af.FactorGraphModel(*analysis_factor_list)
 
     search = af.Nautilus(
         name="subhalo[3]_[single_plane_refine]",
@@ -662,7 +682,7 @@ source_bulge = al.model_util.mge_model_from(
 )
 
 analysis_list = [
-    al.AnalysisImaging(dataset=dataset, use_jax=True) for dataset in dataset_list
+    al.AnalysisImaging(dataset=dataset, setup=setup) for dataset in dataset_list
 ]
 
 source_lp_result = source_lp(
@@ -708,7 +728,7 @@ analysis_list = [
         dataset=result.max_log_likelihood_fit.dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[positions_likelihood],
-        use_jax=True,
+        setup=setup,
     )
     for result, adapt_images in zip(source_lp_result, adapt_images_list)
 ]
@@ -764,7 +784,7 @@ analysis_list = [
     al.AnalysisImaging(
         dataset=result.max_log_likelihood_fit.dataset,
         adapt_images=adapt_images,
-        use_jax=True,
+        setup=setup,
     )
     for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
 ]
@@ -791,6 +811,7 @@ analysis_list = [
         dataset=result.max_log_likelihood_fit.dataset,
         adapt_images=adapt_images,
         raise_inversion_positions_likelihood_exception=False,
+        setup=setup,
     )
     for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
 ]
@@ -813,6 +834,7 @@ analysis_list = [
         dataset=result.max_log_likelihood_fit.dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[positions_likelihood],
+        setup=setup,
     )
     for result, adapt_images in zip(source_pix_result_1, adapt_images_list)
 ]

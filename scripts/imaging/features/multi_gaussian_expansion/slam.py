@@ -22,6 +22,7 @@ __Contents__
 - **MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`, except.
 - **Dataset:** Load and plot the strong lens dataset.
 - **Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+- **Compute Setup:** One compute setup input, `"auto"`, passed to every stage, which picks its own fastest setup.
 - **Redshifts:** The redshifts of the lens and source galaxies.
 - **SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
 
@@ -71,13 +72,14 @@ pipelines use `source_lp_result` directly as both the lens and source initializa
 
 def source_lp(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     mask_radius: float,
     redshift_lens: float,
     redshift_source: float,
     n_batch: int = 50,
 ) -> af.Result:
-    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisImaging(dataset=dataset, setup=setup)
 
     lens_bulge = al.model_util.mge_model_from(
         mask_radius=mask_radius,
@@ -140,12 +142,13 @@ Identical to `slam_start_here.py`, except:
 
 def light_lp(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     mask_radius: float,
     source_lp_result: af.Result,
     n_batch: int = 20,
 ) -> af.Result:
-    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisImaging(dataset=dataset, setup=setup)
 
     lens_bulge = al.model_util.mge_model_from(
         mask_radius=mask_radius,
@@ -196,6 +199,7 @@ Identical to `slam_start_here.py`, except:
 
 def mass_total(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_lp_result: af.Result,
     light_result: af.Result,
@@ -204,7 +208,7 @@ def mass_total(
     # Total mass model for the lens galaxy.
     mass = af.Model(al.mp.PowerLaw)
 
-    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisImaging(dataset=dataset, setup=setup)
 
     mass = al.util.chaining.mass_from(
         mass=mass,
@@ -297,7 +301,23 @@ settings_search = af.SettingsSearch(
     unique_tag=dataset_name,
     info=None,
     session=None,
+    number_of_cores="auto",
 )
+
+"""
+__Compute Setup__
+
+The same compute setup input, `setup = "auto"`, is passed to the analysis of every stage below, and each
+stage picks the fastest setup for its own model and your hardware. On a CPU, the stages that fit a
+light-profile source use JAX and the stages with a pixelized source use numba with a sparse operator; on a
+GPU every stage uses JAX. Each stage prints the setup it chose when its fit starts. To override it, set
+`setup` to a setup_id string (e.g. `"numba_cpu_sparse_fp64"`) or set the `PYAUTO_SETUP` environment
+variable; see `guides/advanced/auto_setup.py`.
+
+`settings_search` also sets `number_of_cores="auto"`, so each stage runs as many parallel workers as its
+setup suits: every core for a numba stage and one for a JAX stage.
+"""
+setup = "auto"
 
 """
 __Redshifts__
@@ -315,6 +335,7 @@ a description of each pipeline step.
 """
 source_lp_result = source_lp(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     redshift_lens=redshift_lens,
@@ -323,6 +344,7 @@ source_lp_result = source_lp(
 
 light_result = light_lp(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     source_lp_result=source_lp_result,
@@ -330,6 +352,7 @@ light_result = light_lp(
 
 mass_result = mass_total(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_lp_result=source_lp_result,
     light_result=light_result,

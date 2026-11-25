@@ -17,6 +17,7 @@ __Contents__
 - **Base Fit:** We have defined a `Simulate` class that will be used to simulate every dataset simulated by the.
 - **Perturb Fit:** We now define a `PerturbFit` class, which defines how the `perturb_model` is fitted to each.
 - **Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+- **Compute Setup:** One compute setup input, `"auto"`, passed to every stage, which picks its own fastest setup.
 - **Redshifts:** The redshifts of the lens and source galaxies.
 - **SLaM Pipeline:** Overview of slam pipeline for this example.
 
@@ -69,12 +70,13 @@ Identical to `slam_start_here.py`, except the lens mass uses an `Isothermal` wit
 
 def source_lp(
     settings_search,
+    setup,
     dataset,
     mask_radius,
     redshift_lens,
     redshift_source,
 ):
-    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisImaging(dataset=dataset, setup=setup)
 
     lens_bulge = al.model_util.mge_model_from(
         mask_radius=mask_radius,
@@ -143,6 +145,7 @@ count equally. The cap is applied to an explicit copy so the raw S/N image is un
 
 def light_lp(
     settings_search,
+    setup,
     dataset,
     mask_radius,
     source_result_for_lens,
@@ -164,6 +167,7 @@ def light_lp(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
+        setup=setup,
     )
 
     lens_bulge = al.model_util.mge_model_from(
@@ -210,6 +214,7 @@ Identical to `slam_start_here.py`.
 
 def mass_total(
     settings_search,
+    setup,
     dataset,
     source_result_for_lens,
     source_result_for_source,
@@ -239,6 +244,7 @@ def mass_total(
                 factor=3.0, minimum_threshold=0.2
             )
         ],
+        setup=setup,
     )
 
     mass = al.util.chaining.mass_from(
@@ -949,6 +955,18 @@ settings_search = af.SettingsSearch(
 )
 
 """
+__Compute Setup__
+
+The same compute setup input, `setup = "auto"`, is passed to the analysis of every stage below, and each
+stage picks the fastest setup for its own model and your hardware. On a CPU, the stages that fit a
+light-profile source use JAX and the stages with a pixelized source use numba with a sparse operator; on a
+GPU every stage uses JAX. Each stage prints the setup it chose when its fit starts. To override it, set
+`setup` to a setup_id string (e.g. `"numba_cpu_sparse_fp64"`) or set the `PYAUTO_SETUP` environment
+variable; see `guides/advanced/auto_setup.py`.
+"""
+setup = "auto"
+
+"""
 __Redshifts__
 
 The redshifts of the lens and source galaxies.
@@ -961,6 +979,7 @@ __SLaM Pipeline__
 """
 source_lp_result = source_lp(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     redshift_lens=redshift_lens,
@@ -969,6 +988,7 @@ source_lp_result = source_lp(
 
 light_result = light_lp(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     source_result_for_lens=source_lp_result,
@@ -977,6 +997,7 @@ light_result = light_lp(
 
 mass_result = mass_total(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_result_for_lens=source_lp_result,
     source_result_for_source=source_lp_result,

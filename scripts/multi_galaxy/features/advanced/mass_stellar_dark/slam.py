@@ -52,6 +52,7 @@ __Contents__
 - **Mass Light Dark Pipeline:** The decomposition.
 - **Dataset, Centres, Mask:** Set up.
 - **Mesh Shape:** The pixelization classes.
+- **Compute Setup:** One compute setup input, `"auto"`, passed to every stage, which picks its own fastest setup.
 - **SLaM Pipeline:** Run the five stages in order.
 """
 
@@ -83,6 +84,7 @@ capped.
 
 def source_lp(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     mask_radius: float,
     main_lens_centres,
@@ -91,7 +93,7 @@ def source_lp(
     upper_einstein_radius: float = 3.0,
     n_batch: int = 50,
 ) -> af.Result:
-    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisImaging(dataset=dataset, setup=setup)
 
     lens_dict = {}
 
@@ -168,6 +170,7 @@ count equally. The cap is applied to an explicit copy so the raw S/N image is un
 
 def source_pix_1(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_lp_result: af.Result,
     mesh_init,
@@ -195,6 +198,7 @@ def source_pix_1(
                 factor=3.0, minimum_threshold=0.2
             )
         ],
+        setup=setup,
     )
 
     lens_dict = {}
@@ -255,6 +259,7 @@ fixed.
 
 def source_pix_2(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_lp_result: af.Result,
     source_pix_result_1: af.Result,
@@ -278,7 +283,7 @@ def source_pix_2(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
-        use_jax=True,
+        setup=setup,
     )
 
     lens_dict = {}
@@ -337,6 +342,7 @@ mass, and from there into the decomposition the pipeline exists to produce.
 
 def light_lp(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     mask_radius: float,
     source_result_for_lens: af.Result,
@@ -356,7 +362,7 @@ def light_lp(
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
-    analysis = al.AnalysisImaging(dataset=dataset, adapt_images=adapt_images)
+    analysis = al.AnalysisImaging(dataset=dataset, adapt_images=adapt_images, setup=setup)
 
     lens_dict = {}
 
@@ -419,6 +425,7 @@ composition is built by hand, as the group pipeline also does.
 
 def mass_light_dark(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     main_lens_centres,
     source_result_for_lens: af.Result,
@@ -447,6 +454,7 @@ def mass_light_dark(
                 factor=3.0, minimum_threshold=0.2
             )
         ],
+        setup=setup,
     )
 
     lens_dict = {}
@@ -567,7 +575,23 @@ settings_search = af.SettingsSearch(
     unique_tag=dataset_name,
     info=None,
     session=None,
+    number_of_cores="auto",
 )
+
+"""
+__Compute Setup__
+
+The same compute setup input, `setup = "auto"`, is passed to the analysis of every stage below, and each
+stage picks the fastest setup for its own model and your hardware. On a CPU, the stages that fit a
+light-profile source use JAX and the stages with a pixelized source use numba with a sparse operator; on a
+GPU every stage uses JAX. Each stage prints the setup it chose when its fit starts. To override it, set
+`setup` to a setup_id string (e.g. `"numba_cpu_sparse_fp64"`) or set the `PYAUTO_SETUP` environment
+variable; see `guides/advanced/auto_setup.py`.
+
+`settings_search` also sets `number_of_cores="auto"`, so each stage runs as many parallel workers as its
+setup suits: every core for a numba stage and one for a JAX stage.
+"""
+setup = "auto"
 
 """
 __Redshifts__
@@ -596,6 +620,7 @@ The five stages, in order.
 """
 source_lp_result = source_lp(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     main_lens_centres=main_lens_centres,
@@ -605,6 +630,7 @@ source_lp_result = source_lp(
 
 source_pix_result_1 = source_pix_1(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_lp_result=source_lp_result,
     mesh_init=mesh_init,
@@ -645,6 +671,7 @@ dataset = dataset.apply_over_sampling(
 
 source_pix_result_2 = source_pix_2(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
@@ -654,6 +681,7 @@ source_pix_result_2 = source_pix_2(
 
 light_result = light_lp(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     source_result_for_lens=source_pix_result_1,
@@ -662,6 +690,7 @@ light_result = light_lp(
 
 mass_result = mass_light_dark(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     main_lens_centres=main_lens_centres,
     source_result_for_lens=source_pix_result_1,

@@ -414,6 +414,7 @@
     "contents": [],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/double_source_plane_lens/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "guides/modeling/slam_start_here.py",
       "scripts/imaging/features/advanced/double_source_plane_lens/slam.py"
     ],
@@ -580,6 +581,7 @@
     "contents": [],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/advanced/mass_stellar_dark/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "guides/modeling/slam_start_here.py",
       "scripts/group/features/advanced/double_source_plane_lens/slam.py",
       "scripts/imaging/features/advanced/mass_stellar_dark/slam.py"
@@ -788,11 +790,14 @@
       "Dataset & Mask",
       "Centres",
       "Over Sampling",
+      "Compute Setup",
       "SLaM Pipeline Functions",
       "Bayesian Evidence",
       "Grid Search Result"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "guides/advanced/auto_setup.py"
+    ],
     "notebook": "notebooks/group/features/advanced/subhalo/detect/start_here.ipynb",
     "path": "scripts/group/features/advanced/subhalo/detect/start_here.py",
     "summary": "Search for a dark matter halo through its effect on lensed emission, rather than through visible starlight. Compare a carefully constructed smooth lens/source model with alternatives containing a perturber, then assess whether a candidate survives changes to the baseline model.",
@@ -959,11 +964,13 @@
       "Galaxy Centres",
       "Mask",
       "Settings AutoFit",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/linear_light_profiles/start_here.ipynb",
-      "group/slam.py"
+      "group/slam.py",
+      "guides/advanced/auto_setup.py"
     ],
     "notebook": "notebooks/group/features/linear_light_profiles/slam.ipynb",
     "path": "scripts/group/features/linear_light_profiles/slam.py",
@@ -1081,11 +1088,13 @@
       "MASS TOTAL PIPELINE",
       "Dataset",
       "Settings AutoFit",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/multi_gaussian_expansion/start_here.ipynb",
-      "group/slam.py"
+      "group/slam.py",
+      "guides/advanced/auto_setup.py"
     ],
     "notebook": "notebooks/group/features/multi_gaussian_expansion/slam.ipynb",
     "path": "scripts/group/features/multi_gaussian_expansion/slam.py",
@@ -1195,11 +1204,13 @@
       "Galaxy Centres",
       "Mask",
       "Settings AutoFit",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/no_lens_light/start_here.ipynb",
       "group/slam.py",
+      "guides/advanced/auto_setup.py",
       "guides/modeling/slam_start_here.ipynb",
       "imaging/features/no_lens_light/slam.py"
     ],
@@ -1340,11 +1351,13 @@
       "Dataset",
       "Galaxy Centres",
       "Mask",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb",
       "group/slam.py",
+      "guides/advanced/auto_setup.py",
       "slam_start_here.py"
     ],
     "notebook": "notebooks/group/features/pixelization/slam.ipynb",
@@ -1706,9 +1719,11 @@
       "Galaxy Centres",
       "Mask",
       "Settings AutoFit",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
+      "guides/advanced/auto_setup.py",
       "guides/modeling/slam_start_here.ipynb",
       "slam_start_here.py"
     ],
@@ -2216,11 +2231,14 @@
       "MASS TOTAL PIPELINE",
       "Dataset",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "Mesh Shape",
       "SLaM Pipeline"
     ],
-    "cross_refs": [],
+    "cross_refs": [
+      "guides/advanced/auto_setup.py"
+    ],
     "notebook": "notebooks/guides/modeling/slam_start_here.ipynb",
     "path": "scripts/guides/modeling/slam_start_here.py",
     "summary": "This scripts gives an introduce to the Source, (lens) Light and Mass (SLaM) pipelines. These are advanced modeling pipelines which use many aspects of core PyAutoLens functionality to automate the modeling of strong lenses.",
@@ -3314,6 +3332,7 @@
     "contents": [],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/double_source_plane_lens/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "guides/modeling/slam_start_here.py"
     ],
     "notebook": "notebooks/imaging/features/advanced/double_source_plane_lens/slam.ipynb",
@@ -3551,12 +3570,14 @@
       "MASS LIGHT DARK PIPELINE",
       "Dataset",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "Mesh Shape",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/mass_stellar_dark/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "slam_start_here.py"
     ],
     "notebook": "notebooks/imaging/features/advanced/mass_stellar_dark/slam.ipynb",
@@ -3885,6 +3906,7 @@
       "LIGHT LP PIPELINE",
       "MASS TOTAL PIPELINE",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "Mesh Shape",
       "SLaM Pipeline",
@@ -3896,6 +3918,7 @@
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/detect/database.ipynb",
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb",
       "database.py",
+      "guides/advanced/auto_setup.py",
       "slam_start_here.py"
     ],
     "notebook": "notebooks/imaging/features/advanced/subhalo/detect/start_here.ipynb",
@@ -3913,11 +3936,13 @@
       "Base Fit",
       "Perturb Fit",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/advanced/subhalo/sensitivity/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "imaging/features/advanced/subhalo/sensitivity/start_here.py",
       "slam_start_here.py",
       "subhalo/detect/start_here.ipynb"
@@ -4089,6 +4114,7 @@
       "Dataset",
       "Extra Galaxies Centres",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "Mesh Shape",
       "SLaM Pipeline"
@@ -4096,6 +4122,7 @@
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/extra_galaxies/start_here.ipynb",
       "features/extra_galaxies/modeling.ipynb",
+      "guides/advanced/auto_setup.py",
       "guides/modeling/slam_start_here.ipynb",
       "scripts/group/slam.py",
       "slam_start_here.py"
@@ -4213,12 +4240,14 @@
       "MASS TOTAL PIPELINE",
       "Dataset",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "Mesh Shape",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/linear_light_profiles/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "slam_start_here.py"
     ],
     "notebook": "notebooks/imaging/features/linear_light_profiles/slam.ipynb",
@@ -4365,11 +4394,13 @@
       "MASS TOTAL PIPELINE",
       "Dataset",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/multi_gaussian_expansion/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "slam_start_here.py"
     ],
     "notebook": "notebooks/imaging/features/multi_gaussian_expansion/slam.ipynb",
@@ -4485,12 +4516,14 @@
       "SOURCE PIX PIPELINE 2",
       "MASS TOTAL PIPELINE",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "Mesh Shape",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/no_lens_light/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "slam_start_here.py"
     ],
     "notebook": "notebooks/imaging/features/no_lens_light/slam.ipynb",
@@ -4741,6 +4774,7 @@
       "MASS TOTAL PIPELINE",
       "Dataset",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "Mesh Shape",
       "SLaM Pipeline"
@@ -4748,6 +4782,7 @@
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb",
       "features/pixelization/delaunay.py",
+      "guides/advanced/auto_setup.py",
       "slam_start_here.py"
     ],
     "notebook": "notebooks/imaging/features/pixelization/slam.ipynb",
@@ -4932,12 +4967,14 @@
       "LIGHT LP PIPELINE",
       "MASS TOTAL PIPELINE",
       "Dataset / Centres / Settings / Redshifts / Mesh Shape.",
+      "Compute Setup",
       "SLaM Pipeline",
       "Measured Luminosities"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/scaling_relation/start_here.ipynb",
       "fit.py",
+      "guides/advanced/auto_setup.py",
       "likelihood_function.py",
       "modeling.py",
       "slam_start_here.py"
@@ -5459,15 +5496,17 @@
       "SOURCE PIX PIPELINE 1",
       "SOURCE PIX PIPELINE 2",
       "MASS TOTAL PIPELINE",
-      "Two Datasets",
-      "Sparse Operators",
+      "One Dataset",
+      "Sparse Operator",
       "Settings",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "Mesh Shape",
       "SLaM Pipeline"
     ],
     "cross_refs": [
+      "guides/advanced/auto_setup.py",
       "slam_start_here.py"
     ],
     "notebook": "notebooks/interferometer/features/advanced/subhalo/detect/start_here.ipynb",
@@ -5818,10 +5857,11 @@
       "SOURCE PIX PIPELINE 2",
       "MASS TOTAL PIPELINE",
       "Extra Galaxies Centres",
-      "Two Datasets",
-      "Sparse Operators",
+      "One Dataset",
+      "Sparse Operator",
       "Settings",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "Mesh Shape",
       "Extra Galaxies",
@@ -5831,6 +5871,7 @@
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/extra_galaxies/start_here.ipynb",
       "features/extra_galaxies/modeling.ipynb",
+      "guides/advanced/auto_setup.py",
       "guides/modeling/slam_start_here.ipynb",
       "slam_start_here.py",
       "start_here.ipynb"
@@ -5953,16 +5994,18 @@
       "SOURCE PIX PIPELINE 1",
       "SOURCE PIX PIPELINE 2",
       "MASS TOTAL PIPELINE",
-      "Two Datasets",
-      "Sparse Operators",
+      "One Dataset",
+      "Sparse Operator",
       "Settings",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "Mesh Shape",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/linear_light_profiles/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "interferometer/features/pixelization/slam.py",
       "slam_start_here.py"
     ],
@@ -6087,16 +6130,18 @@
       "SOURCE PIX PIPELINE 1",
       "SOURCE PIX PIPELINE 2",
       "MASS TOTAL PIPELINE",
-      "Two Datasets",
-      "Sparse Operators",
+      "One Dataset",
+      "Sparse Operator",
       "Settings",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "Mesh Shape",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/multi_gaussian_expansion/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "interferometer/features/pixelization/slam.py",
       "slam_start_here.py"
     ],
@@ -6304,16 +6349,18 @@
       "SOURCE PIX PIPELINE 1",
       "SOURCE PIX PIPELINE 2",
       "MASS TOTAL PIPELINE",
-      "Two Datasets",
-      "Sparse Operators",
+      "One Dataset",
+      "Sparse Operator",
       "Settings",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "Mesh Shape",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/pixelization/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "slam_start_here.py"
     ],
     "notebook": "notebooks/interferometer/features/pixelization/slam.ipynb",
@@ -6477,10 +6524,12 @@
       "SOURCE PIX PIPELINE 1 / 2",
       "MASS TOTAL PIPELINE",
       "Dataset / Centres / External Luminosities / Settings / Mesh Shape.",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/scaling_relation/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "imaging/features/scaling_relation/slam.py",
       "interferometer/features/extra_galaxies/slam.py",
       "slam_start_here.py"
@@ -6977,6 +7026,7 @@
       "This Script",
       "Dataset",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "SLaM Pipeline Functions",
       "SLaM Pipeline",
@@ -6986,6 +7036,7 @@
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/slam/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "guides/modeling/slam_start_here.ipynb",
       "multi_dataset/features/one_by_one/modeling.ipynb",
       "start_here.py"
@@ -7001,12 +7052,14 @@
       "This Script",
       "Dataset",
       "Settings AutoFit",
+      "Compute Setup",
       "Redshifts",
       "SLaM Pipeline Functions",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_dataset/features/slam/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "guides/modeling/slam_start_here.ipynb",
       "imaging/features/advanced/subhalo/detect/start_here.py",
       "independent.py"
@@ -7334,11 +7387,13 @@
       "Mass Total Pipeline",
       "Dataset, Centres, Masks",
       "Mesh Shape",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/double_source_plane_lens/start_here.ipynb",
       "chaining.py",
+      "guides/advanced/auto_setup.py",
       "modeling.py",
       "multi_galaxy/features/advanced/double_source_plane_lens/chaining.py",
       "multi_galaxy/features/advanced/double_source_plane_lens/modeling.py",
@@ -7514,10 +7569,12 @@
       "Mass Light Dark Pipeline",
       "Dataset, Centres, Mask",
       "Mesh Shape",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/advanced/mass_stellar_dark/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "multi_galaxy/features/advanced/mass_stellar_dark/chaining.py",
       "multi_galaxy/features/advanced/mass_stellar_dark/modeling.py",
       "multi_galaxy/slam.py"
@@ -7789,11 +7846,13 @@
       "Subhalo Pipeline (refine)",
       "Dataset, Centres, Mask",
       "Mesh Shape",
+      "Compute Setup",
       "Pipeline",
       "Bayesian Evidence",
       "Grid Search Result"
     ],
     "cross_refs": [
+      "guides/advanced/auto_setup.py",
       "multi_galaxy/modeling.py",
       "multi_galaxy/slam.py"
     ],
@@ -7900,10 +7959,12 @@
       "Light LP Pipeline",
       "Mass Total Pipeline",
       "Dataset, Centres, Mask",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/extra_galaxies/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "imaging/features/extra_galaxies/slam.py",
       "modeling.py",
       "multi_galaxy/features/extra_galaxies/modeling.py",
@@ -8022,11 +8083,13 @@
       "Light LP Pipeline",
       "Mass Total Pipeline",
       "Dataset, Centres, Mask",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/linear_light_profiles/start_here.ipynb",
       "fit.py",
+      "guides/advanced/auto_setup.py",
       "imaging/features/linear_light_profiles/slam.py",
       "multi_galaxy/features/linear_light_profiles/likelihood_function.py",
       "multi_galaxy/simulator.py",
@@ -8172,11 +8235,13 @@
       "Light LP Pipeline",
       "Mass Total Pipeline",
       "Dataset, Centres, Mask",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/multi_gaussian_expansion/start_here.ipynb",
       "fit.py",
+      "guides/advanced/auto_setup.py",
       "likelihood_function.py",
       "multi_galaxy/features/multi_gaussian_expansion/fit.py",
       "multi_galaxy/features/multi_gaussian_expansion/source_science.py",
@@ -8307,10 +8372,12 @@
       "Source Pix Pipeline 2",
       "Mass Total Pipeline",
       "Dataset, Centres, Mask",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/no_lens_light/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "imaging/features/no_lens_light/slam.py",
       "modeling.py",
       "multi_galaxy/features/no_lens_light/modeling.py",
@@ -8535,10 +8602,12 @@
       "Mass Total Pipeline",
       "Dataset, Centres, Mask",
       "Mesh Shape",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/pixelization/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "multi_galaxy/features/pixelization/adaptive.py",
       "multi_galaxy/features/pixelization/delaunay.py",
       "multi_galaxy/features/pixelization/source_science.py",
@@ -8719,12 +8788,14 @@
       "LIGHT LP PIPELINE",
       "MASS TOTAL PIPELINE",
       "Dataset / Two Masks / Centres / Settings.",
+      "Compute Setup",
       "SLaM Pipeline",
       "Measured Luminosities"
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/scaling_relation/start_here.ipynb",
       "fit.py",
+      "guides/advanced/auto_setup.py",
       "imaging/features/scaling_relation/slam.py",
       "likelihood_function.py",
       "modeling.py",
@@ -8967,11 +9038,13 @@
       "Dataset",
       "Centres",
       "Mask & Over Sampling",
+      "Compute Setup",
       "SLaM Pipeline"
     ],
     "cross_refs": [
       "/slam.py",
       "group/slam.py",
+      "guides/advanced/auto_setup.py",
       "multi_galaxy/modeling.py",
       "multi_galaxy/start_here.py",
       "slam_start_here.py"
