@@ -99,6 +99,7 @@ __Contents__
 - **LIGHT LP PIPELINE:** A better light model for the pair, and why it cannot re-measure the tier.
 - **MASS TOTAL PIPELINE:** `PowerLaw` deflectors, with the tie re-applied to the brightest galaxy's.
 - **Dataset / Two Masks / Centres / Settings.**
+- **Compute Setup:** One compute setup input, `"auto"`, passed to every stage, which picks its own fastest setup.
 - **SLaM Pipeline:** Run the stages in order.
 - **Measured Luminosities:** Write them out as CSVs for reuse.
 """
@@ -212,13 +213,14 @@ source, no tier. One free MGE per deflector, centred on its known position.
 
 def lens_light_1(
     settings_search,
+    setup,
     dataset,
     mask_radius,
     main_lens_centres,
     redshift_lens,
     n_batch=50,
 ):
-    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisImaging(dataset=dataset, setup=setup)
 
     lens_dict = {}
 
@@ -280,6 +282,7 @@ its **light** costs parameters in whichever stage does the measuring.
 
 def lens_light_2(
     settings_search,
+    setup,
     dataset_larger,
     mask_radius_larger,
     lens_light_result_1,
@@ -287,7 +290,7 @@ def lens_light_2(
     redshift_lens,
     n_batch=50,
 ):
-    analysis = al.AnalysisImaging(dataset=dataset_larger, use_jax=True)
+    analysis = al.AnalysisImaging(dataset=dataset_larger, setup=setup)
 
     n_main = sum(
         1
@@ -360,6 +363,7 @@ tier's Einstein radii are tied to the brightest galaxy's free `einstein_radius`,
 
 def source_lp(
     settings_search,
+    setup,
     dataset,
     mask_radius,
     lens_light_result,
@@ -372,7 +376,7 @@ def source_lp(
     scaling_exponent=0.5,
     n_batch=50,
 ):
-    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisImaging(dataset=dataset, setup=setup)
 
     n_main = len(main_luminosities)
     luminosity_brightest = main_luminosities[brightest_index]
@@ -463,6 +467,7 @@ count equally. The cap is applied to an explicit copy so the raw S/N image is un
 
 def source_pix_1(
     settings_search,
+    setup,
     dataset,
     source_lp_result,
     mesh_shape,
@@ -489,6 +494,7 @@ def source_pix_1(
                 factor=3.0, minimum_threshold=0.2
             )
         ],
+        setup=setup,
     )
 
     n_main = sum(
@@ -554,6 +560,7 @@ Identical to `slam_start_here.py`, except the tier is fixed as an instance from 
 
 def source_pix_2(
     settings_search,
+    setup,
     dataset,
     source_lp_result,
     source_pix_result_1,
@@ -576,7 +583,7 @@ def source_pix_2(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
-        use_jax=True,
+        setup=setup,
     )
 
     n_main = sum(
@@ -660,6 +667,7 @@ tier keeps its `lens_light[2]` light and its `source_pix[1]` mass as fixed insta
 
 def light_lp(
     settings_search,
+    setup,
     dataset,
     mask_radius,
     source_result_for_lens,
@@ -680,7 +688,7 @@ def light_lp(
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
-    analysis = al.AnalysisImaging(dataset=dataset, adapt_images=adapt_images)
+    analysis = al.AnalysisImaging(dataset=dataset, adapt_images=adapt_images, setup=setup)
 
     n_main = sum(
         1
@@ -749,6 +757,7 @@ almost always be the same galaxy; deriving it again keeps the pipeline honest if
 
 def mass_total(
     settings_search,
+    setup,
     dataset,
     source_result_for_lens,
     source_result_for_source,
@@ -781,6 +790,7 @@ def mass_total(
                 factor=3.0, minimum_threshold=0.2
             )
         ],
+        setup=setup,
     )
 
     n_main = len(main_luminosities)
@@ -975,7 +985,23 @@ settings_search = af.SettingsSearch(
     unique_tag=dataset_name,
     info=None,
     session=None,
+    number_of_cores="auto",
 )
+
+"""
+__Compute Setup__
+
+The same compute setup input, `setup = "auto"`, is passed to the analysis of every stage below, and each
+stage picks the fastest setup for its own model and your hardware. On a CPU, the stages that fit a
+light-profile source use JAX and the stages with a pixelized source use numba with a sparse operator; on a
+GPU every stage uses JAX. Each stage prints the setup it chose when its fit starts. To override it, set
+`setup` to a setup_id string (e.g. `"numba_cpu_sparse_fp64"`) or set the `PYAUTO_SETUP` environment
+variable; see `guides/advanced/auto_setup.py`.
+
+`settings_search` also sets `number_of_cores="auto"`, so each stage runs as many parallel workers as its
+setup suits: every core for a numba stage and one for a JAX stage.
+"""
+setup = "auto"
 
 """
 __Redshifts__
@@ -996,6 +1022,7 @@ __SLaM Pipeline__
 """
 lens_light_result_1 = lens_light_1(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     main_lens_centres=main_lens_centres,
@@ -1004,6 +1031,7 @@ lens_light_result_1 = lens_light_1(
 
 lens_light_result_2 = lens_light_2(
     settings_search=settings_search,
+    setup=setup,
     dataset_larger=dataset_larger,
     mask_radius_larger=mask_radius_larger,
     lens_light_result_1=lens_light_result_1,
@@ -1028,6 +1056,7 @@ print(f"Brightest galaxy is lens_{brightest_index}")
 
 source_lp_result = source_lp(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     lens_light_result=lens_light_result_2,
@@ -1040,6 +1069,7 @@ source_lp_result = source_lp(
 
 source_pix_result_1 = source_pix_1(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_lp_result=source_lp_result,
     mesh_shape=mesh_shape,
@@ -1079,6 +1109,7 @@ dataset = dataset.apply_over_sampling(
 
 source_pix_result_2 = source_pix_2(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
@@ -1087,6 +1118,7 @@ source_pix_result_2 = source_pix_2(
 
 light_result = light_lp(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     source_result_for_lens=source_pix_result_1,
@@ -1101,6 +1133,7 @@ and `mass_total` uses those, so every ratio entering the relation comes from one
 
 mass_result = mass_total(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_result_for_lens=source_pix_result_1,
     source_result_for_source=source_pix_result_2,

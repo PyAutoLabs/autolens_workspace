@@ -20,6 +20,7 @@ __Contents__
 - **Galaxy Centres:** main_lens_centres.json — required; determines the number of main lenses.
 - **Mask:** Define the 2D mask applied to the dataset for the model-fit.
 - **Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+- **Compute Setup:** One compute setup input, `"auto"`, passed to every stage, which picks its own fastest setup.
 - **SLaM Pipeline:** Overview of slam pipeline for this example.
 
 __Prerequisites__
@@ -138,6 +139,7 @@ the total number of galaxies across all three categories.
 def source_lp_0(
     dataset,
     settings_search,
+    setup,
     main_lens_centres,
     extra_lens_centres,
     scaling_lens_centres,
@@ -145,7 +147,7 @@ def source_lp_0(
     redshift_lens,
     n_batch=50,
 ):
-    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisImaging(dataset=dataset, setup=setup)
 
     # --- main lens light models (one per centre, light only) ---
     lens_dict = {}
@@ -239,6 +241,7 @@ brightest main lens (BGG).
 def source_lp_1(
     dataset,
     settings_search,
+    setup,
     source_lp_result_0,
     positions,
     pixel_scale,
@@ -250,7 +253,7 @@ def source_lp_1(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
-        use_jax=True,
+        setup=setup,
     )
 
     n_main = sum(
@@ -453,6 +456,7 @@ def source_pix_1(
     dataset,
     mask,
     settings_search,
+    setup,
     source_lp_result_1,
     over_sample_size,
     pixel_scale,
@@ -509,7 +513,7 @@ def source_pix_1(
                 factor=2.0, positions=positions, minimum_threshold=0.2
             )
         ],
-        use_jax=True,
+        setup=setup,
     )
 
     n_lenses = sum(
@@ -595,6 +599,7 @@ def source_pix_2(
     dataset,
     mask,
     settings_search,
+    setup,
     source_lp_result_1,
     source_pix_result_1,
     over_sample_size,
@@ -658,7 +663,7 @@ def source_pix_2(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
-        use_jax=True,
+        setup=setup,
     )
 
     n_lenses = sum(
@@ -721,6 +726,7 @@ and scaling galaxies are fully fixed from `source_pix[2]`.
 def light_lp(
     dataset,
     settings_search,
+    setup,
     source_lp_result_0,
     source_pix_result_1,
     source_pix_result_2,
@@ -732,7 +738,7 @@ def light_lp(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
-        use_jax=True,
+        setup=setup,
     )
 
     n_lenses = sum(
@@ -826,6 +832,7 @@ galaxies receive a new shared luminosity scaling relation, both paired with thei
 def mass_total(
     dataset,
     settings_search,
+    setup,
     source_pix_result_1,
     source_pix_result_2,
     light_result,
@@ -948,7 +955,7 @@ def mass_total(
                 factor=3.0, positions=positions, minimum_threshold=0.2
             )
         ],
-        use_jax=True,
+        setup=setup,
     )
 
     source = al.util.chaining.source_from(result=source_pix_result_2)
@@ -1081,7 +1088,23 @@ settings_search = af.SettingsSearch(
     unique_tag=dataset_name,
     info=None,
     session=None,
+    number_of_cores="auto",
 )
+
+"""
+__Compute Setup__
+
+The same compute setup input, `setup = "auto"`, is passed to the analysis of every stage below, and each
+stage picks the fastest setup for its own model and your hardware. On a CPU, the stages that fit a
+light-profile source use JAX and the stages with a pixelized source use numba with a sparse operator; on a
+GPU every stage uses JAX. Each stage prints the setup it chose when its fit starts. To override it, set
+`setup` to a setup_id string (e.g. `"numba_cpu_sparse_fp64"`) or set the `PYAUTO_SETUP` environment
+variable; see `guides/advanced/auto_setup.py`.
+
+`settings_search` also sets `number_of_cores="auto"`, so each stage runs as many parallel workers as its
+setup suits: every core for a numba stage and one for a JAX stage.
+"""
+setup = "auto"
 
 """
 __SLaM Pipeline__
@@ -1089,6 +1112,7 @@ __SLaM Pipeline__
 source_lp_result_0 = source_lp_0(
     dataset=dataset,
     settings_search=settings_search,
+    setup=setup,
     main_lens_centres=main_lens_centres,
     extra_lens_centres=extra_lens_centres,
     scaling_lens_centres=scaling_lens_centres,
@@ -1099,6 +1123,7 @@ source_lp_result_0 = source_lp_0(
 source_lp_result_1 = source_lp_1(
     dataset=dataset,
     settings_search=settings_search,
+    setup=setup,
     source_lp_result_0=source_lp_result_0,
     positions=positions,
     pixel_scale=pixel_scale,
@@ -1111,6 +1136,7 @@ source_pix_result_1, dataset, adapt_images = source_pix_1(
     dataset=dataset,
     mask=mask,
     settings_search=settings_search,
+    setup=setup,
     source_lp_result_1=source_lp_result_1,
     over_sample_size=over_sample_size,
     pixel_scale=pixel_scale,
@@ -1123,6 +1149,7 @@ source_pix_result_2, dataset, adapt_images = source_pix_2(
     dataset=dataset,
     mask=mask,
     settings_search=settings_search,
+    setup=setup,
     source_lp_result_1=source_lp_result_1,
     source_pix_result_1=source_pix_result_1,
     over_sample_size=over_sample_size,
@@ -1134,6 +1161,7 @@ source_pix_result_2, dataset, adapt_images = source_pix_2(
 light_result = light_lp(
     dataset=dataset,
     settings_search=settings_search,
+    setup=setup,
     source_lp_result_0=source_lp_result_0,
     source_pix_result_1=source_pix_result_1,
     source_pix_result_2=source_pix_result_2,
@@ -1146,6 +1174,7 @@ light_result = light_lp(
 mass_result = mass_total(
     dataset=dataset,
     settings_search=settings_search,
+    setup=setup,
     source_pix_result_1=source_pix_result_1,
     source_pix_result_2=source_pix_result_2,
     light_result=light_result,

@@ -31,10 +31,11 @@ __Contents__
 - **SOURCE PIX PIPELINE 1:** Initializes a pixelized source using the adapt image from the SOURCE LP result.
 - **SOURCE PIX PIPELINE 2:** Improves the pixelized source using adapt images from `source_pix_result_1`.
 - **MASS TOTAL PIPELINE:** Identical to `slam_start_here.py`, except no lens light model is included as interferometer data.
-- **Two Datasets:** Build one Interferometer with `TransformerNUFFT` (source_lp) and one with `TransformerNUFFT` + sparse operator (source_pix onwards).
-- **Sparse Operators:** The `pixelization/modeling` example describes how the sparse operator formalism speeds up.
+- **One Dataset:** Load one Interferometer with `TransformerNUFFT`, passed to every stage.
+- **Sparse Operator:** Build the w-tilde sparse operator once, up front; the pixelized stages' setup reuses it.
 - **Settings:** Disable the default position only linear algebra solver so the source reconstruction can have.
 - **Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+- **Compute Setup:** One compute setup input, `"auto"`, passed to every stage, which picks its own fastest setup.
 - **Redshifts:** The redshifts of the lens and source galaxies.
 - **Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
 - **SLaM Pipeline:** The code below calls the full SLaM PIPELINE.
@@ -123,9 +124,9 @@ __SOURCE LP PIPELINE__
 
 Initializes a robust mass + source-light model using a Multi Gaussian Expansion (MGE), fit with light profiles.
 
-This stage uses `dataset_nufft` (built with `TransformerNUFFT`, backed by JAX-native `nufftax`), which makes
-light-profile fitting fast even on ALMA-class datasets with millions of visibilities. The result provides the
-adapt image and position likelihood threaded into the pixelized pipelines that follow.
+This stage fits the dataset with its `TransformerNUFFT` (backed by `nufftax`) and no sparse operator, which
+makes light-profile fitting fast even on ALMA-class datasets with millions of visibilities. The result
+provides the adapt image and position likelihood threaded into the pixelized pipelines that follow.
 
 No lens light is fitted: interferometer data does not contain lens light emission.
 """
@@ -133,13 +134,14 @@ No lens light is fitted: interferometer data does not contain lens light emissio
 
 def source_lp(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     mask_radius: float,
     redshift_lens: float,
     redshift_source: float,
     n_batch: int = 50,
 ) -> af.Result:
-    analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisInterferometer(dataset=dataset, setup=setup)
 
     source_bulge = al.model_util.mge_model_from(
         mask_radius=mask_radius, total_gaussians=5, centre_prior_is_uniform=False
@@ -184,9 +186,8 @@ The first search of the SOURCE PIX PIPELINE fits a pixelization whose purpose is
 adapt image used in search 2. It uses the adapt image computed from the SOURCE LP result, with the position
 likelihood derived automatically via `source_lp_result.positions_likelihood_from(...)`.
 
-This stage uses `dataset_sparse` (built with `TransformerNUFFT` + `apply_sparse_operator`), which makes the
-inversion cost independent of visibility count (the sparse operator supports linear light profiles as well as
-pixelizations, so a single sparse dataset can serve every stage).
+This stage's setup reuses the w-tilde sparse operator built up front, which makes the inversion cost
+independent of visibility count.
 
 __Adapt Image S/N Cap (Interferometer)__
 
@@ -202,6 +203,7 @@ adaptive mesh and regularization weights.
 
 def source_pix_1(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_lp_result: af.Result,
     mesh_init,
@@ -243,6 +245,7 @@ def source_pix_1(
             )
         ],
         settings=settings,
+        setup=setup,
     )
 
     mass = al.util.chaining.mass_from(
@@ -296,6 +299,7 @@ contain lens light emission.
 
 def source_pix_2(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_lp_result: af.Result,
     source_pix_result_1: af.Result,
@@ -333,6 +337,7 @@ def source_pix_2(
         dataset=dataset,
         adapt_images=adapt_images,
         settings=settings,
+        setup=setup,
     )
 
     model = af.Collection(
@@ -378,6 +383,7 @@ contain lens light emission.
 
 def mass_total(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_pix_result_1: af.Result,
     source_pix_result_2: af.Result,
@@ -421,6 +427,7 @@ def mass_total(
             )
         ],
         settings=settings,
+        setup=setup,
     )
 
     mass = al.util.chaining.mass_from(
@@ -468,6 +475,7 @@ This grid search maps out where in the image plane including a DM subhalo provid
 
 def subhalo_grid_search(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_pix_result_1: af.Result,
     mass_result: af.Result,
@@ -509,6 +517,7 @@ def subhalo_grid_search(
             mass_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
         ],
         settings=settings,
+        setup=setup,
     )
 
     subhalo = af.Model(al.Galaxy, mass=subhalo_mass)
@@ -569,6 +578,7 @@ was detected.
 
 def subhalo_refine(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_pix_result_1: af.Result,
     mass_result: af.Result,
@@ -609,6 +619,7 @@ def subhalo_refine(
             mass_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
         ],
         settings=settings,
+        setup=setup,
     )
 
     subhalo = af.Model(
@@ -682,25 +693,12 @@ al.util.dataset.simulate_if_needed(
 
 
 """
-__Two Datasets__
+__One Dataset__
 
-The SLaM pipeline runs in two phases that prefer different transformers:
-
-- `dataset_nufft` uses `TransformerNUFFT` (backed by JAX-native `nufftax`) for the `source_lp` stage.
-- `dataset_sparse` uses `TransformerNUFFT` + `apply_sparse_operator(...)` for `source_pix_1`,
-  `source_pix_2`, `mass_total`, and every search of the SUBHALO PIPELINE.
-
-Both datasets are built from the same FITS files; only the transformer (and sparse-operator preload) differ.
+One `Interferometer` is loaded with `TransformerNUFFT` (backed by JAX-native `nufftax`) and passed, with the same
+`setup`, to every stage.
 """
-dataset_nufft = al.Interferometer.from_fits(
-    data_path=dataset_path / "data.fits",
-    noise_map_path=dataset_path / "noise_map.fits",
-    uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
-    real_space_mask=real_space_mask,
-    transformer_class=al.TransformerNUFFT,
-)
-
-dataset_sparse = al.Interferometer.from_fits(
+dataset = al.Interferometer.from_fits(
     data_path=dataset_path / "data.fits",
     noise_map_path=dataset_path / "noise_map.fits",
     uv_wavelengths_path=dataset_path / "uv_wavelengths.fits",
@@ -709,17 +707,15 @@ dataset_sparse = al.Interferometer.from_fits(
 )
 
 """
-__Sparse Operators__
+__Sparse Operator__
 
-The `pixelization/modeling` example describes how the sparse operator formalism speeds up interferometer
-pixelized source modeling, especially for many visibilities.
+The w-tilde sparse operator makes the inversion cost of the pixelized stages independent of the visibility
+count, but building it is expensive for large datasets, so it is built once here, up front, and attached to the
+dataset. It is loaded from `nufft_precision_operator.npy` when that file exists (e.g. made by the
+`many_visibilities_preparation` example) and computed here otherwise.
 
-We use a try / except to load the pre-computed curvature preload, which is necessary to use
-the sparse operator formalism. If this file does not exist (e.g. you have not made it manually via
-the `many_visibilities_preparation` example) it is made here.
-
-The sparse operator is applied only to `dataset_sparse` here; `source_lp` can also be run on a sparse dataset
-if you prefer a single dataset for the whole pipeline.
+The `setup` of each pixelized stage reuses this operator rather than building its own. The light-profile
+`source_lp` stage chooses a dense NUFFT setup and simply does not use it.
 """
 try:
     nufft_precision_operator = np.load(
@@ -728,7 +724,7 @@ try:
 except FileNotFoundError:
     nufft_precision_operator = None
 
-dataset_sparse = dataset_sparse.apply_sparse_operator(
+dataset = dataset.apply_sparse_operator(
     nufft_precision_operator=nufft_precision_operator, use_jax=True, show_progress=True
 )
 
@@ -750,7 +746,23 @@ settings_search = af.SettingsSearch(
     unique_tag=dataset_name,
     info=None,
     session=None,
+    number_of_cores="auto",
 )
+
+"""
+__Compute Setup__
+
+The same compute setup input, `setup = "auto"`, is passed to the analysis of every stage below, and each
+stage picks the fastest setup for its own model and your hardware, including the Fourier transform and
+operator it applies to the dataset. On a CPU, the stages that fit a light-profile source use JAX with a
+NUFFT and the stages with a pixelized source use numba with the w-tilde sparse operator; on a GPU every
+stage uses JAX. Each stage prints the setup it chose when its fit starts. To override it, set `setup` to a
+setup_id string or set the `PYAUTO_SETUP` environment variable; see `guides/advanced/auto_setup.py`.
+
+`settings_search` also sets `number_of_cores="auto"`, so each stage runs as many parallel workers as its
+setup suits: every core for a numba stage and one for a JAX stage.
+"""
+setup = "auto"
 
 """
 __Redshifts__
@@ -774,12 +786,13 @@ __SLaM Pipeline__
 The code below calls the full SLaM PIPELINE. See the documentation string above each Python function for
 a description of each pipeline step.
 
-Note the transformer split: `source_lp` is passed `dataset_nufft` (TransformerNUFFT), while every later stage
-— including the SUBHALO PIPELINE — is passed `dataset_sparse` (TransformerNUFFT + sparse operator).
+Every stage, including the SUBHALO PIPELINE, is passed the same `dataset` and `setup`; the pixelized stages'
+setup reuses the sparse operator built up front.
 """
 source_lp_result = source_lp(
     settings_search=settings_search,
-    dataset=dataset_nufft,
+    setup=setup,
+    dataset=dataset,
     mask_radius=mask_radius,
     redshift_lens=redshift_lens,
     redshift_source=redshift_source,
@@ -787,7 +800,8 @@ source_lp_result = source_lp(
 
 source_pix_result_1 = source_pix_1(
     settings_search=settings_search,
-    dataset=dataset_sparse,
+    setup=setup,
+    dataset=dataset,
     source_lp_result=source_lp_result,
     mesh_init=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
     regularization_init=al.reg.Adapt,
@@ -796,7 +810,8 @@ source_pix_result_1 = source_pix_1(
 
 source_pix_result_2 = source_pix_2(
     settings_search=settings_search,
-    dataset=dataset_sparse,
+    setup=setup,
+    dataset=dataset,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
     mesh=af.Model(al.mesh.RectangularBilinearAdaptImage, shape=mesh_shape),
@@ -806,7 +821,8 @@ source_pix_result_2 = source_pix_2(
 
 mass_result = mass_total(
     settings_search=settings_search,
-    dataset=dataset_sparse,
+    setup=setup,
+    dataset=dataset,
     source_pix_result_1=source_pix_result_1,
     source_pix_result_2=source_pix_result_2,
     settings=settings,
@@ -814,7 +830,8 @@ mass_result = mass_total(
 
 result_subhalo_grid_search = subhalo_grid_search(
     settings_search=settings_search,
-    dataset=dataset_sparse,
+    setup=setup,
+    dataset=dataset,
     source_pix_result_1=source_pix_result_1,
     mass_result=mass_result,
     subhalo_mass=af.Model(al.mp.NFWMCRLudlowSph),
@@ -825,7 +842,8 @@ result_subhalo_grid_search = subhalo_grid_search(
 
 result_with_subhalo = subhalo_refine(
     settings_search=settings_search,
-    dataset=dataset_sparse,
+    setup=setup,
+    dataset=dataset,
     source_pix_result_1=source_pix_result_1,
     mass_result=mass_result,
     subhalo_grid_search_result=result_subhalo_grid_search,

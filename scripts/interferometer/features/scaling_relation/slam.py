@@ -32,10 +32,10 @@ mixed measurement corrupts the ratio); here there is nothing to mix.
 
 __Transformer Choice__
 
-This script uses `TransformerDFT`, which is simple and exact for a modest number of visibilities. For large visibility
-sets the sibling `interferometer/features/extra_galaxies/slam.py` shows the `TransformerNUFFT` + sparse-operator
-treatment, which is a performance concern orthogonal to the scaling relation and is documented there rather than
-duplicated here.
+This script loads the dataset with `TransformerDFT`, which is simple and exact for a modest number of visibilities.
+The `setup` each stage resolves may swap the transformer or attach a sparse operator for speed; the sibling
+`interferometer/features/extra_galaxies/slam.py` describes that treatment for large visibility sets, which is a
+performance concern orthogonal to the scaling relation and is documented there rather than duplicated here.
 
 __Prerequisites__
 
@@ -73,6 +73,7 @@ __Contents__
 - **SOURCE PIX PIPELINE 1 / 2:** Pixelized source, tier carried forward then fixed.
 - **MASS TOTAL PIPELINE:** `PowerLaw` anchor, with the tie re-applied to it.
 - **Dataset / Centres / External Luminosities / Settings / Mesh Shape.**
+- **Compute Setup:** One compute setup input, `"auto"`, passed to every stage, which picks its own fastest setup.
 - **SLaM Pipeline:** Run the stages in order.
 """
 
@@ -134,6 +135,7 @@ with its mass tied to the anchor.
 
 def source_lp(
     settings_search,
+    setup,
     dataset,
     mask_radius,
     scaling_galaxies_centres,
@@ -143,7 +145,7 @@ def source_lp(
     redshift_source,
     n_batch=50,
 ):
-    analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisInterferometer(dataset=dataset, setup=setup)
 
     source_bulge = al.model_util.mge_model_from(
         mask_radius=mask_radius, total_gaussians=5, centre_prior_is_uniform=False
@@ -208,6 +210,7 @@ adaptive mesh and regularization weights.
 
 def source_pix_1(
     settings_search,
+    setup,
     dataset,
     source_lp_result,
     mesh_shape,
@@ -238,7 +241,7 @@ def source_pix_1(
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
-    analysis = al.AnalysisInterferometer(dataset=dataset, adapt_images=adapt_images)
+    analysis = al.AnalysisInterferometer(dataset=dataset, adapt_images=adapt_images, setup=setup)
 
     mass = al.util.chaining.mass_from(
         mass=af.Model(al.mp.Isothermal),
@@ -290,6 +293,7 @@ Identical to `slam_start_here.py`, except the tier is fixed as an instance from 
 
 def source_pix_2(
     settings_search,
+    setup,
     dataset,
     source_lp_result,
     source_pix_result_1,
@@ -322,7 +326,7 @@ def source_pix_2(
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
     analysis = al.AnalysisInterferometer(
-        dataset=dataset, adapt_images=adapt_images, use_jax=True
+        dataset=dataset, adapt_images=adapt_images, setup=setup
     )
 
     model = af.Collection(
@@ -376,6 +380,7 @@ The luminosities are the same external numbers used in `source_lp[1]` — there 
 
 def mass_total(
     settings_search,
+    setup,
     dataset,
     source_result_for_lens,
     source_result_for_source,
@@ -410,7 +415,7 @@ def mass_total(
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
-    analysis = al.AnalysisInterferometer(dataset=dataset, adapt_images=adapt_images)
+    analysis = al.AnalysisInterferometer(dataset=dataset, adapt_images=adapt_images, setup=setup)
 
     mass = al.util.chaining.mass_from(
         mass=af.Model(al.mp.PowerLaw),
@@ -518,7 +523,23 @@ settings_search = af.SettingsSearch(
     unique_tag=dataset_name,
     info=None,
     session=None,
+    number_of_cores="auto",
 )
+
+"""
+__Compute Setup__
+
+The same compute setup input, `setup = "auto"`, is passed to the analysis of every stage below, and each
+stage picks the fastest setup for its own model and your hardware, including the Fourier transform and
+operator it applies to the dataset. On a CPU, the stages that fit a light-profile source use JAX with a
+NUFFT and the stages with a pixelized source use numba with the w-tilde sparse operator; on a GPU every
+stage uses JAX. Each stage prints the setup it chose when its fit starts. To override it, set `setup` to a
+setup_id string or set the `PYAUTO_SETUP` environment variable; see `guides/advanced/auto_setup.py`.
+
+`settings_search` also sets `number_of_cores="auto"`, so each stage runs as many parallel workers as its
+setup suits: every core for a numba stage and one for a JAX stage.
+"""
+setup = "auto"
 
 """
 __Redshifts__
@@ -539,6 +560,7 @@ __SLaM Pipeline__
 """
 source_lp_result = source_lp(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     scaling_galaxies_centres=scaling_galaxies_centres,
@@ -550,6 +572,7 @@ source_lp_result = source_lp(
 
 source_pix_result_1 = source_pix_1(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_lp_result=source_lp_result,
     mesh_shape=mesh_shape,
@@ -557,6 +580,7 @@ source_pix_result_1 = source_pix_1(
 
 source_pix_result_2 = source_pix_2(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
@@ -565,6 +589,7 @@ source_pix_result_2 = source_pix_2(
 
 mass_result = mass_total(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_result_for_lens=source_pix_result_1,
     source_result_for_source=source_pix_result_2,

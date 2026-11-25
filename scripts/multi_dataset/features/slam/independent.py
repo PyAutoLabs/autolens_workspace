@@ -38,6 +38,7 @@ __Contents__
 - **This Script:** Using a SOURCE LP PIPELINE, SOURCE PIX PIPELINE, LIGHT LP PIPELINE and TOTAL MASS PIPELINE this.
 - **Dataset:** Load and plot the strong lens dataset.
 - **Settings AutoFit:** The settings of autofit, which controls the output paths, parallelization, database use, etc.
+- **Compute Setup:** One compute setup input, `"auto"`, passed to every stage, which picks its own fastest setup.
 - **Redshifts:** The redshifts of the lens and source galaxies.
 - **SLaM Pipeline Functions:** Overview of slam pipeline functions for this example.
 - **SLaM Pipeline:** Overview of slam pipeline for this example.
@@ -153,7 +154,23 @@ settings_search = af.SettingsSearch(
     unique_tag=f"{dataset_name}_data_{dataset_waveband}",
     info=None,
     session=None,
+    number_of_cores="auto",
 )
+
+"""
+__Compute Setup__
+
+The same compute setup input, `setup = "auto"`, is passed to the analysis of every stage below, and each
+stage picks the fastest setup for its own model and your hardware. On a CPU, the stages that fit a
+light-profile source use JAX and the stages with a pixelized source use numba with a sparse operator; on a
+GPU every stage uses JAX. Each stage prints the setup it chose when its fit starts. To override it, set
+`setup` to a setup_id string (e.g. `"numba_cpu_sparse_fp64"`) or set the `PYAUTO_SETUP` environment
+variable; see `guides/advanced/auto_setup.py`.
+
+`settings_search` also sets `number_of_cores="auto"`, so each stage runs as many parallel workers as its
+setup suits: every core for a numba stage and one for a JAX stage.
+"""
+setup = "auto"
 
 """
 __Redshifts__
@@ -561,7 +578,7 @@ source_bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
 )
 
-analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+analysis = al.AnalysisImaging(dataset=dataset, setup=setup)
 
 source_lp_result = source_lp(
     settings_search=settings_search,
@@ -599,7 +616,7 @@ analysis = al.AnalysisImaging(
     positions_likelihood_list=[
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
-    use_jax=True,
+    setup=setup,
 )
 
 source_pix_result_1 = source_pix_1(
@@ -656,7 +673,7 @@ dataset = dataset.apply_over_sampling(
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    use_jax=True,
+    setup=setup,
 )
 
 source_pix_result_2 = source_pix_2(
@@ -678,7 +695,7 @@ lens_bulge = al.model_util.mge_model_from(
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    use_jax=True,
+    setup=setup,
 )
 
 light_result = light_lp(
@@ -695,6 +712,7 @@ analysis = al.AnalysisImaging(
     positions_likelihood_list=[
         source_pix_result_2.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
+    setup=setup,
 )
 
 mass_result = mass_total(
@@ -768,6 +786,7 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
         path_prefix=Path("slam", "multi_dataset", "independent"),
         unique_tag=f"{dataset_name}_data_{dataset_waveband}",
         info=None,
+        number_of_cores="auto",
     )
 
     """
@@ -812,7 +831,7 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
         profile_list=bulge_gaussian_list,
     )
 
-    analysis = al.AnalysisImaging(dataset=dataset)
+    analysis = al.AnalysisImaging(dataset=dataset, setup=setup)
 
     source_lp_result = source_lp_secondary(
         settings_search=settings_search,
@@ -849,6 +868,7 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
         dataset=dataset,
         adapt_images=adapt_images,
         raise_inversion_positions_likelihood_exception=False,
+        setup=setup,
     )
 
     source_pix_result_1 = source_pix_1_secondary(
@@ -903,6 +923,7 @@ for dataset_waveband, pixel_scale in zip(dataset_waveband_list, pixel_scale_list
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
+        setup=setup,
     )
 
     multi_result = source_pix_2_secondary(

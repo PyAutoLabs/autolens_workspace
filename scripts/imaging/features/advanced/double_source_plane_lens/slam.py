@@ -67,13 +67,14 @@ The model:
 
 def source_lp_1(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     mask_radius: float,
     redshift_lens: float,
     redshift_source_0: float,
     n_batch: int = 50,
 ) -> af.Result:
-    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisImaging(dataset=dataset, setup=setup)
 
     lens_bulge = al.model_util.mge_model_from(
         mask_radius=mask_radius,
@@ -139,6 +140,7 @@ further down the pipeline.
 
 def source_lp_2(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     mask_radius: float,
     source_lp_result_1: af.Result,
@@ -153,6 +155,7 @@ def source_lp_2(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         positions_likelihood_list=[positions_likelihood_source_0],
+        setup=setup,
     )
 
     source_0_mass = af.Model(al.mp.Isothermal)
@@ -220,6 +223,7 @@ count equally. The cap is applied to an explicit copy so the raw S/N image is un
 
 def source_pix_1_source_0(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_lp_result_1: af.Result,
     source_lp_result_2: af.Result,
@@ -252,6 +256,7 @@ def source_pix_1_source_0(
         dataset=dataset,
         adapt_images=adapt_images,
         positions_likelihood_list=[positions_likelihood_source_0],
+        setup=setup,
     )
 
     mass = al.util.chaining.mass_from(
@@ -314,6 +319,7 @@ result); `source_0`'s adapt image comes from the pixelized search above. All thr
 
 def source_pix_1_source_1(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_lp_result_2: af.Result,
     source_pix_result_1_source_0: af.Result,
@@ -369,6 +375,7 @@ def source_pix_1_source_1(
             positions_likelihood_source_0,
             positions_likelihood_source_1,
         ],
+        setup=setup,
     )
 
     source_0_mass = al.util.chaining.mass_from(
@@ -427,6 +434,7 @@ pipeline stages to adapt each source-plane pixelization to its reconstructed mor
 
 def source_pix_2(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_lp_result_2: af.Result,
     source_pix_result_1_source_0: af.Result,
@@ -469,7 +477,7 @@ def source_pix_2(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
-        use_jax=True,
+        setup=setup,
     )
 
     model = af.Collection(
@@ -568,7 +576,23 @@ settings_search = af.SettingsSearch(
     unique_tag=dataset_name,
     info=None,
     session=None,
+    number_of_cores="auto",
 )
+
+"""
+__Compute Setup__
+
+The same compute setup input, `setup = "auto"`, is passed to the analysis of every stage below, and each
+stage picks the fastest setup for its own model and your hardware. On a CPU, the stages that fit a
+light-profile source use JAX and the stages with a pixelized source use numba with a sparse operator; on a
+GPU every stage uses JAX. Each stage prints the setup it chose when its fit starts. To override it, set
+`setup` to a setup_id string (e.g. `"numba_cpu_sparse_fp64"`) or set the `PYAUTO_SETUP` environment
+variable; see `guides/advanced/auto_setup.py`.
+
+`settings_search` also sets `number_of_cores="auto"`, so each stage runs as many parallel workers as its
+setup suits: every core for a numba stage and one for a JAX stage.
+"""
+setup = "auto"
 
 """
 __Redshifts__
@@ -596,6 +620,7 @@ each stage.
 """
 source_lp_result_1 = source_lp_1(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     redshift_lens=redshift_lens,
@@ -604,6 +629,7 @@ source_lp_result_1 = source_lp_1(
 
 source_lp_result_2 = source_lp_2(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     source_lp_result_1=source_lp_result_1,
@@ -612,6 +638,7 @@ source_lp_result_2 = source_lp_2(
 
 source_pix_result_1_source_0 = source_pix_1_source_0(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_lp_result_1=source_lp_result_1,
     source_lp_result_2=source_lp_result_2,
@@ -622,6 +649,7 @@ source_pix_result_1_source_0 = source_pix_1_source_0(
 
 source_pix_result_1_source_1 = source_pix_1_source_1(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_lp_result_2=source_lp_result_2,
     source_pix_result_1_source_0=source_pix_result_1_source_0,
@@ -665,6 +693,7 @@ dataset = dataset.apply_over_sampling(
 
 source_pix_result_2 = source_pix_2(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_lp_result_2=source_lp_result_2,
     source_pix_result_1_source_0=source_pix_result_1_source_0,

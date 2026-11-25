@@ -29,6 +29,7 @@ __Contents__
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
 - **Centres:** Load galaxy centres from JSON files.
 - **Over Sampling:** Set up the adaptive over-sampling grid.
+- **Compute Setup:** One compute setup input, `"auto"`, passed to every stage, which picks its own fastest setup.
 - **SLaM Pipeline Functions:** The pipeline functions adapted for group-scale lenses.
 - **Bayesian Evidence:** Determine if a DM subhalo was detected.
 - **Grid Search Result:** Inspect the grid search results.
@@ -94,6 +95,7 @@ Fits the group lens with parametric light profiles for the source, using MGE for
 
 def source_lp(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     mask_radius: float,
     main_lens_centres,
@@ -102,7 +104,7 @@ def source_lp(
     redshift_source: float,
     n_batch: int = 50,
 ) -> af.Result:
-    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisImaging(dataset=dataset, setup=setup)
 
     # Main Lens Galaxies:
 
@@ -210,6 +212,7 @@ count equally. The cap is applied to an explicit copy so the raw S/N image is un
 
 def source_pix_1(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_lp_result: af.Result,
     mesh_init,
@@ -237,7 +240,7 @@ def source_pix_1(
                 factor=3.0, minimum_threshold=0.2
             )
         ],
-        use_jax=True,
+        setup=setup,
     )
 
     # Use the lens model from the SOURCE LP result, fixing light and freeing mass.
@@ -301,6 +304,7 @@ Refines the pixelized source reconstruction with adaptive mesh.
 
 def source_pix_2(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_lp_result: af.Result,
     source_pix_result_1: af.Result,
@@ -324,7 +328,7 @@ def source_pix_2(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
-        use_jax=True,
+        setup=setup,
     )
 
     lens_dict = {}
@@ -378,6 +382,7 @@ Refits the lens light using MGE, with the source pixelization fixed.
 
 def light_lp(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     mask_radius: float,
     source_result_for_lens: af.Result,
@@ -401,7 +406,7 @@ def light_lp(
     analysis = al.AnalysisImaging(
         dataset=dataset,
         adapt_images=adapt_images,
-        use_jax=True,
+        setup=setup,
     )
 
     source = al.util.chaining.source_custom_model_from(
@@ -456,6 +461,7 @@ Fits the total mass distribution as a ``PowerLaw``.
 
 def mass_total(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_result_for_lens: af.Result,
     source_result_for_source: af.Result,
@@ -483,7 +489,7 @@ def mass_total(
                 factor=3.0, minimum_threshold=0.2
             )
         ],
-        use_jax=True,
+        setup=setup,
     )
 
     source = al.util.chaining.source_from(result=source_result_for_source)
@@ -536,6 +542,7 @@ Refits the lens model without a DM subhalo to establish a Bayesian evidence base
 
 def subhalo_no_subhalo(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_pix_result_1: af.Result,
     mass_result: af.Result,
@@ -560,6 +567,7 @@ def subhalo_no_subhalo(
         positions_likelihood_list=[
             mass_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
         ],
+        setup=setup,
     )
 
     source = al.util.chaining.source_from(result=mass_result)
@@ -599,6 +607,7 @@ lensed source images can span a wider area due to the more complex mass distribu
 
 def subhalo_grid_search(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_pix_result_1: af.Result,
     mass_result: af.Result,
@@ -627,6 +636,7 @@ def subhalo_grid_search(
         positions_likelihood_list=[
             mass_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
         ],
+        setup=setup,
     )
 
     subhalo = af.Model(al.Galaxy, mass=subhalo_mass)
@@ -695,6 +705,7 @@ Refines the best-fit subhalo model, initializing the subhalo centre from the hig
 
 def subhalo_refine(
     settings_search: af.SettingsSearch,
+    setup,
     dataset,
     source_pix_result_1: af.Result,
     mass_result: af.Result,
@@ -722,6 +733,7 @@ def subhalo_refine(
         positions_likelihood_list=[
             mass_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
         ],
+        setup=setup,
     )
 
     subhalo = af.Model(
@@ -841,7 +853,23 @@ settings_search = af.SettingsSearch(
     unique_tag=dataset_name,
     info=None,
     session=None,
+    number_of_cores="auto",
 )
+
+"""
+__Compute Setup__
+
+The same compute setup input, `setup = "auto"`, is passed to the analysis of every stage below, and each
+stage picks the fastest setup for its own model and your hardware. On a CPU, the stages that fit a
+light-profile source use JAX and the stages with a pixelized source use numba with a sparse operator; on a
+GPU every stage uses JAX. Each stage prints the setup it chose when its fit starts. To override it, set
+`setup` to a setup_id string (e.g. `"numba_cpu_sparse_fp64"`) or set the `PYAUTO_SETUP` environment
+variable; see `guides/advanced/auto_setup.py`.
+
+`settings_search` also sets `number_of_cores="auto"`, so each stage runs as many parallel workers as its
+setup suits: every core for a numba stage and one for a JAX stage.
+"""
+setup = "auto"
 
 """
 __Redshifts__
@@ -866,6 +894,7 @@ The code below calls the full SLaM PIPELINE adapted for group-scale lenses.
 """
 source_lp_result = source_lp(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     main_lens_centres=main_lens_centres,
@@ -876,6 +905,7 @@ source_lp_result = source_lp(
 
 source_pix_result_1 = source_pix_1(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_lp_result=source_lp_result,
     mesh_init=af.Model(al.mesh.RectangularBilinearAdaptDensity, shape=mesh_shape),
@@ -928,6 +958,7 @@ dataset = dataset.apply_over_sampling(
 
 source_pix_result_2 = source_pix_2(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_lp_result=source_lp_result,
     source_pix_result_1=source_pix_result_1,
@@ -937,6 +968,7 @@ source_pix_result_2 = source_pix_2(
 
 light_result = light_lp(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     mask_radius=mask_radius,
     source_result_for_lens=source_pix_result_1,
@@ -946,6 +978,7 @@ light_result = light_lp(
 
 mass_result = mass_total(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_result_for_lens=source_pix_result_1,
     source_result_for_source=source_pix_result_2,
@@ -954,6 +987,7 @@ mass_result = mass_total(
 
 result_no_subhalo = subhalo_no_subhalo(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_pix_result_1=source_pix_result_1,
     mass_result=mass_result,
@@ -961,6 +995,7 @@ result_no_subhalo = subhalo_no_subhalo(
 
 result_subhalo_grid_search = subhalo_grid_search(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_pix_result_1=source_pix_result_1,
     mass_result=mass_result,
@@ -972,6 +1007,7 @@ result_subhalo_grid_search = subhalo_grid_search(
 
 result_with_subhalo = subhalo_refine(
     settings_search=settings_search,
+    setup=setup,
     dataset=dataset,
     source_pix_result_1=source_pix_result_1,
     mass_result=mass_result,
