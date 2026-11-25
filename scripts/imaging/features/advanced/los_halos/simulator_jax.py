@@ -405,7 +405,10 @@ every seed.
 from autolens.lens.los import mass_concentration_ab_from, mass_function_ab_from
 
 mass_function_coefficients = np.array(
-    [mass_function_ab_from(redshift=z, cosmology_name="planck15") for z in plane_centres]
+    [
+        mass_function_ab_from(redshift=z, cosmology_name="planck15")
+        for z in plane_centres
+    ]
 )
 mass_concentration_coefficients = np.array(
     [
