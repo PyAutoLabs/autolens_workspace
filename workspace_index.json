@@ -200,6 +200,7 @@
       "Tracer",
       "Critical Curves",
       "Caustics",
+      "Family Fit",
       "Visualizer"
     ],
     "cross_refs": [
@@ -210,7 +211,7 @@
     ],
     "notebook": "notebooks/cluster/plot.ipynb",
     "path": "scripts/cluster/plot.py",
-    "summary": "This example shows how to plot a cluster-scale strong lens dataset \u2014 the multiple-image positions of its lensed sources, individually and overlaid together on an image of the cluster.",
+    "summary": "This example shows how to plot a cluster-scale strong lens dataset \u2014 the multiple-image positions of its lensed sources, individually and overlaid on a cluster image. It then follows one family from its observed images to the source-plane fit.",
     "title": "Plots: Cluster"
   },
   {
