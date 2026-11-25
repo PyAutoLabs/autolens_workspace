@@ -3,7 +3,8 @@ Plots: Cluster
 ==============
 
 This example shows how to plot a cluster-scale strong lens dataset — the multiple-image positions
-of its lensed sources, individually and overlaid together on an image of the cluster.
+of its lensed sources, individually and overlaid on a cluster image. It then follows one family from its observed images
+to the source-plane fit.
 
 Cluster datasets are point-source datasets: each lensed source contributes the (y,x) positions of
 its multiple images (see `scripts/cluster/start_here.py` for the full data model). Plotting
@@ -20,9 +21,10 @@ __Contents__
 - **Positions Overlay:** Plot every system's positions together, overlaid on the cluster image.
 - **Image Group Zooms:** Plot a zoomed cutout around each system's multiple images.
 - **Cluster Subplot:** Plot the combined cluster dataset subplot.
-- **Tracer:** Build the truth-model tracer from the dataset's mass CSVs.
+- **Tracer:** Build a tracer from the main lens galaxies, host halo and source redshifts.
 - **Critical Curves:** Plot the multi-plane critical curves of the cluster.
 - **Caustics:** Plot the multi-plane caustics of the cluster.
+- **Family Fit:** Inspect the sky overview, contribution ranking, one numbered image and the common source plane, then combine them.
 - **Visualizer:** How figures are output automatically during a cluster model-fit.
 """
 
@@ -135,23 +137,20 @@ __Tracer__
 The figures above show the data alone. The remaining figures show the lens model, which requires a
 `Tracer`.
 
-The dataset ships with its mass model in `mass.csv` and `point.csv`. `al.galaxy_af_models_from_csv_tables()`
-turns these into `af.Model[Galaxy]` objects whose parameters are all fixed at the CSV values
-(`prior_count` is 0), so `instance_from_prior_medians()` returns the exact truth galaxies rather
-than a sample.
+For the critical curves and caustics, use the two main lens galaxies and the host halo from
+`mass.csv`. Their parameters are fixed at the CSV values. Each observed family supplies a source
+redshift and a named `PointSolved` profile. The family fits below will solve for its centre.
 """
 mass_table = al.galaxy_models_from_csv(
     file_path=dataset_path / "mass.csv", family="mass"
 )
-point_table = al.galaxy_models_from_csv(
-    file_path=dataset_path / "point.csv", family="point"
-)
-
-galaxy_models = al.galaxy_af_models_from_csv_tables(mass_table, point_table)
-
-galaxies = [model.instance_from_prior_medians() for model in galaxy_models.values()]
-
-tracer = al.Tracer(galaxies=galaxies)
+mass_models = al.galaxy_af_models_from_csv_tables(mass_table)
+main_lenses = [model.instance_from_prior_medians() for model in mass_models.values()]
+sources = [
+    al.Galaxy(redshift=dataset.redshift, **{dataset.name: al.ps.PointSolved()})
+    for dataset in dataset_list
+]
+tracer = al.Tracer(galaxies=main_lenses + sources)
 
 grid = al.Grid2D.uniform(shape_native=(150, 150), pixel_scales=1.0)
 
@@ -192,6 +191,76 @@ aplt.plot_caustics(
     grid=grid,
     plane_indices=plane_indices,
 )
+
+"""
+__Family Fit__
+
+Follow the four observed images of Pandora's `point_6`. To reproduce the gallery's fixed starting
+model, add the 188 cluster members from the luminosity catalogue. Their velocity dispersions and
+cut radii follow the scaling relation in `scripts/cluster/start_here.py`, with the reference
+dispersion fixed at its prior midpoint of 150 km/s. These plots diagnose this starting model.
+"""
+members = al.galaxy_table_from_csv(file_path=dataset_path / "scaling_galaxies.csv")
+source_redshift = max(dataset.redshift for dataset in dataset_list)
+member_galaxies = []
+for centre, luminosity in zip(members.centres, members.luminosities, strict=True):
+    mass = al.mp.dPIEMassSph(
+        centre=tuple(centre),
+        sigma=150 * luminosity**0.25,
+        r_cut=5 * luminosity**0.7,
+        r_core=0.0,
+        redshift_object=0.308,
+        redshift_source=source_redshift,
+        H0=67.66,
+        Om0=0.30966,
+    )
+    member_galaxies.append(al.Galaxy(redshift=0.308, mass=mass))
+
+fit_tracer = al.Tracer(galaxies=main_lenses + member_galaxies + sources)
+fits = [
+    al.FitPointDataset(
+        dataset=dataset, tracer=fit_tracer, solver=None,
+        fit_positions_cls=al.FitPositionsSourceSolved,
+    )
+    for dataset in dataset_list
+]
+fit = next(fit for fit in fits if fit.dataset.name == "point_6")
+
+"""
+**Find the family on the sky.** The overview numbers the observed images of `point_6`. Passing
+`fits=fits` shows the other six families for context and keeps colours consistent across panels.
+Each function also works with just the selected fit.
+"""
+aplt.plot_family_overview(fit=fit, fits=fits, image=data)
+
+"""
+**Read the ranking.** Each bar is one image's contribution to the positions statistic. Image 4
+contributes the most for this starting model. The axis follows the likelihood used by the fit:
+for example, an all-pairs mixture reports contributions to −2 ln L.
+"""
+aplt.plot_family_contributions(fit=fit, fits=fits)
+
+"""
+**Inspect Image 4.** Pass the number printed beside the image. For this source-plane fit the zoom
+compares the back-traced position and its uncertainty with the solved source centre. For an
+image-plane fit the same call shows the observed position and the model prediction. Omit
+`image_number` to see the whole family in a shared detail panel.
+"""
+aplt.plot_family_image_detail(fit=fit, fits=fits, image_number=4)
+
+"""
+**Compare all back-traced images.** Every numbered image is traced to the same source plane.
+The plus marks the fitted centre. This panel is also available for an image-plane fit.
+"""
+aplt.plot_family_source_plane(fit=fit, fits=fits)
+
+"""
+**Put the panels together.** The subplot uses the same panels and image numbers. It shows up
+to six individual zooms per page. Set `single_panel=True` to share one detail panel instead.
+To arrange individual panels yourself, pass a Matplotlib `ax` to each `plot_family_*` call.
+To save one directly, pass `output_path`, `output_filename` and `output_format="png"`.
+"""
+aplt.subplot_fit_family(fit=fit, fits=fits, image=data)
 
 """
 __Visualizer__
