@@ -24,14 +24,15 @@
 # -----------------------------------------------------------------------------
 source $PROJECT_PATH/activate.sh
 
-# Force JAX onto the CPU backend, so it does not try to use a GPU that was not
-# allocated to this job.
+# Optional: force JAX onto the CPU backend, so it does not look for a GPU that
+# was not allocated to this job. setup="auto" then also chooses a CPU setup.
 export JAX_PLATFORM_NAME=cpu
 export JAX_PLATFORMS=cpu
 
-# Pin every linear algebra library to the CPUs SLURM actually allocated. Without
-# this each library spawns one thread per physical core, and array jobs sharing
-# a node oversubscribe it badly.
+# Optional: pin every linear algebra library to the CPUs SLURM allocated, so
+# array jobs sharing a node do not oversubscribe it. setup="auto" already limits
+# numba and the linear algebra libraries to the allocated cores, and
+# number_of_cores="auto" reads SLURM_CPUS_PER_TASK; these lines are a safeguard.
 THREADS=$SLURM_CPUS_PER_TASK
 export OPENBLAS_NUM_THREADS=$THREADS
 export MKL_NUM_THREADS=$THREADS

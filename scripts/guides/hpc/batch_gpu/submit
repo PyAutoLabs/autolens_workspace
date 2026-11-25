@@ -21,9 +21,10 @@
 #   export PROJECT_PATH=/PATH/TO/LARGE_STORAGE/YOUR_USERNAME/autolens_workspace
 #   sbatch scripts/guides/hpc/batch_gpu/submit
 #
-# Note there is no JAX_PLATFORM_NAME override and no CPU thread-pinning block
-# here: JAX auto-detects the allocated GPU, and pinning host threads is
-# irrelevant when the GPU is doing the work.
+# Note there is no JAX_PLATFORMS override and no CPU thread-pinning block here:
+# JAX detects the allocated GPU, setup="auto" chooses a JAX GPU setup and
+# number_of_cores="auto" uses one worker. Setting JAX_PLATFORMS=cpu here would
+# hide the GPU from JAX.
 # -----------------------------------------------------------------------------
 source $PROJECT_PATH/activate.sh
 

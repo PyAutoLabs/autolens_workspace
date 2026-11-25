@@ -4,27 +4,30 @@ CPU Fast Modeling: Pixelization (Multi Galaxy)
 
 Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
 
-This script fits a multi-galaxy strong lens with a pixelized source **on the CPU, without JAX**, using:
+This script shows how to override the automatic compute setup, by fitting a multi-galaxy strong lens with a
+pixelized source using a setup you choose yourself:
 
- - `numba` for optimized numerical routines.
- - Python `multiprocessing` to use multiple CPU cores.
+ - `numba` for the likelihood, instead of JAX.
  - The sparse operator formalism for the inversion's linear algebra.
+ - Python `multiprocessing` to run likelihoods on several CPU cores at once.
 
-Pixelizations rely on sparse linear algebra, which is not currently optimized in JAX. On a machine with many
-cores this route can therefore outperform JAX GPU acceleration for a pixelized source.
+You usually do not need to do this. Passing `setup="auto"` to the analysis and `number_of_cores="auto"` to the
+search already picks this setup, `numba_cpu_sparse_fp64` with one worker per core, for a pixelized source on a CPU.
+On an A100 GPU it picks `jax_gpu_dense_fp64` instead, and for MGE or parametric sources it picks JAX on both. The
+`guides/advanced/auto_setup.py` guide explains the automatic setup and lists the setup it picks for every dataset.
 
-> This applies to pixelized sources only. For parametric or multi-Gaussian sources, JAX with a GPU is
-> substantially faster — which is what the rest of this package uses.
+Override it when you want the same setup on every machine, for example to compare run times, or when the automatic
+choice is not the one you want.
 
 __Contents__
 
 - **Dataset:** Load the multi-galaxy dataset that is fitted.
 - **Extra Galaxies Noise Scaling:** Scale the contaminating galaxy's light out of the fit.
 - **Mask, Centres & Over Sampling:** Standard set up, over-sampled at every deflector centre.
-- **Sparse Operators:** Pre-compute the sparse matrices the CPU inversion uses.
+- **Compute Setup:** Choose the numba sparse setup, which attaches the sparse operator to the dataset.
 - **Mesh Shape:** The resolution of the source-plane mesh.
 - **Fit:** A single CPU fit, before any search.
-- **Model:** The model-fit, with JAX disabled and the search parallelized over cores.
+- **Model:** The model-fit, with the setup passed to the analysis and the search parallelized over cores.
 - **Result:** What to check.
 - **Wrap Up:** Where to go next.
 
@@ -138,16 +141,19 @@ dataset = dataset.apply_over_sampling(
 aplt.subplot_imaging_dataset(dataset=dataset)
 
 """
-__Sparse Operators__
+__Compute Setup__
 
 The inversion's matrices are mostly zeros, because each image pixel maps to only a handful of source pixels.
-`apply_sparse_operator_cpu` pre-computes the operators that exploit this, so the dense operations are replaced by
-sparse ones for every subsequent fit.
+The sparse operator exploits this, replacing dense operations with sparse ones in every fit.
 
-Computing them takes anywhere from a few seconds to a few minutes depending on the dataset size. It is done once,
-here, and every model-fit below is faster for it.
+A setup is named by a setup id, `<backend>_<device>_<operator>_<precision>`. Applying `numba_cpu_sparse_fp64` to the
+dataset builds the numba sparse operator once, which takes a few seconds to a few minutes depending on the dataset
+size, and every fit below reuses it. The analysis below is given the same setup; it sees the operator is already
+attached and does not rebuild it.
 """
-dataset = dataset.apply_sparse_operator_cpu()
+setup = "numba_cpu_sparse_fp64"
+
+dataset = dataset.apply_setup(setup=setup)
 
 """
 __Mesh Shape__
@@ -219,11 +225,13 @@ __Model__
 The standard multi-galaxy composition — one `lens_i` per deflector with its mass centre fixed, the shear in its
 own `MassField` — with a pixelized source.
 
-Two things differ from the JAX examples in this package:
+Two inputs set the compute setup by hand:
 
- - **JAX is disabled:** `AnalysisImaging` is created with `use_jax=False`.
- - **CPU parallelization:** the search is given `number_of_cores`, which parallelizes likelihood evaluations
-   with Python's `multiprocessing`.
+ - **The setup:** `AnalysisImaging` is given `setup="numba_cpu_sparse_fp64"` instead of `setup="auto"`.
+ - **The number of cores:** the search is given `number_of_cores=2` instead of `number_of_cores="auto"` (which
+   would use every detected core). Each core runs one likelihood at a time, through Python's `multiprocessing`.
+
+When the fit starts, it prints `Compute setup (set explicitly by setup=...):` followed by the setup it used.
 """
 # Main Lens Galaxies:
 
@@ -291,7 +299,7 @@ search = af.Nautilus(
     name="cpu_fast_modeling",
     unique_tag=dataset_name,
     n_live=100,
-    number_of_cores=2,  # CPU specific: parallelize likelihood evaluations
+    number_of_cores=2,  # Override: "auto" uses every detected core for a numba setup
     live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
@@ -300,7 +308,7 @@ positions = al.Grid2DIrregular(al.from_json(file_path=dataset_path / "positions.
 analysis = al.AnalysisImaging(
     dataset=dataset,
     positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
-    use_jax=False,  # CPU specific: disable JAX compilation
+    setup=setup,  # Override: setup="auto" picks this setup on a CPU
 )
 
 result = search.fit(model=model, analysis=analysis)
@@ -317,9 +325,10 @@ __Wrap Up__
 
 Where to go next:
 
+ - `guides/advanced/auto_setup.py` — the automatic setup, and every way to override it.
  - `multi_galaxy/features/pixelization/modeling.py` — the same model fitted with JAX enabled.
  - `multi_galaxy/features/pixelization/delaunay.py` — the Delaunay meshes.
  - `guides/hpc` — running fits on a cluster, where `number_of_cores` matters most.
- - `imaging/features/pixelization/cpu_fast_modeling.py` — the galaxy-scale walkthrough, including its CPU-fast
-   SLaM pipeline.
+ - `imaging/features/pixelization/cpu_fast_modeling.py` — the galaxy-scale walkthrough, including a SLaM
+   pipeline with the setup overridden.
 """

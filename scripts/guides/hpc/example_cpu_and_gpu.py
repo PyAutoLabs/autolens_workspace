@@ -5,16 +5,20 @@ HPC: Example CPU and GPU
 This example illustrates how to set up lens modeling on a High Performance Computing (HPC) system, using either
 multiple CPUs or a GPU.
 
-It illustrates two different forms of parallelization:
+It illustrates two forms of parallelization, which you can combine:
 
-1) Set off many single CPU jobs in a single HPC submission script, where each job fits a different dataset using the
-same lens model analysis. This form of parallelization is efficient when we have many datasets we wish to fit
-simultaneously, but each individual fit only uses one CPU so overall run times are slower.
+1) Fit many datasets at once, with one SLURM array job per dataset. Every job runs the same Python script on a
+different dataset, so a sample of lenses is fitted in parallel.
 
-2) Fit a single dataset using a parallelized Nautilus model-fit, where the non-linear search distributes the model-fit
-over multiple CPUs. This form of parallelization is efficient when we have a single dataset to fit, but we wish to
-speed up the overall run time of the model-fit by using multiple CPUs. However, parallelizing over multiple CPUs
-have communication overheads, and so this form of parallelization is less efficient than fitting many single CPU jobs.
+2) Speed up each fit by giving its job several CPU cores (or a GPU). The non-linear search spreads the likelihood
+evaluations of one fit over those cores.
+
+The shipped CPU batch script does both: each array job fits one dataset and asks for 8 CPU cores.
+
+The Python script is the same on a CPU node and a GPU node. The analysis is given `setup="auto"` and the search
+`number_of_cores="auto"`, so each job checks the hardware it was given and picks how to compute the likelihood. For
+a pixelized source, a CPU node uses numba with one likelihood per allocated core, and a GPU node uses JAX on the GPU.
+The `guides/advanced/auto_setup.py` guide explains these choices.
 
 The example assumes the HPC environment uses SLURM for job management, which is standard for many academic HPCs but
 may not necessarily be the case for your HPC. If your HPC does not use SLURM, you should still be able to adapt this
@@ -39,7 +43,7 @@ __Contents__
 - **Batch Script: Many Datasets (Array Job):** Configure a SLURM array job to fit many lenses in parallel.
 - **Dataset:** Load the dataset this job has been asked to fit.
 - **Batch Script: Single Dataset with Multiple CPUs:** Configure a parallelized single-dataset Nautilus fit.
-- **Nautilus CPUs:** Configure Nautilus to use multiple CPU cores for parallelized sampling.
+- **Nautilus CPUs:** Let Nautilus use the CPU cores SLURM allocated, with `number_of_cores="auto"`.
 - **Lens Modeling:** Perform a standard lens model-fit on the HPC.
 - **GPU Jobs:** Run GPU-accelerated model-fits using the GPU batch script.
 
@@ -145,18 +149,22 @@ The following line activates the PyAutoLens virtual environment for this run:
 
     source $PROJECT_PATH/activate.sh
 
-These lines tell JAX to use the CPU backend (not attempt to use a GPU that was not allocated):
+The batch script also contains two optional blocks. These lines tell JAX to use the CPU backend, so it does not
+look for a GPU that was not allocated. With them set, `setup="auto"` also chooses the CPU setup:
 
     export JAX_PLATFORM_NAME=cpu
     export JAX_PLATFORMS=cpu
 
-These lines prevent NumPy linear algebra libraries from spawning more threads than the allocated CPUs,
-which would cause slowdowns when many array jobs share the same node:
+These lines limit the linear algebra libraries to the allocated CPUs, so array jobs sharing a node do not
+oversubscribe it:
 
     THREADS=$SLURM_CPUS_PER_TASK
     export OPENBLAS_NUM_THREADS=$THREADS
     export MKL_NUM_THREADS=$THREADS
     ...
+
+`setup="auto"` already limits numba and the linear algebra libraries to the allocated cores, so the thread lines
+are a safeguard rather than a requirement.
 
 The dataset is selected using the array index:
 
@@ -225,44 +233,43 @@ dataset = al.Imaging.from_fits(
 )
 
 """
-You now have all the code you need to set off many single-CPU jobs on the hpc!
+You now have all the code you need to fit many datasets with one array job on the hpc!
 
 You would simply append the batch scripts and Python code above to the lens modeling script you are using,
 which is given below for completeness.
 
-However, first we describe how to set up a single multi-CPU Nautilus job on the hpc.
+First, we describe how each job uses the CPU cores it was given.
 
 __Batch Script: Single Dataset with Multiple CPUs__
 
 The same batch script (scripts/guides/hpc/batch_cpu/submit) handles this case by leaving --array=0-0
 (a single-element array) and increasing --cpus-per-task. The dataset list then contains only one entry.
 
-The key difference is that Nautilus is given the number of cores via `number_of_cores`, which it uses
-to distribute likelihood evaluations across CPUs.
+Nautilus uses `number_of_cores` to spread likelihood evaluations across the CPUs.
 
 __Nautilus CPUs__
 
-For a parallelized single-dataset run, we tell Nautilus how many CPU cores to use. This is read from
-the SLURM environment variable set by --cpus-per-task in the batch script, so the Python script does
-not need to be changed when adjusting the CPU count — only the batch script header changes.
+With `number_of_cores="auto"`, Nautilus reads the number of CPUs SLURM allocated (`--cpus-per-task`, via the
+`SLURM_CPUS_PER_TASK` environment variable), so only the batch script header changes when you change the CPU
+count. For a numba setup it runs one likelihood per core. For a JAX setup it uses one worker, because JAX
+parallelizes within one process. When the analysis knows how much memory each likelihood needs, it also caps the
+number so the workers fit in the memory of the job.
+
+You can still pass a number, for example `number_of_cores=8`, to choose it yourself.
 """
-import os
-
-number_of_cores = int(os.environ.get("SLURM_CPUS_PER_TASK", 1))
-
 search = af.Nautilus(
     path_prefix="hpc",
     name="example",
     unique_tag=dataset_name,
     n_live=100,
-    number_of_cores=number_of_cores,
+    number_of_cores="auto",
 )
 
 """
 We now have everything we need to fit a single dataset using multiple CPUs on the hpc!
 
-The code below performs standard lens modeling, which is unchanged from normal modeling on a laptop. It can be
-used for either many single-CPU jobs or a single multi-CPU Nautilus job.
+The code below performs standard lens modeling, which is unchanged from normal modeling on a laptop. It is the
+same whether you fit one dataset or many, on CPUs or a GPU.
 
 __Lens Modeling__
 
@@ -314,9 +321,16 @@ model = af.Collection(
 """
 __Analysis__
 
-Create the `AnalysisImaging` object defining how the via Nautilus the model is fitted to the data.
+Create the `AnalysisImaging` object defining how the model is fitted to the data.
+
+`setup="auto"` chooses how the likelihood is computed on the hardware the job runs on. This model has a parametric
+source, so it picks JAX on both a CPU node (`jax_cpu_dense_fp64`) and a GPU node (`jax_gpu_dense_fp64`), and
+Nautilus uses one worker. If you swap in a pixelized source, it picks numba with one likelihood per core on a CPU
+node (`numba_cpu_sparse_fp64`) and JAX on a GPU node, with no other change to the script.
+
+When the fit starts, the job's log shows the setup it chose, the number of workers and an estimate of the run time.
 """
-analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+analysis = al.AnalysisImaging(dataset=dataset, setup="auto")
 
 """
 __Model-Fit__
@@ -329,16 +343,16 @@ result = search.fit(model=model, analysis=analysis)
 """
 __GPU Jobs__
 
-The Python modeling code above is identical for GPU runs — no changes are needed here.
+The Python modeling code above is the same for GPU runs. No changes are needed here.
 
 The only difference is which batch script you submit. The GPU script at:
 
   scripts/guides/hpc/batch_gpu/submit
 
-requests a GPU partition and a single GPU via `--gres=gpu:1`. JAX auto-detects the GPU and uses it
-automatically because `use_jax=True` is set on the analysis object. The CPU thread-pinning and
-JAX_PLATFORM_NAME overrides in the CPU batch script are omitted, and `nvidia-smi` is called at the
-start of the job to confirm the GPU allocation in the log.
+requests a GPU partition and a single GPU via `--gres=gpu:1`. `setup="auto"` sees the GPU and chooses a JAX GPU
+setup, and `number_of_cores="auto"` uses one worker. The script leaves out the CPU batch script's `JAX_PLATFORMS`
+and thread lines (with `JAX_PLATFORMS=cpu` set, JAX could not see the GPU), and calls `nvidia-smi` at the start of
+the job to confirm the GPU allocation in the log.
 
 To submit a GPU job:
 

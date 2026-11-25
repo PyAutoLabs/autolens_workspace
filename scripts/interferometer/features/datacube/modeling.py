@@ -112,6 +112,10 @@ sparse-operator matrix per channel so each `AnalysisInterferometer.log_likelihoo
 during the fit. For SMA-scale data this finishes in seconds per channel; for ALMA-scale cubes it can take
 minutes per channel on CPU, in which case see `pixelization/many_visibilities_preparation.py` for how to
 compute and cache them once.
+
+Passing `setup="auto"` to every channel's analysis builds this operator for you instead. On a CPU the designated
+datacube setup is `numba_cpu_sparse_fp64_wtilde`, and every channel of the factor graph resolves the same setup.
+`guides/advanced/auto_setup.py` explains the automatic setup; this script builds the operator explicitly.
 """
 dataset_list = [
     dataset.apply_sparse_operator(use_jax=True, show_progress=False)

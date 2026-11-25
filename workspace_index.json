@@ -1247,12 +1247,13 @@
     "contents": [
       "Dataset & Mask",
       "Galaxy Centres",
-      "Sparse Operators",
+      "Compute Setup",
       "Fit",
       "Model"
     ],
     "cross_refs": [
-      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb"
+      "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/group/features/pixelization/start_here.ipynb",
+      "guides/advanced/auto_setup.py"
     ],
     "notebook": "notebooks/group/features/pixelization/cpu_fast_modeling.ipynb",
     "path": "scripts/group/features/pixelization/cpu_fast_modeling.py",
@@ -1798,6 +1799,32 @@
   },
   {
     "contents": [
+      "What Auto Decides",
+      "Designated Setups",
+      "Dataset",
+      "Model",
+      "Fit With Auto",
+      "Reading The Output",
+      "Overriding The Setup",
+      "Estimating Run Time",
+      "Outside Modeling",
+      "Dataset Operations",
+      "Output Files",
+      "Factor Graphs",
+      "Wrap Up"
+    ],
+    "cross_refs": [
+      "guides/hpc/example_cpu_and_gpu.py",
+      "imaging/features/pixelization/cpu_fast_modeling.py",
+      "my_script.py"
+    ],
+    "notebook": "notebooks/guides/advanced/auto_setup.ipynb",
+    "path": "scripts/guides/advanced/auto_setup.py",
+    "summary": "Every likelihood evaluation in a lens model-fit can be computed in several ways. It can run on JAX or numba, on a CPU or a GPU, with the dense mapping-matrix linear algebra or a precomputed sparse operator, and with one or many CPU cores working in parallel. Which of these is fastest depends on the dataset, the model and the hardware.",
+    "title": "Auto Setup"
+  },
+  {
+    "contents": [
       "PyAutoFit",
       "Source Code",
       "Example Analysis Class",
@@ -1961,7 +1988,8 @@
       "GPU Jobs"
     ],
     "cross_refs": [
-      "PROJECT_PATH/scripts/guides/hpc/example_cpu_and_gpu.py"
+      "PROJECT_PATH/scripts/guides/hpc/example_cpu_and_gpu.py",
+      "guides/advanced/auto_setup.py"
     ],
     "notebook": "notebooks/guides/hpc/example_cpu_and_gpu.ipynb",
     "path": "scripts/guides/hpc/example_cpu_and_gpu.py",
@@ -2868,6 +2896,7 @@
     ],
     "cross_refs": [
       "autofit.jax.py",
+      "guides/advanced/auto_setup.py",
       "likelihood_function.py",
       "scripts/imaging/likelihood_function.py",
       "scripts/imaging/simulator.py",
@@ -2877,7 +2906,7 @@
     ],
     "notebook": "notebooks/guides/using_jax.ipynb",
     "path": "scripts/guides/using_jax.py",
-    "summary": "**PyAutoLens** runs on either **NumPy** (the default) or **JAX** (Google's array library with GPU support and just-in-time compilation). JAX makes lens modeling 10-100x faster on large grids \u2014 sometimes more on GPU \u2014 so the library is built to use it automatically wherever it helps.",
+    "summary": "**PyAutoLens** runs on **JAX** (Google's array library with GPU support and just-in-time compilation) when it is installed, and on **NumPy** when it is not. JAX makes lens modeling 10-100x faster on large grids \u2014 sometimes more on GPU \u2014 so the library is built to use it automatically wherever it helps.",
     "title": "Using JAX"
   },
   {
@@ -4538,7 +4567,7 @@
   },
   {
     "contents": [
-      "Sparse Operators",
+      "Compute Setup",
       "Mesh Shape",
       "Fit",
       "Model",
@@ -4549,6 +4578,7 @@
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "guides/modeling//slam_start_here.ipynb",
       "imaging/features/pixelization/fit.py"
     ],
@@ -4626,6 +4656,7 @@
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "guides/mappings.py"
     ],
     "notebook": "notebooks/imaging/features/pixelization/fit.ipynb",
@@ -4702,6 +4733,7 @@
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb",
       "/imaging/data_preparation/gui/positions.py",
       "autolens_workspace/notebooks/guides/modeling/chaining.ipynb",
+      "guides/advanced/auto_setup.py",
       "imaging/start_here.ipynb",
       "pixelization/fit.py",
       "start.here.py",
@@ -5078,6 +5110,7 @@
       "/imaging/data_preparation/gui/mask_extra_galaxies.py",
       "/imaging/data_preparation/start_here.ipynb",
       "/imaging/simulator.py",
+      "guides/advanced/auto_setup.py",
       "over_sampling.ipynb",
       "start_here.py"
     ],
@@ -5210,6 +5243,7 @@
       "cluster/start_here.ipynb",
       "group/start_here.ipynb",
       "modeling.py",
+      "scripts/guides/advanced/auto_setup.py",
       "scripts/imaging/simulator.py"
     ],
     "notebook": "notebooks/imaging/start_here.ipynb",
@@ -5556,6 +5590,7 @@
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "likelihood_function.py",
       "modeling.py",
       "modeling_parametric.py",
@@ -5621,6 +5656,7 @@
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/datacube/start_here.ipynb",
       "autolens_workspace_test/scripts/interferometer/datacube/shared_preloads.py",
+      "guides/advanced/auto_setup.py",
       "likelihood_function.py",
       "pixelization/many_visibilities_preparation.py",
       "simulator.py",
@@ -5747,6 +5783,7 @@
       "autolens_workspace/scripts/multi_dataset/modeling.py",
       "data_preparation.py",
       "delaunay.py",
+      "guides/advanced/auto_setup.py",
       "likelihood_function.py",
       "modeling.py",
       "modeling_array_free.py",
@@ -6191,6 +6228,7 @@
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/pixelization/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "pixelization/many_visibilities_preparation.py"
     ],
     "notebook": "notebooks/interferometer/features/pixelization/fit.ipynb",
@@ -6284,6 +6322,7 @@
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/interferometer/features/pixelization/start_here.ipynb",
       "/imaging/data_preparation/gui/positions.py",
       "fit.py",
+      "guides/advanced/auto_setup.py",
       "interferometer/start_here.ipynb",
       "pixelization/fit.py",
       "pixelization/many_visibilities_preparation.py",
@@ -6589,6 +6628,7 @@
     ],
     "cross_refs": [
       "/interferometer/data_preparation.ipynb",
+      "guides/advanced/auto_setup.py",
       "interferometer/start_here.py",
       "start_here.py"
     ],
@@ -8371,7 +8411,7 @@
       "Dataset",
       "Extra Galaxies Noise Scaling",
       "Mask, Centres & Over Sampling",
-      "Sparse Operators",
+      "Compute Setup",
       "Mesh Shape",
       "Fit",
       "Model",
@@ -8380,6 +8420,7 @@
     ],
     "cross_refs": [
       "//github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/multi_galaxy/features/pixelization/start_here.ipynb",
+      "guides/advanced/auto_setup.py",
       "imaging/features/pixelization/cpu_fast_modeling.py",
       "multi_galaxy/features/pixelization/delaunay.py",
       "multi_galaxy/features/pixelization/fit.py",

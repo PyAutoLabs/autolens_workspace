@@ -229,21 +229,22 @@ data, continue with the [PyAutoLens AI Assistant](https://github.com/PyAutoLabs/
 
 __JAX__
 
-**PyAutoLens** runs on either **NumPy** (the default) or **JAX** (Google's
-array library with GPU support and just-in-time compilation). JAX makes
-lens modeling 10-100x faster on large grids — sometimes more on GPU.
+**PyAutoLens** computes with **JAX** (Google's array library with GPU support and just-in-time compilation)
+when it is installed, and with **NumPy** when it is not. JAX makes lens modeling 10-100x faster on large grids,
+and sometimes more on a GPU.
 
-You do not have to do anything to use it. JAX installs with `autolens` by
-default (`pip install autolens`), and the analysis objects you'll meet in
-the `__Lens Modeling__` section below use JAX automatically. The first time a model-fit starts you'll see a one-time log
-line like `JAX: Applying vmap and jit to likelihood function -- may take a
-few seconds.` — that's JAX compiling the likelihood function, after which
-every evaluation re-uses the compiled code. If JAX is not installed, the
-analysis warns once and falls back to NumPy automatically.
+You do not have to do anything to use it. JAX installs with `autolens` by default (`pip install autolens`), and
+the analysis objects you'll meet in the `__Lens Modeling__` section below use it automatically. The first time a
+model-fit starts you'll see a one-time log line like `JAX: Applying vmap and jit to likelihood function -- may
+take a few seconds.`. That's JAX compiling the likelihood function, after which every evaluation re-uses the
+compiled code. If JAX is not installed, the analysis warns once and uses NumPy instead.
 
-That is all a new user needs to know: install the extra, and lens modeling
-is fast. Everything else — disabling JAX, writing `@jax.jit` code yourself
-and how JAX changes the arrays inside results — is covered in the
+For some fits, such as a pixelized source on a CPU with many cores, numba running on every core is faster than
+JAX. Pass `setup="auto"` to an analysis and `number_of_cores="auto"` to a search and **PyAutoLens** picks the
+fastest option for your dataset, model and hardware, and prints what it chose when the fit starts. The
+`scripts/guides/advanced/auto_setup.py` guide explains this.
+
+Disabling JAX, writing `@jax.jit` code yourself and how JAX changes the arrays inside results are covered in the
 `scripts/guides/using_jax.py` guide.
 
 __Units__

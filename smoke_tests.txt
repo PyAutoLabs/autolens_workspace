@@ -67,6 +67,9 @@ multi_dataset/features/imaging_and_point_source/modeling.py
 multi_dataset/plot.py
 guides/galaxies.py
 guides/using_jax.py
+# The auto-setup guide is the only entry exercising setup="auto" / number_of_cores="auto" end to end:
+# the setup banner, an explicit setup_id override, al.estimate_runtime and lazy_sparse_operator="auto".
+guides/advanced/auto_setup.py
 # The mappings guide is the only entry exercising the image<->source mapping API (ShapeSolver
 # regions, inversion clumps, the brightest multiple-image positions). It declares
 # `ENV: full_datasets` because its clump thresholds are read off a full-resolution

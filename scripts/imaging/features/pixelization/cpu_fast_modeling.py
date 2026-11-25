@@ -4,28 +4,31 @@ Pixelization: CPU Fast Modeling
 
 Read the [feature introduction](https://github.com/PyAutoLabs/autolens_workspace/blob/main/notebooks/imaging/features/pixelization/start_here.ipynb) for the shared concepts and a guide to the examples.
 
-This example demonstrates how to achieve **fast pixelization performance on a CPU without JAX**, by combining:
+This example shows how to **override the automatic compute setup**, by fitting a pixelized source with a setup you
+choose yourself:
 
-- `numba` for optimized numerical routines, and
-- Python `multiprocessing` to exploit multiple CPU cores.
+- `numba` for the likelihood, instead of JAX;
+- the sparse operator formalism for the inversion's linear algebra; and
+- Python `multiprocessing` to run likelihoods on several CPU cores at once.
 
-On machines with many CPU cores (e.g. HPC clusters with >10 CPUs), this method can **outperform JAX GPU acceleration**
-for pixelized source modeling. The advantage arises because pixelizations rely heavily on **sparse linear algebra**,
-which is not currently optimized in JAX.
+You usually do not need to do this. Passing `setup="auto"` to the analysis and `number_of_cores="auto"` to the
+search already picks this setup, `numba_cpu_sparse_fp64` with one worker per core, for a pixelized source on a CPU.
+On an A100 GPU it picks `jax_gpu_dense_fp64` instead, and for MGE or parametric sources it picks JAX on both CPU
+and GPU. The `guides/advanced/auto_setup.py` guide explains the automatic setup and lists the setup it picks for
+every dataset.
 
-> Note: This performance advantage applies **only to pixelized sources**.
-> For parametric sources or multi-Gaussian models, JAX (especially with a GPU) is significantly faster, and even JAX
-> on a CPU outperforms the `numba` approach shown here.
+Override it when you want the same setup on every machine, for example to compare run times, or when the automatic
+choice is not the one you want.
 
 __Contents__
 
-- **Sparse Operators:** Pixelized source modeling requires dense linear algebra operations.
+- **Compute Setup:** Choose the numba sparse setup, which attaches the sparse operator to the dataset.
 - **Mesh Shape:** As discussed in the `features/pixelization/modeling` example, the mesh shape is fixed before.
 - **Fit:** Fit the lens model to the dataset.
 - **Model:** Compose the lens model fitted to the data.
 - **SLaM Pipeline:** The example `guides/modeling//slam_start_here.ipynb` introduces the SLaM (Source, Light and Mass).
 - **SLaM Pipeline Functions:** Overview of slam pipeline functions for this example.
-- **CPU Fast SLaM Pipelines:** The SLaM pipeline is mostly identical to other examples, but via the `SettingsSearch` it uses a.
+- **CPU Fast SLaM Pipelines:** The pixelized stages of the SLaM pipeline use the overridden setup and `number_of_cores`.
 - **Wrap Up:** Summary of the script and next steps.
 """
 
@@ -132,24 +135,24 @@ positions = al.Grid2DIrregular(
 positions_likelihood = al.PositionsLH(positions=positions, threshold=0.3)
 
 """
-__Sparse Operators__
+__Compute Setup__
 
-Pixelized source modeling requires dense linear algebra operations. These calculations can be greatly accelerated
-using an alternative mathematical approach called the **sparse operator formalism**.
+Pixelized source modeling uses linear algebra on large matrices that are mostly zeros. The **sparse operator
+formalism** exploits this sparsity, which reduces memory use and speeds up every pixelized fit.
 
-You do not need to understand the full details of the method, but the key point is:
+The sparse operator has two implementations: a numba one (`apply_sparse_operator_cpu()`) and a JAX one
+(`apply_sparse_operator()`). Profiling found numba with the sparse operator, one likelihood per core, the fastest
+setup on a many-core CPU, and JAX with the dense linear algebra the fastest on an A100 GPU. That is why
+`setup="auto"` picks them.
 
-- It exploits the **sparsity** of the matrices used in pixelized source reconstruction, reducing memory usage.
-- This leads to a **significant speed-up on CPUs**.
-- The current implementation does **not support JAX**, and therefore does not benefit from GPU acceleration.
-
-To enable this feature, we call `apply_sparse_operator()` on the `Imaging` dataset. This computes and stores operator
-matrices, which are then reused in all subsequent pixelized source fits.
-
-- Computing the operator matrices takes anywhere from a few seconds to a few minutes, depending on the dataset size.
-- After it is computed once, every model-fit using pixelization becomes substantially faster.
+A setup is named by a setup id, `<backend>_<device>_<operator>_<precision>`. Applying `numba_cpu_sparse_fp64` to the
+dataset builds the numba sparse operator once, which takes a few seconds to a few minutes depending on the dataset
+size, and every fit below reuses it. The analyses below are given the same setup; they see the operator is already
+attached and do not rebuild it.
 """
-dataset = dataset.apply_sparse_operator_cpu()
+setup = "numba_cpu_sparse_fp64"
+
+dataset = dataset.apply_setup(setup=setup)
 
 """
 __Mesh Shape__
@@ -204,19 +207,15 @@ aplt.subplot_fit_imaging(fit=fit)
 """
 __Model__
 
-We now perform a full model-fit using the sparse operator formalism on the CPU.
+We now perform a full model-fit with the setup chosen by hand. Two inputs set it:
 
-There are two key differences from the earlier JAX-based pixelization examples:
+- **The setup:** `AnalysisImaging` is given `setup="numba_cpu_sparse_fp64"` instead of `setup="auto"`.
 
-- **JAX is disabled**  
-  The `AnalysisImaging` class is created with `use_jax=False`, preventing JAX compilation and ensuring
-  that all computations run on the CPU.
+- **The number of cores:** the search is given `number_of_cores=2` instead of `number_of_cores="auto"` (which
+  would use every detected core). Each core runs one likelihood at a time, through Python's `multiprocessing`.
 
-- **CPU parallelization**  
-  The non-linear search is given a `number_of_cores` parameter, which parallelizes likelihood evaluations
-  using Python's `multiprocessing`.  
-  In practice, this provides a speed-up of roughly half the number of CPU cores used  
-  (e.g., 4 cores → ~2× speed-up, 8 cores → ~4× speed-up).
+When the fit starts, it prints `Compute setup (set explicitly by setup=...):` followed by the setup it used and an
+estimate of the run time.
 """
 lens = af.Model(al.Galaxy, redshift=0.5, mass=al.mp.Isothermal)
 
@@ -242,14 +241,14 @@ search = af.Nautilus(
     name="cpu_fast_modeling",
     unique_tag=dataset_name,
     n_live=100,
-    number_of_cores=2,  # CPU specific code
+    number_of_cores=2,  # Override: "auto" uses every detected core for a numba setup
     live_visual_update=False,  # Set True to open a live matplotlib window (script) or refresh a Jupyter cell (notebook).
 )
 
 analysis = al.AnalysisImaging(
     dataset=dataset,
     positions_likelihood_list=[positions_likelihood],
-    use_jax=False,  # CPU specific code
+    setup=setup,  # Override: setup="auto" picks this setup on a CPU
 )
 
 result = search.fit(model=model, analysis=analysis)
@@ -261,11 +260,11 @@ __SLaM Pipeline__
 The example `guides/modeling//slam_start_here.ipynb` introduces the SLaM (Source, Light and Mass) pipelines for
 automated lens modeling of large samples of strong lenses.
 
-We finish this example by showing how to run the SLaM pipelines using CPU acceleration with sparse operators, similar 
-to the model-fit above.
+We finish this example by running the SLaM pipelines with the setup overridden for the pixelized stages, as in
+the model-fit above.
 
-Note that the first pipeline, SOURCE LP, uses JAX acceleration as in previous examples and therefore does not 
-pass `use_jax=False` or a `number_of_cores` parameter.
+The first pipeline, SOURCE LP, fits an MGE source, which has no pixelization. Its analysis is given `setup="auto"`,
+which picks JAX for it, and its search does not pass a `number_of_cores` parameter.
 
 __SLaM Pipeline Functions__
 """
@@ -539,7 +538,7 @@ source_bulge = al.model_util.mge_model_from(
     mask_radius=mask_radius, total_gaussians=20, centre_prior_is_uniform=False
 )
 
-analysis = al.AnalysisImaging(dataset=dataset, use_jax=False)
+analysis = al.AnalysisImaging(dataset=dataset, setup="auto")
 
 source_lp_result = source_lp(
     settings_search=settings_search,
@@ -553,9 +552,8 @@ source_lp_result = source_lp(
 """
 __CPU Fast SLaM Pipelines__
 
-The SLaM pipeline is mostly identical to other examples, but via the `SettingsSearch` it
-uses a `number_of_cores` parameter to parallelize the likelihood evaluations on the CPU
-and disables JAX compilation for each `AnalysisImaging` object.
+The rest of the SLaM pipeline is the same as in other examples, except that the `SettingsSearch`
+passes `number_of_cores` to every search and each `AnalysisImaging` is given `setup=setup`.
 """
 settings_search = af.SettingsSearch(
     path_prefix=Path("imaging") / "slam_cpu_fast",
@@ -592,7 +590,7 @@ analysis = al.AnalysisImaging(
     positions_likelihood_list=[
         source_lp_result.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
-    use_jax=False,  # CPU specific code
+    setup=setup,  # Override: setup="auto" picks this setup on a CPU
 )
 
 source_pix_result_1 = source_pix_1(
@@ -631,9 +629,8 @@ SOURCE PIX PIPELINE 1 keeps the dataset's default uniform sub-size. Its adapt im
 source fit of the SOURCE LP PIPELINE, which does not yet trace the lensed source well enough to steer
 over-sampling.
 
-The precomputed Numba sparse operator is an attribute of the `Imaging` object it was built from, so
-`apply_sparse_operator_cpu()` is called again after the re-sampling to rebuild it on the new dataset and keep
-the CPU speed-up this example demonstrates.
+The sparse operator depends only on the noise-map, PSF and mask, not on the over-sampling, so
+`apply_over_sampling` keeps the operator and setup already attached to the dataset. Nothing is rebuilt.
 """
 signal_to_noise_threshold = 3.0
 
@@ -650,13 +647,10 @@ dataset = dataset.apply_over_sampling(
     over_sample_size_pixelization=over_sample_size_pixelization
 )
 
-# The sparse operator belongs to the `Imaging` it was built from, so it is rebuilt after the re-sample.
-dataset = dataset.apply_sparse_operator_cpu()
-
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    use_jax=False,  # CPU specific code
+    setup=setup,  # Override: setup="auto" picks this setup on a CPU
 )
 
 source_pix_result_2 = source_pix_2(
@@ -678,7 +672,7 @@ lens_bulge = al.model_util.mge_model_from(
 analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
-    use_jax=False,  # CPU specific code
+    setup=setup,  # Override: setup="auto" picks this setup on a CPU
 )
 
 light_result = light_lp(
@@ -695,7 +689,7 @@ analysis = al.AnalysisImaging(
     positions_likelihood_list=[
         source_pix_result_2.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
-    use_jax=False,  # CPU specific code
+    setup=setup,  # Override: setup="auto" picks this setup on a CPU
 )
 
 mass_result = mass_total(
@@ -710,6 +704,9 @@ mass_result = mass_total(
 """
 __Wrap Up__
 
-This example has demonstrated how to perform fast pixelized source modeling on a CPU without JAX, by combining
-`numba` and Python `multiprocessing`.
+This example has shown how to override the automatic setup, with `setup="numba_cpu_sparse_fp64"` on the analysis
+and `number_of_cores` on the search. `setup="auto"` with `number_of_cores="auto"` picks the same setup on a CPU and
+`jax_gpu_dense_fp64` on an A100 GPU, without changing the script. The `guides/advanced/auto_setup.py` guide covers
+the automatic setup, its other overrides (`al.Setup` objects and the `PYAUTO_SETUP` environment variable) and
+run-time estimates.
 """

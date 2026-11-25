@@ -80,6 +80,8 @@ dataset = al.Interferometer.from_fits(
     transformer_class=al.TransformerNUFFT,
 )
 
+# The sparse operator speeds up pixelized fits (see `pixelization/modeling.py`). In a model-fit, setup="auto"
+# builds it for you (see guides/advanced/auto_setup.py).
 dataset = dataset.apply_sparse_operator(use_jax=True, show_progress=True)
 
 settings = al.Settings(use_positive_only_solver=False)
@@ -581,7 +583,7 @@ analysis = al.AnalysisInterferometer(
     dataset=dataset,
     positions_likelihood_list=[positions_likelihood],
     settings=settings,
-    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
+    use_jax=True,  # JAX uses a GPU if available, else the CPU. setup="auto" chooses for you, see guides/advanced/auto_setup.py.
 )
 
 result = search.fit(model=model, analysis=analysis)

@@ -29,9 +29,10 @@ speed up is possible with better hardware.
 
 __CPU Users__
 
-On CPU, JAX pixelization calculations are not accelerated and are therefore relatively slow. CPU users
-should therefore read the `pixelization/cpu_fast_modeling` example after this one, and copy its set up,
-to get the fastest run times for pixelization modeling on CPU.
+On a CPU, JAX is not the fastest way to fit a pixelized source: numba with the sparse operator, running one
+likelihood per core, is faster. Pass `setup="auto"` to the analysis and `number_of_cores="auto"` to the search
+and **PyAutoLens** uses it on a CPU, and JAX on a GPU. The `guides/advanced/auto_setup.py` guide explains this,
+and the `pixelization/cpu_fast_modeling` example shows how to choose the CPU setup yourself.
 
 On GPU, JAX run times are fast and this example is all that is required, however we do set a few settings
 to make things run extra fast on GPU.
@@ -39,7 +40,7 @@ to make things run extra fast on GPU.
 __Contents__
 
 - **GPU Run Times:** On consumer laptop GPUs, the run times of pixelization modeling can be a bit prohibitive, for.
-- **CPU Users:** On CPU, JAX pixelization calculations are not accelerated and are therefore relatively slow.
+- **CPU Users:** On a CPU, `setup="auto"` fits pixelized sources with numba and the sparse operator, which is faster than JAX.
 - **Advantages & Disadvantages:** Many strongly lensed source galaxies exhibit complex, asymmetric, and irregular morphologies.
 - **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
 - **Model:** Compose the lens model fitted to the data.
@@ -426,8 +427,9 @@ The run time of a pixelization are fast provided that the GPU VRAM exceeds the a
 a likelihood evaluation.
 
 Assuming the use of a 20 x 20 mesh grid above means this is the case, the run times of this model-fit on a GPU
-should take under 10 minutes. If VRAM is exceeded, the run time will be significantly longer (3+ hours). CPU run
-times are also of order hours, but can be sped up using the `numba` library (see the `pixelization/cpu_fast_modeling` example).
+should take under 10 minutes. If VRAM is exceeded, the run time will be significantly longer (3+ hours). With JAX
+on a CPU run times are of order hours. `setup="auto"` with `number_of_cores="auto"` uses numba with one likelihood
+per core instead, which is faster (see `guides/advanced/auto_setup.py`).
 
 The run times of pixelizations slow down as the data becomes higher resolution. In this example, data with a pixel
 scale of 0.1" gives of order 10 minute run times (when VRAM is under control), for a pixel scale of 0.05" this

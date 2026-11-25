@@ -2,9 +2,9 @@
 Using JAX
 =========
 
-**PyAutoLens** runs on either **NumPy** (the default) or **JAX** (Google's array library with GPU support and
-just-in-time compilation). JAX makes lens modeling 10-100x faster on large grids — sometimes more on GPU — so the
-library is built to use it automatically wherever it helps.
+**PyAutoLens** runs on **JAX** (Google's array library with GPU support and just-in-time compilation) when it is
+installed, and on **NumPy** when it is not. JAX makes lens modeling 10-100x faster on large grids — sometimes more
+on GPU — so the library is built to use it automatically wherever it helps.
 
 The `start_here.py` introduction covers the one thing every user needs to know: JAX installs with
 `autolens` by default (`pip install autolens`) and lens modeling uses it automatically. This guide covers the
@@ -45,6 +45,10 @@ multiple-image positions through several planes), use the higher-level `al.Point
 How much faster is JAX? It depends on grid size, model complexity and hardware (GPU gains dwarf CPU gains), so
 this guide quotes no headline number — measured timings for representative configurations live in
 `autolens_workspace_developer/jax_profiling/`.
+
+JAX is not always the fastest choice: for a pixelized source on a CPU with many cores, numba running one likelihood
+per core is faster. `setup="auto"` on the analysis (with `number_of_cores="auto"` on the search) chooses between JAX
+and numba, CPU and GPU, for each fit. The `guides/advanced/auto_setup.py` guide explains it.
 
 __Disabling JAX__
 

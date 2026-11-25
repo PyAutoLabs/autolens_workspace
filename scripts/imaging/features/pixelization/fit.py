@@ -21,14 +21,15 @@ Pixelizations are covered in detail in chapter 3 of the **HowToLens** lectures.
 
 __CPU Users__
 
-On CPU, the linear algebra of a pixelized source reconstruction is fastest via the sparse operator formalism, which
-is set up once with `dataset.apply_sparse_operator_cpu()`. This set up takes a few seconds to a few minutes depending
-on the dataset size, after which every fit is substantially faster. The `features/pixelization/cpu_fast_modeling`
-example shows the full CPU set up.
+On CPU, the linear algebra of a pixelized source reconstruction is fastest via the numba sparse operator. In a
+model-fit, `setup="auto"` attaches it for you. For single fits like the ones in this script, pass
+`settings=al.Settings(lazy_sparse_operator="auto")` to `FitImaging`: the first fit builds the operator, which takes a
+few seconds to a few minutes depending on the dataset size, and later fits of the same dataset reuse it. The
+`guides/advanced/auto_setup.py` guide explains both.
 
 __Contents__
 
-- **CPU Users:** On CPU, the sparse operator formalism set up by `dataset.apply_sparse_operator_cpu()` makes every fit substantially faster.
+- **CPU Users:** On CPU, the numba sparse operator makes fits faster: `setup="auto"` attaches it in model-fits, and `lazy_sparse_operator="auto"` in single fits.
 - **Advantages & Disadvantages:** Many strongly lensed source galaxies are complex, and have asymmetric and irregular morphologies.
 - **Positive Only Solver:** Ensuring positive-only solutions for linear light profile intensities.
 - **Dataset & Mask:** Standard set up of the dataset and mask that is fitted.
