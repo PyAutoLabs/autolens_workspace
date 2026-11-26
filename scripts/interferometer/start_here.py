@@ -274,7 +274,7 @@ check your model and data are sensible, then `Nautilus` when you need results yo
 
 __JAX__
 
-`AnalysisInterferometer` chooses its compute setup for you (JAX by default; from the next release,
+`AnalysisInterferometer` chooses its compute setup for you (by default,
 `setup="auto"` picks JAX or numba, CPU or GPU). Pass `use_jax=True` or
 `use_jax=False` to choose the backend yourself.
 The search driver wraps the likelihood in `jax.vmap(jax.jit(...))` —

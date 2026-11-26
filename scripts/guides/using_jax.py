@@ -28,9 +28,9 @@ __Contents__
 
 __Auto-Enabled Modeling__
 
-If JAX is installed, the `AnalysisImaging`, `AnalysisInterferometer`, and `AnalysisPoint` classes run on JAX by
-default (from the next release they choose their compute setup with `setup="auto"`; pass `use_jax=True` or
-`use_jax=False` to choose the backend yourself). The non-linear search driver (Nautilus, dynesty, ...) batches
+The `AnalysisImaging`, `AnalysisInterferometer`, and `AnalysisPoint` classes choose their compute setup automatically
+with `setup="auto"` (the default), which picks JAX when it is installed and the fastest setup for the likelihood; pass
+`use_jax=True` or `use_jax=False` to choose the backend yourself. The non-linear search driver (Nautilus, dynesty, ...) batches
 parameter vectors and evaluates the likelihood through `jax.vmap(jax.jit(...))` internally. You'll see a one-time log
 line like `JAX: Applying vmap and jit to likelihood function -- may take a few seconds.` the first time a search
 starts; that's the JIT compile kicking in, after which evaluations re-use the compiled trace.

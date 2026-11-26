@@ -324,7 +324,7 @@ your model and data are sensible, then `Nautilus` when you need results you can 
 
 __JAX__
 
-`AnalysisImaging` chooses its compute setup for you (JAX by default; from the next release, `setup="auto"` picks
+`AnalysisImaging` chooses its compute setup for you (by default, `setup="auto"` picks
 JAX or numba, CPU or GPU). Pass `use_jax=True` or `use_jax=False` to choose the backend yourself. The search
 driver wraps the likelihood in `jax.vmap(jax.jit(...))` internally — every one of the `n_starts` parameter vectors
 evaluates in parallel in a single GPU call. Watch for `JAX: Applying vmap and jit to likelihood function -- may

@@ -648,7 +648,7 @@ function at ``autolens_workspace/*/imaging/likelihood_function`
 
 __JAX__
 
-`AnalysisImaging` chooses its compute setup for you (JAX by default; from the next release,
+`AnalysisImaging` chooses its compute setup for you (by default,
 `setup="auto"` picks JAX or numba, CPU or GPU). Pass `use_jax=True` or
 `use_jax=False` to choose the backend yourself. For group-scale fits the
 JAX speedup is substantial — the multi-galaxy deflection sum dominates

@@ -268,7 +268,7 @@ source centre — with free centres a gradient search stalls below the true solu
 
 __JAX__
 
-`AnalysisPoint` chooses its compute setup for you (JAX by default; from the next release,
+`AnalysisPoint` chooses its compute setup for you (by default,
 `setup="auto"` picks JAX or numba, CPU or GPU). Pass `use_jax=True` or
 `use_jax=False` to choose the backend yourself.
 `AnalysisPoint._register_fit_point_pytrees()` runs on first `fit_from`

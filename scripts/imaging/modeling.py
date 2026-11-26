@@ -497,7 +497,7 @@ JAX will still provide a speed up via multithreading, with fits taking around 20
 If you don’t have a GPU locally, consider Google Colab which provides free GPUs, so your modeling runs are much faster.
 
 To let **PyAutoLens** choose how the likelihood is computed (JAX or numba, CPU or GPU, and how many cores), pass
-`setup="auto"` to the analysis (the default from the next release) and `number_of_cores="auto"` to the search. When
+`setup="auto"` to the analysis (the default) and `number_of_cores="auto"` to the search. When
 the fit starts it prints the setup it chose and an estimate of the run time. The `guides/advanced/auto_setup.py`
 guide explains this.
 """

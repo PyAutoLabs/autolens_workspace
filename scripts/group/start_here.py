@@ -371,7 +371,7 @@ timeout). Once the multi-start compile cost comes down, this example will switch
 
 __JAX__
 
-`AnalysisImaging` chooses its compute setup for you (JAX by default; from the next release,
+`AnalysisImaging` chooses its compute setup for you (by default,
 `setup="auto"` picks JAX or numba, CPU or GPU). Pass `use_jax=True` or
 `use_jax=False` to choose the backend yourself. The search driver wraps the
 likelihood in `jax.vmap(jax.jit(...))`. Force NumPy with `use_jax=False`
