@@ -27,9 +27,9 @@ Using a SOURCE LP PIPELINE, LIGHT LP PIPELINE, MASS TOTAL PIPELINE and SUBHALO P
 fits `Imaging` of a strong lens system, where in the final model:
 
  - The lens galaxy's light is an MGE bulge.
- - The lens galaxy's total mass distribution is an `Isothermal`.
- - A dark matter subhalo near The lens galaxy mass is included as a`NFWMCRLudlowSph`.
- - The source galaxy is an `Inversion`.
+ - The lens galaxy's total mass distribution is a `PowerLaw`.
+ - A dark matter subhalo near the lens galaxy mass is included as a `NFWMCRLudlowSph`.
+ - The source galaxy's light is an MGE bulge.
 
 It ends by performing sensitivity mapping of the data using the above model, so as to determine where in the data
 subhalos of a given mass could have been detected if present.
@@ -37,16 +37,14 @@ subhalos of a given mass could have been detected if present.
 This uses the SLaM pipelines:
 
  `source_lp`
- `source_pix`
  `light_lp`
  `mass_total`
- `subhalo/detect`
 
 Check them out for a full description of the analysis!
 
 __Start Here Notebook__
 
-If any code in this script is unclear, refer to the `subhalo/detect/start_here.ipynb` notebook.
+If any code in this script is unclear, refer to the `subhalo/sensitivity/start_here.ipynb` notebook.
 """
 
 from autolens import jax_wrapper  # Sets JAX environment before other imports
@@ -376,7 +374,7 @@ class SimulateImaging:
                 grid=dataset.grid,
             )[-1]
 
-            source_centre = instance.galaxies.source.bulge.profile_list[0].centre
+            source_centre = instance.galaxies.source.bulge.centre
 
             over_sample_size = (
                 al.util.over_sample.over_sample_size_via_radial_bins_from(
@@ -466,7 +464,7 @@ class SimulateImaging:
             grid=dataset.grid,
         )[-1]
 
-        source_centre = instance.galaxies.source.bulge.profile_list[0].centre
+        source_centre = instance.galaxies.source.bulge.centre
 
         over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
             grid=traced_grid,
@@ -553,7 +551,7 @@ Each simulated dataset will have a unique set of parameters for the `subhalo` (e
 `perturb_model`.
 
 We will fit each simulated dataset using the `base_model`, which quantifies whether not including the dark matter
-subhalo in the model changess the goodness-of-fit and therefore indicates if we are sensitive to the subhalo.
+subhalo in the model changes the goodness-of-fit and therefore indicates if we are sensitive to the subhalo.
 
 We now write a `BaseFit` class, defining how the `base_model` is fitted to each simulated dataset and the
 goodness-of-fit used to quantify whether the model fits the data well. As above, the `__init__` method can be
@@ -564,7 +562,7 @@ the `log_evidence` of the model fit as the goodness-of-fit. This fit could easil
 more computationally efficient, for example performing a single log likelihood evaluation of the `base_model` fit
 to the simulated data.
 
-Fucntionality which adapts the mesh and regularization of a pixelized source reconstruction to the unlensed source's
+Functionality which adapts the mesh and regularization of a pixelized source reconstruction to the unlensed source's
 morphology require an `adapt_images`. This is an input of the __init__ constructor which is passed to the `Analysis`
 for every simulated dataset.
 """
@@ -583,8 +581,7 @@ class BaseFit:
         maps out the sensitivity of every parameter is (e.g. the sensitivity of the mass of the subhalo).
 
         The `__init__` constructor can be extended with new inputs which can be used to control how the dataset is
-        fitted, below we include an input `analysis_cls` which is the `AnalysisImaging` class used to fit the model
-        to the dataset.
+        fitted.
 
         Parameters
         ----------
@@ -660,8 +657,7 @@ class PerturbFit:
         maps out the sensitivity of every parameter is (e.g. the sensitivity of mass of the subhalo).
 
         The `__init__` constructor can be extended with new inputs which can be used to control how the dataset is
-        fitted, below we include an input `analysis_cls` which is the `Analysis` class used to fit the model to the
-        dataset.
+        fitted.
 
         Parameters
         ----------
@@ -713,9 +709,9 @@ class PerturbFit:
 def base_model_narrow_priors_from(base_model, result, stretch: float = 1.0):
     """
     Returns a base model where priors are updated to `UniformPriors` with a `lower_limit` and `upper_limit` which
-    are a narrow range over the `simulation_instance` parameter values.
+    are a narrow range around the maximum likelihood parameter values of `result`.
 
-    Using this updated model can significiantly speed up sensitivity mapping, as it dramatically reduces
+    Using this updated model can significantly speed up sensitivity mapping, as it dramatically reduces
     the volume of parameter space that needs to be sampled.
 
     The downside of this approach is that these narrow priors may remove viable solutions that alter the sensitivity
@@ -779,10 +775,10 @@ def base_model_narrow_priors_from(base_model, result, stretch: float = 1.0):
 
     if hasattr(base_model.galaxies.source, "bulge"):
         """
-        The source bulge is a multi Gaussian expansion (MGE), whose Gaussians all share one centre and one set of
-        elliptical components (their sigmas are fixed and their intensities are solved for linearly). The narrowed
-        priors are therefore created once, from the first Gaussian, and the same prior objects are given to every
-        Gaussian so they stay tied together.
+        The source bulge is a multi Gaussian expansion (MGE) with a single basis (`gaussian_per_basis=1`), whose
+        Gaussians all share one centre and one set of elliptical components (their sigmas are fixed and their
+        intensities are solved for linearly). The narrowed priors are therefore created once, from the first
+        Gaussian, and the same prior objects are given to every Gaussian so they stay tied together.
         """
         source_bulge = result.model_centred_max_lh_bounded(
             b=0.1 * stretch
