@@ -296,7 +296,6 @@ analysis_factor_list = [
             dataset=dataset,
             solver=solver,
             fit_positions_cls=al.FitPositionsSourceSolved,
-            use_jax=True,
         ),
     )
     for dataset in dataset_list
@@ -305,7 +304,7 @@ analysis_factor_list = [
 analysis_factor_list.append(
     af.AnalysisFactor(
         prior_model=model_weak,
-        analysis=al.AnalysisWeak(dataset=dataset_weak, use_jax=True),
+        analysis=al.AnalysisWeak(dataset=dataset_weak),
     )
 )
 

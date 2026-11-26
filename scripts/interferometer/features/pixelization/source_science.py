@@ -583,7 +583,6 @@ analysis = al.AnalysisInterferometer(
     dataset=dataset,
     positions_likelihood_list=[positions_likelihood],
     settings=settings,
-    use_jax=True,  # JAX uses a GPU if available, else the CPU. setup="auto" chooses for you, see guides/advanced/auto_setup.py.
 )
 
 result = search.fit(model=model, analysis=analysis)

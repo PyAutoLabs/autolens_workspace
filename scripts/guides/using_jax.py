@@ -28,11 +28,12 @@ __Contents__
 
 __Auto-Enabled Modeling__
 
-If JAX is installed, the `AnalysisImaging`, `AnalysisInterferometer`, and `AnalysisPoint` classes default to
-`use_jax=True`. The non-linear search driver (Nautilus, dynesty, ...) batches parameter vectors and evaluates the
-likelihood through `jax.vmap(jax.jit(...))` internally. You'll see a one-time log line like
-`JAX: Applying vmap and jit to likelihood function -- may take a few seconds.` the first time a search starts;
-that's the JIT compile kicking in, after which evaluations re-use the compiled trace.
+If JAX is installed, the `AnalysisImaging`, `AnalysisInterferometer`, and `AnalysisPoint` classes run on JAX by
+default (from the next release they choose their compute setup with `setup="auto"`; pass `use_jax=True` or
+`use_jax=False` to choose the backend yourself). The non-linear search driver (Nautilus, dynesty, ...) batches
+parameter vectors and evaluates the likelihood through `jax.vmap(jax.jit(...))` internally. You'll see a one-time log
+line like `JAX: Applying vmap and jit to likelihood function -- may take a few seconds.` the first time a search
+starts; that's the JIT compile kicking in, after which evaluations re-use the compiled trace.
 
 If JAX is not installed, the analysis warns once and falls back to NumPy automatically.
 
@@ -127,7 +128,7 @@ problematic value is of type ModelInstance`.
 the whole calculation for you, so `@jax.jit` is the only JAX you write:
 
 ```python
-analysis = al.AnalysisImaging(dataset=dataset)  # use_jax=True by default
+analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
 
 @jax.jit
 def log_likelihood(instance):
@@ -190,7 +191,7 @@ The advanced path is JIT-ing library methods directly (`tracer.image_2d_from`,
 `LensCalc.magnification_2d_via_hessian_from`, etc.) without going through a `Simulator` or `Analysis`.
 
 Audience: users building custom forward models or scientific tools using PyAutoLens primitives directly — not
-running standard fits (which go through `Analysis(use_jax=True)` and need zero JAX code from you) or standard
+running standard fits (which go through an `Analysis` and need zero JAX code from you) or standard
 simulations (which use `Simulator(use_jax=True)` similarly).
 
 Everything from here down is executable. First the imports — `jax_wrapper` must come before the other imports,
@@ -235,7 +236,7 @@ When a jitted function takes a `Tracer`, `Galaxy` or `Galaxies` as an *argument*
 that object across the JIT boundary — i.e. the class must be registered as a JAX **pytree**. The library handles
 this for you automatically in two situations:
 
-1. You constructed an `Analysis` with `use_jax=True` (the default for modeling fits). Its first `fit_from` call
+1. You constructed an `Analysis` that runs on JAX (the default for most modeling fits). Its first `fit_from` call
    walks the dataset and registers every reachable `Galaxy` / profile class.
 2. You constructed a `Simulator` with `use_jax=True` and made a call — the same walk happens.
 

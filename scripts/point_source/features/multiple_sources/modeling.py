@@ -239,7 +239,6 @@ analysis_list = [
     al.AnalysisPoint(
         dataset=dataset,
         solver=solver,
-        use_jax=True,
     )
     for dataset in dataset_list
 ]

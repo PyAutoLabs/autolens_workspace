@@ -285,7 +285,6 @@ We next create an `AnalysisImaging` object with JAX acceleration enabled.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    use_jax=True,
 )
 
 """

@@ -567,7 +567,7 @@ log likelihoods; each dataset gets its own output subdirectory for visualization
 
 __JAX__
 
-`AnalysisPoint(use_jax=True)` per-dataset; the search driver wraps the
+One `AnalysisPoint` per dataset; the search driver wraps the
 joint likelihood in `jax.vmap(jax.jit(...))`. Cluster point-source fits
 get the largest speedup from JAX on GPU (the multi-plane deflection sum
 over many members dominates runtime). Force NumPy with `use_jax=False`
@@ -578,7 +578,6 @@ analysis_list = [
         dataset=dataset,
         solver=solver,
         fit_positions_cls=al.FitPositionsSourceSolved,
-        use_jax=True,
     )
     for dataset in dataset_list
 ]

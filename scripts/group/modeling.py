@@ -648,7 +648,9 @@ function at ``autolens_workspace/*/imaging/likelihood_function`
 
 __JAX__
 
-`AnalysisImaging` defaults to `use_jax=True`. For group-scale fits the
+`AnalysisImaging` chooses its compute setup for you (JAX by default; from the next release,
+`setup="auto"` picks JAX or numba, CPU or GPU). Pass `use_jax=True` or
+`use_jax=False` to choose the backend yourself. For group-scale fits the
 JAX speedup is substantial — the multi-galaxy deflection sum dominates
 runtime on CPU but vectorises cleanly on GPU. Search driver wraps the
 likelihood in `jax.vmap(jax.jit(...))`. Force NumPy with `use_jax=False`
@@ -656,7 +658,6 @@ likelihood in `jax.vmap(jax.jit(...))`. Force NumPy with `use_jax=False`
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 
 """

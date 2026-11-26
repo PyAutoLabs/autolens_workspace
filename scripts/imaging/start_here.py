@@ -34,8 +34,8 @@ __Contents__
 __JAX__
 
 PyAutoLens runs imaging model-fits on JAX by default (JAX installs with
-`autolens` itself) — the `al.AnalysisImaging(dataset=dataset)` line below
-auto-enables `use_jax=True`. JAX is what makes the gradient-based search
+`autolens` itself), so the `al.AnalysisImaging(dataset=dataset)` line below
+needs no JAX option. JAX is what makes the gradient-based search
 used below possible at all — it supplies the derivatives of the likelihood
 and evaluates all of the search's parallel starts in one batched call. If
 you do not have a GPU locally, Google Colab provides free GPUs.
@@ -275,8 +275,9 @@ then run `Nautilus` when you need results you can quote.
 
 __JAX__
 
-`AnalysisImaging` defaults to `use_jax=True` when JAX is installed (set
-explicitly below for clarity). The search driver wraps the likelihood in
+`AnalysisImaging` chooses its compute setup for you (JAX by default; from the next release,
+`setup="auto"` picks JAX or numba, CPU or GPU). Pass `use_jax=True` or
+`use_jax=False` to choose the backend yourself. The search driver wraps the likelihood in
 `jax.vmap(jax.jit(...))` internally — batches of parameter vectors
 evaluate in parallel on a single GPU call. Watch for `JAX: Applying vmap
 and jit to likelihood function -- may take a few seconds.` in the log;
@@ -287,7 +288,8 @@ Force NumPy with `use_jax=False` (or `PYAUTO_DISABLE_JAX=1`) when
 debugging — NumPy stack traces are easier to read than JAX traces.
 
 To let **PyAutoLens** choose how each likelihood is computed (JAX or numba,
-CPU or GPU, and how many cores), pass `setup="auto"` to the analysis and
+CPU or GPU, and how many cores), pass `setup="auto"` to the analysis (the
+default from the next release) and
 `number_of_cores="auto"` to the search. This matters most for pixelized
 sources, where numba on many CPU cores can beat JAX on a CPU. See
 `scripts/guides/advanced/auto_setup.py`.
@@ -329,7 +331,6 @@ search = af.MultiStartProdigy(
 
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 
 """

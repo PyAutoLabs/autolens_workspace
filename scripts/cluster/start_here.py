@@ -60,8 +60,8 @@ __Contents__
 
 __JAX__
 
-PyAutoLens runs cluster point-source fits on JAX by default —
-`al.AnalysisPoint(use_jax=True)` (auto-enabled) routes the likelihood
+PyAutoLens runs cluster point-source fits on JAX by default, so
+`al.AnalysisPoint` needs no JAX option and routes the likelihood
 through `jax.vmap(jax.jit(...))`. Cluster fits benefit the most from
 GPU acceleration: the multi-galaxy multi-plane deflection sum over
 hundreds of members is the dominant cost of the solved source-plane
@@ -436,7 +436,6 @@ analysis_list = [
         solver=solver,
         image=data,
         fit_positions_cls=al.FitPositionsSourceSolved,
-        use_jax=True,
     )
     for dataset in dataset_list
 ]

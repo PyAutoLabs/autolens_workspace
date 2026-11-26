@@ -261,7 +261,6 @@ analysis_list = [
         dataset=dataset,
         settings=settings,
         positions_likelihood_list=[positions_likelihood],
-        use_jax=True,
     )
     for dataset in dataset_list
 ]

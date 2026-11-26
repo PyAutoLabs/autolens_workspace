@@ -69,7 +69,7 @@ __Contents__
 
 __JAX__
 
-PyAutoLens runs multi-galaxy model-fits on JAX by default — `al.AnalysisImaging` auto-enables `use_jax=True`
+PyAutoLens runs multi-galaxy model-fits on JAX by default, so `al.AnalysisImaging` needs no JAX option
 (JAX installs with `autolens` itself). The multi-galaxy deflection sum vectorises cleanly, so fits benefit substantially
 from GPU acceleration. Expect ~10-20 minutes on a GPU for this example.
 
@@ -324,7 +324,8 @@ your model and data are sensible, then `Nautilus` when you need results you can 
 
 __JAX__
 
-`AnalysisImaging` defaults to `use_jax=True` when JAX is installed (set explicitly below for clarity). The search
+`AnalysisImaging` chooses its compute setup for you (JAX by default; from the next release, `setup="auto"` picks
+JAX or numba, CPU or GPU). Pass `use_jax=True` or `use_jax=False` to choose the backend yourself. The search
 driver wraps the likelihood in `jax.vmap(jax.jit(...))` internally — every one of the `n_starts` parameter vectors
 evaluates in parallel in a single GPU call. Watch for `JAX: Applying vmap and jit to likelihood function -- may
 take a few seconds.` in the log; that's the JIT compile starting, after which evaluations re-use the compiled
@@ -377,7 +378,6 @@ search = af.MultiStartProdigy(
 
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    use_jax=True,  # JAX uses GPUs for acceleration if available, else multithreaded CPUs.
 )
 
 print("""

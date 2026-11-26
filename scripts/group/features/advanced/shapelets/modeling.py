@@ -293,7 +293,6 @@ negative intensities in the linear solution.
 analysis = al.AnalysisImaging(
     dataset=dataset,
     settings=al.Settings(use_positive_only_solver=False),
-    use_jax=True,
 )
 
 """

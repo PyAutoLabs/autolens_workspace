@@ -303,7 +303,7 @@ __Analysis__
 
 Create the `AnalysisInterferometer` object defining how Nautilus fits the model to the data.
 """
-analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
+analysis = al.AnalysisInterferometer(dataset=dataset)
 
 """
 __VRAM__

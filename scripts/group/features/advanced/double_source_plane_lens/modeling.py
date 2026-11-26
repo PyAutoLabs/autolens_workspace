@@ -236,7 +236,7 @@ __Analysis__
 
 Create the `AnalysisImaging` object.
 """
-analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+analysis = al.AnalysisImaging(dataset=dataset)
 
 """
 __VRAM__

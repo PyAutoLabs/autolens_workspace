@@ -246,7 +246,6 @@ If you don’t have a GPU locally, consider Google Colab which provides free GPU
 analysis_list = [
     al.AnalysisImaging(
         dataset=dataset,
-        use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
     )
     for dataset in dataset_list
 ]

@@ -134,7 +134,7 @@ class AnalysisLatent(al.AnalysisImaging):
     Latent = LatentShear
 
 
-analysis = AnalysisLatent(dataset=dataset, use_jax=True)
+analysis = AnalysisLatent(dataset=dataset)
 
 # Two fits are written to `results_folder/`:
 #

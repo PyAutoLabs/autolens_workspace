@@ -39,8 +39,8 @@ __Contents__
 __JAX__
 
 PyAutoLens runs multi-wavelength model-fits on JAX by default. The
-per-band `al.AnalysisImaging(dataset=dataset, use_jax=True)` instances
-below auto-enable JAX, and the `af.FactorGraphModel(*analysis_factor_list,
+per-band `al.AnalysisImaging(dataset=dataset)` instances
+below need no JAX option, and the `af.FactorGraphModel(*analysis_factor_list,
 use_jax=True)` further down stitches them together with JAX-aware
 broadcasting. Expect 1-10 minutes per band on GPU vs hours on pure NumPy.
 
@@ -309,7 +309,7 @@ When there are multiple datasets, a list of analysis objects is created, once fo
 
 __JAX__
 
-`AnalysisImaging(use_jax=True)` runs per-band; `FactorGraphModel(use_jax=True)`
+One `AnalysisImaging` runs per band; `FactorGraphModel(use_jax=True)`
 below stitches them into the joint multi-band likelihood. The non-linear
 search driver wraps the joint likelihood in `jax.vmap(jax.jit(...))` —
 batches of parameter vectors evaluate in parallel across all bands on a
@@ -319,7 +319,6 @@ on either constructor when debugging.
 analysis_list = [
     al.AnalysisImaging(
         dataset=dataset,
-        use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
     )
     for dataset in dataset_masked_list
 ]

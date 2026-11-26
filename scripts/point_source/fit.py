@@ -47,7 +47,7 @@ __JAX__
 This guide walks through point-source fitting at a low level (no
 non-linear search) — the `FitPointDataset` and `PointSolver` objects work
 on either NumPy or JAX. For the standard search-driven modeling path
-where `AnalysisPoint` auto-enables `use_jax=True` and the JIT happens
+where `AnalysisPoint` chooses its compute setup and the JIT happens
 inside the search driver, see `start_here.py` / `modeling.py`. For the
 explicit `@jax.jit + PointSolver(use_jax=True)` pattern (useful for fast
 forward-solving in custom code), see `simulator.py`'s `__JAX Variant__`

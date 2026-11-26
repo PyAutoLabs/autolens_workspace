@@ -36,7 +36,7 @@ backed by `numpy.ndarray` on the default path or `jax.Array` if you
 constructed the upstream objects with `xp=jnp`.
 
 For the standard analysis-driven modeling path — where `AnalysisImaging`
-auto-enables `use_jax=True` and the search driver handles the JIT
+chooses its compute setup and the search driver handles the JIT
 internally — see `start_here.py` / `modeling.py`. For the advanced path
 where you wrap your own `@jax.jit` around `FitImaging` construction, see
 `likelihood_function.py`'s `__JAX__` section and the `scripts/guides/using_jax.py` guide.

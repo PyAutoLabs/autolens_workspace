@@ -214,7 +214,7 @@ import autofit as af
 
 model = af.Collection(galaxies=af.Collection(lens=lens_galaxy, source=source_galaxy))
 
-analysis = al.AnalysisWeak(dataset=dataset)
+analysis = al.AnalysisWeak(dataset=dataset, use_jax=False)
 
 instance = model.instance_from_unit_vector([])
 

@@ -26,7 +26,7 @@ __Contents__
 - **Settings:** Disable the positive-only solver so visibility-space inversions can take negative pixel values.
 - **Mesh Shape:** Pixelization mesh size — fixed before modeling because JAX needs static-shape arrays.
 - **Model:** Compose the shared `Isothermal` lens, its `ExternalShear` `MassField` and the pixelized source.
-- **Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with `use_jax=True`.
+- **Per-Channel Analyses:** One `AnalysisInterferometer` per channel.
 - **FactorGraph:** Wrap each analysis in an `AnalysisFactor` and combine via `af.FactorGraphModel`.
 - **Search:** Configure the `Nautilus` non-linear search.
 - **Model Fit:** Run the fit. Per-channel inversion cost dominates runtime — see notes inline.
@@ -202,8 +202,9 @@ af.ModelPlotter(model).figure()
 """
 __Per-Channel Analyses__
 
-One `AnalysisInterferometer` per channel, all with `use_jax=True` so the FactorGraph fit runs on the JAX
-backend. The shared `positions_likelihood` is passed to every analysis — same penalty, every channel.
+One `AnalysisInterferometer` per channel. Every channel has the same kind of dataset, so every analysis chooses the
+same compute setup, as a FactorGraph fit requires. The shared `positions_likelihood` is passed to every analysis —
+same penalty, every channel.
 
 __Shared Preloads__
 
@@ -231,7 +232,6 @@ analysis_list = [
         dataset=dataset,
         settings=settings,
         positions_likelihood_list=[positions_likelihood],
-        use_jax=True,
         shared_preloads=True,
     )
     for dataset in dataset_list
