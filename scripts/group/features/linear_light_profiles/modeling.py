@@ -252,7 +252,6 @@ their intensities during every likelihood evaluation.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    use_jax=True,
 )
 
 """

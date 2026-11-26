@@ -47,7 +47,7 @@ __Contents__
 __JAX__
 
 PyAutoLens runs point-source model-fits on JAX by default (JAX installs
-with `autolens` itself). `AnalysisPoint` auto-enables `use_jax=True`; the
+with `autolens` itself), so `AnalysisPoint` needs no JAX option; the
 search driver wraps the likelihood in `jax.vmap(jax.jit(...))`.
 
 For the broader JAX principles see `autolens_workspace/start_here.py`
@@ -268,7 +268,9 @@ source centre — with free centres a gradient search stalls below the true solu
 
 __JAX__
 
-`AnalysisPoint` defaults to `use_jax=True` when JAX is installed.
+`AnalysisPoint` chooses its compute setup for you (JAX by default; from the next release,
+`setup="auto"` picks JAX or numba, CPU or GPU). Pass `use_jax=True` or
+`use_jax=False` to choose the backend yourself.
 `AnalysisPoint._register_fit_point_pytrees()` runs on first `fit_from`
 to register `FitPositionsSource`, `FitPositionsImagePair`, and `Tracer`
 as JAX pytrees — you don't need to call `register_tracer_classes`
@@ -304,7 +306,6 @@ search = af.Nautilus(
 analysis = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 
 """
@@ -437,7 +438,6 @@ search = af.Nautilus(
 analysis = al.AnalysisPoint(
     dataset=dataset,
     solver=solver,
-    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 
 result = search.fit(model=model, analysis=analysis)

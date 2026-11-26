@@ -342,7 +342,6 @@ Create the `AnalysisImaging` object defining how the model is fitted to the data
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    use_jax=True,
 )
 
 """

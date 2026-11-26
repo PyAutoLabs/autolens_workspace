@@ -263,7 +263,7 @@ search = af.Nautilus(
 """
 __Analysis__
 """
-analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+analysis = al.AnalysisImaging(dataset=dataset)
 
 """
 __Run Time__

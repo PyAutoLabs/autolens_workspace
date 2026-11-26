@@ -32,8 +32,8 @@ __Contents__
 __JAX__
 
 PyAutoLens runs interferometer model-fits on JAX by default (JAX installs
-with `autolens` itself) — `al.AnalysisInterferometer(dataset=dataset)`
-below auto-enables `use_jax=True`. Both `TransformerDFT` (the default in
+with `autolens` itself), so `al.AnalysisInterferometer(dataset=dataset)`
+below needs no JAX option. Both `TransformerDFT` (the default in
 this script) and `TransformerNUFFT` are JAX-traceable, so either works
 under JAX; `TransformerNUFFT` is nufftax-backed and is much faster on
 large UV sets (see the `__NUFFT (nufftax)__` section below).
@@ -274,7 +274,9 @@ check your model and data are sensible, then `Nautilus` when you need results yo
 
 __JAX__
 
-`AnalysisInterferometer` defaults to `use_jax=True` when JAX is installed.
+`AnalysisInterferometer` chooses its compute setup for you (JAX by default; from the next release,
+`setup="auto"` picks JAX or numba, CPU or GPU). Pass `use_jax=True` or
+`use_jax=False` to choose the backend yourself.
 The search driver wraps the likelihood in `jax.vmap(jax.jit(...))` —
 batches of parameter vectors evaluate in parallel. Force NumPy with
 `use_jax=False` (or `PYAUTO_DISABLE_JAX=1`) when debugging.
@@ -308,7 +310,6 @@ search = af.MultiStartProdigy(
 
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
-    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 
 """

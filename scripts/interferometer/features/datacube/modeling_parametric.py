@@ -34,7 +34,7 @@ __Contents__
 - **Positions:** Load multiple-image positions and build a shared `PositionsLH` penalty.
 - **Settings:** Default `al.Settings()` — no positive-only-solver tweak needed (no inversion).
 - **Model:** Compose the shared `Isothermal` lens, its `ExternalShear` `MassField` and the `Sersic` source.
-- **Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with `use_jax=True` and the shared `PositionsLH`.
+- **Per-Channel Analyses:** One `AnalysisInterferometer` per channel, with the shared `PositionsLH`.
 - **FactorGraph:** Per-factor `model.copy()` with the source `intensity` prior overridden per channel.
 - **Search:** Configure the `Nautilus` non-linear search.
 - **Model Fit:** Run the fit. Per-channel cost is much cheaper than the pixelization variant.
@@ -175,7 +175,6 @@ analysis_list = [
         dataset=dataset,
         settings=settings,
         positions_likelihood_list=[positions_likelihood],
-        use_jax=True,
     )
     for dataset in dataset_list
 ]

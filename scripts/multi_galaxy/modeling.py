@@ -598,7 +598,6 @@ than JAX traces.
 """
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 
 """

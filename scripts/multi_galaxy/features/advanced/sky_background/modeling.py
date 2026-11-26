@@ -257,7 +257,6 @@ __Analysis__
 analysis = al.AnalysisImaging(
     dataset=dataset,
     positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
-    use_jax=True,
 )
 
 """

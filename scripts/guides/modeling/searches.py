@@ -77,7 +77,7 @@ boundary around the current live point set, using only evaluations of the likeli
 differentiates the likelihood, and unlike `MultiStartProdigy` below it neither needs nor uses JAX's gradients.
 
 It does, however, exploit JAX on a GPU. Nautilus proposes points in batches rather than one at a time, and when
-the analysis is JAX-traceable (created via `use_jax=True`) **PyAutoFit** evaluates each batch through the
+the analysis runs on JAX (the default, or `use_jax=True`) **PyAutoFit** evaluates each batch through the
 `jax.vmap(jax.jit(...))` wrapped likelihood in a single call. All `n_batch` lens models are therefore fitted
 simultaneously on the GPU, and the JAX speed-up applies in full to a Nautilus fit -- it simply comes from batched
 likelihood evaluation instead of gradient descent.
@@ -131,7 +131,7 @@ Three JAX multi-start optimizers are available (they share the same multi-start 
 
 __Pixelized sources__
 
-Because these are gradient-based, they require a JAX-traceable analysis (created via `use_jax=True`). They are
+Because these are gradient-based, they require an analysis that runs on JAX (the default, or `use_jax=True`). They are
 validated for **parametric sources** (e.g. an MGE or Sersic source) and — as of the 2026-07 pixelized-mesh
 campaign — for **pixelized sources** (a `Pixelization` / reconstructed source) too, where from fully broad mass
 priors they recover the true lens model on every mesh family (rectangular, k-nearest-neighbour, Delaunay), reaching

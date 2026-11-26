@@ -27,8 +27,8 @@ __Contents__
 __JAX__
 
 `FitInterferometer` runs on either NumPy or JAX. For the standard
-analysis-driven path — where `AnalysisInterferometer` auto-enables
-`use_jax=True` and the search driver handles the JIT — see `start_here.py`
+analysis-driven path — where `AnalysisInterferometer` chooses
+its compute setup and the search driver handles the JIT — see `start_here.py`
 / `modeling.py`. For the JIT-it-yourself path around individual library
 methods, see `scripts/guides/using_jax.py`.
 

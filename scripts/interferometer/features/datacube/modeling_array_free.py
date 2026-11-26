@@ -25,7 +25,7 @@ On the resulting dataset `dataset.data`, `dataset.noise_map`, `dataset.uv_wavele
 are all `None` and `dataset.is_array_free` is `True`. Everything a modeling run needs still works:
 
  - Fits with pixelized sources, linear light profiles and ordinary (non-linear) light profiles.
- - `jax.jit` of the likelihood (`use_jax=True`), exactly as in `modeling.py`.
+ - The same compute setup as `modeling.py`.
  - Result output, `search.fit` resume and aggregator reload.
  - Visualization: the visualizer plots the naturally weighted dirty images (`dirty_image_natural`) and the
    dirty beam in place of the visibility-space panels, which need the visibilities and are skipped.
@@ -260,7 +260,7 @@ print(model.info)
 """
 __Per-Channel Analyses__
 
-One `AnalysisInterferometer` per array-free channel, exactly as in `modeling.py` — including `use_jax=True` and
+One `AnalysisInterferometer` per array-free channel, exactly as in `modeling.py` — including
 `shared_preloads=True` (valid here for the same reason: the simulated cube has identical `uv_wavelengths` and
 noise in every channel, so the curvature matrix is channel-invariant).
 """
@@ -269,7 +269,6 @@ analysis_list = [
         dataset=dataset,
         settings=settings,
         positions_likelihood_list=[positions_likelihood],
-        use_jax=True,
         shared_preloads=True,
     )
     for dataset in dataset_list

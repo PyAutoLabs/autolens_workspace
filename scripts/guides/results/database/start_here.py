@@ -214,7 +214,7 @@ for dataset_name in dataset_names:
         n_like_max=300,
     )
 
-    analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+    analysis = al.AnalysisImaging(dataset=dataset)
 
     search.fit(analysis=analysis, model=model, info=info)
 

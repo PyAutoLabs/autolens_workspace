@@ -49,8 +49,8 @@ __Contents__
 
 __JAX__
 
-PyAutoLens runs group-scale model-fits on JAX by default — `al.AnalysisImaging`
-auto-enables `use_jax=True` (JAX installs with `autolens` itself). Group fits
+PyAutoLens runs group-scale model-fits on JAX by default, so `al.AnalysisImaging`
+needs no JAX option (JAX installs with `autolens` itself). Group fits
 benefit substantially from GPU acceleration (the multi-galaxy deflection
 sum is the dominant cost). Expect 5-30 minutes on GPU vs hours on pure
 NumPy.
@@ -371,7 +371,9 @@ timeout). Once the multi-start compile cost comes down, this example will switch
 
 __JAX__
 
-`AnalysisImaging` defaults to `use_jax=True`. Search driver wraps the
+`AnalysisImaging` chooses its compute setup for you (JAX by default; from the next release,
+`setup="auto"` picks JAX or numba, CPU or GPU). Pass `use_jax=True` or
+`use_jax=False` to choose the backend yourself. The search driver wraps the
 likelihood in `jax.vmap(jax.jit(...))`. Force NumPy with `use_jax=False`
 (or `PYAUTO_DISABLE_JAX=1`) when debugging.
 
@@ -403,7 +405,6 @@ search = af.Nautilus(
 
 analysis = al.AnalysisImaging(
     dataset=dataset,
-    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 
 """

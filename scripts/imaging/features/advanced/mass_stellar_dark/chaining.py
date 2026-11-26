@@ -166,7 +166,7 @@ search_1 = af.Nautilus(
     n_live=100,
 )
 
-analysis_1 = al.AnalysisImaging(dataset=dataset, use_jax=True)
+analysis_1 = al.AnalysisImaging(dataset=dataset)
 
 result_1 = search_1.fit(model=model_1, analysis=analysis_1)
 
@@ -242,7 +242,7 @@ search_2 = af.Nautilus(
     n_live=100,
 )
 
-analysis_2 = al.AnalysisImaging(dataset=dataset, use_jax=True)
+analysis_2 = al.AnalysisImaging(dataset=dataset)
 
 result_2 = search_2.fit(model=model_2, analysis=analysis_2)
 

@@ -217,7 +217,7 @@ search_base = af.Nautilus(
     n_live=100,
 )
 
-analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+analysis = al.AnalysisImaging(dataset=dataset)
 
 result = search_base.fit(model=base_model, analysis=analysis)
 

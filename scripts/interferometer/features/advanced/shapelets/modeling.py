@@ -301,7 +301,6 @@ solver, as discussed above.
 analysis = al.AnalysisInterferometer(
     dataset=dataset,
     settings=al.Settings(use_positive_only_solver=False),
-    use_jax=True,
 )
 
 """

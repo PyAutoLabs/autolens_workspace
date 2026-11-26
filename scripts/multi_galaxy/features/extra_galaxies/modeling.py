@@ -335,7 +335,7 @@ search = af.Nautilus(
     iterations_per_quick_update=1000,
 )
 
-analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+analysis = al.AnalysisImaging(dataset=dataset)
 
 """
 __VRAM__

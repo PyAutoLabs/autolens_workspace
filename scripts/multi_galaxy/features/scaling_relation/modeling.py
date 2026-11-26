@@ -310,7 +310,7 @@ search = af.Nautilus(
     iterations_per_full_update=100000,
 )
 
-analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+analysis = al.AnalysisImaging(dataset=dataset)
 
 result = search.fit(model=model, analysis=analysis)
 

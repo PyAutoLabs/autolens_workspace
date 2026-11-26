@@ -103,7 +103,7 @@ model = af.Collection(
     fields=field,
 )
 
-analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+analysis = al.AnalysisImaging(dataset=dataset)
 
 """
 __Notation__

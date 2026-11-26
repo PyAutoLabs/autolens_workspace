@@ -219,7 +219,7 @@ search_1 = af.Nautilus(
     n_like_max=500,
 )
 
-analysis_1 = al.AnalysisImaging(dataset=dataset, use_jax=True)
+analysis_1 = al.AnalysisImaging(dataset=dataset)
 
 result_1 = search_1.fit(model=model_1, analysis=analysis_1)
 
@@ -272,7 +272,6 @@ analysis_2 = al.AnalysisImaging(
     positions_likelihood_list=[
         result_1.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
-    use_jax=True,
 )
 
 result_2 = search_2.fit(model=model_2, analysis=analysis_2)
@@ -345,7 +344,6 @@ analysis_3 = al.AnalysisImaging(
     positions_likelihood_list=[
         result_2.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
-    use_jax=True,
 )
 
 result_3 = search_3.fit(model=model_3, analysis=analysis_3)
@@ -413,7 +411,6 @@ analysis_4 = al.AnalysisImaging(
     positions_likelihood_list=[
         result_2.positions_likelihood_from(factor=3.0, minimum_threshold=0.2)
     ],
-    use_jax=True,
 )
 
 result_4 = search_4.fit(model=model_4, analysis=analysis_4)

@@ -213,7 +213,7 @@ __Analysis__
 
 Create the `AnalysisInterferometer` object defining how the via Nautilus the model is fitted to the data.
 """
-analysis = al.AnalysisInterferometer(dataset=dataset, use_jax=True)
+analysis = al.AnalysisInterferometer(dataset=dataset)
 
 """
 __Run Time__

@@ -138,9 +138,13 @@ aplt.subplot_imaging_dataset(dataset=imaging)
 __Analysis__
 
 We create analysis objects for both datasets.
+
+Both pass `use_jax=True` to choose the JAX backend themselves. A factor graph evaluates every factor in one
+process, so its analyses must share one compute setup; with `setup="auto"` (the default from the next release)
+the imaging and interferometer analyses would each pick a different setup.
 """
-analysis_imaging = al.AnalysisImaging(dataset=imaging)
-analysis_interferometer = al.AnalysisInterferometer(dataset=interferometer)
+analysis_imaging = al.AnalysisImaging(dataset=imaging, use_jax=True)
+analysis_interferometer = al.AnalysisInterferometer(dataset=interferometer, use_jax=True)
 
 """
 __Model__

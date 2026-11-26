@@ -217,7 +217,7 @@ __Fits__
 
 Fit both models to the same data with the same search settings, so the evidences are comparable.
 """
-analysis = al.AnalysisImaging(dataset=dataset, use_jax=True)
+analysis = al.AnalysisImaging(dataset=dataset)
 
 search_a = af.Nautilus(
     path_prefix=Path("group") / "features" / "group_halo",

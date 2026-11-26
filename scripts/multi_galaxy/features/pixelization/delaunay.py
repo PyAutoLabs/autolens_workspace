@@ -363,7 +363,6 @@ analysis = al.AnalysisImaging(
     dataset=dataset,
     adapt_images=adapt_images,
     positions_likelihood_list=[al.PositionsLH(positions=positions, threshold=0.3)],
-    use_jax=True,
 )
 
 """

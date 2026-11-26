@@ -421,7 +421,6 @@ analysis = al.AnalysisPoint(
     # The default fit is `al.FitPositionsImagePairAllSolved` (all-to-all image-plane chi-squared, solved
     # source centre). Pass `fit_positions_cls` to use another, e.g. `al.FitPositionsImagePairAll` for a
     # free source centre or `al.FitPositionsSourceSolved` for the fast tensor source-plane chi-squared.
-    use_jax=True,  # JAX will use GPUs for acceleration if available, else JAX will use multithreaded CPUs.
 )
 
 """
