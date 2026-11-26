@@ -139,14 +139,11 @@ __Analysis__
 
 We create analysis objects for both datasets.
 
-Both pass `use_jax=True` to choose the JAX backend themselves. A factor graph evaluates every factor in one
-process, so its analyses must share one compute setup; with `setup="auto"` (the default from the next release)
-the imaging and interferometer analyses would each pick a different setup.
+A factor graph evaluates every factor in one process, so its analyses share one compute setup. The backend is
+chosen once, on the `FactorGraphModel` below (`use_jax=True`), and analyses left on their default setup adopt it.
 """
-analysis_imaging = al.AnalysisImaging(dataset=imaging, use_jax=True)
-analysis_interferometer = al.AnalysisInterferometer(
-    dataset=interferometer, use_jax=True
-)
+analysis_imaging = al.AnalysisImaging(dataset=imaging)
+analysis_interferometer = al.AnalysisInterferometer(dataset=interferometer)
 
 """
 __Model__

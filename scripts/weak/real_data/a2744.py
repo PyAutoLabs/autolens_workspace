@@ -269,7 +269,7 @@ parameter.
 """
 af.ModelPlotter(model).figure()
 
-analysis = al.AnalysisWeak(dataset=dataset, use_jax=False)
+analysis = al.AnalysisWeak(dataset=dataset)
 
 search = af.Nautilus(
     path_prefix=Path("weak") / "real_data",

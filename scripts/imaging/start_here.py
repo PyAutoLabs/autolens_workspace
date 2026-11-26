@@ -275,7 +275,7 @@ then run `Nautilus` when you need results you can quote.
 
 __JAX__
 
-`AnalysisImaging` chooses its compute setup for you (JAX by default; from the next release,
+`AnalysisImaging` chooses its compute setup for you (by default,
 `setup="auto"` picks JAX or numba, CPU or GPU). Pass `use_jax=True` or
 `use_jax=False` to choose the backend yourself. The search driver wraps the likelihood in
 `jax.vmap(jax.jit(...))` internally — batches of parameter vectors
@@ -289,7 +289,7 @@ debugging — NumPy stack traces are easier to read than JAX traces.
 
 To let **PyAutoLens** choose how each likelihood is computed (JAX or numba,
 CPU or GPU, and how many cores), pass `setup="auto"` to the analysis (the
-default from the next release) and
+default) and
 `number_of_cores="auto"` to the search. This matters most for pixelized
 sources, where numba on many CPU cores can beat JAX on a CPU. See
 `scripts/guides/advanced/auto_setup.py`.

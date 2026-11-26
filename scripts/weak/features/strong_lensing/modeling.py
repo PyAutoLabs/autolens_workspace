@@ -122,14 +122,15 @@ __Analysis List__
 
 One analysis object per dataset, exactly as each would be built in its own modeling script.
 
-Both analyses run in NumPy mode here (`use_jax=False`): the factor graph below evaluates its factors in a
-plain Python loop because the weak-lensing analysis is a NumPy calculation, and mixing an eagerly-JAX
+The imaging analysis runs in NumPy mode here (`use_jax=False`), and the weak-lensing analysis, left on its
+default setup, adopts the same backend: the factor graph below evaluates its factors in a plain Python loop,
+and mixing an eagerly-JAX
 imaging likelihood into that loop gains nothing over NumPy without JIT compilation. On this small masked
 dataset the NumPy likelihood is fast, and the weak likelihood is fractions of a millisecond.
 """
 analysis_imaging = al.AnalysisImaging(dataset=dataset_imaging, use_jax=False)
 
-analysis_weak = al.AnalysisWeak(dataset=dataset_weak, use_jax=False)
+analysis_weak = al.AnalysisWeak(dataset=dataset_weak)
 
 """
 __Analysis Factor__
