@@ -291,8 +291,8 @@ When this dataset is simulated, the quantity `instance.perturb` is used in `__ca
 of the `NFWMCRLudlowSph`, and it is different every time the `simulate_cls` is called based on the value of sensitivity
 being computed.
 
-In this example, this `instance.perturb` corresponds to two different subhalos with values of `mass_at_200` of
-1e6 MSun and 1e13 MSun.
+In this example, this `instance.perturb` corresponds to subhalos at different centres on the sensitivity grid, each
+injected with a fixed `mass_at_200` of 1e9 MSun.
 """
 
 
@@ -376,7 +376,7 @@ class SimulateImaging:
                 grid=dataset.grid,
             )[-1]
 
-            source_centre = instance.galaxies.source.bulge.centre
+            source_centre = instance.galaxies.source.bulge.profile_list[0].centre
 
             over_sample_size = (
                 al.util.over_sample.over_sample_size_via_radial_bins_from(
@@ -466,7 +466,7 @@ class SimulateImaging:
             grid=dataset.grid,
         )[-1]
 
-        source_centre = instance.galaxies.source.bulge.centre
+        source_centre = instance.galaxies.source.bulge.profile_list[0].centre
 
         over_sample_size = al.util.over_sample.over_sample_size_via_radial_bins_from(
             grid=traced_grid,
@@ -628,8 +628,7 @@ class BaseFit:
             number_of_cores=self.number_of_cores,
         )
 
-        analysis = al.AnalysisImaging(dataset=dataset)
-        analysis._adapt_images = self.adapt_images
+        analysis = al.AnalysisImaging(dataset=dataset, adapt_images=self.adapt_images)
 
         return search.fit(model=model, analysis=analysis)
 
@@ -706,8 +705,7 @@ class PerturbFit:
             number_of_cores=self.number_of_cores,
         )
 
-        analysis = al.AnalysisImaging(dataset=dataset)
-        analysis._adapt_images = self.adapt_images
+        analysis = al.AnalysisImaging(dataset=dataset, adapt_images=self.adapt_images)
 
         return search.fit(model=model, analysis=analysis)
 
@@ -780,48 +778,21 @@ def base_model_narrow_priors_from(base_model, result, stretch: float = 1.0):
         ).fields.shear.gamma_2
 
     if hasattr(base_model.galaxies.source, "bulge"):
-        base_model.galaxies.source.bulge.centre.centre_0 = (
-            result.model_centred_max_lh_bounded(
-                b=0.1 * stretch
-            ).galaxies.source.bulge.centre.centre_0
-        )
-        base_model.galaxies.source.bulge.centre.centre_1 = (
-            result.model_centred_max_lh_bounded(
-                b=0.1 * stretch
-            ).galaxies.source.bulge.centre.centre_1
-        )
-        base_model.galaxies.source.bulge.ell_comps.ell_comps_0 = (
-            result.model_centred_max_lh_bounded(
-                b=0.1 * stretch
-            ).galaxies.source.bulge.ell_comps.ell_comps_0
-        )
-        base_model.galaxies.source.bulge.ell_comps.ell_comps_1 = (
-            result.model_centred_max_lh_bounded(
-                b=0.1 * stretch
-            ).galaxies.source.bulge.ell_comps.ell_comps_1
-        )
-        base_model.galaxies.source.bulge.effective_radius = (
-            result.model_centred_max_lh_bounded(
-                b=0.2 * stretch
-            ).galaxies.source.bulge.effective_radius
-        )
-        base_model.galaxies.source.bulge.sersic_index = (
-            result.model_centred_max_lh_bounded(
-                b=0.2 * stretch
-            ).galaxies.source.bulge.sersic_index
-        )
+        """
+        The source bulge is a multi Gaussian expansion (MGE), whose Gaussians all share one centre and one set of
+        elliptical components (their sigmas are fixed and their intensities are solved for linearly). The narrowed
+        priors are therefore created once, from the first Gaussian, and the same prior objects are given to every
+        Gaussian so they stay tied together.
+        """
+        source_bulge = result.model_centred_max_lh_bounded(
+            b=0.1 * stretch
+        ).galaxies.source.bulge.profile_list[0]
 
-        if base_model.galaxies.source.bulge.effective_radius.lower_limit < 0.0:
-            base_model.galaxies.source.bulge.effective_radius = af.UniformPrior(
-                lower_limit=0.0,
-                upper_limit=base_model.galaxies.source.bulge.effective_radius.upper_limit,
-            )
-
-        if base_model.galaxies.source.bulge.sersic_index.lower_limit < 0.0:
-            base_model.galaxies.source.bulge.sersic_index = af.UniformPrior(
-                lower_limit=0.0,
-                upper_limit=base_model.galaxies.source.bulge.sersic_index.upper_limit,
-            )
+        for gaussian in base_model.galaxies.source.bulge.profile_list:
+            gaussian.centre.centre_0 = source_bulge.centre.centre_0
+            gaussian.centre.centre_1 = source_bulge.centre.centre_1
+            gaussian.ell_comps.ell_comps_0 = source_bulge.ell_comps.ell_comps_0
+            gaussian.ell_comps.ell_comps_1 = source_bulge.ell_comps.ell_comps_1
 
     return base_model
 
@@ -1022,10 +993,7 @@ base_model = base_model_narrow_priors_from(base_model=base_model, result=mass_re
 
 perturb_model = af.Model(al.Galaxy, redshift=0.5, mass=subhalo_mass)
 
-perturb_model.mass.log10m_vir = 9.0
-perturb_model.mass.c_gNFW = 12.0
-perturb_model.mass.overdens = 200.0
-perturb_model.mass.inner_slope = 2.2
+perturb_model.mass.mass_at_200 = 1e9
 
 perturb_model.mass.centre.centre_0 = af.UniformPrior(
     lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
@@ -1050,7 +1018,9 @@ def perturb_model_prior_func(perturb_instance, perturb_model):
         upper_limit=perturb_instance.mass.centre[1] + b,
     )
 
-    perturb_model.mass.log10m_vir = af.UniformPrior(lower_limit=6, upper_limit=12)
+    perturb_model.mass.mass_at_200 = af.LogUniformPrior(
+        lower_limit=1e6, upper_limit=1e12
+    )
 
     return perturb_model
 
