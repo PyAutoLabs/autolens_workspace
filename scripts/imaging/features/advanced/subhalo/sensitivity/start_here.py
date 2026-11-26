@@ -360,8 +360,8 @@ When this dataset is simulated, the quantity `instance.perturb` is used in `__ca
 of the `NFWMCRLudlowSph`, and it is different every time the `simulate_cls` is called based on the value of sensitivity 
 being computed. 
 
-In this example, this `instance.perturb` corresponds to two different subhalos with values of `mass_at_200` of 
-1e6 MSun and 1e13 MSun.
+In this example, this `instance.perturb` corresponds to subhalos at different centres on the sensitivity grid, each
+injected with a fixed `mass_at_200` of 1e10 MSun.
 """
 
 
@@ -686,8 +686,7 @@ class BaseFit:
             n_batch=50,
         )
 
-        analysis = al.AnalysisImaging(dataset=dataset)
-        analysis._adapt_images = self.adapt_images
+        analysis = al.AnalysisImaging(dataset=dataset, adapt_images=self.adapt_images)
 
         return search.fit(model=model, analysis=analysis)
 
@@ -764,8 +763,7 @@ class PerturbFit:
             n_batch=50,  # GPU lens model fits are batched and run simultaneously, see VRAM section below.
         )
 
-        analysis = al.AnalysisImaging(dataset=dataset)
-        analysis._adapt_images = self.adapt_images
+        analysis = al.AnalysisImaging(dataset=dataset, adapt_images=self.adapt_images)
 
         return search.fit(model=model, analysis=analysis)
 
