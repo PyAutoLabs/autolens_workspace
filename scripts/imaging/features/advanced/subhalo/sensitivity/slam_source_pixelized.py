@@ -432,8 +432,8 @@ When this dataset is simulated, the quantity `instance.perturb` is used in `__ca
 of the `NFWMCRLudlowSph`, and it is different every time the `simulate_cls` is called based on the value of sensitivity
 being computed.
 
-In this example, this `instance.perturb` corresponds to two different subhalos with values of `mass_at_200` of
-1e6 MSun and 1e13 MSun.
+In this example, this `instance.perturb` corresponds to subhalos at different centres on the sensitivity grid, each
+injected with a fixed `mass_at_200` of 1e9 MSun.
 """
 
 
@@ -565,6 +565,10 @@ class SimulateImagingPixelized:
             pixel_scales=tuple(4.0 / (n - 1) for n in self.interpolated_pixelized_shape),
             over_sample_size=1,
         )
+        # Linearly interpolate the reconstruction onto this grid. Grid points outside the source-plane mesh are
+        # set to zero, as in the source-science example, so the simulated source has no flux beyond the region
+        # the reconstruction covers. (The retired `MapperValued` interpolation instead copied the nearest mesh
+        # vertex's value outside the mesh, which smears edge pixels across the whole box.)
         source_values = griddata(
             points=mapper.source_plane_mesh_grid,
             values=self.inversion.reconstruction_dict[mapper],
@@ -813,8 +817,7 @@ class BaseFit:
             number_of_cores=self.number_of_cores,
         )
 
-        analysis = al.AnalysisImaging(dataset=dataset)
-        analysis._adapt_images = self.adapt_images
+        analysis = al.AnalysisImaging(dataset=dataset, adapt_images=self.adapt_images)
 
         return search.fit(model=model, analysis=analysis)
 
@@ -887,8 +890,7 @@ class PerturbFit:
             number_of_cores=self.number_of_cores,
         )
 
-        analysis = al.AnalysisImaging(dataset=dataset)
-        analysis._adapt_images = self.adapt_images
+        analysis = al.AnalysisImaging(dataset=dataset, adapt_images=self.adapt_images)
 
         return search.fit(model=model, analysis=analysis)
 
@@ -1198,10 +1200,7 @@ base_model = base_model_narrow_priors_from(base_model=base_model, result=mass_re
 
 perturb_model = af.Model(al.Galaxy, redshift=0.5, mass=subhalo_mass)
 
-perturb_model.mass.log10m_vir = 9.0
-perturb_model.mass.c_gNFW = 12.0
-perturb_model.mass.overdens = 200.0
-perturb_model.mass.inner_slope = 2.2
+perturb_model.mass.mass_at_200 = 1e9
 perturb_model.mass.centre.centre_0 = af.UniformPrior(
     lower_limit=-grid_dimension_arcsec, upper_limit=grid_dimension_arcsec
 )
@@ -1225,7 +1224,9 @@ def perturb_model_prior_func(perturb_instance, perturb_model):
         upper_limit=perturb_instance.mass.centre[1] + b,
     )
 
-    perturb_model.mass.log10m_vir = af.UniformPrior(lower_limit=6, upper_limit=12)
+    perturb_model.mass.mass_at_200 = af.LogUniformPrior(
+        lower_limit=1e6, upper_limit=1e12
+    )
 
     return perturb_model
 
