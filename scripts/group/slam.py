@@ -12,8 +12,8 @@ __Contents__
 - **This Script:** Using a SOURCE LP PIPELINE (two searches), SOURCE PIX PIPELINE (two searches), LIGHT LP PIPELINE.
 - **SOURCE LP PIPELINE 0:** Not present in `slam_start_here.py`.
 - **SOURCE LP PIPELINE 1:** Equivalent to `source_lp` in `slam_start_here.py`, except lens light is fixed from `source_lp[0]`.
-- **SOURCE PIX PIPELINE 1:** Equivalent to `source_pix_1` in `slam_start_here.py`, except a Hilbert image mesh is used instead.
-- **SOURCE PIX PIPELINE 2:** Identical to `source_pix_1` above, except the adapt data for the Hilbert image mesh is capped at a.
+- **SOURCE PIX PIPELINE 1:** Equivalent to `source_pix_1` in `slam_start_here.py`, except a `HilbertSNR` image mesh is used instead.
+- **SOURCE PIX PIPELINE 2:** Identical to `source_pix_1` above, with adapt images from the `source_pix_1` result (`AdaptImages.from_result`).
 - **LIGHT LP PIPELINE:** Identical to `light_lp` in `slam_start_here.py`, except extra galaxies receive a fresh free MGE.
 - **MASS TOTAL PIPELINE:** Identical to `mass_total` in `slam_start_here.py`, except extra galaxies receive a new.
 - **Dataset:** Load and plot the strong lens dataset.
@@ -115,14 +115,12 @@ import autofit as af
 import autolens as al
 import autolens.plot as aplt
 
-
 def _load_centres(path):
     """Load a centres JSON file, returning an empty list if the file is absent."""
     try:
         return al.Grid2DIrregular(al.from_json(file_path=path))
     except FileNotFoundError:
         return al.Grid2DIrregular([])
-
 
 """
 __SOURCE LP PIPELINE 0__
@@ -134,7 +132,6 @@ Fits multiple main-lens galaxies (`lens_0`, `lens_1`, ...) under `galaxies`, ext
 under `extra_galaxies`, and scaling galaxies under `scaling_galaxies`. `n_live` scales with
 the total number of galaxies across all three categories.
 """
-
 
 def source_lp_0(
     dataset,
@@ -221,7 +218,6 @@ def source_lp_0(
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
 
-
 """
 __SOURCE LP PIPELINE 1__
 
@@ -236,7 +232,6 @@ masses follow the reference-anchored relation `sigma = sigma_ref * (L / L_ref)^0
 truncation `r_cut = r_cut_ref * (L / L_ref)^0.7`), the reference luminosity fixed to the
 brightest main lens (BGG).
 """
-
 
 def source_lp_1(
     dataset,
@@ -431,26 +426,24 @@ def source_lp_1(
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
 
-
 """
 __SOURCE PIX PIPELINE 1__
 
-Equivalent to `source_pix_1` in `slam_start_here.py`, except a Hilbert image mesh is used
+Equivalent to `source_pix_1` in `slam_start_here.py`, except a `HilbertSNR` image mesh is used
 instead of `RectangularBilinearAdaptDensity`, with edge-point padding of 30 pixels. The Hilbert pixel
 count is set by `al.model_util.hilbert_pixels_from_pixel_scale`.
 
 The dataset and adapt_images are returned alongside the result. Extra and scaling galaxy models are
 carried forward as free `model` parameters, not fixed instances.
 
-__Adapt Image S/N Cap__
+__Adapt Images__
 
-The source adapt image is capped at a signal-to-noise of 3.0 before it is used by the adaptive
-image-mesh and the adaptive regularization. Without the cap the brightest peak dominates the
-weights (they scale as a power of the adapt image), so fainter multiply-imaged features get too
-few source pixels and too little regularization weight. Capping makes every feature above S/N 3.0
-count equally. The cap is applied to an explicit copy so the raw S/N image is untouched.
+The adapt images are the source's signal-to-noise (S/N) map from the previous fit: the data with every other
+galaxy's model image subtracted, divided by the noise map. `AdaptImages.from_result` builds, in one call, the
+source's image-plane mesh drawn from its S/N map by the `HilbertSNR` image mesh (edge points included), and the
+soft S/N maps the adaptive regularization adapts to. `HilbertSNR` works in absolute S/N, so a bright peak cannot
+starve fainter multiply-imaged features of source pixels and no S/N cap is needed.
 """
-
 
 def source_pix_1(
     dataset,
@@ -467,39 +460,20 @@ def source_pix_1(
     hilbert_pixels = al.model_util.hilbert_pixels_from_pixel_scale(pixel_scale)
     edge_pixels_total = 30
 
-    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
-        result=source_lp_result_1
-    )
+    # One call: each galaxy's S/N map from `source_lp_result_1`, the source's image-plane mesh drawn
+    # from its S/N map (edge points included), and the soft S/N maps the adaptive
+    # regularization adapts to (see __Adapt Images__ above).
+    image_mesh = al.image_mesh.HilbertSNR(pixels=hilbert_pixels, edge_pixels=edge_pixels_total)
 
-    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
-    adapt_image_snr_cap = 3.0
-
-    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
-    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
-    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
-
-    image_mesh = al.image_mesh.Hilbert(
-        pixels=hilbert_pixels, weight_power=3.5, weight_floor=0.01
-    )
-
-    image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
+    adapt_images = al.AdaptImages.from_result(
+        result=source_lp_result_1,
+        image_mesh={"source": image_mesh},
         mask=mask,
-        adapt_data=source_adapt_image,
     )
 
-    image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
-        image_plane_mesh_grid=image_plane_mesh_grid,
-        centre=mask.mask_centre,
-        radius=mask_radius + mask.pixel_scale / 2.0,
-        n_points=edge_pixels_total,
-    )
-
-    adapt_images = al.AdaptImages(
-        galaxy_name_image_dict=galaxy_image_name_dict,
-        galaxy_name_image_plane_mesh_grid_dict={
-            "('galaxies', 'source')": image_plane_mesh_grid
-        },
-    )
+    image_plane_mesh_grid = adapt_images.galaxy_name_image_plane_mesh_grid_dict[
+        "('galaxies', 'source')"
+    ]
 
     dataset = dataset.apply_over_sampling(
         over_sample_size_lp=over_sample_size,
@@ -571,7 +545,6 @@ def source_pix_1(
     result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
     return result, dataset, adapt_images
 
-
 """
 __SOURCE PIX PIPELINE 2__
 
@@ -581,19 +554,18 @@ As `source_pix_1` above, except extra and scaling galaxy models are fixed as ins
 __Adaptive Pixelization Over-Sampling__
 
 From SOURCE PIX PIPELINE 2 onwards the pixelization grid is over-sampled adaptively. The source's
-signal-to-noise map from the previous pixelized fit (the same map that becomes the adapt image, read before
-the S/N 3.0 cap is applied) is thresholded at S/N 3.0: pixels above it, the bright lensed source, use a
+signal-to-noise map from the previous pixelized fit (the same map the adapt images are built from) is
+thresholded at S/N 3.0: pixels above it, the bright lensed source, use a
 sub-size of 4 and every other pixel uses a sub-size of 2. This concentrates the extra over-sampling where the
 source is bright and the pixelization gains the most accuracy from it, and keeps the rest of the mask cheap.
 
-The map returned by `galaxy_name_image_dict_via_result_from` is already signal divided by noise, so it is
-thresholded directly.
+`al.galaxy_snr_maps_from` returns each galaxy's S/N map (data minus the other galaxies' models, over the
+noise map), so it is thresholded directly.
 
 SOURCE PIX PIPELINE 1 keeps the dataset's default uniform sub-size. Its adapt image comes from the parametric
 source fit of the SOURCE LP PIPELINE, which does not yet trace the lensed source well enough to steer
 over-sampling.
 """
-
 
 def source_pix_2(
     dataset,
@@ -611,40 +583,22 @@ def source_pix_2(
     edge_pixels_total = 30
     signal_to_noise_threshold = 3.0
 
-    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
-        result=source_pix_result_1
+    # One call: each galaxy's S/N map from `source_pix_result_1`, the source's image-plane mesh drawn
+    # from its S/N map (edge points included), and the soft S/N maps the adaptive
+    # regularization adapts to (see __Adapt Images__ above).
+    source_image_raw = al.galaxy_snr_maps_from(result=source_pix_result_1)["('galaxies', 'source')"]
+
+    image_mesh = al.image_mesh.HilbertSNR(pixels=hilbert_pixels, edge_pixels=edge_pixels_total)
+
+    adapt_images = al.AdaptImages.from_result(
+        result=source_pix_result_1,
+        image_mesh={"source": image_mesh},
+        mask=mask,
     )
 
-    source_image_raw = galaxy_image_name_dict["('galaxies', 'source')"]
-
-    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
-    adapt_image_snr_cap = 3.0
-
-    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
-    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
-    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
-
-    image_mesh = al.image_mesh.Hilbert(
-        pixels=hilbert_pixels, weight_power=3.5, weight_floor=0.01
-    )
-
-    image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
-        mask=mask, adapt_data=source_adapt_image
-    )
-
-    image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
-        image_plane_mesh_grid=image_plane_mesh_grid,
-        centre=mask.mask_centre,
-        radius=mask_radius + mask.pixel_scale / 2.0,
-        n_points=edge_pixels_total,
-    )
-
-    adapt_images = al.AdaptImages(
-        galaxy_name_image_dict=galaxy_image_name_dict,
-        galaxy_name_image_plane_mesh_grid_dict={
-            "('galaxies', 'source')": image_plane_mesh_grid
-        },
-    )
+    image_plane_mesh_grid = adapt_images.galaxy_name_image_plane_mesh_grid_dict[
+        "('galaxies', 'source')"
+    ]
 
     over_sample_size_pixelization = np.where(
         source_image_raw > signal_to_noise_threshold,
@@ -713,7 +667,6 @@ def source_pix_2(
     result = search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
     return result, dataset, adapt_images
 
-
 """
 __LIGHT LP PIPELINE__
 
@@ -721,7 +674,6 @@ Identical to `light_lp` in `slam_start_here.py`, except extra galaxies receive a
 MGE bulge (centred on the `source_pix[1]` mass centre) with mass fixed from `source_pix[1]`,
 and scaling galaxies are fully fixed from `source_pix[2]`.
 """
-
 
 def light_lp(
     dataset,
@@ -818,7 +770,6 @@ def light_lp(
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
 
-
 """
 __MASS TOTAL PIPELINE__
 
@@ -827,7 +778,6 @@ luminosity-bounded, truncated `dPIEMassSph` mass (using `light[1]` luminosities)
 galaxies receive a new shared luminosity scaling relation, both paired with their fixed
 `light[1]` bulge.
 """
-
 
 def mass_total(
     dataset,
@@ -997,7 +947,6 @@ def mass_total(
     )
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
-
 
 """
 __Dataset__
