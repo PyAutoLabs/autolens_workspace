@@ -341,12 +341,11 @@ One analysis per dataset, each wrapped in an `AnalysisFactor` with its own model
 graph combines them so a single search samples the shared parameter space. The total log likelihood
 is the sum of the imaging and point log likelihoods.
 
-Both analyses pass `use_jax=True` to choose the JAX backend themselves: a factor graph evaluates every
-factor in one process, so its analyses must share one compute setup, and with `setup="auto"` (the default
-from the next release) the imaging and point analyses would each pick a different setup.
+A factor graph evaluates every factor in one process, so its analyses share one compute setup. The backend is
+chosen once, on the `FactorGraphModel` below (`use_jax=True`), and analyses left on their default setup adopt it.
 """
-analysis_imaging = al.AnalysisImaging(dataset=dataset_imaging, use_jax=True)
-analysis_point = al.AnalysisPoint(dataset=dataset_point, solver=solver, use_jax=True)
+analysis_imaging = al.AnalysisImaging(dataset=dataset_imaging)
+analysis_point = al.AnalysisPoint(dataset=dataset_point, solver=solver)
 
 factor_imaging = af.AnalysisFactor(prior_model=model_imaging, analysis=analysis_imaging)
 factor_point = af.AnalysisFactor(prior_model=model_point, analysis=analysis_point)

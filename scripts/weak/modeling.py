@@ -192,11 +192,9 @@ A step-by-step walkthrough of this likelihood function is the next entry in the 
 (`scripts/weak/likelihood_function.py`), following the format of the imaging and interferometer
 likelihood-function guides.
 
-The analysis passes `use_jax=False` to keep the fit on NumPy: the weak-lensing fit is cheap enough that JAX
-acceleration is unnecessary for catalogues of this size, and visualization of a JAX-path weak fit currently
-crashes (PyAutoLens#614).
+No `use_jax` option is passed: like the other analyses, `AnalysisWeak` chooses its compute setup automatically.
 """
-analysis = al.AnalysisWeak(dataset=dataset, use_jax=False)
+analysis = al.AnalysisWeak(dataset=dataset)
 
 """
 __Run Times__
