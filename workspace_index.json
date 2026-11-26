@@ -3975,7 +3975,7 @@
       "guides/advanced/auto_setup.py",
       "imaging/features/advanced/subhalo/sensitivity/start_here.py",
       "slam_start_here.py",
-      "subhalo/detect/start_here.ipynb"
+      "subhalo/sensitivity/start_here.ipynb"
     ],
     "notebook": "notebooks/imaging/features/advanced/subhalo/sensitivity/slam_source_parametric.ipynb",
     "path": "scripts/imaging/features/advanced/subhalo/sensitivity/slam_source_parametric.py",
