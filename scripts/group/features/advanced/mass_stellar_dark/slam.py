@@ -373,7 +373,9 @@ def light_lp(
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_dict)
 
-    analysis = al.AnalysisImaging(dataset=dataset, adapt_images=adapt_images, setup=setup)
+    analysis = al.AnalysisImaging(
+        dataset=dataset, adapt_images=adapt_images, setup=setup
+    )
 
     lens_dict = {}
     for i, centre in enumerate(main_lens_centres):

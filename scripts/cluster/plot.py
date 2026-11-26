@@ -219,7 +219,9 @@ for centre, luminosity in zip(members.centres, members.luminosities, strict=True
 fit_tracer = al.Tracer(galaxies=main_lenses + member_galaxies + sources)
 fits = [
     al.FitPointDataset(
-        dataset=dataset, tracer=fit_tracer, solver=None,
+        dataset=dataset,
+        tracer=fit_tracer,
+        solver=None,
         fit_positions_cls=al.FitPositionsSourceSolved,
     )
     for dataset in dataset_list

@@ -362,7 +362,9 @@ def light_lp(
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
-    analysis = al.AnalysisImaging(dataset=dataset, adapt_images=adapt_images, setup=setup)
+    analysis = al.AnalysisImaging(
+        dataset=dataset, adapt_images=adapt_images, setup=setup
+    )
 
     lens_dict = {}
 

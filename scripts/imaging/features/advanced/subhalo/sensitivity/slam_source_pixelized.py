@@ -562,7 +562,9 @@ class SimulateImagingPixelized:
         # Sample from -2 to +2 arcsec along each axis at the requested resolution.
         interpolation_grid = al.Grid2D.uniform(
             shape_native=self.interpolated_pixelized_shape,
-            pixel_scales=tuple(4.0 / (n - 1) for n in self.interpolated_pixelized_shape),
+            pixel_scales=tuple(
+                4.0 / (n - 1) for n in self.interpolated_pixelized_shape
+            ),
             over_sample_size=1,
         )
         # Linearly interpolate the reconstruction onto this grid. Grid points outside the source-plane mesh are

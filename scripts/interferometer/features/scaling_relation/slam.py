@@ -241,7 +241,9 @@ def source_pix_1(
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
-    analysis = al.AnalysisInterferometer(dataset=dataset, adapt_images=adapt_images, setup=setup)
+    analysis = al.AnalysisInterferometer(
+        dataset=dataset, adapt_images=adapt_images, setup=setup
+    )
 
     mass = al.util.chaining.mass_from(
         mass=af.Model(al.mp.Isothermal),
@@ -415,7 +417,9 @@ def mass_total(
 
     adapt_images = al.AdaptImages(galaxy_name_image_dict=galaxy_image_name_dict)
 
-    analysis = al.AnalysisInterferometer(dataset=dataset, adapt_images=adapt_images, setup=setup)
+    analysis = al.AnalysisInterferometer(
+        dataset=dataset, adapt_images=adapt_images, setup=setup
+    )
 
     mass = al.util.chaining.mass_from(
         mass=af.Model(al.mp.PowerLaw),
