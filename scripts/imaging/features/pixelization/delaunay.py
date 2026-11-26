@@ -161,8 +161,8 @@ This `image_plane_mesh_grid` must be computed before lens modeling.
 
 We compute this `image_plane_mesh_grid` using an `Overlay` image-mesh, which places a regular grid of
 (y, x) points across the image-plane. This has a mild adaptive effect: regions of high lens magnification receive
-more source pixels once they are ray-traced. Later in this example, we switch to a `Hilbert` image-mesh, which adapts
-the pixel distribution more strongly to the source’s surface brightness.
+more source pixels once they are ray-traced. Later in this example, we switch to a `HilbertSNR` image-mesh, which
+adapts the pixel distribution to the source's signal-to-noise.
 
 The `Delaunay` mesh has an input number of `pixels`, which is the number of source pixels used to reconstruct the 
 source. The number of `pixels` must be equal to the number of coordinates in the `image_plane_mesh_grid`. 
@@ -174,7 +174,9 @@ To pass the `image_plane_mesh_grid` to the modeling, we use the `AdaptImages` ob
 the `image_plane_mesh_grid` to the source galaxy. For double source plane lenses, this means we can
 attach an `image_plane_mesh_grid` to each source galaxy and use adaptive meshes for each source plane.
 """
-image_mesh = al.image_mesh.Overlay(shape=(26, 26))
+edge_pixels_total = 30
+
+image_mesh = al.image_mesh.Overlay(shape=(26, 26), edge_pixels=edge_pixels_total)
 
 image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
     mask=dataset.mask,
@@ -190,23 +192,15 @@ bright surface brightnesses, often because they fit residuals from the lens ligh
 For a rectangular mesh, the source code computes edge pixels internally using the known pixels at the edge of the mesh,
 requiring no input from the user. 
 
-For the `Delaunay` mesh, we use the `append_with_circle_edge_points` function to manually setup the Delaunay image
-mesh to include a ring of edge pixels, and then tell the mesh how many there are (`zeroed_pixels`) so the inversion
-can zero them. The mesh's `pixels` input is the number of interior vertices, i.e. the grid before the ring was
-appended, so below it is the appended grid's length minus `edge_pixels_total`.
+For the `Delaunay` mesh, the image mesh appends a ring of edge points itself: `edge_pixels=edge_pixels_total`
+(above) adds that many points on a circle half a pixel beyond the mask's outer edge, after the interior points. We
+then tell the mesh how many there are (`zeroed_pixels`) so the inversion can zero them. The mesh's `pixels` input
+is the number of interior vertices, i.e. the grid's length minus `edge_pixels_total`.
 
-These points are added to the edge of the image-plane mesh, ray-traced to the source-plane during lens modeling,
-included in the Delaunay triangulation but zeroed during the inversion. The inversion zeroes the last
-`zeroed_pixels` vertices of the mesh grid it receives, which is where `append_with_circle_edge_points` puts them.
+These points are ray-traced to the source-plane during lens modeling, included in the Delaunay triangulation but
+zeroed during the inversion. The inversion zeroes the last `zeroed_pixels` vertices of the mesh grid it receives,
+which is where the image mesh puts them.
 """
-edge_pixels_total = 30
-
-image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
-    image_plane_mesh_grid=image_plane_mesh_grid,
-    centre=mask.mask_centre,
-    radius=mask_radius + mask.pixel_scale / 2.0,
-    n_points=edge_pixels_total,
-)
 
 """
 __Fit__
@@ -439,20 +433,22 @@ __Adaptive Delaunay__
 The example `imaging/features/pixelization/adaptive.py` illustrates how to use adaptive features to
 adapt the rectangular mesh and its regularization to the source's surface brightness.
 
-The image-mesh has a special adaptive variant called the `Hilbert` image-mesh, which adapts the distribution 
-of source-pixels to the source's unlensed morphology. This means that the source's brightest regions are 
-reconstructed using significantly more source pixels than seen for the `Overlay` image mesh. 
-Conversely, the source's faintest regions are reconstructed using significantly fewer source pixels.
-The source image which weights this adaptation is capped at a signal-to-noise of 3.0 (see below), so that
-fainter multiply-imaged features keep their share of source pixels instead of being crushed by the
-source's brightest peak.
+The image-mesh has an adaptive variant, `HilbertSNR`, which adapts the distribution of source-pixels to the
+source's unlensed morphology: more source pixels are placed where the lensed source is detected, fewer in empty
+regions of the image.
 
-Unlike the adaptive rectangular mesh, the Hilbert image-plane mesh is computed before modeling, passed
+`HilbertSNR` works in the source's signal-to-noise (S/N), not its brightness relative to the brightest pixel:
+a quarter of the points are spread evenly over the mask, most follow a soft S/N curve (zero below S/N 2, rising
+through S/N 5 and flattening for bright pixels), a few go to the region near the brightest S/N, and no image pixel
+gets more than 8. A bright peak therefore cannot starve fainter multiply-imaged features of source pixels, and no
+S/N cap or `weight_power` / `weight_floor` tuning is needed.
+
+Unlike the adaptive rectangular mesh, the `HilbertSNR` image-plane mesh is computed before modeling, passed
 to the `AdaptImages` object, and remains fixed during the model-fit.
 
 It is recommend that the parameters governing these features are always fitted from using a fixed lens light and
 mass model. This ensures the adaptation is performed quickly, and removes degeneracies in the lens model that
-are difficult to sample. Given the Hilbert mesh is fixed, this modeling only fits for the regularization coefficients
+are difficult to sample. Given the `HilbertSNR` mesh is fixed, this modeling only fits for the regularization coefficients
 of the adaptive regularization scheme.
 
 For this reason, search 2 fixes the lens galaxy's light and mass model to the best-fit model of search 1. A third
@@ -461,46 +457,28 @@ search will then fit for the lens galaxy's light and mass model using these adap
 The details of how the above features work is not provided here, but is given at the end of chapter 3 of the HowToLens
 lecture series.
 """
-galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(result=result_1)
-
 """
-__Adapt Image S/N Cap__
+__Adapt Images__
 
-The source adapt image is capped at a signal-to-noise of 3.0 before it is used by the adaptive
-image-mesh and the adaptive regularization. Without the cap the brightest peak dominates the
-weights (they scale as a power of the adapt image), so fainter multiply-imaged features get too
-few source pixels and too little regularization weight. Capping makes every feature above S/N 3.0
-count equally. The cap is applied to an explicit copy so the raw S/N image is untouched.
+The adapt images are the source's signal-to-noise map from the previous fit: the data with every other
+galaxy's model image subtracted, divided by the noise map. S/N is used because it is unit-free and comparable
+across datasets, whereas an image's values depend on its brightness units.
+
+`AdaptImages.from_result` builds everything in one call: each galaxy's S/N map from `result_1`, the source's
+image-plane mesh drawn from its S/N map by the `HilbertSNR` image mesh (edge points included), and the soft S/N
+maps that the adaptive regularization (`AdaptSplit`) adapts to, so the mesh and the regularization adapt to one
+signal. The source is named by its galaxy name, `"source"`.
 """
-adapt_image_snr_cap = 3.0
+image_mesh = al.image_mesh.HilbertSNR(pixels=1000, edge_pixels=edge_pixels_total)
 
-source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
-source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
-galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
-
-image_mesh = al.image_mesh.Hilbert(pixels=1000, weight_power=3.5, weight_floor=0.01)
-
-image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
-    mask=dataset.mask, adapt_data=source_adapt_image
+adapt_images = al.AdaptImages.from_result(
+    result=result_1,
+    image_mesh={"source": image_mesh},
 )
 
-# Repeat edge zeroing set up describe above.
-
-edge_pixels_total = 30
-
-image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
-    image_plane_mesh_grid=image_plane_mesh_grid,
-    centre=mask.mask_centre,
-    radius=mask_radius + mask.pixel_scale / 2.0,
-    n_points=edge_pixels_total,
-)
-
-adapt_images = al.AdaptImages(
-    galaxy_name_image_dict=galaxy_image_name_dict,
-    galaxy_name_image_plane_mesh_grid_dict={
-        "('galaxies', 'source')": image_plane_mesh_grid
-    },
-)
+image_plane_mesh_grid = adapt_images.galaxy_name_image_plane_mesh_grid_dict[
+    "('galaxies', 'source')"
+]
 
 """
 __Model (Search 2)__
@@ -512,7 +490,7 @@ the second search our lens model is:
    `MassField`, both with fixed parameters from 
    search 1 [0 parameters].
  
- - The source galaxy's light uses a `Hilbert` image-mesh with fixed resolution 1000 pixels [2 parameters].
+ - The source galaxy's light uses a `HilbertSNR` image-mesh with 1000 pixels [0 parameters].
  
  - The source-galaxy's light uses a `Delaunay` mesh [0 parameters].
 
@@ -589,7 +567,6 @@ __SOURCE LP PIPELINE__
 Identical to `slam_start_here.py`.
 """
 
-
 def source_lp(
     settings_search: af.SettingsSearch,
     dataset,
@@ -643,7 +620,6 @@ def source_lp(
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
 
-
 """
 __SOURCE PIX PIPELINE 1__
 
@@ -653,7 +629,6 @@ The `source_pix_1` search uses an `Overlay` image-mesh to place the initial Dela
 additional edge points added around the mask boundary to ensure full coverage.
 """
 
-
 def source_pix_1(
     settings_search: af.SettingsSearch,
     dataset,
@@ -661,38 +636,22 @@ def source_pix_1(
     source_lp_result: af.Result,
     n_batch: int = 20,
 ) -> af.Result:
-    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
-        result=source_lp_result
-    )
+    # One call: each galaxy's S/N map from `source_lp_result`, the source's image-plane mesh drawn
+    # from its S/N map (edge points included), and the soft S/N maps the adaptive
+    # regularization adapts to (see __Adapt Images__ above).
+    edge_pixels_total = 30
 
-    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
-    adapt_image_snr_cap = 3.0
+    image_mesh = al.image_mesh.Overlay(shape=(26, 26), edge_pixels=edge_pixels_total)
 
-    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
-    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
-    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
-
-    image_mesh = al.image_mesh.Overlay(shape=(26, 26))
-
-    image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
+    adapt_images = al.AdaptImages.from_result(
+        result=source_lp_result,
+        image_mesh={"source": image_mesh},
         mask=dataset.mask,
     )
 
-    edge_pixels_total = 30
-
-    image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
-        image_plane_mesh_grid=image_plane_mesh_grid,
-        centre=dataset.mask.mask_centre,
-        radius=mask_radius + dataset.mask.pixel_scale / 2.0,
-        n_points=edge_pixels_total,
-    )
-
-    adapt_images = al.AdaptImages(
-        galaxy_name_image_dict=galaxy_image_name_dict,
-        galaxy_name_image_plane_mesh_grid_dict={
-            "('galaxies', 'source')": image_plane_mesh_grid
-        },
-    )
+    image_plane_mesh_grid = adapt_images.galaxy_name_image_plane_mesh_grid_dict[
+        "('galaxies', 'source')"
+    ]
 
     analysis = al.AnalysisImaging(
         dataset=dataset,
@@ -745,16 +704,14 @@ def source_pix_1(
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
 
-
 """
 __SOURCE PIX PIPELINE 2__
 
 Identical to `slam_start_here.py`, except the source pixelization uses a Delaunay mesh.
 
-The `source_pix_2` search uses a `Hilbert` image-mesh to place the final Delaunay mesh pixels, which adapts
+The `source_pix_2` search uses a `HilbertSNR` image-mesh to place the final Delaunay mesh pixels, which adapts
 the mesh to the source morphology using the high-quality adapt images from search 1.
 """
-
 
 def source_pix_2(
     settings_search: af.SettingsSearch,
@@ -764,38 +721,22 @@ def source_pix_2(
     source_pix_result_1: af.Result,
     n_batch: int = 20,
 ) -> af.Result:
-    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
-        result=source_pix_result_1
-    )
-
-    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
-    adapt_image_snr_cap = 3.0
-
-    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
-    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
-    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
-
-    image_mesh = al.image_mesh.Hilbert(pixels=1000, weight_power=3.5, weight_floor=0.01)
-
-    image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
-        mask=dataset.mask, adapt_data=source_adapt_image
-    )
-
+    # One call: each galaxy's S/N map from `source_pix_result_1`, the source's image-plane mesh drawn
+    # from its S/N map (edge points included), and the soft S/N maps the adaptive
+    # regularization adapts to (see __Adapt Images__ above).
     edge_pixels_total = 30
 
-    image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
-        image_plane_mesh_grid=image_plane_mesh_grid,
-        centre=dataset.mask.mask_centre,
-        radius=mask_radius + dataset.mask.pixel_scale / 2.0,
-        n_points=edge_pixels_total,
+    image_mesh = al.image_mesh.HilbertSNR(pixels=1000, edge_pixels=edge_pixels_total)
+
+    adapt_images = al.AdaptImages.from_result(
+        result=source_pix_result_1,
+        image_mesh={"source": image_mesh},
+        mask=dataset.mask,
     )
 
-    adapt_images = al.AdaptImages(
-        galaxy_name_image_dict=galaxy_image_name_dict,
-        galaxy_name_image_plane_mesh_grid_dict={
-            "('galaxies', 'source')": image_plane_mesh_grid
-        },
-    )
+    image_plane_mesh_grid = adapt_images.galaxy_name_image_plane_mesh_grid_dict[
+        "('galaxies', 'source')"
+    ]
 
     analysis = al.AnalysisImaging(
         dataset=dataset,
@@ -836,13 +777,11 @@ def source_pix_2(
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
 
-
 """
 __LIGHT LP PIPELINE__
 
 Identical to `slam_start_here.py`.
 """
-
 
 def light_lp(
     settings_search: af.SettingsSearch,
@@ -852,19 +791,12 @@ def light_lp(
     source_result_for_source: af.Result,
     n_batch: int = 20,
 ) -> af.Result:
-    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
-        result=source_result_for_lens
-    )
-
-    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
-    adapt_image_snr_cap = 3.0
-
-    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
-    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
-    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
-
+    # The soft S/N maps of `source_result_for_lens` for the adaptive regularization; the mesh is the earlier
+    # pixelized fit's (see __Adapt Images__ above).
     adapt_images = al.AdaptImages(
-        galaxy_name_image_dict=galaxy_image_name_dict,
+        galaxy_name_image_dict=al.soft_snr_maps_from(
+            al.galaxy_snr_maps_from(result=source_result_for_lens)
+        ),
         galaxy_name_image_plane_mesh_grid_dict=(
             source_result_for_source.analysis.adapt_images.galaxy_name_image_plane_mesh_grid_dict
         ),
@@ -910,13 +842,11 @@ def light_lp(
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
 
-
 """
 __MASS TOTAL PIPELINE__
 
 Identical to `slam_start_here.py`.
 """
-
 
 def mass_total(
     settings_search: af.SettingsSearch,
@@ -929,19 +859,12 @@ def mass_total(
     # Total mass model for the lens galaxy.
     mass = af.Model(al.mp.PowerLaw)
 
-    galaxy_image_name_dict = al.galaxy_name_image_dict_via_result_from(
-        result=source_result_for_lens
-    )
-
-    # Cap the source adapt image at S/N 3.0 (see __Adapt Image S/N Cap__ above).
-    adapt_image_snr_cap = 3.0
-
-    source_adapt_image = galaxy_image_name_dict["('galaxies', 'source')"].copy()
-    source_adapt_image[source_adapt_image > adapt_image_snr_cap] = adapt_image_snr_cap
-    galaxy_image_name_dict["('galaxies', 'source')"] = source_adapt_image
-
+    # The soft S/N maps of `source_result_for_lens` for the adaptive regularization; the mesh is the earlier
+    # pixelized fit's (see __Adapt Images__ above).
     adapt_images = al.AdaptImages(
-        galaxy_name_image_dict=galaxy_image_name_dict,
+        galaxy_name_image_dict=al.soft_snr_maps_from(
+            al.galaxy_snr_maps_from(result=source_result_for_lens)
+        ),
         galaxy_name_image_plane_mesh_grid_dict=(
             source_result_for_source.analysis.adapt_images.galaxy_name_image_plane_mesh_grid_dict
         ),
@@ -990,7 +913,6 @@ def mass_total(
     )
 
     return search.fit(model=model, analysis=analysis, **settings_search.fit_dict)
-
 
 dataset_name = "simple"
 dataset_path = Path("dataset") / "imaging" / dataset_name
@@ -1079,13 +1001,13 @@ source_pix_result_1 = source_pix_1(
 __Adaptive Pixelization Over-Sampling__
 
 From SOURCE PIX PIPELINE 2 onwards the pixelization grid is over-sampled adaptively. The source's
-signal-to-noise map from the previous pixelized fit (the same map that becomes the adapt image, read before
-the S/N 3.0 cap is applied) is thresholded at S/N 3.0: pixels above it, the bright lensed source, use a
+signal-to-noise map from the previous pixelized fit (the same map the adapt images are built from) is
+thresholded at S/N 3.0: pixels above it, the bright lensed source, use a
 sub-size of 4 and every other pixel uses a sub-size of 2. This concentrates the extra over-sampling where the
 source is bright and the pixelization gains the most accuracy from it, and keeps the rest of the mask cheap.
 
-The map returned by `galaxy_name_image_dict_via_result_from` is already signal divided by noise, so it is
-thresholded directly.
+`al.galaxy_snr_maps_from` returns each galaxy's S/N map (data minus the other galaxies' models, over the
+noise map), so it is thresholded directly.
 
 SOURCE PIX PIPELINE 1 keeps the dataset's default uniform sub-size. Its adapt image comes from the parametric
 source fit of the SOURCE LP PIPELINE, which does not yet trace the lensed source well enough to steer
@@ -1093,9 +1015,9 @@ over-sampling.
 """
 signal_to_noise_threshold = 3.0
 
-source_image_raw = al.galaxy_name_image_dict_via_result_from(
-    result=source_pix_result_1
-)["('galaxies', 'source')"]
+source_image_raw = al.galaxy_snr_maps_from(result=source_pix_result_1)[
+    "('galaxies', 'source')"
+]
 
 over_sample_size_pixelization = al.Array2D(
     values=np.where(source_image_raw > signal_to_noise_threshold, 4, 2),
@@ -1201,16 +1123,13 @@ __Lens Light__
 """
 image = lens_galaxy.image_2d_from(grid=masked_dataset.grid)
 
-
 blurring_image_2d = lens_galaxy.image_2d_from(grid=masked_dataset.grids.blurring)
-
 
 convolved_image_2d = masked_dataset.psf.convolved_image_from(
     image=image, blurring_image=blurring_image_2d
 )
 
 aplt.plot_array(array=convolved_image_2d, title="")
-
 
 lens_subtracted_image = masked_dataset.data - convolved_image_2d
 
@@ -1229,22 +1148,17 @@ source pixels will congregate in higher magnification regions.
 This calculation is performed by overlaying a uniform regular grid with an `pixelization_shape_2d` over the image
 mask and retaining all pixels that fall within the mask. This uses a `Grid2DSparse` object.
 """
-image_mesh = al.image_mesh.Overlay(shape=(30, 30))  # Specific to Delaunay
+image_mesh = al.image_mesh.Overlay(
+    shape=(30, 30), edge_pixels=edge_pixels_total
+)  # Specific to Delaunay
 
+"""
+As in the fits above, the image mesh appends a ring of `edge_pixels_total` points just outside the mask edge.
+They become the last `edge_pixels_total` vertices of the Delaunay mesh, which is what the `zeroed_pixels` input
+to the mesh below refers to.
+"""
 image_plane_mesh_grid = image_mesh.image_plane_mesh_grid_from(
     mask=masked_dataset.mask,
-)
-
-"""
-As in the fits above, a ring of `edge_pixels_total` points is appended just outside the mask edge. They become
-the last `edge_pixels_total` vertices of the Delaunay mesh, which is what the `zeroed_pixels` input to the mesh
-below refers to.
-"""
-image_plane_mesh_grid = al.image_mesh.append_with_circle_edge_points(
-    image_plane_mesh_grid=image_plane_mesh_grid,
-    centre=mask.mask_centre,
-    radius=mask_radius + mask.pixel_scale / 2.0,
-    n_points=edge_pixels_total,
 )
 
 """
@@ -1312,7 +1226,6 @@ traced_grid_pixelization = tracer.traced_grid_2d_list_from(
 # This functions a bit weird - it returns a list of lists of ndarrays. Best not to worry about it for now!
 traced_mesh_grid = tracer_to_inversion.traced_mesh_grid_pg_list[-1][-1]
 
-
 aplt.plot_grid(grid=traced_grid_pixelization, title="")
 
 """
@@ -1339,7 +1252,6 @@ relocated_grid = border_relocator.relocated_grid_from(grid=traced_grid_pixelizat
 relocated_mesh_grid = border_relocator.relocated_mesh_grid_from(
     grid=traced_grid_pixelization, mesh_grid=traced_mesh_grid
 )
-
 
 aplt.plot_grid(grid=relocated_grid, title="")
 
@@ -1379,7 +1291,6 @@ __Interpolation__
 pix_indexes_for_sub_slim_index = mapper.pix_indexes_for_sub_slim_index
 
 print(pix_indexes_for_sub_slim_index[0:9])
-
 
 aplt.plot_array(
     array=lens_subtracted_image, title="Image", positions=mapper.image_plane_data_grid
@@ -1509,7 +1420,6 @@ curvature_reg_matrix = np.add(curvature_matrix, regularization_matrix)
 
 reconstruction = np.linalg.solve(curvature_reg_matrix, data_vector)
 
-
 aplt.plot_grid(grid=mapper.source_plane_mesh_grid, title="Source-Plane Mesh Grid")
 
 mapped_reconstructed_operated_data = (
@@ -1583,7 +1493,6 @@ fit_log_evidence = fit.log_evidence
 print(fit_log_evidence)
 
 aplt.subplot_fit_imaging(fit=fit)
-
 
 """
 __Lens Modeling__

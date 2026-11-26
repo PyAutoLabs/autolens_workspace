@@ -230,9 +230,12 @@ This is a key automation feature of SLaM.
 
 __Adapt Images__
 
-An adapt image is computed from the SOURCE LP result and passed to the analysis. This provides an initial
-estimate of the source morphology for the `Adapt` regularization scheme, even though the MGE source model
-may not fully capture the source structure. Search 2 improves upon this using a pixelized adapt image.
+An adapt image is computed from the SOURCE LP result and passed to the analysis. It is the source's
+signal-to-noise (S/N) map: the data with the lens light model subtracted, divided by the noise map. The structure
+comes from the data, not the MGE source model, which only enters through what is subtracted. It is what the adaptive
+mesh and the `Adapt` regularization scheme adapt to, and the cap below acts on it. S/N is used because it is
+unit-free and comparable across datasets, whereas an image's values depend on its brightness units. Later searches
+rebuild it the same way from the pixelized fits, whose lens light subtraction is better.
 
 __Adapt Image S/N Cap__
 
