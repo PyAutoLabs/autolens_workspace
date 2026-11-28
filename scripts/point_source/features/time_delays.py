@@ -312,9 +312,7 @@ result = search.fit(model=model, analysis=analysis)
 
 """
 Checkout `autolens_workspace/*/guides/results` for a full description of analysing results.
-"""
 
-"""
 __Related Geometric Guide__
 
 For a specialized approximation to point-source image geometry, see
