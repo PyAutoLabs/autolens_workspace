@@ -200,9 +200,7 @@ is the number of interior vertices, i.e. the grid's length minus `edge_pixels_to
 These points are ray-traced to the source-plane during lens modeling, included in the Delaunay triangulation but
 zeroed during the inversion. The inversion zeroes the last `zeroed_pixels` vertices of the mesh grid it receives,
 which is where the image mesh puts them.
-"""
 
-"""
 __Fit__
 
 In the example `imaging/features/pixelization/fit.py`, we illustrate how to use a pixelized source
@@ -456,8 +454,7 @@ search will then fit for the lens galaxy's light and mass model using these adap
 
 The details of how the above features work is not provided here, but is given at the end of chapter 3 of the HowToLens
 lecture series.
-"""
-"""
+
 __Adapt Images__
 
 The adapt images are the source's signal-to-noise map from the previous fit: the data with every other
@@ -1530,21 +1527,15 @@ The number of pixels that each sub-pixel maps too is also stored and extracted. 
 the calculation of the `mapping_matrix` described next.
 
 As discussed above, because for the `VoronoiNoInterp` pixelization where every sub-pixel maps to one source pixel,
-every entry of this array will be equal to 1.
-"""
-# pix_sizes_for_sub_slim_index = mapper.pix_sizes_for_sub_slim_index
+every entry of this array will be equal to 1. These sizes are stored in `mapper.pix_sizes_for_sub_slim_index`.
 
-"""
 When each sub-pixel maps to multiple source pixels, the mappings are described via an interpolation weight. For 
 example, for a `Delaunay` triangulation, every sub-pixel maps to 3 Delaunay triangles based on which triangle
 it lands in.
 
 For the `VoronoiNoInterp` pixelization where every sub-pixel maps to a single source pixel without inteprolation,
-every entry of this weight array is 1.0.
-"""
-# pix_weights_for_sub_slim_index = mapper.pix_weights_for_sub_slim_index
+every entry of this weight array is 1.0. These weights are stored in `mapper.pix_weights_for_sub_slim_index`.
 
-"""
 __Wrap Up__
 
 We have presented a visual step-by-step guide to the **PyAutoLens** likelihood function, which uses a pixelization, 
