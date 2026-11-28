@@ -218,7 +218,7 @@ if RUN_IMAGE_PLANE:
 
     al.jax.register_tracer_classes(tracer)
 
-    grid = al.Grid2D.uniform(shape_native=(200, 200), pixel_scales=0.7)
+    grid = al.Grid2D.uniform(shape_native=(1400, 1400), pixel_scales=0.1)
     solver = al.PointSolver.for_grid(
         grid=grid, pixel_scale_precision=0.01, use_jax=True
     )
@@ -484,6 +484,15 @@ The search goes through ``AnalysisPoint``; the factor-graph pattern is identical
 on real hardware, not in a tutorial session. The result's max-likelihood instance is the PyAutoLens
 equivalent of ``best.par``; compare it to Table 3 of Mahler et al. 2023 and to the reconstruction
 above.
+
+The refit solves the lens equation in every likelihood evaluation, so its starting grid sets most of
+the cost. It uses 0.1" pixels. On the solver-grid checks of Simple, Pandora, MACS J0416 and
+SMACS 0723 (autolens_workspace#704), every coarser grid tested (1", 0.5", 0.25" and 0.2") missed an
+observed image on at least one cluster, typically a low-magnification image or a tight pair beside a
+member galaxy, while 0.1" found them all. A coarser grid is faster but can silently drop an image;
+``scripts/cluster/solver_grid_check.py`` tests a grid on your own data.
+At 1400 x 1400 the solve is far slower than the earlier 1.4" grid (79x at 0.2" in the NumPy timing
+of #704), which itself missed both observed images of system 16.
 """
 search = af.Nautilus(
     path_prefix=Path("cluster") / "smacs0723",
@@ -494,7 +503,7 @@ search = af.Nautilus(
 )
 
 solver = al.PointSolver.for_grid(
-    grid=al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=1.4),
+    grid=al.Grid2D.uniform(shape_native=(1400, 1400), pixel_scales=0.1),
     pixel_scale_precision=0.025,
 )
 

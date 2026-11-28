@@ -641,10 +641,16 @@ filtering, multi-plane handling, JAX-compatibility) has not yet been written. Th
 is ``autolens_workspace/scripts/guides/point_solver/pairing.py``, which documents the pairing
 schemes and solver settings the refinement feeds.
 
-In code, the solver is constructed once and reused per evaluation:
+In code, the solver is constructed once and reused per evaluation.
+
+The starting grid uses 0.1" pixels. On the solver-grid checks of Simple, Pandora, MACS J0416 and
+SMACS 0723 (autolens_workspace#704), every coarser grid tested (1", 0.5", 0.25" and 0.2") missed an
+observed image on at least one cluster, typically a low-magnification image or a tight pair beside a
+member galaxy, while 0.1" found them all. A coarser grid is faster but can silently drop an image;
+``scripts/cluster/solver_grid_check.py`` tests a grid on your own data.
 """
 solver = al.PointSolver.for_grid(
-    grid=al.Grid2D.uniform(shape_native=(100, 100), pixel_scales=1.0),
+    grid=al.Grid2D.uniform(shape_native=(1000, 1000), pixel_scales=0.1),
     pixel_scale_precision=0.001,
     magnification_threshold=0.1,
 )

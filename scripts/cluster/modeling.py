@@ -232,10 +232,16 @@ image-plane chi-squared, which requires the ``PointSolver`` forward solve, for v
 max-likelihood model; see ``autolens_workspace/*/cluster/likelihood_function`` for a full walkthrough.
 The solver defined above is therefore used for visualization and validation rather than in every
 likelihood evaluation.
+
+The starting grid uses 0.1" pixels. On the solver-grid checks of Simple, Pandora, MACS J0416 and
+SMACS 0723 (autolens_workspace#704), every coarser grid tested (1", 0.5", 0.25" and 0.2") missed an
+observed image on at least one cluster, typically a low-magnification image or a tight pair beside a
+member galaxy, while 0.1" found them all. A coarser grid is faster but can silently drop an image;
+``scripts/cluster/solver_grid_check.py`` tests a grid on your own data.
 """
 grid = al.Grid2D.uniform(
-    shape_native=(100, 100),
-    pixel_scales=1.0,  # The pixel-scale converts pixel units to arc-seconds.
+    shape_native=(1000, 1000),
+    pixel_scales=0.1,  # The pixel-scale converts pixel units to arc-seconds.
 )
 
 solver = al.PointSolver.for_grid(
